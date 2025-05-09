@@ -1,40 +1,34 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui';
-
-// TODO:
-// - No loading UI exists yet
-// - cancel promises when component is destroyed
-// - show errors in UI for thumbnails if promise fails
+import { Toolbox } from '@ohif/extension-default';
+import PanelTMTV from './Panels/PanelTMTV';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedPanelPetSuv = () => {
-    return (
-      <PanelPetSUV
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-      />
-    );
+    return <PanelPetSUV />;
   };
 
   const wrappedROIThresholdToolbox = () => {
     return (
-      <>
-        <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-          buttonSectionId="ROIThresholdToolbox"
-          title="Threshold Tools"
-        />
-      </>
+      <Toolbox
+        buttonSectionId="ROIThresholdToolbox"
+        title="Threshold Tools"
+      />
     );
   };
 
   const wrappedROIThresholdExport = () => {
+    return <PanelROIThresholdExport />;
+  };
+
+  const wrappedPanelTMTV = () => {
     return (
       <>
-        <PanelROIThresholdExport
+        <Toolbox
+          buttonSectionId="ROIThresholdToolbox"
+          title="Threshold Tools"
+        />
+        <PanelTMTV
           commandsManager={commandsManager}
           servicesManager={servicesManager}
         />
@@ -49,6 +43,12 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconLabel: 'Patient Info',
       label: 'Patient Info',
       component: wrappedPanelPetSuv,
+    },
+    {
+      name: 'tmtv',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      component: wrappedPanelTMTV,
     },
     {
       name: 'tmtvBox',

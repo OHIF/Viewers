@@ -1,313 +1,497 @@
-import CustomizationService, { CustomizationType, MergeEnum } from './CustomizationService';
-import log from '../../log';
+// File: CustomizationService.registrationAndOperations.test.js
+import CustomizationService, { CustomizationScope } from './CustomizationService';
 
-jest.mock('../../log.js', () => ({
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-}));
-
+const commandsManager = {};
 const extensionManager = {
   registeredExtensionIds: [],
   moduleEntries: {},
-
   getRegisteredExtensionIds: () => extensionManager.registeredExtensionIds,
-
   getModuleEntry: function (id) {
     return this.moduleEntries[id];
   },
 };
 
-const commandsManager = {};
+const noop = () => {};
 
-const ohifOverlayItem = {
-  id: 'ohif.overlayItem',
-  content: function (props) {
-    return {
-      label: this.label,
-      value: props[this.attribute],
-      ver: 'default',
-    };
-  },
-};
+// A helper default customization module that mimics the structure returned by the module.
+function getDefaultCustomizationModule() {
+  return {
+    // Simple types
+    showAddSegment: true,
+    somethingFalse: false,
+    onAddSegment: () => 'default add',
+    // Array of primitives
+    NumbersList: [1, 2, 3, 4],
+    // Object
+    SeriesInfo: {
+      label: 'Series Date',
+      sortFunction: noop,
+      views: ['sagittal', 'coronal', 'axial'],
+      advanced: {
+        subKey: 'original',
+        anotherKey: 42,
+      },
+    },
+    // Array of objects
+    studyBrowser: [
+      {
+        id: 'seriesDate',
+        label: 'Series Date',
+        sortFunction: noop,
+      },
+    ],
+    advanced: {
+      firstLabel: 'hello',
+      functions: [
+        {
+          id: 'seriesDate',
+          label: 'Series Date',
+          sortFunction: () => {},
+          viewFunctions: [
+            { id: 'sagittal', label: 'Sagittal', sortFunction: () => {} },
+            { id: 'coronal', label: 'Coronal', sortFunction: () => {} },
+            { id: 'axial', label: 'Axial', sortFunction: () => {} },
+          ],
+        },
+      ],
+    },
+  };
+}
 
-const testItem = {
-  id: 'testItem',
-  customizationType: 'ohif.overlayItem',
-  attribute: 'testAttribute',
-  label: 'testItemLabel',
-};
-
-describe('CustomizationService.ts', () => {
+describe('CustomizationService - Registration + API Operations', () => {
   let customizationService;
 
-  let configuration;
-
   beforeEach(() => {
-    log.warn.mockClear();
-    jest.clearAllMocks();
-    configuration = {};
-    customizationService = new CustomizationService({
-      configuration,
-      commandsManager,
-    });
-    extensionManager.registeredExtensionIds = [];
-    extensionManager.moduleEntries = {};
+    customizationService = new CustomizationService({ commandsManager, configuration: {} });
+
+    // Simulate default registrations.
+    customizationService.addReferences(getDefaultCustomizationModule(), CustomizationScope.Default);
   });
 
-  describe('init', () => {
-    it('init succeeds', () => {
-      customizationService.init(extensionManager);
-    });
-
-    it('configurationRegistered', () => {
-      configuration.testItem = testItem;
-      customizationService.init(extensionManager);
-      expect(customizationService.getGlobalCustomization('testItem')).toBe(testItem);
-    });
-
-    it('defaultRegistered', () => {
-      extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
-        name: 'default',
-        value: [testItem],
-      };
-      customizationService.init(extensionManager);
-      expect(customizationService.getGlobalCustomization('testItem')).toBe(testItem);
-    });
+  afterEach(() => {
+    customizationService.onModeExit();
   });
 
-  describe('customizationType', () => {
-    it('inherits type', () => {
-      extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
-        name: 'default',
-        value: [ohifOverlayItem],
-      };
-      configuration.testItem = testItem;
-      customizationService.init(extensionManager);
+  // Check that defaults are registered
+  it('has registered default customizations', () => {
+    const defaultShowAddSegment = customizationService.getCustomization('showAddSegment');
+    expect(defaultShowAddSegment).toBe(true);
 
-      const item = customizationService.getGlobalCustomization('testItem');
+    const defaultNumbersList = customizationService.getCustomization('NumbersList');
+    expect(defaultNumbersList).toEqual([1, 2, 3, 4]);
 
-      const props = { testAttribute: 'testAttrValue' };
-      const result = item.content(props);
-      expect(result.label).toBe(testItem.label);
-      expect(result.value).toBe(props.testAttribute);
-      expect(result.ver).toBe('default');
-    });
+    const defaultSeriesInfo = customizationService.getCustomization('SeriesInfo');
+    expect(defaultSeriesInfo.label).toBe('Series Date');
+    expect(defaultSeriesInfo.advanced.subKey).toBe('original');
 
-    it('inline default inherits type', () => {
-      extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
-        name: 'default',
-        value: [ohifOverlayItem],
-      };
-      configuration.testItem = testItem;
-      customizationService.init(extensionManager);
+    const defaultStudyBrowser = customizationService.getCustomization('studyBrowser');
+    expect(Array.isArray(defaultStudyBrowser)).toBe(true);
+    expect(defaultStudyBrowser.length).toBe(1);
 
-      const item = customizationService.getCustomization('testItem2', {
-        id: 'testItem2',
-        customizationType: 'ohif.overlayItem',
-        label: 'otherLabel',
-        attribute: 'otherAttr',
+    //
+    const advanced = customizationService.getCustomization('advanced');
+    expect(advanced.firstLabel).toBe('hello');
+    expect(advanced.functions.length).toBe(1);
+    expect(advanced.functions[0].id).toBe('seriesDate');
+    expect(advanced.functions[0].viewFunctions.length).toBe(3);
+    expect(advanced.functions[0].viewFunctions[0].id).toBe('sagittal');
+    expect(advanced.functions[0].viewFunctions[1].id).toBe('coronal');
+    expect(advanced.functions[0].viewFunctions[2].id).toBe('axial');
+  });
+
+  // 1. Simple Data Types
+  describe('Simple Data Types', () => {
+    it('replaces boolean value using $set over the default', () => {
+      // Update the default value with a new one using $set.
+      customizationService.setCustomizations({
+        showAddSegment: { $set: false },
       });
+      const result = customizationService.getCustomization('showAddSegment');
 
-      // Customizes the default value, as this is testItem2
-      const props = { otherAttr: 'other attribute value' };
-      const result = item.content(props);
-      expect(result.label).toBe('otherLabel');
-      expect(result.value).toBe(props.otherAttr);
-      expect(result.ver).toBe('default');
-    });
-  });
-
-  describe('mode customization', () => {
-    it('onModeEnter can add extensions', () => {
-      extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
-        name: 'default',
-        value: [ohifOverlayItem],
-      };
-      customizationService.init(extensionManager);
-
-      expect(customizationService.getModeCustomization('testItem')).toBeUndefined();
-
-      customizationService.addModeCustomizations([testItem]);
-
-      expect(customizationService.getGlobalCustomization('testItem')).toBeUndefined();
-
-      const item = customizationService.getModeCustomization('testItem');
-      expect(item).not.toBeUndefined();
-
-      const props = { testAttribute: 'testAttrValue' };
-      const result = item.content(props);
-      expect(result.label).toBe(testItem.label);
-      expect(result.value).toBe(props.testAttribute);
-      expect(result.ver).toBe('default');
+      // Mode/global should override the default.
+      expect(result).toBe(false);
     });
 
-    it('global customizations override modes', () => {
-      extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.global'] = {
-        name: 'default',
-        value: [ohifOverlayItem],
-      };
-      configuration.testItem = testItem;
-      customizationService.init(extensionManager);
+    it('replaces boolean value using $set over the default false', () => {
+      // Update the default value with a new one using $set.
+      customizationService.setCustomizations({
+        somethingFalse: { $set: true },
+      });
+      const result = customizationService.getCustomization('somethingFalse');
 
-      // Add a mode customization that would otherwise fail below
-      customizationService.addModeCustomizations([{ ...testItem, label: 'other' }]);
-
-      const item = customizationService.getModeCustomization('testItem');
-
-      const props = { testAttribute: 'testAttrValue' };
-      const result = item.content(props);
-      expect(result.label).toBe(testItem.label);
-      expect(result.value).toBe(props.testAttribute);
+      // Mode/global should override the default.
+      expect(result).toBe(true);
     });
 
-    it('mode customizations override default', () => {
-      extensionManager.registeredExtensionIds.push('@testExtension');
-      extensionManager.moduleEntries['@testExtension.customizationModule.default'] = {
-        name: 'default',
-        value: [ohifOverlayItem, testItem],
-      };
-      customizationService.init(extensionManager);
+    it('replaces function value using $set over the default', () => {
+      // Original default returns "default add"
+      const original = customizationService.getCustomization('onAddSegment');
+      expect(original()).toBe('default add');
 
-      // Add a mode customization that would otherwise fail below
-      customizationService.addModeCustomizations([{ ...testItem, label: 'other' }]);
+      // Now update the function
+      customizationService.setCustomizations({
+        onAddSegment: { $set: () => 999 },
+      });
+      const updated = customizationService.getCustomization('onAddSegment');
+      expect(updated()).toBe(999);
+    });
 
-      const item = customizationService.getCustomization('testItem');
+    it('replaces two properties at once', () => {
+      // Original default returns "default add"
+      const original = customizationService.getCustomization('onAddSegment');
+      expect(original()).toBe('default add');
 
-      const props = { testAttribute: 'testAttrValue' };
-      const result = item.content(props);
-      expect(result.label).toBe('other');
-      expect(result.value).toBe(props.testAttribute);
+      // Now update the function
+      customizationService.setCustomizations({
+        onAddSegment: { $set: () => 998 },
+        showAddSegment: { $set: false },
+      });
+      expect(customizationService.getCustomization('onAddSegment')).toBeDefined();
+      expect(customizationService.getCustomization('showAddSegment')).toBe(false);
+      expect(customizationService.getCustomization('onAddSegment')()).toBe(998);
     });
   });
 
-  describe('merge', () => {
-    it('appends to global configuration', () => {
-      customizationService.init(extensionManager);
-
-      customizationService.setGlobalCustomization('appendSet', {
-        values: [{ id: 'one' }, { id: 'two' }],
+  // 2. Arrays of Primitives
+  describe('Arrays of Primitives', () => {
+    it('replaces entire array with $set over default', () => {
+      customizationService.setCustomizations({
+        NumbersList: { $set: [5, 6, 7, 8, 9] },
       });
-      const appendSet = customizationService.getCustomization('appendSet');
-      expect(appendSet.values.length).toBe(2);
-
-      customizationService.setGlobalCustomization(
-        'appendSet',
-        {
-          values: [{ id: 'three' }],
-        },
-        MergeEnum.Append
-      );
-      const appendSet2 = customizationService.getCustomization('appendSet');
-      expect(appendSet2.values.length).toBe(3);
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([5, 6, 7, 8, 9]);
     });
 
-    it('appends mode to default without touching default', () => {
-      customizationService.init(extensionManager);
-
-      customizationService.setDefaultCustomization('appendSet', {
-        values: [{ id: 'one' }, { id: 'two' }],
-      });
-      const appendSet = customizationService.get('appendSet');
-      expect(appendSet.values.length).toBe(2);
-
-      customizationService.setModeCustomization(
-        'appendSet',
-        {
-          values: [{ id: 'three' }],
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
+          $push: [5, 6],
         },
-        MergeEnum.Append
-      );
-
-      expect(appendSet.values.length).toBe(2);
-      const appendSet2 = customizationService.getModeCustomization('appendSet');
-      expect(appendSet2.values.length).toBe(3);
+      });
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([1, 2, 3, 4, 5, 6]);
     });
 
-    it('merges values by name/position', () => {
-      customizationService.init(extensionManager);
-
-      customizationService.setDefaultCustomization('appendSet', {
-        values: [{ id: 'one', obj: { v: '5' }, list: [1, 2, 3] }, { id: 'two' }],
-      });
-      const appendSet = customizationService.get('appendSet');
-      expect(appendSet.values.length).toBe(2);
-
-      customizationService.setModeCustomization(
-        'appendSet',
-        {
-          values: [{ id: 'three', obj: { v: 2 }, list: [3, 2, 1, 4] }],
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
+          $unshift: [0],
         },
-        MergeEnum.Merge,
-      );
-
-      const appendSet2 = customizationService.get('appendSet');
-      const [value0] = appendSet2.values;
-      expect(value0.id).toBe('three');
-      expect(value0.list).toEqual([3, 2, 1, 4]);
+      });
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([0, 1, 2, 3, 4]);
     });
 
-    it('merges functions', () => {
-      customizationService.init(extensionManager);
-
-      customizationService.setDefaultCustomization('appendSet', {
-        values: [{ f: () => 0, id: '0' }, { f: () => 5, id: '5' }],
-      });
-      const appendSet = customizationService.get('appendSet');
-      expect(appendSet.values.length).toBe(2);
-
-      customizationService.setModeCustomization(
-        'appendSet',
-        {
-          values: [{ f: () => 2, id: '2' }]
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
+          $splice: [
+            [2, 1, 99], // At index 2, remove
+          ],
         },
-        MergeEnum.Merge,
-      );
-
-      const appendSet2 = customizationService.get('appendSet');
-      const [value0, value1] = appendSet2.values;
-      expect(value0.f()).toBe(2);
-      expect(value1.f()).toBe(5);
+      });
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([1, 2, 99, 4]);
     });
 
-    it('merges list with object', () => {
-      customizationService.init(extensionManager);
-
-      const destination = [
-        1,
-        { id: 'two', value: 2, list: [5, 6], },
-        { id: 'three', value: 3 }
-      ];
-
-      const source = {
-        two: { value: 'updated2', list: { 0: 8 } },
-        1: { extraValue: 2, list: [7], },
-        1.0001: { id: 'inserted', value: 1.0001 },
-        '-1': {
-          value: -3
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
+          $push: [5, 6],
+          $unshift: [0],
         },
+      });
+      const result = customizationService.getCustomization('NumbersList');
+
+      expect(result).toEqual([0, 1, 2, 3, 4, 5, 6]);
+    });
+  });
+
+  // 3. Objects
+  describe('Objects', () => {
+    it('replaces entire object with $set', () => {
+      customizationService.setCustomizations({
+        SeriesInfo: {
+          $set: {
+            label: 'Series Number',
+            sortFunction: (a, b) => a?.SeriesNumber - b?.SeriesNumber,
+            views: ['3D'],
+          },
+        },
+      });
+      const result = customizationService.getCustomization('SeriesInfo');
+
+      expect(result.label).toBe('Series Number');
+      expect(result.sortFunction).not.toEqual(noop);
+      expect(result.views).toEqual(['3D']);
+    });
+
+    it('merges object fields with $merge over default', () => {
+      // Merge basic fields (in mode should override defaults)
+      customizationService.setCustomizations({
+        SeriesInfo: {
+          $merge: {
+            label: 'New Label',
+            extraField: true,
+          },
+        },
+      });
+      let result = customizationService.getCustomization('SeriesInfo');
+
+      expect(result.label).toBe('New Label');
+      expect(result.extraField).toBe(true);
+
+      // Merge deeper nested fields on the "advanced" property.
+      customizationService.setCustomizations({
+        SeriesInfo: {
+          advanced: {
+            $merge: {
+              subKey: 'updatedSubValue',
+              newSubKey: 123,
+            },
+          },
+        },
+      });
+      result = customizationService.getCustomization('SeriesInfo');
+      expect(result.advanced.subKey).toBe('updatedSubValue');
+      expect(result.advanced.newSubKey).toBe(123);
+      expect(result.advanced.anotherKey).toBe(42);
+    });
+
+    it('applies a function to modify a property with $apply', () => {
+      customizationService.setCustomizations({
+        SeriesInfo: {
+          $apply: oldValue => ({
+            ...oldValue,
+            label: 'Series Number (via $apply)',
+          }),
+        },
+      });
+      const result = customizationService.getCustomization('SeriesInfo');
+
+      expect(result.label).toBe('Series Number (via $apply)');
+    });
+  });
+
+  // 4. Arrays of Objects
+  describe('Arrays of Objects', () => {
+    it('replaces entire array of objects using $set', () => {
+      customizationService.setCustomizations({
+        studyBrowser: {
+          $set: [
+            {
+              id: 'seriesNumber',
+              label: 'Series Number',
+              sortFunction: (a, b) => a?.SeriesNumber - b?.SeriesNumber,
+            },
+            {
+              id: 'seriesDate',
+              label: 'Series Date',
+              sortFunction: (a, b) => new Date(b?.SeriesDate) - new Date(a?.SeriesDate),
+            },
+          ],
+        },
+      });
+      const result = customizationService.getCustomization('studyBrowser');
+      expect(result.length).toBe(2);
+      expect(result[0].label).toBe('Series Number');
+      expect(result[1].label).toBe('Series Date');
+    });
+
+    it('updates array of objects with $push and $splice', () => {
+      // Append a new item using $push
+      customizationService.setCustomizations({
+        studyBrowser: {
+          $push: [
+            {
+              id: 'seriesNumber',
+              label: 'Series Number',
+              sortFunction: (a, b) => a?.SeriesNumber - b?.SeriesNumber,
+            },
+          ],
+        },
+      });
+
+      let result = customizationService.getCustomization('studyBrowser');
+      expect(result.length).toBe(2);
+      expect(result[0].label).toBe('Series Date');
+      expect(result[1].label).toBe('Series Number');
+
+      // Insert at index 1 with $splice
+      customizationService.setCustomizations({
+        studyBrowser: {
+          $splice: [
+            [
+              1,
+              0,
+              {
+                id: 'anotherItem',
+                label: 'Another Item',
+                sortFunction: noop,
+              },
+            ],
+          ],
+        },
+      });
+      result = customizationService.getCustomization('studyBrowser');
+      expect(result.length).toBe(3);
+      expect(result[0].label).toBe('Series Date');
+      expect(result[1].label).toBe('Another Item');
+    });
+  });
+
+  // 5. Advanced Nested Structures
+  describe('Advanced Nested Structures', () => {
+    it('updates first level properties in advanced object', () => {
+      customizationService.setCustomizations({
+        advanced: {
+          firstLabel: {
+            $set: 'newLabel',
+          },
+        },
+      });
+
+      const result = customizationService.getCustomization('advanced');
+      expect(result.firstLabel).toBe('newLabel');
+      expect(result.functions).toBeDefined();
+    });
+
+    it('updates nested objects within functions array using $filter and $merge', () => {
+      customizationService.setCustomizations({
+        advanced: {
+          // filter an object that is inside the advanced object
+          // and then merge the object
+          $filter: {
+            match: { id: 'seriesDate' },
+            $merge: {
+              label: 'Series Data (via $filter)',
+            },
+          },
+        },
+      });
+
+      const result = customizationService.getCustomization('advanced');
+
+      expect(result.functions.length).toBe(1);
+      expect(result.functions[0].label).toBe('Series Data (via $filter)');
+    });
+
+    it('updates deeply nested view functions using $filter', () => {
+      customizationService.setCustomizations({
+        advanced: {
+          $filter: {
+            match: { id: 'axial' },
+            $merge: {
+              label: 'Axial (via $filter)',
+            },
+          },
+        },
+      });
+
+      const result = customizationService.getCustomization('advanced');
+
+      expect(result.functions.length).toBe(1);
+      expect(result.functions[0].viewFunctions[2].label).toBe('Axial (via $filter)');
+    });
+  });
+
+  // 6. Multiple Default Registrations
+  describe('Multiple Default Registrations', () => {
+    it('allows subsequent default registrations to enhance previous ones', () => {
+      customizationService = new CustomizationService({ commandsManager, configuration: {} });
+
+      // First extension registers its defaults
+      const firstExtensionDefaults = {
+        simpleList: [1, 2, 3],
       };
+      customizationService.addReferences(firstExtensionDefaults, CustomizationScope.Default);
 
-      customizationService.setDefaultCustomization('appendSet', {
-        values: destination,
+      // Second extension enhances the first one's defaults
+      const secondExtensionDefaults = {
+        simpleList: { $push: [4, 5] },
+      };
+      customizationService.addReferences(secondExtensionDefaults, CustomizationScope.Default);
+
+      // Verify the final state combines both extensions' contributions
+      const result = customizationService.getCustomization('simpleList');
+      expect(result).toEqual([1, 2, 3, 4, 5]);
+    });
+  });
+
+  describe('CustomizationService - Inheritance (`inheritsFrom`)', () => {
+    it('inherits properties from the parent customization', () => {
+      // Register a parent customization
+      customizationService.setCustomizations(
+        {
+          'test.overlayItem': {
+            label: 'Default Label',
+            color: 'blue',
+          },
+        },
+        CustomizationScope.Default
+      );
+
+      // Register a child customization with `inheritsFrom`
+      customizationService.setCustomizations({
+        'viewportOverlay.topLeft.StudyDate': {
+          $set: {
+            inheritsFrom: 'test.overlayItem',
+            label: 'Study Date',
+            title: ' date',
+          },
+        },
       });
-      customizationService.setModeCustomization('appendSet', {
-        values: source,
-      }, MergeEnum.Append);
 
-      const { values } = customizationService.getCustomization('appendSet');
-      const [zero, one, two, three] = values;
-      expect(zero).toBe(1);
-      expect(one.value).toBe('updated2');
-      expect(one.extraValue).toBe(2);
-      expect(one.list).toEqual([8, 6, 7]);
-      expect(two.id).toBe('inserted');
-      expect(three.value).toBe(-3);
+      const customization = customizationService.getCustomization(
+        'viewportOverlay.topLeft.StudyDate'
+      );
+
+      // Check that the inherited and overridden properties exist
+      expect(customization.label).toBe('Study Date'); // Overridden
+      expect(customization.color).toBe('blue'); // Inherited
+    });
+
+    it('executes transform methods from the parent customization', () => {
+      // Register a parent customization
+      customizationService.setCustomizations(
+        {
+          'test.overlayItem': {
+            $set: {
+              $transform: function () {
+                return {
+                  label: this.label,
+                  additionalKey: 'transformedValue',
+                };
+              },
+            },
+          },
+        },
+        CustomizationScope.Default
+      );
+
+      // Register a child customization with `inheritsFrom`
+      customizationService.setCustomizations({
+        'viewportOverlay.bottomRight.InstanceNumber': {
+          $set: {
+            inheritsFrom: 'test.overlayItem',
+            label: 'Instance Number',
+            title: 'Instance Title',
+          },
+        },
+      });
+
+      const customization = customizationService.getCustomization(
+        'viewportOverlay.bottomRight.InstanceNumber'
+      );
+
+      // Verify that the transform function from the parent is executed
+      expect(customization.additionalKey).toBe('transformedValue');
+      expect(customization.label).toBe('Instance Number');
+      expect(customization.title).toBe(undefined);
     });
   });
 });

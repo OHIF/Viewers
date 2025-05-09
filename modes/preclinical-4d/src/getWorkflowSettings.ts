@@ -2,19 +2,39 @@ const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  toolBox: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-toolbox',
-  export: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-export',
+  segmentation: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-segmentation',
 };
 
 const cornerstone = {
-  segmentation: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentationNoHeader',
   activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
-const defaultButtons = {
-  buttonSection: 'primary',
-  buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
-};
+const defaultButtons = [
+  {
+    buttonSection: 'primary',
+    buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
+  },
+  {
+    buttonSection: 'measurementSection',
+    buttons: ['Length', 'Bidirectional', 'ArrowAnnotate', 'EllipticalROI'],
+  },
+];
+
+const ROIThresholdToolbox = [
+  {
+    buttonSection: 'dynamic-toolbox',
+    buttons: ['SegmentationTools'],
+  },
+  {
+    buttonSection: 'segmentationToolboxToolsSection',
+    buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
+  },
+  {
+    buttonSection: 'brushToolsSection',
+    buttons: ['Brush', 'Eraser', 'Threshold'],
+  },
+];
 
 const defaultLeftPanel = [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]];
 
@@ -60,20 +80,14 @@ function getWorkflowSettings({ servicesManager }) {
         layout: {
           panels: {
             left: defaultLeftPanel,
-            right: [[dynamicVolume.toolBox, cornerstone.segmentation, dynamicVolume.export]],
+            right: [[dynamicVolume.segmentation]],
           },
           options: {
             leftPanelClosed: false,
             rightPanelClosed: false,
           },
         },
-        toolbarButtons: [
-          defaultButtons,
-          {
-            buttonSection: 'dynamic-toolbox',
-            buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
-          },
-        ],
+        toolbarButtons: [...defaultButtons, ...ROIThresholdToolbox],
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'roiQuantification',

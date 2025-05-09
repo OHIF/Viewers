@@ -1,9 +1,11 @@
 //Creating aliases for Cornerstone tools buttons
 export function initCornerstoneToolsAliases() {
-  cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
+  // Note: stack scroll is not in the DOM when the study is loaded
+  // cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
+
   cy.get('[data-cy="Zoom"]').as('zoomBtn');
-  cy.get('[data-cy="WindowLevel-split-button-primary"]').as('wwwcBtnPrimary');
-  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as('wwwcBtnSecondary');
+  cy.get('[data-cy="WindowLevelGroup-split-button-primary"]').as('wwwcBtnPrimary');
+  cy.get('[data-cy="WindowLevelGroup-split-button-secondary"]').as('wwwcBtnSecondary');
   cy.get('[data-cy="Pan"]').as('panBtn');
   cy.get('[data-cy="MeasurementTools-split-button-primary"]').as('measurementToolsBtnPrimary');
   cy.get('[data-cy="MeasurementTools-split-button-secondary"]').as('measurementToolsBtnSecondary');
@@ -15,7 +17,7 @@ export function initCornerstoneToolsAliases() {
 }
 
 //Creating aliases for Common page elements
-export function initCommonElementsAliases() {
+export function initCommonElementsAliases(skipMarkers) {
   cy.get('[data-cy="trackedMeasurements-btn"]').as('measurementsBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
   cy.get('[data-cy="seriesList-btn"]').as('seriesBtn');
@@ -27,14 +29,23 @@ export function initCommonElementsAliases() {
 
   // TODO: Panels are not in DOM when closed, move this somewhere else
   cy.get('[data-cy="trackedMeasurements-panel"]').as('measurementsPanel');
+  cy.get('[data-cy="panelSegmentation-btn"]').as('segmentationPanel');
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');
   cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
   cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
-  cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
-  cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
+  if (skipMarkers) {
+    return;
+  }
+
+  try {
+    cy.get('.left-mid.orientation-marker')?.as('viewportInfoMidLeft');
+    cy.get('.top-mid.orientation-marker')?.as('viewportInfoMidTop');
+  } catch (error) {
+    console.log('Error: ', error);
+  }
 }
 
 //Creating aliases for Routes

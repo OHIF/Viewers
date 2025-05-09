@@ -1,5 +1,5 @@
-import { hotkeys, classes } from '@ohif/core';
-import toolbarButtons from './toolbarButtons.js';
+import { classes } from '@ohif/core';
+import toolbarButtons from './toolbarButtons';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
@@ -11,20 +11,19 @@ const { MetadataProvider } = classes;
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-  segPanel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  segPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationNoHeader',
+  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
 };
 
 const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
-  toolbox: '@ohif/extension-tmtv.panelModule.tmtvBox',
-  export: '@ohif/extension-tmtv.panelModule.tmtvExport',
+  tmtv: '@ohif/extension-tmtv.panelModule.tmtv',
 };
 
 const extensionDependencies = {
@@ -62,7 +61,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(toolNames, Enums, toolGroupService, commandsManager, null, servicesManager);
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
       const { unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
@@ -97,21 +96,31 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
       ]);
-      toolbarService.createButtonSection('ROIThresholdToolbox', [
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+      ]);
+
+      toolbarService.createButtonSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'RectangleROIStartEndThreshold',
         'BrushTools',
       ]);
 
-      customizationService.addModeCustomizations([
-        {
-          id: 'segmentation.panel',
-          segmentationPanelMode: 'expanded',
-          addSegment: false,
-          onSegmentationAdd: () => {
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
+
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
+        },
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
             commandsManager.run('createNewLabelmapFromPT');
           },
         },
-      ]);
+      });
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard
@@ -155,7 +164,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -199,8 +208,10 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
               leftPanelClosed: true,
-              rightPanels: [[tmtv.toolbox, cs3d.segPanel, tmtv.export], tmtv.petSUV],
+              rightPanels: [tmtv.tmtv, tmtv.petSUV],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: cs3d.viewport,
@@ -215,7 +226,6 @@ function modeFactory({ modeConfiguration }) {
     extensions: extensionDependencies,
     hangingProtocol: tmtv.hangingProtocol,
     sopClassHandlers: [ohif.sopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }

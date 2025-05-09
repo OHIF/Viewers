@@ -72,22 +72,27 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
-  displaySet.getReferenceDisplaySet = () => {
-    const { displaySetService } = servicesManager.services;
-    const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
-      displaySet.referencedSeriesInstanceUID
+  const { displaySetService } = servicesManager.services;
+  const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
+    displaySet.referencedSeriesInstanceUID
+  );
+
+  if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
+    // Instead of throwing error, subscribe to display sets added
+    const { unsubscribe } = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
+      ({ displaySetsAdded }) => {
+        const addedDisplaySet = displaySetsAdded[0];
+        if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
+          displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
+          unsubscribe();
+        }
+      }
     );
-
-    if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
-      throw new Error('Referenced DisplaySet is missing for the RT');
-    }
-
+  } else {
     const referencedDisplaySet = referencedDisplaySets[0];
-
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
-
-    return referencedDisplaySet;
-  };
+  }
 
   displaySet.load = ({ headers }) => _load(displaySet, servicesManager, extensionManager, headers);
 
@@ -111,19 +116,13 @@ function _load(rtDisplaySet, servicesManager: AppTypes.ServicesManager, extensio
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
     if (!rtDisplaySet.structureSet) {
-      const structureSet = await loadRTStruct(
-        extensionManager,
-        rtDisplaySet,
-        rtDisplaySet.getReferenceDisplaySet(),
-        headers
-      );
+      const structureSet = await loadRTStruct(extensionManager, rtDisplaySet, headers);
 
       rtDisplaySet.structureSet = structureSet;
     }
 
-    const suppressEvents = true;
     segmentationService
-      .createSegmentationForRTDisplaySet(rtDisplaySet, null, suppressEvents)
+      .createSegmentationForRTDisplaySet(rtDisplaySet)
       .then(() => {
         rtDisplaySet.loading = false;
         resolve();

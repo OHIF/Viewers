@@ -4,71 +4,113 @@ title: Custom URL Access/Build
 ---
 
 
-## Build for non-root path
+# Hosting the Web Viewer on a Custom URL Path
 
-Sometimes it is desired to access the viewer from a non-root path (e.g., `/my-awesome-viewer` instead of `/`).
-You can achieve so by using the `PUBLIC_URL` environment variable AND the `routerBasename` configuration option.
-
-1. use a config (e.g. `config/myConfig.js`) file that is using the `routerBasename` of your choice `/my-awesome-viewer` (note there is only one / - it is not /my-awesome-viewer/).
-2. build the viewer with `PUBLIC_URL=/my-awesome-viewer/` (note there are two / - it is not /my-awesome-viewer).
+You can host the viewer on a subpath like `/abc` instead of the root `/`. There are **two levels** of customization depending on how you want to serve your static assets.
 
 
-:::tip
-The PUBLIC_URL tells the application where to find the static assets and the routerBasename will tell the application how to handle the routes
-:::
+## Simple Setup (Recommended for Most Use Cases)
 
+If you want to make the viewer accessible from a custom path (e.g. `/abc`) and **don’t care where the assets are loaded from** (they’ll be fetched from the root `/`), this setup is for you.
 
-### Testing in Development
-For testing the build locally, you can use the following command:
+### What You Get
 
-```bash
-# we use default config file, so we assume you have already set the routerBasename to /my-awesome-viewer in the default config as an example
-PUBLIC_URL=/my-awesome-viewer/ APP_CONFIG=config/default.js yarn dev
-```
+- Viewer available at `https://yourdomain.com/abc`
+- All assets (JS, WASM, etc.) still loaded from the root (`/app.js`, `/viewer.wasm`, etc.)
 
+### How To Set It Up
 
-### Testing in Build (production)
-You need to build the viewer with the following command:
+1. Set `routerBasename` in your config file (e.g., `config/myConfig.js`) to `/abc`
+2. Build the viewer with:
 
 ```bash
-PUBLIC_URL=/my-awesome-viewer/ APP_CONFIG=config/default.js yarn build
+APP_CONFIG=config/myConfig.js yarn build
 ```
 
-We can use the `npx serve` to serve the build folder. There are two things you need to consider however,
-1. You need to change the public/serve.json file to reflect the new routerBasename in the destination (see the example below)
+### Local Development
 
+```bash
+APP_CONFIG=config/myConfig.js yarn dev
+```
 
-```json
-// final serve.json
-{
-  "rewrites": [{ "source": "*", "destination": "my-awesome-viewer/index.html" }],
-  "headers": [
-    {
-      "source": "**/*",
-      "headers": [
-        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
-      ]
-    }
-  ]
+---
+
+##  Advanced Setup (Custom Asset Path)
+
+If you want to host the viewer at `/abc` **and** serve static assets from a different location (e.g. `/my-private-assets`), this is a more advanced scenario.
+
+### What You Get
+
+- Viewer accessible from `https://yourdomain.com/abc`
+- All assets loaded from `https://yourdomain.com/my-private-assets/`
+
+### Why This is Tricky
+
+Some libraries (especially ones using WASM) load assets using **relative paths**, which can break if not handled carefully. To solve this:
+
+- Set `routerBasename` to `/abc`
+- Set `PUBLIC_URL` to `/my-private-assets/`
+- Webpack will load assets from the specified public URL.
+
+### Local Development Notes
+
+In development, use proxy rewrites to handle relative asset paths. Example for `dicom-microscopy-viewer`:
+
+```js
+proxy: {
+  '/dicom-microscopy-viewer': {
+    target: 'http://localhost:3000',
+    pathRewrite: {
+      '^/dicom-microscopy-viewer': `/${PUBLIC_URL}/dicom-microscopy-viewer`,
+    },
+  },
 }
 ```
 
+This ensures local development can find assets even when libraries expect them at certain paths.
+
+
+### Building and Serving in Production
+
+To build the viewer for production:
+
 ```bash
-cd platform/app;
-
-# rename the dist folder to my-awesome-viewer
-mv dist my-awesome-viewer
-
-# serve the folder with custom json, note that we are using ../public/serve.json and NOT public/serve.json
-npx serve  -c ./public/serve.json
+PUBLIC_URL=/my-private-assets/ APP_CONFIG=config/myConfig.js yarn build
 ```
 
+If you're using `npx serve`, make sure to update `serve.json`:
 
-:::note
-When you want to authenticate against a sub path, there are a few things you should keep in mind:
+```json
+{
+  "rewrites": [{ "source": "*", "destination": "/abc/index.html" }]
+}
+```
 
-1. Set the `routerBasename` to the sub path and also update the `PUBLIC_URL` to match the sub path.
-2. Don't forget to modify the `serve.json` file as mentioned earlier.
-3. Ensure that the sub path is included in the list of allowed callback URLs. For example, in the Google Cloud dashboard, you can set it in the `Authorized redirect URIs` field under the `Credentials` section of the `APIs & Services` menu.
-:::
+Serve the viewer like this:
+
+```bash
+cd platform/app
+mv dist abc  # Rename dist folder to match your viewer route
+npx serve -c ./public/serve.json
+```
+
+---
+
+### 🐳 Using Docker? You're Covered
+
+If you’re using our Dockerfile, you’re all set — it already handles copying specific asset folders (like `dicom-microscopy-viewer`) to the root:
+
+```Dockerfile
+COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/share/nginx/html/dicom-microscopy-viewer
+```
+
+Keep an eye on the browser network tab for any assets that might fail to load — if any other libraries require similar treatment, you’ll need to handle those as well.
+
+---
+
+## Summary
+
+| Goal                              | routerBasename | PUBLIC_URL           | Assets Load From        |
+|-----------------------------------|----------------|-----------------------|--------------------------|
+| Viewer at `/abc`, assets from `/` | `/abc`         | default                   | Root `/`                 |
+| Viewer at `/abc`, assets from `/my-private-assets` | `/abc`         | `/my-private-assets/`  | `/my-private-assets/`    |

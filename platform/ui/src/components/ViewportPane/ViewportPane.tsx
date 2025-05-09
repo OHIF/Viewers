@@ -58,13 +58,15 @@ function ViewportPane({
       // onInteractionHandler...
       // https://reactjs.org/docs/events.html#mouse-events
       // https://stackoverflow.com/questions/8378243/catch-scrolling-event-on-overflowhidden-element
-      onMouseDown={onInteractionHandler}
+      // Use onPointerDown so that for the config property activateViewportBeforeInteraction===false,
+      // a touch drag will activate the viewport as well as apply the tool selected.
+      onPointerDown={onInteractionHandler}
       onDoubleClick={onDoubleClick}
       onClick={onInteractionHandler}
       onScroll={onInteractionHandler}
       onWheel={onInteractionHandler}
       className={classnames(
-        'group h-full w-full overflow-hidden rounded-md transition duration-300',
+        'group/pane h-full w-full overflow-hidden rounded-md transition duration-300',
         {
           'border-primary-light border-2': isActive,
           'border-2 border-transparent': !isActive,
@@ -80,7 +82,7 @@ function ViewportPane({
           'h-full w-full overflow-hidden rounded-md',
           {
             'border border-transparent': isActive,
-            'border-secondary-light group-hover:border-primary-light/70 border': !isActive,
+            'border-secondary-light group-hover/pane:border-primary-light/70 border': !isActive,
           },
           className
         )}

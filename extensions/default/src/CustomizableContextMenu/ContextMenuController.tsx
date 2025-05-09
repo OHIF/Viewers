@@ -1,5 +1,4 @@
 import * as ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
-import ContextMenu from '../../../../platform/ui/src/components/ContextMenu/ContextMenu';
 import { CommandsManager } from '@ohif/core';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
 import { Menu, MenuItem, Point, ContextMenuProps } from './types';
@@ -26,7 +25,7 @@ export default class ContextMenuController {
   }
 
   closeContextMenu() {
-    this.services.uiDialogService.dismiss({ id: 'context-menu' });
+    this.services.uiDialogService.hide('context-menu');
   }
 
   /**
@@ -47,17 +46,22 @@ export default class ContextMenuController {
     }
 
     const { event, subMenu, menuId, menus, selectorProps } = contextMenuProps;
-
-    const annotationManager = CsAnnotation.state.getAnnotationManager();
-    const { locking } = CsAnnotation;
-    const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
-    const isLocked = locking.isAnnotationLocked(
-      annotationManager.getAnnotation(targetAnnotationId)
-    );
-
-    if (isLocked) {
-      console.warn('Annotation is locked.');
+    if (!menus) {
+      console.warn('No menus found for', menuId);
       return;
+    }
+
+    const { locking, visibility } = CsAnnotation;
+    const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
+
+    if (targetAnnotationId) {
+      const isLocked = locking.isAnnotationLocked(targetAnnotationId);
+      const isVisible = visibility.isAnnotationVisible(targetAnnotationId);
+
+      if (isLocked || !isVisible) {
+        console.warn(`Annotation is ${isLocked ? 'locked' : 'not visible'}.`);
+        return;
+      }
     }
 
     const items = ContextMenuItemsBuilder.getMenuItems(
@@ -67,34 +71,34 @@ export default class ContextMenuController {
       menuId
     );
 
-    this.services.uiDialogService.dismiss({ id: 'context-menu' });
-    this.services.uiDialogService.create({
+    if (!items) {
+      return;
+    }
+
+    const ContextMenu = this.services.customizationService.getCustomization('ui.contextMenu');
+
+    this.services.uiDialogService.hide('context-menu');
+    this.services.uiDialogService.show({
       id: 'context-menu',
-      isDraggable: false,
-      preservePosition: false,
-      preventCutOf: true,
       defaultPosition: ContextMenuController._getDefaultPosition(
         defaultPointsPosition,
-        event?.detail,
+        event?.detail || event,
         viewportElement
       ),
-      event,
       content: ContextMenu,
-
-      // This naming is part of the uiDialogService convention
-      // Clicking outside simply closes the dialog box.
-      onClickOutside: () => this.services.uiDialogService.dismiss({ id: 'context-menu' }),
-
+      shouldCloseOnEsc: true,
+      shouldCloseOnOverlayClick: true,
+      unstyled: true,
       contentProps: {
         items,
         selectorProps,
         menus,
         event,
         subMenu,
-        eventData: event?.detail,
+        eventData: event?.detail || event,
 
         onClose: () => {
-          this.services.uiDialogService.dismiss({ id: 'context-menu' });
+          this.services.uiDialogService.hide('context-menu');
         },
 
         /**
@@ -138,8 +142,8 @@ export default class ContextMenuController {
   };
 
   static _getEventDefaultPosition = eventDetail => ({
-    x: eventDetail && eventDetail.currentPoints.client[0],
-    y: eventDetail && eventDetail.currentPoints.client[1],
+    x: eventDetail?.currentPoints?.client[0] ?? eventDetail?.pageX,
+    y: eventDetail?.currentPoints?.client[1] ?? eventDetail?.pageY,
   });
 
   static _getElementDefaultPosition = element => {

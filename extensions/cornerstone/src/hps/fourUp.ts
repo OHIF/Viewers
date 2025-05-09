@@ -1,3 +1,5 @@
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+
 export const fourUp = {
   id: 'fourUp',
   locked: true,
@@ -11,7 +13,7 @@ export const fourUp = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    mprDisplaySet: {
+    activeDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -46,21 +48,11 @@ export const fourUp = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -72,10 +64,11 @@ export const fourUp = {
             customViewportProps: {
               hideOverlays: true,
             },
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',
@@ -94,21 +87,11 @@ export const fourUp = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -120,21 +103,11 @@ export const fourUp = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },

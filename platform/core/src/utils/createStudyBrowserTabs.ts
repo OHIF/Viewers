@@ -1,3 +1,5 @@
+import { useSystem } from '../contextProviders/SystemProvider';
+
 /**
  *
  * @param {string[]} primaryStudyInstanceUIDs
@@ -12,7 +14,16 @@
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
 
-export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets, recentTimeframeMS = 31536000000) {
+export function createStudyBrowserTabs(
+  primaryStudyInstanceUIDs,
+  studyDisplayList,
+  displaySets,
+  recentTimeframeMS = 31536000000
+) {
+  const { servicesManager } = useSystem();
+  const { displaySetService } = servicesManager.services;
+
+  const shouldSortBySeriesUID = process.env.TEST_ENV === 'true';
   const primaryStudies = [];
   const allStudies = [];
 
@@ -20,8 +31,22 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
+
+    // sort them by seriesInstanceUID
+    let sortedDisplaySets;
+    if (shouldSortBySeriesUID) {
+      sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
+        const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
+        const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);
+
+        return displaySetA.SeriesInstanceUID.localeCompare(displaySetB.SeriesInstanceUID);
+      });
+    } else {
+      sortedDisplaySets = displaySetsForStudy;
+    }
+
     const tabStudy = Object.assign({}, study, {
-      displaySets: displaySetsForStudy,
+      displaySets: sortedDisplaySets,
     });
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
@@ -54,6 +79,7 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
 
     return dateB - dateA;
   };
+
   const tabs = [
     {
       name: 'primary',

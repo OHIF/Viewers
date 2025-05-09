@@ -1,10 +1,13 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui-next';
+import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { utils } from '@ohif/extension-cornerstone';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
@@ -29,6 +32,10 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     viewportActionCornersService,
   } = servicesManager.services;
 
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
+
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportId}`;
 
   // SEG viewport will always have a single display set
@@ -37,11 +44,11 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   }
 
   const segDisplaySet = displaySets[0];
-
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [selectedSegment, setSelectedSegment] = useState(1);
+  const selectedSegmentObjectIndex: number = 0;
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the SEG is opened and segments are loaded into the
   // segmentation panel, and SEG is also rendered on any viewport that is in the
@@ -61,7 +68,11 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   const { viewports, activeViewportId } = viewportGrid;
 
-  const referencedDisplaySet = segDisplaySet.getReferenceDisplaySet();
+  const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+    referencedDisplaySetInstanceUID
+  );
+
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(
     referencedDisplaySet,
     segDisplaySet
@@ -98,18 +109,17 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       '@ohif/extension-cornerstone.viewportModule.cornerstone'
     );
 
-    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
-
     // Todo: jump to the center of the first segment
     return (
       <Component
         {...props}
-        displaySets={[referencedDisplaySet, segDisplaySet]}
+        displaySets={[segDisplaySet]}
         viewportOptions={{
-          viewportType: 'volume',
+          viewportType: viewportOptions.viewportType,
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
         onElementEnabled={evt => {
           props.onElementEnabled?.(evt);
@@ -122,28 +132,39 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   const onSegmentChange = useCallback(
     direction => {
-      const segmentationId = segDisplaySet.displaySetInstanceUID;
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      const { segments } = segmentation;
-
-      const numberOfSegments = Object.keys(segments).length;
-
-      let newSelectedSegmentIndex = selectedSegment + direction;
-
-      // Segment 0 is always background
-
-      if (newSelectedSegmentIndex > numberOfSegments - 1) {
-        newSelectedSegmentIndex = 1;
-      } else if (newSelectedSegmentIndex === 0) {
-        newSelectedSegmentIndex = numberOfSegments - 1;
-      }
-
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
-      setSelectedSegment(newSelectedSegmentIndex);
+      utils.handleSegmentChange({
+        direction,
+        segDisplaySet: segDisplaySet,
+        viewportId,
+        selectedSegmentObjectIndex,
+        segmentationService,
+      });
     },
-    [selectedSegment]
+    [selectedSegmentObjectIndex]
   );
+
+  const hydrateSEG = useCallback(() => {
+    // update the previously stored segmentationPresentation with the new viewportId
+    // presentation so that when we put the referencedDisplaySet back in the viewport
+    // it will have the correct segmentation representation hydrated
+    commandsManager.runCommand('updateStoredSegmentationPresentation', {
+      displaySet: segDisplaySet,
+      type: SegmentationRepresentations.Labelmap,
+    });
+
+    // update the previously stored positionPresentation with the new viewportId
+    // presentation so that when we put the referencedDisplaySet back in the viewport
+    // it will be in the correct position zoom and pan
+    commandsManager.runCommand('updateStoredPositionPresentation', {
+      viewportId,
+      displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
+    });
+
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+      viewportId,
+      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+    });
+  }, [commandsManager, viewportId, referencedDisplaySet, segDisplaySet]);
 
   useEffect(() => {
     if (segIsLoading) {
@@ -155,20 +176,34 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       viewportId,
       segDisplaySet,
       preHydrateCallbacks: [storePresentationState],
-      hydrateSEGDisplaySet,
+      hydrateCallback: hydrateSEG,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportId, segDisplaySet, segIsLoading]);
+  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, hydrateSEG]);
 
   useEffect(() => {
+    // on new seg display set, remove all segmentations from all viewports
+    segmentationService.clearSegmentationRepresentations(viewportId);
+
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
         if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
+        }
+
+        if (segDisplaySet?.firstSegmentedSliceImageId && viewportOptions?.presentationIds) {
+          const { firstSegmentedSliceImageId } = segDisplaySet;
+          const { presentationIds } = viewportOptions;
+
+          setPositionPresentation(presentationIds.positionPresentationId, {
+            viewReference: {
+              referencedImageId: firstSegmentedSliceImageId,
+            },
+          });
         }
       }
     );
@@ -223,38 +258,30 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       return;
     }
 
+    // keep the already stored segmentationPresentation for this viewport in memory
+    // so that we can restore it after hydrating the SEG
+    commandsManager.runCommand('updateStoredSegmentationPresentation', {
+      displaySet: segDisplaySet,
+      type: SegmentationRepresentations.Labelmap,
+    });
+
+    // always start fresh for this viewport since it is special type of viewport
+    // that should only show one segmentation at a time.
+    segmentationService.clearSegmentationRepresentations(viewportId);
+
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
     toolGroup = createSEGToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
+      // e.g., another seg displayset is dragged into the viewport
+      segmentationService.clearSegmentationRepresentations(viewportId);
 
       // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
-
-  useEffect(() => {
-    setIsHydrated(segDisplaySet.isHydrated);
-
-    return () => {
-      // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
-      referencedDisplaySetRef.current = null;
-    };
-  }, [segDisplaySet]);
-
-  const hydrateSEGDisplaySet = useCallback(
-    ({ segDisplaySet, viewportId }) => {
-      commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
-        displaySets: [segDisplaySet],
-        viewportId,
-      });
-    },
-    [commandsManager]
-  );
 
   const onStatusClick = useCallback(async () => {
     // Before hydrating a SEG and make it added to all viewports in the grid
@@ -264,16 +291,11 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     // presentation state (w/l and invert) and then opens the SEG. If we don't store
     // the presentation state, the viewport will be reset to the default presentation
     storePresentationState();
-    const isHydrated = await hydrateSEGDisplaySet({
-      segDisplaySet,
-      viewportId,
-    });
-
-    setIsHydrated(isHydrated);
-  }, [hydrateSEGDisplaySet, segDisplaySet, storePresentationState, viewportId]);
+    hydrateSEG();
+  }, [storePresentationState, hydrateSEG]);
 
   useEffect(() => {
-    viewportActionCornersService.setComponents([
+    viewportActionCornersService.addComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',
@@ -292,7 +314,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
             key="actionArrows"
             onArrowsClick={onSegmentChange}
             className={
-              viewportId === activeViewportId ? 'visible' : 'invisible group-hover:visible'
+              viewportId === activeViewportId ? 'visible' : 'invisible group-hover/pane:visible'
             }
           ></ViewportActionArrows>
         ),
@@ -332,18 +354,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     });
   }
 
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    ManufacturerModelName,
-    StudyDate,
-    SeriesDescription,
-    SpacingBetweenSlices,
-  } = referencedDisplaySetRef.current.metadata;
-
   return (
     <>
       <div className="relative flex h-full w-full flex-row overflow-hidden">
@@ -361,13 +371,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     </>
   );
 }
-
-OHIFCornerstoneSEGViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
   const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;

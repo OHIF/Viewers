@@ -3,11 +3,27 @@ sidebar_position: 11
 sidebar_label: Playwright Testing
 ---
 
+
+
+:::note
+You might need to run the `yarn playwright install ` for the first time if you have not
+:::
+
+# Running the tests
+
+```bash
+# run the tests
+yarn test:e2e:ui
+```
+
+
 # Writing PlayWright Tests
 
 Our Playwright tests are written using the Playwright test framework. We use these tests to test our OHIF Viewer and ensure that it is working as expected.
 
 In this guide, we will show you how to write Playwright tests for the OHIF Viewer.
+
+
 
 ## Using a specific study and mode
 
@@ -15,7 +31,7 @@ If you would like to use a specific study, you can use the `studyInstanceUID` pr
 
 ```ts
 import { test } from '@playwright/test';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index';
+import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
@@ -52,7 +68,7 @@ import {
   visitStudy,
   checkForScreenshot,
   screenshotPath,
-} from './utils/index';
+} from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
@@ -84,7 +100,7 @@ import {
   checkForScreenshot,
   screenShotPaths,
   simulateDrag,
-} from './utils/index';
+} from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';

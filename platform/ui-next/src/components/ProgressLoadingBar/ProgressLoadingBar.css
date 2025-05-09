@@ -1,0 +1,26 @@
+.loading {
+  background-color: #091731;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.infinite-loading-bar {
+  animation: side2side 2s ease-in-out infinite;
+  height: 100%;
+  position: absolute;
+  border-radius: 4px;
+  width: 50%;
+}
+
+@keyframes side2side {
+  0%,
+  100% {
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(150%);
+  }
+}

@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { SwitchButton } from '@ohif/ui';
+import { Switch } from '@ohif/ui-next';
 import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
@@ -22,7 +22,7 @@ export function setViewportColorbar(
     colorbarOptions.ticks = {
       position: 'left',
       style: {
-        font: '12px Arial',
+        font: '13px Inter',
         color: '#000000',
         maxNumTicks: 8,
         tickSize: 5,
@@ -101,12 +101,20 @@ export function Colorbar({
   }, [viewportId]);
 
   return (
-    <div className="all-in-one-menu-item flex w-full justify-center">
-      <div className="mr-2 w-[28px]"></div>
-      <SwitchButton
-        label="Display Color bar"
+    <div
+      className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
+      onClick={e => {
+        e.stopPropagation();
+        onSetColorbar();
+      }}
+    >
+      <div className="flex w-7 flex-shrink-0 items-center justify-center"></div>
+      <span className="flex-grow">Display Color bar</span>
+      <Switch
+        className="ml-2 flex-shrink-0"
         checked={showColorbar}
-        onChange={() => {
+        onClick={e => {
+          e.stopPropagation();
           onSetColorbar();
         }}
       />

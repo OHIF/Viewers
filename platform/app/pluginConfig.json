@@ -23,6 +23,11 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "@ohif/extension-cornerstone-dicom-pmap",
+      "default": false,
+      "version": "3.0.0"
+    },
+    {
       "packageName": "@ohif/extension-cornerstone-dynamic-volume",
       "default": false,
       "version": "3.0.0"
@@ -88,6 +93,12 @@
   "public": [
     {
       "directory": "./platform/public"
+    },
+    {
+      "packageName": "dicom-microscopy-viewer",
+      "importPath": "/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
+      "globalName": "dicomMicroscopyViewer",
+      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import"
     }
   ]
 }

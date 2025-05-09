@@ -2,10 +2,10 @@ import { id } from './id';
 import React, { Suspense, useMemo } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
+import getCustomizationModule from './getCustomizationModule';
 import { Types } from '@ohif/core';
 
-import { useViewportGrid } from '@ohif/ui';
-import getDicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler';
+import { useViewportGrid } from '@ohif/ui-next';
 import getDicomMicroscopySRSopClassHandler from './DicomMicroscopySRSopClassHandler';
 import MicroscopyService from './services/MicroscopyService';
 import { useResizeDetector } from 'react-resize-detector';
@@ -83,9 +83,6 @@ const extension: Types.Extensions.Extension = {
       return (
         <MicroscopyViewport
           key={displaySetsKey}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-          commandsManager={commandsManager}
           activeViewportId={activeViewportId}
           setViewportActive={(viewportId: string) => {
             viewportGridService.setActiveViewportId(viewportId);
@@ -152,22 +149,15 @@ const extension: Types.Extensions.Extension = {
    * Each sop class handler is defined by a { name, sopClassUids, getDisplaySetsFromSeries}.
    * Examples include the default sop class handler provided by the default extension
    */
-  getSopClassHandlerModule({ servicesManager, commandsManager, extensionManager }) {
-    return [
-      getDicomMicroscopySopClassHandler({
-        servicesManager,
-        extensionManager,
-      }),
-      getDicomMicroscopySRSopClassHandler({
-        servicesManager,
-        extensionManager,
-      }),
-    ];
+  getSopClassHandlerModule(params) {
+    return [getDicomMicroscopySRSopClassHandler(params)];
   },
 
   getPanelModule,
 
   getCommandsModule,
+
+  getCustomizationModule,
 };
 
 export default extension;

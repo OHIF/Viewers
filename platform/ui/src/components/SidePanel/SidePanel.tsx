@@ -2,8 +2,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 import Tooltip from '../Tooltip';
 
 type StyleMap = {
@@ -224,8 +223,7 @@ const SidePanel = ({
           }}
           data-cy={`side-panel-header-${side}`}
         >
-          <Icon
-            name={'navigation-panel-right-reveal'}
+          <Icons.NavigationPanelReveal
             className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
           />
         </div>
@@ -237,7 +235,7 @@ const SidePanel = ({
               content={getToolTipContent(childComponent.label, childComponent.disabled)}
               className={classnames(
                 'flex items-center',
-                side === 'left' ? 'justify-end ' : 'justify-start '
+                side === 'left' ? 'justify-end' : 'justify-start'
               )}
             >
               <div
@@ -248,7 +246,7 @@ const SidePanel = ({
                   return childComponent.disabled ? null : updateActiveTabIndex(index);
                 }}
               >
-                <Icon
+                <Icons.ByName
                   name={childComponent.iconName}
                   className={classnames({
                     'text-primary-active': true,
@@ -280,7 +278,7 @@ const SidePanel = ({
         }}
         data-cy={`side-panel-header-${side}`}
       >
-        <Icon
+        <Icons.ByName
           name={openStateIconName[side]}
           className="text-primary-active"
         />
@@ -292,7 +290,7 @@ const SidePanel = ({
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
-      <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
+      <div className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}>
         <div
           className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
           style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
@@ -331,14 +329,14 @@ const SidePanel = ({
                     data-cy={`${tab.name}-btn`}
                   >
                     <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                      <Icon
+                      <Icons.ByName
                         name={tab.iconName}
                         className={`${tab.disabled && 'ohif-disabled'}`}
                         style={{
                           width: '22px',
                           height: '22px',
                         }}
-                      ></Icon>
+                      />
                     </div>
                   </div>
                 </Tooltip>
@@ -354,7 +352,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'text-primary-active flex	 grow cursor-pointer select-none justify-center self-center text-[13px]'
+          'text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         style={{
           ...(side === 'left'
@@ -371,7 +369,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]	">
+      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { WindowLevelActionMenu } from './WindowLevelActionMenu';
+import { nonWLModalities } from './WindowLevelActionMenu';
 
 export function getWindowLevelActionMenu({
   viewportId,
@@ -9,23 +9,38 @@ export function getWindowLevelActionMenu({
   commandsManager,
   verticalDirection,
   horizontalDirection,
-}: withAppTypes): ReactNode {
+}: withAppTypes<{
+  viewportId: string;
+  element: HTMLElement;
+  displaySets: AppTypes.DisplaySet[];
+}>): ReactNode {
   const { customizationService } = servicesManager.services;
 
-  const { presets } = customizationService.get('cornerstone.windowLevelPresets');
-  const colorbarProperties = customizationService.get('cornerstone.colorbar');
-  const { volumeRenderingPresets, volumeRenderingQualityRange } = customizationService.get(
-    'cornerstone.3dVolumeRendering'
+  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
+  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
+  const { volumeRenderingPresets, volumeRenderingQualityRange } =
+    customizationService.getCustomization('cornerstone.3dVolumeRendering');
+  const WindowLevelActionMenu = customizationService.getCustomization(
+    'viewportActionMenu.windowLevelActionMenu'
   );
-
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
     .map(displaySet => {
       return { [displaySet.Modality]: presets[displaySet.Modality] };
     });
 
+  const modalities = displaySets
+    .map(displaySet => displaySet.Modality)
+    .filter(modality => !nonWLModalities.includes(modality));
+
+  if (modalities.length === 0) {
+    return null;
+  }
+
+  const WindowLevelActionMenuComponent = WindowLevelActionMenu?.component;
+
   return (
-    <WindowLevelActionMenu
+    <WindowLevelActionMenuComponent
       viewportId={viewportId}
       element={element}
       presets={displaySetPresets}

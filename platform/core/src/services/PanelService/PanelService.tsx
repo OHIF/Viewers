@@ -105,10 +105,13 @@ export default class PanelService extends PubSubService {
       entry = panelsData[0].entry;
 
       // stack the content of the panels in one react component
-      content = () => (
+      content = props => (
         <>
           {panelsData.map(({ content: PanelContent }, index) => (
-            <PanelContent key={index} />
+            <PanelContent
+              key={index}
+              {...props}
+            />
           ))}
         </>
       );
@@ -148,13 +151,7 @@ export default class PanelService extends PubSubService {
     panelsIds.forEach(panelId => this.addPanel(position, panelId, options));
   }
 
-  public setPanels(
-    panels: { [key in PanelPosition]: string[] },
-    options: {
-      rightPanelClosed?: boolean;
-      leftPanelClosed?: boolean;
-    }
-  ): void {
+  public setPanels(panels: { [key in PanelPosition]: string[] }, options): void {
     this.reset();
 
     Object.keys(panels).forEach((position: PanelPosition) => {

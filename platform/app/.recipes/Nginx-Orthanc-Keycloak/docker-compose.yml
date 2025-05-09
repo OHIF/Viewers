@@ -1,0 +1,126 @@
+services:
+  ohif_viewer:
+    build:
+      context: ./../../../../
+      dockerfile: ./platform/app/.recipes/Nginx-Orthanc-Keycloak/dockerfile
+    image: webapp:latest
+    container_name: webapp
+    ports:
+      - '443:443' # SSL
+      - '80:80' # Web
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - default
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
+    volumes:
+      # - ../../app/dist /var/www/html
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy/oauth2-proxy.cfg
+
+      - ./config/letsencrypt:/etc/letsencrypt
+      - ./config/certbot:/var/www/certbot
+
+  orthanc:
+    image: jodogne/orthanc-plugins
+    hostname: orthanc
+    container_name: orthanc
+    volumes:
+      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+    restart: unless-stopped
+    networks:
+      - default
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.5
+    command: 'start-dev --import-realm'
+    hostname: keycloak
+    container_name: keycloak
+    volumes:
+      - ./config/ohif-keycloak-realm.json:/opt/keycloak/data/import/ohif-keycloak-realm.json
+    environment:
+      # Database
+      KC_DB_URL_HOST: postgres
+      KC_DB: postgres
+      KC_DB_URL: 'jdbc:postgresql://postgres:5432/keycloak'
+      KC_DB_SCHEMA: public
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      KC_HOSTNAME_ADMIN_URL: http://YOUR_DOMAIN/keycloak/
+      KC_HOSTNAME_URL: http://YOUR_DOMAIN/keycloak/
+      KC_HOSTNAME_STRICT_BACKCHANNEL: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_PROXY: edge
+      KC_PROXY_HEADERS: xforwarded
+      KEYCLOAK_JDBC_PARAMS: connectTimeout=40000
+      KC_LOG_LEVEL: INFO
+      KC_HOSTNAME_DEBUG: true
+      # added later
+      PROXY_ADDRESS_FORWARDING: true
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - default
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    healthcheck:
+      test: [
+          'CMD-SHELL',
+          "exec 3<>/dev/tcp/YOUR_DOMAIN/8080;echo -e \"GET /health/ready HTTP/1.1\r
+
+          host: http://localhost\r
+
+          Connection: close\r
+
+          \r
+
+          \" >&3;grep \"HTTP/1.1 200 OK\" <&3",
+        ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  postgres:
+    image: postgres:15
+    hostname: postgres
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    restart: unless-stopped
+    networks:
+      - default
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./config/letsencrypt:/etc/letsencrypt
+      - ./config/certbot:/var/www/certbot
+    entrypoint:
+      /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge

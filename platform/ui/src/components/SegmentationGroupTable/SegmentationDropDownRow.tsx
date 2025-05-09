@@ -1,7 +1,8 @@
 import React from 'react';
-import { Select, Icon, Dropdown, Tooltip } from '../../components';
+import { Select, Dropdown, Tooltip } from '../../components';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+import { Icons } from '@ohif/ui-next';
 
 function SegmentationDropDownRow({
   segmentations = [],
@@ -98,8 +99,8 @@ function SegmentationDropDownRow({
             ],
           ]}
         >
-          <div className="hover:bg-secondary-dark  grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
-            <Icon name="icon-more-menu"></Icon>
+          <div className="hover:bg-secondary-dark grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]">
+            <Icons.More />
           </div>
         </Dropdown>
       </div>
@@ -109,12 +110,7 @@ function SegmentationDropDownRow({
           isClearable={false}
           onChange={handleChange}
           components={{
-            DropdownIndicator: () => (
-              <Icon
-                name={'chevron-down-new'}
-                className="mr-2"
-              />
-            ),
+            DropdownIndicator: () => <Icons.ChevronOpen className="mr-2" />,
           }}
           isSearchable={false}
           options={selectOptions}
@@ -132,25 +128,16 @@ function SegmentationDropDownRow({
             </div>
           }
         >
-          <Icon
-            name="info-action"
-            className="text-primary-active"
-          />
+          <Icons.Info className="text-primary-active" />
         </Tooltip>
         <div
-          className="hover:bg-secondary-dark  mr-1 grid h-[28px]  w-[28px] cursor-pointer place-items-center rounded-[4px]"
+          className="hover:bg-secondary-dark mr-1 grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (
-            <Icon
-              name="row-shown"
-              className="text-primary-active"
-            />
+            <Icons.EyeVisible className="text-primary-active" />
           ) : (
-            <Icon
-              name="row-hidden"
-              className="text-primary-active"
-            />
+            <Icons.EyeHidden className="text-primary-active" />
           )}
         </div>
       </div>

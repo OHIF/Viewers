@@ -38,14 +38,14 @@
   "resolutions": {
     "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
-    "dcmjs": ">=0.33.0",
+    "dcmjs": "0.38.0",
     "dicomweb-client": ">=0.10.4",
     "nth-check": "^2.1.1",
     "trim-newlines": "^5.0.0",
     "glob-parent": "^6.0.2",
     "trim": "^1.0.0",
     "package-json": "^8.1.0",
-    "typescript": "4.6.4",
+    "typescript": "5.5.4",
     "sharp": "^0.32.6"
   }
 }

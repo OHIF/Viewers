@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+import { utils } from '@ohif/core';
 
 import StudyItem from '../StudyItem';
 import LegacyButtonGroup from '../LegacyButtonGroup';
@@ -8,6 +9,8 @@ import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
 import StudyBrowserSort from '../StudyBrowserSort';
+
+const { sortStudySeries } = utils;
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -31,16 +34,20 @@ const StudyBrowser = ({
   onClickThumbnail = noop,
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
+  onClickLaunch,
   activeDisplaySetInstanceUIDs,
   servicesManager,
 }: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
-
+  const { experimentalStudyBrowserSort } = window.config;
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
-    return tabData.studies.map(
+    return tabData?.studies?.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
+        if (!experimentalStudyBrowserSort) {
+          sortStudySeries(displaySets);
+        }
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (
           <React.Fragment key={studyInstanceUid}>
@@ -54,6 +61,7 @@ const StudyBrowser = ({
               onClick={() => {
                 onClickStudy(studyInstanceUid);
               }}
+              onClickLaunch={onClickLaunch?.bind(null, studyInstanceUid)}
               data-cy="thumbnail-list"
             />
             {isExpanded && displaySets && (
@@ -88,7 +96,7 @@ const StudyBrowser = ({
             const isActive = activeTabName === name;
             const isDisabled = !studies.length;
             // Apply the contrasting color for brighter button color visibility
-            const classStudyBrowser = customizationService?.getModeCustomization(
+            const classStudyBrowser = customizationService?.getCustomization(
               'class:StudyBrowser'
             ) || {
               true: 'default',
@@ -112,9 +120,7 @@ const StudyBrowser = ({
             );
           })}
         </LegacyButtonGroup>
-        {window.config.experimentalStudyBrowserSort && (
-          <StudyBrowserSort servicesManager={servicesManager} />
-        )}
+        {experimentalStudyBrowserSort && <StudyBrowserSort servicesManager={servicesManager} />}
       </div>
       <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}

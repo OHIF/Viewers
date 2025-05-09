@@ -22,7 +22,7 @@ const testPixel = (dx, dy, expectedPixel) => {
         const { viewport } = cornerstone.getEnabledElements()[0];
         const imageData = viewport.getImageData();
         // cy.log("imageData", imageData);
-        const origin = viewport.worldToCanvas(imageData.origin);
+        const origin = viewport.worldToCanvas(imageData?.origin);
         const orX = origin[0] * devicePixelRatio;
         const orY = origin[1] * devicePixelRatio;
         const x = Math.round(orX + dx);
@@ -45,7 +45,9 @@ describe('CS3D Image Consistency and Quality', () => {
       `&seriesInstanceUID=${seriesUID}&hangingProtocolId=@ohif/hpScale`
     );
     cy.initCornerstoneToolsAliases();
-    cy.initCommonElementsAliases();
+
+    const skipMarkers = true;
+    cy.initCommonElementsAliases(skipMarkers);
   };
 
   it('TG18 Resolution Test Displayed 1:1', () => {
@@ -53,6 +55,8 @@ describe('CS3D Image Consistency and Quality', () => {
       '2.16.124.113543.6004.101.103.20021117.061159.1',
       '2.16.124.113543.6004.101.103.20021117.061159.1.004'
     );
+
+    cy.wait(2000);
     testPixel(1018, 1028, 255);
     // Horizontal and vertical delta from this should not be contaminated
     // by values from center
@@ -66,6 +70,8 @@ describe('CS3D Image Consistency and Quality', () => {
   it.skip('8 bit image displayable', () => {
     setupStudySeries('1.3.46.670589.17.1.7.1.1.7', '1.3.46.670589.17.1.7.2.1.7');
 
+    cy.wait(1000);
+
     // Compare with dcm2jpg generated values or by manually computing WL values
     testPixel(258, 257, 171);
     testPixel(259, 257, 166);
@@ -76,6 +82,8 @@ describe('CS3D Image Consistency and Quality', () => {
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1',
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113608.5'
     );
+
+    cy.wait(1000);
 
     // Compare with dcm2jpg generated values or by manually computing WL values
     testPixel(258, 277, 120);

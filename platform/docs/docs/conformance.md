@@ -1,6 +1,6 @@
 ---
 sidebar_position: 12
-sidebar_label: DICOM Conformance Statement (NEW)
+sidebar_label: DICOM Conformance Statement
 title: DICOM Conformance Statement
 ---
 

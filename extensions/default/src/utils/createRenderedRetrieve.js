@@ -17,12 +17,13 @@ const createRenderedRetrieve = (config, params) => {
   const { wadoRoot } = config;
   const { instance, tag = 'PixelData' } = params;
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-  const value = instance[tag];
+  const bulkDataURI = instance[tag]?.BulkDataURI ?? '';
 
-  if (value?.BulkDataURI?.indexOf('?') !== -1) {
+  if (bulkDataURI?.indexOf('?') !== -1) {
     // The value instance has parameters, so it should not revert to the rendered
     return;
   }
+
   if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
     return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
   }

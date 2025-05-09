@@ -5,7 +5,6 @@ import {
   ViewportGridService,
   ToolbarService,
   DisplaySetService,
-  StateSyncService,
   UINotificationService,
   UIModalService,
   WorkflowStepsService,
@@ -14,6 +13,7 @@ import {
   PanelService,
   UIDialogService,
   UIViewportDialogService,
+  MultiMonitorService,
 } from '../services';
 
 /**
@@ -29,13 +29,13 @@ interface Services {
   viewportGridService?: ViewportGridService;
   uiModalService?: UIModalService;
   uiNotificationService?: UINotificationService;
-  stateSyncService?: StateSyncService;
   workflowStepsService: WorkflowStepsService;
   cineService?: CineService;
   userAuthenticationService?: UserAuthenticationService;
   uiDialogService?: UIDialogService;
   uiViewportDialogService?: UIViewportDialogService;
   panelService?: PanelService;
+  multiMonitorService?: MultiMonitorService;
 }
 
 export default Services;

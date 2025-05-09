@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import LegacyButton from '../LegacyButton';
-import Icon from '../Icon';
 import Typography from '../Typography';
 import InputGroup from '../InputGroup';
+import { Icons } from '@ohif/ui-next';
 
 const StudyListFilter = ({
   filtersMeta,
@@ -47,7 +47,7 @@ const StudyListFilter = ({
                     className="text-primary-active flex cursor-pointer items-center gap-2 self-center text-lg font-semibold"
                     onClick={onUploadClick}
                   >
-                    <Icon name="icon-upload"></Icon>
+                    <Icons.Upload />
                     <span>{t('Upload')}</span>
                   </div>
                 )}
@@ -61,24 +61,25 @@ const StudyListFilter = ({
                     color="primaryActive"
                     border="primaryActive"
                     className="mx-8"
-                    startIcon={<Icon name="cancel" />}
+                    startIcon={<Icons.Cancel />}
                     onClick={clearFilters}
                   >
                     {t('ClearFilters')}
                   </LegacyButton>
                 )}
-                <Typography
-                  variant="h6"
-                  className="text-primary-light"
-                >
-                  {`${t('Number of studies')}: `}
-                </Typography>
+
                 <Typography
                   variant="h6"
                   className="mr-2"
                   data-cy={'num-studies'}
                 >
                   {numOfStudies > 100 ? '>100' : numOfStudies}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  className="text-primary-light"
+                >
+                  {`${t('Studies')} `}
                 </Typography>
               </div>
             </div>
@@ -99,7 +100,9 @@ const StudyListFilter = ({
         {numOfStudies > 100 && (
           <div className="container m-auto">
             <div className="bg-primary-main rounded-b py-1 text-center text-base">
-              <p className="text-white">{t('Filter list to 100 studies or less to enable sorting')}</p>
+              <p className="text-white">
+                {t('Filter list to 100 studies or less to enable sorting')}
+              </p>
             </div>
           </div>
         )}
