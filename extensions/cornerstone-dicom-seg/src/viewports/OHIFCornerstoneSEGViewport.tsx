@@ -110,7 +110,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       viewportId,
       segDisplaySet,
       hydrateCallback: async () => {
-        debugger;
         await commandsManager.runCommand('hydrateSecondaryDisplaySet', {
           displaySet: segDisplaySet,
           viewportId,

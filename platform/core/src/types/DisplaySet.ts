@@ -45,6 +45,9 @@ export type DisplaySet = {
   SeriesDate?: string;
   SeriesTime?: string;
   instance?: InstanceMetadata;
+
+  isHydrated?: boolean;
+  isRehydratable?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

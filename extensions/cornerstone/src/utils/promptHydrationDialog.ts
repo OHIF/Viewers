@@ -111,7 +111,6 @@ function promptHydrationDialog({
 
         resolve(isHydrated);
       } else if (type === HydrationType.SR) {
-        debugger;
         // SR has a different result structure
         const hydrationResult = await hydrateCallback(displaySet);
 

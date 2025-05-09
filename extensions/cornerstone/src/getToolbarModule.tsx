@@ -42,6 +42,7 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
         const viewportDisplaySets = displaySetUIDs.map(uid =>
           displaySetService.getDisplaySetByUID(uid)
         );
+
         // Only show status for supported types like SR, SEG, RTSTRUCT
         const isSupportedType = viewportDisplaySets.some(
           displaySet =>
@@ -49,6 +50,20 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
             displaySet?.Modality === 'SEG' ||
             displaySet?.Modality === 'RTSTRUCT'
         );
+
+        // Check if the measurement tracking extension is present
+        const measurementTrackingModule = servicesManager._extensionManager?.getModuleEntry(
+          '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
+        );
+
+        // Never disable if we have measurement tracking active, even if we don't have a specific
+        // supported display set (SR, SEG, RTSTRUCT) - allow the tracking status to be shown
+        // we let the status component handle the display set check or
+        if (measurementTrackingModule) {
+          return {
+            disabled: false,
+          };
+        }
 
         return {
           disabled: !isSupportedType,
