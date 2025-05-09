@@ -13,11 +13,11 @@ import { useSystem } from '@ohif/core/src';
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
 function OHIFCornerstoneRTViewport(props: withAppTypes) {
-  const { servicesManager, extensionManager, commandsManager } = useSystem();
+  const { servicesManager, commandsManager } = useSystem();
   const { children, displaySets, viewportOptions } = props as {
     children: React.ReactNode;
     displaySets: AppTypes.DisplaySet[];
-    viewportOptions: unknown;
+    viewportOptions: AppTypes.ViewportOptions;
   };
 
   const { displaySetService, toolGroupService, segmentationService, customizationService } =

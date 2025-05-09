@@ -14,7 +14,7 @@ import type {
   SegmentationRepresentation as SegRep,
   SegmentationInfo as SegInfo,
 } from '../services/SegmentationService/SegmentationService';
-
+import type { ViewportOptions as ViewportOpts } from '../services/ViewportService/Viewport';
 declare global {
   namespace AppTypes {
     export type CornerstoneCacheService = CornerstoneCacheServiceType;
@@ -51,5 +51,7 @@ declare global {
       cornerstone?: typeof cornerstone;
       cornerstoneTools?: typeof cornerstoneTools;
     }
+
+    export type ViewportOptions = ViewportOpts;
   }
 }

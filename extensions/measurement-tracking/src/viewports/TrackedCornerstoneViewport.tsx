@@ -8,23 +8,23 @@ import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
-import { useTranslation } from 'react-i18next';
+import { useSystem } from '@ohif/core';
 
 function TrackedCornerstoneViewport(
   props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
 ) {
-  const { displaySets, viewportId, servicesManager, extensionManager } = props;
+  const { servicesManager } = useSystem();
+  const { displaySets, viewportId } = props as {
+    displaySets: AppTypes.DisplaySet[];
+    viewportId: string;
+    servicesManager: AppTypes.Services;
+  };
 
   const { measurementService, cornerstoneViewportService, viewportGridService } =
     servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
-  const { t } = useTranslation('Common');
-
-  const [viewportGrid] = useViewportGrid();
-  const { activeViewportId } = viewportGrid;
-
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
 
   const [isTracked, setIsTracked] = useState(false);
@@ -282,31 +282,5 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
     />
   );
 };
-
-function _getStatusComponent(isTracked, t) {
-  if (!isTracked) {
-    return null;
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span>
-          <Icons.StatusTracking className="text-muted-foreground mt-0.5 ml-0.5" />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent
-        align="start"
-        side="bottom"
-      >
-        {isTracked ? (
-          <>{t('Series is tracked and can be viewed in the measurement panel')}</>
-        ) : (
-          <>{t('Measurements for untracked series will not be shown in the measurements panel')}</>
-        )}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
 
 export default TrackedCornerstoneViewport;

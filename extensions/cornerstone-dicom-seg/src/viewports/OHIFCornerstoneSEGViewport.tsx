@@ -4,11 +4,17 @@ import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
 function OHIFCornerstoneSEGViewport(props: withAppTypes) {
-  const { children, displaySets, viewportOptions, servicesManager, commandsManager } = props;
+  const { servicesManager, commandsManager } = useSystem();
+  const { children, displaySets, viewportOptions } = props as {
+    children: React.ReactNode;
+    displaySets: AppTypes.DisplaySet[];
+    viewportOptions: AppTypes.ViewportOptions;
+  };
   const viewportId = viewportOptions.viewportId;
 
   const { displaySetService, toolGroupService, segmentationService, customizationService } =

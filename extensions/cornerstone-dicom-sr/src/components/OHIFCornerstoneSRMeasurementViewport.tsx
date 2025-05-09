@@ -1,23 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
-import {
-  usePositionPresentationStore,
-  OHIFCornerstoneViewport
-} from '@ohif/extension-cornerstone';
+import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
-function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
-  const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
-    props;
+function OHIFCornerstoneSRMeasurementViewport(props) {
+  const { servicesManager, extensionManager } = useSystem();
+  const { children, dataSource, displaySets, viewportOptions } = props as {
+    children: React.ReactNode;
+    dataSource: unknown;
+    displaySets: AppTypes.DisplaySet[];
+    viewportOptions: AppTypes.ViewportOptions;
+    servicesManager: AppTypes.Services;
+  };
 
   const { displaySetService } = servicesManager.services;
 
@@ -39,8 +41,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] = useState(null);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
-
-  const { t } = useTranslation('Common');
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
