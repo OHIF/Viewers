@@ -530,7 +530,6 @@ class SegmentationService extends PubSubService {
     };
 
     segDisplaySet.isLoaded = true;
-    segDisplaySet.isHydrated = true;
 
     this.addOrUpdateSegmentation(seg);
 
@@ -678,7 +677,6 @@ class SegmentationService extends PubSubService {
 
     // Mark the RT display set as loaded
     rtDisplaySet.isLoaded = true;
-    rtDisplaySet.isHydrated = true;
     // Add or update the segmentation in the state
     this.addOrUpdateSegmentation(segmentation);
 

@@ -1,9 +1,10 @@
 import { Enums } from '@cornerstonejs/tools';
-import { utils } from '@ohif/ui-next';
+import { Icons, utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 import StatusComponent from './components/StatusComponent/StatusComponent';
+import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -21,6 +22,19 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
   } = servicesManager.services;
 
   return [
+    // StatusComponent
+    {
+      name: 'ohif.icon',
+      defaultComponent: props => {
+        debugger;
+        return (
+          <Icons.ByName
+            name={props.name}
+            className="h-4 w-4"
+          />
+        );
+      },
+    },
     {
       name: 'ohif.statusComponent',
       defaultComponent: StatusComponent,
@@ -51,19 +65,40 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
             displaySet?.Modality === 'RTSTRUCT'
         );
 
-        // Check if the measurement tracking extension is present
-        const measurementTrackingModule = servicesManager._extensionManager?.getModuleEntry(
-          '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
-        );
+        return {
+          disabled: !isSupportedType,
+        };
+      },
+    },
+    // NavigationComponent
+    {
+      name: 'ohif.navigationComponent',
+      defaultComponent: NavigationComponent,
+    },
+    {
+      name: 'evaluate.navigationComponent',
+      evaluate: ({ viewportId }) => {
+        // Same logic as statusComponent - only show for SR, SEG, RTSTRUCT
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
-        // Never disable if we have measurement tracking active, even if we don't have a specific
-        // supported display set (SR, SEG, RTSTRUCT) - allow the tracking status to be shown
-        // we let the status component handle the display set check or
-        if (measurementTrackingModule) {
+        if (!displaySetUIDs?.length) {
           return {
-            disabled: false,
+            disabled: true,
           };
         }
+
+        // Get the display sets that are specifically in this viewport
+        const viewportDisplaySets = displaySetUIDs.map(uid =>
+          displaySetService.getDisplaySetByUID(uid)
+        );
+
+        // Only show navigation for supported types like SR, SEG, RTSTRUCT
+        const isSupportedType = viewportDisplaySets.some(
+          displaySet =>
+            displaySet?.Modality === 'SR' ||
+            displaySet?.Modality === 'SEG' ||
+            displaySet?.Modality === 'RTSTRUCT'
+        );
 
         return {
           disabled: !isSupportedType,

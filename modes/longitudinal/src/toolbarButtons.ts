@@ -50,6 +50,19 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'navigationComponent',
+    uiType: 'ohif.navigationComponent',
+    props: {
+      icon: 'Navigation',
+      label: 'Navigation',
+      tooltip: 'Navigate between segments/measurements',
+      evaluate: {
+        name: 'evaluate.navigationComponent',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'dataOverlayMenu',
     uiType: 'ohif.dataOverlayMenu',
     props: {

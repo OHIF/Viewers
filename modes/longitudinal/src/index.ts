@@ -111,6 +111,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
       toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
         'statusComponent',
+        'navigationComponent',
       ]);
 
       toolbarService.createButtonSection(toolbarService.sections.measurementSection, [

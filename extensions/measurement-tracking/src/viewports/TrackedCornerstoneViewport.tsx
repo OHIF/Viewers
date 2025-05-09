@@ -19,7 +19,7 @@ function TrackedCornerstoneViewport(
     servicesManager: AppTypes.Services;
   };
 
-  const { measurementService, cornerstoneViewportService, viewportGridService } =
+  const { measurementService, cornerstoneViewportService, viewportGridService, toolbarService } =
     servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
@@ -190,6 +190,20 @@ function TrackedCornerstoneViewport(
   );
 
   const getCornerstoneViewport = () => {
+    if (isTracked) {
+      toolbarService.addButtons([
+        {
+          id: 'isTracked',
+          uiType: 'ohif.icon',
+          props: {
+            name: 'StatusTracking',
+          },
+        },
+      ]);
+      toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'isTracked',
+      ]);
+    }
     return (
       <OHIFCornerstoneViewport
         {...props}
