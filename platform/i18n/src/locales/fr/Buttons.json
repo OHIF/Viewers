@@ -31,6 +31,7 @@
   "ROI Window": "ROI fenêtrage",
   "Rectangle": "Rectangle",
   "Reset": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) toutes les vues",
   "Reset to defaults": "Valeurs d'usine",
   "Rotate Right": "Tourner à droite",
   "Sagittal": "Sagittal",

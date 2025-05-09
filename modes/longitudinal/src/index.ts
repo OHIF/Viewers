@@ -117,6 +117,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.createButtonSection('moreToolsSection', [
         'Reset',
+        'reset-all',
         'rotate-right',
         'flipHorizontal',
         'ImageSliceSync',
