@@ -183,7 +183,7 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
   const StatusArea = () => {
     return (
       <>
-        {!statusInfo.isHydrated && (
+        {!isTracked && !statusInfo.isHydrated && (
           <div className="flex h-6 cursor-default text-sm leading-6 text-white">
             <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
               <StatusIcon />
@@ -201,6 +201,7 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
             </ViewportActionButton>
           </div>
         )}
+        {isTracked && <Icons.StatusTracking className="h-4 w-4" />}
       </>
     );
   };

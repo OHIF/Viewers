@@ -24,18 +24,6 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
   return [
     // StatusComponent
     {
-      name: 'ohif.icon',
-      defaultComponent: props => {
-        debugger;
-        return (
-          <Icons.ByName
-            name={props.name}
-            className="h-4 w-4"
-          />
-        );
-      },
-    },
-    {
       name: 'ohif.statusComponent',
       defaultComponent: StatusComponent,
     },
@@ -64,6 +52,20 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
             displaySet?.Modality === 'SEG' ||
             displaySet?.Modality === 'RTSTRUCT'
         );
+
+        // Check if the measurement tracking extension is present
+        const measurementTrackingModule = servicesManager._extensionManager?.getModuleEntry(
+          '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
+        );
+
+        // Never disable if we have measurement tracking active, even if we don't have a specific
+        // supported display set (SR, SEG, RTSTRUCT) - allow the tracking status to be shown
+        // we let the status component handle the display set check or
+        if (measurementTrackingModule) {
+          return {
+            disabled: false,
+          };
+        }
 
         return {
           disabled: !isSupportedType,

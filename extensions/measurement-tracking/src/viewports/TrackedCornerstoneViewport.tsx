@@ -190,20 +190,6 @@ function TrackedCornerstoneViewport(
   );
 
   const getCornerstoneViewport = () => {
-    if (isTracked) {
-      toolbarService.addButtons([
-        {
-          id: 'isTracked',
-          uiType: 'ohif.icon',
-          props: {
-            name: 'StatusTracking',
-          },
-        },
-      ]);
-      toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
-        'isTracked',
-      ]);
-    }
     return (
       <OHIFCornerstoneViewport
         {...props}
