@@ -13,22 +13,19 @@ import {
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
-export function WindowLevelActionMenuWrapper({
-  viewportId,
-  element,
-  location,
-  isOpen = false,
-  onOpen,
-  onClose,
-}: withAppTypes<{
-  viewportId: string;
-  element?: HTMLElement;
-  location?: string;
-  isOpen?: boolean;
-  onOpen?: () => void;
-  onClose?: () => void;
-  displaySets?: Array<AppTypes.DisplaySet>;
-}>): ReactNode {
+export function WindowLevelActionMenuWrapper(
+  props: withAppTypes<{
+    viewportId: string;
+    element?: HTMLElement;
+    location?: string;
+    isOpen?: boolean;
+    onOpen?: () => void;
+    onClose?: () => void;
+    displaySets?: Array<AppTypes.DisplaySet>;
+    disabled?: boolean;
+  }>
+): ReactNode {
+  const { viewportId, element, location, isOpen = false, onOpen, onClose, disabled } = props;
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
@@ -78,6 +75,7 @@ export function WindowLevelActionMenuWrapper({
         <Button
           variant="ghost"
           size="icon"
+          disabled={disabled}
         >
           <Icons.ByName
             name="viewport-window-level"

@@ -4,22 +4,17 @@ import { Button, Icons, Popover, PopoverContent, PopoverTrigger, useIconSize } f
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
-export function ViewportDataOverlayMenuWrapper({
-  location,
-  viewportId,
-  isOpen = false,
-  onOpen,
-  onClose,
-  iconSize = 24,
-}: withAppTypes<{
+type DataOverlayMenuProps = {
   viewportId: string;
-  element?: HTMLElement;
-  location?: string;
+  location: string;
   isOpen?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
-  iconSize?: number;
-}>): ReactNode {
+  disabled?: boolean;
+};
+
+export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): ReactNode {
+  const { viewportId, location, isOpen = false, onOpen, onClose, disabled } = props;
   const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
   const iconClasses = useIconSize();
 
@@ -49,6 +44,7 @@ export function ViewportDataOverlayMenuWrapper({
         <Button
           variant="ghost"
           size="icon"
+          disabled={disabled}
         >
           <Icons.ViewportViews className={iconClasses} />
         </Button>

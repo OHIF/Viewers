@@ -244,7 +244,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     };
   }, [viewportGridService, toolbarService, openItemIds]);
 
-  if (!toolbarButtons) {
+  if (!toolbarButtons?.length) {
     return {
       toolbarButtons: [],
       onInteraction,

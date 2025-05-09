@@ -39,19 +39,12 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
         if (!displaySetUIDs?.length) {
           return {
-            visible: false,
             disabled: true,
           };
         }
 
-        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-        const hasSupportedModality = displaySets.some(displaySet =>
-          ['CT', 'MR', 'PT', 'CR', 'DX', 'US'].includes(displaySet?.Modality)
-        );
-
         return {
-          visible: hasSupportedModality,
-          disabled: !hasSupportedModality,
+          disabled: false,
         };
       },
     },
@@ -93,15 +86,17 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
 
         if (!viewport) {
           return {
-            visible: false,
             disabled: true,
           };
         }
 
-        // All viewports can have window/level adjustments
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        const supportWindowLevel = displaySets.some(displaySet => displaySet?.supportsWindowLevel);
+
         return {
-          visible: true,
-          disabled: false,
+          disabled: !supportWindowLevel,
         };
       },
     },

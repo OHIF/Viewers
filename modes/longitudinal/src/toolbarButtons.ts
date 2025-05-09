@@ -55,7 +55,7 @@ const toolbarButtons: Button[] = [
       tooltip: 'Orientation',
       evaluate: {
         name: 'evaluate.orientationMenu',
-        hideWhenDisabled: true,
+        // hideWhenDisabled: true,
       },
     },
   },

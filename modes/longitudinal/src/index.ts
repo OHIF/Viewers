@@ -90,22 +90,7 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      // toolbarService.addButtons(toolbarButtons);
-      toolbarService.addButtons([
-        {
-          id: 'orientationMenu',
-          uiType: 'ohif.orientationMenu',
-          props: {
-            icon: 'Orientation',
-            label: 'Orientation',
-            tooltip: 'Orientation',
-            evaluate: {
-              name: 'evaluate.orientationMenu',
-              hideWhenDisabled: true,
-            },
-          },
-        },
-      ]);
+      toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',

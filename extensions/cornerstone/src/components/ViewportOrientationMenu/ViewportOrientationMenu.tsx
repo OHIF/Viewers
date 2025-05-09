@@ -11,6 +11,7 @@ function ViewportOrientationMenu({
   isOpen = false,
   onOpen,
   onClose,
+  disabled,
 }: withAppTypes<{
   location?: string;
   viewportId: string;
@@ -18,6 +19,7 @@ function ViewportOrientationMenu({
   isOpen?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
+  disabled?: boolean;
 }>) {
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
@@ -100,8 +102,6 @@ function ViewportOrientationMenu({
     return null;
   }
 
-  const hasReconstructableDisplaySet = displaySets.some(ds => ds.isReconstructable);
-
   // Get proper alignment and side based on the location using toolbar service
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
@@ -117,7 +117,7 @@ function ViewportOrientationMenu({
         <Button
           variant="ghost"
           size="icon"
-          disabled={!hasReconstructableDisplaySet}
+          disabled={disabled}
         >
           <Icons.OrientationSwitch className={iconClasses} />
         </Button>

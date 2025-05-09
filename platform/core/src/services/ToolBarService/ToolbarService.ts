@@ -244,6 +244,7 @@ export default class ToolbarService extends PubSubService {
           typeof props.evaluate === 'function'
             ? props.evaluate({ ...refreshProps, button })
             : undefined;
+        debugger;
         const updatedProps = {
           ...props,
           ...evaluated,
