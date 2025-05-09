@@ -19,7 +19,15 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
 
   const { displaySetService, microscopyService } = servicesManager.services;
 
-  const instance = instances[0];
+  // Sort instances by date/time in ascending order (oldest first)
+  const sortedInstances = [...instances].sort((a, b) => {
+    const dateA = `${a.ContentDate}${a.ContentTime}`;
+    const dateB = `${b.ContentDate}${b.ContentTime}`;
+    return dateA.localeCompare(dateB);
+  });
+
+  // Get the most recent instance (last in the sorted array)
+  const instance = sortedInstances[sortedInstances.length - 1];
 
   const naturalizedDataset = DicomMetadataStore.getSeries(
     instance.StudyInstanceUID,
@@ -40,6 +48,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   const displaySet = {
     plugin: 'microscopy',
     Modality: 'ANN',
+    thumbnailSrc: null,
     altImageText: 'Microscopy Annotation',
     displaySetInstanceUID: utils.uuidv4(),
     SOPInstanceUID,
