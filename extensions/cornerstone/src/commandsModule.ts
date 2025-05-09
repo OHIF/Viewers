@@ -179,7 +179,7 @@ function commandsModule({
         referencedDisplaySets.forEach(storePositionPresentation);
 
         if (referencedDisplaySets.length) {
-          commandsManager.run('setDisplaySetsForViewports', {
+          actions.setDisplaySetsForViewports({
             viewportsToUpdate: [
               {
                 viewportId: viewportGridService.getActiveViewportId(),
@@ -1817,11 +1817,11 @@ function commandsModule({
         displaySetInstanceUIDs,
       });
 
-      updatedViewports.forEach(viewport => {
-        viewportGridService.setDisplaySetsForViewport({
+      actions.setDisplaySetsForViewports({
+        viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
           displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
-        });
+        })),
       });
     },
     setViewportOrientation: ({ viewportId, orientation }) => {
