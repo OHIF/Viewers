@@ -41,7 +41,7 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
 
     setPatientInfo({
       PatientID: instance.PatientID || null,
-      PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName[0]?.Alphabetic) : null,
       PatientSex: instance.PatientSex || null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });
