@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { useViewportGrid, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -190,12 +191,8 @@ function TrackedCornerstoneViewport(
   );
 
   const getCornerstoneViewport = () => {
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
-
     return (
-      <Component
+      <OHIFCornerstoneViewport
         {...props}
         onElementEnabled={evt => {
           props.onElementEnabled?.(evt);

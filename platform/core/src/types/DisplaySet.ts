@@ -35,6 +35,13 @@ export type DisplaySet = {
    */
   renderedUrl?: string;
 
+  /**
+   * The instance UID of the display set that this display set references.
+   * This is used to determine if the display set is a referenced display set.
+   * It usually is for SEG, RTSTRUCT, etc.
+   */
+  referencedDisplaySetInstanceUID?: string;
+
   SeriesDate?: string;
   SeriesTime?: string;
   instance?: InstanceMetadata;

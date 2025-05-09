@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
-import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
+import {
+  usePositionPresentationStore,
+  OHIFCornerstoneViewport
+} from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
@@ -137,10 +140,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
       return null;
     }
 
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
-
     const { measurements } = srDisplaySet;
     const measurement = measurements[measurementSelected];
 
@@ -149,7 +148,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     }
 
     return (
-      <Component
+      <OHIFCornerstoneViewport
         {...props}
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
@@ -173,7 +172,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           onElementEnabled(evt);
         }}
         isJumpToMeasurementDisabled={true}
-      ></Component>
+      />
     );
   }, [activeImageDisplaySetData, viewportId, measurementSelected]);
 

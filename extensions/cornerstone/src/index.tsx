@@ -260,6 +260,7 @@ export {
   StudySummaryFromMetadata,
   CornerstoneViewportDownloadForm,
   utils,
+  OHIFCornerstoneViewport,
 };
 
 // Export constants

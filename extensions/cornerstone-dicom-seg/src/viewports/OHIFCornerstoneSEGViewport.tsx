@@ -1,26 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ViewportActionArrows } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
-import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
+import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
-import { utils } from '@ohif/extension-cornerstone';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
 function OHIFCornerstoneSEGViewport(props: withAppTypes) {
-  const {
-    children,
-    displaySets,
-    viewportOptions,
-    servicesManager,
-    extensionManager,
-    commandsManager,
-  } = props;
-
-  const { t } = useTranslation('SEGViewport');
+  const { children, displaySets, viewportOptions, servicesManager, commandsManager } = props;
   const viewportId = viewportOptions.viewportId;
 
   const { displaySetService, toolGroupService, segmentationService, customizationService } =
@@ -41,7 +29,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the SEG is opened and segments are loaded into the
@@ -49,9 +36,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   // same frameOfReferenceUID as the referencedSeriesUID of the SEG. However,
   // loading basically means SEG loading over network and bit unpacking of the
   // SEG data.
-  const [isHydrated, setIsHydrated] = useState(segDisplaySet.isHydrated);
   const [segIsLoading, setSegIsLoading] = useState(!segDisplaySet.isLoaded);
-  const [element, setElement] = useState(null);
   const [processingProgress, setProcessingProgress] = useState({
     percentComplete: null,
     totalSegments: null,
@@ -76,19 +61,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     displaySet: referencedDisplaySet,
     metadata: referencedDisplaySetMetadata,
   };
-  /**
-   * OnElementEnabled callback which is called after the cornerstoneExtension
-   * has enabled the element. Note: we delegate all the image rendering to
-   * cornerstoneExtension, so we don't need to do anything here regarding
-   * the image rendering, element enabling etc.
-   */
-  const onElementEnabled = evt => {
-    setElement(evt.detail.element);
-  };
-
-  const onElementDisabled = () => {
-    setElement(null);
-  };
 
   const storePresentationState = useCallback(() => {
     viewportGrid?.viewports.forEach(({ viewportId }) => {
@@ -99,13 +71,8 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   }, [viewportGrid]);
 
   const getCornerstoneViewport = useCallback(() => {
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
-
-    // Todo: jump to the center of the first segment
     return (
-      <Component
+      <OHIFCornerstoneViewport
         {...props}
         displaySets={[segDisplaySet]}
         viewportOptions={{
@@ -117,10 +84,8 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         }}
         onElementEnabled={evt => {
           props.onElementEnabled?.(evt);
-          onElementEnabled(evt);
         }}
-        onElementDisabled={onElementDisabled}
-      ></Component>
+      />
     );
   }, [viewportId, segDisplaySet, toolGroupId]);
 
@@ -171,12 +136,15 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       segDisplaySet,
       preHydrateCallbacks: [storePresentationState],
       hydrateCallback: hydrateSEG,
-    }).then(isHydrated => {
-      if (isHydrated) {
-        setIsHydrated(true);
-      }
     });
-  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, hydrateSEG]);
+  }, [
+    servicesManager,
+    viewportId,
+    segDisplaySet,
+    segIsLoading,
+    hydrateSEG,
+    storePresentationState,
+  ]);
 
   useEffect(() => {
     // on new seg display set, remove all segmentations from all viewports
