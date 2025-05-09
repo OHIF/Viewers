@@ -1,4 +1,4 @@
-import { utils } from '@ohif/extension-cornerstone';
+import { utils, Types } from '@ohif/extension-cornerstone';
 
 function promptHydrateSEG({
   servicesManager,
@@ -6,6 +6,12 @@ function promptHydrateSEG({
   viewportId,
   preHydrateCallbacks,
   hydrateCallback,
+}: {
+  servicesManager: AppTypes.ServicesManager;
+  segDisplaySet: AppTypes.DisplaySet;
+  viewportId: string;
+  preHydrateCallbacks?: Types.HydrationCallback[];
+  hydrateCallback: Types.HydrationCallback;
 }) {
   return utils.promptHydrationDialog({
     servicesManager,

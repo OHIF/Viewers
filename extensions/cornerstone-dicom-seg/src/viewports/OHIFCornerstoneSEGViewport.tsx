@@ -68,14 +68,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     metadata: referencedDisplaySetMetadata,
   };
 
-  const storePresentationState = useCallback(() => {
-    viewportGrid?.viewports.forEach(({ viewportId }) => {
-      commandsManager.runCommand('storePresentation', {
-        viewportId,
-      });
-    });
-  }, [viewportGrid]);
-
   const getCornerstoneViewport = useCallback(() => {
     return (
       <OHIFCornerstoneViewport
@@ -108,29 +100,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   //   [selectedSegmentObjectIndex]
   // );
 
-  const hydrateSEG = useCallback(() => {
-    // update the previously stored segmentationPresentation with the new viewportId
-    // presentation so that when we put the referencedDisplaySet back in the viewport
-    // it will have the correct segmentation representation hydrated
-    commandsManager.runCommand('updateStoredSegmentationPresentation', {
-      displaySet: segDisplaySet,
-      type: SegmentationRepresentations.Labelmap,
-    });
-
-    // update the previously stored positionPresentation with the new viewportId
-    // presentation so that when we put the referencedDisplaySet back in the viewport
-    // it will be in the correct position zoom and pan
-    commandsManager.runCommand('updateStoredPositionPresentation', {
-      viewportId,
-      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
-    });
-
-    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
-      viewportId,
-      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
-    });
-  }, [commandsManager, viewportId, referencedDisplaySet, segDisplaySet]);
-
   useEffect(() => {
     if (segIsLoading) {
       return;
@@ -140,17 +109,17 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       servicesManager,
       viewportId,
       segDisplaySet,
-      preHydrateCallbacks: [storePresentationState],
-      hydrateCallback: hydrateSEG,
+      hydrateCallback: async () => {
+        debugger;
+        await commandsManager.runCommand('hydrateSecondaryDisplaySet', {
+          displaySet: segDisplaySet,
+          viewportId,
+        });
+
+        return true;
+      },
     });
-  }, [
-    servicesManager,
-    viewportId,
-    segDisplaySet,
-    segIsLoading,
-    hydrateSEG,
-    storePresentationState,
-  ]);
+  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, commandsManager]);
 
   useEffect(() => {
     // on new seg display set, remove all segmentations from all viewports

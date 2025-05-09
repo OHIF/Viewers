@@ -1,4 +1,4 @@
-import { utils } from '@ohif/extension-cornerstone';
+import { utils, Types } from '@ohif/extension-cornerstone';
 
 function promptHydrateRT({
   servicesManager,
@@ -6,6 +6,12 @@ function promptHydrateRT({
   viewportId,
   preHydrateCallbacks,
   hydrateRTDisplaySet,
+}: {
+  servicesManager: AppTypes.ServicesManager;
+  rtDisplaySet: AppTypes.DisplaySet;
+  viewportId: string;
+  preHydrateCallbacks?: Types.HydrationCallback[];
+  hydrateRTDisplaySet: Types.HydrationCallback;
 }) {
   return utils.promptHydrationDialog({
     servicesManager,
@@ -13,7 +19,7 @@ function promptHydrateRT({
     displaySet: rtDisplaySet,
     preHydrateCallbacks,
     hydrateCallback: hydrateRTDisplaySet,
-    type: 'RT',
+    type: 'RTSTRUCT',
   });
 }
 

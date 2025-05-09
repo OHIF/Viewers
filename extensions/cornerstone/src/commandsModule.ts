@@ -37,6 +37,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -127,6 +128,69 @@ function commandsModule({
   }
 
   const actions = {
+    hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
+      if (!displaySet) {
+        return;
+      }
+
+      // if segmentation, we can't use the isOverlay, since PMAP is also an overlay but not a segmentation
+      if (['SEG', 'RTSTRUCT'].includes(displaySet.Modality)) {
+        // update the previously stored segmentationPresentation with the new viewportId
+        // presentation so that when we put the referencedDisplaySet back in the viewport
+        // it will have the correct segmentation representation hydrated
+        commandsManager.runCommand('updateStoredSegmentationPresentation', {
+          displaySet,
+          type:
+            displaySet.Modality === 'SEG'
+              ? SegmentationRepresentations.Labelmap
+              : SegmentationRepresentations.Contour,
+        });
+      }
+
+      const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
+
+      const storePositionPresentation = refDisplaySet => {
+        // update the previously stored positionPresentation with the new viewportId
+        // presentation so that when we put the referencedDisplaySet back in the viewport
+        // it will be in the correct position zoom and pan
+        commandsManager.runCommand('updateStoredPositionPresentation', {
+          viewportId,
+          displaySetInstanceUIDs: [refDisplaySet.displaySetInstanceUID],
+        });
+      };
+
+      if (displaySet.Modality === 'SEG' || displaySet.Modality === 'RTSTRUCT') {
+        const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+          referencedDisplaySetInstanceUID
+        );
+        storePositionPresentation(referencedDisplaySet);
+        return commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+          viewportId,
+          displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+        });
+      } else if (displaySet.Modality === 'SR') {
+        const results = commandsManager.runCommand('hydrateStructuredReport', {
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+        });
+        const { SeriesInstanceUIDs } = results;
+        const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
+          SeriesInstanceUIDs[0]
+        );
+        referencedDisplaySets.forEach(storePositionPresentation);
+
+        if (referencedDisplaySets.length) {
+          commandsManager.run('setDisplaySetsForViewports', {
+            viewportsToUpdate: [
+              {
+                viewportId: viewportGridService.getActiveViewportId(),
+                displaySetInstanceUIDs: [referencedDisplaySets[0].displaySetInstanceUID],
+              },
+            ],
+          });
+        }
+        return results;
+      }
+    },
     runSegmentBidirectional: async ({ segmentationId, segmentIndex } = {}) => {
       // Get active segmentation if not specified
       const targetSegmentation =
@@ -2065,6 +2129,7 @@ function commandsModule({
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
+    hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
   };
 
   return {

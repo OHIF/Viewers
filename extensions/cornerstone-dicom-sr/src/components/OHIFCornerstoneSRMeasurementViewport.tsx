@@ -104,10 +104,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
         console.warn('More than one SOPClassUID in the same series is not yet supported.');
       }
 
-      // if (!srDisplaySet.measurements || !srDisplaySet.measurements.length) {
-      //   return;
-      // }
-
       _getViewportReferencedDisplaySetData(
         srDisplaySet,
         newMeasurementSelected,

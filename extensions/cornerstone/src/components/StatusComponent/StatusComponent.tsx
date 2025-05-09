@@ -1,13 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportActionButton } from '@ohif/ui-next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+
+/**
+ * @returns
+ */
 function StatusComponent({ viewportId }: { viewportId: string }) {
-  const { commandsManager, servicesManager } = useSystem();
-  const { displaySetService } = servicesManager.services;
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('Common');
   const loadStr = t('LOAD');
 
@@ -72,52 +74,6 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
     };
   }, [displaySet, loadStr]);
 
-  const onLoadClick = useCallback(() => {
-    if (!statusInfo.displaySet) {
-      return;
-    }
-
-    // if segmentation, we can't use the isOverlay, since PMAP is also an overlay but not a segmentation
-    if (['SEG', 'RTSTRUCT'].includes(statusInfo.displaySet.Modality)) {
-      // update the previously stored segmentationPresentation with the new viewportId
-      // presentation so that when we put the referencedDisplaySet back in the viewport
-      // it will have the correct segmentation representation hydrated
-      commandsManager.runCommand('updateStoredSegmentationPresentation', {
-        displaySet: statusInfo.displaySet,
-        type:
-          statusInfo.displaySet.Modality === 'SEG'
-            ? SegmentationRepresentations.Labelmap
-            : SegmentationRepresentations.Contour,
-      });
-    }
-
-    const referencedDisplaySetInstanceUID = statusInfo.displaySet.referencedDisplaySetInstanceUID;
-
-    let referencedDisplaySet = null;
-    if (referencedDisplaySetInstanceUID) {
-      referencedDisplaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
-      // update the previously stored positionPresentation with the new viewportId
-      // presentation so that when we put the referencedDisplaySet back in the viewport
-      // it will be in the correct position zoom and pan
-      commandsManager.runCommand('updateStoredPositionPresentation', {
-        viewportId,
-        displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
-      });
-    }
-
-    if (statusInfo.type === 'SEG' || statusInfo.type === 'RTSTRUCT') {
-      commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
-        viewportId,
-        displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
-      });
-    } else if (statusInfo.type === 'SR') {
-      commandsManager.runCommand('loadMeasurementDisplaySetsForViewport', {
-        viewportId,
-        displaySetInstanceUIDs: [statusInfo.displaySet.displaySetInstanceUID],
-      });
-    }
-  }, [commandsManager, statusInfo, viewportId]);
-
   if (!statusInfo.type) {
     return null;
   }
@@ -143,7 +99,16 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
           <span className="ml-1">{statusInfo.type}</span>
         </div>
         {!statusInfo.isHydrated && statusInfo.type && (
-          <ViewportActionButton onInteraction={onLoadClick}>{loadStr}</ViewportActionButton>
+          <ViewportActionButton
+            onInteraction={() => {
+              commandsManager.runCommand('hydrateSecondaryDisplaySet', {
+                displaySet: statusInfo.displaySet,
+                viewportId,
+              });
+            }}
+          >
+            {loadStr}
+          </ViewportActionButton>
         )}
       </div>
     );

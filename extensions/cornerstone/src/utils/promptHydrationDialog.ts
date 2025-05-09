@@ -1,16 +1,16 @@
 export type HydrationCallback = (params: any) => Promise<boolean>;
 
 export const HydrationType = {
-  RT: 'RT',
   SEG: 'SEG',
   SR: 'SR',
+  RTSTRUCT: 'RTSTRUCT',
 } as const;
 
 export interface HydrationDialogProps {
   servicesManager: AppTypes.ServicesManager;
   viewportId: string;
   displaySet: AppTypes.DisplaySet;
-  preHydrateCallbacks?: Array<() => void>;
+  preHydrateCallbacks?: HydrationCallback[];
   hydrateCallback: HydrationCallback;
   type: string;
 }
@@ -36,8 +36,8 @@ const RESPONSE = {
 
 function getCustomizationMessageKey(type: string): string {
   switch (type) {
-    case HydrationType.RT:
-      return 'viewportNotification.hydrateRTMessage';
+    case HydrationType.RTSTRUCT:
+      return 'viewportNotification.hydrateRTSSMessage';
     case HydrationType.SEG:
       return 'viewportNotification.hydrateSEGMessage';
     case HydrationType.SR:
@@ -49,7 +49,7 @@ function getCustomizationMessageKey(type: string): string {
 
 function getDialogId(type: string): string {
   switch (type) {
-    case HydrationType.RT:
+    case HydrationType.RTSS:
       return 'promptHydrateRT';
     case HydrationType.SEG:
       return 'promptHydrateSEG';
@@ -101,7 +101,7 @@ function promptHydrationDialog({
 
           resolve(isHydrated);
         }, 0);
-      } else if (type === HydrationType.RT) {
+      } else if (type === HydrationType.RTSTRUCT) {
         // RT hydration
         const isHydrated = await hydrateCallback({
           rtDisplaySet: displaySet,
@@ -111,6 +111,7 @@ function promptHydrationDialog({
 
         resolve(isHydrated);
       } else if (type === HydrationType.SR) {
+        debugger;
         // SR has a different result structure
         const hydrationResult = await hydrateCallback(displaySet);
 

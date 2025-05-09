@@ -1,20 +1,15 @@
-import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 import { utils } from '@ohif/extension-cornerstone';
 
-function promptHydrateStructuredReport(
-  { servicesManager, extensionManager, commandsManager, appConfig },
-  ctx,
-  evt
-) {
+function promptHydrateStructuredReport({ servicesManager, commandsManager }, ctx, evt) {
   const { displaySetService } = servicesManager.services;
   const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   const hydrateCallback = async () => {
-    return hydrateStructuredReport(
-      { servicesManager, extensionManager, commandsManager, appConfig },
-      displaySetInstanceUID
-    );
+    return commandsManager.runCommand('hydrateSecondaryDisplaySet', {
+      displaySet: srDisplaySet,
+      viewportId,
+    });
   };
 
   // For SR we need to use the whole context
