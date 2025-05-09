@@ -56,10 +56,58 @@ module "tags" {
 #  name = "Managed-AllViewerExceptHostHeader"
 #}
 
+# policy for creating custom caching policy for the viewer distribution to the image bucket
+resource "aws_cloudfront_cache_policy" "origin_forward" {
+  name = "forward-origin-header"
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    headers_config {
+      header_behavior = "whitelist"
+      headers         = ["Origin"]
+    }
+
+    cookies_config {
+      cookie_behavior = "none"
+    }
+
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
+}
+
+# policy for creating a cors response header, headers to be sent to the browser
+resource "aws_cloudfront_response_headers_policy" "this" {
+  name = "cors-policy-for-ohif-viewer"
+
+  cors_config {
+    access_control_allow_credentials = false
+
+    access_control_allow_headers = {
+      items = ["*"]
+    }
+
+    access_control_allow_methods = {
+      items = ["GET", "HEAD", "OPTIONS"]
+    }
+
+    access_control_allow_origins = {
+      items = ["*"]
+    }
+
+    origin_override = true
+  }
+
+  custom_headers_config {
+    items = []
+  }
+}
+
+
 module "cdn" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "~> 4.0"
-  aliases = [var.cloudfront.route53_domain]
+  aliases =  module.cdn.cloudfront_distribution_domain_name #[var.cloudfront.route53_domain]
   #checkov:skip=CKV_TF_1:UKHSA "Internal module, release process to be defined"
   #checkov:skip=CKV_TF_2:UKHSA "Internal module, release process to be defined"
 
@@ -138,6 +186,7 @@ module "cdn" {
     compress        = true
     query_string    = true
 
+    cache_policy_id = aws_cloudfront_cache_policy.origin_forward.id
     response_headers_policy_id = aws_cloudfront_response_headers_policy.this.id
 
     function_association = {

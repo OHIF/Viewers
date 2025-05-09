@@ -279,21 +279,6 @@ module "s3_bucket" {
     }
   }
 
-  #  cors_rule = [
-  #    {
-  #      allowed_methods = ["PUT", "POST"]
-  #      allowed_origins = ["https://modules.tf", "https://terraform-aws-modules.modules.tf"]
-  #      allowed_headers = ["*"]
-  #      expose_headers  = ["ETag"]
-  #      max_age_seconds = 3000
-  #      }, {
-  #      allowed_methods = ["PUT"]
-  #      allowed_origins = ["https://example.com"]
-  #      allowed_headers = ["*"]
-  #      expose_headers  = ["ETag"]
-  #      max_age_seconds = 3000
-  #      }
-  #    ]
 
   lifecycle_rule = [
     {
@@ -315,16 +300,6 @@ module "s3_bucket" {
     {
       id      = "log2"
       enabled = true
-
-      #      filter = {
-      #        prefix                   = "log1/"
-      #        object_size_greater_than = 200000
-      #        object_size_less_than    = 500000
-      #        tags = {
-      #          some    = "value"
-      #          another = "value2"
-      #        }
-      #      }
 
       noncurrent_version_transition = [
         {
@@ -368,7 +343,7 @@ module "cloudtrail_s3_bucket" {
 }
 
 ##############################################################################
-############# creating the cloudtrail replica region bucket##################
+############# creating the cloudtrail replica region bucket ##################
 #############################################################################
 
 # Defines the replica location

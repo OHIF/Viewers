@@ -24,10 +24,11 @@ cloudfront = {
   route53_domain             = ""
   cloudfront_log_bucket      = "logs-aw-pets-euw-dev-s3-cloudfront.s3.amazonaws.com"
   comment                    = "Dicom Viewer Dev CloudFront Distribution"
-  s3_one_bucket              = "aw-pets-euw-dev-s3-dicomviewer"
-  s3_one                     = "aw-pets-euw-dev-s3-dicomviewer.s3.amazonaws.com"
+  s3_one_bucket              = "ohif-viewer-test"
+  s3_one                     = "ohif-viewer-test.s3.amazonaws.com"
   s3_one_description         = "Dicom Viewer Dev CloudFront Distribution"
   s3_malware                 = ""
   https_s3_malware           = ""
   route_53_query_log_group   = ""
 }
+
