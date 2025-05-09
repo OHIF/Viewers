@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Component, useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useViewportGrid } from '@ohif/ui-next';
 import {
   utils,
   usePositionPresentationStore,
-  OHIFCornerstoneViewport
+  OHIFCornerstoneViewport,
 } from '@ohif/extension-cornerstone';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
@@ -61,28 +61,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     displaySet: referencedDisplaySet,
     metadata: referencedDisplaySetMetadata,
   };
-
-  const getCornerstoneViewport = useCallback(() => {
-    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
-
-    // Todo: jump to the center of the first segment
-    return (
-      <OHIFCornerstoneViewport
-        {...props}
-        displaySets={[referencedDisplaySet, rtDisplaySet]}
-        viewportOptions={{
-          viewportType: 'stack',
-          toolGroupId: toolGroupId,
-          orientation: viewportOptions.orientation,
-          viewportId: viewportOptions.viewportId,
-          presentationIds: viewportOptions.presentationIds,
-        }}
-        onElementEnabled={evt => {
-          props.onElementEnabled?.(evt);
-        }}
-      ></Component>
-    );
-  }, [viewportId, rtDisplaySet, toolGroupId]);
 
   const onSegmentChange = useCallback(
     direction => {
@@ -146,7 +124,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   }, [rtDisplaySet]);
 
   useEffect(() => {
-    const { unsubscribe } = segmentationService.subscribe(
+    const segmentLoadingSubscription = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE,
       ({ percentComplete, numSegments }) => {
         setProcessingProgress({
@@ -156,16 +134,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       }
     );
 
-    return () => {
-      unsubscribe();
-    };
-  }, [rtDisplaySet]);
-
-  /**
-   Cleanup the SEG viewport when the viewport is destroyed
-   */
-  useEffect(() => {
-    const onDisplaySetsRemovedSubscription = displaySetService.subscribe(
+    const displaySetsRemovedSubscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_REMOVED,
       ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports.get(activeViewportId);
@@ -179,9 +148,10 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     );
 
     return () => {
-      onDisplaySetsRemovedSubscription.unsubscribe();
+      segmentLoadingSubscription.unsubscribe();
+      displaySetsRemovedSubscription.unsubscribe();
     };
-  }, []);
+  }, [rtDisplaySet, displaySetService, viewports, activeViewportId, viewportGridService]);
 
   useEffect(() => {
     let toolGroup = toolGroupService.getToolGroup(toolGroupId);
@@ -199,6 +169,28 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
+
+  const getCornerstoneViewport = useCallback(() => {
+    const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
+
+    // Todo: jump to the center of the first segment
+    return (
+      <OHIFCornerstoneViewport
+        {...props}
+        displaySets={[referencedDisplaySet, rtDisplaySet]}
+        viewportOptions={{
+          viewportType: 'stack',
+          toolGroupId: toolGroupId,
+          orientation: viewportOptions.orientation,
+          viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
+        }}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+        }}
+      />
+    );
+  }, [viewportId, rtDisplaySet, toolGroupId]);
 
   let childrenWithProps = null;
 

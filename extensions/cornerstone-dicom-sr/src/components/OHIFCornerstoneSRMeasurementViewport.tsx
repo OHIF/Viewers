@@ -18,7 +18,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
     dataSource: unknown;
     displaySets: AppTypes.DisplaySet[];
     viewportOptions: AppTypes.ViewportOptions;
-    servicesManager: AppTypes.Services;
   };
 
   const { displaySetService } = servicesManager.services;
@@ -291,8 +290,6 @@ OHIFCornerstoneSRMeasurementViewport.propTypes = {
   children: PropTypes.node,
   viewportLabel: PropTypes.string,
   viewportOptions: PropTypes.object,
-  servicesManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
 
 async function _getViewportReferencedDisplaySetData(

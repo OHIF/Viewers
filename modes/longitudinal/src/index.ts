@@ -105,11 +105,11 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.createButtonSection('viewportActionMenu.topLeft', [
-        'statusComponent',
         'orientationMenu',
         'dataOverlayMenu',
         'windowLevelMenu',
       ]);
+      toolbarService.createButtonSection('viewportActionMenu.topRight', ['statusComponent']);
 
       toolbarService.createButtonSection('measurementSection', [
         'Length',
