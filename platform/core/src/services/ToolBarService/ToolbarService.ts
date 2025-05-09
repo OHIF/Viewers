@@ -9,6 +9,41 @@ const EVENTS = {
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
 };
 
+/**
+ * Predefined toolbar sections used throughout the application
+ */
+export const TOOLBAR_SECTIONS = {
+  /**
+   * Main toolbar
+   */
+  primary: 'primary',
+
+  /**
+   * Secondary toolbar
+   */
+  secondary: 'secondary',
+
+  /**
+   * Viewport action menu sections
+   */
+  viewportActionMenu: {
+    topLeft: 'viewportActionMenu.topLeft',
+    topRight: 'viewportActionMenu.topRight',
+    bottomLeft: 'viewportActionMenu.bottomLeft',
+    bottomRight: 'viewportActionMenu.bottomRight',
+  },
+
+  /**
+   * Measurement tools section
+   */
+  measurementSection: 'measurementSection',
+
+  /**
+   * More tools section
+   */
+  moreToolsSection: 'moreToolsSection',
+};
+
 export default class ToolbarService extends PubSubService {
   public static REGISTRATION = {
     name: 'toolbarService',
@@ -17,6 +52,13 @@ export default class ToolbarService extends PubSubService {
       return new ToolbarService(commandsManager, extensionManager, servicesManager);
     },
   };
+
+  /**
+   * Access to predefined toolbar sections for autocomplete support
+   */
+  public get sections() {
+    return TOOLBAR_SECTIONS;
+  }
 
   public static createButton(options: {
     id: string;

@@ -91,7 +91,7 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.createButtonSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
         'Pan',
@@ -104,14 +104,16 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection('viewportActionMenu.topLeft', [
+      toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topLeft, [
         'orientationMenu',
         'dataOverlayMenu',
         'windowLevelMenu',
       ]);
-      toolbarService.createButtonSection('viewportActionMenu.topRight', ['statusComponent']);
+      toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'statusComponent',
+      ]);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.createButtonSection(toolbarService.sections.measurementSection, [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -123,7 +125,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.createButtonSection(toolbarService.sections.moreToolsSection, [
         'Reset',
         'rotate-right',
         'flipHorizontal',
