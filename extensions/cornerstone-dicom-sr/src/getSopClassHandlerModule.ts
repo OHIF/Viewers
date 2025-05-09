@@ -216,6 +216,12 @@ async function _load(
   });
 }
 
+function _measurementSharesFrameOfReferenceUID({ measurement, displaySet }) {
+  return (
+    measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.FrameOfReferenceUID
+  );
+}
+
 /**
  * Checks if measurements can be added to a display set.
  *
@@ -236,17 +242,9 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (
-    unloadedMeasurements.length === 0 ||
-    !(newDisplaySet instanceof ImageSet) ||
-    newDisplaySet.unsupported
-  ) {
+  if (unloadedMeasurements.length === 0 || newDisplaySet.unsupported) {
     return;
   }
-
-  // const { sopClassUids } = newDisplaySet;
-  // Create a Set for faster lookups
-  // const sopClassUidSet = new Set(sopClassUids);
 
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
@@ -266,6 +264,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
+    const is3DMeasurement = measurement.coords?.[0]?.ValueType === 'SCOORD3D';
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
@@ -280,9 +279,15 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     // if it is 3d SR we can just add the SR annotation
-    if (is3DSR) {
+    if (
+      is3DSR &&
+      is3DMeasurement &&
+      _measurementSharesFrameOfReferenceUID({ measurement, displaySet: newDisplaySet })
+    ) {
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+      unloadedMeasurements.splice(j, 1);
       continue;
     }
 
