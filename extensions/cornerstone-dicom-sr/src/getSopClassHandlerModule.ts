@@ -264,6 +264,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
+    const is3DMeasurement = measurement.coords?.[0]?.ValueType === 'SCOORD3D';
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
@@ -280,6 +281,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     // if it is 3d SR we can just add the SR annotation
     if (
       is3DSR &&
+      is3DMeasurement &&
       _measurementSharesFrameOfReferenceUID({ measurement, displaySet: newDisplaySet })
     ) {
       addSRAnnotation(measurement, null, null);
