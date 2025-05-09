@@ -9,7 +9,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
 
   // Store all buttons returned by the toolbar service
   const [toolbarButtons, setToolbarButtons] = useState(
-    toolbarService.getButtonSection(buttonSection as string)
+    toolbarService.getButtonSection(buttonSection as string).filter(Boolean)
   );
 
   // Store state of open/closed menu items
@@ -244,8 +244,22 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     };
   }, [viewportGridService, toolbarService, openItemIds]);
 
+  if (!toolbarButtons) {
+    return {
+      toolbarButtons: [],
+      onInteraction,
+      ...actions,
+    };
+  }
+
+  // filter out buttons that are disabled and have hideWhenDisabled set to true
+  const filteredToolbarButtons = toolbarButtons.filter(button => {
+    const props = button.componentProps;
+    return props.visible !== false;
+  });
+
   return {
-    toolbarButtons,
+    toolbarButtons: filteredToolbarButtons,
     onInteraction,
     ...actions,
   };

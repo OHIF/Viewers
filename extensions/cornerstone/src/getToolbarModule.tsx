@@ -73,11 +73,12 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
         // Only show orientation menu for 3D capable viewports
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-        const CT = displaySets.some(displaySet => displaySet?.Modality === 'CT');
+        const isNotReconstructable = displaySets.some(displaySet => !displaySet?.isReconstructable);
+
+        const disabled = isNotReconstructable;
 
         return {
-          visible: CT,
-          disabled: !CT,
+          disabled,
         };
       },
     },

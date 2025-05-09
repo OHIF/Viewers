@@ -239,6 +239,7 @@ export default class ToolbarService extends PubSubService {
         const { disabled, disabledText, className, isActive } = evaluationResults.get(button.id);
         return { ...props, disabled, disabledText, className, isActive };
       } else {
+        const evaluateProps = props.evaluateProps;
         const evaluated =
           typeof props.evaluate === 'function'
             ? props.evaluate({ ...refreshProps, button })
@@ -247,6 +248,7 @@ export default class ToolbarService extends PubSubService {
           ...props,
           ...evaluated,
           disabled: evaluated?.disabled || false,
+          visible: evaluateProps?.hideWhenDisabled && evaluated?.disabled ? false : true,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
         };
@@ -587,6 +589,7 @@ export default class ToolbarService extends PubSubService {
         return evaluateFunction;
       });
 
+      const evaluateProps = props.evaluate;
       props.evaluate = args => {
         const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
 
@@ -606,6 +609,8 @@ export default class ToolbarService extends PubSubService {
 
         return mergedResult;
       };
+
+      props.evaluateProps = evaluateProps;
 
       return;
     }
@@ -627,7 +632,9 @@ export default class ToolbarService extends PubSubService {
       const { name, ...options } = evaluate;
       const evaluateFunction = this._evaluateFunction[name];
       if (evaluateFunction) {
+        const evaluateProps = props.evaluate;
         props.evaluate = args => evaluateFunction({ ...args, ...options });
+        props.evaluateProps = evaluateProps;
         return;
       }
 

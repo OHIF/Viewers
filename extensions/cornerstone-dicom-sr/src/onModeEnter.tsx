@@ -17,23 +17,23 @@ export default function onModeEnter({ servicesManager }) {
     ds.isHydrated = false;
   });
 
-  toolbarService.addButtons([
-    {
-      // A base/default button for loading measurements. It is added to the toolbar below.
-      // Customizations to this button can be made in the mode or by another extension.
-      // For example, the button label can be changed and/or the command to clear
-      // the measurements can be dropped.
-      id: 'loadSRMeasurements',
-      component: props => (
-        <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
-      ),
-      props: {
-        commands: ['clearMeasurements', 'loadSRMeasurements'],
-      },
-    },
-  ]);
+  // toolbarService.addButtons([
+  //   {
+  //     // A base/default button for loading measurements. It is added to the toolbar below.
+  //     // Customizations to this button can be made in the mode or by another extension.
+  //     // For example, the button label can be changed and/or the command to clear
+  //     // the measurements can be dropped.
+  //     id: 'loadSRMeasurements',
+  //     component: props => (
+  //       <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
+  //     ),
+  //     props: {
+  //       commands: ['clearMeasurements', 'loadSRMeasurements'],
+  //     },
+  //   },
+  // ]);
 
   // The toolbar used in the viewport's status bar. Modes and extensions can further customize
   // it to optionally add other buttons.
-  toolbarService.createButtonSection('loadSRMeasurements', ['loadSRMeasurements']);
+  // toolbarService.createButtonSection('loadSRMeasurements', ['loadSRMeasurements']);
 }

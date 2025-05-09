@@ -90,7 +90,22 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
+      // toolbarService.addButtons(toolbarButtons);
+      toolbarService.addButtons([
+        {
+          id: 'orientationMenu',
+          uiType: 'ohif.orientationMenu',
+          props: {
+            icon: 'Orientation',
+            label: 'Orientation',
+            tooltip: 'Orientation',
+            evaluate: {
+              name: 'evaluate.orientationMenu',
+              hideWhenDisabled: true,
+            },
+          },
+        },
+      ]);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
@@ -100,6 +115,7 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
+        'orientationMenu',
         'MoreTools',
       ]);
 
@@ -140,12 +156,6 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
-      ]);
-
-      toolbarService.createButtonSection('mainViewport.TopLeft', [
-        'orientationMenu',
-        'dataOverlayMenu',
-        'windowLevelMenu',
       ]);
 
       customizationService.setCustomizations({
