@@ -14,7 +14,7 @@ const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking'
  */
 function StatusComponent({ viewportId }: { viewportId: string }) {
   const { commandsManager, extensionManager, servicesManager } = useSystem();
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, segmentationService } = servicesManager.services;
   const { t } = useTranslation('Common');
   const loadStr = t('LOAD');
 
@@ -150,33 +150,33 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
   }
 
   const StatusIcon = () => {
-    if (statusInfo.isTracked) {
-      return <Icons.StatusTracking className="h-4 w-4" />;
-    }
+    if (statusInfo.type === 'SR') {
+      if (statusInfo.isRehydratable && !isLocked) {
+        return (
+          <Icons.ByName
+            className="text-muted-foreground h-4 w-4"
+            name="status-untracked"
+          />
+        );
+      }
 
-    if (statusInfo.isRehydratable && !isLocked) {
-      return (
-        <Icons.ByName
-          className="text-muted-foreground h-4 w-4"
-          name="status-untracked"
-        />
-      );
-    }
-
-    if (statusInfo.isRehydratable && isLocked) {
-      return (
-        <Icons.ByName
-          name="status-locked"
-          className="h-4 w-4"
-        />
-      );
+      if (statusInfo.isRehydratable && isLocked) {
+        return (
+          <Icons.ByName
+            name="status-locked"
+            className="h-4 w-4"
+          />
+        );
+      } else {
+        return (
+          <Icons.ByName
+            name="status-alert"
+            className="h-4 w-4"
+          />
+        );
+      }
     } else {
-      return (
-        <Icons.ByName
-          name="status-alert"
-          className="h-4 w-4"
-        />
-      );
+      return <Icons.StatusUntracked className="h-4 w-4" />;
     }
   };
 
