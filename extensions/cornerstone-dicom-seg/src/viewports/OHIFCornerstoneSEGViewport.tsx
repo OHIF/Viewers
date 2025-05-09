@@ -69,6 +69,17 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
+  // If the referencedDisplaySetInstanceUID is not found.
+  // It happens if we launch a Segmentation series only.
+  if (!referencedDisplaySetInstanceUID) {
+    const missingReferenceDisplaySetHandler = customizationService.getCustomization(
+      'missingReferenceDisplaySetHandler'
+    );
+    const { handled } = missingReferenceDisplaySetHandler();
+    if (handled) {
+      return;
+    }
+  }
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     referencedDisplaySetInstanceUID
   );

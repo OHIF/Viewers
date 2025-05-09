@@ -71,6 +71,17 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const { viewports, activeViewportId } = viewportGrid;
 
   const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
+  // If the referencedDisplaySetInstanceUID is not found.
+  // It happens if we launch a RTStruct series only.
+  if (!referencedDisplaySetInstanceUID) {
+    const missingReferenceDisplaySetHandler = customizationService.getCustomization(
+      'missingReferenceDisplaySetHandler'
+    );
+    const { handled } = missingReferenceDisplaySetHandler();
+    if (handled) {
+      return;
+    }
+  }
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     referencedDisplaySetInstanceUID
   );
