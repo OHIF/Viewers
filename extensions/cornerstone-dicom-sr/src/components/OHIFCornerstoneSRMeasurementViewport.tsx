@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
-import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
@@ -337,124 +335,6 @@ async function _getViewportReferencedDisplaySetData(
   };
 
   return { referencedDisplaySetMetadata, referencedDisplaySet };
-}
-
-function _getStatusComponent({ srDisplaySet, viewportId, isRehydratable, isLocked, t }) {
-  const loadStr = t('LOAD');
-
-  // 1 - Incompatible
-  // 2 - Locked
-  // 3 - Rehydratable / Open
-  const state = isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
-  let ToolTipMessage = null;
-  let StatusIcon = null;
-
-  switch (state) {
-    case 1:
-      StatusIcon = () => (
-        <Icons.ByName
-          name="status-alert"
-          className="h-4 w-4"
-        />
-      );
-
-      ToolTipMessage = () => (
-        <div>
-          This structured report is not compatible
-          <br />
-          with this application.
-        </div>
-      );
-      break;
-    case 2:
-      StatusIcon = () => (
-        <Icons.ByName
-          name="status-locked"
-          className="h-4 w-4"
-        />
-      );
-
-      ToolTipMessage = () => (
-        <div>
-          This structured report is currently read-only
-          <br />
-          because you are tracking measurements in
-          <br />
-          another viewport.
-        </div>
-      );
-      break;
-    case 3:
-      StatusIcon = () => (
-        <Icons.ByName
-          className="text-muted-foreground h-4 w-4"
-          name="status-untracked"
-        />
-      );
-
-      ToolTipMessage = () => <div>{`Click ${loadStr} to restore measurements.`}</div>;
-  }
-
-  const StatusArea = () => {
-    const { toolbarButtons: loadSRMeasurementsButtons, onInteraction } = useToolbar({
-      buttonSection: 'loadSRMeasurements',
-    });
-
-    const commandOptions = {
-      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-      viewportId,
-    };
-
-    return (
-      <div className="flex h-6 cursor-default text-sm leading-6 text-white">
-        <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
-          <StatusIcon className="h-4 w-4" />
-          <span className="ml-1">SR</span>
-        </div>
-        {state === 3 && (
-          <>
-            {loadSRMeasurementsButtons.map(toolDef => {
-              if (!toolDef) {
-                return null;
-              }
-              const { id, Component, componentProps } = toolDef;
-              const tool = (
-                <Component
-                  key={id}
-                  id={id}
-                  onInteraction={args => onInteraction({ ...args, ...commandOptions })}
-                  {...componentProps}
-                />
-              );
-
-              return <div key={id}>{tool}</div>;
-            })}
-          </>
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <>
-      {ToolTipMessage && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span>
-              <StatusArea />
-            </span>
-          </TooltipTrigger>
-          <TooltipContent
-            side="bottom"
-            align="start"
-          >
-            <ToolTipMessage />
-          </TooltipContent>
-        </Tooltip>
-      )}
-      {!ToolTipMessage && <StatusArea />}
-    </>
-  );
 }
 
 export default OHIFCornerstoneSRMeasurementViewport;

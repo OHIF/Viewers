@@ -4,7 +4,6 @@ import { ViewportActionArrows } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
-import _getStatusComponent from './_getStatusComponent';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { utils } from '@ohif/extension-cornerstone';
@@ -125,18 +124,18 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     );
   }, [viewportId, segDisplaySet, toolGroupId]);
 
-  const onSegmentChange = useCallback(
-    direction => {
-      utils.handleSegmentChange({
-        direction,
-        segDisplaySet: segDisplaySet,
-        viewportId,
-        selectedSegmentObjectIndex,
-        segmentationService,
-      });
-    },
-    [selectedSegmentObjectIndex]
-  );
+  // const onSegmentChange = useCallback(
+  //   direction => {
+  //     utils.handleSegmentChange({
+  //       direction,
+  //       segDisplaySet: segDisplaySet,
+  //       viewportId,
+  //       selectedSegmentObjectIndex,
+  //       segmentationService,
+  //     });
+  //   },
+  //   [selectedSegmentObjectIndex]
+  // );
 
   const hydrateSEG = useCallback(() => {
     // update the previously stored segmentationPresentation with the new viewportId
@@ -277,17 +276,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       toolGroupService.destroyToolGroup(toolGroupId);
     };
   }, []);
-
-  const onStatusClick = useCallback(async () => {
-    // Before hydrating a SEG and make it added to all viewports in the grid
-    // that share the same frameOfReferenceUID, we need to store the viewport grid
-    // presentation state, so that we can restore it after hydrating the SEG. This is
-    // required if the user has changed the viewport (other viewport than SEG viewport)
-    // presentation state (w/l and invert) and then opens the SEG. If we don't store
-    // the presentation state, the viewport will be reset to the default presentation
-    storePresentationState();
-    hydrateSEG();
-  }, [storePresentationState, hydrateSEG]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;

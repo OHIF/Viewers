@@ -105,6 +105,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.createButtonSection('viewportActionMenu.topLeft', [
+        'statusComponent',
         'orientationMenu',
         'dataOverlayMenu',
         'windowLevelMenu',

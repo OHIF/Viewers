@@ -3,6 +3,7 @@ import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
+import StatusComponent from './components/StatusComponent/StatusComponent';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -20,6 +21,40 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
   } = servicesManager.services;
 
   return [
+    {
+      name: 'ohif.statusComponent',
+      defaultComponent: StatusComponent,
+    },
+    {
+      name: 'evaluate.statusComponent',
+      evaluate: ({ viewportId }) => {
+        // We can't use useViewportDisplaySets hook here since we're in a non-React context,
+        // but we'll follow the same pattern by getting only the display sets for this viewport
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Get the display sets that are specifically in this viewport
+        const viewportDisplaySets = displaySetUIDs.map(uid =>
+          displaySetService.getDisplaySetByUID(uid)
+        );
+        // Only show status for supported types like SR, SEG, RTSTRUCT
+        const isSupportedType = viewportDisplaySets.some(
+          displaySet =>
+            displaySet?.Modality === 'SR' ||
+            displaySet?.Modality === 'SEG' ||
+            displaySet?.Modality === 'RTSTRUCT'
+        );
+
+        return {
+          disabled: !isSupportedType,
+        };
+      },
+    },
     {
       name: 'ohif.dataOverlayMenu',
       defaultComponent: ViewportDataOverlayMenuWrapper,

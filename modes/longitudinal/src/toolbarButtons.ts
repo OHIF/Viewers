@@ -37,6 +37,19 @@ const toolbarButtons: Button[] = [
   },
   // tool defs
   {
+    id: 'statusComponent',
+    uiType: 'ohif.statusComponent',
+    props: {
+      icon: 'Status',
+      label: 'Status',
+      tooltip: 'Status',
+      evaluate: {
+        name: 'evaluate.statusComponent',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'dataOverlayMenu',
     uiType: 'ohif.dataOverlayMenu',
     props: {
