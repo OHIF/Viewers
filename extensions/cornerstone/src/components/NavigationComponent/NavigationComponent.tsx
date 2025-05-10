@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
-import { usePositionPresentationStore, utils } from '../..';
+import { utils } from '../..';
 import { useViewportSegmentations } from '../../hooks';
 import { useMeasurementTracking } from '../../hooks/useMeasurementTracking';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
@@ -12,15 +12,13 @@ import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
  */
 function NavigationComponent({ viewportId }: { viewportId: string }) {
   const { servicesManager } = useSystem();
-  const { segmentationService, measurementService, cornerstoneViewportService } =
+  const { segmentationService, cornerstoneViewportService, measurementService } =
     servicesManager.services;
 
   // Get tracking information
-  const { isTracked } = useMeasurementTracking({ viewportId });
+  const { isTracked, trackedMeasurementUIDs } = useMeasurementTracking({ viewportId });
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
   const [measurementSelected, setMeasurementSelected] = useState(0);
-  const viewportOptions = cornerstoneViewportService.getViewportOptions(viewportId);
-  const { setPositionPresentation } = usePositionPresentationStore();
   const isSRDisplaySet = viewportDisplaySets.some(displaySet => displaySet?.Modality === 'SR');
   const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -46,26 +44,44 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
         displaySet => displaySet?.Modality === 'SR'
       );
 
-      if (!measurementDisplaySet) {
-        return;
+      if (measurementDisplaySet) {
+        const measurementCount = measurementDisplaySet.measurements.length;
+        let newMeasurementSelected = measurementSelected;
+        newMeasurementSelected += direction;
+        if (newMeasurementSelected >= measurementCount) {
+          newMeasurementSelected = 0;
+        } else if (newMeasurementSelected < 0) {
+          newMeasurementSelected = measurementCount - 1;
+        }
+
+        setMeasurementSelected(newMeasurementSelected);
+        const measurement = measurementDisplaySet.measurements[newMeasurementSelected];
+        cornerstoneViewport.setViewReference({
+          referencedImageId: measurement.imageId,
+        });
       }
 
-      const measurementCount = measurementDisplaySet.measurements.length;
-      let newMeasurementSelected = measurementSelected;
-      newMeasurementSelected += direction;
-      if (newMeasurementSelected >= measurementCount) {
-        newMeasurementSelected = 0;
-      } else if (newMeasurementSelected < 0) {
-        newMeasurementSelected = measurementCount - 1;
+      if (isTracked) {
+        const currentIndex = trackedMeasurementUIDs.indexOf(
+          trackedMeasurementUIDs[measurementSelected]
+        );
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < trackedMeasurementUIDs.length) {
+          setMeasurementSelected(newIndex);
+          measurementService.jumpToMeasurement(viewportId, trackedMeasurementUIDs[newIndex]);
+        }
       }
-
-      setMeasurementSelected(newMeasurementSelected);
-      const measurement = measurementDisplaySet.measurements[newMeasurementSelected];
-      cornerstoneViewport.setViewReference({
-        referencedImageId: measurement.imageId,
-      });
     },
-    [viewportId, cornerstoneViewport, measurementSelected, setMeasurementSelected]
+    [
+      viewportId,
+      cornerstoneViewport,
+      measurementSelected,
+      setMeasurementSelected,
+      measurementService,
+      isTracked,
+      trackedMeasurementUIDs,
+      viewportDisplaySets,
+    ]
   );
 
   const handleSegmentNavigation = useCallback(
