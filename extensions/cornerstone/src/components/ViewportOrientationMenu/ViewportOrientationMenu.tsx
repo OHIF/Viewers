@@ -105,6 +105,7 @@ function ViewportOrientationMenu({
   // Get proper alignment and side based on the location using toolbar service
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
+  const Icon = <Icons.OrientationSwitch className={iconClassName} />;
   return (
     <Popover
       open={isOpen}
@@ -117,11 +118,12 @@ function ViewportOrientationMenu({
         <div>
           {IconContainer ? (
             <IconContainer
-              variant="ghost"
               disabled={disabled}
+              size="icon"
+              variant="ghost"
               icon="OrientationSwitch"
             >
-              <Icons.OrientationSwitch className={iconClassName} />
+              {Icon}
             </IconContainer>
           ) : (
             <Button
@@ -130,7 +132,7 @@ function ViewportOrientationMenu({
               disabled={disabled}
               onClick={() => {}}
             >
-              <Icons.OrientationSwitch className={iconClassName} />
+              {Icon}
             </Button>
           )}
         </div>

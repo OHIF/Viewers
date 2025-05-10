@@ -101,6 +101,8 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'orientationMenu',
+        'dataOverlayMenu',
+        'windowLevelMenu',
         'MoreTools',
       ]);
 

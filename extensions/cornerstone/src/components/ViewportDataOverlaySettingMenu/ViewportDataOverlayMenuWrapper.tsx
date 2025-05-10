@@ -15,8 +15,8 @@ type DataOverlayMenuProps = {
 
 export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): ReactNode {
   const { viewportId, location, isOpen = false, onOpen, onClose, disabled } = props;
-  const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
-  const iconClasses = useIconSize();
+  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
+  const { IconContainer, className: iconClassName } = useIconSize();
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
@@ -32,6 +32,8 @@ export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): Rea
   // Get alignment and side from the toolbar service
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
+  const Icon = <Icons.ViewportViews className={iconClassName} />;
+
   return (
     <Popover
       open={isOpen}
@@ -41,13 +43,26 @@ export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): Rea
         asChild
         className="flex items-center justify-center"
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={disabled}
-        >
-          <Icons.ViewportViews className={iconClasses} />
-        </Button>
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+              icon="ViewportViews"
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+            >
+              {Icon}
+            </Button>
+          )}
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"

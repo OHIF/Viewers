@@ -29,9 +29,10 @@ export function WindowLevelActionMenuWrapper(
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
-  const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
+  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
+  const { IconContainer, className: iconClassName } = useIconSize();
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
@@ -61,7 +62,7 @@ export function WindowLevelActionMenuWrapper(
     return null;
   }
 
-  const iconClasses = useIconSize();
+  const Icon = <Icons.ViewportWindowLevel className={iconClassName} />;
 
   return (
     <Popover
@@ -72,16 +73,27 @@ export function WindowLevelActionMenuWrapper(
         asChild
         className="flex items-center justify-center"
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={disabled}
-        >
-          <Icons.ByName
-            name="viewport-window-level"
-            className={iconClasses}
-          />
-        </Button>
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              variant="ghost"
+              size="icon"
+              icon="viewport-window-level"
+              disabled={disabled}
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+              onClick={() => {}}
+            >
+              {Icon}
+            </Button>
+          )}
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"
