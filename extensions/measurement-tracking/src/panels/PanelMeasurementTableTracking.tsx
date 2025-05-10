@@ -1,10 +1,9 @@
 import React from 'react';
-import { utils } from '@ohif/core';
+import { useSystem, utils } from '@ohif/core';
 import { AccordionTrigger, MeasurementTable, ScrollArea, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
   StudyMeasurements,
-  StudyMeasurementsActions,
   StudySummaryFromMetadata,
   AccordionGroup,
   MeasurementsOrAdditionalFindings,
@@ -18,7 +17,9 @@ const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
 
 function PanelMeasurementTableTracking(props) {
   const [viewportGrid] = useViewportGrid();
-  const { measurementService, uiModalService } = props.servicesManager.services;
+  const { servicesManager } = useSystem();
+  const { measurementService, uiModalService } = servicesManager.services;
+
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy

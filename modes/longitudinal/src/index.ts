@@ -90,8 +90,8 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection(toolbarService.sections.primary, [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
         'Pan',
@@ -104,18 +104,20 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topLeft, [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
         'orientationMenu',
         'dataOverlayMenu',
         'windowLevelMenu',
       ]);
-      toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
         'modalityLoadBadge',
         'trackingStatus',
         'navigationComponent',
       ]);
 
-      toolbarService.createButtonSection(toolbarService.sections.measurementSection, [
+      toolbarService.updateSection(toolbarService.sections.measurementPanel.actions, ['Zoom']);
+
+      toolbarService.updateSection(toolbarService.sections.measurementSection, [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -127,7 +129,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection(toolbarService.sections.moreToolsSection, [
+      toolbarService.updateSection(toolbarService.sections.moreToolsSection, [
         'Reset',
         'rotate-right',
         'flipHorizontal',
@@ -232,7 +234,7 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
               rightPanels: [cornerstone.segmentation, tracked.measurements],
-              rightPanelClosed: true,
+              // rightPanelClosed: true,
               rightPanelResizable: true,
               viewports: [
                 {

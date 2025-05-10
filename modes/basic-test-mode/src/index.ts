@@ -89,9 +89,9 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      toolbarService.addButtons(toolbarButtons);
+      toolbarService.register(toolbarButtons);
       console.debug('toolbarButtons', toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.updateSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevelGroup',
@@ -103,7 +103,7 @@ function modeFactory() {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection('windowLevelSection', [
+      toolbarService.updateSection('windowLevelSection', [
         'WindowLevel',
         'Soft tissue',
         'Lung',
@@ -112,7 +112,7 @@ function modeFactory() {
         'Brain',
       ]);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection('measurementSection', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -123,7 +123,7 @@ function modeFactory() {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.updateSection('moreToolsSection', [
         'Reset',
         'rotate-right',
         'flipHorizontal',

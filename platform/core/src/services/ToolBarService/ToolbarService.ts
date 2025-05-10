@@ -172,7 +172,7 @@ export default class ToolbarService extends PubSubService {
    * @param buttons - The buttons to be added.
    * @param replace - Flag indicating if any existing button with the same id as one being added should be replaced
    */
-  public addButtons(buttons: Button[], replace: boolean = false): void {
+  public register(buttons: Button[], replace: boolean = false): void {
     buttons.forEach(button => {
       if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
@@ -417,7 +417,7 @@ export default class ToolbarService extends PubSubService {
    * @param {string} key - The key of the button section.
    * @param {Array} buttons - The buttons to be added to the section.
    */
-  createButtonSection(key, buttons) {
+  updateSection(key, buttons) {
     if (this.state.buttonSections[key]) {
       this.state.buttonSections[key].push(
         ...buttons.filter(
