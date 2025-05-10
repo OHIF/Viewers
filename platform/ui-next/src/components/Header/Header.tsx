@@ -9,7 +9,7 @@ import {
   Button,
   ToolButton,
 } from '../';
-import { IconSizeProvider } from '@ohif/ui-next';
+import { IconPresentationProvider } from '@ohif/ui-next';
 
 import NavBar from '../NavBar';
 
@@ -52,7 +52,7 @@ function Header({
   };
 
   return (
-    <IconSizeProvider
+    <IconPresentationProvider
       size="large"
       IconContainer={ToolButton}
     >
@@ -122,7 +122,7 @@ function Header({
           </div>
         </div>
       </NavBar>
-    </IconSizeProvider>
+    </IconPresentationProvider>
   );
 }
 

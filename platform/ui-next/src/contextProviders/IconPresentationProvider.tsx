@@ -50,7 +50,7 @@ const defaultContext: IconSizeContextType = {
 
 export const IconSizeContext = createContext<IconSizeContextType>(defaultContext);
 
-interface IconSizeProviderProps {
+interface IconPresentationProviderProps {
   size: IconSizeType;
   children: ReactNode;
   IconContainer?: ComponentType<any>;
@@ -61,12 +61,12 @@ interface IconSizeProviderProps {
   };
 }
 
-export const IconSizeProvider = ({
+export const IconPresentationProvider = ({
   size,
   children,
   IconContainer = Button,
   containerProps = {},
-}: IconSizeProviderProps) => {
+}: IconPresentationProviderProps) => {
   const className = getSizeClassName(size);
   const mergedProps = {
     variant: 'ghost',
@@ -85,4 +85,4 @@ export const IconSizeProvider = ({
   return <IconSizeContext.Provider value={contextValue}>{children}</IconSizeContext.Provider>;
 };
 
-export const useIconSize = () => useContext(IconSizeContext);
+export const useIconPresentation = () => useContext(IconSizeContext);

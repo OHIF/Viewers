@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn, Icons, ToolButton, useIconSize } from '@ohif/ui-next';
+import { cn, Icons, ToolButton, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
@@ -24,7 +24,7 @@ function ViewportOrientationMenu({
 }>) {
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
-  const { IconContainer, className: iconClassName, containerProps } = useIconSize();
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, toolbarService } = servicesManager.services;
 

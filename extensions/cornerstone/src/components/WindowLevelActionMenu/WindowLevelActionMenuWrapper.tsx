@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
   AllInOneMenu,
   useViewportGrid,
-  useIconSize,
+  useIconPresentation,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
@@ -41,7 +41,7 @@ export function WindowLevelActionMenuWrapper(
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
-  const { IconContainer, className: iconClassName, containerProps } = useIconSize();
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');

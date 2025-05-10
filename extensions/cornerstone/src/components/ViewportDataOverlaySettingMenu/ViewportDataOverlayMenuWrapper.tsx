@@ -1,6 +1,13 @@
 import React, { ReactNode } from 'react';
 import { useSystem } from '@ohif/core';
-import { Button, Icons, Popover, PopoverContent, PopoverTrigger, useIconSize } from '@ohif/ui-next';
+import {
+  Button,
+  Icons,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  useIconPresentation,
+} from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
@@ -16,7 +23,7 @@ type DataOverlayMenuProps = {
 export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): ReactNode {
   const { viewportId, location, isOpen = false, onOpen, onClose, disabled, ...rest } = props;
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
-  const { IconContainer, className: iconClassName, containerProps } = useIconSize();
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
