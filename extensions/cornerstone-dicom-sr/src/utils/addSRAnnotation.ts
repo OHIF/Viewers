@@ -63,5 +63,4 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
    * was not triggering annotation_added events.
    */
   annotation.state.addAnnotation(SRAnnotation);
-  console.debug('Adding SR annotation:', SRAnnotation);
 }

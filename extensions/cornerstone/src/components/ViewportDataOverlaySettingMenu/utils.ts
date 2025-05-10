@@ -42,6 +42,14 @@ export function getModalityOverlayColormap(customizationService, modality) {
 export function getEnhancedDisplaySets({ viewportId, services }) {
   const { displaySetService, viewportGridService } = services;
   const displaySetsUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+  if (!displaySetsUIDs?.length) {
+    return {
+      viewportDisplaySets: [],
+      enhancedDisplaySets: [],
+    };
+  }
+
   const allDisplaySets = displaySetService.getActiveDisplaySets();
 
   const otherDisplaySets = allDisplaySets.filter(
@@ -52,7 +60,7 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
     displaySetService.getDisplaySetByUID(displaySetUID)
   );
 
-  const backgroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds);
+  const backgroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds || []);
   const backgroundDisplaySet = viewportDisplaySets[0];
 
   const enhancedDisplaySets = otherDisplaySets.map(displaySet => {

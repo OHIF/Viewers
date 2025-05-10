@@ -26,7 +26,6 @@ import {
   ModalProvider,
   ViewportDialogProvider,
   UserAuthenticationProvider,
-  ViewportActionCornersProvider,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -105,7 +104,6 @@ function App({
     userAuthenticationService,
     uiNotificationService,
     customizationService,
-    viewportActionCornersService,
   } = servicesManager.services;
 
   const providers = [
@@ -121,7 +119,6 @@ function App({
     [TooltipProvider],
     [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
     [ModalProvider, { service: uiModalService, modal: ModalNext }],
-    [ViewportActionCornersProvider, { service: viewportActionCornersService }],
     [ShepherdJourneyProvider],
   ];
 

@@ -48,8 +48,8 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register([...toolbarButtons, ...moreTools]);
+      toolbarService.updateSection('primary', [
         'measurementSection',
         'Zoom',
         'Pan',
@@ -61,7 +61,7 @@ function modeFactory({ modeConfiguration }) {
         'moreToolsSection',
       ]);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection('measurementSection', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -73,7 +73,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.updateSection('moreToolsSection', [
         'Reset',
         'rotate-right',
         'flipHorizontal',

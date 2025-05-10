@@ -12,7 +12,6 @@ const toolbarButtons = [
     id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      groupId: 'MeasurementTools',
       buttonSection: 'measurementSection',
     },
   },
@@ -20,7 +19,6 @@ const toolbarButtons = [
     id: 'BrushTools',
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
-      groupId: 'BrushTools',
       buttonSection: 'brushToolsSection',
     },
   },
@@ -28,7 +26,6 @@ const toolbarButtons = [
     id: 'SegmentationTools',
     uiType: 'ohif.toolBoxButton',
     props: {
-      groupId: 'SegmentationTools',
       buttonSection: 'segmentationToolboxToolsSection',
     },
   },

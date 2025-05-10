@@ -9,7 +9,7 @@ export default function PanelRoiThresholdSegmentation() {
   const { commandsManager, servicesManager } = useSystem();
   const { segmentationService } = servicesManager.services;
   const { segmentationsWithRepresentations: segmentationsInfo } =
-    useActiveViewportSegmentationRepresentations({ servicesManager });
+    useActiveViewportSegmentationRepresentations();
 
   const segmentationIds = segmentationsInfo?.map(info => info.segmentation.segmentationId) || [];
   const segmentations = segmentationsInfo?.map(info => info.segmentation) || [];

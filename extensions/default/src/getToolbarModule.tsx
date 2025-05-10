@@ -3,9 +3,6 @@ import { ToolButton, utils } from '@ohif/ui-next';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
 // legacy
-import ToolbarDividerLegacy from './Toolbar/ToolbarDivider';
-import ToolbarSplitButtonWithServicesLegacy from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWithServices';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 // new

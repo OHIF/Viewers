@@ -23,7 +23,7 @@ import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
-import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
+import windowLevelMenu from '../../../assets/img/windowLevelMenu.png';
 import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
 import captureViewportModal from '../../../assets/img/captureViewportModal.png';
 import aboutModal from '../../../assets/img/aboutModal.png';
@@ -202,17 +202,17 @@ window.config = {
     `,
   },
   {
-    id: 'viewportActionMenu.windowLevelActionMenu',
+    id: 'viewportActionMenu.windowLevelMenu',
     description:
       'Configures the display and location of the window level action menu in the viewport.',
-    image: windowLevelActionMenu,
+    image: windowLevelMenu,
     default: null,
     configuration: `
       window.config = {
         // rest of window config
         customizationService: [
           {
-            'viewportActionMenu.windowLevelActionMenu': {
+            'viewportActionMenu.windowLevelMenu': {
               $merge: {
                location: 0, // Set the location of the menu in the viewport.
                             // 0: topLeft
@@ -937,17 +937,17 @@ window.config = {
         `,
   },
   {
-    id: 'viewportActionMenu.windowLevelActionMenu',
+    id: 'viewportActionMenu.windowLevelMenu',
     description:
       'Configures the display and location of the window level action menu in the viewport.',
-    image: windowLevelActionMenu,
+    image: windowLevelMenu,
     default: null,
     configuration: `
       window.config = {
         // rest of window config
         customizationService: [
           {
-            'viewportActionMenu.windowLevelActionMenu': {
+            'viewportActionMenu.windowLevelMenu': {
               $merge: {
                location: 0, // Set the location of the menu in the viewport.
                             // 0: topLeft

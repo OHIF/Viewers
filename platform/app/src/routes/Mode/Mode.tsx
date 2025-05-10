@@ -83,10 +83,10 @@ export default function ModeRoute({
     extensionManager.setActiveDataSource(dataSourceName);
   }
 
-  const dataSource = extensionManager.getActiveDataSource()[0];
+  const dataSource = extensionManager.getActiveDataSource()?.[0] ?? null;
 
   // Only handling one route per mode for now
-  const route = mode.routes[0];
+  const route = mode.routes?.[0] ?? null;
 
   useEffect(() => {
     const loadExtensions = async () => {

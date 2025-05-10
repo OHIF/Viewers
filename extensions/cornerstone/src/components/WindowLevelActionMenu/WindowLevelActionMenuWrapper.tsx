@@ -2,57 +2,62 @@ import React, { ReactNode } from 'react';
 import { useSystem } from '@ohif/core';
 import {
   Button,
-  cn,
   Icons,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  useViewportGrid,
-  useViewportActionCorners,
   AllInOneMenu,
+  useViewportGrid,
+  useIconPresentation,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
-import { MENU_IDS } from '../menus/menu-ids';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
-export function WindowLevelActionMenuWrapper({
-  viewportId,
-  element,
-  location,
-  displaySets,
-}: withAppTypes<{
-  viewportId: string;
-  element: HTMLElement;
-  location: string;
-  displaySets: Array<AppTypes.DisplaySet>;
-}>): ReactNode {
-  const [viewportGrid] = useViewportGrid();
-  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
-  const isActiveViewport = viewportId === viewportGrid.activeViewportId;
+export function WindowLevelActionMenuWrapper(
+  props: withAppTypes<{
+    viewportId: string;
+    element?: HTMLElement;
+    location?: string;
+    isOpen?: boolean;
+    onOpen?: () => void;
+    onClose?: () => void;
+    displaySets?: Array<AppTypes.DisplaySet>;
+    disabled?: boolean;
+  }>
+): ReactNode {
+  const {
+    viewportId,
+    element,
+    location,
+    isOpen = false,
+    onOpen,
+    onClose,
+    disabled,
+    ...rest
+  } = props;
+  const [gridState] = useViewportGrid();
+  const viewportIdToUse = viewportId || gridState.activeViewportId;
+
+  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
+
   const { volumeRenderingPresets, volumeRenderingQualityRange } =
     customizationService.getCustomization('cornerstone.3dVolumeRendering');
 
-  const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(
-      item => item.id === MENU_IDS.WINDOW_LEVEL_MENU
-    )?.isOpen ?? false;
-
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.WINDOW_LEVEL_MENU);
+      onOpen?.();
     } else {
-      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.WINDOW_LEVEL_MENU);
+      onClose?.();
     }
   };
 
-  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(
-    location,
-    viewportActionCornersAPI
-  );
+  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(location);
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
@@ -66,25 +71,38 @@ export function WindowLevelActionMenuWrapper({
     return null;
   }
 
+  const Icon = <Icons.ViewportWindowLevel className={iconClassName} />;
+
   return (
     <Popover
-      open={isMenuOpen}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible',
-            'text-highlight'
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              disabled={disabled}
+              {...rest}
+              {...containerProps}
+              icon="ViewportWindowLevel"
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+              onClick={() => {}}
+            >
+              {Icon}
+            </Button>
           )}
-        >
-          <Icons.ByName name="viewport-window-level" />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"
@@ -94,7 +112,7 @@ export function WindowLevelActionMenuWrapper({
         sideOffset={5}
       >
         <WindowLevelActionMenu
-          viewportId={viewportId}
+          viewportId={viewportIdToUse}
           element={element}
           presets={displaySetPresets}
           horizontalDirection={horizontalDirection}
@@ -109,15 +127,12 @@ export function WindowLevelActionMenuWrapper({
   );
 }
 
-const getMenuDirections = (location, viewportActionCornersAPI) => {
-  let align = 'center';
-  let side = 'bottom';
+const getMenuDirections = location => {
+  const { servicesManager } = useSystem();
+  const { toolbarService } = servicesManager.services;
 
-  if (location !== undefined) {
-    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
-  }
+  // Get alignment and side from the toolbar service
+  const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
   let horizontalDirection;
   let verticalDirection;

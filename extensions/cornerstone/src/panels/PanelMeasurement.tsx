@@ -12,7 +12,7 @@ import StudyMeasurements from '../components/StudyMeasurements';
  *
  * Creates a default study measurements panel with default children:
  * ```
- * <PanelMEasurement>
+ * <PanelMeasurement>
  *   <StudyMeasurements />
  * </PanelMeasurement>
  * ```

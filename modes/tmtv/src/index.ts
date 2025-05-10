@@ -88,28 +88,28 @@ function modeFactory({ modeConfiguration }) {
       );
 
       unsubscriptions.push(unsubscribe);
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Crosshairs',
         'Pan',
       ]);
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection('measurementSection', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
         'EllipticalROI',
       ]);
 
-      toolbarService.createButtonSection('ROIThresholdToolbox', ['SegmentationTools']);
-      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+      toolbarService.updateSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.updateSection('segmentationToolboxToolsSection', [
         'RectangleROIStartEndThreshold',
         'BrushTools',
       ]);
 
-      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
+      toolbarService.updateSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
 
       customizationService.setCustomizations({
         'panelSegmentation.tableMode': {

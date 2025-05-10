@@ -1,54 +1,58 @@
 import React from 'react';
-import {
-  useViewportActionCorners,
-  ViewportActionCorners,
-  ViewportActionCornersLocations,
-} from '@ohif/ui-next';
+import { ViewportActionCorners, IconPresentationProvider, Button, ToolButton } from '@ohif/ui-next';
+import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
+import { useViewportHover } from '../hooks';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
-  const [state] = useViewportActionCorners();
+  // Use the viewport hover hook to track if viewport is hovered or active
+  const { isHovered, isActive } = useViewportHover(viewportId);
 
-  if (!state.viewports[viewportId]) {
+  const shouldShowCorners = isHovered || isActive;
+
+  if (!shouldShowCorners) {
     return null;
   }
 
-  const components = state.viewports[viewportId];
-
-  const renderCorner = (location: ViewportActionCornersLocations, CornerComponent) => {
-    const cornerComponents = components[location];
-    if (!cornerComponents?.length) {
-      return null;
-    }
-
-    return (
-      <CornerComponent>
-        {cornerComponents
-          .filter(componentInfo => componentInfo.isVisible !== false)
-          .map(componentInfo => (
-            <div
-              key={componentInfo.id}
-              className={
-                componentInfo.isLocked === true ? 'pointer-events-none opacity-50' : undefined
-              }
-            >
-              {componentInfo.component}
-            </div>
-          ))}
-      </CornerComponent>
-    );
-  };
-
   return (
-    <ViewportActionCorners.Container>
-      {renderCorner(ViewportActionCornersLocations.topLeft, ViewportActionCorners.TopLeft)}
-      {renderCorner(ViewportActionCornersLocations.topRight, ViewportActionCorners.TopRight)}
-      {renderCorner(ViewportActionCornersLocations.bottomLeft, ViewportActionCorners.BottomLeft)}
-      {renderCorner(ViewportActionCornersLocations.bottomRight, ViewportActionCorners.BottomRight)}
-    </ViewportActionCorners.Container>
+    <IconPresentationProvider
+      size="medium"
+      IconContainer={ToolButton}
+      containerProps={{
+        size: 'tiny',
+        className: 'font-normal text-primary hover:bg-primary/25',
+      }}
+    >
+      <ViewportActionCorners.Container>
+        <ViewportActionCorners.TopLeft>
+          <Toolbar
+            buttonSection="viewportActionMenu.topLeft"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.TopLeft>
+        <ViewportActionCorners.TopRight>
+          <Toolbar
+            buttonSection="viewportActionMenu.topRight"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.TopRight>
+        <ViewportActionCorners.BottomLeft>
+          <Toolbar
+            buttonSection="viewportActionMenu.bottomLeft"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.BottomLeft>
+        <ViewportActionCorners.BottomRight>
+          <Toolbar
+            buttonSection="viewportActionMenu.bottomRight"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.BottomRight>
+      </ViewportActionCorners.Container>
+    </IconPresentationProvider>
   );
 }
 

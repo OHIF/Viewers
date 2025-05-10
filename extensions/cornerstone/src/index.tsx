@@ -34,7 +34,6 @@ import PlanarFreehandROI from './utils/measurementServiceMappings/PlanarFreehand
 import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
-import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
@@ -56,6 +55,7 @@ import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
+import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -158,7 +158,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     servicesManager.registerService(SyncGroupService.REGISTRATION);
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
-    servicesManager.registerService(ViewportActionCornersService.REGISTRATION);
     servicesManager.registerService(ColorbarService.REGISTRATION);
 
     const { syncGroupService } = servicesManager.services;
@@ -262,6 +261,8 @@ export {
   StudySummaryFromMetadata,
   CornerstoneViewportDownloadForm,
   utils,
+  OHIFCornerstoneViewport,
+  useMeasurementTracking,
 };
 
 // Export constants

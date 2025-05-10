@@ -21,6 +21,9 @@ import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewport
 
 const STACK = 'stack';
 
+// Cache for viewport dimensions, persists across component remounts
+const viewportDimensions = new Map<string, { width: number; height: number }>();
+
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
 const OHIFCornerstoneViewport = React.memo(
@@ -88,7 +91,6 @@ const OHIFCornerstoneViewport = React.memo(
       cornerstoneViewportService,
       segmentationService,
       cornerstoneCacheService,
-      viewportActionCornersService,
       customizationService,
       measurementService,
     } = servicesManager.services;
@@ -101,12 +103,28 @@ const OHIFCornerstoneViewport = React.memo(
     }, [elementRef]);
 
     // useCallback for onResize
-    const onResize = useCallback(() => {
-      if (elementRef.current) {
-        cornerstoneViewportService.resize();
-        setImageScrollBarHeight();
-      }
-    }, [elementRef, cornerstoneViewportService, setImageScrollBarHeight]);
+    const onResize = useCallback(
+      (entries: ResizeObserverEntry[]) => {
+        if (elementRef.current && entries?.length) {
+          const entry = entries[0];
+          const { width, height } = entry.contentRect;
+
+          const prevDimensions = viewportDimensions.get(viewportId) || { width: 0, height: 0 };
+
+          // Check if dimensions actually changed and then only resize if they have changed
+          const hasDimensionsChanged =
+            prevDimensions.width !== width || prevDimensions.height !== height;
+
+          if (width > 0 && height > 0 && hasDimensionsChanged) {
+            viewportDimensions.set(viewportId, { width, height });
+            // Perform resize operations
+            cornerstoneViewportService.resize();
+            setImageScrollBarHeight();
+          }
+        }
+      },
+      [viewportId, elementRef, cornerstoneViewportService, setImageScrollBarHeight]
+    );
 
     useEffect(() => {
       const element = elementRef.current;
@@ -133,16 +151,8 @@ const OHIFCornerstoneViewport = React.memo(
         syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
 
         segmentationService.clearSegmentationRepresentations(viewportId);
-
-        viewportActionCornersService.clear(viewportId);
       },
-      [
-        viewportId,
-        segmentationService,
-        syncGroupService,
-        toolGroupService,
-        viewportActionCornersService,
-      ]
+      [viewportId, segmentationService, syncGroupService, toolGroupService]
     );
 
     const elementEnabledHandler = useCallback(
@@ -328,6 +338,7 @@ const OHIFCornerstoneViewport = React.memo(
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
             onMouseDown={e => e.preventDefault()}
+            data-viewportId={viewportId}
             ref={elementRef}
           ></div>
           <CornerstoneOverlays

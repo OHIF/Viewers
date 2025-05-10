@@ -1,27 +1,29 @@
 import React, { ReactNode } from 'react';
-import { useViewportGrid } from '@ohif/ui-next';
-import { cn } from '@ohif/ui-next';
 import ViewportOrientationMenu from './ViewportOrientationMenu';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
-export function ViewportOrientationMenuWrapper({
-  viewportId,
-  location,
-}: withAppTypes<{
-  viewportId: string;
-  element: HTMLElement;
-  location: string;
-}>): ReactNode {
-  const [viewportGrid] = useViewportGrid();
-  const isActiveViewport = viewportId === viewportGrid.activeViewportId;
+export function ViewportOrientationMenuWrapper(
+  props: withAppTypes<{
+    viewportId: string;
+    location: string;
+    isOpen?: boolean;
+    onOpen?: () => void;
+    onClose?: () => void;
+    iconSize?: number;
+    disabled?: boolean;
+  }>
+): ReactNode {
+  const { viewportId } = props;
+  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+
+  if (!viewportDisplaySets.length) {
+    return null;
+  }
 
   return (
-    <div
-      className={cn(
-        'flex justify-end',
-        isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
-      )}
-    >
-      <ViewportOrientationMenu location={location} />
-    </div>
+    <ViewportOrientationMenu
+      {...props}
+      displaySets={viewportDisplaySets}
+    />
   );
 }

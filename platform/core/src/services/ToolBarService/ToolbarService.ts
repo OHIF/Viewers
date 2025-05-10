@@ -2,11 +2,46 @@ import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { RunCommand } from '../../types/Command';
-import { Button, ButtonProps, EvaluateFunction, EvaluatePublic, NestedButtonProps } from './types';
+import { Button, ButtonProps, EvaluateFunction, EvaluatePublic } from './types';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
   TOOL_BAR_STATE_MODIFIED: 'event::toolBarService:toolBarStateModified',
+};
+
+/**
+ * Predefined toolbar sections used throughout the application
+ */
+export const TOOLBAR_SECTIONS = {
+  /**
+   * Main toolbar
+   */
+  primary: 'primary',
+
+  /**
+   * Secondary toolbar
+   */
+  secondary: 'secondary',
+
+  /**
+   * Viewport action menu sections
+   */
+  viewportActionMenu: {
+    topLeft: 'viewportActionMenu.topLeft',
+    topRight: 'viewportActionMenu.topRight',
+    bottomLeft: 'viewportActionMenu.bottomLeft',
+    bottomRight: 'viewportActionMenu.bottomRight',
+  },
+
+  /**
+   * Measurement tools section
+   */
+  measurementSection: 'measurementSection',
+
+  /**
+   * More tools section
+   */
+  moreToolsSection: 'moreToolsSection',
 };
 
 export default class ToolbarService extends PubSubService {
@@ -17,6 +52,13 @@ export default class ToolbarService extends PubSubService {
       return new ToolbarService(commandsManager, extensionManager, servicesManager);
     },
   };
+
+  /**
+   * Access to predefined toolbar sections for autocomplete support
+   */
+  public get sections() {
+    return TOOLBAR_SECTIONS;
+  }
 
   public static createButton(options: {
     id: string;
@@ -130,7 +172,7 @@ export default class ToolbarService extends PubSubService {
    * @param buttons - The buttons to be added.
    * @param replace - Flag indicating if any existing button with the same id as one being added should be replaced
    */
-  public addButtons(buttons: Button[], replace: boolean = false): void {
+  public register(buttons: Button[], replace: boolean = false): void {
     buttons.forEach(button => {
       if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
@@ -239,6 +281,7 @@ export default class ToolbarService extends PubSubService {
         const { disabled, disabledText, className, isActive } = evaluationResults.get(button.id);
         return { ...props, disabled, disabledText, className, isActive };
       } else {
+        const evaluateProps = props.evaluateProps;
         const evaluated =
           typeof props.evaluate === 'function'
             ? props.evaluate({ ...refreshProps, button })
@@ -247,6 +290,7 @@ export default class ToolbarService extends PubSubService {
           ...props,
           ...evaluated,
           disabled: evaluated?.disabled || false,
+          visible: evaluateProps?.hideWhenDisabled && evaluated?.disabled ? false : true,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
         };
@@ -373,7 +417,7 @@ export default class ToolbarService extends PubSubService {
    * @param {string} key - The key of the button section.
    * @param {Array} buttons - The buttons to be added to the section.
    */
-  createButtonSection(key, buttons) {
+  updateSection(key, buttons) {
     if (this.state.buttonSections[key]) {
       this.state.buttonSections[key].push(
         ...buttons.filter(
@@ -443,7 +487,7 @@ export default class ToolbarService extends PubSubService {
     }
 
     const { id, uiType } = btn;
-    const { groupId } = btn.props as NestedButtonProps;
+    const { buttonSection } = btn.props;
 
     const buttonTypes = this._getButtonUITypes();
 
@@ -457,7 +501,7 @@ export default class ToolbarService extends PubSubService {
       return;
     }
 
-    !groupId ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
+    !buttonSection ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
     const { id: buttonId, props: componentProps } = btn;
 
@@ -587,6 +631,7 @@ export default class ToolbarService extends PubSubService {
         return evaluateFunction;
       });
 
+      const evaluateProps = props.evaluate;
       props.evaluate = args => {
         const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
 
@@ -606,6 +651,8 @@ export default class ToolbarService extends PubSubService {
 
         return mergedResult;
       };
+
+      props.evaluateProps = evaluateProps;
 
       return;
     }
@@ -627,7 +674,9 @@ export default class ToolbarService extends PubSubService {
       const { name, ...options } = evaluate;
       const evaluateFunction = this._evaluateFunction[name];
       if (evaluateFunction) {
+        const evaluateProps = props.evaluate;
         props.evaluate = args => evaluateFunction({ ...args, ...options });
+        props.evaluateProps = evaluateProps;
         return;
       }
 
@@ -644,5 +693,31 @@ export default class ToolbarService extends PubSubService {
   clearButtonSection(buttonSection: string) {
     this.state.buttonSections[buttonSection] = [];
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
+  }
+
+  /**
+   * Returns the alignment and side for a specific viewport corner location.
+   * Used for menu positioning based on the corner location.
+   *
+   * @param location - The viewport corner location
+   * @returns An object with align and side properties
+   */
+  public getAlignAndSide(location: number): {
+    align: 'start' | 'end' | 'center';
+    side: 'top' | 'bottom' | 'left' | 'right';
+  } {
+    // Convert the numeric location into alignment and side values
+    switch (location) {
+      case 0: // topLeft
+        return { align: 'start', side: 'bottom' };
+      case 1: // topRight
+        return { align: 'end', side: 'bottom' };
+      case 2: // bottomLeft
+        return { align: 'start', side: 'top' };
+      case 3: // bottomRight
+        return { align: 'end', side: 'top' };
+      default:
+        return { align: 'start', side: 'bottom' };
+    }
   }
 }
