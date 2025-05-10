@@ -1,9 +1,9 @@
 import { Enums } from '@cornerstonejs/tools';
-import { Icons, utils } from '@ohif/ui-next';
+import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
-import StatusComponent from './components/StatusComponent/StatusComponent';
+import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 
 const getDisabledState = (disabledText?: string) => ({
@@ -22,13 +22,13 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
   } = servicesManager.services;
 
   return [
-    // StatusComponent
+    // ModalityLoadBadge
     {
-      name: 'ohif.statusComponent',
-      defaultComponent: StatusComponent,
+      name: 'ohif.modalityLoadBadge',
+      defaultComponent: ModalityLoadBadge,
     },
     {
-      name: 'evaluate.statusComponent',
+      name: 'evaluate.modalityLoadBadge',
       evaluate: ({ viewportId }) => {
         // We can't use useViewportDisplaySets hook here since we're in a non-React context,
         // but we'll follow the same pattern by getting only the display sets for this viewport

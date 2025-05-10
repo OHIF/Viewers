@@ -7,6 +7,6 @@ export * from './SeriesMeasurements';
 export * from './StudyMeasurementsActions';
 export * from './MeasurementsOrAdditionalFindings';
 export * from './WindowLevelActionMenu';
-export * from './StatusComponent';
+export * from './ModalityLoadBadge';
 
 export { DicomUpload };

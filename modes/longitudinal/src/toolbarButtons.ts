@@ -37,14 +37,14 @@ const toolbarButtons: Button[] = [
   },
   // tool defs
   {
-    id: 'statusComponent',
-    uiType: 'ohif.statusComponent',
+    id: 'modalityLoadBadge',
+    uiType: 'ohif.modalityLoadBadge',
     props: {
       icon: 'Status',
       label: 'Status',
       tooltip: 'Status',
       evaluate: {
-        name: 'evaluate.statusComponent',
+        name: 'evaluate.modalityLoadBadge',
         hideWhenDisabled: true,
       },
     },

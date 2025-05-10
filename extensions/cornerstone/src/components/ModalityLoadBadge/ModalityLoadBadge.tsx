@@ -9,12 +9,12 @@ import { BaseVolumeViewport } from '@cornerstonejs/core';
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 /**
- * StatusComponent displays the status and actionable buttons for viewports containing
+ * ModalityLoadBadge displays the status and actionable buttons for viewports containing
  * special displaySets (SR, SEG, RTSTRUCT) or when tracking measurements
  */
-function StatusComponent({ viewportId }: { viewportId: string }) {
+function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
   const { commandsManager, extensionManager, servicesManager } = useSystem();
-  const { cornerstoneViewportService, segmentationService } = servicesManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const { t } = useTranslation('Common');
   const loadStr = t('LOAD');
 
@@ -183,7 +183,7 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
   const StatusArea = () => {
     return (
       <>
-        {!isTracked && !statusInfo.isHydrated && (
+        {!statusInfo.isHydrated && (
           <div className="flex h-6 cursor-default text-sm leading-6 text-white">
             <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
               <StatusIcon />
@@ -201,7 +201,6 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
             </ViewportActionButton>
           </div>
         )}
-        {isTracked && <Icons.StatusTracking className="h-4 w-4" />}
       </>
     );
   };
@@ -225,4 +224,4 @@ function StatusComponent({ viewportId }: { viewportId: string }) {
   );
 }
 
-export default StatusComponent;
+export default ModalityLoadBadge;

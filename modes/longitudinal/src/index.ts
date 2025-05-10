@@ -110,7 +110,7 @@ function modeFactory({ modeConfiguration }) {
         'windowLevelMenu',
       ]);
       toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
-        'statusComponent',
+        'modalityLoadBadge',
         'navigationComponent',
       ]);
 
