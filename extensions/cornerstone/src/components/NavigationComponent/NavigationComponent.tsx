@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
-import { utils } from '../..';
+import { usePositionPresentationStore, utils } from '../..';
 import { useViewportSegmentations } from '../../hooks';
 import { useMeasurementTracking } from '../../hooks/useMeasurementTracking';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
@@ -12,10 +12,17 @@ import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
  */
 function NavigationComponent({ viewportId }: { viewportId: string }) {
   const { servicesManager } = useSystem();
-  const { segmentationService, measurementService } = servicesManager.services;
+  const { segmentationService, measurementService, cornerstoneViewportService } =
+    servicesManager.services;
 
   // Get tracking information
-  const { isTracked, hasMeasurements } = useMeasurementTracking({ viewportId });
+  const { isTracked } = useMeasurementTracking({ viewportId });
+  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+  const [measurementSelected, setMeasurementSelected] = useState(0);
+  const viewportOptions = cornerstoneViewportService.getViewportOptions(viewportId);
+  const { setPositionPresentation } = usePositionPresentationStore();
+  const isSRDisplaySet = viewportDisplaySets.some(displaySet => displaySet?.Modality === 'SR');
+  const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   // Get segmentation information
   const { segmentationsWithRepresentations } = useViewportSegmentations({
@@ -25,22 +32,40 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
   const hasSegmentations = segmentationsWithRepresentations.length > 0;
 
   // prefer segment navigation if available
-  const navigationMode = hasSegmentations ? 'segment' : hasMeasurements ? 'measurement' : null;
+  const navigationMode = hasSegmentations
+    ? 'segment'
+    : isSRDisplaySet
+      ? 'measurement'
+      : isTracked
+        ? 'measurement'
+        : null;
 
   const handleMeasurementNavigation = useCallback(
     (direction: number) => {
-      //   let newMeasurementSelected = measurementSelected;
-      //   newMeasurementSelected += direction;
-      //   if (newMeasurementSelected >= measurementCount) {
-      //     newMeasurementSelected = 0;
-      //   } else if (newMeasurementSelected < 0) {
-      //     newMeasurementSelected = measurementCount - 1;
-      //   }
-      //   setTrackingIdentifiers(newMeasurementSelected);
-      //   updateViewport(newMeasurementSelected);
-      // },
+      const measurementDisplaySet = viewportDisplaySets.find(
+        displaySet => displaySet?.Modality === 'SR'
+      );
+
+      if (!measurementDisplaySet) {
+        return;
+      }
+
+      const measurementCount = measurementDisplaySet.measurements.length;
+      let newMeasurementSelected = measurementSelected;
+      newMeasurementSelected += direction;
+      if (newMeasurementSelected >= measurementCount) {
+        newMeasurementSelected = 0;
+      } else if (newMeasurementSelected < 0) {
+        newMeasurementSelected = measurementCount - 1;
+      }
+
+      setMeasurementSelected(newMeasurementSelected);
+      const measurement = measurementDisplaySet.measurements[newMeasurementSelected];
+      cornerstoneViewport.setViewReference({
+        referencedImageId: measurement.imageId,
+      });
     },
-    [viewportId, segmentationService, measurementService, isTracked]
+    [viewportId, cornerstoneViewport, measurementSelected, setMeasurementSelected]
   );
 
   const handleSegmentNavigation = useCallback(
@@ -71,9 +96,6 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
   );
 
   // Only render if we need navigation
-  if (!navigationMode) {
-    return null;
-  }
 
   return (
     <ViewportActionArrows

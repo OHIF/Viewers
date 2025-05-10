@@ -124,10 +124,14 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
             trackedMeasurementsService.isSeriesTracked(displaySet.SeriesInstanceUID)
         );
 
+        const isSRDisplaySet = viewportDisplaySets.some(
+          displaySet => displaySet?.Modality === 'SR'
+        );
+
         // Enable navigation if:
         // - There's a segmentation to navigate (SEG/RTSTRUCT)
         // - OR there are tracked measurements in the viewport (SR/etc.)
-        const needsNavigation = hasSegmentation || hasTrackedInViewport;
+        const needsNavigation = hasSegmentation || hasTrackedInViewport || isSRDisplaySet;
 
         return {
           disabled: !needsNavigation,

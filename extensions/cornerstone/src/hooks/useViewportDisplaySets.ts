@@ -53,6 +53,10 @@ export type ViewportDisplaySets = {
    */
   allDisplaySets: AppTypes.DisplaySet[];
   /**
+   * The viewport display sets for the viewport
+   */
+  viewportDisplaySets: AppTypes.DisplaySet[];
+  /**
    * The primary display set for the viewport (base image)
    */
   backgroundDisplaySet?: AppTypes.DisplaySet;
@@ -223,7 +227,7 @@ export function useViewportDisplaySets(
     foregroundDisplaySetUIDs,
   ]);
 
-  const result: ViewportDisplaySets = { allDisplaySets };
+  const result: ViewportDisplaySets = { allDisplaySets, viewportDisplaySets };
 
   if (includeBackground) {
     result.backgroundDisplaySet = backgroundDisplaySet;
