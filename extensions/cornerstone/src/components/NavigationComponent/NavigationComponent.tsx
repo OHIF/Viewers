@@ -2,6 +2,9 @@ import React, { useCallback } from 'react';
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
 import { utils } from '../..';
+import { useViewportSegmentations } from '../../hooks';
+import { useMeasurementTracking } from '../../hooks/useMeasurementTracking';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
 /**
  * NavigationComponent provides navigation controls for viewports containing
@@ -11,60 +14,61 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
   const { servicesManager } = useSystem();
   const { segmentationService, measurementService } = servicesManager.services;
 
-  // Handle navigation between segments/measurements
-  const handleNavigate = useCallback(
+  // Get tracking information
+  const { isTracked } = useMeasurementTracking({ viewportId });
+
+  // Get segmentation information
+  const { segmentationsWithRepresentations } = useViewportSegmentations({
+    viewportId,
+  });
+
+  const hasSegmentations = segmentationsWithRepresentations.length > 0;
+  const needsNavigation = hasSegmentations || isTracked;
+
+  const handleMeasurementNavigation = useCallback(
     (direction: number) => {
-      const { Modality } = specialDisplaySet;
+      const measurements = measurementService.getMeasurements();
+      const activeMeasurement = measurementService.getActiveMeasurement(viewportId);
 
-      if (Modality === 'SEG') {
-        // Handle SEG navigation
-        utils.handleSegmentChange({
-          direction,
-          segDisplaySet: specialDisplaySet,
-          viewportId,
-          selectedSegmentObjectIndex: 0, // The segmentation service will find the correct segment
-          segmentationService,
-        });
-      } else if (Modality === 'RTSTRUCT') {
-        // Handle RTSTRUCT navigation (same as SEG)
-        utils.handleSegmentChange({
-          direction,
-          segDisplaySet: specialDisplaySet,
-          viewportId,
-          selectedSegmentObjectIndex: 0,
-          segmentationService,
-        });
-      } else if (Modality === 'SR') {
-        // Handle SR navigation - we'll use the display set's onMeasurementChange if it exists
-        // otherwise try to use the measurement service
-        if (typeof specialDisplaySet.onMeasurementChange === 'function') {
-          specialDisplaySet.onMeasurementChange(direction);
-        } else {
-          // Try to navigate using measurement service as fallback
-          const measurements = measurementService.getMeasurements();
-          const activeMeasurement = measurementService.getActiveMeasurement(viewportId);
+      if (measurements.length && activeMeasurement) {
+        const activeIndex = measurements.findIndex(m => m.uid === activeMeasurement.uid);
+        let newIndex = activeIndex + direction;
 
-          if (measurements.length && activeMeasurement) {
-            const activeIndex = measurements.findIndex(m => m.uid === activeMeasurement.uid);
-            let newIndex = activeIndex + direction;
+        // Handle looping through the measurements
+        if (newIndex >= measurements.length) {
+          newIndex = 0;
+        } else if (newIndex < 0) {
+          newIndex = measurements.length - 1;
+        }
 
-            // Handle looping through the measurements
-            if (newIndex >= measurements.length) {
-              newIndex = 0;
-            } else if (newIndex < 0) {
-              newIndex = measurements.length - 1;
-            }
-
-            const newMeasurement = measurements[newIndex];
-            if (newMeasurement) {
-              measurementService.jumpToMeasurement(viewportId, newMeasurement.uid);
-            }
-          }
+        const newMeasurement = measurements[newIndex];
+        if (newMeasurement) {
+          measurementService.jumpToMeasurement(viewportId, newMeasurement.uid);
         }
       }
     },
-    [specialDisplaySet, viewportId, segmentationService, measurementService]
+    [viewportId, segmentationService, measurementService, isTracked]
   );
+
+  const handleSegmentNavigation = useCallback(
+    (direction: number) => {
+      // Try to navigate using measurement service as fallback
+    },
+    [viewportId, segmentationService, measurementService, isTracked]
+  );
+
+  // Handle navigation between segments/measurements
+  const handleNavigate = useCallback(
+    (direction: number) => {
+      // Try to navigate using measurement service as fallback
+    },
+    [viewportId, segmentationService, measurementService, isTracked]
+  );
+
+  // Only render if we need navigation
+  if (!needsNavigation) {
+    return null;
+  }
 
   return (
     <ViewportActionArrows

@@ -55,6 +55,7 @@ import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
+import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -261,6 +262,7 @@ export {
   CornerstoneViewportDownloadForm,
   utils,
   OHIFCornerstoneViewport,
+  useMeasurementTracking,
 };
 
 // Export constants

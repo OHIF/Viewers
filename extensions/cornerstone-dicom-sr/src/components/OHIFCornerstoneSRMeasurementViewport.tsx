@@ -3,7 +3,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
-import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
+import {
+  usePositionPresentationStore,
+  OHIFCornerstoneViewport,
+  useMeasurementTracking,
+} from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
@@ -22,6 +26,9 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
 
   const viewportId = viewportOptions.viewportId;
 
+  // Use the tracking hook instead of direct service interaction
+  const { isLocked } = useMeasurementTracking({ viewportId });
+
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
     throw new Error('SR viewport should only have a single display set');
@@ -39,41 +46,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
 
-  // Use the TrackedMeasurementsService to check for locked state
-  const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
-
-  // Track whether tracking is locked (any series being tracked)
-  const [isLocked, setIsLocked] = useState(false);
-
-  // Subscribe to tracking enabled/disabled events
-  useEffect(() => {
-    if (!trackedMeasurementsService) {
-      return;
-    }
-
-    // Initial state - check if tracking is enabled
-    setIsLocked(trackedMeasurementsService.isTrackingEnabled());
-
-    // Subscribe to tracking enabled/disabled events
-    const subscriptions = [
-      trackedMeasurementsService.subscribe(trackedMeasurementsService.EVENTS.TRACKING_ENABLED, () =>
-        setIsLocked(true)
-      ),
-      trackedMeasurementsService.subscribe(
-        trackedMeasurementsService.EVENTS.TRACKING_DISABLED,
-        () => setIsLocked(false)
-      ),
-    ];
-
-    return () => {
-      subscriptions.forEach(subscription => subscription.unsubscribe());
-    };
-  }, [trackedMeasurementsService]);
-  /**
-   * Store the tracking identifiers per viewport in order to be able to
-   * show the SR measurements on the referenced image on the correct viewport,
-   * when multiple viewports are used.
-   */
   const setTrackingIdentifiers = useCallback(
     measurementSelected => {
       const { measurements } = srDisplaySet;
@@ -178,22 +150,22 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
     );
   }, [activeImageDisplaySetData, viewportId, measurementSelected]);
 
-  const onMeasurementChange = useCallback(
-    direction => {
-      let newMeasurementSelected = measurementSelected;
+  // const onMeasurementChange = useCallback(
+  //   direction => {
+  //     let newMeasurementSelected = measurementSelected;
 
-      newMeasurementSelected += direction;
-      if (newMeasurementSelected >= measurementCount) {
-        newMeasurementSelected = 0;
-      } else if (newMeasurementSelected < 0) {
-        newMeasurementSelected = measurementCount - 1;
-      }
+  //     newMeasurementSelected += direction;
+  //     if (newMeasurementSelected >= measurementCount) {
+  //       newMeasurementSelected = 0;
+  //     } else if (newMeasurementSelected < 0) {
+  //       newMeasurementSelected = measurementCount - 1;
+  //     }
 
-      setTrackingIdentifiers(newMeasurementSelected);
-      updateViewport(newMeasurementSelected);
-    },
-    [measurementSelected, measurementCount, updateViewport, setTrackingIdentifiers]
-  );
+  //     setTrackingIdentifiers(newMeasurementSelected);
+  //     updateViewport(newMeasurementSelected);
+  //   },
+  //   [measurementSelected, measurementCount, updateViewport, setTrackingIdentifiers]
+  // );
 
   /**
    Cleanup the SR viewport when the viewport is destroyed

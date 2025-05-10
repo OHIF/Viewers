@@ -1,89 +1,40 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportActionButton } from '@ohif/ui-next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
-import { BaseVolumeViewport } from '@cornerstonejs/core';
+import { useMeasurementTracking } from '../../hooks/useMeasurementTracking';
 
 /**
  * ModalityLoadBadge displays the status and actionable buttons for viewports containing
  * special displaySets (SR, SEG, RTSTRUCT) or when tracking measurements
  */
 function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
-  const { commandsManager, servicesManager } = useSystem();
-  const { cornerstoneViewportService } = servicesManager.services;
-  const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('Common');
   const loadStr = t('LOAD');
 
+  const { isTracked, isLocked } = useMeasurementTracking({ viewportId });
+
   const { backgroundDisplaySet, overlayDisplaySets } = useViewportDisplaySets(viewportId);
-  const [isTracked, setIsTracked] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
+
+  const [specialDisplaySet, setSpecialDisplaySet] = useState(null);
 
   const allDisplaySets = useMemo(() => {
-    return [backgroundDisplaySet, ...overlayDisplaySets];
+    return [backgroundDisplaySet, ...overlayDisplaySets].filter(Boolean);
   }, [backgroundDisplaySet, overlayDisplaySets]);
 
-  // Subscribe to tracked series changes using specific events
   useEffect(() => {
-    if (!trackedMeasurementsService) {
-      return;
-    }
-
-    // Initial state check
-    setIsLocked(trackedMeasurementsService.isTrackingEnabled());
-
-    if (backgroundDisplaySet?.SeriesInstanceUID) {
-      setIsTracked(trackedMeasurementsService.isSeriesTracked(backgroundDisplaySet.SeriesInstanceUID));
-    }
-
-    // Subscribe to tracking enabled/disabled events for lock state
-    const subscriptions = [
-      // Global tracking enabled/disabled for lock state
-      trackedMeasurementsService.subscribe(
-        trackedMeasurementsService.EVENTS.TRACKING_ENABLED,
-        () => setIsLocked(true)
-      ),
-      trackedMeasurementsService.subscribe(
-        trackedMeasurementsService.EVENTS.TRACKING_DISABLED,
-        () => setIsLocked(false)
-      ),
-
-      // Series-specific events for this viewport's tracked state
-      trackedMeasurementsService.subscribe(
-        trackedMeasurementsService.EVENTS.TRACKED_SERIES_CHANGED,
-        ({ trackedSeries }) => {
-          if (backgroundDisplaySet?.SeriesInstanceUID) {
-            setIsTracked(trackedSeries.includes(backgroundDisplaySet.SeriesInstanceUID));
-          }
-        }
-      )
-    ];
-
-    return () => {
-      subscriptions.forEach(sub => sub.unsubscribe());
-    };
-  }, [trackedMeasurementsService, backgroundDisplaySet]);
-
-  const displaySet = useMemo(() => {
-    if (!allDisplaySets?.length) {
-      return null;
-    }
-    return allDisplaySets.find(
-      ds => ds.Modality === 'SEG' || ds.Modality === 'RTSTRUCT' || ds.Modality === 'SR'
+    const displaySet = allDisplaySets.find(
+      ds => ds?.Modality === 'SEG' || ds?.Modality === 'RTSTRUCT' || ds?.Modality === 'SR'
     );
+
+    setSpecialDisplaySet(displaySet || null);
   }, [allDisplaySets]);
 
   const statusInfo = useMemo(() => {
-    if (!displaySet) {
-      return {
-        type: null,
-      };
-    }
-
-    // If we have tracking active but no special display set, show tracking status
-    if (isTracked) {
+    if (isTracked && !specialDisplaySet) {
       return {
         type: 'SR',
         isHydrated: true,
@@ -93,28 +44,26 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
       };
     }
 
-    let type = null;
-    let isHydrated = false;
-    let tooltip = null;
-    let isRehydratable = false;
+    if (!specialDisplaySet) {
+      return {
+        type: null,
+      };
+    }
 
-    if (displaySet.Modality === 'SEG') {
-      type = 'SEG';
-      isHydrated = displaySet.isHydrated || false;
+    const type = specialDisplaySet.Modality;
+    const isHydrated = specialDisplaySet.isHydrated || false;
+    let tooltip = null;
+    const isRehydratable = specialDisplaySet.isRehydratable || false;
+
+    if (type === 'SEG') {
       tooltip = isHydrated
         ? 'This Segmentation is loaded in the segmentation panel'
         : 'Click LOAD to load segmentation.';
-    } else if (displaySet.Modality === 'RTSTRUCT') {
-      type = 'RTSTRUCT';
-      isHydrated = displaySet.isHydrated || false;
+    } else if (type === 'RTSTRUCT') {
       tooltip = isHydrated
         ? 'This RTSTRUCT is loaded in the segmentation panel'
         : 'Click LOAD to load RTSTRUCT.';
-    } else if (displaySet.Modality === 'SR') {
-      type = 'SR';
-      isHydrated = displaySet.isHydrated || false;
-      isRehydratable = displaySet.isRehydratable || false;
-
+    } else if (type === 'SR') {
       if (!isRehydratable) {
         tooltip = 'This structured report is not compatible with this application.';
       } else if (isRehydratable && isLocked) {
@@ -128,13 +77,13 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
     return {
       type,
       isHydrated,
-      displaySet,
+      displaySet: specialDisplaySet,
       isRehydratable,
       tooltip,
     };
-  }, [displaySet, loadStr, isLocked, isTracked]);
+  }, [specialDisplaySet, loadStr, isLocked, isTracked]);
 
-  // let the track move forward
+  // Nothing to show if there's no special display set type or tracking
   if (!statusInfo.type && !isTracked) {
     return null;
   }
@@ -171,28 +120,28 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
   };
 
   const StatusArea = () => {
-    return (
-      <>
-        {!statusInfo.isHydrated && (
-          <div className="flex h-6 cursor-default text-sm leading-6 text-white">
-            <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
-              <StatusIcon />
-              <span className="ml-1">{statusInfo.type}</span>
-            </div>
-            <ViewportActionButton
-              onInteraction={() => {
-                commandsManager.runCommand('hydrateSecondaryDisplaySet', {
-                  displaySet: statusInfo.displaySet,
-                  viewportId,
-                });
-              }}
-            >
-              {loadStr}
-            </ViewportActionButton>
+    if (!statusInfo.isHydrated) {
+      return (
+        <div className="flex h-6 cursor-default text-sm leading-6 text-white">
+          <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
+            <StatusIcon />
+            <span className="ml-1">{statusInfo.type}</span>
           </div>
-        )}
-      </>
-    );
+          <ViewportActionButton
+            onInteraction={() => {
+              commandsManager.runCommand('hydrateSecondaryDisplaySet', {
+                displaySet: statusInfo.displaySet,
+                viewportId,
+              });
+            }}
+          >
+            {loadStr}
+          </ViewportActionButton>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
