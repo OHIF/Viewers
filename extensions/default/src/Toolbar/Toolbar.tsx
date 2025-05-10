@@ -50,16 +50,6 @@ export function Toolbar({ buttonSection = 'primary', viewportId, iconSize = 24 }
             id={id}
             iconSize={iconSize}
             onInteraction={args => {
-              // If the component is a menu-type button, handle open/close behavior
-              if (enhancedProps.type === 'menu' || id.includes('Menu')) {
-                if (isItemOpen(id, viewportId)) {
-                  closeItem(id, viewportId);
-                } else {
-                  openItem(id, viewportId);
-                }
-              }
-
-              // Add viewportId to interaction if available
               onInteraction({
                 ...args,
                 itemId: id,
