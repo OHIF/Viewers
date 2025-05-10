@@ -15,7 +15,7 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
   const { segmentationService, measurementService } = servicesManager.services;
 
   // Get tracking information
-  const { isTracked } = useMeasurementTracking({ viewportId });
+  const { isTracked, hasMeasurements } = useMeasurementTracking({ viewportId });
 
   // Get segmentation information
   const { segmentationsWithRepresentations } = useViewportSegmentations({
@@ -23,50 +23,55 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
   });
 
   const hasSegmentations = segmentationsWithRepresentations.length > 0;
-  const needsNavigation = hasSegmentations || isTracked;
+
+  // prefer segment navigation if available
+  const navigationMode = hasSegmentations ? 'segment' : hasMeasurements ? 'measurement' : null;
 
   const handleMeasurementNavigation = useCallback(
     (direction: number) => {
-      const measurements = measurementService.getMeasurements();
-      const activeMeasurement = measurementService.getActiveMeasurement(viewportId);
-
-      if (measurements.length && activeMeasurement) {
-        const activeIndex = measurements.findIndex(m => m.uid === activeMeasurement.uid);
-        let newIndex = activeIndex + direction;
-
-        // Handle looping through the measurements
-        if (newIndex >= measurements.length) {
-          newIndex = 0;
-        } else if (newIndex < 0) {
-          newIndex = measurements.length - 1;
-        }
-
-        const newMeasurement = measurements[newIndex];
-        if (newMeasurement) {
-          measurementService.jumpToMeasurement(viewportId, newMeasurement.uid);
-        }
-      }
+      //   let newMeasurementSelected = measurementSelected;
+      //   newMeasurementSelected += direction;
+      //   if (newMeasurementSelected >= measurementCount) {
+      //     newMeasurementSelected = 0;
+      //   } else if (newMeasurementSelected < 0) {
+      //     newMeasurementSelected = measurementCount - 1;
+      //   }
+      //   setTrackingIdentifiers(newMeasurementSelected);
+      //   updateViewport(newMeasurementSelected);
+      // },
     },
     [viewportId, segmentationService, measurementService, isTracked]
   );
 
   const handleSegmentNavigation = useCallback(
     (direction: number) => {
-      // Try to navigate using measurement service as fallback
+      const segmentationId = segmentationsWithRepresentations[0].segmentation.segmentationId;
+
+      utils.handleSegmentChange({
+        direction,
+        segmentationId,
+        viewportId,
+        selectedSegmentObjectIndex: 0,
+        segmentationService,
+      });
     },
-    [viewportId, segmentationService, measurementService, isTracked]
+    [segmentationsWithRepresentations, viewportId, segmentationService]
   );
 
   // Handle navigation between segments/measurements
   const handleNavigate = useCallback(
     (direction: number) => {
-      // Try to navigate using measurement service as fallback
+      if (navigationMode === 'segment') {
+        handleSegmentNavigation(direction);
+      } else if (navigationMode === 'measurement') {
+        handleMeasurementNavigation(direction);
+      }
     },
-    [viewportId, segmentationService, measurementService, isTracked]
+    [navigationMode, handleSegmentNavigation, handleMeasurementNavigation]
   );
 
   // Only render if we need navigation
-  if (!needsNavigation) {
+  if (!navigationMode) {
     return null;
   }
 

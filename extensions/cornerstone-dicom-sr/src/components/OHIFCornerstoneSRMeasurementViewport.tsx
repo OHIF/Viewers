@@ -3,11 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
-import {
-  usePositionPresentationStore,
-  OHIFCornerstoneViewport,
-  useMeasurementTracking,
-} from '@ohif/extension-cornerstone';
+import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
@@ -26,9 +22,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
 
   const viewportId = viewportOptions.viewportId;
 
-  // Use the tracking hook instead of direct service interaction
-  const { isLocked } = useMeasurementTracking({ viewportId });
-
   // SR viewport will always have a single display set
   if (displaySets.length > 1) {
     throw new Error('SR viewport should only have a single display set');
@@ -40,7 +33,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
-  const [measurementCount, setMeasurementCount] = useState(1);
   const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(null);
   const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] = useState(null);
   const [element, setElement] = useState(null);
@@ -150,23 +142,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
     );
   }, [activeImageDisplaySetData, viewportId, measurementSelected]);
 
-  // const onMeasurementChange = useCallback(
-  //   direction => {
-  //     let newMeasurementSelected = measurementSelected;
-
-  //     newMeasurementSelected += direction;
-  //     if (newMeasurementSelected >= measurementCount) {
-  //       newMeasurementSelected = 0;
-  //     } else if (newMeasurementSelected < 0) {
-  //       newMeasurementSelected = measurementCount - 1;
-  //     }
-
-  //     setTrackingIdentifiers(newMeasurementSelected);
-  //     updateViewport(newMeasurementSelected);
-  //   },
-  //   [measurementSelected, measurementCount, updateViewport, setTrackingIdentifiers]
-  // );
-
   /**
    Cleanup the SR viewport when the viewport is destroyed
    */
@@ -201,8 +176,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
       if (!srDisplaySet.isLoaded) {
         await srDisplaySet.load();
       }
-      const numMeasurements = srDisplaySet.measurements.length;
-      setMeasurementCount(numMeasurements);
       updateViewport(measurementSelected);
     };
     loadSR();

@@ -62,19 +62,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     metadata: referencedDisplaySetMetadata,
   };
 
-  const onSegmentChange = useCallback(
-    direction => {
-      utils.handleSegmentChange({
-        direction,
-        segDisplaySet: rtDisplaySet,
-        viewportId,
-        selectedSegmentObjectIndex,
-        segmentationService,
-      });
-    },
-    [selectedSegmentObjectIndex]
-  );
-
   useEffect(() => {
     if (rtIsLoading) {
       return;

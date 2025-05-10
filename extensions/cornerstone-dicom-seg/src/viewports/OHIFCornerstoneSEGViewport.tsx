@@ -85,20 +85,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         }}
       />
     );
-  }, [viewportId, segDisplaySet, toolGroupId]);
-
-  // const onSegmentChange = useCallback(
-  //   direction => {
-  //     utils.handleSegmentChange({
-  //       direction,
-  //       segDisplaySet: segDisplaySet,
-  //       viewportId,
-  //       selectedSegmentObjectIndex,
-  //       segmentationService,
-  //     });
-  //   },
-  //   [selectedSegmentObjectIndex]
-  // );
+  }, [viewportId, segDisplaySet, toolGroupId, props, viewportOptions]);
 
   useEffect(() => {
     if (segIsLoading) {
