@@ -4,3 +4,4 @@ export * from './useSegmentations';
 export * from './useViewportSegmentations';
 export * from './useViewportHover';
 export * from './useViewportDisplaySets';
+export * from './useMeasurementTracking';
