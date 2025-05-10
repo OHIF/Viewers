@@ -14,16 +14,16 @@ export function ViewportOrientationMenuWrapper(
   }>
 ): ReactNode {
   const { viewportId } = props;
-  const { allDisplaySets } = useViewportDisplaySets(viewportId);
+  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
 
-  if (!allDisplaySets.length) {
+  if (!viewportDisplaySets.length) {
     return null;
   }
 
   return (
     <ViewportOrientationMenu
       {...props}
-      displaySets={allDisplaySets}
+      displaySets={viewportDisplaySets}
     />
   );
 }

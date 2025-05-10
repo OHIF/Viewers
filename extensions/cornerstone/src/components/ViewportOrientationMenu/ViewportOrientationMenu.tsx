@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons, useIconSize } from '@ohif/ui-next';
+import { cn, Icons, ToolButton, useIconSize } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
@@ -23,7 +23,7 @@ function ViewportOrientationMenu({
 }>) {
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
-  const iconClasses = useIconSize();
+  const { IconContainer, className: iconClassName } = useIconSize();
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, toolbarService } = servicesManager.services;
 
@@ -112,15 +112,28 @@ function ViewportOrientationMenu({
     >
       <PopoverTrigger
         asChild
-        className="flex items-center justify-center"
+        className={cn('flex items-center justify-center')}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={disabled}
-        >
-          <Icons.OrientationSwitch className={iconClasses} />
-        </Button>
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              variant="ghost"
+              disabled={disabled}
+              icon="OrientationSwitch"
+            >
+              <Icons.OrientationSwitch className={iconClassName} />
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+              onClick={() => {}}
+            >
+              <Icons.OrientationSwitch className={iconClassName} />
+            </Button>
+          )}
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="w-[100px] p-1"

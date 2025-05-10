@@ -51,7 +51,7 @@ function ToolButton(props: ToolButtonProps) {
     className,
   } = props;
 
-  const iconClasses = useIconSize();
+  const { className: iconClassName } = useIconSize();
   const { buttonSizeClass, iconSizeClass } = sizeClasses[size] || sizeClasses.default;
 
   const buttonClasses = cn(
@@ -94,7 +94,7 @@ function ToolButton(props: ToolButtonProps) {
           >
             <Icons.ByName
               name={icon}
-              className={iconClasses || iconSizeClass}
+              className={iconClassName || iconSizeClass}
             />
           </Button>
         </span>

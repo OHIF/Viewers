@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   Icons,
   Button,
+  ToolButton,
 } from '../';
 import { IconSizeProvider } from '@ohif/ui-next';
 
@@ -51,7 +52,10 @@ function Header({
   };
 
   return (
-    <IconSizeProvider size="large">
+    <IconSizeProvider
+      size="large"
+      IconContainer={ToolButton}
+    >
       <NavBar
         isSticky={isSticky}
         {...props}
