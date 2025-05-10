@@ -1,8 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useCallback } from 'react';
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
-import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import { utils } from '../..';
 
 /**
@@ -10,31 +8,12 @@ import { utils } from '../..';
  * special displaySets (SR, SEG, RTSTRUCT) to navigate between segments or measurements
  */
 function NavigationComponent({ viewportId }: { viewportId: string }) {
-  const { t } = useTranslation('Common');
-  const { servicesManager, commandsManager } = useSystem();
+  const { servicesManager } = useSystem();
   const { segmentationService, measurementService } = servicesManager.services;
-
-  const { backgroundDisplaySet, overlayDisplaySets } = useViewportDisplaySets(viewportId);
-
-  // Combine all display sets for evaluation
-  const allDisplaySets = useMemo(() => {
-    return [backgroundDisplaySet, ...overlayDisplaySets].filter(Boolean);
-  }, [backgroundDisplaySet, overlayDisplaySets]);
-
-  // Find any special display sets (SEG, RTSTRUCT, SR)
-  const specialDisplaySet = useMemo(() => {
-    return allDisplaySets.find(
-      ds => ds && (ds.Modality === 'SEG' || ds.Modality === 'RTSTRUCT' || ds.Modality === 'SR')
-    );
-  }, [allDisplaySets]);
 
   // Handle navigation between segments/measurements
   const handleNavigate = useCallback(
     (direction: number) => {
-      if (!specialDisplaySet) {
-        return;
-      }
-
       const { Modality } = specialDisplaySet;
 
       if (Modality === 'SEG') {
@@ -64,18 +43,18 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
           // Try to navigate using measurement service as fallback
           const measurements = measurementService.getMeasurements();
           const activeMeasurement = measurementService.getActiveMeasurement(viewportId);
-          
+
           if (measurements.length && activeMeasurement) {
             const activeIndex = measurements.findIndex(m => m.uid === activeMeasurement.uid);
             let newIndex = activeIndex + direction;
-            
+
             // Handle looping through the measurements
             if (newIndex >= measurements.length) {
               newIndex = 0;
             } else if (newIndex < 0) {
               newIndex = measurements.length - 1;
             }
-            
+
             const newMeasurement = measurements[newIndex];
             if (newMeasurement) {
               measurementService.jumpToMeasurement(viewportId, newMeasurement.uid);
@@ -86,11 +65,6 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
     },
     [specialDisplaySet, viewportId, segmentationService, measurementService]
   );
-
-  // Don't render if there's no special display set
-  if (!specialDisplaySet) {
-    return null;
-  }
 
   return (
     <ViewportActionArrows

@@ -30,7 +30,17 @@ const measurementTrackingExtension = {
   },
 
   onModeEnter({ servicesManager }) {
-    const { customizationService } = servicesManager.services;
+    const { customizationService, toolbarService, trackedMeasurementsService } =
+      servicesManager.services;
+
+    toolbarService.registerEventForToolbarUpdate(trackedMeasurementsService, [
+      trackedMeasurementsService.EVENTS.TRACKED_SERIES_CHANGED,
+      trackedMeasurementsService.EVENTS.SERIES_ADDED,
+      trackedMeasurementsService.EVENTS.SERIES_REMOVED,
+      trackedMeasurementsService.EVENTS.TRACKING_ENABLED,
+      trackedMeasurementsService.EVENTS.TRACKING_DISABLED,
+    ]);
+
     customizationService.setCustomizations({
       'studyBrowser.thumbnailDoubleClickCallback': {
         $set: onDoubleClickHandler,

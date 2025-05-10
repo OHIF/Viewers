@@ -88,6 +88,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     {
       name: 'evaluate.navigationComponent',
       evaluate: ({ viewportId }) => {
+        const { trackedMeasurementsService } = servicesManager.services;
         // Same logic as statusComponent - only show for SR, SEG, RTSTRUCT
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
@@ -106,31 +107,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         // 1. Segmentations are present (for SEG/RTSTRUCT navigation)
         // 2. There are tracked measurements in the viewport (for SR navigation)
 
-        // Special modality viewport that needs navigation controls
-        const hasSpecialModality = viewportDisplaySets.some(
-          displaySet =>
-            displaySet?.Modality === 'SR' ||
-            displaySet?.Modality === 'SEG' ||
-            displaySet?.Modality === 'RTSTRUCT'
-        );
-
-        // Nothing to navigate if there's no special modality
-        if (!hasSpecialModality) {
-          return {
-            disabled: true,
-          };
-        }
-
         // Check for SEG/RTSTRUCT navigation
         const hasSegmentation =
           segmentationService.getSegmentationRepresentations(viewportId).length > 0;
 
-        // Check if we have tracked measurements for this series (for SR navigation)
-        const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
-
-        // Fallback if the service isn't available
         if (!trackedMeasurementsService) {
-          // Just base navigation on segmentations if service not available
           return {
             disabled: !hasSegmentation,
           };
