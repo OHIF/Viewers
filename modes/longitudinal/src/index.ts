@@ -115,8 +115,6 @@ function modeFactory({ modeConfiguration }) {
         'navigationComponent',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.measurementPanel.actions, ['Zoom']);
-
       toolbarService.updateSection(toolbarService.sections.measurementSection, [
         'Length',
         'Bidirectional',
