@@ -12,7 +12,7 @@ const getDisabledState = (disabledText?: string) => ({
   disabledText: disabledText ?? 'Not available on the current viewport',
 });
 
-export default function getToolbarModule({ servicesManager }: withAppTypes) {
+export default function getToolbarModule({ servicesManager, extensionManager }: withAppTypes) {
   const {
     toolGroupService,
     toolbarService,
@@ -20,6 +20,7 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
     cornerstoneViewportService,
     displaySetService,
     viewportGridService,
+    segmentationService,
   } = servicesManager.services;
 
   return [
@@ -101,16 +102,54 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
           displaySetService.getDisplaySetByUID(uid)
         );
 
-        // Only show navigation for supported types like SR, SEG, RTSTRUCT
-        const isSupportedType = viewportDisplaySets.some(
+        // Check if there's a need for navigation:
+        // 1. Segmentations are present (for SEG/RTSTRUCT navigation)
+        // 2. There are tracked measurements in the viewport (for SR navigation)
+
+        // Special modality viewport that needs navigation controls
+        const hasSpecialModality = viewportDisplaySets.some(
           displaySet =>
             displaySet?.Modality === 'SR' ||
             displaySet?.Modality === 'SEG' ||
             displaySet?.Modality === 'RTSTRUCT'
         );
 
+        // Nothing to navigate if there's no special modality
+        if (!hasSpecialModality) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Check for SEG/RTSTRUCT navigation
+        const hasSegmentation =
+          segmentationService.getSegmentationRepresentations(viewportId).length > 0;
+
+        // Check if we have tracked measurements for this series (for SR navigation)
+        const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
+
+        // Fallback if the service isn't available
+        if (!trackedMeasurementsService) {
+          // Just base navigation on segmentations if service not available
+          return {
+            disabled: !hasSegmentation,
+          };
+        }
+
+        // Check if any of the viewport's series are being tracked
+        const hasTrackedInViewport = viewportDisplaySets.some(
+          displaySet =>
+            displaySet?.SeriesInstanceUID &&
+            trackedMeasurementsService.isSeriesTracked(displaySet.SeriesInstanceUID)
+        );
+
+        // Enable navigation if:
+        // - There's a segmentation to navigate (SEG/RTSTRUCT)
+        // - OR there are tracked measurements in the viewport (SR/etc.)
+        const needsNavigation = hasSegmentation || hasTrackedInViewport;
+
         return {
-          disabled: !isSupportedType,
+          disabled: !needsNavigation,
         };
       },
     },

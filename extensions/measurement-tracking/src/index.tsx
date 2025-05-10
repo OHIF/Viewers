@@ -1,17 +1,16 @@
-import React from 'react';
-
 import getContextModule from './getContextModule';
 import getPanelModule from './getPanelModule';
 import getViewportModule from './getViewportModule';
 import { id } from './id.js';
-import { ViewportActionButton } from '@ohif/ui-next';
-import i18n from '@ohif/i18n';
 import { measurementTrackingMode } from './contexts/TrackedMeasurementsContext/promptBeginTracking';
 import getCustomizationModule from './getCustomizationModule';
 import {
   onDoubleClickHandler,
   customOnDropHandlerCallback,
 } from './customizations/studyBrowserCustomization';
+import { TrackedMeasurementsService } from './services';
+// Import types to ensure they're included in the build
+import './types';
 
 const measurementTrackingExtension = {
   /**
@@ -22,6 +21,13 @@ const measurementTrackingExtension = {
   getContextModule,
   getPanelModule,
   getViewportModule,
+
+  /**
+   * Service configuration
+   */
+  preRegistration({ servicesManager }) {
+    servicesManager.registerService(TrackedMeasurementsService.REGISTRATION);
+  },
 
   onModeEnter({ servicesManager }) {
     const { customizationService } = servicesManager.services;
