@@ -111,6 +111,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
       toolbarService.createButtonSection(toolbarService.sections.viewportActionMenu.topRight, [
         'modalityLoadBadge',
+        'trackingStatus',
         'navigationComponent',
       ]);
 

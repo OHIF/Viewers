@@ -34,31 +34,6 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
   let trackedMeasurements;
   let isLocked = false;
 
-  const updateIsTracked = useCallback(
-    trackedSeries => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const SeriesInstanceUID = backgroundDisplaySet?.SeriesInstanceUID;
-
-      if (viewport instanceof BaseVolumeViewport) {
-        // A current image id will only exist for volume viewports that can have measurements tracked.
-        // Typically these are those volume viewports for the series of acquisition.
-        const currentImageId = viewport?.getCurrentImageId();
-
-        if (!currentImageId) {
-          if (isTracked) {
-            setIsTracked(false);
-          }
-          return;
-        }
-      }
-
-      if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
-        setIsTracked(!isTracked);
-      }
-    },
-    [isTracked, viewportId, backgroundDisplaySet, cornerstoneViewportService]
-  );
-
   if (hasMeasurementTrackingExtension) {
     const contextModule = extensionManager.getModuleEntry(
       '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
@@ -71,8 +46,6 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
       // Check if tracking is active (has tracked series)
       const trackedSeries = trackedMeasurements?.context?.trackedSeries;
       isLocked = trackedSeries?.length > 0;
-
-      updateIsTracked(trackedSeries);
     }
   }
 

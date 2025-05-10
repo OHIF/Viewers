@@ -63,6 +63,19 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'trackingStatus',
+    uiType: 'ohif.trackingStatus',
+    props: {
+      icon: 'TrackingStatus',
+      label: 'Tracking Status',
+      tooltip: 'Tracking Status',
+      evaluate: {
+        name: 'evaluate.trackingStatus',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'dataOverlayMenu',
     uiType: 'ohif.dataOverlayMenu',
     props: {

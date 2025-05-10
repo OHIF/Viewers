@@ -5,6 +5,7 @@ import { ViewportOrientationMenuWrapper } from './components/ViewportOrientation
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
+import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -22,6 +23,26 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
   } = servicesManager.services;
 
   return [
+    {
+      name: 'ohif.trackingStatus',
+      defaultComponent: TrackingStatus,
+    },
+    {
+      name: 'evaluate.trackingStatus',
+      evaluate: ({ viewportId }) => {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        return {
+          disabled: false,
+        };
+      },
+    },
     // ModalityLoadBadge
     {
       name: 'ohif.modalityLoadBadge',
@@ -52,20 +73,6 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
             displaySet?.Modality === 'SEG' ||
             displaySet?.Modality === 'RTSTRUCT'
         );
-
-        // Check if the measurement tracking extension is present
-        const measurementTrackingModule = servicesManager._extensionManager?.getModuleEntry(
-          '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
-        );
-
-        // Never disable if we have measurement tracking active, even if we don't have a specific
-        // supported display set (SR, SEG, RTSTRUCT) - allow the tracking status to be shown
-        // we let the status component handle the display set check or
-        if (measurementTrackingModule) {
-          return {
-            disabled: false,
-          };
-        }
 
         return {
           disabled: !isSupportedType,
