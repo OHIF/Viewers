@@ -45,38 +45,35 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
       );
 
       if (measurementDisplaySet) {
-        const measurementCount = measurementDisplaySet.measurements.length;
-        let newMeasurementSelected = measurementSelected;
-        newMeasurementSelected += direction;
-        if (newMeasurementSelected >= measurementCount) {
-          newMeasurementSelected = 0;
-        } else if (newMeasurementSelected < 0) {
-          newMeasurementSelected = measurementCount - 1;
+        const measurements = measurementDisplaySet.measurements;
+        if (measurements.length <= 0) {
+          return;
         }
 
-        setMeasurementSelected(newMeasurementSelected);
-        const measurement = measurementDisplaySet.measurements[newMeasurementSelected];
+        const newIndex = getNextIndex(measurementSelected, direction, measurements.length);
+        setMeasurementSelected(newIndex);
+
+        const measurement = measurements[newIndex];
         cornerstoneViewport.setViewReference({
           referencedImageId: measurement.imageId,
         });
+        return;
       }
 
-      if (isTracked) {
-        const currentIndex = trackedMeasurementUIDs.indexOf(
-          trackedMeasurementUIDs[measurementSelected]
+      if (isTracked && trackedMeasurementUIDs.length > 0) {
+        const newIndex = getNextIndex(
+          measurementSelected,
+          direction,
+          trackedMeasurementUIDs.length
         );
-        const newIndex = currentIndex + direction;
-        if (newIndex >= 0 && newIndex < trackedMeasurementUIDs.length) {
-          setMeasurementSelected(newIndex);
-          measurementService.jumpToMeasurement(viewportId, trackedMeasurementUIDs[newIndex]);
-        }
+        setMeasurementSelected(newIndex);
+        measurementService.jumpToMeasurement(viewportId, trackedMeasurementUIDs[newIndex]);
       }
     },
     [
       viewportId,
       cornerstoneViewport,
       measurementSelected,
-      setMeasurementSelected,
       measurementService,
       isTracked,
       trackedMeasurementUIDs,
@@ -86,6 +83,10 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
 
   const handleSegmentNavigation = useCallback(
     (direction: number) => {
+      if (!segmentationsWithRepresentations.length) {
+        return;
+      }
+
       const segmentationId = segmentationsWithRepresentations[0].segmentation.segmentationId;
 
       utils.handleSegmentChange({
@@ -111,7 +112,10 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
     [navigationMode, handleSegmentNavigation, handleMeasurementNavigation]
   );
 
-  // Only render if we need navigation
+  // Only render if we have a navigation mode
+  if (!navigationMode) {
+    return null;
+  }
 
   return (
     <ViewportActionArrows
@@ -119,6 +123,29 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
       className="h-6"
     />
   );
+}
+
+/**
+ * Calculate the next index with circular navigation support
+ * @param currentIndex Current index position
+ * @param direction Direction of movement (1 for next, -1 for previous)
+ * @param totalItems Total number of items to navigate through
+ * @returns The next index with wrap-around support
+ */
+function getNextIndex(currentIndex: number, direction: number, totalItems: number): number {
+  if (totalItems <= 0) {
+    return 0;
+  }
+
+  // Use modulo to handle circular navigation
+  let nextIndex = (currentIndex + direction) % totalItems;
+
+  // Handle negative index when going backwards from index 0
+  if (nextIndex < 0) {
+    nextIndex = totalItems - 1;
+  }
+
+  return nextIndex;
 }
 
 export default NavigationComponent;
