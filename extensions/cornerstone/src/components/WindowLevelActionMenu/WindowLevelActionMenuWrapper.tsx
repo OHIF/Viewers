@@ -25,14 +25,23 @@ export function WindowLevelActionMenuWrapper(
     disabled?: boolean;
   }>
 ): ReactNode {
-  const { viewportId, element, location, isOpen = false, onOpen, onClose, disabled } = props;
+  const {
+    viewportId,
+    element,
+    location,
+    isOpen = false,
+    onOpen,
+    onClose,
+    disabled,
+    ...rest
+  } = props;
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
-  const { IconContainer, className: iconClassName } = useIconSize();
+  const { IconContainer, className: iconClassName, containerProps } = useIconSize();
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
@@ -76,10 +85,10 @@ export function WindowLevelActionMenuWrapper(
         <div>
           {IconContainer ? (
             <IconContainer
-              variant="ghost"
-              size="icon"
-              icon="viewport-window-level"
               disabled={disabled}
+              {...rest}
+              {...containerProps}
+              icon="ViewportWindowLevel"
             >
               {Icon}
             </IconContainer>

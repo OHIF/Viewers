@@ -9,6 +9,12 @@ interface IconSizeContextType {
   getSizeValue: (size?: IconSizeType) => number | string;
   getSizeClassName: (size?: IconSizeType, additionalClasses?: string) => string;
   IconContainer: ComponentType<any>;
+  containerProps: {
+    variant: string;
+    size: string;
+    [key: string]: any;
+  };
+  className: string;
 }
 
 const sizeMap = {
@@ -35,6 +41,11 @@ const defaultContext: IconSizeContextType = {
   getSizeValue,
   getSizeClassName,
   IconContainer: Button,
+  containerProps: {
+    variant: 'ghost',
+    size: 'icon',
+  },
+  className: '',
 };
 
 export const IconSizeContext = createContext<IconSizeContextType>(defaultContext);
@@ -43,15 +54,32 @@ interface IconSizeProviderProps {
   size: IconSizeType;
   children: ReactNode;
   IconContainer?: ComponentType<any>;
+  containerProps?: {
+    variant?: string;
+    size?: string;
+    [key: string]: any;
+  };
 }
 
-export const IconSizeProvider = ({ size, children, IconContainer }: IconSizeProviderProps) => {
+export const IconSizeProvider = ({
+  size,
+  children,
+  IconContainer = Button,
+  containerProps = {},
+}: IconSizeProviderProps) => {
   const className = getSizeClassName(size);
+  const mergedProps = {
+    variant: 'ghost',
+    size: 'icon',
+    ...containerProps,
+  };
+
   const contextValue = {
     size,
     getSizeValue,
     getSizeClassName,
     IconContainer,
+    containerProps: mergedProps,
     className,
   };
   return <IconSizeContext.Provider value={contextValue}>{children}</IconSizeContext.Provider>;

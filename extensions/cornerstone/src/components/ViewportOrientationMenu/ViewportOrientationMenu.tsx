@@ -12,6 +12,7 @@ function ViewportOrientationMenu({
   onOpen,
   onClose,
   disabled,
+  ...props
 }: withAppTypes<{
   location?: string;
   viewportId: string;
@@ -23,7 +24,7 @@ function ViewportOrientationMenu({
 }>) {
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
-  const { IconContainer, className: iconClassName } = useIconSize();
+  const { IconContainer, className: iconClassName, containerProps } = useIconSize();
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, toolbarService } = servicesManager.services;
 
@@ -119,9 +120,9 @@ function ViewportOrientationMenu({
           {IconContainer ? (
             <IconContainer
               disabled={disabled}
-              size="icon"
-              variant="ghost"
               icon="OrientationSwitch"
+              {...props}
+              {...containerProps}
             >
               {Icon}
             </IconContainer>

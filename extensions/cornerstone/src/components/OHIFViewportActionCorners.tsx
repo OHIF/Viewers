@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewportActionCorners, IconSizeProvider, Button } from '@ohif/ui-next';
+import { ViewportActionCorners, IconSizeProvider, Button, ToolButton } from '@ohif/ui-next';
 import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
 import { useViewportHover } from '../hooks';
 
@@ -20,7 +20,11 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
   return (
     <IconSizeProvider
       size="medium"
-      IconContainer={Button}
+      IconContainer={ToolButton}
+      containerProps={{
+        size: 'tiny',
+        className: 'font-normal text-primary hover:bg-primary/25',
+      }}
     >
       <ViewportActionCorners.Container>
         <ViewportActionCorners.TopLeft>

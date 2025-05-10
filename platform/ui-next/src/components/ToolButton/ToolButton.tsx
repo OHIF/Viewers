@@ -20,6 +20,10 @@ const sizeClasses = {
     buttonSizeClass: 'w-8 h-8',
     iconSizeClass: 'h-6 w-6',
   },
+  tiny: {
+    buttonSizeClass: 'w-6 h-6',
+    iconSizeClass: 'h-4 w-4',
+  },
 };
 
 interface ToolButtonProps {
