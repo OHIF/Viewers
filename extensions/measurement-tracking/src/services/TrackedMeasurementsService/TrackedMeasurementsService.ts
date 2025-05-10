@@ -2,6 +2,10 @@ import { PubSubService } from '@ohif/core';
 
 const EVENTS = {
   TRACKED_SERIES_CHANGED: 'event::trackedmeasurements:trackedserieschanged',
+  SERIES_ADDED: 'event::trackedmeasurements:seriesadded',
+  SERIES_REMOVED: 'event::trackedmeasurements:seriesremoved',
+  TRACKING_ENABLED: 'event::trackedmeasurements:trackingenabled',
+  TRACKING_DISABLED: 'event::trackedmeasurements:trackingdisabled',
 };
 
 /**
@@ -33,15 +37,27 @@ export class TrackedMeasurementsService extends PubSubService {
       trackedSeries = [];
     }
 
-    // Check if arrays are different before updating
     const hasChanged =
       this._trackedSeries.length !== trackedSeries.length ||
       this._trackedSeries.some((seriesUID, index) => seriesUID !== trackedSeries[index]);
 
     if (hasChanged) {
+      const oldSeries = [...this._trackedSeries];
       this._trackedSeries = [...trackedSeries];
 
-      // Notify subscribers of changes
+      const wasEmpty = oldSeries.length === 0;
+      const isEmpty = trackedSeries.length === 0;
+
+      if (wasEmpty && !isEmpty) {
+        this._broadcastEvent(EVENTS.TRACKING_ENABLED, {
+          trackedSeries: this.getTrackedSeries(),
+        });
+      } else if (!wasEmpty && isEmpty) {
+        this._broadcastEvent(EVENTS.TRACKING_DISABLED, {
+          trackedSeries: this.getTrackedSeries(),
+        });
+      }
+
       this._broadcastEvent(EVENTS.TRACKED_SERIES_CHANGED, {
         trackedSeries: this.getTrackedSeries(),
       });
@@ -49,11 +65,66 @@ export class TrackedMeasurementsService extends PubSubService {
   }
 
   /**
+   * Adds a single series to tracking
+   * @param seriesInstanceUID Series instance UID to add to tracking
+   */
+  public addTrackedSeries(seriesInstanceUID: string): void {
+    if (!seriesInstanceUID || this.isSeriesTracked(seriesInstanceUID)) {
+      return;
+    }
+
+    const wasEmpty = this._trackedSeries.length === 0;
+    this._trackedSeries = [...this._trackedSeries, seriesInstanceUID];
+
+    this._broadcastEvent(EVENTS.SERIES_ADDED, {
+      seriesInstanceUID,
+      trackedSeries: this.getTrackedSeries(),
+    });
+
+    if (wasEmpty) {
+      this._broadcastEvent(EVENTS.TRACKING_ENABLED, {
+        trackedSeries: this.getTrackedSeries(),
+      });
+    }
+
+    this._broadcastEvent(EVENTS.TRACKED_SERIES_CHANGED, {
+      trackedSeries: this.getTrackedSeries(),
+    });
+  }
+
+  /**
+   * Removes a single series from tracking
+   * @param seriesInstanceUID Series instance UID to remove from tracking
+   */
+  public removeTrackedSeries(seriesInstanceUID: string): void {
+    if (!seriesInstanceUID || !this.isSeriesTracked(seriesInstanceUID)) {
+      return;
+    }
+
+    this._trackedSeries = this._trackedSeries.filter(uid => uid !== seriesInstanceUID);
+
+    this._broadcastEvent(EVENTS.SERIES_REMOVED, {
+      seriesInstanceUID,
+      trackedSeries: this.getTrackedSeries(),
+    });
+
+    if (this._trackedSeries.length === 0) {
+      this._broadcastEvent(EVENTS.TRACKING_DISABLED, {
+        trackedSeries: this.getTrackedSeries(),
+      });
+    }
+
+    this._broadcastEvent(EVENTS.TRACKED_SERIES_CHANGED, {
+      trackedSeries: this.getTrackedSeries(),
+    });
+  }
+
+  /**
    * Retrieves the currently tracked series
    * @returns Array of series UIDs being tracked
    */
   public getTrackedSeries(): string[] {
-    return [...this._trackedSeries]; // Return a copy to prevent mutation
+    return [...this._trackedSeries];
   }
 
   /**
@@ -69,8 +140,28 @@ export class TrackedMeasurementsService extends PubSubService {
    * Resets the service state
    */
   public reset(): void {
+    const wasTracking = this._trackedSeries.length > 0;
     this._trackedSeries = [];
+
+    if (wasTracking) {
+      this._broadcastEvent(EVENTS.TRACKING_DISABLED, {
+        trackedSeries: [],
+      });
+
+      this._broadcastEvent(EVENTS.TRACKED_SERIES_CHANGED, {
+        trackedSeries: [],
+      });
+    }
+
     super.reset();
+  }
+
+  /**
+   * Checks if any series are being tracked
+   * @returns boolean indicating if tracking is active
+   */
+  public isTrackingEnabled(): boolean {
+    return this._trackedSeries.length > 0;
   }
 }
 

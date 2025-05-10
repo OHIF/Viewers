@@ -1,33 +1,32 @@
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSystem } from '@ohif/core/src';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import { BaseVolumeViewport } from '@cornerstonejs/core';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
-const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 /**
  * TrackingStatus displays the status and actionable buttons for viewports containing
  * special displaySets (SR, SEG, RTSTRUCT) or when tracking measurements
  */
 function TrackingStatus({ viewportId }: { viewportId: string }) {
-  const { extensionManager, servicesManager } = useSystem();
+  const { servicesManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
+  const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
 
   const { backgroundDisplaySet } = useViewportDisplaySets(viewportId);
   const [isTracked, setIsTracked] = useState(false);
 
-  // Check if measurement tracking is active
-  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
-    MEASUREMENT_TRACKING_EXTENSION_ID
-  );
-
-  // Access tracking state if available
-  let trackedMeasurements;
-
   const updateIsTracked = useCallback(
     trackedSeries => {
+      if (!trackedSeries?.length || !backgroundDisplaySet?.SeriesInstanceUID) {
+        if (isTracked) {
+          setIsTracked(false);
+        }
+        return;
+      }
+
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const SeriesInstanceUID = backgroundDisplaySet?.SeriesInstanceUID;
+      const SeriesInstanceUID = backgroundDisplaySet.SeriesInstanceUID;
 
       if (viewport instanceof BaseVolumeViewport) {
         // A current image id will only exist for volume viewports that can have measurements tracked.
@@ -42,29 +41,53 @@ function TrackingStatus({ viewportId }: { viewportId: string }) {
         }
       }
 
-      if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
-        setIsTracked(!isTracked);
+      const seriesIsTracked = trackedSeries.includes(SeriesInstanceUID);
+      if (seriesIsTracked !== isTracked) {
+        setIsTracked(seriesIsTracked);
       }
     },
     [isTracked, viewportId, backgroundDisplaySet, cornerstoneViewportService]
   );
 
-  if (hasMeasurementTrackingExtension) {
-    const contextModule = extensionManager.getModuleEntry(
-      '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
-    );
-
-    if (contextModule?.context) {
-      const tracked = useContext(contextModule.context);
-      trackedMeasurements = tracked?.[0];
-
-      // Check if tracking is active (has tracked series)
-      const trackedSeries = trackedMeasurements?.context?.trackedSeries;
-      updateIsTracked(trackedSeries);
+  // Subscribe to tracked series changes using the service
+  useEffect(() => {
+    if (!trackedMeasurementsService) {
+      return;
     }
-  }
 
-  if (!hasMeasurementTrackingExtension || !isTracked) {
+    // Initial check
+    updateIsTracked(trackedMeasurementsService.getTrackedSeries());
+
+    // Subscribe to series changes
+    const subscriptions = [
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.TRACKED_SERIES_CHANGED,
+        ({ trackedSeries }) => {
+          updateIsTracked(trackedSeries);
+        }
+      ),
+
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.SERIES_ADDED,
+        ({ trackedSeries }) => {
+          updateIsTracked(trackedSeries);
+        }
+      ),
+
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.SERIES_REMOVED,
+        ({ trackedSeries }) => {
+          updateIsTracked(trackedSeries);
+        }
+      ),
+    ];
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe());
+    };
+  }, [trackedMeasurementsService, updateIsTracked]);
+
+  if (!isTracked) {
     return null;
   }
 

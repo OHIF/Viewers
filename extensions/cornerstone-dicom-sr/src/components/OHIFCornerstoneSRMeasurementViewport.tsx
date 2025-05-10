@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
@@ -7,12 +7,10 @@ import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/ext
 import { useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
-const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
-
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRMeasurementViewport(props) {
-  const { servicesManager, extensionManager } = useSystem();
+  const { servicesManager } = useSystem();
   const { children, dataSource, displaySets, viewportOptions } = props as {
     children: React.ReactNode;
     dataSource: unknown;
@@ -41,27 +39,36 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
 
-  // Optional hook into tracking extension, if present.
-  let trackedMeasurements;
+  // Use the TrackedMeasurementsService to check for locked state
+  const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
 
-  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
-    MEASUREMENT_TRACKING_EXTENSION_ID
-  );
+  // Track whether tracking is locked (any series being tracked)
+  const [isLocked, setIsLocked] = useState(false);
 
-  if (hasMeasurementTrackingExtension) {
-    const contextModule = extensionManager.getModuleEntry(
-      '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
-    );
+  // Subscribe to tracking enabled/disabled events
+  useEffect(() => {
+    if (!trackedMeasurementsService) {
+      return;
+    }
 
-    const tracked = useContext(contextModule.context);
-    trackedMeasurements = tracked?.[0];
-  }
+    // Initial state - check if tracking is enabled
+    setIsLocked(trackedMeasurementsService.isTrackingEnabled());
 
-  /**
-   * Todo: what is this, not sure what it does regarding the react aspect,
-   * it is updating a local variable? which is not state.
-   */
-  const [isLocked, setIsLocked] = useState(trackedMeasurements?.context?.trackedSeries?.length > 0);
+    // Subscribe to tracking enabled/disabled events
+    const subscriptions = [
+      trackedMeasurementsService.subscribe(trackedMeasurementsService.EVENTS.TRACKING_ENABLED, () =>
+        setIsLocked(true)
+      ),
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.TRACKING_DISABLED,
+        () => setIsLocked(false)
+      ),
+    ];
+
+    return () => {
+      subscriptions.forEach(subscription => subscription.unsubscribe());
+    };
+  }, [trackedMeasurementsService]);
   /**
    * Store the tracking identifiers per viewport in order to be able to
    * show the SR measurements on the referenced image on the correct viewport,
@@ -245,10 +252,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
     };
     updateSR();
   }, [measurementSelected, element, setTrackingIdentifiers, srDisplaySet]);
-
-  useEffect(() => {
-    setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
-  }, [trackedMeasurements]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;

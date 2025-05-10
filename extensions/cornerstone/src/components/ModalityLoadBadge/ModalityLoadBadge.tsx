@@ -1,4 +1,4 @@
-import React, { useMemo, useContext, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ViewportActionButton } from '@ohif/ui-next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
@@ -6,48 +6,65 @@ import { useSystem } from '@ohif/core/src';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import { BaseVolumeViewport } from '@cornerstonejs/core';
 
-const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
-
 /**
  * ModalityLoadBadge displays the status and actionable buttons for viewports containing
  * special displaySets (SR, SEG, RTSTRUCT) or when tracking measurements
  */
 function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
-  const { commandsManager, extensionManager, servicesManager } = useSystem();
+  const { commandsManager, servicesManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
+  const { trackedMeasurementsService } = servicesManager.services as AppTypes.Services;
   const { t } = useTranslation('Common');
   const loadStr = t('LOAD');
 
   const { backgroundDisplaySet, overlayDisplaySets } = useViewportDisplaySets(viewportId);
   const [isTracked, setIsTracked] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const allDisplaySets = useMemo(() => {
     return [backgroundDisplaySet, ...overlayDisplaySets];
   }, [backgroundDisplaySet, overlayDisplaySets]);
 
-  // Check if measurement tracking is active
-  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
-    MEASUREMENT_TRACKING_EXTENSION_ID
-  );
-
-  // Access tracking state if available
-  let trackedMeasurements;
-  let isLocked = false;
-
-  if (hasMeasurementTrackingExtension) {
-    const contextModule = extensionManager.getModuleEntry(
-      '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
-    );
-
-    if (contextModule?.context) {
-      const tracked = useContext(contextModule.context);
-      trackedMeasurements = tracked?.[0];
-
-      // Check if tracking is active (has tracked series)
-      const trackedSeries = trackedMeasurements?.context?.trackedSeries;
-      isLocked = trackedSeries?.length > 0;
+  // Subscribe to tracked series changes using specific events
+  useEffect(() => {
+    if (!trackedMeasurementsService) {
+      return;
     }
-  }
+
+    // Initial state check
+    setIsLocked(trackedMeasurementsService.isTrackingEnabled());
+
+    if (backgroundDisplaySet?.SeriesInstanceUID) {
+      setIsTracked(trackedMeasurementsService.isSeriesTracked(backgroundDisplaySet.SeriesInstanceUID));
+    }
+
+    // Subscribe to tracking enabled/disabled events for lock state
+    const subscriptions = [
+      // Global tracking enabled/disabled for lock state
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.TRACKING_ENABLED,
+        () => setIsLocked(true)
+      ),
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.TRACKING_DISABLED,
+        () => setIsLocked(false)
+      ),
+
+      // Series-specific events for this viewport's tracked state
+      trackedMeasurementsService.subscribe(
+        trackedMeasurementsService.EVENTS.TRACKED_SERIES_CHANGED,
+        ({ trackedSeries }) => {
+          if (backgroundDisplaySet?.SeriesInstanceUID) {
+            setIsTracked(trackedSeries.includes(backgroundDisplaySet.SeriesInstanceUID));
+          }
+        }
+      )
+    ];
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe());
+    };
+  }, [trackedMeasurementsService, backgroundDisplaySet]);
 
   const displaySet = useMemo(() => {
     if (!allDisplaySets?.length) {
