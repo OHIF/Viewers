@@ -45,6 +45,8 @@ export function WindowLevelActionMenuWrapper(
   const { toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
+  const isAdvancedColorbar = hasColorbar && colorbarPosition === 'bottom';
+
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
       onOpen?.();
@@ -61,12 +63,15 @@ export function WindowLevelActionMenuWrapper(
     return null;
   }
 
-  const Icon =
-    hasColorbar && colorbarPosition === 'bottom' ? (
-      <Icons.Close className={'h-5 w-5'} />
-    ) : (
-      <Icons.ViewportWindowLevel className={iconClassName} />
-    );
+  const Icon = isAdvancedColorbar ? (
+    <Icons.Close className={'h-5 w-5'} />
+  ) : (
+    <Icons.ViewportWindowLevel className={iconClassName} />
+  );
+
+  if (isAdvancedColorbar && isOpen) {
+    onClose?.();
+  }
 
   return (
     <Popover
@@ -91,7 +96,6 @@ export function WindowLevelActionMenuWrapper(
               variant="ghost"
               size="icon"
               disabled={disabled}
-              onClick={() => {}}
             >
               {Icon}
             </Button>

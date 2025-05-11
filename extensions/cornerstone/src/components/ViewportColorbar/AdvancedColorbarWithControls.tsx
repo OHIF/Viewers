@@ -41,10 +41,6 @@ const AdvancedColorbarWithControls = ({
   onClose,
   viewportElementRef,
 }: AdvancedColorbarWithControlsProps) => {
-  const handleClose = (displaySetInstanceUID?: string) => {
-    onClose(displaySetInstanceUID);
-  };
-
   // Get bottom position styles from customization
   const positionStyles = colorbarCustomization?.positionStyles || {};
   const bottomPositionStyles = positionStyles.bottom || {};
@@ -53,15 +49,6 @@ const AdvancedColorbarWithControls = ({
   return (
     <div className="mx-auto flex h-[20px] w-1/2 flex-row items-center justify-between">
       <div className="flex flex-shrink-0 flex-row">
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={() => handleClose()}
-          className="flex-shrink-0 p-0"
-        >
-          <Icons.Close />
-        </Button>
-
         <Button
           size="icon"
           variant="ghost"
