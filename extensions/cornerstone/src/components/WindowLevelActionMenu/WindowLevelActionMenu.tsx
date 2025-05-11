@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AllInOneMenu } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -42,31 +42,16 @@ export function WindowLevelActionMenuContent({
 }): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
   const [viewportGrid] = useViewportGrid();
-  const { activeViewportId } = viewportGrid;
-  const [menuKey, setMenuKey] = useState(0);
+  // Use a stable key for the menu to avoid infinite re-renders
+  const menuKey = useMemo(() => `${viewportId}`, [viewportId]);
 
   const {
     is3DVolume,
-    displaySets,
     colorbarProperties,
     presets,
     volumeRenderingPresets,
     volumeRenderingQualityRange,
   } = useWindowLevel(viewportId);
-
-  // Force re-render on viewport or props changes
-  useEffect(() => {
-    setMenuKey(prevKey => prevKey + 1);
-  }, [
-    displaySets,
-    viewportId,
-    presets,
-    volumeRenderingQualityRange,
-    volumeRenderingPresets,
-    colorbarProperties,
-    activeViewportId,
-    viewportGrid,
-  ]);
 
   return (
     <AllInOneMenu.Menu
@@ -80,7 +65,7 @@ export function WindowLevelActionMenuContent({
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && <Colorbar viewportId={viewportId} />}
 
-        {colorbarProperties.colormaps && !is3DVolume && (
+        {colorbarProperties?.colormaps && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
             itemLabel="Color LUT"

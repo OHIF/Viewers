@@ -41,23 +41,27 @@ export function setViewportColorbar(
 export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { hasColorbar, toggleColorbar } = useWindowLevel(viewportId);
 
+  // Memoize toggle handler to avoid recreating it on each render
+  const handleToggle = React.useCallback(() => {
+    toggleColorbar();
+  }, [viewportId, toggleColorbar]);
+
+  // Only log on initial render or when values change
+  React.useEffect(() => {}, [viewportId, hasColorbar]);
+
   return (
-    <div
-      className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
-      onClick={e => {
-        e.stopPropagation();
-        toggleColorbar();
-      }}
-    >
+    <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded">
       <div className="flex w-7 flex-shrink-0 items-center justify-center"></div>
-      <span className="flex-grow">Display Color bar</span>
+      <span
+        className="flex-grow"
+        onClick={handleToggle}
+      >
+        Display Color bar
+      </span>
       <Switch
         className="ml-2 flex-shrink-0"
-        checked={hasColorbar}
-        onClick={e => {
-          e.stopPropagation();
-          toggleColorbar();
-        }}
+        checked={!!hasColorbar}
+        onCheckedChange={handleToggle}
       />
     </div>
   );

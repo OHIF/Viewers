@@ -19,13 +19,15 @@ export function useWindowLevel(viewportId?: string) {
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
 
   // Get viewport info
-  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
 
   // Get customizations
-  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
-  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
-  const { volumeRenderingPresets, volumeRenderingQualityRange } =
-    customizationService.getCustomization('cornerstone.3dVolumeRendering');
+  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets') || {};
+  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar') || {};
+  const {
+    volumeRenderingPresets = [],
+    volumeRenderingQualityRange = { min: 0, max: 1, step: 0.1 },
+  } = customizationService.getCustomization('cornerstone.3dVolumeRendering') || {};
 
   // State
   const [is3DVolume, setIs3DVolume] = useState(false);
@@ -54,9 +56,18 @@ export function useWindowLevel(viewportId?: string) {
 
   // Update colorbar state when it changes
   useEffect(() => {
+    // Only subscribe if viewportId is valid
+    if (!viewportId) {
+      return;
+    }
+
     const updateColorbarState = () => {
-      setHasColorbar(colorbarService.hasColorbar(viewportId));
+      const hasColorbarValue = colorbarService.hasColorbar(viewportId);
+      setHasColorbar(hasColorbarValue);
     };
+
+    // Initial state check
+    updateColorbarState();
 
     const { unsubscribe } = colorbarService.subscribe(
       colorbarService.EVENTS.STATE_CHANGED,
@@ -86,6 +97,24 @@ export function useWindowLevel(viewportId?: string) {
   // Colorbar functions
   const toggleColorbar = useCallback(
     (options?: Partial<ColorbarOptions>) => {
+      // Ensure viewportId is defined
+      if (!viewportId) {
+        console.error('Cannot toggle colorbar: viewportId is undefined');
+        return;
+      }
+
+      // Ensure we have display sets
+      if (!displaySets || displaySets.length === 0) {
+        console.warn('Cannot toggle colorbar: no display sets available for viewport', viewportId);
+        return;
+      }
+
+      // Ensure we have colorbar properties
+      if (!colorbarProperties) {
+        console.error('Cannot toggle colorbar: colorbar properties not available');
+        return;
+      }
+
       const {
         width: colorbarWidth,
         colorbarTickPosition,
@@ -94,13 +123,13 @@ export function useWindowLevel(viewportId?: string) {
 
       const colorbarOptions = {
         viewportId,
-        colormaps: colorbarProperties.colormaps,
+        colormaps: colorbarProperties.colormaps || {},
         ticks: {
-          position: colorbarTickPosition,
+          position: colorbarTickPosition || 'top',
         },
         width: colorbarWidth,
-        position: colorbarPosition,
-        activeColormapName: colorbarInitialColormap,
+        position: colorbarPosition || 'bottom',
+        activeColormapName: colorbarInitialColormap || 'Grayscale',
         ...options,
       };
 
@@ -119,13 +148,17 @@ export function useWindowLevel(viewportId?: string) {
         };
       }
 
-      const displaySetInstanceUIDs = displaySets?.map(ds => ds.displaySetInstanceUID) || [];
+      const displaySetInstanceUIDs = displaySets.map(ds => ds.displaySetInstanceUID);
 
-      commandsManager.run('toggleViewportColorbar', {
-        viewportId,
-        options: colorbarOptions,
-        displaySetInstanceUIDs,
-      });
+      try {
+        commandsManager.run('toggleViewportColorbar', {
+          viewportId,
+          options: colorbarOptions,
+          displaySetInstanceUIDs,
+        });
+      } catch (error) {
+        console.error('Error toggling colorbar:', error);
+      }
     },
     [commandsManager, viewportId, colorbarProperties, isLight, displaySets, colorbarPosition]
   );
