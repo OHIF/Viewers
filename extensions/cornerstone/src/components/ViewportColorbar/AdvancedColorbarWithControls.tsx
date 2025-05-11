@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
+import { useViewportRef } from '@ohif/core';
 import ViewportColorbar from './ViewportColorbar';
 import {
   ColorbarCustomization,
@@ -8,7 +9,6 @@ import {
 } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import { WindowLevelActionMenuWrapper } from '../WindowLevelActionMenu';
-
 type ColorbarData = {
   colorbar: {
     activeColormapName: string;
@@ -25,7 +25,6 @@ type AdvancedColorbarWithControlsProps = {
   tickPosition: string;
   colorbarCustomization: ColorbarCustomization;
   onClose: (displaySetInstanceUID?: string) => void;
-  viewportElementRef?: React.RefObject<HTMLDivElement>;
 };
 
 /**
@@ -39,10 +38,10 @@ const AdvancedColorbarWithControls = ({
   position,
   tickPosition,
   colorbarCustomization,
-  viewportElementRef,
   ...rest
 }: AdvancedColorbarWithControlsProps) => {
   // Get bottom position styles from customization
+  const viewportElementRef = useViewportRef(viewportId);
   const positionStyles = colorbarCustomization?.positionStyles || {};
   const bottomPositionStyles = positionStyles.bottom || {};
   const heightStyle = bottomPositionStyles.height;

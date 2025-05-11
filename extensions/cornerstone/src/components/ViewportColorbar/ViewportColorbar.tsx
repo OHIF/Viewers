@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { utilities } from '@cornerstonejs/tools';
-import { useSystem } from '@ohif/core';
+import { useSystem, useViewportRef } from '@ohif/core';
 import {
   ColorbarPositionType,
   TickPositionType,
@@ -40,11 +40,11 @@ const ViewportColorbar = ({
   position,
   tickPosition,
   tickStyles,
-  viewportElementRef,
 }: ColorbarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
+  const viewportElementRef = useViewportRef(viewportId);
 
   useEffect(() => {
     if (!containerRef.current || !colormaps || !activeColormapName) {
@@ -103,6 +103,8 @@ const ViewportColorbar = ({
   ) as unknown as ColorbarCustomization;
 
   const positionStylesFromConfig = colorbarCustomization?.positionStyles?.[position] || {};
+  console.debug('🚀 ~ position:', position);
+  console.debug('🚀 ~ positionStylesFromConfig:', positionStylesFromConfig);
 
   return (
     <div

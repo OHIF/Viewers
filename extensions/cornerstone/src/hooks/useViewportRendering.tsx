@@ -6,6 +6,7 @@ import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
 import { VolumeLightingParams } from '../types';
+import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 
 interface WindowLevelHook {
   // Viewport information
@@ -42,13 +43,23 @@ interface WindowLevelHook {
   volumeRenderingQualityRange: { min: number; max: number; step: number };
 }
 
+const getPosition = (location: number) => {
+  const isLeft = location === ButtonLocation.LeftMiddle;
+  const isRight = location === ButtonLocation.RightMiddle;
+  const isBottom = location === ButtonLocation.BottomMiddle;
+  return isLeft ? 'left' : isRight ? 'right' : isBottom ? 'bottom' : 'top';
+};
+
 /**
  * Hook to access window level functionality for a specific viewport
  *
  * @param viewportId - The ID of the viewport to get window level functionality for
  * @returns Window level API for the specified viewport
  */
-export function useViewportRendering(viewportId?: string): WindowLevelHook {
+export function useViewportRendering(
+  viewportId?: string,
+  options?: { location?: number }
+): WindowLevelHook {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, colorbarService, customizationService } =
     servicesManager.services;
@@ -75,7 +86,7 @@ export function useViewportRendering(viewportId?: string): WindowLevelHook {
   const [is3DVolume, setIs3DVolume] = useState(false);
   const [hasColorbar, setHasColorbar] = useState(colorbarService.hasColorbar(viewportId));
   const [colorbarPosition, setColorbarPosition] = useState<ColorbarPositionType>(
-    colorbarProperties?.colorbarContainerPosition || 'bottom'
+    options?.location ? getPosition(options.location) : 'bottom'
   );
 
   // Get background color for light/dark detection
@@ -176,7 +187,7 @@ export function useViewportRendering(viewportId?: string): WindowLevelHook {
           position: colorbarTickPosition || 'top',
         },
         width: colorbarWidth,
-        position: colorbarPosition || 'bottom',
+        position: colorbarPosition,
         activeColormapName: colorbarInitialColormap || 'Grayscale',
         ...options,
       };

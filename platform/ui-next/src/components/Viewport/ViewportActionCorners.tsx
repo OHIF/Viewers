@@ -43,11 +43,11 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.bottomMiddle]: classNames(
     commonClasses,
-    'absolute bottom-[3px] left-1/2 -translate-x-1/2'
+    'absolute bottom-[3px] left-1/2 -translate-x-1/2 w-full'
   ),
   [ViewportActionCornersLocations.leftMiddle]: classNames(
     commonClasses,
-    'absolute left-[0px] top-1/2 -translate-y-1/2 pl-[4px]'
+    'absolute left-[20px] top-1/2 -translate-y-1/2 pl-[4px]'
   ),
   [ViewportActionCornersLocations.rightMiddle]: classNames(
     commonClasses,

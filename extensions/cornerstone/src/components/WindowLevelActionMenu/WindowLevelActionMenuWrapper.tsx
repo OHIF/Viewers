@@ -11,13 +11,12 @@ import {
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
-import useViewportRendering from '../../hooks/useViewportRendering';
 
 export function WindowLevelActionMenuWrapper(
   props: withAppTypes<{
     viewportId: string;
     element?: HTMLElement;
-    location?: string;
+    location?: number;
     isOpen?: boolean;
     onOpen?: () => void;
     onClose?: () => void;
@@ -39,21 +38,12 @@ export function WindowLevelActionMenuWrapper(
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
-  const { hasColorbar, colorbarPosition, toggleColorbar } = useViewportRendering(viewportId);
-
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
   const { toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
-  const isAdvancedColorbar = hasColorbar && colorbarPosition === 'bottom';
-
   const handleOpenChange = (openState: boolean) => {
-    if (isAdvancedColorbar && openState) {
-      toggleColorbar();
-      return;
-    }
-
     if (openState) {
       onOpen?.();
     } else {
@@ -69,15 +59,7 @@ export function WindowLevelActionMenuWrapper(
     return null;
   }
 
-  const Icon = isAdvancedColorbar ? (
-    <Icons.Close className={'h-5 w-5'} />
-  ) : (
-    <Icons.ViewportWindowLevel className={iconClassName} />
-  );
-
-  if (isAdvancedColorbar && isOpen) {
-    onClose?.();
-  }
+  const Icon = <Icons.ViewportWindowLevel className={iconClassName} />;
 
   return (
     <Popover
