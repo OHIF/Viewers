@@ -1,4 +1,4 @@
-import { ToolButton, utils } from '@ohif/ui-next';
+import { utils } from '@ohif/ui-next';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
@@ -8,6 +8,7 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
+import { ToolButtonWrapper } from './Toolbar/ToolButtonWrapper';
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
@@ -15,7 +16,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // new
     {
       name: 'ohif.toolButton',
-      defaultComponent: ToolButton,
+      defaultComponent: ToolButtonWrapper,
     },
     {
       name: 'ohif.toolButtonList',

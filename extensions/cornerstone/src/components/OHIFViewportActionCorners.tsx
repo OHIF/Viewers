@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewportActionCorners, IconPresentationProvider, Button, ToolButton } from '@ohif/ui-next';
+import { ViewportActionCorners, IconPresentationProvider, ToolButton } from '@ohif/ui-next';
 import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
 import { useViewportHover } from '../hooks';
 
@@ -33,18 +33,42 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
             viewportId={viewportId}
           />
         </ViewportActionCorners.TopLeft>
+        <ViewportActionCorners.TopMiddle>
+          <Toolbar
+            buttonSection="viewportActionMenu.topMiddle"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.TopMiddle>
         <ViewportActionCorners.TopRight>
           <Toolbar
             buttonSection="viewportActionMenu.topRight"
             viewportId={viewportId}
           />
         </ViewportActionCorners.TopRight>
+        <ViewportActionCorners.LeftMiddle>
+          <Toolbar
+            buttonSection="viewportActionMenu.leftMiddle"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.LeftMiddle>
+        <ViewportActionCorners.RightMiddle>
+          <Toolbar
+            buttonSection="viewportActionMenu.rightMiddle"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.RightMiddle>
         <ViewportActionCorners.BottomLeft>
           <Toolbar
             buttonSection="viewportActionMenu.bottomLeft"
             viewportId={viewportId}
           />
         </ViewportActionCorners.BottomLeft>
+        <ViewportActionCorners.BottomMiddle>
+          <Toolbar
+            buttonSection="viewportActionMenu.bottomMiddle"
+            viewportId={viewportId}
+          />
+        </ViewportActionCorners.BottomMiddle>
         <ViewportActionCorners.BottomRight>
           <Toolbar
             buttonSection="viewportActionMenu.bottomRight"

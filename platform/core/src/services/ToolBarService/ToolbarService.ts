@@ -31,6 +31,10 @@ export const TOOLBAR_SECTIONS = {
     topRight: 'viewportActionMenu.topRight',
     bottomLeft: 'viewportActionMenu.bottomLeft',
     bottomRight: 'viewportActionMenu.bottomRight',
+    topMiddle: 'viewportActionMenu.topMiddle',
+    bottomMiddle: 'viewportActionMenu.bottomMiddle',
+    leftMiddle: 'viewportActionMenu.leftMiddle',
+    rightMiddle: 'viewportActionMenu.rightMiddle',
   },
 
   /**
@@ -716,6 +720,14 @@ export default class ToolbarService extends PubSubService {
         return { align: 'start', side: 'top' };
       case 3: // bottomRight
         return { align: 'end', side: 'top' };
+      case 4: // topMiddle
+        return { align: 'center', side: 'bottom' };
+      case 5: // bottomMiddle
+        return { align: 'center', side: 'top' };
+      case 6: // leftMiddle
+        return { align: 'start', side: 'right' };
+      case 7: // rightMiddle
+        return { align: 'end', side: 'left' };
       default:
         return { align: 'start', side: 'bottom' };
     }
