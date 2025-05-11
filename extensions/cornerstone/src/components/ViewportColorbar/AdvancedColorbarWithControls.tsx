@@ -7,6 +7,7 @@ import {
   TickPositionType,
 } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
+import { WindowLevelActionMenuWrapper } from '../WindowLevelActionMenu';
 
 type ColorbarData = {
   colorbar: {
@@ -38,8 +39,8 @@ const AdvancedColorbarWithControls = ({
   position,
   tickPosition,
   colorbarCustomization,
-  onClose,
   viewportElementRef,
+  ...rest
 }: AdvancedColorbarWithControlsProps) => {
   // Get bottom position styles from customization
   const positionStyles = colorbarCustomization?.positionStyles || {};
@@ -49,6 +50,13 @@ const AdvancedColorbarWithControls = ({
   return (
     <div className="mx-auto flex h-[20px] w-1/2 flex-row items-center justify-between">
       <div className="flex flex-shrink-0 flex-row">
+        <WindowLevelActionMenuWrapper
+          viewportId={viewportId}
+          isOpen={true}
+          location="bottom"
+          abbas={true}
+          {...rest}
+        />
         <Button
           size="icon"
           variant="ghost"
