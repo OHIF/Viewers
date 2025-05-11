@@ -7,10 +7,11 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate SR reports correctly', async ({ page }) => {
+test('should hydrate SR reports correctly @debug', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('trackedMeasurements-btn').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await page.waitForTimeout(2000);
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
 
   await page.evaluate(() => {
@@ -33,6 +34,7 @@ test('should hydrate SR reports correctly', async ({ page }) => {
   });
 
   await page.getByTestId('yes-hydrate-btn').click();
+  await page.waitForTimeout(2000);
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
 
   await page.evaluate(() => {
@@ -55,5 +57,6 @@ test('should hydrate SR reports correctly', async ({ page }) => {
   });
 
   await page.getByTestId('data-row').first().click();
+  await page.waitForTimeout(2000);
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
 });

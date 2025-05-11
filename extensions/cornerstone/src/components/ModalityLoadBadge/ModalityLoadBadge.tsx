@@ -127,16 +127,20 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
             <StatusIcon />
             <span className="ml-1">{statusInfo.type}</span>
           </div>
-          <ViewportActionButton
-            onInteraction={() => {
-              commandsManager.runCommand('hydrateSecondaryDisplaySet', {
-                displaySet: statusInfo.displaySet,
-                viewportId,
-              });
-            }}
-          >
-            {loadStr}
-          </ViewportActionButton>
+          {/* We don't show the load button for SRs because we handle it in the SR extension
+          via the tracked measurement context that works with state machine, this is not a regression right now  */}
+          {statusInfo.type !== 'SR' && (
+            <ViewportActionButton
+              onInteraction={() => {
+                commandsManager.runCommand('hydrateSecondaryDisplaySet', {
+                  displaySet: statusInfo.displaySet,
+                  viewportId,
+                });
+              }}
+            >
+              {loadStr}
+            </ViewportActionButton>
+          )}
         </div>
       );
     }
