@@ -3,7 +3,6 @@ import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
-import { CineActionMenuWrapper } from './components/CineActionMenu/CineActionMenuWrapper';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
@@ -216,41 +215,6 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         return {
           disabled: !supportWindowLevel,
-        };
-      },
-    },
-    {
-      name: 'ohif.cineMenu',
-      defaultComponent: CineActionMenuWrapper,
-    },
-    {
-      name: 'evaluate.cineMenu',
-      evaluate: ({ viewportId }) => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-        if (!viewport) {
-          return {
-            disabled: true,
-          };
-        }
-
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-        if (!displaySetUIDs?.length) {
-          return {
-            disabled: true,
-          };
-        }
-
-        // Check if the viewport type supports cine
-        // Volume3D viewports currently don't support cine
-        if (viewport.type === 'volume3d') {
-          return {
-            disabled: true,
-          };
-        }
-
-        return {
-          disabled: false,
         };
       },
     },

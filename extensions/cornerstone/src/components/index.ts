@@ -8,6 +8,5 @@ export * from './StudyMeasurementsActions';
 export * from './MeasurementsOrAdditionalFindings';
 export * from './WindowLevelActionMenu';
 export * from './ModalityLoadBadge';
-export * from './CineActionMenu';
 
 export { DicomUpload };

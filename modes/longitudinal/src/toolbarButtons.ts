@@ -110,16 +110,6 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'cineMenu',
-    uiType: 'ohif.cineMenu',
-    props: {
-      icon: 'Cine',
-      label: 'Cine',
-      tooltip: 'Toggle CINE player and control playback',
-      evaluate: 'evaluate.cineMenu',
-    },
-  },
-  {
     id: 'Reset',
     uiType: 'ohif.toolButton',
     props: {
