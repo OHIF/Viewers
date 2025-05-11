@@ -214,6 +214,7 @@ export function useViewportSegmentations({
     displaySetService,
     debounceTime,
     subscribeToDataModified,
+    viewportId,
   ]);
 
   return segmentationsWithRepresentations;
