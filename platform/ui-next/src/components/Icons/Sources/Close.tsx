@@ -3,9 +3,9 @@ import type { IconProps } from '../types';
 
 export const Close = (props: IconProps) => (
   <svg
-    width="12"
-    height="12"
-    viewBox="0 0 12 12"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >

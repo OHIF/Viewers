@@ -38,6 +38,7 @@ interface ToolButtonProps {
   commands?: Record<string, unknown>;
   onInteraction?: (details: { itemId: string; commands?: Record<string, unknown> }) => void;
   className?: string;
+  children?: React.ReactNode;
 }
 
 function ToolButton(props: ToolButtonProps) {
@@ -53,6 +54,7 @@ function ToolButton(props: ToolButtonProps) {
     commands,
     onInteraction,
     className,
+    children,
   } = props;
 
   const { className: iconClassName } = useIconPresentation();
@@ -96,10 +98,12 @@ function ToolButton(props: ToolButtonProps) {
             aria-label={defaultTooltip}
             disabled={disabled}
           >
-            <Icons.ByName
-              name={icon}
-              className={iconClassName || iconSizeClass}
-            />
+            {children || (
+              <Icons.ByName
+                name={icon}
+                className={iconClassName || iconSizeClass}
+              />
+            )}
           </Button>
         </span>
       </TooltipTrigger>

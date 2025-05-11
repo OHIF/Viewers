@@ -1,11 +1,11 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useSystem } from '@ohif/core';
-import { useViewportDisplaySets } from '../useViewportDisplaySets';
+import { useViewportDisplaySets } from './useViewportDisplaySets';
 import { StackViewport, Types, VolumeViewport3D, utilities } from '@cornerstonejs/core';
-import { WindowLevelPreset } from '../../types/WindowLevel';
-import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../../types/Colorbar';
-import { VolumeRenderingConfig } from '../../types/VolumeRenderingConfig';
-import { VolumeLightingParams } from '../../types';
+import { WindowLevelPreset } from '../types/WindowLevel';
+import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
+import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
+import { VolumeLightingParams } from '../types';
 
 interface WindowLevelHook {
   // Viewport information
@@ -48,7 +48,7 @@ interface WindowLevelHook {
  * @param viewportId - The ID of the viewport to get window level functionality for
  * @returns Window level API for the specified viewport
  */
-export function useWindowLevel(viewportId?: string): WindowLevelHook {
+export function useViewportRendering(viewportId?: string): WindowLevelHook {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, colorbarService, customizationService } =
     servicesManager.services;
@@ -402,4 +402,4 @@ export function useWindowLevel(viewportId?: string): WindowLevelHook {
   };
 }
 
-export default useWindowLevel;
+export default useViewportRendering;

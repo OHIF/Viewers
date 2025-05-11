@@ -1,10 +1,10 @@
 import React, { ReactElement, useRef, useState } from 'react';
 import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
-import { useWindowLevel } from '../../hooks/useWindowLevel';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
 
 export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { colorbarProperties, displaySets, setColormap, getViewportColormap } =
-    useWindowLevel(viewportId);
+    useViewportRendering(viewportId);
 
   // Use state to keep track of the active display set for this component
   const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets?.[0]);

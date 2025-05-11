@@ -4,10 +4,10 @@ import { VolumeRenderingQuality } from './VolumeRenderingQuality';
 import { VolumeShift } from './VolumeShift';
 import { VolumeLighting } from './VolumeLighting';
 import { VolumeShade } from './VolumeShade';
-import { useWindowLevel } from '../../hooks/useWindowLevel';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
 
 export function VolumeRenderingOptions({ viewportId }: { viewportId?: string } = {}): ReactElement {
-  const { volumeRenderingQualityRange } = useWindowLevel(viewportId);
+  const { volumeRenderingQualityRange } = useViewportRendering(viewportId);
   const [hasShade, setShade] = useState(false);
   return (
     <AllInOneMenu.ItemPanel>

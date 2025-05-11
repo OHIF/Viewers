@@ -11,6 +11,7 @@ import {
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import useViewportRendering from '../../hooks/useViewportRendering';
 
 export function WindowLevelActionMenuWrapper(
   props: withAppTypes<{
@@ -37,16 +38,12 @@ export function WindowLevelActionMenuWrapper(
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
+  const { hasColorbar } = useViewportRendering(viewportId);
+
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
-  const { customizationService, toolbarService } = servicesManager.services;
+  const { toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
-
-  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
-  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
-
-  const { volumeRenderingPresets, volumeRenderingQualityRange } =
-    customizationService.getCustomization('cornerstone.3dVolumeRendering');
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
@@ -58,19 +55,17 @@ export function WindowLevelActionMenuWrapper(
 
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
-  const displaySetPresets = displaySets
-    .filter(displaySet => presets[displaySet.Modality])
-    .map(displaySet => {
-      return { [displaySet.Modality]: presets[displaySet.Modality] };
-    });
-
   const modalities = displaySets.map(displaySet => displaySet.supportsWindowLevel);
 
   if (modalities.length === 0) {
     return null;
   }
 
-  const Icon = <Icons.ViewportWindowLevel className={iconClassName} />;
+  const Icon = hasColorbar ? (
+    <Icons.Close className={'h-5 w-5'} />
+  ) : (
+    <Icons.ViewportWindowLevel className={iconClassName} />
+  );
 
   return (
     <Popover
@@ -87,7 +82,6 @@ export function WindowLevelActionMenuWrapper(
               disabled={disabled}
               {...rest}
               {...containerProps}
-              icon="ViewportWindowLevel"
             >
               {Icon}
             </IconContainer>

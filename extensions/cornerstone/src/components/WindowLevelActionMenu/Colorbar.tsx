@@ -1,9 +1,9 @@
 import React, { ReactElement, useCallback } from 'react';
 import { Switch } from '@ohif/ui-next';
-import { useWindowLevel } from '../../hooks/useWindowLevel';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
 
 export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement {
-  const { hasColorbar, toggleColorbar } = useWindowLevel(viewportId);
+  const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
 
   const handleToggle = useCallback(() => {
     toggleColorbar();

@@ -6,7 +6,7 @@ import { Colorbar } from './Colorbar';
 import { WindowLevel } from './WindowLevel';
 import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
-import { useWindowLevel } from '../../hooks/useWindowLevel';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -49,7 +49,7 @@ export function WindowLevelActionMenuContent({
     windowLevelPresets,
     volumeRenderingPresets,
     volumeRenderingQualityRange,
-  } = useWindowLevel(viewportId);
+  } = useViewportRendering(viewportId);
 
   return (
     <AllInOneMenu.Menu
