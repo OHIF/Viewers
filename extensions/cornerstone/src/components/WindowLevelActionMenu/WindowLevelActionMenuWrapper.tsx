@@ -38,7 +38,7 @@ export function WindowLevelActionMenuWrapper(
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
-  const { hasColorbar } = useViewportRendering(viewportId);
+  const { hasColorbar, colorbarPosition } = useViewportRendering(viewportId);
 
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
@@ -61,11 +61,12 @@ export function WindowLevelActionMenuWrapper(
     return null;
   }
 
-  const Icon = hasColorbar ? (
-    <Icons.Close className={'h-5 w-5'} />
-  ) : (
-    <Icons.ViewportWindowLevel className={iconClassName} />
-  );
+  const Icon =
+    hasColorbar && colorbarPosition === 'bottom' ? (
+      <Icons.Close className={'h-5 w-5'} />
+    ) : (
+      <Icons.ViewportWindowLevel className={iconClassName} />
+    );
 
   return (
     <Popover
