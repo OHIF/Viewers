@@ -5,8 +5,8 @@ import { StackViewport, Types, VolumeViewport3D, utilities } from '@cornerstonej
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../../types/Colorbar';
 import { VolumeRenderingConfig } from '../../types/VolumeRenderingConfig';
+import { VolumeLightingParams } from '../../types';
 
-// Interface for the return value of the useWindowLevel hook
 interface WindowLevelHook {
   // Viewport information
   is3DVolume: boolean;
@@ -15,6 +15,7 @@ interface WindowLevelHook {
 
   // Window level functions
   setWindowLevelPreset: (preset: WindowLevelPreset) => void;
+  windowLevelPresets: Array<Record<string, any>>;
 
   // Colorbar functions
   hasColorbar: boolean;
@@ -37,9 +38,6 @@ interface WindowLevelHook {
   setVolumeRenderingQuality: (quality: number) => void;
   setVolumeLighting: (params: { ambient: number; diffuse: number; specular: number }) => void;
   setVolumeShading: (enabled: boolean) => void;
-
-  // Presets
-  windowLevelPresets: Array<Record<string, any>>;
   volumeRenderingPresets: Array<any>;
   volumeRenderingQualityRange: { min: number; max: number; step: number };
 }
@@ -60,9 +58,10 @@ export function useWindowLevel(viewportId?: string): WindowLevelHook {
   const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
 
   // Get customizations
-  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets') || {};
-  const colorbarProperties =
-    (customizationService.getCustomization('cornerstone.colorbar') as ColorbarProperties) || {};
+  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
+  const colorbarProperties = customizationService.getCustomization(
+    'cornerstone.colorbar'
+  ) as ColorbarProperties;
 
   const {
     volumeRenderingPresets = [],
@@ -219,16 +218,8 @@ export function useWindowLevel(viewportId?: string): WindowLevelHook {
     ]
   );
 
-  // Colormap functions
-  interface SetColormapParams {
-    colormap: any;
-    displaySetInstanceUID: string;
-    opacity?: number;
-    immediate?: boolean;
-  }
-
   const setColormap = useCallback(
-    ({ colormap, displaySetInstanceUID, opacity = 1, immediate = false }: SetColormapParams) => {
+    ({ colormap, displaySetInstanceUID, opacity = 1, immediate = false }) => {
       if (!viewportId) {
         return;
       }
@@ -338,12 +329,6 @@ export function useWindowLevel(viewportId?: string): WindowLevelHook {
     },
     [commandsManager, viewportId]
   );
-
-  interface VolumeLightingParams {
-    ambient: number;
-    diffuse: number;
-    specular: number;
-  }
 
   const setVolumeLighting = useCallback(
     ({ ambient, diffuse, specular }: VolumeLightingParams) => {

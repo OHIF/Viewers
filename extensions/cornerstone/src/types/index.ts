@@ -7,3 +7,4 @@ export * from './Presentation';
 export * from './ViewportPresets';
 export * from './WindowLevel';
 export * from './VolumeRenderingConfig';
+export * from './VolumeLighting';
