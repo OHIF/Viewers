@@ -6,6 +6,7 @@ import {
   StudyMeasurements,
   StudySummaryFromMetadata,
   AccordionGroup,
+  StudyMeasurementsActions,
   MeasurementsOrAdditionalFindings,
 } from '@ohif/extension-cornerstone';
 
