@@ -4,10 +4,10 @@ import { useToolbar } from '@ohif/core';
 interface ToolbarProps {
   buttonSection?: string;
   viewportId?: string;
-  iconSize?: number;
+  location?: number;
 }
 
-export function Toolbar({ buttonSection = 'primary', viewportId, iconSize = 24 }: ToolbarProps) {
+export function Toolbar({ buttonSection = 'primary', viewportId, location }: ToolbarProps) {
   const {
     toolbarButtons,
     onInteraction,
@@ -48,7 +48,7 @@ export function Toolbar({ buttonSection = 'primary', viewportId, iconSize = 24 }
           <Component
             key={id}
             id={id}
-            iconSize={iconSize}
+            location={location}
             onInteraction={args => {
               onInteraction({
                 ...args,

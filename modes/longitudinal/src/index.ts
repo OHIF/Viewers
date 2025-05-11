@@ -104,21 +104,22 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
-        'Zoom',
         'orientationMenu',
         'dataOverlayMenu',
       ]);
 
-      // toolbarService.updateSection(toolbarService.sections.viewportActionMenu.leftMiddle, ['Zoom']);
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.leftMiddle, [
+        'Colorbar',
+      ]);
 
-      // toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
-      //   'modalityLoadBadge',
-      //   'trackingStatus',
-      //   'navigationComponent',
-      // ]);
-      // toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
-      //   'windowLevelMenu',
-      // ]);
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
 
       toolbarService.updateSection(toolbarService.sections.measurementSection, [
         'Length',

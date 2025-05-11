@@ -8,7 +8,6 @@ import {
 } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import { WindowLevelActionMenuWrapper } from '../WindowLevelActionMenu';
-import { useToolbar } from '@ohif/core/src';
 
 type ColorbarData = {
   colorbar: {

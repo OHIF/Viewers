@@ -8,7 +8,7 @@ import { deepMerge } from '@cornerstonejs/core/utilities';
 
 type ViewportColorbarsContainerProps = {
   viewportId: string;
-  viewportElementRef?: React.RefObject<HTMLDivElement>;
+  location: string;
 };
 
 type ColorbarData = {
@@ -24,13 +24,10 @@ type ColorbarData = {
  * Container component that manages multiple colorbars for a viewport
  * It interacts with the colorbarService to get/set colorbar states
  */
-const ViewportColorbarsContainer = ({
-  viewportId,
-  viewportElementRef,
-}: ViewportColorbarsContainerProps) => {
+const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsContainerProps) => {
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
-  const { colorbarService, customizationService } = servicesManager.services;
+  const { colorbarService, customizationService, toolbarService } = servicesManager.services;
 
   useEffect(() => {
     setColorbars(colorbarService.getViewportColorbar(viewportId) || []);
@@ -62,6 +59,11 @@ const ViewportColorbarsContainer = ({
   if (!colorbars.length) {
     return null;
   }
+
+  const { align, side } = toolbarService.getAlignAndSide(location);
+  console.debug('location', location);
+  console.debug('align', align);
+  console.debug('side', side);
 
   const colorbarCustomization = customizationService.getCustomization(
     'cornerstone.colorbar'
@@ -114,7 +116,6 @@ const ViewportColorbarsContainer = ({
                 colormaps={colorbar.colormaps}
                 activeColormapName={colorbar.activeColormapName}
                 volumeId={colorbar.volumeId}
-                viewportElementRef={viewportElementRef}
                 position={position}
                 tickPosition={tickPosition}
                 tickStyles={colorbarCustomization?.tickStyles}
@@ -130,7 +131,6 @@ const ViewportColorbarsContainer = ({
           tickPosition={defaultTickPosition}
           colorbarCustomization={colorbarCustomization}
           onClose={handleClose}
-          viewportElementRef={viewportElementRef}
         />
       )}
     </div>

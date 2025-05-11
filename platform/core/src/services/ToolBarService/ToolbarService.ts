@@ -48,6 +48,17 @@ export const TOOLBAR_SECTIONS = {
   moreToolsSection: 'moreToolsSection',
 };
 
+export enum ButtonLocation {
+  TopLeft = 0,
+  TopMiddle = 1,
+  TopRight = 2,
+  LeftMiddle = 3,
+  RightMiddle = 4,
+  BottomLeft = 5,
+  BottomMiddle = 6,
+  BottomRight = 7,
+}
+
 export default class ToolbarService extends PubSubService {
   public static REGISTRATION = {
     name: 'toolbarService',
@@ -706,29 +717,30 @@ export default class ToolbarService extends PubSubService {
    * @param location - The viewport corner location
    * @returns An object with align and side properties
    */
-  public getAlignAndSide(location: number): {
+  public getAlignAndSide(location: ButtonLocation | string): {
     align: 'start' | 'end' | 'center';
     side: 'top' | 'bottom' | 'left' | 'right';
   } {
-    // Convert the numeric location into alignment and side values
-    switch (location) {
-      case 0: // topLeft
+    const locationNumber = Number(location);
+    switch (locationNumber) {
+      case ButtonLocation.TopLeft: // Enum 0, Original 0 (topLeft)
         return { align: 'start', side: 'bottom' };
-      case 1: // topRight
-        return { align: 'end', side: 'bottom' };
-      case 2: // bottomLeft
-        return { align: 'start', side: 'top' };
-      case 3: // bottomRight
-        return { align: 'end', side: 'top' };
-      case 4: // topMiddle
+      case ButtonLocation.TopMiddle: // Enum 1, Original 4 (topMiddle)
         return { align: 'center', side: 'bottom' };
-      case 5: // bottomMiddle
-        return { align: 'center', side: 'top' };
-      case 6: // leftMiddle
+      case ButtonLocation.TopRight: // Enum 2, Original 1 (topRight)
+        return { align: 'end', side: 'bottom' };
+      case ButtonLocation.LeftMiddle: // Enum 3, Original 6 (leftMiddle)
         return { align: 'start', side: 'right' };
-      case 7: // rightMiddle
+      case ButtonLocation.RightMiddle: // Enum 4, Original 7 (rightMiddle)
         return { align: 'end', side: 'left' };
+      case ButtonLocation.BottomLeft: // Enum 5, Original 2 (bottomLeft)
+        return { align: 'start', side: 'top' };
+      case ButtonLocation.BottomMiddle: // Enum 6, Original 5 (bottomMiddle)
+        return { align: 'center', side: 'top' };
+      case ButtonLocation.BottomRight: // Enum 7, Original 3 (bottomRight)
+        return { align: 'end', side: 'top' };
       default:
+        // Default to TopLeft behavior if an unexpected value is passed.
         return { align: 'start', side: 'bottom' };
     }
   }

@@ -532,6 +532,14 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'Colorbar',
+    uiType: 'ohif.colorbar',
+    props: {
+      type: 'tool',
+      label: 'Colorbar',
+    },
+  },
+  {
     id: 'TrackballRotate',
     uiType: 'ohif.toolButton',
     props: {

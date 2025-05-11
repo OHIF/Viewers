@@ -23,7 +23,6 @@ export function WindowLevelActionMenuWrapper(
     onClose?: () => void;
     displaySets?: Array<AppTypes.DisplaySet>;
     disabled?: boolean;
-    abbas?: boolean;
   }>
 ): ReactNode {
   const {
@@ -34,9 +33,9 @@ export function WindowLevelActionMenuWrapper(
     onOpen,
     onClose,
     disabled,
-    abbas,
     ...rest
   } = props;
+
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
 
@@ -47,7 +46,7 @@ export function WindowLevelActionMenuWrapper(
   const { toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
-  const isAdvancedColorbar = !abbas && hasColorbar && colorbarPosition === 'bottom';
+  const isAdvancedColorbar = hasColorbar && colorbarPosition === 'bottom';
 
   const handleOpenChange = (openState: boolean) => {
     if (isAdvancedColorbar && openState) {
@@ -62,7 +61,7 @@ export function WindowLevelActionMenuWrapper(
     }
   };
 
-  const { align, side } = toolbarService.getAlignAndSide(Number(location));
+  const { align, side } = toolbarService.getAlignAndSide(location);
 
   const modalities = displaySets.map(displaySet => displaySet.supportsWindowLevel);
 

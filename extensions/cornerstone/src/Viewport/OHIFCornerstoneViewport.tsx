@@ -357,10 +357,6 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId={viewportId}
             servicesManager={servicesManager}
           />
-          <ViewportColorbarsContainer
-            viewportId={viewportId}
-            viewportElementRef={elementRef}
-          />
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">

@@ -36,8 +36,7 @@ export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): Rea
   const { servicesManager } = useSystem();
   const { toolbarService } = servicesManager.services;
 
-  // Get alignment and side from the toolbar service
-  const { align, side } = toolbarService.getAlignAndSide(Number(location));
+  const { align, side } = toolbarService.getAlignAndSide(location);
 
   const Icon = <Icons.ViewportViews className={iconClassName} />;
 

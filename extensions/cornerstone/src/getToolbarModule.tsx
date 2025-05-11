@@ -6,6 +6,7 @@ import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
+import ViewportColorbarsContainer from './components/ViewportColorbar';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -24,6 +25,10 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
   } = servicesManager.services;
 
   return [
+    {
+      name: 'ohif.colorbar',
+      defaultComponent: ViewportColorbarsContainer,
+    },
     {
       name: 'ohif.trackingStatus',
       defaultComponent: TrackingStatus,
