@@ -60,10 +60,7 @@ import StudyMeasurements from '../components/StudyMeasurements';
 export default function PanelMeasurement(props): React.ReactNode {
   const { measurementFilter, emptyComponent: EmptyComponent, children } = props;
 
-  const system = useSystem();
-  const displayMeasurements = useMeasurements(system.servicesManager, {
-    measurementFilter,
-  });
+  const displayMeasurements = useMeasurements({ measurementFilter });
 
   if (!displayMeasurements.length) {
     return EmptyComponent ? (
