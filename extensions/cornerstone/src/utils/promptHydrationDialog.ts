@@ -37,7 +37,7 @@ const RESPONSE = {
 function getCustomizationMessageKey(type: string): string {
   switch (type) {
     case HydrationType.RTSTRUCT:
-      return 'viewportNotification.hydrateRTSSMessage';
+      return 'viewportNotification.hydrateRTMessage';
     case HydrationType.SEG:
       return 'viewportNotification.hydrateSEGMessage';
     case HydrationType.SR:
