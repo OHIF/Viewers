@@ -6,7 +6,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  AllInOneMenu,
   useViewportGrid,
   useIconPresentation,
 } from '@ohif/ui-next';

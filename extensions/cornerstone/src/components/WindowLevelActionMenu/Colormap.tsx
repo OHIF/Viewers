@@ -1,15 +1,19 @@
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
+import { useWindowLevel } from '../../hooks/useWindowLevel';
 
-import { StackViewport, Types } from '@cornerstonejs/core';
-import { ColormapProps } from '../../types/Colormap';
-import { useSystem } from '@ohif/core';
+export function Colormap(): ReactElement {
+  const {
+    colorbarProperties,
+    displaySets,
+    setColormap,
+    getViewportColormap,
+    activeDisplaySet,
+    setActiveDisplaySet,
+    viewportId,
+  } = useWindowLevel();
 
-export function Colormap({ colormaps, viewportId, displaySets }: ColormapProps): ReactElement {
-  const { servicesManager, commandsManager } = useSystem();
-  const { cornerstoneViewportService } = servicesManager.services;
-
-  const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets[0]);
+  const { colormaps } = colorbarProperties;
 
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
@@ -21,53 +25,22 @@ export function Colormap({ colormaps, viewportId, displaySets }: ColormapProps):
   const activeDisplaySetRef = useRef(activeDisplaySet);
   activeDisplaySetRef.current = activeDisplaySet;
 
-  const onSetColorLUT = useCallback(
-    props => {
-      // TODO: Better way to check if it's a fusion
-      const oneOpacityColormaps = ['Grayscale', 'X Ray'];
-      const opacity =
-        displaySets.length > 1 && !oneOpacityColormaps.includes(props.colormap.name) ? 0.5 : 1;
-      commandsManager.run({
-        commandName: 'setViewportColormap',
-        commandOptions: {
-          ...props,
-          opacity,
-          immediate: true,
-        },
-        context: 'CORNERSTONE',
-      });
-    },
-    [commandsManager]
-  );
+  const handleSetColorLUT = props => {
+    // Check if it's a fusion viewport
+    const oneOpacityColormaps = ['Grayscale', 'X Ray'];
+    const opacity =
+      displaySets.length > 1 && !oneOpacityColormaps.includes(props.colormap.name) ? 0.5 : 1;
 
-  const getViewportColormap = (viewportId, displaySet) => {
-    const { displaySetInstanceUID } = displaySet;
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    if (viewport instanceof StackViewport) {
-      const { colormap } = viewport.getProperties();
-      if (!colormap) {
-        return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
-      }
-      return colormap;
-    }
-    const actorEntries = viewport.getActors();
-    const actorEntry = actorEntries?.find(entry =>
-      entry.referencedId.includes(displaySetInstanceUID)
-    );
-    const { colormap } = (viewport as Types.IVolumeViewport).getProperties(actorEntry.referencedId);
-    if (!colormap) {
-      return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
-    }
-    return colormap;
+    setColormap({
+      ...props,
+      opacity,
+      immediate: true,
+    });
   };
 
   const activeIndex = displaySets.findIndex(
-    ds => ds.displaySetInstanceUID === activeDisplaySetRef.current.displaySetInstanceUID
+    ds => ds.displaySetInstanceUID === activeDisplaySetRef.current?.displaySetInstanceUID
   );
-
-  useEffect(() => {
-    setActiveDisplaySet(displaySets[displaySets.length - 1]);
-  }, [displaySets]);
 
   return (
     <>
@@ -118,17 +91,17 @@ export function Colormap({ colormaps, viewportId, displaySets }: ColormapProps):
             label={colormap.description}
             useIconSpace={false}
             onClick={() => {
-              onSetColorLUT({
+              handleSetColorLUT({
                 viewportId,
                 colormap,
-                displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
+                displaySetInstanceUID: activeDisplaySetRef.current?.displaySetInstanceUID,
               });
               setPrePreviewColormap(null);
             }}
             onMouseEnter={() => {
-              if (showPreviewRef.current) {
-                setPrePreviewColormap(getViewportColormap(viewportId, activeDisplaySetRef.current));
-                onSetColorLUT({
+              if (showPreviewRef.current && activeDisplaySetRef.current) {
+                setPrePreviewColormap(getViewportColormap(activeDisplaySetRef.current));
+                handleSetColorLUT({
                   viewportId,
                   colormap,
                   displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
@@ -136,8 +109,12 @@ export function Colormap({ colormaps, viewportId, displaySets }: ColormapProps):
               }
             }}
             onMouseLeave={() => {
-              if (showPreviewRef.current && prePreviewColormapRef.current) {
-                onSetColorLUT({
+              if (
+                showPreviewRef.current &&
+                prePreviewColormapRef.current &&
+                activeDisplaySetRef.current
+              ) {
+                handleSetColorLUT({
                   viewportId,
                   colormap: prePreviewColormapRef.current,
                   displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,

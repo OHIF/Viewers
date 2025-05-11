@@ -1,31 +1,11 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement } from 'react';
 import { AllInOneMenu } from '@ohif/ui-next';
-import { WindowLevelPreset } from '../../types/WindowLevel';
-import { useSystem } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
+import { useWindowLevel } from '../../hooks/useWindowLevel';
 
-export type WindowLevelProps = {
-  viewportId: string;
-  presets: Array<Record<string, Array<WindowLevelPreset>>>;
-};
-
-export function WindowLevel({ viewportId, presets }: WindowLevelProps): ReactElement {
-  const { commandsManager } = useSystem();
+export function WindowLevel(): ReactElement {
+  const { presets, setWindowLevelPreset } = useWindowLevel();
   const { t } = useTranslation('WindowLevelActionMenu');
-
-  const onSetWindowLevel = useCallback(
-    props => {
-      commandsManager.run({
-        commandName: 'setViewportWindowLevel',
-        commandOptions: {
-          ...props,
-          viewportId,
-        },
-        context: 'CORNERSTONE',
-      });
-    },
-    [commandsManager, viewportId]
-  );
 
   return (
     <AllInOneMenu.ItemPanel>
@@ -42,7 +22,7 @@ export function WindowLevel({ viewportId, presets }: WindowLevelProps): ReactEle
                   label={preset.description}
                   secondaryLabel={`${preset.window} / ${preset.level}`}
                   useIconSpace={false}
-                  onClick={() => onSetWindowLevel(preset)}
+                  onClick={() => setWindowLevelPreset(preset)}
                 />
               ))}
             </React.Fragment>

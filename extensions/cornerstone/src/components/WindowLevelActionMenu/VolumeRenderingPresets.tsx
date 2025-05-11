@@ -1,14 +1,12 @@
 import { AllInOneMenu } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import React, { ReactElement } from 'react';
-import { VolumeRenderingPresetsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
 import { useSystem } from '@ohif/core';
+import { useWindowLevel } from '../../hooks/useWindowLevel';
 
-export function VolumeRenderingPresets({
-  viewportId,
-  volumeRenderingPresets,
-}: VolumeRenderingPresetsProps): ReactElement {
+export function VolumeRenderingPresets(): ReactElement {
+  const { volumeRenderingPresets, viewportId } = useWindowLevel();
   const { servicesManager } = useSystem();
   const { uiDialogService } = servicesManager.services;
 
