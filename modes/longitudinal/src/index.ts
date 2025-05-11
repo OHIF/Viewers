@@ -100,9 +100,6 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'orientationMenu',
-        'dataOverlayMenu',
-        'windowLevelMenu',
         'MoreTools',
       ]);
 
@@ -234,7 +231,7 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
               rightPanels: [cornerstone.segmentation, tracked.measurements],
-              // rightPanelClosed: true,
+              rightPanelClosed: true,
               rightPanelResizable: true,
               viewports: [
                 {

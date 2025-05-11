@@ -74,6 +74,12 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+        'windowLevelMenu',
+      ]);
+
       toolbarService.updateSection('moreToolsSection', [
         'Reset',
         'rotate-right',

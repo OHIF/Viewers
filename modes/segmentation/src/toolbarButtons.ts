@@ -18,6 +18,40 @@ const callbacks = (toolName: string) => [
 ];
 
 const toolbarButtons: Button[] = [
+  {
+    id: 'dataOverlayMenu',
+    uiType: 'ohif.dataOverlayMenu',
+    props: {
+      icon: 'ViewportViews',
+      label: 'Data Overlay',
+      tooltip: 'Configure data overlay options and manage foreground/background display sets',
+      evaluate: 'evaluate.dataOverlayMenu',
+    },
+  },
+  {
+    id: 'orientationMenu',
+    uiType: 'ohif.orientationMenu',
+    props: {
+      icon: 'OrientationSwitch',
+      label: 'Orientation',
+      tooltip:
+        'Change viewport orientation between axial, sagittal, coronal and acquisition planes',
+      evaluate: {
+        name: 'evaluate.orientationMenu',
+        // hideWhenDisabled: true,
+      },
+    },
+  },
+  {
+    id: 'windowLevelMenu',
+    uiType: 'ohif.windowLevelMenu',
+    props: {
+      icon: 'WindowLevel',
+      label: 'Window Level',
+      tooltip: 'Adjust window/level presets and customize image contrast settings',
+      evaluate: 'evaluate.windowLevelMenu',
+    },
+  },
   // sections
   {
     id: 'MoreTools',

@@ -96,6 +96,13 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
       ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+        'windowLevelMenu',
+      ]);
+
       toolbarService.updateSection('measurementSection', [
         'Length',
         'Bidirectional',

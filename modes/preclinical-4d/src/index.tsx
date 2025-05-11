@@ -58,6 +58,12 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.updateSection('secondary', ['ProgressDropdown']);
 
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+        'windowLevelMenu',
+      ]);
+
       // the primary button section is created in the workflow steps
       // specific to the step
       customizationService.setCustomizations({
