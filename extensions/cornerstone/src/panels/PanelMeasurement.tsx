@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSystem } from '@ohif/core';
 
 import { useMeasurements } from '../hooks/useMeasurements';
 import StudyMeasurements from '../components/StudyMeasurements';

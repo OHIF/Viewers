@@ -25,7 +25,6 @@ export type WindowLevelActionMenuProps = {
   volumeRenderingPresets: Array<ViewportPreset>;
   volumeRenderingQualityRange: VolumeRenderingQualityRange;
   location?: string;
-  // New props for menu positioning
   align?: 'start' | 'end' | 'center';
   side?: 'top' | 'bottom' | 'left' | 'right';
 };
@@ -34,8 +33,6 @@ export function WindowLevelActionMenu({
   viewportId,
   element,
   presets,
-  verticalDirection,
-  horizontalDirection,
   colorbarProperties,
   displaySets,
   volumeRenderingPresets,

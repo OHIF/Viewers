@@ -41,8 +41,6 @@ export function setViewportColorbar(
 export function Colorbar({
   viewportId,
   colorbarProperties,
-  showAdvancedColorbar,
-  setShowAdvancedColorbar,
 }: withAppTypes<ColorbarProps>): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
   const { colorbarService } = servicesManager.services;
