@@ -5,6 +5,7 @@ import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import ViewportColorbar from './ViewportColorbar';
 import { deepMerge } from '@cornerstonejs/core/utilities';
+import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 
 type ViewportColorbarsContainerProps = {
   viewportId: string;
@@ -20,6 +21,13 @@ type ColorbarData = {
   displaySetInstanceUID: string;
 };
 
+const getPosition = (location: number) => {
+  const isLeft = location === ButtonLocation.LeftMiddle;
+  const isRight = location === ButtonLocation.RightMiddle;
+  const isBottom = location === ButtonLocation.BottomMiddle;
+  return isLeft ? 'left' : isRight ? 'right' : isBottom ? 'bottom' : 'top';
+};
+
 /**
  * Container component that manages multiple colorbars for a viewport
  * It interacts with the colorbarService to get/set colorbar states
@@ -27,7 +35,7 @@ type ColorbarData = {
 const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsContainerProps) => {
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
-  const { colorbarService, customizationService, toolbarService } = servicesManager.services;
+  const { colorbarService, customizationService } = servicesManager.services;
 
   useEffect(() => {
     setColorbars(colorbarService.getViewportColorbar(viewportId) || []);
@@ -60,22 +68,15 @@ const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsC
     return null;
   }
 
-  const { align, side } = toolbarService.getAlignAndSide(location);
-  console.debug('location', location);
-  console.debug('align', align);
-  console.debug('side', side);
-
   const colorbarCustomization = customizationService.getCustomization(
     'cornerstone.colorbar'
   ) as unknown as ColorbarCustomization;
 
-  const defaultPosition = colorbarCustomization?.colorbarContainerPosition;
   const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
 
-  const position = colorbarCustomization?.colorbarContainerPosition || defaultPosition;
   const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
   const positionStyles = colorbarCustomization?.positionStyles;
-
+  const position = getPosition(location);
   const positionStyle = positionStyles?.[position];
 
   const defaultPositionStyle =
