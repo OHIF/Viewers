@@ -3,7 +3,46 @@ import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from '../useViewportDisplaySets';
 import { StackViewport, Types, VolumeViewport3D, utilities } from '@cornerstonejs/core';
 import { WindowLevelPreset } from '../../types/WindowLevel';
-import { ColorbarPositionType, ColorbarOptions } from '../../types/Colorbar';
+import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../../types/Colorbar';
+import { VolumeRenderingConfig } from '../../types/VolumeRenderingConfig';
+
+// Interface for the return value of the useWindowLevel hook
+interface WindowLevelHook {
+  // Viewport information
+  is3DVolume: boolean;
+  isViewportBackgroundLight: boolean;
+  displaySets: AppTypes.DisplaySet[] | undefined;
+
+  // Window level functions
+  setWindowLevelPreset: (preset: WindowLevelPreset) => void;
+
+  // Colorbar functions
+  hasColorbar: boolean;
+  toggleColorbar: (options?: Partial<ColorbarOptions>) => void;
+  colorbarProperties: ColorbarProperties;
+  colorbarPosition: ColorbarPositionType;
+  setColorbarPosition: React.Dispatch<React.SetStateAction<ColorbarPositionType>>;
+
+  // Colormap functions
+  setColormap: (params: {
+    colormap: any;
+    displaySetInstanceUID: string;
+    opacity?: number;
+    immediate?: boolean;
+  }) => void;
+  getViewportColormap: (displaySet: AppTypes.DisplaySet) => any;
+
+  // 3D volume rendering functions
+  setVolumeRenderingPreset: (preset: any) => void;
+  setVolumeRenderingQuality: (quality: number) => void;
+  setVolumeLighting: (params: { ambient: number; diffuse: number; specular: number }) => void;
+  setVolumeShading: (enabled: boolean) => void;
+
+  // Presets
+  windowLevelPresets: Array<Record<string, any>>;
+  volumeRenderingPresets: Array<any>;
+  volumeRenderingQualityRange: { min: number; max: number; step: number };
+}
 
 /**
  * Hook to access window level functionality for a specific viewport
@@ -11,23 +50,27 @@ import { ColorbarPositionType, ColorbarOptions } from '../../types/Colorbar';
  * @param viewportId - The ID of the viewport to get window level functionality for
  * @returns Window level API for the specified viewport
  */
-export function useWindowLevel(viewportId?: string) {
+export function useWindowLevel(viewportId?: string): WindowLevelHook {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, colorbarService, customizationService } =
     servicesManager.services;
-  // Get display sets using the hook
+
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
 
-  // Get viewport info
   const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
 
   // Get customizations
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets') || {};
-  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar') || {};
+  const colorbarProperties =
+    (customizationService.getCustomization('cornerstone.colorbar') as ColorbarProperties) || {};
+
   const {
     volumeRenderingPresets = [],
     volumeRenderingQualityRange = { min: 0, max: 1, step: 0.1 },
-  } = customizationService.getCustomization('cornerstone.3dVolumeRendering') || {};
+  } =
+    (customizationService.getCustomization(
+      'cornerstone.3dVolumeRendering'
+    ) as VolumeRenderingConfig) || {};
 
   // State
   const [is3DVolume, setIs3DVolume] = useState(false);
@@ -38,14 +81,16 @@ export function useWindowLevel(viewportId?: string) {
 
   // Get background color for light/dark detection
   const backgroundColor = viewportInfo?.getViewportOptions().background;
-  const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
+  const isViewportBackgroundLight = backgroundColor
+    ? utilities.isEqual(backgroundColor, [1, 1, 1])
+    : false;
 
   // Calculate filtered presets
-  const displaySetPresets =
+  const windowLevelPresets =
     displaySets
-      ?.filter(displaySet => presets?.[displaySet.Modality])
+      ?.filter(displaySet => presets?.[displaySet.Modality as string])
       .map(displaySet => {
-        return { [displaySet.Modality]: presets[displaySet.Modality] };
+        return { [displaySet.Modality as string]: presets[displaySet.Modality as string] };
       }) || [];
 
   // Check if viewport is 3D
@@ -82,6 +127,10 @@ export function useWindowLevel(viewportId?: string) {
   // Window level functions
   const setWindowLevelPreset = useCallback(
     (preset: WindowLevelPreset) => {
+      if (!viewportId) {
+        return;
+      }
+
       commandsManager.run({
         commandName: 'setViewportWindowLevel',
         commandOptions: {
@@ -119,7 +168,7 @@ export function useWindowLevel(viewportId?: string) {
         width: colorbarWidth,
         colorbarTickPosition,
         colorbarInitialColormap,
-      } = colorbarProperties;
+      } = colorbarProperties as ColorbarProperties;
 
       const colorbarOptions = {
         viewportId,
@@ -134,7 +183,7 @@ export function useWindowLevel(viewportId?: string) {
       };
 
       // If light background, adjust tick style
-      if (isLight) {
+      if (isViewportBackgroundLight) {
         colorbarOptions.ticks = {
           position: 'left',
           style: {
@@ -160,12 +209,30 @@ export function useWindowLevel(viewportId?: string) {
         console.error('Error toggling colorbar:', error);
       }
     },
-    [commandsManager, viewportId, colorbarProperties, isLight, displaySets, colorbarPosition]
+    [
+      commandsManager,
+      viewportId,
+      colorbarProperties,
+      isViewportBackgroundLight,
+      displaySets,
+      colorbarPosition,
+    ]
   );
 
   // Colormap functions
+  interface SetColormapParams {
+    colormap: any;
+    displaySetInstanceUID: string;
+    opacity?: number;
+    immediate?: boolean;
+  }
+
   const setColormap = useCallback(
-    ({ colormap, displaySetInstanceUID, opacity = 1, immediate = false }) => {
+    ({ colormap, displaySetInstanceUID, opacity = 1, immediate = false }: SetColormapParams) => {
+      if (!viewportId) {
+        return;
+      }
+
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {
@@ -182,12 +249,16 @@ export function useWindowLevel(viewportId?: string) {
   );
 
   const getViewportColormap = useCallback(
-    displaySet => {
+    (displaySet: AppTypes.DisplaySet) => {
       if (!displaySet) {
         return null;
       }
 
       const { displaySetInstanceUID } = displaySet;
+      if (!viewportId) {
+        return null;
+      }
+
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       if (!viewport) {
@@ -198,8 +269,8 @@ export function useWindowLevel(viewportId?: string) {
         const { colormap } = viewport.getProperties();
         if (!colormap) {
           return (
-            colorbarProperties.colormaps.find(c => c.Name === 'Grayscale') ||
-            colorbarProperties.colormaps[0]
+            colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+            colorbarProperties?.colormaps?.[0]
           );
         }
         return colormap;
@@ -212,8 +283,8 @@ export function useWindowLevel(viewportId?: string) {
 
       if (!actorEntry) {
         return (
-          colorbarProperties.colormaps.find(c => c.Name === 'Grayscale') ||
-          colorbarProperties.colormaps[0]
+          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+          colorbarProperties?.colormaps?.[0]
         );
       }
 
@@ -223,8 +294,8 @@ export function useWindowLevel(viewportId?: string) {
 
       if (!colormap) {
         return (
-          colorbarProperties.colormaps.find(c => c.Name === 'Grayscale') ||
-          colorbarProperties.colormaps[0]
+          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+          colorbarProperties?.colormaps?.[0]
         );
       }
 
@@ -235,7 +306,11 @@ export function useWindowLevel(viewportId?: string) {
 
   // 3D volume rendering functions
   const setVolumeRenderingPreset = useCallback(
-    preset => {
+    (preset: any) => {
+      if (!viewportId) {
+        return;
+      }
+
       commandsManager.run({
         commandName: 'setVolumesPreset',
         commandOptions: {
@@ -249,6 +324,10 @@ export function useWindowLevel(viewportId?: string) {
 
   const setVolumeRenderingQuality = useCallback(
     (quality: number) => {
+      if (!viewportId) {
+        return;
+      }
+
       commandsManager.run({
         commandName: 'setVolumeRenderingQuality',
         commandOptions: {
@@ -260,8 +339,18 @@ export function useWindowLevel(viewportId?: string) {
     [commandsManager, viewportId]
   );
 
+  interface VolumeLightingParams {
+    ambient: number;
+    diffuse: number;
+    specular: number;
+  }
+
   const setVolumeLighting = useCallback(
-    ({ ambient, diffuse, specular }) => {
+    ({ ambient, diffuse, specular }: VolumeLightingParams) => {
+      if (!viewportId) {
+        return;
+      }
+
       commandsManager.run({
         commandName: 'setVolumeLighting',
         commandOptions: {
@@ -277,6 +366,10 @@ export function useWindowLevel(viewportId?: string) {
 
   const setVolumeShading = useCallback(
     (enabled: boolean) => {
+      if (!viewportId) {
+        return;
+      }
+
       commandsManager.run({
         commandName: 'setVolumeShading',
         commandOptions: {
@@ -289,10 +382,8 @@ export function useWindowLevel(viewportId?: string) {
   );
 
   return {
-    // Viewport info
-    viewportId,
     is3DVolume,
-    isLight,
+    isViewportBackgroundLight,
 
     // Window level functions
     setWindowLevelPreset,
@@ -320,7 +411,7 @@ export function useWindowLevel(viewportId?: string) {
     setColorbarPosition,
 
     // Presets
-    presets: displaySetPresets,
+    windowLevelPresets,
     volumeRenderingPresets,
     volumeRenderingQualityRange,
   };

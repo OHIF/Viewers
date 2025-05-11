@@ -27,11 +27,11 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,
-    'absolute bottom-[4px] left-[0px] pl-[4px]'
+    'absolute bottom-[3px] left-[0px] pl-[4px]'
   ),
   [ViewportActionCornersLocations.bottomRight]: classNames(
     commonClasses,
-    'absolute bottom-[4px] right-[16px] right-viewport-scrollbar'
+    'absolute bottom-[3px] right-[16px] right-viewport-scrollbar'
   ),
 };
 

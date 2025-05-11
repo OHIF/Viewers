@@ -1,7 +1,6 @@
-import React, { ReactElement, useEffect, useState, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AllInOneMenu } from '@ohif/ui-next';
-import { useViewportGrid } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
 import { WindowLevel } from './WindowLevel';
@@ -41,14 +40,13 @@ export function WindowLevelActionMenuContent({
   side?: string;
 }): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
-  const [viewportGrid] = useViewportGrid();
   // Use a stable key for the menu to avoid infinite re-renders
   const menuKey = useMemo(() => `${viewportId}`, [viewportId]);
 
   const {
     is3DVolume,
     colorbarProperties,
-    presets,
+    windowLevelPresets,
     volumeRenderingPresets,
     volumeRenderingQualityRange,
   } = useWindowLevel(viewportId);
@@ -76,7 +74,7 @@ export function WindowLevelActionMenuContent({
           </AllInOneMenu.SubMenu>
         )}
 
-        {presets && presets.length > 0 && !is3DVolume && (
+        {windowLevelPresets?.length > 0 && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="windowLevelPresets"
             itemLabel={t('Modality Window Presets')}

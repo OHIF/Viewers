@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef, useState, useEffect } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useWindowLevel } from '../../hooks/useWindowLevel';
 
