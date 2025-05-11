@@ -113,13 +113,8 @@ export function WindowLevelActionMenuWrapper(
         <WindowLevelActionMenu
           viewportId={viewportIdToUse}
           element={element}
-          presets={displaySetPresets}
           align={align}
           side={side}
-          colorbarProperties={colorbarProperties}
-          displaySets={displaySets}
-          volumeRenderingPresets={volumeRenderingPresets}
-          volumeRenderingQualityRange={volumeRenderingQualityRange}
         />
       </PopoverContent>
     </Popover>

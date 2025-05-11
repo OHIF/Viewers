@@ -3,8 +3,8 @@ import { AllInOneMenu } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 import { useWindowLevel } from '../../hooks/useWindowLevel';
 
-export function WindowLevel(): ReactElement {
-  const { presets, setWindowLevelPreset } = useWindowLevel();
+export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { presets, setWindowLevelPreset } = useWindowLevel(viewportId);
   const { t } = useTranslation('WindowLevelActionMenu');
 
   return (

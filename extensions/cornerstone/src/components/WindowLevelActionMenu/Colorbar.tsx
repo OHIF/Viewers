@@ -38,8 +38,8 @@ export function setViewportColorbar(
   });
 }
 
-export function Colorbar(): ReactElement {
-  const { hasColorbar, toggleColorbar } = useWindowLevel();
+export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { hasColorbar, toggleColorbar } = useWindowLevel(viewportId);
 
   return (
     <div

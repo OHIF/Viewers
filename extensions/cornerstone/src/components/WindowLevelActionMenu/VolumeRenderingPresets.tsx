@@ -5,8 +5,8 @@ import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
 import { useSystem } from '@ohif/core';
 import { useWindowLevel } from '../../hooks/useWindowLevel';
 
-export function VolumeRenderingPresets(): ReactElement {
-  const { volumeRenderingPresets, viewportId } = useWindowLevel();
+export function VolumeRenderingPresets({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { volumeRenderingPresets } = useWindowLevel(viewportId);
   const { servicesManager } = useSystem();
   const { uiDialogService } = servicesManager.services;
 

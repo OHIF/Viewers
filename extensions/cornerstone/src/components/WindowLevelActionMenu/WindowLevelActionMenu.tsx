@@ -7,11 +7,11 @@ import { Colorbar } from './Colorbar';
 import { WindowLevel } from './WindowLevel';
 import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
-import { WindowLevelProvider, useWindowLevel } from '../../hooks/useWindowLevel';
+import { useWindowLevel } from '../../hooks/useWindowLevel';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
-  element: HTMLElement;
+  element?: HTMLElement;
   align?: 'start' | 'end' | 'center';
   side?: 'top' | 'bottom' | 'left' | 'right';
 };
@@ -23,16 +23,23 @@ export function WindowLevelActionMenu({
   side,
 }: WindowLevelActionMenuProps): ReactElement {
   return (
-    <WindowLevelProvider
+    <WindowLevelActionMenuContent
       viewportId={viewportId}
-      element={element}
-    >
-      <WindowLevelActionMenuContent align={align} side={side} />
-    </WindowLevelProvider>
+      align={align}
+      side={side}
+    />
   );
 }
 
-export function WindowLevelActionMenuContent({ align, side }: { align?: string; side?: string }): ReactElement {
+export function WindowLevelActionMenuContent({
+  viewportId,
+  align,
+  side,
+}: {
+  viewportId: string;
+  align?: string;
+  side?: string;
+}): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
@@ -45,8 +52,7 @@ export function WindowLevelActionMenuContent({ align, side }: { align?: string; 
     presets,
     volumeRenderingPresets,
     volumeRenderingQualityRange,
-    viewportId
-  } = useWindowLevel();
+  } = useWindowLevel(viewportId);
 
   // Force re-render on viewport or props changes
   useEffect(() => {
@@ -72,9 +78,7 @@ export function WindowLevelActionMenuContent({ align, side }: { align?: string; 
       side={side}
     >
       <AllInOneMenu.ItemPanel>
-        {!is3DVolume && (
-          <Colorbar />
-        )}
+        {!is3DVolume && <Colorbar viewportId={viewportId} />}
 
         {colorbarProperties.colormaps && !is3DVolume && (
           <AllInOneMenu.SubMenu
@@ -83,7 +87,7 @@ export function WindowLevelActionMenuContent({ align, side }: { align?: string; 
             itemIcon="icon-color-lut"
             className="flex h-[calc(100%-32px)] flex-col"
           >
-            <Colormap />
+            <Colormap viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
 
@@ -93,17 +97,15 @@ export function WindowLevelActionMenuContent({ align, side }: { align?: string; 
             itemLabel={t('Modality Window Presets')}
             itemIcon="viewport-window-level"
           >
-            <WindowLevel />
+            <WindowLevel viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
 
-        {volumeRenderingPresets && is3DVolume && (
-          <VolumeRenderingPresets />
-        )}
+        {volumeRenderingPresets && is3DVolume && <VolumeRenderingPresets viewportId={viewportId} />}
 
         {volumeRenderingQualityRange && is3DVolume && (
           <AllInOneMenu.SubMenu itemLabel="Rendering Options">
-            <VolumeRenderingOptions />
+            <VolumeRenderingOptions viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
