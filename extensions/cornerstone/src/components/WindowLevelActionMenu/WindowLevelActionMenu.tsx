@@ -24,7 +24,10 @@ export type WindowLevelActionMenuProps = {
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;
   volumeRenderingQualityRange: VolumeRenderingQualityRange;
-  location: string;
+  location?: string;
+  // New props for menu positioning
+  align?: 'start' | 'end' | 'center';
+  side?: 'top' | 'bottom' | 'left' | 'right';
 };
 
 export function WindowLevelActionMenu({
@@ -37,6 +40,8 @@ export function WindowLevelActionMenu({
   displaySets,
   volumeRenderingPresets,
   volumeRenderingQualityRange,
+  align,
+  side,
 }: withAppTypes<WindowLevelActionMenuProps>): ReactElement {
   const { commandsManager, servicesManager } = useSystem();
   const {
@@ -116,8 +121,8 @@ export function WindowLevelActionMenu({
       key={menuKey}
       // the visibility is handled by the parent component
       isVisible={true}
-      horizontalDirection={horizontalDirection}
-      verticalDirection={verticalDirection}
+      align={align}
+      side={side}
     >
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && (

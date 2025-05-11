@@ -40,7 +40,7 @@ export function WindowLevelActionMenuWrapper(
 
   const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
-  const { customizationService } = servicesManager.services;
+  const { customizationService, toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
@@ -57,7 +57,7 @@ export function WindowLevelActionMenuWrapper(
     }
   };
 
-  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(location);
+  const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
@@ -115,8 +115,8 @@ export function WindowLevelActionMenuWrapper(
           viewportId={viewportIdToUse}
           element={element}
           presets={displaySetPresets}
-          horizontalDirection={horizontalDirection}
-          verticalDirection={verticalDirection}
+          align={align}
+          side={side}
           colorbarProperties={colorbarProperties}
           displaySets={displaySets}
           volumeRenderingPresets={volumeRenderingPresets}
@@ -126,28 +126,3 @@ export function WindowLevelActionMenuWrapper(
     </Popover>
   );
 }
-
-const getMenuDirections = location => {
-  const { servicesManager } = useSystem();
-  const { toolbarService } = servicesManager.services;
-
-  // Get alignment and side from the toolbar service
-  const { align, side } = toolbarService.getAlignAndSide(Number(location));
-
-  let horizontalDirection;
-  let verticalDirection;
-
-  if (side === 'bottom') {
-    verticalDirection = AllInOneMenu.VerticalDirection.TopToBottom;
-  } else {
-    verticalDirection = AllInOneMenu.VerticalDirection.BottomToTop;
-  }
-
-  if (align === 'start') {
-    horizontalDirection = AllInOneMenu.HorizontalDirection.LeftToRight;
-  } else {
-    horizontalDirection = AllInOneMenu.HorizontalDirection.RightToLeft;
-  }
-
-  return { align, side, horizontalDirection, verticalDirection };
-};
