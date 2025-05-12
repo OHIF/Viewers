@@ -96,39 +96,28 @@ const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsC
         pointerEvents: 'auto',
       }}
     >
-      {position !== 'bottom' ? (
-        <div
-          className="flex h-full flex-col items-center justify-center"
-          style={{ pointerEvents: 'auto' }}
-        >
-          {colorbars.map((colorbarInfo, index) => {
-            const { colorbar, displaySetInstanceUID } = colorbarInfo;
-            return (
-              <ViewportColorbar
-                key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
-                viewportId={viewportId}
-                displaySetInstanceUID={displaySetInstanceUID}
-                colormaps={colorbar.colormaps}
-                activeColormapName={colorbar.activeColormapName}
-                volumeId={colorbar.volumeId}
-                position={position}
-                tickPosition={tickPosition}
-                tickStyles={colorbarCustomization?.tickStyles}
-                numColorbars={colorbars.length}
-              />
-            );
-          })}
-        </div>
-      ) : (
-        <AdvancedColorbarWithControls
-          viewportId={viewportId}
-          colorbars={colorbars}
-          position={position}
-          tickPosition={defaultTickPosition}
-          colorbarCustomization={colorbarCustomization}
-          onClose={handleClose}
-        />
-      )}
+      <div
+        className="flex h-full flex-col items-center justify-center"
+        style={{ pointerEvents: 'auto' }}
+      >
+        {colorbars.map((colorbarInfo, index) => {
+          const { colorbar, displaySetInstanceUID } = colorbarInfo;
+          return (
+            <ViewportColorbar
+              key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
+              viewportId={viewportId}
+              displaySetInstanceUID={displaySetInstanceUID}
+              colormaps={colorbar.colormaps}
+              activeColormapName={colorbar.activeColormapName}
+              volumeId={colorbar.volumeId}
+              position={position}
+              tickPosition={tickPosition}
+              tickStyles={colorbarCustomization?.tickStyles}
+              numColorbars={colorbars.length}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

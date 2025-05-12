@@ -47,7 +47,7 @@ const ViewportColorbar = ({
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
   const viewportElementRef = useViewportRef(viewportId);
-  const { height } = useViewportSize(viewportId);
+  const { height, width } = useViewportSize(viewportId);
 
   useEffect(() => {
     if (!containerRef.current || !colormaps || !activeColormapName) {
@@ -116,7 +116,7 @@ const ViewportColorbar = ({
 
   const positionStylesFromConfig = colorbarCustomization?.positionStyles?.[position] || {};
 
-  if (!height) {
+  if (!height || !width) {
     return null;
   }
 
@@ -131,8 +131,8 @@ const ViewportColorbar = ({
         display: 'flex',
         alignItems: 'center',
         pointerEvents: 'auto',
-        minWidth: position === 'bottom' ? '100%' : '17px',
-        minHeight: position === 'bottom' ? '20px' : numColorbars === 1 ? height / 2 : height / 4,
+        minWidth: position === 'bottom' ? width / 2.5 : '17px',
+        minHeight: position === 'bottom' ? '20px' : numColorbars === 1 ? height / 3 : height / 4,
         ...positionStylesFromConfig,
       }}
     ></div>
