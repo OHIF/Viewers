@@ -8,14 +8,15 @@ summary: Guide to writing and running end-to-end tests for OHIF Viewer using Pla
 
 
 :::note
-You might need to run the `yarn playwright install ` for the first time if you have not
+You might need to run the `bun playwright install ` for the first time if you have not
 :::
 
 # Running the tests
 
 ```bash
+#
 # run the tests
-yarn test:e2e:ui
+bun test:e2e:ui
 ```
 
 

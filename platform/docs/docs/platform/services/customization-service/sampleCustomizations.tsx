@@ -202,6 +202,31 @@ window.config = {
     `,
   },
   {
+    id: 'viewportActionMenu.windowLevelActionMenu',
+    description:
+      'Configures the display and location of the window level action menu in the viewport.',
+    image: windowLevelActionMenu,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportActionMenu.windowLevelActionMenu': {
+              $merge: {
+               location: 0, // Set the location of the menu in the viewport.
+                            // 0: topLeft
+                            // 1: topRight
+                            // 2: bottomLeft
+                            // 3: bottomRight
+              }
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
     id: 'measurementLabels',
     description: 'Labels for measurement tools in the viewer that are automatically asked for.',
     image: measurementLabelsImage,
@@ -937,7 +962,7 @@ window.config = {
         `,
   },
   {
-    id: 'viewportActionMenu.dataOverlay',
+    id: 'viewportActionMenu.dataOverlayMenu',
     description: 'Configures the display and location of the data overlay in the viewport.',
     image: segmentationOverlay,
     default: null,
@@ -946,7 +971,7 @@ window.config = {
         // rest of window config
         customizationService: [
           {
-            'viewportActionMenu.dataOverlay': {
+            'viewportActionMenu.dataOverlayMenu': {
                $merge: {
                  enabled: true,
                  location: 1, // Set the location of the overlay in the viewport.

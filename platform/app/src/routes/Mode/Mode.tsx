@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
-import { useSearchParams } from '@hooks';
+import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';

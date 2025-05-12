@@ -1,7 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import { AllInOneMenu } from '@ohif/ui-next';
+import { AllInOneMenu, cn } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
@@ -25,6 +24,7 @@ export type WindowLevelActionMenuProps = {
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;
   volumeRenderingQualityRange: VolumeRenderingQualityRange;
+  location: string;
 };
 
 export function WindowLevelActionMenu({
@@ -111,20 +111,13 @@ export function WindowLevelActionMenu({
   ]);
 
   return (
-    <AllInOneMenu.IconMenu
-      icon="viewport-window-level"
-      verticalDirection={verticalDirection}
-      horizontalDirection={horizontalDirection}
-      iconClassName={classNames(
-        activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
-        'flex shrink-0 cursor-pointer rounded active:text-foreground text-highlight',
-        isLight ? ' hover:bg-primary/30' : 'hover:bg-primary/30'
-      )}
-      menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
-      onVisibilityChange={() => {
-        setVpHeight(element.clientHeight);
-      }}
+    <AllInOneMenu.Menu
       menuKey={menuKey}
+      key={menuKey}
+      // the visibility is handled by the parent component
+      isVisible={true}
+      horizontalDirection={horizontalDirection}
+      verticalDirection={verticalDirection}
     >
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && (
@@ -180,6 +173,6 @@ export function WindowLevelActionMenu({
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
-    </AllInOneMenu.IconMenu>
+    </AllInOneMenu.Menu>
   );
 }

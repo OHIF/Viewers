@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons, useViewportGrid } from '@ohif/ui-next';
+import { Icons, useViewportActionCorners, useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import {
@@ -10,13 +10,20 @@ import {
   DropdownMenuLabel,
   Button,
 } from '@ohif/ui-next';
+import { MENU_IDS } from '../menus/menu-ids';
 
 function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
   const [viewportGridState, viewportGridService] = useViewportGrid();
+  const [actionCornerState, viewportActionCornersServiceAPI] = useViewportActionCorners();
   const { cornerstoneViewportService, displaySetService } = servicesManager.services;
 
   const viewportId = viewportGridState.activeViewportId;
+
+  const isMenuOpen =
+    actionCornerState.viewports[viewportId]?.[location]?.find(
+      item => item.id === MENU_IDS.ORIENTATION_MENU
+    )?.isOpen ?? false;
 
   const handleOrientationChange = (orientation: string) => {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
@@ -80,8 +87,19 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
         orientation: orientationEnum,
       });
     }
+
+    // Close the menu after selection
+    viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
   };
-  const { viewportActionCornersService } = servicesManager.services;
+
+  const handleOpenChange = (openState: boolean) => {
+    if (openState) {
+      viewportActionCornersServiceAPI.openItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
+    } else {
+      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
+    }
+  };
+
   const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
   const displaySets = displaySetUIDs
     .map(uid => displaySetService.getDisplaySetByUID(uid))
@@ -98,13 +116,16 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   let side = 'bottom';
 
   if (location !== undefined) {
-    const positioning = viewportActionCornersService.getAlignAndSide(location);
+    const positioning = viewportActionCornersServiceAPI.getAlignAndSide(location);
     align = positioning.align;
     side = positioning.side;
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      open={isMenuOpen}
+      onOpenChange={handleOpenChange}
+    >
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

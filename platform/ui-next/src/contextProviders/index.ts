@@ -9,6 +9,10 @@ import { UserAuthenticationProvider, useUserAuthentication } from './UserAuthent
 import { ImageViewerContext, ImageViewerProvider, useImageViewer } from './ImageViewerProvider';
 import DragAndDropProvider from './DragAndDropProvider';
 import CineProvider, { useCine } from './CineProvider';
+import {
+  ViewportActionCornersProvider,
+  useViewportActionCorners,
+} from './ViewportActionCornersProvider';
 
 export { useNotification, NotificationProvider };
 export { ViewportGridContext, ViewportGridProvider, useViewportGrid };
@@ -20,3 +24,4 @@ export { UserAuthenticationProvider, useUserAuthentication };
 export { ImageViewerContext, ImageViewerProvider, useImageViewer };
 export { DragAndDropProvider };
 export { CineProvider, useCine };
+export { ViewportActionCornersProvider, useViewportActionCorners };

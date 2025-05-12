@@ -1,31 +1,54 @@
 import React from 'react';
-import { useViewportActionCornersContext } from '../contextProviders/ViewportActionCornersProvider';
-import { useSystem } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
+import {
+  useViewportActionCorners,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+} from '@ohif/ui-next';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
-  const { servicesManager } = useSystem();
-  const [viewportActionCornersState] = useViewportActionCornersContext();
+  const [state] = useViewportActionCorners();
 
-  const [viewportGrid] = useViewportGrid();
-  const isActiveViewport = viewportGrid.activeViewportId === viewportId;
-
-  const ViewportActionCorners =
-    servicesManager.services.customizationService.getCustomization('ui.viewportActionCorner');
-
-  if (!viewportActionCornersState[viewportId]) {
+  if (!state.viewports[viewportId]) {
     return null;
   }
 
+  const components = state.viewports[viewportId];
+
+  const renderCorner = (location: ViewportActionCornersLocations, CornerComponent) => {
+    const cornerComponents = components[location];
+    if (!cornerComponents?.length) {
+      return null;
+    }
+
+    return (
+      <CornerComponent>
+        {cornerComponents
+          .filter(componentInfo => componentInfo.isVisible !== false)
+          .map(componentInfo => (
+            <div
+              key={componentInfo.id}
+              className={
+                componentInfo.isLocked === true ? 'pointer-events-none opacity-50' : undefined
+              }
+            >
+              {componentInfo.component}
+            </div>
+          ))}
+      </CornerComponent>
+    );
+  };
+
   return (
-    <ViewportActionCorners
-      cornerComponents={viewportActionCornersState[viewportId]}
-      isActiveViewport={isActiveViewport}
-    />
+    <ViewportActionCorners.Container>
+      {renderCorner(ViewportActionCornersLocations.topLeft, ViewportActionCorners.TopLeft)}
+      {renderCorner(ViewportActionCornersLocations.topRight, ViewportActionCorners.TopRight)}
+      {renderCorner(ViewportActionCornersLocations.bottomLeft, ViewportActionCorners.BottomLeft)}
+      {renderCorner(ViewportActionCornersLocations.bottomRight, ViewportActionCorners.BottomRight)}
+    </ViewportActionCorners.Container>
   );
 }
 

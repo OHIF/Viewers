@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Icons } from '@ohif/ui-next';
 import { Button } from '../Button';
+import { useTranslation } from 'react-i18next';
 
 export enum showDialogOption {
   NeverShowDialog = 'never',
@@ -16,6 +17,7 @@ const InvestigationalUseDialog = ({
 }) => {
   const { option, days } = dialogConfiguration;
   const [isHidden, setIsHidden] = useState(true);
+  const { t } = useTranslation('InvestigationalUseDialog');
 
   useEffect(() => {
     const dialogLocalState = localStorage.getItem('investigationalUseDialog');
@@ -69,14 +71,14 @@ const InvestigationalUseDialog = ({
           <div className="flex flex-col">
             <div className="text-[19px] text-white">
               OHIF Viewer is{' '}
-              <span className="text-primary-light">for investigational use only</span>
+              <span className="text-primary-light">{t('for investigational use only')}</span>
             </div>
             <div className="text-[13px] text-white">
               <span
                 className="text-primary-active cursor-pointer"
                 onClick={() => window.open('https://ohif.org/', '_blank')}
               >
-                Learn more about OHIF Viewer
+                {t('Learn more about OHIF Viewer')}
               </span>
             </div>
           </div>
@@ -86,7 +88,7 @@ const InvestigationalUseDialog = ({
           className="bg-primary-main"
           dataCY="confirm-and-hide-button"
         >
-          Confirm and Hide
+          {t('Confirm and hide')}
         </Button>
       </div>
     </div>
