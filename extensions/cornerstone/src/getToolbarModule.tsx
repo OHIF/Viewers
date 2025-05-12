@@ -3,6 +3,7 @@ import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
+import { WindowLevelAdvancedMenuWrapper } from './components/WindowLevelAdvancedMenu';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
@@ -203,7 +204,32 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       defaultComponent: WindowLevelActionMenuWrapper,
     },
     {
+      name: 'ohif.windowLevelAdvancedMenu',
+      defaultComponent: WindowLevelAdvancedMenuWrapper,
+    },
+    {
       name: 'evaluate.windowLevelMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        const supportWindowLevel = displaySets.some(displaySet => displaySet?.supportsWindowLevel);
+
+        return {
+          disabled: !supportWindowLevel,
+        };
+      },
+    },
+    {
+      name: 'evaluate.windowLevelAdvancedMenu',
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 

@@ -1,0 +1,170 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Button,
+  Switch,
+  Numeric,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@ohif/ui-next';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
+import { useSystem } from '@ohif/core';
+import { utilities, cache } from '@cornerstonejs/core';
+interface WindowLevelAdvancedMenuProps {
+  viewportId: string;
+  className?: string;
+}
+
+const TABS = {
+  MINMAX: 'minmax',
+  MANUAL: 'manual',
+};
+
+function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedMenuProps) {
+  const { servicesManager } = useSystem();
+  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
+  const [activeTab, setActiveTab] = useState(TABS.MINMAX);
+  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+  const [selectedDisplaySetUID, setSelectedDisplaySetUID] = useState<string | undefined>(
+    viewportDisplaySets.length > 0 ? viewportDisplaySets[0].displaySetInstanceUID : undefined
+  );
+
+  // Get viewport rendering helper hook
+  const { setWindowLevelPreset, windowLevelPresets, is3DVolume } = useViewportRendering(viewportId);
+
+  useEffect(() => {
+    if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {
+      setSelectedDisplaySetUID(viewportDisplaySets[0].displaySetInstanceUID);
+    }
+  }, [viewportDisplaySets, selectedDisplaySetUID]);
+
+  const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+  const properties = csViewport.getProperties();
+
+  if (!properties) {
+    return null;
+  }
+
+  const { voiRange } = properties;
+  const { upper, lower } = voiRange;
+  const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
+
+  const selectedViewportImageIds =
+    displaySetService.getDisplaySetByUID(selectedDisplaySetUID)?.imageIds;
+
+  let min = Infinity;
+  let max = -Infinity;
+  for (const imageId of selectedViewportImageIds) {
+    const image = cache.getImage(imageId);
+    if (image) {
+      min = Math.min(min, image.minPixelValue);
+      max = Math.max(max, image.maxPixelValue);
+    }
+  }
+
+  const minMax = {
+    min: min,
+    max: max,
+  };
+
+  return (
+    <div className={className}>
+      <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
+        <Tabs
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+        >
+          <div className="mb-4 flex items-center space-x-2">
+            {viewportDisplaySets.length > 1 && (
+              <Select
+                value={selectedDisplaySetUID}
+                onValueChange={setSelectedDisplaySetUID}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Display Set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {viewportDisplaySets.map(ds => (
+                    <SelectItem
+                      key={ds.displaySetInstanceUID}
+                      value={ds.displaySetInstanceUID}
+                    >
+                      {`${ds.SeriesDescription || ''}`.trim()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <TabsList className="w-full flex-1">
+              <TabsTrigger
+                value={TABS.MINMAX}
+                className="flex-1"
+              >
+                Min/Max
+              </TabsTrigger>
+              <TabsTrigger
+                value={TABS.MANUAL}
+                className="flex-1"
+              >
+                Manual
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value={TABS.MINMAX}>
+            <Numeric.Container
+              mode="doubleRange"
+              min={minMax.min}
+              max={minMax.max}
+              values={[lower, upper]}
+              step={1}
+              className="space-y-1"
+              onChange={(vals: [number, number]) => {
+                const [newLower, newUpper] = vals;
+                csViewport.setProperties({
+                  voiRange: { lower: newLower, upper: newUpper },
+                });
+                csViewport.render();
+              }}
+            >
+              <Numeric.DoubleRange showNumberInputs />
+            </Numeric.Container>
+          </TabsContent>
+          <TabsContent value={TABS.MANUAL}>
+            <Numeric.Container
+              mode="doubleRange"
+              min={minMax.min}
+              max={minMax.max}
+              step={1}
+              values={[windowWidth, windowCenter]}
+              className="space-y-1"
+              onChange={(vals: [number, number]) => {
+                const [newWidth, newCenter] = vals;
+                const { lower, upper } = utilities.windowLevel.toLowHighRange(newWidth, newCenter);
+                csViewport.setProperties({
+                  voiRange: {
+                    lower,
+                    upper,
+                  },
+                });
+                csViewport.render();
+              }}
+            >
+              <Numeric.DoubleRange showNumberInputs />
+            </Numeric.Container>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
+
+export default WindowLevelAdvancedMenu;

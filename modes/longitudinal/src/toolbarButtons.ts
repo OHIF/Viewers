@@ -110,6 +110,16 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'windowLevelAdvancedMenu',
+    uiType: 'ohif.windowLevelAdvancedMenu',
+    props: {
+      icon: 'WindowLevelAdvanced',
+      label: 'Advanced Window Level',
+      tooltip: 'Advanced window/level settings with manual controls and presets',
+      evaluate: 'evaluate.windowLevelAdvancedMenu',
+    },
+  },
+  {
     id: 'Reset',
     uiType: 'ohif.toolButton',
     props: {

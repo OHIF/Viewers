@@ -29,7 +29,6 @@ interface NumericMetaContextValue {
   min: number;
   max: number;
   step: number;
-  lockMode?: boolean;
 }
 
 const NumericMetaContext = createContext<NumericMetaContextValue | null>(null);
@@ -48,7 +47,6 @@ interface NumericMetaContainerProps {
   max?: number;
   step?: number;
   className?: string;
-  lockMode?: boolean; // Add lock mode prop for doubleRange
 }
 
 function NumericMetaContainer({
@@ -62,7 +60,6 @@ function NumericMetaContainer({
   max = 100,
   step = 1,
   className,
-  lockMode = false,
   children,
 }: PropsWithChildren<NumericMetaContainerProps>) {
   // Calculate default values based on min and max
@@ -118,7 +115,6 @@ function NumericMetaContainer({
         min,
         max,
         step,
-        lockMode,
       }}
     >
       <div className={cn('flex flex-col', className)}>{children}</div>
@@ -240,7 +236,7 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
     throw new Error('DoubleRange must be used inside <Numeric.Container>.');
   }
 
-  const { mode, doubleValue, setDoubleValue, min, max, step, lockMode } = ctx;
+  const { mode, doubleValue, setDoubleValue, min, max, step } = ctx;
 
   const handleSliderChange = useCallback(
     (values: [number, number]) => {
@@ -262,7 +258,6 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
         defaultValue={doubleValue}
         onValueChange={handleSliderChange}
         showNumberInputs={showNumberInputs}
-        lockMode={lockMode}
       />
     </div>
   );
