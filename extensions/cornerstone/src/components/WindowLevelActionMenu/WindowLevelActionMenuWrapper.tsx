@@ -80,7 +80,7 @@ export function WindowLevelActionMenuWrapper({
           size="icon"
           className={cn(
             isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible',
-            'text-highlight'
+            'text-primary'
           )}
         >
           <Icons.ByName name="viewport-window-level" />

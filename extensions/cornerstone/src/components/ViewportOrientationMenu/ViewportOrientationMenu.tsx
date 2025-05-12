@@ -130,7 +130,7 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
         <Button
           variant="ghost"
           size="icon"
-          className="text-highlight"
+          className="text-primary"
           disabled={!hasReconstructableDisplaySet}
         >
           <Icons.OrientationSwitch />

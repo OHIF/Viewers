@@ -66,7 +66,7 @@ export function ViewportDataOverlayMenuWrapper({
               : 'invisible group-hover/pane:visible'
           )}
         >
-          <Icons.ViewportViews className={classNames('text-highlight')} />
+          <Icons.ViewportViews className={classNames('text-primary')} />
         </Button>
       </PopoverTrigger>
       <PopoverContent
