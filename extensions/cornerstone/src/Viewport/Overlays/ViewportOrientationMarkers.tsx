@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import classNames from 'classnames';
-import { metaData, Enums, Types, getEnabledElement } from '@cornerstonejs/core';
+import {
+  metaData,
+  Enums,
+  Types,
+  getEnabledElement,
+  utilities as coreUtilities,
+} from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 
@@ -20,6 +26,7 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
+  const [isLight, setIsLight] = useState(false);
   const { cornerstoneViewportService } = servicesManager.services;
 
   // Store initial viewUp and viewRight for volume viewports
@@ -46,6 +53,26 @@ function ViewportOrientationMarkers({
       initialVolumeOrientationRef.current.initialViewRight = [...viewRight];
     }
   }, [element, viewportData]);
+
+  // Determine if viewport has light background
+  useEffect(() => {
+    const updateIsLight = () => {
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      if (!viewportInfo) {
+        return;
+      }
+
+      const backgroundColor = viewportInfo.getViewportOptions().background;
+      const isLightBackground = backgroundColor
+        ? coreUtilities.isEqual(backgroundColor, [1, 1, 1])
+        : false;
+
+      setIsLight(isLightBackground);
+    };
+
+    // Initialize isLight state
+    updateIsLight();
+  }, [viewportId, cornerstoneViewportService]);
 
   useEffect(() => {
     const cameraModifiedListener = (evt: Types.EventTypes.CameraModifiedEvent) => {
@@ -151,7 +178,8 @@ function ViewportOrientationMarkers({
         className={classNames(
           'overlay-text',
           `${m}-mid orientation-marker`,
-          'text-highlight/65',
+          isLight ? 'text-neutral-dark/65' : 'text-neutral-light/65',
+          isLight ? 'shadow-light' : 'shadow-dark',
           'text-base',
           'leading-5'
         )}
@@ -168,6 +196,7 @@ function ViewportOrientationMarkers({
     flipHorizontal,
     orientationMarkers,
     element,
+    isLight,
   ]);
 
   return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
