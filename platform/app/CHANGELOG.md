@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.30...v3.11.0-beta.31) (2025-05-12)
+
+
+### Bug Fixes
+
+* **NotFoundStudy:** Fixed the viewer not-found page when showStudyList: false ([#5035](https://github.com/OHIF/Viewers/issues/5035)) ([950453f](https://github.com/OHIF/Viewers/commit/950453fd70ed2b5fec51cc9b6d34e94538ed15cd))
+
+
+
+
+
 # [3.11.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.29...v3.11.0-beta.30) (2025-05-09)
 
 **Note:** Version bump only for package @ohif/app
