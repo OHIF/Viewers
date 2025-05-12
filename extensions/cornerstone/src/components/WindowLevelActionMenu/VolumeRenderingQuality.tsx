@@ -29,7 +29,9 @@ export function VolumeRenderingQuality({
     const mapper = actor.getMapper();
     const image = mapper.getInputData();
     const spacing = image.getSpacing();
+    console.log('these walls');
     const sampleDistance = mapper.getSampleDistance();
+    console.log('these walls');
     const averageSpacing = spacing.reduce((a, b) => a + b) / 3.0;
     if (sampleDistance === averageSpacing) {
       setQuality(1);

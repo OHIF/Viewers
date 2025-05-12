@@ -17,7 +17,7 @@ const defaultVariantMapping = {
 
 const defaults = {
   align: 'inherit',
-  color: 'initial',
+  color: 'inherit',
   display: 'initial',
   gutterBottom: false,
   noWrap: false,

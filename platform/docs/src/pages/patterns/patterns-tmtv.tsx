@@ -85,7 +85,7 @@ export default function TMTVPatterns() {
             >
               {/* Segmentation Tools */}
               <AccordionItem value="segmentation-tools">
-                <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                <AccordionTrigger className=" hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                   <span>Segmentation Tools</span>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -94,7 +94,7 @@ export default function TMTVPatterns() {
               </AccordionItem>
               {/* Segmentation List */}
               <AccordionItem value="segmentation-list">
-                <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                <AccordionTrigger className=" hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                   <span>Segmentation List</span>
                 </AccordionTrigger>
                 <AccordionContent>

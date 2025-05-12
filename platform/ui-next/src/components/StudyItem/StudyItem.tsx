@@ -35,22 +35,31 @@ const StudyItem = ({
       defaultValue={isActive ? 'study-item' : undefined}
     >
       <AccordionItem value="study-item">
-        <AccordionTrigger className={classnames('hover:bg-accent bg-popover group w-full rounded')}>
-          <div className="flex h-[40px] w-full flex-row overflow-hidden">
-            <div className="flex w-full flex-row items-center justify-between">
-              <div className="flex min-w-0 flex-col items-start text-[13px]">
-                <Tooltip>
+        <AccordionTrigger className={classnames('hover:bg-primary-light group w-full ')}>
+          <div className="flex h-[40px] w-full overflow-hidden ">
+            <div className="flex w-full  items-center gap-4">
+
+              <div className="text-[12px]">
+                <div className="max-w-[150px] overflow-hidden text-ellipsis  py-2 text-light bg-primary-dark flex items-center justify-center px-4 rounded">{modalities}</div>
+                {/* <div>{numInstances}</div> */}
+              </div>
+              <div className="min-w-0  text-[13px] text-left flex flex-col">
+                <span className='text-[14px] w-full max-w-[160px] font-semibold'>
+                  Nombre Paciente
+                </span>
+                <span className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap font-light">{date}</span>
+                {/* <Tooltip>
                   <TooltipContent>{date}</TooltipContent>
                   <TooltipTrigger
                     className="w-full"
                     asChild
                   >
-                    <div className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left text-white">
+                    <div className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap  ">
                       {date}
                     </div>
                   </TooltipTrigger>
-                </Tooltip>
-                <Tooltip>
+                </Tooltip> */}
+                {/* <Tooltip>
                   <TooltipContent>{description}</TooltipContent>
                   <TooltipTrigger
                     className="w-full"
@@ -60,11 +69,7 @@ const StudyItem = ({
                       {description}
                     </div>
                   </TooltipTrigger>
-                </Tooltip>
-              </div>
-              <div className="text-muted-foreground flex flex-col items-end pl-[10px] text-[12px]">
-                <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
-                <div>{numInstances}</div>
+                </Tooltip> */}
               </div>
               {StudyMenuItems && (
                 <div className="ml-2 flex items-center">

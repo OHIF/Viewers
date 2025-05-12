@@ -8,8 +8,9 @@ import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
 import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
+import classNames from 'classnames';
 
-const resizableHandleClassName = 'mt-[1px] bg-black';
+const resizableHandleClassName = 'mt-[1px] ';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -56,6 +57,7 @@ function ViewerLayout({
     hasLeftPanels,
     hasRightPanels
   );
+  console.log(leftPanelProps)
 
   const handleMouseEnter = () => {
     (document.activeElement as HTMLElement)?.blur();
@@ -71,11 +73,11 @@ function ViewerLayout({
    * is sized to our viewport.
    */
   useEffect(() => {
-    document.body.classList.add('bg-black');
+    // document.body.classList.add('bg-black');
     document.body.classList.add('overflow-hidden');
 
     return () => {
-      document.body.classList.remove('bg-black');
+      // document.body.classList.remove('bg-black');
       document.body.classList.remove('overflow-hidden');
     };
   }, []);
@@ -150,7 +152,7 @@ function ViewerLayout({
         appConfig={appConfig}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden "
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
@@ -161,6 +163,7 @@ function ViewerLayout({
               <>
                 <ResizablePanel {...resizableLeftPanelProps}>
                   <SidePanelWithServices
+                    className=' dark:bg-secondary-dark'
                     side="left"
                     isExpanded={!leftPanelClosedState}
                     servicesManager={servicesManager}
@@ -170,7 +173,7 @@ function ViewerLayout({
                 <ResizableHandle
                   onDragging={onHandleDragging}
                   disabled={!leftPanelResizable}
-                  className={resizableHandleClassName}
+                  className={classNames(resizableHandleClassName, 'bg-dark dark:bg-secondary-dark')}
                 />
               </>
             ) : null}
@@ -178,7 +181,7 @@ function ViewerLayout({
             <ResizablePanel {...resizableViewportGridPanelProps}>
               <div className="flex h-full flex-1 flex-col">
                 <div
-                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden "
                   onMouseEnter={handleMouseEnter}
                 >
                   <ViewportGridComp
@@ -194,11 +197,12 @@ function ViewerLayout({
                 <ResizableHandle
                   onDragging={onHandleDragging}
                   disabled={!rightPanelResizable}
-                  className={resizableHandleClassName}
+                  className={classNames(resizableHandleClassName, 'bg-dark dark:bg-primary-dark')}
                 />
                 <ResizablePanel {...resizableRightPanelProps}>
                   <SidePanelWithServices
                     side="right"
+                    className=' dark:bg-primary-dark'
                     isExpanded={!rightPanelClosedState}
                     servicesManager={servicesManager}
                     {...rightPanelProps}

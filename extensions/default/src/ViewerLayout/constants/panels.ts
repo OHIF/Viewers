@@ -1,5 +1,5 @@
 const expandedInsideBorderSize = 0;
-const collapsedInsideBorderSize = 4;
+const collapsedInsideBorderSize = 0;
 const collapsedOutsideBorderSize = 4;
 const collapsedWidth = 25;
 

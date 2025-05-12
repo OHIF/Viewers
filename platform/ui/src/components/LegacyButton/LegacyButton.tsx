@@ -6,11 +6,11 @@ const baseClasses =
   'leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
 
 const defaults = {
-  color: 'default',
+  color: 'none',
   disabled: false,
   fullWidth: false,
   rounded: 'medium',
-  border: 'none',
+  border: 'default',
   size: 'medium',
   type: 'button',
   variant: 'contained',
@@ -26,6 +26,7 @@ const roundedClasses = {
 
 const variants = {
   text: {
+    none: '',
     default:
       'text-primary-light hover:bg-primary-light hover:text-white active:opacity-80 focus:bg-primary-light focus:text-white',
     primary:
@@ -38,6 +39,7 @@ const variants = {
       'text-black hover:bg-black hover:text-white focus:bg-black focus:text-white active:opacity-80',
   },
   outlined: {
+    none: '',
     default:
       'text-primary-light hover:bg-primary-light hover:text-black focus:text-black focus:bg-primary-light active:opacity-80',
     primary: 'text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
@@ -52,6 +54,7 @@ const variants = {
       'border bg-transparent border-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   contained: {
+    none: '',
     default: 'text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary: 'text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     primaryDark: 'text-primary-active hover:opacity-80 active:opacity-100 focus:opacity-80',
@@ -61,6 +64,7 @@ const variants = {
     light: 'border text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   disabled: {
+    none: '',
     default: 'cursor-not-allowed opacity-50 text-black',
     primary: 'cursor-not-allowed opacity-50 text-white',
     secondary: 'cursor-not-allowed opacity-50 text-white',
@@ -110,12 +114,12 @@ const _getVariantClass = (variant, color, bgColor = null) => {
   if (!bgColor) {
     bgColor = defaultBackgroundColor;
   }
-
-  return `${variants[variant][color]} ${bgColor}`;
+  const varr = `${variants[variant][color]} ${bgColor}`;
+  return varr;
 };
 
 const borderClasses = {
-  none: '',
+  default: 'border',
   light: 'border border-primary-light',
   primary: 'border border-primary-main',
   primaryActive: 'border border-primary-active',
@@ -228,6 +232,7 @@ LegacyButton.propTypes = {
     'inherit',
     'light',
     'translucent',
+    'none',
   ]),
   border: PropTypes.oneOf([
     'none',

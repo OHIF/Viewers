@@ -5,7 +5,7 @@
   "Empty": "vacío",
   "Filter list to 100 studies or less to enable sorting": "Filtre la lista a 100 estudios o menos para habilitar la clasificación",
   "Instances": "Instancias",
-  "MRN": "MRN",
+  "MRN": "Historia Clínica (MRN)",
   "Modality": "Modalidad",
   "PatientName": "Nombre paciente",
   "Previous": "< Anterior",
@@ -15,5 +15,7 @@
   "Number of studies": "Estudios",
   "StudyDate": "Fecha del estudio",
   "StudyList": "Lista de Estudios",
-  "No studies available": "Sin estudios disponibles"
+  "No studies available": "Sin estudios disponibles",
+  "Upload": "Subir",
+  "Studies": "Estudios"
 }

@@ -27,7 +27,7 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
   };
 
   return (
-    <div className="bg-black py-10">
+    <div className=" py-10">
       <div className="container relative m-auto px-8">
         <div className="flex justify-between">
           <div className="flex items-center">
@@ -55,9 +55,8 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
                 <LegacyButton
                   size="initial"
                   className="px-4 py-2 text-base"
-                  color="translucent"
-                  border="primary"
                   variant="outlined"
+                  color="none"
                   onClick={() => navigateToPage(1)}
                 >
                   {`<<`}
@@ -65,9 +64,9 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
                 <LegacyButton
                   size="initial"
                   className="py-2 px-2 text-base"
-                  color="translucent"
-                  border="primary"
                   variant="outlined"
+                  color="none"
+
                   onClick={() => navigateToPage(currentPage - 1)}
                 >
                   {t('Previous')}
@@ -75,9 +74,8 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
                 <LegacyButton
                   size="initial"
                   className="py-2 px-4 text-base"
-                  color="translucent"
-                  border="primary"
                   variant="outlined"
+                  color="none"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
                   {t('Next')}

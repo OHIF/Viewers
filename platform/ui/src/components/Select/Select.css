@@ -1,6 +1,17 @@
 .customSelect__wrapper .customSelect__control {
-  @apply border-secondary-light w-full rounded border bg-black text-sm leading-tight text-white shadow transition duration-300;
-  min-height: 28px;
+  @apply
+  /* border-inputfield-main */
+  /* focus:border-inputfield-focus */
+  focus:outline-none
+  /* disabled:border-inputfield-disabled */
+  w-full
+  rounded
+  dark:bg-dark
+  text-sm
+  leading-tight
+  dark:text-light
+  transition
+  duration-300 min-h-[28px];
 }
 .customSelect__wrapper .customSelect__control:hover {
   @apply border-gray-500;
@@ -21,17 +32,13 @@
   line-height: 1.25 !important;
 }
 
-.customSelect__wrapper .customSelect__control:focus,
+/* .customSelect__wrapper .customSelect__control:focus,
 .customSelect__wrapper .customSelect__control--menu-is-open {
   @apply border-gray-500 outline-none;
-}
+} */
 
 .customSelect--is-disabled .customSelect__control--is-disabled {
   @apply pointer-events-none;
-}
-
-.css-1hwfws3 {
-  padding: 0;
 }
 
 .customSelect__wrapper .customSelect__indicator-separator {
@@ -93,10 +100,10 @@
   background-color: #0944b3;
   border-radius: 10px;
 }
-
+/*
 .customSelect__option--is-focused {
   background-color: #0944b391 !important;
-}
+} */
 
 .customSelect__menu-portal .customSelect__option:hover {
   background-color: #0944b391;
@@ -106,8 +113,4 @@
   border: 2px solid #0944b3;
   border-radius: 6px;
   background-color: #151515 !important;
-}
-
-.css-1hwfws3 {
-  all: unset !important;
 }

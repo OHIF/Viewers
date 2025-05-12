@@ -98,7 +98,6 @@ const SidePanelWithServices = ({
       activatePanelSubscription.unsubscribe();
     };
   }, [tabs, sidePanelExpanded, panelService, closedManually]);
-
   return (
     <SidePanel
       {...props}

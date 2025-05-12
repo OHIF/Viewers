@@ -2,6 +2,7 @@
 
 
 window.config = {
+  investigationalUseDialog:false,
   // name: 'config/default.js',
   whiteLabeling: {
     createLogoComponentFn: function(React) {
@@ -14,8 +15,8 @@ window.config = {
           href: '/',
         },
         React.createElement('img', {
-          src: 'https://img.freepik.com/vector-gratis/diseno-logotipo-degradado-colorido-letra_474888-2309.jpg',
-          // className: 'w-8 h-8',
+          src: '/ohif/ddigital.jpeg',
+          className: 'w-8 h-8',
         })
       );
     },

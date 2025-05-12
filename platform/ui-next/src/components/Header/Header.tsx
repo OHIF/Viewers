@@ -55,7 +55,7 @@ function Header({
       isSticky={isSticky}
       {...props}
     >
-      <div className="relative h-[48px] items-center">
+      <div className="relative h-[72px] items-center">
         <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
           <div
             className={classNames(
@@ -77,16 +77,16 @@ function Header({
         </div>
         <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
           {UndoRedo}
-          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+          {  UndoRedo ?        <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>      : null     }
           {PatientInfo}
-          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+          {PatientInfo ?        <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>      : null     }
           <div className="flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="ghost"
+                  // variant="ghost"
                   size="icon"
-                  className="text-primary hover:bg-primary-dark mt-2 h-full w-full"
+                  className=" mt-2 h-full w-full"
                 >
                   <Icons.GearSettings />
                 </Button>

@@ -4,11 +4,28 @@ import Label from '../Label';
 import classnames from 'classnames';
 
 const baseInputClasses =
-  'shadow transition duration-300 appearance-none border border-inputfield-main focus:border-inputfield-focus focus:outline-none disabled:border-inputfield-disabled rounded w-full py-2 px-3 text-sm text-white placeholder-inputfield-placeholder leading-tight';
+  `
+  transition
+  duration-300
+  appearance-none
+  border
+  border-inputfield-main
+  focus:border-inputfield-focus
+  focus:outline-none
+  disabled:border-inputfield-disabled
+  rounded
+  w-full
+  py-2
+  px-3
+  text-sm
+  text-dark
+  dark:text-light
+  placeholder-inputfield-placeholder
+  leading-tight`;
 
 const transparentClasses = {
   true: 'bg-transparent',
-  false: 'bg-black',
+  false: ' dark:bg-dark',
 };
 
 const smallInputClasses = {

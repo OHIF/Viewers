@@ -1,0 +1,61 @@
+/*
+Copyright (c) MONAI Consortium
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.settingsTable {
+  border-collapse: collapse;
+  border: 0 solid;
+  width: 100%;
+  font-size: small;
+  color: #fff;
+}
+.settingsTable tr td {
+  border: 0 solid;
+}
+.settings_active,
+.settings_header {
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+}
+.settings_active {
+  background-color: #403f3d;
+}
+.settings_header:hover {
+  background-color: #2b2a28;
+}
+.settings_header:after {
+  content: '\002B';
+  color: #fff;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+.settings_active:after {
+  content: '\2212';
+  color: #fff;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+.settings_content {
+  cursor: pointer;
+  color: #fff;
+  background-color: #2b2a28;
+  padding: 10px;
+  font-size: smaller;
+}

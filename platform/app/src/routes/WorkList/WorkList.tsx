@@ -342,8 +342,8 @@ function WorkList({
             <>
               <Icons.GroupLayers
                 className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary': isExpanded,
-                  'text-secondary-light': !isExpanded,
+                  'text-dark': isExpanded,
+                  'text-black': !isExpanded,
                 })}
               />
               {instances}
@@ -538,7 +538,7 @@ function WorkList({
   );
 
   return (
-    <div className="flex h-screen flex-col bg-black">
+    <div className="flex h-screen flex-col bg-white dark:bg-black">
       <Header
         isSticky
         menuOptions={menuOptions}
