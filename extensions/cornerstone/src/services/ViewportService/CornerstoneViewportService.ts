@@ -733,6 +733,40 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return 0;
   }
 
+  getVolumeDataForSomeReferencedDisplaySet({ viewportData, displaySetService }) {
+    for (const [index, data] of viewportData.data.entries()) {
+      const { imageIds, displaySetInstanceUID } = data;
+
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      const referencedDisplaySetInstanceUID = displaySet.measurements?.[0]?.displaySetInstanceUID;
+
+      if (!referencedDisplaySetInstanceUID) {
+        continue;
+      }
+
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        referencedDisplaySetInstanceUID
+      );
+
+      if (!referencedDisplaySet) {
+        continue;
+      }
+
+      const volume = csToolsUtils.getOrCreateImageVolume(
+        referencedDisplaySet.images.map(image => image.imageId)
+      );
+
+      if (!volume) {
+        console.log('Volume display set not found');
+        continue;
+      }
+
+      return { volume, imageIds, index, modality: displaySet.modality, displaySetInstanceUID };
+    }
+
+    return {};
+  }
+
   async _setVolumeViewport(
     viewport: Types.IVolumeViewport,
     viewportData: VolumeViewportData,
@@ -807,6 +841,28 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
+    // When you load SRs that only have measurements that were made in reconstructed views
+    // it's possible that you don't get any volumes. In this case we must grab the volumes
+    // from one of the referenced DS, so that we can activate MPR view without any errors
+    if (volumeInputArray.length === 0) {
+      const { volume, imageIds, index, modality, displaySetInstanceUID } =
+        this.getVolumeDataForSomeReferencedDisplaySet({ viewportData, displaySetService });
+
+      if (volume) {
+        volumeToLoad.push(volume);
+
+        const displaySetOptions = displaySetOptionsArray[index];
+        const { volumeId } = volume;
+        volumeInputArray.push({
+          imageIds,
+          volumeId,
+          modality,
+          displaySetInstanceUID,
+          blendMode: displaySetOptions.blendMode,
+          slabThickness: this._getSlabThickness(displaySetOptions, volumeId),
+        });
+      }
+    }
     // It's crucial not to return here because the volume may be loaded,
     // but the viewport also needs to set the volume.
     // if (!volumesNotLoaded.length) {
