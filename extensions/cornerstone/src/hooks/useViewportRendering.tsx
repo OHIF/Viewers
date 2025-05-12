@@ -43,11 +43,19 @@ interface WindowLevelHook {
   volumeRenderingQualityRange: { min: number; max: number; step: number };
 }
 
-const getPosition = (location: number) => {
-  const isLeft = location === ButtonLocation.LeftMiddle;
-  const isRight = location === ButtonLocation.RightMiddle;
-  const isBottom = location === ButtonLocation.BottomMiddle;
-  return isLeft ? 'left' : isRight ? 'right' : isBottom ? 'bottom' : 'top';
+const getPosition = (location: number): ColorbarPositionType => {
+  switch (location) {
+    case ButtonLocation.LeftMiddle:
+      return 'left';
+    case ButtonLocation.RightMiddle:
+      return 'right';
+    case ButtonLocation.BottomMiddle:
+      return 'bottom';
+    case ButtonLocation.TopMiddle:
+      return 'top';
+    default:
+      return 'bottom'; // Default to bottom if location doesn't match a middle position
+  }
 };
 
 /**
@@ -180,11 +188,19 @@ export function useViewportRendering(
         colorbarInitialColormap,
       } = colorbarProperties as ColorbarProperties;
 
+      let appropriateTickPosition = colorbarTickPosition || 'top';
+
+      if (colorbarPosition === 'left' || colorbarPosition === 'right') {
+        appropriateTickPosition = colorbarPosition === 'left' ? 'right' : 'left';
+      } else {
+        appropriateTickPosition = colorbarPosition === 'top' ? 'bottom' : 'top';
+      }
+
       const colorbarOptions = {
         viewportId,
         colormaps: colorbarProperties.colormaps || {},
         ticks: {
-          position: colorbarTickPosition || 'top',
+          position: appropriateTickPosition,
         },
         width: colorbarWidth,
         position: colorbarPosition,
@@ -192,10 +208,10 @@ export function useViewportRendering(
         ...options,
       };
 
-      // If light background, adjust tick style
+      // If light background, adjust tick style but keep the appropriate position
       if (isViewportBackgroundLight) {
         colorbarOptions.ticks = {
-          position: 'left',
+          position: appropriateTickPosition,
           style: {
             font: '13px Inter',
             color: '#000000',

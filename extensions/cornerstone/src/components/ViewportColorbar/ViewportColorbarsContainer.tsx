@@ -74,16 +74,16 @@ const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsC
   const positionStyle = positionStyles?.[position];
 
   const defaultPositionStyle =
-    position !== 'bottom'
+    position === 'bottom'
       ? {
-          width: '20px',
+          width: '100%',
+          height: '20px',
+          minWidth: '100px',
+        }
+      : {
           height: colorbars.length === 1 ? '55%' : '75%',
           top: '50%',
           transform: 'translateY(-50%)',
-        }
-      : {
-          width: '100%',
-          height: '20px',
         };
 
   const finalPositionStyle = deepMerge(defaultPositionStyle, positionStyle);
@@ -91,7 +91,6 @@ const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsC
   return (
     <div
       className="absolute"
-      id="alireza"
       style={{
         ...finalPositionStyle,
         pointerEvents: 'auto',

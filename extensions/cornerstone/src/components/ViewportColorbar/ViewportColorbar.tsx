@@ -62,6 +62,15 @@ const ViewportColorbar = ({
     ) as unknown as ColorbarCustomization;
 
     const positionTickStyles = colorbarCustomization?.positionTickStyles?.[position];
+
+    let appropriateTickPosition = tickPosition;
+
+    if (position === 'left' || position === 'right') {
+      appropriateTickPosition = position === 'left' ? 'right' : 'left';
+    } else {
+      appropriateTickPosition = position === 'top' ? 'bottom' : 'top';
+    }
+
     const csColorbar = new CornerstoneViewportColorbar({
       id: `Colorbar-${viewportId}-${displaySetInstanceUID}`,
       element: viewportElement,
@@ -70,7 +79,7 @@ const ViewportColorbar = ({
       activeColormapName: activeColormapName,
       volumeId,
       ticks: {
-        position: tickPosition as ColorbarRangeTextPosition,
+        position: appropriateTickPosition as ColorbarRangeTextPosition,
         style: {
           ...(colorbarCustomization?.tickStyles || {}),
           ...(positionTickStyles?.style || {}),
@@ -103,22 +112,20 @@ const ViewportColorbar = ({
   ) as unknown as ColorbarCustomization;
 
   const positionStylesFromConfig = colorbarCustomization?.positionStyles?.[position] || {};
-  console.debug('🚀 ~ position:', position);
-  console.debug('🚀 ~ positionStylesFromConfig:', positionStylesFromConfig);
 
   return (
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
       ref={containerRef}
       style={{
-        width: position === 'bottom' ? '100%' : '20px',
-        height: position === 'bottom' ? '20px' : '100%',
         position: 'relative',
         zIndex: 1000,
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
         pointerEvents: 'auto',
+        minWidth: position === 'bottom' ? '100%' : '17px',
+        minHeight: position === 'bottom' ? '20px' : '150px',
         ...positionStylesFromConfig,
       }}
     ></div>
