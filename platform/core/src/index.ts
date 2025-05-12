@@ -42,6 +42,8 @@ import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetS
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 import useActiveViewportDisplaySets from './hooks/useActiveViewportDisplaySets';
 
+export * from './hooks';
+
 const hotkeys = {
   ...utils.hotkeys,
   defaults: { hotkeyBindings: defaults.hotkeyBindings },
@@ -141,7 +143,6 @@ export {
 };
 
 export { OHIF };
-export * from './hooks';
 
 export type { Types };
 

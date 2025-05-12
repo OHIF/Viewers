@@ -114,6 +114,7 @@ const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsC
                 position={position}
                 tickPosition={tickPosition}
                 tickStyles={colorbarCustomization?.tickStyles}
+                numColorbars={colorbars.length}
               />
             );
           })}

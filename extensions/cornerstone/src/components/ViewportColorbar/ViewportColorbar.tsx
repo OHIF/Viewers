@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { utilities } from '@cornerstonejs/tools';
-import { useSystem, useViewportRef } from '@ohif/core';
+import { useSystem, useViewportRef, useViewportSize } from '@ohif/core';
 import {
   ColorbarPositionType,
   TickPositionType,
@@ -24,6 +24,7 @@ type ColorbarProps = {
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
   viewportElementRef?: React.RefObject<HTMLDivElement>;
+  numColorbars: number;
 };
 
 /**
@@ -40,11 +41,13 @@ const ViewportColorbar = ({
   position,
   tickPosition,
   tickStyles,
+  numColorbars,
 }: ColorbarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
   const viewportElementRef = useViewportRef(viewportId);
+  const { height } = useViewportSize(viewportId);
 
   useEffect(() => {
     if (!containerRef.current || !colormaps || !activeColormapName) {
@@ -113,6 +116,10 @@ const ViewportColorbar = ({
 
   const positionStylesFromConfig = colorbarCustomization?.positionStyles?.[position] || {};
 
+  if (!height) {
+    return null;
+  }
+
   return (
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
@@ -125,7 +132,7 @@ const ViewportColorbar = ({
         alignItems: 'center',
         pointerEvents: 'auto',
         minWidth: position === 'bottom' ? '100%' : '17px',
-        minHeight: position === 'bottom' ? '20px' : '150px',
+        minHeight: position === 'bottom' ? '20px' : numColorbars === 1 ? height / 2 : height / 4,
         ...positionStylesFromConfig,
       }}
     ></div>
