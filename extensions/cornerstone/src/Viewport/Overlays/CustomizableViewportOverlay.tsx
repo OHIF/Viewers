@@ -265,6 +265,7 @@ function CustomizableViewportOverlay({
       bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
       bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
       color={isLight ? 'text-neutral-dark' : 'text-neutral-light'}
+      shadowClass={isLight ? 'shadow-light' : 'shadow-dark'}
     />
   );
 }
