@@ -67,6 +67,7 @@ function CustomizableViewportOverlay({
     servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
+  const [isLight, setIsLight] = useState(false);
   const { imageIndex } = imageSliceData;
 
   // Historical usage defined the overlays as separate items due to lack of
@@ -160,6 +161,26 @@ function CustomizableViewportOverlay({
     };
   }, [viewportId, viewportData, cornerstoneViewportService, element]);
 
+  // Determine if viewport has light background
+  useEffect(() => {
+    const updateIsLight = () => {
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      if (!viewportInfo) {
+        return;
+      }
+
+      const backgroundColor = viewportInfo.getViewportOptions().background;
+      const isLightBackground = backgroundColor
+        ? utilities.isEqual(backgroundColor, [1, 1, 1])
+        : false;
+
+      setIsLight(isLightBackground);
+    };
+
+    // Initialize isLight state
+    updateIsLight();
+  }, [viewportId, cornerstoneViewportService]);
+
   const _renderOverlayItem = useCallback(
     (item, props) => {
       const overlayItemProps = {
@@ -170,6 +191,7 @@ function CustomizableViewportOverlay({
         viewportId,
         servicesManager,
         customization: item,
+        isLight,
         formatters: {
           formatPN,
           formatDate: formatDICOMDate,
@@ -219,6 +241,7 @@ function CustomizableViewportOverlay({
         instanceNumber,
         viewportId,
         toolGroupService,
+        isLight,
       };
 
       return (
@@ -241,6 +264,7 @@ function CustomizableViewportOverlay({
       topRight={getContent(topRightCustomization, 'topRightOverlayItem')}
       bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
       bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
+      color={isLight ? 'text-neutral-dark' : 'text-neutral-light'}
     />
   );
 }
