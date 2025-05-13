@@ -135,7 +135,9 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
               className="space-y-1"
               onChange={(vals: [number, number]) => {
                 const [newLower, newUpper] = vals;
-                setVOIRange({ lower: newLower, upper: newUpper });
+                if (newLower !== lower || newUpper !== upper) {
+                  setVOIRange({ lower: newLower, upper: newUpper });
+                }
               }}
             >
               <Numeric.DoubleRange showNumberInputs />
@@ -145,13 +147,15 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
             <div className="space-y-1">
               <Numeric.Container
                 mode="singleRange"
-                min={minMax.min}
+                min={0}
                 max={minMax.max}
                 step={1}
                 value={windowWidth}
                 className="space-y-1"
                 onChange={(val: number) => {
-                  setWindowLevel({ windowWidth: val, windowCenter });
+                  if (val !== windowWidth) {
+                    setWindowLevel({ windowWidth: val, windowCenter });
+                  }
                 }}
               >
                 <div className="flex items-center space-x-2">
@@ -162,13 +166,15 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
 
               <Numeric.Container
                 mode="singleRange"
-                min={0}
-                max={minMax.max - minMax.min}
+                min={minMax.min}
+                max={minMax.max}
                 step={1}
                 value={windowCenter}
                 className="space-y-1"
                 onChange={(val: number) => {
-                  setWindowLevel({ windowWidth, windowCenter: val });
+                  if (val !== windowCenter) {
+                    setWindowLevel({ windowWidth, windowCenter: val });
+                  }
                 }}
               >
                 <div className="flex items-center space-x-2">

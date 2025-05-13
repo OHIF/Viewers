@@ -279,15 +279,36 @@ export function useViewportRendering(
 
       const displaySetInstanceUID = validateActiveDisplaySet();
 
-      commandsManager.run({
-        commandName: 'setViewportWindowLevel',
-        commandOptions: {
-          ...preset,
-          viewportId,
-          displaySetInstanceUID,
-        },
-        context: 'CORNERSTONE',
-      });
+      // Update voiRange as well, to ensure immediate UI updates
+      const { lower, upper } = utilities.windowLevel.toLowHighRange(
+        preset.windowWidth,
+        preset.windowCenter
+      );
+
+      // Only update if values have actually changed
+      const currentWindowLevel = utilities.windowLevel.toWindowLevel(
+        voiRangeRef.current?.lower,
+        voiRangeRef.current?.upper
+      );
+
+      if (
+        !currentWindowLevel ||
+        Math.abs(currentWindowLevel.windowWidth - preset.windowWidth) > 0.001 ||
+        Math.abs(currentWindowLevel.windowCenter - preset.windowCenter) > 0.001
+      ) {
+        voiRangeRef.current = { lower, upper };
+        setVoiRange({ lower, upper });
+
+        commandsManager.run({
+          commandName: 'setViewportWindowLevel',
+          commandOptions: {
+            ...preset,
+            viewportId,
+            displaySetInstanceUID,
+          },
+          context: 'CORNERSTONE',
+        });
+      }
     },
     [commandsManager, viewportId, validateActiveDisplaySet]
   );
@@ -298,14 +319,32 @@ export function useViewportRendering(
         return;
       }
 
-      // Update the ref immediately to avoid race conditions with the event listener
-      voiRangeRef.current = params;
+      // Only update if VOI values have actually changed
+      if (
+        !voiRangeRef.current ||
+        Math.abs(voiRangeRef.current.lower - params.lower) > 0.001 ||
+        Math.abs(voiRangeRef.current.upper - params.upper) > 0.001
+      ) {
+        // Update the ref and state immediately to avoid race conditions with the event listener
+        voiRangeRef.current = params;
+        setVoiRange(params);
 
-      const windowLevel = utilities.windowLevel.toWindowLevel(params.lower, params.upper);
+        const windowLevel = utilities.windowLevel.toWindowLevel(params.lower, params.upper);
 
-      setWindowLevel(windowLevel);
+        // Set window level using the command manager directly to avoid circular calls
+        const displaySetInstanceUID = validateActiveDisplaySet();
+        commandsManager.run({
+          commandName: 'setViewportWindowLevel',
+          commandOptions: {
+            ...windowLevel,
+            viewportId,
+            displaySetInstanceUID,
+          },
+          context: 'CORNERSTONE',
+        });
+      }
     },
-    [viewportId, setWindowLevel]
+    [viewportId, commandsManager, validateActiveDisplaySet]
   );
 
   const toggleColorbar = useCallback(
