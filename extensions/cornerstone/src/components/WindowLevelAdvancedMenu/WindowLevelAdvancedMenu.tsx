@@ -36,10 +36,10 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
     viewportDisplaySets.length > 0 ? viewportDisplaySets[0].displaySetInstanceUID : undefined
   );
 
-  // Get viewport rendering helper hook
-  const { voiRange, setVOIRange } = useViewportRendering(viewportId, {
+  const { voiRange, setVOIRange, windowLevel, setWindowLevel } = useViewportRendering(viewportId, {
     displaySetInstanceUID: selectedDisplaySetUID,
   });
+  console.debug('🚀 ~ voiRange:', voiRange);
 
   useEffect(() => {
     if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {
@@ -47,20 +47,33 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
     }
   }, [viewportDisplaySets, selectedDisplaySetUID]);
 
+  if (!voiRange) {
+    return null;
+  }
+
   const { upper, lower } = voiRange;
-  const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
+  const { windowWidth, windowCenter } = windowLevel;
 
   const selectedViewportImageIds =
     displaySetService.getDisplaySetByUID(selectedDisplaySetUID)?.imageIds;
 
   let min = Infinity;
   let max = -Infinity;
-  for (const imageId of selectedViewportImageIds) {
-    const image = cache.getImage(imageId);
-    if (image) {
-      min = Math.min(min, image.minPixelValue);
-      max = Math.max(max, image.maxPixelValue);
+
+  if (selectedViewportImageIds) {
+    for (const imageId of selectedViewportImageIds) {
+      const image = cache.getImage(imageId);
+      if (image) {
+        min = Math.min(min, image.minPixelValue);
+        max = Math.max(max, image.maxPixelValue);
+      }
     }
+  }
+
+  // Provide reasonable defaults if min/max couldn't be determined
+  if (min === Infinity || max === -Infinity) {
+    min = 0;
+    max = 255;
   }
 
   const minMax = {
@@ -129,7 +142,7 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
             </Numeric.Container>
           </TabsContent>
           <TabsContent value={TABS.MANUAL}>
-            <div className="space-y-4">
+            <div className="space-y-1">
               <Numeric.Container
                 mode="singleRange"
                 min={minMax.min}
@@ -138,19 +151,15 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
                 value={windowWidth}
                 className="space-y-1"
                 onChange={(val: number) => {
-                  const newWidth = val as number;
-                  const { lower, upper } = utilities.windowLevel.toLowHighRange(
-                    newWidth,
-                    windowCenter
-                  );
-                  setVOIRange({ lower, upper });
+                  setWindowLevel({ windowWidth: val, windowCenter });
                 }}
               >
-                <Numeric.Label>Window Width</Numeric.Label>
-                <Numeric.SingleRange showNumberInput />
+                <div className="flex items-center space-x-2">
+                  <Numeric.Label>W:</Numeric.Label>
+                  <Numeric.SingleRange showNumberInput />
+                </div>
               </Numeric.Container>
 
-              {/* Window Center Slider */}
               <Numeric.Container
                 mode="singleRange"
                 min={0}
@@ -159,16 +168,13 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
                 value={windowCenter}
                 className="space-y-1"
                 onChange={(val: number) => {
-                  const newCenter = val as number;
-                  const { lower, upper } = utilities.windowLevel.toLowHighRange(
-                    windowWidth,
-                    newCenter
-                  );
-                  setVOIRange({ lower, upper });
+                  setWindowLevel({ windowWidth, windowCenter: val });
                 }}
               >
-                <Numeric.Label>Window Center</Numeric.Label>
-                <Numeric.SingleRange showNumberInput />
+                <div className="flex items-center space-x-2">
+                  <Numeric.Label>L:</Numeric.Label>
+                  <Numeric.SingleRange showNumberInput />
+                </div>
               </Numeric.Container>
             </div>
           </TabsContent>

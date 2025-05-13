@@ -1,7 +1,14 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
-import { StackViewport, Types, VolumeViewport3D, utilities } from '@cornerstonejs/core';
+import {
+  StackViewport,
+  Types,
+  VolumeViewport3D,
+  utilities,
+  Enums,
+  BaseVolumeViewport,
+} from '@cornerstonejs/core';
 import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
@@ -19,6 +26,7 @@ interface WindowLevelHook {
   isViewportBackgroundLight: boolean;
   viewportDisplaySets: AppTypes.DisplaySet[] | undefined;
   voiRange: { lower: number; upper: number } | undefined;
+  windowLevel: { windowWidth: number; windowCenter: number } | undefined;
 
   // Window level functions
   setWindowLevel: (preset: {
@@ -90,6 +98,7 @@ export function useViewportRendering(
     options?.location ? getPosition(options.location) : 'bottom'
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
+  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
 
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
 
@@ -148,7 +157,36 @@ export function useViewportRendering(
   useEffect(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     setIs3DVolume(viewport instanceof VolumeViewport3D);
-  }, [cornerstoneViewportService, viewportId]);
+
+    // Initialize the VOI range from the viewport
+    if (viewport && activeDisplaySetInstanceUID) {
+      try {
+        let properties;
+
+        if (viewport instanceof StackViewport) {
+          properties = viewport.getProperties();
+          if (properties.voiRange) {
+            setVoiRange(properties.voiRange);
+            voiRangeRef.current = properties.voiRange;
+          }
+        } else if (viewport instanceof BaseVolumeViewport) {
+          // For volume viewports, find the actor for the active display set
+          const volumeIds = viewport.getAllVolumeIds();
+          const volumeId = volumeIds.find(id => id.includes(activeDisplaySetInstanceUID));
+
+          if (volumeId) {
+            properties = viewport.getProperties(volumeId);
+            if (properties.voiRange) {
+              setVoiRange(properties.voiRange);
+              voiRangeRef.current = properties.voiRange;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing VOI range:', error);
+      }
+    }
+  }, [cornerstoneViewportService, viewportId, activeDisplaySetInstanceUID]);
 
   useEffect(() => {
     if (!viewportId) {
@@ -172,7 +210,44 @@ export function useViewportRendering(
     };
   }, [colorbarService, viewportId]);
 
-  // Validate the active display set exists in the viewport
+  useEffect(() => {
+    if (!viewportId || !activeDisplaySetInstanceUID) {
+      return;
+    }
+
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport) {
+      return;
+    }
+
+    const element = viewport.element;
+    if (!element) {
+      return;
+    }
+
+    const updateVOI = eventDetail => {
+      const { range } = eventDetail.detail;
+
+      if (!range) {
+        return;
+      }
+
+      if (
+        voiRangeRef.current?.lower !== range.lower ||
+        voiRangeRef.current?.upper !== range.upper
+      ) {
+        voiRangeRef.current = range;
+        setVoiRange(range);
+      }
+    };
+
+    element.addEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
+
+    return () => {
+      element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
+    };
+  }, [viewportId, activeDisplaySetInstanceUID, cornerstoneViewportService]);
+
   const validateActiveDisplaySet = useCallback(() => {
     if (!activeDisplaySetInstanceUID) {
       throw new Error('No active display set instance UID is available');
@@ -222,6 +297,9 @@ export function useViewportRendering(
       if (!viewportId) {
         return;
       }
+
+      // Update the ref immediately to avoid race conditions with the event listener
+      voiRangeRef.current = params;
 
       const windowLevel = utilities.windowLevel.toWindowLevel(params.lower, params.upper);
 
@@ -475,6 +553,7 @@ export function useViewportRendering(
     setWindowLevel,
     setVOIRange,
     voiRange,
+    windowLevel: utilities.windowLevel.toWindowLevel(voiRange?.lower, voiRange?.upper),
 
     // Colorbar functions
     hasColorbar,
