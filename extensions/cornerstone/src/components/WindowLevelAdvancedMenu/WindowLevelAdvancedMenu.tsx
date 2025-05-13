@@ -37,7 +37,7 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
   );
 
   // Get viewport rendering helper hook
-  const { setWindowLevelPreset, windowLevelPresets, is3DVolume } = useViewportRendering(viewportId);
+  const { setWindowLevel, voiRange, setVOIRange, is3DVolume } = useViewportRendering(viewportId);
 
   useEffect(() => {
     if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {
@@ -45,15 +45,6 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
     }
   }, [viewportDisplaySets, selectedDisplaySetUID]);
 
-  const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-  const properties = csViewport.getProperties();
-
-  if (!properties) {
-    return null;
-  }
-
-  const { voiRange } = properties;
   const { upper, lower } = voiRange;
   const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
 

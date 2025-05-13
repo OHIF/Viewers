@@ -1,64 +1,69 @@
-import React, { MutableRefObject, ReactElement, useRef, useState } from 'react';
-import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 
 export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
-  const {
-    colorbarProperties,
-    viewportDisplaySets: displaySets,
-    setColormap,
-    getViewportColormap,
-  } = useViewportRendering(viewportId);
+  const { viewportDisplaySets } = useViewportRendering(viewportId);
 
-  // Use state to keep track of the active display set for this component
-  const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets?.[0]);
+  const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
+    viewportDisplaySets?.[0]?.displaySetInstanceUID
+  );
+
+  // Use the hook with the active display set
+  const { colorbarProperties, setColormap, getViewportColormap } = useViewportRendering(
+    viewportId,
+    {
+      displaySetInstanceUID: activeDisplaySetUID,
+    }
+  );
 
   const { colormaps } = colorbarProperties;
 
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewColormap, setPrePreviewColormap] = useState(null);
+  const [currentColormap, setCurrentColormap] = useState(null);
 
   const showPreviewRef = useRef(showPreview);
   showPreviewRef.current = showPreview;
   const prePreviewColormapRef = useRef(prePreviewColormap);
   prePreviewColormapRef.current = prePreviewColormap;
-  const activeDisplaySetRef = useRef(activeDisplaySet) as MutableRefObject<AppTypes.DisplaySet>;
-  activeDisplaySetRef.current = activeDisplaySet;
+  const currentColormapRef = useRef(currentColormap);
+  currentColormapRef.current = currentColormap;
 
-  const handleSetColorLUT = props => {
+  useEffect(() => {
+    setCurrentColormap(null);
+    setPrePreviewColormap(null);
+  }, [activeDisplaySetUID]);
+
+  const handleSetColorLUT = (colormap, immediate = true) => {
     // Check if it's a fusion viewport
     const oneOpacityColormaps = ['Grayscale', 'X Ray'];
     const opacity =
-      displaySets.length > 1 && !oneOpacityColormaps.includes(props.colormap.name) ? 0.5 : 1;
+      viewportDisplaySets.length > 1 && !oneOpacityColormaps.includes(colormap.name) ? 0.5 : 1;
 
     setColormap({
-      ...props,
+      colormap,
       opacity,
-      immediate: true,
+      immediate,
     });
   };
 
-  const activeIndex = displaySets.findIndex(
-    ds => ds.displaySetInstanceUID === activeDisplaySetRef.current?.displaySetInstanceUID
-  );
-
   return (
     <>
-      {displaySets.length > 1 && (
+      {viewportDisplaySets && viewportDisplaySets.length > 1 && (
         <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
           <Tabs
-            value={String(activeIndex)}
-            onValueChange={val => {
-              const index = parseInt(val, 10);
-              setActiveDisplaySet(displaySets[index]);
+            value={activeDisplaySetUID}
+            onValueChange={displaySetUID => {
+              setActiveDisplaySetUID(displaySetUID);
               setPrePreviewColormap(null);
             }}
           >
             <TabsList>
-              {displaySets.map((ds, i) => (
+              {viewportDisplaySets.map(ds => (
                 <TabsTrigger
-                  key={i}
-                  value={String(i)}
+                  key={ds.displaySetInstanceUID}
+                  value={ds.displaySetInstanceUID}
                 >
                   {ds.Modality}
                 </TabsTrigger>
@@ -67,6 +72,7 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
           </Tabs>
         </div>
       )}
+
       <div
         className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
         onClick={() => setShowPreview(!showPreview)}
@@ -77,55 +83,48 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
           checked={showPreview}
           onCheckedChange={checked => {
             setShowPreview(checked);
+
+            if (!checked && currentColormapRef.current) {
+              handleSetColorLUT(currentColormapRef.current);
+            }
           }}
         />
       </div>
+
       <AllInOneMenu.DividerItem />
-      <AllInOneMenu.ItemPanel
-        maxHeight="calc(100vh - 250px)"
-        className="min-h-[200px] flex-grow"
-      >
-        {colormaps.map((colormap, index) => (
-          <AllInOneMenu.Item
-            key={index}
-            label={colormap.description}
-            useIconSpace={false}
-            onClick={() => {
-              handleSetColorLUT({
-                viewportId,
-                colormap,
-                displaySetInstanceUID: activeDisplaySetRef.current?.displaySetInstanceUID,
-              });
-              setPrePreviewColormap(null);
-            }}
-            onMouseEnter={() => {
-              if (showPreviewRef.current && activeDisplaySetRef.current) {
-                setPrePreviewColormap(
-                  getViewportColormap(activeDisplaySetRef.current.displaySetInstanceUID)
-                );
-                handleSetColorLUT({
-                  viewportId,
-                  colormap,
-                  displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
-                });
-              }
-            }}
-            onMouseLeave={() => {
-              if (
-                showPreviewRef.current &&
-                prePreviewColormapRef.current &&
-                activeDisplaySetRef.current
-              ) {
-                handleSetColorLUT({
-                  viewportId,
-                  colormap: prePreviewColormapRef.current,
-                  displaySetInstanceUID: activeDisplaySetRef.current.displaySetInstanceUID,
-                });
-              }
-            }}
-          ></AllInOneMenu.Item>
-        ))}
-      </AllInOneMenu.ItemPanel>
+
+      <div className="h-[300px] flex-grow">
+        <ScrollArea className="h-full w-full">
+          <div className="p-1">
+            {colormaps.map((colormap, index) => (
+              <AllInOneMenu.Item
+                key={index}
+                label={colormap.description}
+                useIconSpace={false}
+                onClick={() => {
+                  setCurrentColormap(colormap);
+                  handleSetColorLUT(colormap);
+                  setPrePreviewColormap(null);
+                }}
+                onMouseEnter={() => {
+                  if (showPreviewRef.current) {
+                    if (!prePreviewColormapRef.current) {
+                      const currentMap = getViewportColormap();
+                      setPrePreviewColormap(currentMap || colormap);
+                    }
+                    handleSetColorLUT(colormap);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (showPreviewRef.current && prePreviewColormapRef.current) {
+                    handleSetColorLUT(prePreviewColormapRef.current);
+                  }
+                }}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
     </>
   );
 }

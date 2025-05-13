@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
 import { StackViewport, Types, VolumeViewport3D, utilities } from '@cornerstonejs/core';
@@ -8,6 +8,11 @@ import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
 import { VolumeLightingParams } from '../types';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 
+interface ViewportRenderingOptions {
+  location?: number;
+  displaySetInstanceUID?: string;
+}
+
 interface WindowLevelHook {
   // Viewport information
   is3DVolume: boolean;
@@ -15,20 +20,26 @@ interface WindowLevelHook {
   viewportDisplaySets: AppTypes.DisplaySet[] | undefined;
   voiRange: { lower: number; upper: number } | undefined;
 
+  // The display set that operations are working with
+  activeDisplaySetInstanceUID: string | undefined;
+
+  // Active display set metadata
+  activeDisplaySet?: AppTypes.DisplaySet;
+  activeModality?: string;
+
   // Window level functions
-  setWindowLevelPreset: (
-    preset: { windowWidth: number; windowCenter: number },
-    displaySetInstanceUID?: string
-  ) => void;
-  setVOIRange: (params: { lower: number; upper: number }, displaySetInstanceUID?: string) => void;
-  setVOIWindowLevel: (
-    params: {
-      windowWidth: number;
-      windowCenter: number;
-    },
-    displaySetInstanceUID?: string
-  ) => void;
-  windowLevelPresets: Array<Record<string, any>>;
+  setWindowLevel: (preset: {
+    windowWidth: number;
+    windowCenter: number;
+    immediate?: boolean;
+  }) => void;
+  setVOIRange: (params: { lower: number; upper: number }) => void;
+  windowLevelPresets: WindowLevelPreset[]; // Now directly provides presets for active display set
+  allWindowLevelPresets: Array<{
+    displaySetInstanceUID: string;
+    modality: string;
+    presets: WindowLevelPreset[];
+  }>;
 
   // Colorbar functions
   hasColorbar: boolean;
@@ -38,13 +49,8 @@ interface WindowLevelHook {
   setColorbarPosition: React.Dispatch<React.SetStateAction<ColorbarPositionType>>;
 
   // Colormap functions
-  setColormap: (params: {
-    colormap: any;
-    displaySetInstanceUID: string;
-    opacity?: number;
-    immediate?: boolean;
-  }) => void;
-  getViewportColormap: (displaySetInstanceUID?: string) => any;
+  setColormap: (params: { colormap: any; opacity?: number; immediate?: boolean }) => void;
+  getViewportColormap: () => any;
 
   // 3D volume rendering functions
   setVolumeRenderingPreset: (preset: any) => void;
@@ -74,11 +80,12 @@ const getPosition = (location: number): ColorbarPositionType => {
  * Hook to access window level functionality for a specific viewport
  *
  * @param viewportId - The ID of the viewport to get window level functionality for
+ * @param options - Options for the hook, including location and displaySetInstanceUID
  * @returns Window level API for the specified viewport
  */
 export function useViewportRendering(
   viewportId?: string,
-  options?: { location?: number; displaySetInstanceUID?: string }
+  options?: ViewportRenderingOptions
 ): WindowLevelHook {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, colorbarService, customizationService } =
@@ -93,6 +100,31 @@ export function useViewportRendering(
 
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
 
+  // Determine the active display set instance UID
+  const activeDisplaySetInstanceUID = useMemo(() => {
+    if (options?.displaySetInstanceUID) {
+      return options.displaySetInstanceUID;
+    }
+
+    if (viewportDisplaySets && viewportDisplaySets.length > 0) {
+      return viewportDisplaySets[0].displaySetInstanceUID;
+    }
+
+    return undefined;
+  }, [options?.displaySetInstanceUID, viewportDisplaySets]);
+
+  // Find the active display set
+  const activeDisplaySet = useMemo(() => {
+    if (!activeDisplaySetInstanceUID || !viewportDisplaySets) {
+      return undefined;
+    }
+
+    return viewportDisplaySets.find(ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID);
+  }, [activeDisplaySetInstanceUID, viewportDisplaySets]);
+
+  // Get active modality
+  const activeModality = activeDisplaySet?.Modality as string | undefined;
+
   const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
 
   const { presets, colorbarProperties, volumeRenderingPresets, volumeRenderingQualityRange } =
@@ -103,67 +135,39 @@ export function useViewportRendering(
     ? utilities.isEqual(backgroundColor, [1, 1, 1])
     : false;
 
-  const windowLevelPresets =
+  // Get all window level presets for all display sets in the viewport
+  const allWindowLevelPresets =
     viewportDisplaySets
       ?.filter(displaySet => presets?.[displaySet.Modality as string])
       .map(displaySet => {
-        return { [displaySet.Modality as string]: presets[displaySet.Modality as string] };
+        return {
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          modality: displaySet.Modality as string,
+          presets: presets[displaySet.Modality as string],
+        };
       }) || [];
+
+  // Get the presets specifically for the active display set
+  const activeDisplaySetPresets = useMemo(() => {
+    if (!activeDisplaySetInstanceUID || allWindowLevelPresets.length === 0) {
+      return [];
+    }
+
+    const activePresetData = allWindowLevelPresets.find(
+      preset => preset.displaySetInstanceUID === activeDisplaySetInstanceUID
+    );
+
+    if (!activePresetData) {
+      return [];
+    }
+
+    return activePresetData.presets;
+  }, [allWindowLevelPresets, activeDisplaySetInstanceUID]);
 
   useEffect(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     setIs3DVolume(viewport instanceof VolumeViewport3D);
   }, [cornerstoneViewportService, viewportId]);
-
-  // useEffect(() => {
-  //   if (!viewportId) {
-  //     return;
-  //   }
-
-  //   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  //   if (!viewport) {
-  //     return;
-  //   }
-
-  //   // Initialize VOI range state from current properties
-  //   const updateVOIFromViewport = () => {
-  //     if (viewport instanceof StackViewport) {
-  //       const { voiRange: currentVoiRange } = viewport.getProperties();
-  //       if (currentVoiRange) {
-  //         setVoiRange(currentVoiRange);
-  //       }
-  //     } else if (viewport instanceof BaseVolumeViewport) {
-  //       if (displaySets && displaySets.length > 0) {
-  //         throw new Error('Volume viewports with display sets are not yet supported');
-  //       }
-  //     }
-  //   };
-
-  //   updateVOIFromViewport();
-
-  //   const callback = evt => {
-  //     const { viewportId: eventViewportId, voiRange: newVoiRange } = evt.detail;
-  //     if (eventViewportId === viewportId && newVoiRange) {
-  //       setVoiRange(newVoiRange);
-  //     }
-  //   };
-
-  //   const element = viewport.element;
-  //   if (element) {
-  //     element.addEventListener(EVENTS.VOI_MODIFIED, callback);
-
-  //     voiEventUnsubscribe.current = () => {
-  //       element.removeEventListener(EVENTS.VOI_MODIFIED, callback);
-  //     };
-  //   }
-
-  //   return () => {
-  //     if (voiEventUnsubscribe.current) {
-  //       voiEventUnsubscribe.current();
-  //       voiEventUnsubscribe.current = null;
-  //     }
-  //   };
-  // }, [viewportId, cornerstoneViewportService, displaySets]);
 
   useEffect(() => {
     if (!viewportId) {
@@ -187,32 +191,62 @@ export function useViewportRendering(
     };
   }, [colorbarService, viewportId]);
 
-  const setWindowLevelPreset = useCallback(
-    (preset: WindowLevelPreset, displaySetInstanceUID?: string) => {
+  // Validate the active display set exists in the viewport
+  const validateActiveDisplaySet = useCallback(() => {
+    if (!activeDisplaySetInstanceUID) {
+      throw new Error('No active display set instance UID is available');
+    }
+
+    if (viewportDisplaySets?.length === 0) {
+      throw new Error('No display sets are available for this viewport');
+    }
+
+    // Verify the active display set is in the viewport
+    const isDisplaySetInViewport = viewportDisplaySets?.some(
+      ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID
+    );
+
+    if (!isDisplaySetInViewport) {
+      throw new Error(
+        `Display set with UID ${activeDisplaySetInstanceUID} is not present in the viewport`
+      );
+    }
+
+    return activeDisplaySetInstanceUID;
+  }, [activeDisplaySetInstanceUID, viewportDisplaySets]);
+
+  const setWindowLevel = useCallback(
+    (preset: { windowWidth: number; windowCenter: number; immediate?: boolean }) => {
       if (!viewportId) {
         return;
       }
 
-      if (!displaySetInstanceUID && viewportDisplaySets.length > 1) {
-        throw new Error(
-          'You need to provide a displaySetInstanceUID when there are multiple display sets to setWindowLevelPreset'
-        );
-      }
-
-      const displaySetInstanceUIDToUse =
-        displaySetInstanceUID ?? viewportDisplaySets[0].displaySetInstanceUID;
+      const displaySetInstanceUID = validateActiveDisplaySet();
 
       commandsManager.run({
         commandName: 'setViewportWindowLevel',
         commandOptions: {
           ...preset,
           viewportId,
-          displaySetInstanceUID: displaySetInstanceUIDToUse,
+          displaySetInstanceUID,
         },
         context: 'CORNERSTONE',
       });
     },
-    [commandsManager, viewportId, viewportDisplaySets]
+    [commandsManager, viewportId, validateActiveDisplaySet]
+  );
+
+  const setVOIRange = useCallback(
+    (params: { lower: number; upper: number }) => {
+      if (!viewportId) {
+        return;
+      }
+
+      const windowLevel = utilities.windowLevel.toWindowLevel(params.lower, params.upper);
+
+      setWindowLevel(windowLevel);
+    },
+    [viewportId, setWindowLevel]
   );
 
   const toggleColorbar = useCallback(
@@ -293,94 +327,80 @@ export function useViewportRendering(
   );
 
   const setColormap = useCallback(
-    ({ colormap, displaySetInstanceUID, opacity = 1, immediate = false }) => {
+    ({ colormap, opacity = 1, immediate = false }) => {
       if (!viewportId) {
         return;
       }
 
-      if (!displaySetInstanceUID && viewportDisplaySets.length > 1) {
-        throw new Error(
-          'You need to provide a displaySetInstanceUID when there are multiple display sets to setColormap'
-        );
-      }
-
-      const displaySetInstanceUIDToUse =
-        displaySetInstanceUID ?? viewportDisplaySets[0].displaySetInstanceUID;
+      const displaySetInstanceUID = validateActiveDisplaySet();
 
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {
           viewportId,
           colormap,
-          displaySetInstanceUID: displaySetInstanceUIDToUse,
+          displaySetInstanceUID,
           opacity,
           immediate,
         },
         context: 'CORNERSTONE',
       });
     },
-    [commandsManager, viewportId, viewportDisplaySets]
+    [commandsManager, viewportId, validateActiveDisplaySet]
   );
 
-  const getViewportColormap = useCallback(
-    (displaySetInstanceUID?: string) => {
-      if (!displaySetInstanceUID && viewportDisplaySets.length > 1) {
-        throw new Error(
-          'You need to provide a displaySetInstanceUID when there are multiple display sets to getViewportColormap'
-        );
-      }
+  const getViewportColormap = useCallback(() => {
+    if (!viewportId) {
+      return null;
+    }
 
-      if (!displaySetInstanceUID || !viewportId) {
-        return null;
-      }
+    const displaySetInstanceUID = validateActiveDisplaySet();
 
-      const displaySetInstanceUIDToUse =
-        displaySetInstanceUID ?? viewportDisplaySets[0].displaySetInstanceUID;
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport) {
+      return null;
+    }
 
-      if (!viewport) {
-        return null;
-      }
-
-      if (viewport instanceof StackViewport) {
-        const { colormap } = viewport.getProperties();
-        if (!colormap) {
-          return (
-            colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-            colorbarProperties?.colormaps?.[0]
-          );
-        }
-        return colormap;
-      }
-
-      const actorEntries = viewport.getActors();
-      const actorEntry = actorEntries?.find(entry =>
-        entry.referencedId.includes(displaySetInstanceUIDToUse)
-      );
-
-      if (!actorEntry) {
-        return (
-          colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
-          colorbarProperties?.colormaps?.[0]
-        );
-      }
-
-      const { colormap } = (viewport as Types.IVolumeViewport).getProperties(
-        actorEntry.referencedId
-      );
-
+    if (viewport instanceof StackViewport) {
+      const { colormap } = viewport.getProperties();
       if (!colormap) {
         return (
           colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
           colorbarProperties?.colormaps?.[0]
         );
       }
-
       return colormap;
-    },
-    [cornerstoneViewportService, viewportId, viewportDisplaySets, colorbarProperties?.colormaps]
-  );
+    }
+
+    const actorEntries = viewport.getActors();
+    const actorEntry = actorEntries?.find(entry =>
+      entry.referencedId.includes(displaySetInstanceUID)
+    );
+
+    if (!actorEntry) {
+      return (
+        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+        colorbarProperties?.colormaps?.[0]
+      );
+    }
+
+    const { colormap } = (viewport as Types.IVolumeViewport).getProperties(actorEntry.referencedId);
+
+    if (!colormap) {
+      return (
+        colorbarProperties?.colormaps?.find(c => c.Name === 'Grayscale') ||
+        colorbarProperties?.colormaps?.[0]
+      );
+    }
+
+    return colormap;
+  }, [
+    cornerstoneViewportService,
+    viewportId,
+    validateActiveDisplaySet,
+    colorbarProperties?.colormaps,
+  ]);
 
   // 3D volume rendering functions
   const setVolumeRenderingPreset = useCallback(
@@ -389,16 +409,18 @@ export function useViewportRendering(
         return;
       }
 
+      const displaySetInstanceUID = validateActiveDisplaySet();
+
       commandsManager.run({
         commandName: 'setVolumesPreset',
         commandOptions: {
           preset,
           viewportId,
-          displaySetInstanceUID: displaySetInstanceUIDToUse,
+          displaySetInstanceUID,
         },
       });
     },
-    [commandsManager, viewportId, viewportDisplaySets]
+    [commandsManager, viewportId, validateActiveDisplaySet]
   );
 
   const setVolumeRenderingQuality = useCallback(
@@ -457,11 +479,13 @@ export function useViewportRendering(
   return {
     is3DVolume,
     isViewportBackgroundLight,
+    activeDisplaySetInstanceUID,
+    activeDisplaySet,
+    activeModality,
 
     // Window level functions
-    setWindowLevelPreset,
-    // setVOIRange,
-    // setVOIWindowLevel,
+    setWindowLevel,
+    setVOIRange,
     voiRange,
 
     // Colorbar functions
@@ -487,7 +511,8 @@ export function useViewportRendering(
     setColorbarPosition,
 
     // Presets
-    windowLevelPresets,
+    windowLevelPresets: activeDisplaySetPresets,
+    allWindowLevelPresets,
     volumeRenderingPresets,
     volumeRenderingQualityRange,
   };

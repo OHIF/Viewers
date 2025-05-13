@@ -1,13 +1,18 @@
-import React, { MutableRefObject, ReactElement, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 
 export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement {
-  const { windowLevelPresets, setWindowLevelPreset, viewportDisplaySets } =
-    useViewportRendering(viewportId);
+  const { viewportDisplaySets } = useViewportRendering(viewportId);
+  const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
+    viewportDisplaySets?.[0]?.displaySetInstanceUID
+  );
 
-  const [activeDisplaySet, setActiveDisplaySet] = useState(viewportDisplaySets?.[0]);
+  // Use the hook with the active display set
+  const { windowLevelPresets, setWindowLevel } = useViewportRendering(viewportId, {
+    displaySetInstanceUID: activeDisplaySetUID,
+  });
 
   const [showPreview, setShowPreview] = useState(false);
   const [prePreviewPreset, setPrePreviewPreset] = useState<WindowLevelPreset | null>(null);
@@ -17,51 +22,39 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
   showPreviewRef.current = showPreview;
   const prePreviewPresetRef = useRef(prePreviewPreset);
   prePreviewPresetRef.current = prePreviewPreset;
-  const activeDisplaySetRef = useRef(activeDisplaySet) as MutableRefObject<AppTypes.DisplaySet>;
-  activeDisplaySetRef.current = activeDisplaySet;
   const currentPresetRef = useRef(currentPreset);
   currentPresetRef.current = currentPreset;
 
+  // Reset presets when active display set changes
   useEffect(() => {
     setCurrentPreset(null);
     setPrePreviewPreset(null);
-  }, [activeDisplaySet]);
+  }, [activeDisplaySetUID]);
 
-  const handleSetWindowLevel = (preset: WindowLevelPreset) => {
-    setWindowLevelPreset(
-      {
-        windowWidth: Number(preset.window),
-        windowCenter: Number(preset.level),
-      },
-      activeDisplaySetRef.current?.displaySetInstanceUID
-    );
+  // Handle applying window level preset
+  const handleSetWindowLevel = (preset: WindowLevelPreset, immediate = false) => {
+    setWindowLevel({
+      windowWidth: Number(preset.window),
+      windowCenter: Number(preset.level),
+      immediate,
+    });
   };
-
-  const activeIndex =
-    viewportDisplaySets?.findIndex(
-      ds => ds.displaySetInstanceUID === activeDisplaySetRef.current?.displaySetInstanceUID
-    ) ?? 0;
-
-  const currentModalityPresets = windowLevelPresets[activeIndex] || {};
-  const modality = activeDisplaySet?.Modality || Object.keys(currentModalityPresets)[0] || '';
-  const presets = currentModalityPresets[modality] || [];
 
   return (
     <>
       {viewportDisplaySets && viewportDisplaySets.length > 1 && (
         <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
           <Tabs
-            value={String(activeIndex)}
-            onValueChange={val => {
-              const index = parseInt(val, 10);
-              setActiveDisplaySet(viewportDisplaySets[index]);
+            value={activeDisplaySetUID}
+            onValueChange={displaySetUID => {
+              setActiveDisplaySetUID(displaySetUID);
             }}
           >
             <TabsList>
-              {viewportDisplaySets.map((ds, i) => (
+              {viewportDisplaySets.map(ds => (
                 <TabsTrigger
-                  key={i}
-                  value={String(i)}
+                  key={ds.displaySetInstanceUID}
+                  value={ds.displaySetInstanceUID}
                 >
                   {ds.Modality}
                 </TabsTrigger>
@@ -82,6 +75,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
           onCheckedChange={checked => {
             setShowPreview(checked);
 
+            // When turning off preview, restore the current preset if one exists
             if (!checked && currentPresetRef.current) {
               handleSetWindowLevel(currentPresetRef.current, true);
             }
@@ -91,10 +85,10 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
 
       <AllInOneMenu.DividerItem />
 
-      <div className="h-[200px] flex-grow">
+      <div className="h-[175px] flex-grow">
         <ScrollArea className="h-full w-full">
           <div className="p-1">
-            {presets.map((preset, index) => (
+            {windowLevelPresets.map((preset, index) => (
               <AllInOneMenu.Item
                 key={index}
                 label={preset.description}
@@ -106,7 +100,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
                   setPrePreviewPreset(null);
                 }}
                 onMouseEnter={() => {
-                  if (showPreviewRef.current && activeDisplaySetRef.current) {
+                  if (showPreviewRef.current) {
                     if (!prePreviewPresetRef.current) {
                       setPrePreviewPreset(currentPresetRef.current || preset);
                     }
@@ -114,11 +108,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
                   }
                 }}
                 onMouseLeave={() => {
-                  if (
-                    showPreviewRef.current &&
-                    prePreviewPresetRef.current &&
-                    activeDisplaySetRef.current
-                  ) {
+                  if (showPreviewRef.current && prePreviewPresetRef.current) {
                     handleSetWindowLevel(prePreviewPresetRef.current, true);
                   }
                 }}
