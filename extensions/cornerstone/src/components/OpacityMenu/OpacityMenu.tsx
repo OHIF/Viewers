@@ -1,6 +1,6 @@
 import React from 'react';
-import { Numeric, cn } from '@ohif/ui-next';
-import { useViewportRendering } from '../../hooks';
+import { Numeric } from '@ohif/ui-next';
+import { useViewportDisplaySets, useViewportRendering } from '../../hooks';
 
 interface OpacityMenuProps {
   viewportId: string;
@@ -8,31 +8,42 @@ interface OpacityMenuProps {
 }
 
 function OpacityMenu({ viewportId, className }: OpacityMenuProps) {
-  const { opacity, setOpacity } = useViewportRendering(viewportId);
+  const { backgroundDisplaySet, foregroundDisplaySets } = useViewportDisplaySets(viewportId, {
+    includeForeground: true,
+    includeBackground: true,
+  });
+  const { opacityLinear, setOpacityLinear } = useViewportRendering(viewportId, {
+    displaySetInstanceUID: foregroundDisplaySets[0].displaySetInstanceUID,
+  });
 
-  const opacityValue = opacity;
+  const opacityValue = opacityLinear !== undefined ? opacityLinear : 0;
+  const backgroundModality = backgroundDisplaySet?.Modality || '';
+  const foregroundModality = foregroundDisplaySets[0]?.Modality || '';
 
   return (
     <div className={className}>
-      <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-lg font-medium">Opacity</h3>
-          <span className="text-muted-foreground text-sm">{(opacityValue * 100).toFixed(0)}%</span>
+      <div className="bg-popover w-72 rounded-lg p-3">
+        <div className="mb-2 flex items-center justify-center">
+          <span className="text-muted-foreground text-base">Opacity</span>
         </div>
-        <div className="py-2">
+        <div className="">
           <Numeric.Container
             mode="singleRange"
             value={opacityValue}
             onChange={(val: number | [number, number]) => {
               if (typeof val === 'number') {
-                setOpacity(val);
+                setOpacityLinear(val);
               }
             }}
             min={0}
             max={1}
-            step={0.01}
+            step={0.0001}
           >
-            <Numeric.SingleRange showNumberInput={false} />
+            <div className="flex items-center">
+              <span className="text-foreground mr-2 text-sm">{backgroundModality}</span>
+              <Numeric.SingleRange showNumberInput={false} />
+              <span className="text-foreground ml-2 text-sm">{foregroundModality}</span>
+            </div>
           </Numeric.Container>
         </div>
       </div>

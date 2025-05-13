@@ -62,6 +62,8 @@ interface WindowLevelHook {
   // Opacity functions
   opacity: number | undefined;
   setOpacity: (opacity: number) => void;
+  opacityLinear: number | undefined;
+  setOpacityLinear: (opacityLinear: number) => void;
 
   // Threshold functions
   threshold: number | undefined;
@@ -92,6 +94,8 @@ const getPosition = (location: number): ColorbarPositionType => {
   }
 };
 
+const GAMMA = 1 / 5;
+
 /**
  * Hook to access window level functionality for a specific viewport
  *
@@ -115,6 +119,7 @@ export function useViewportRendering(
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
   const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
   const [opacity, setOpacityState] = useState<number | undefined>();
+  const [opacityLinear, setOpacityLinearState] = useState<number | undefined>();
   const [threshold, setThresholdState] = useState<number | undefined>();
   const [pixelValueRange, setPixelValueRange] = useState<PixelValueRange>({ min: 0, max: 255 });
 
@@ -157,7 +162,7 @@ export function useViewportRendering(
         }) || []
     );
   }, [viewportDisplaySets, presets]);
-  
+
   // Calculate pixel value range for the active display set
   useEffect(() => {
     if (!activeDisplaySetInstanceUID) {
@@ -235,9 +240,13 @@ export function useViewportRendering(
 
             // Get opacity from colormap if available
             if (properties.colormap && properties.colormap.opacity !== undefined) {
-              const colormapOpacity =
-                typeof properties.colormap.opacity === 'number' ? properties.colormap.opacity : 1;
-              setOpacityState(colormapOpacity);
+              const isArray = Array.isArray(properties.colormap.opacity);
+              const opacity = isArray
+                ? properties.colormap.opacity[0].opacity
+                : properties.colormap.opacity;
+
+              setOpacityState(opacity);
+              setOpacityLinearState(opacityToLinear(opacity));
             }
 
             // Get threshold from colormap if available
@@ -505,6 +514,14 @@ export function useViewportRendering(
     [commandsManager, viewportId, validateActiveDisplaySet]
   );
 
+  const linearToOpacity = useCallback((linearValue: number): number => {
+    return Math.pow(linearValue, GAMMA);
+  }, []);
+
+  const opacityToLinear = useCallback((opacityValue: number): number => {
+    return Math.pow(opacityValue, 1.0 / GAMMA);
+  }, []);
+
   const setOpacity = useCallback(
     (opacityValue: number) => {
       if (!viewportId) {
@@ -516,7 +533,10 @@ export function useViewportRendering(
         return;
       }
 
+      // Apply the actual opacity value
       setOpacityState(opacityValue);
+      // Update the linear value for UI
+      setOpacityLinearState(opacityToLinear(opacityValue));
 
       const displaySetInstanceUID = validateActiveDisplaySet();
       const volumeIds = viewport.getAllVolumeIds();
@@ -546,7 +566,16 @@ export function useViewportRendering(
 
       viewport.render();
     },
-    [cornerstoneViewportService, viewportId, validateActiveDisplaySet]
+    [cornerstoneViewportService, viewportId, validateActiveDisplaySet, opacityToLinear]
+  );
+
+  const setOpacityLinear = useCallback(
+    (linearValue: number) => {
+      // Convert linear UI value to actual opacity value and apply it
+      const actualOpacity = linearToOpacity(linearValue);
+      setOpacity(actualOpacity);
+    },
+    [linearToOpacity, setOpacity]
   );
 
   const setThreshold = useCallback(
@@ -751,6 +780,8 @@ export function useViewportRendering(
     // Opacity functions
     opacity,
     setOpacity,
+    opacityLinear,
+    setOpacityLinear,
 
     // Threshold functions
     threshold,
