@@ -10,6 +10,7 @@ import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge'
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
+import AdvancedWindowLevelControls from './components/AdvancedWindowLevelControls';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -28,6 +29,28 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
   } = servicesManager.services;
 
   return [
+    {
+      name: 'ohif.advancedWindowLevelControls',
+      defaultComponent: AdvancedWindowLevelControls,
+    },
+    {
+      name: 'evaluate.advancedWindowLevelControls',
+      evaluate: ({ viewportId }) => {
+        const { colorbarService } = servicesManager.services;
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        const hasColorbar = colorbarService?.hasColorbar(viewportId) || false;
+        return {
+          disabled: !hasColorbar,
+        };
+      },
+    },
     {
       name: 'ohif.colorbar',
       defaultComponent: ViewportColorbarsContainer,
