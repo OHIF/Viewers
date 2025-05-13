@@ -57,6 +57,10 @@ interface WindowLevelHook {
   opacity: number | undefined;
   setOpacity: (opacity: number) => void;
 
+  // Threshold functions
+  threshold: number | undefined;
+  setThreshold: (threshold: number) => void;
+
   // 3D volume rendering functions
   setVolumeRenderingPreset: (preset: any) => void;
   setVolumeRenderingQuality: (quality: number) => void;
@@ -104,6 +108,7 @@ export function useViewportRendering(
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
   const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
   const [opacity, setOpacityState] = useState<number | undefined>();
+  const [threshold, setThresholdState] = useState<number | undefined>();
 
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
 
@@ -193,6 +198,11 @@ export function useViewportRendering(
               const colormapOpacity =
                 typeof properties.colormap.opacity === 'number' ? properties.colormap.opacity : 1;
               setOpacityState(colormapOpacity);
+            }
+
+            // Get threshold from colormap if available
+            if (properties.colormap && properties.colormap.threshold !== undefined) {
+              setThresholdState(properties.colormap.threshold);
             }
           }
         }
@@ -499,6 +509,50 @@ export function useViewportRendering(
     [cornerstoneViewportService, viewportId, validateActiveDisplaySet]
   );
 
+  const setThreshold = useCallback(
+    (thresholdValue: number) => {
+      if (!viewportId) {
+        return;
+      }
+
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+        return;
+      }
+
+      setThresholdState(thresholdValue);
+
+      const displaySetInstanceUID = validateActiveDisplaySet();
+      const volumeIds = viewport.getAllVolumeIds();
+      const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
+
+      if (!volumeId) {
+        return;
+      }
+
+      // Get current properties including colormap
+      const properties = viewport.getProperties(volumeId);
+      const currentColormap = properties.colormap || {};
+
+      // Update colormap with new threshold
+      const updatedColormap = {
+        ...currentColormap,
+        threshold: thresholdValue,
+      };
+
+      // Apply updated colormap
+      viewport.setProperties(
+        {
+          colormap: updatedColormap,
+        },
+        volumeId
+      );
+
+      viewport.render();
+    },
+    [cornerstoneViewportService, viewportId, validateActiveDisplaySet]
+  );
+
   // Get the current colormap for the active display set
   const colormap = useMemo(() => {
     if (!viewportId || !activeDisplaySetInstanceUID || !viewportDisplaySets?.length) {
@@ -657,6 +711,10 @@ export function useViewportRendering(
     // Opacity functions
     opacity,
     setOpacity,
+
+    // Threshold functions
+    threshold,
+    setThreshold,
 
     // 3D volume rendering functions
     setVolumeRenderingPreset,

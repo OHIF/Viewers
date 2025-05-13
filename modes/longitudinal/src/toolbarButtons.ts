@@ -136,7 +136,10 @@ const toolbarButtons: Button[] = [
       icon: 'Threshold',
       label: 'Threshold',
       tooltip: 'Image threshold settings',
-      evaluate: 'evaluate.thresholdMenu',
+      evaluate: {
+        name: 'evaluate.thresholdMenu',
+        hideWhenDisabled: true,
+      },
     },
   },
   {

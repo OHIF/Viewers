@@ -288,18 +288,21 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport) {
+        if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
           return {
             disabled: true,
           };
         }
 
-        // For now, enable it for all viewports that have display sets
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        if (!displaySetUIDs.length) {
+          return {
+            disabled: true,
+          };
+        }
 
         return {
-          disabled: !displaySets.length,
+          disabled: false,
         };
       },
     },
@@ -323,10 +326,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         }
 
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-        const hasNonOverlayable = displaySets.some(displaySet => displaySet?.isOverlayDisplaySet);
+        // We want to be enabled when at least one displaySet is overlayable
+        const hasOverlayable = displaySets.some(displaySet => displaySet?.isOverlayDisplaySet);
 
         return {
-          disabled: hasNonOverlayable,
+          disabled: !hasOverlayable,
         };
       },
     },
