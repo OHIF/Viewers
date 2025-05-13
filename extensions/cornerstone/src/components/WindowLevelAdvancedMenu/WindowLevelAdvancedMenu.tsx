@@ -4,8 +4,6 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-  Button,
-  Switch,
   Numeric,
   Select,
   SelectTrigger,
@@ -16,7 +14,8 @@ import {
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useSystem } from '@ohif/core';
-import { utilities, cache } from '@cornerstonejs/core';
+import { cache } from '@cornerstonejs/core';
+
 interface WindowLevelAdvancedMenuProps {
   viewportId: string;
   className?: string;
@@ -76,11 +75,6 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
     max = 255;
   }
 
-  const minMax = {
-    min: min,
-    max: max,
-  };
-
   return (
     <div className={className}>
       <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
@@ -128,8 +122,8 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
           <TabsContent value={TABS.MINMAX}>
             <Numeric.Container
               mode="doubleRange"
-              min={minMax.min}
-              max={minMax.max}
+              min={min}
+              max={max}
               values={[lower, upper]}
               step={1}
               className="space-y-1"
@@ -148,7 +142,7 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
               <Numeric.Container
                 mode="singleRange"
                 min={0}
-                max={minMax.max}
+                max={max}
                 step={1}
                 value={windowWidth}
                 className="space-y-1"
@@ -166,8 +160,8 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
 
               <Numeric.Container
                 mode="singleRange"
-                min={minMax.min}
-                max={minMax.max}
+                min={min}
+                max={max}
                 step={1}
                 value={windowCenter}
                 className="space-y-1"
