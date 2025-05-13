@@ -990,7 +990,7 @@ class SegmentationService extends PubSubService {
     );
   }
 
-  public createSegmentationForDisplaySet = async (
+  public createLabelmapForDisplaySet = async (
     displaySetInstanceUID: string,
     options?: {
       segmentationId: string;

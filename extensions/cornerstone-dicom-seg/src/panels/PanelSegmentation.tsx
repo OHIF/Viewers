@@ -54,7 +54,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationAdd = async () => {
-    commandsManager.runCommand('createEmptySegmentationForViewport');
+    commandsManager.runCommand('createLabelmapForViewport');
   };
 
   const onSegmentationClick = (segmentationId: string) => {

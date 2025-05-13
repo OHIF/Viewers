@@ -2,9 +2,7 @@ import { hotkeys } from '@ohif/core';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
-import XNATStandaloneRouting from '../../../platform/app/src/routes/XNATStandaloneRouting';
 import SessionRouter from '@ohif/extension-xnat/src/xnat-components/XNATNavigation/helpers/SessionRouter.js';
-import { Types } from '@ohif/core';
 import { defaultRouteInit } from '../../../platform/app/src/routes/Mode/defaultRouteInit';
 import sessionMap from '@ohif/extension-xnat/src/utils/sessionMap.js';
 
@@ -142,39 +140,28 @@ function modeFactory({ modeConfiguration }) {
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      console.log('XNAT Mode Enter - Start');
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
-      console.log('XNAT Mode Enter - Services:', { measurementService, toolbarService, toolGroupService });
-      
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
+
       measurementService.clearMeasurements();
+
+      // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
+
       toolbarService.createButtonSection('primary', [
-        // Re-enable MeasurementTools container
-        'MeasurementTools',
-        'Zoom',
         'WindowLevel',
         'Pan',
+        'Zoom',
+        'TrackballRotate',
         'Capture',
         'Layout',
         'Crosshairs',
-        'MoreTools', // Keep the container button
+        'MoreTools',
       ]);
 
-      // Define the content of the MeasurementTools dropdown section
-      // Note: IDs must match tool names used in initToolGroups/Cornerstone
-      toolbarService.createButtonSection('measurementSection', [
-        'Length',
-        'Bidirectional',
-        'ArrowAnnotate',
-        'EllipticalROI', 
-        'CircleROI',
-        // Add other measurement tools as needed
-      ]);
-
-      // Define the content of the MoreTools dropdown section
       toolbarService.createButtonSection('moreToolsSection', [
         'Reset',
         'rotate-right',
@@ -186,29 +173,24 @@ function modeFactory({ modeConfiguration }) {
         'Cine',
         'Magnify',
         'TagBrowser',
-        // Add other tools previously in moreTools.ts if needed
       ]);
 
-      // Define the content of the BrushTools toolbox group section
-      toolbarService.createButtonSection('brushToolsSection', [
-        'Brush',
-        'Eraser',
-        'Threshold',
+      toolbarService.createButtonSection('segmentationToolbox', [
+        'SegmentationUtilities',
+        'SegmentationTools',
+      ]);
+      toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
+        'LabelmapSlicePropagation',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ]);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+        'BrushTools',
+        'MarkerLabelmap',
+        'RegionSegmentPlus',
         'Shapes',
       ]);
-
-      // Define the main segmentation toolbox section (if needed, might be handled by panel)
-      // toolbarService.createButtonSection('segmentationToolbox', [
-      //  'BrushTools', // The group container
-      //  // Add other standalone segmentation tools here if they belong directly in the main toolbox panel
-      //  'InterpolateLabelmap',
-      //  'SegmentBidirectional',
-      //  'RegionSegmentPlus',
-      //  'LabelmapSlicePropagation',
-      //  'MarkerLabelmap',
-      // ]);
-
-      console.log('XNAT Mode Enter - Complete');
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }) => {
       const {
@@ -262,7 +244,7 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
               // rightPanels: [cornerstone.segmentation, cornerstone.measurements],
-              rightPanels: [cornerstone.measurements],
+              rightPanels: [cornerstone.segmentation, cornerstone.measurements],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

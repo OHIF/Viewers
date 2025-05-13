@@ -922,7 +922,7 @@ const commandsModule = ({
         return;
       }
 
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+      const segmentationId = await segmentationService.createLabelmapForDisplaySet(
         displaySetInstanceUID
       );
 
