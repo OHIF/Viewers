@@ -125,17 +125,19 @@ export function useViewportRendering(
     ? utilities.isEqual(backgroundColor, [1, 1, 1])
     : false;
 
-  // Get all window level presets for all display sets in the viewport
-  const allWindowLevelPresets =
-    viewportDisplaySets
-      ?.filter(displaySet => presets?.[displaySet.Modality as string])
-      .map(displaySet => {
-        return {
-          displaySetInstanceUID: displaySet.displaySetInstanceUID,
-          modality: displaySet.Modality as string,
-          presets: presets[displaySet.Modality as string],
-        };
-      }) || [];
+  const allWindowLevelPresets = useMemo(() => {
+    return (
+      viewportDisplaySets
+        ?.filter(displaySet => presets?.[displaySet.Modality as string])
+        .map(displaySet => {
+          return {
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+            modality: displaySet.Modality as string,
+            presets: presets[displaySet.Modality as string],
+          };
+        }) || []
+    );
+  }, [viewportDisplaySets, presets]);
 
   // Get the presets specifically for the active display set
   const activeDisplaySetPresets = useMemo(() => {
@@ -232,10 +234,11 @@ export function useViewportRendering(
         return;
       }
 
-      if (
-        voiRangeRef.current?.lower !== range.lower ||
-        voiRangeRef.current?.upper !== range.upper
-      ) {
+      // Check if this update is coming from our own setVOIRange or setWindowLevel call
+      // If so, we already updated our state and don't need to do it again
+      const isInternalUpdate = voiRangeRef.current && areVoiRangesClose(voiRangeRef.current, range);
+
+      if (!isInternalUpdate) {
         voiRangeRef.current = range;
         setVoiRange(range);
       }
@@ -285,19 +288,11 @@ export function useViewportRendering(
         preset.windowCenter
       );
 
-      // Only update if values have actually changed
-      const currentWindowLevel = utilities.windowLevel.toWindowLevel(
-        voiRangeRef.current?.lower,
-        voiRangeRef.current?.upper
-      );
+      const newVoiRange = { lower, upper };
 
-      if (
-        !currentWindowLevel ||
-        Math.abs(currentWindowLevel.windowWidth - preset.windowWidth) > 0.001 ||
-        Math.abs(currentWindowLevel.windowCenter - preset.windowCenter) > 0.001
-      ) {
-        voiRangeRef.current = { lower, upper };
-        setVoiRange({ lower, upper });
+      if (!voiRangeRef.current || !areVoiRangesClose(voiRangeRef.current, newVoiRange)) {
+        voiRangeRef.current = newVoiRange;
+        setVoiRange(newVoiRange);
 
         commandsManager.run({
           commandName: 'setViewportWindowLevel',
@@ -320,11 +315,7 @@ export function useViewportRendering(
       }
 
       // Only update if VOI values have actually changed
-      if (
-        !voiRangeRef.current ||
-        Math.abs(voiRangeRef.current.lower - params.lower) > 0.001 ||
-        Math.abs(voiRangeRef.current.upper - params.upper) > 0.001
-      ) {
+      if (!voiRangeRef.current || !areVoiRangesClose(voiRangeRef.current, params)) {
         // Update the ref and state immediately to avoid race conditions with the event listener
         voiRangeRef.current = params;
         setVoiRange(params);
@@ -625,6 +616,27 @@ export function useViewportRendering(
 }
 
 export default useViewportRendering;
+
+/**
+ * Helper function to compare two VOI ranges with a small tolerance.
+ * @param rangeA - The first VOI range { lower, upper }.
+ * @param rangeB - The second VOI range { lower, upper }.
+ * @param epsilon - The tolerance for comparison.
+ * @returns True if the ranges are considered close, false otherwise.
+ */
+function areVoiRangesClose(
+  rangeA: { lower: number; upper: number },
+  rangeB: { lower: number; upper: number },
+  epsilon = 0.001
+): boolean {
+  if (!rangeA || !rangeB) {
+    return false;
+  }
+  return (
+    Math.abs(rangeA.lower - rangeB.lower) < epsilon &&
+    Math.abs(rangeA.upper - rangeB.upper) < epsilon
+  );
+}
 
 function getCustomizationData(customizationService) {
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
