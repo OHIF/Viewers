@@ -75,7 +75,11 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
             max={max}
             step={0.01}
           >
-            <Numeric.SingleRange showNumberInput />
+            <Numeric.SingleRange />
+            <div className="mt-1 flex justify-between">
+              <span className="text-muted-foreground text-sm">{min.toFixed(0)}</span>
+              <span className="text-muted-foreground text-sm">{max.toFixed(0)}</span>
+            </div>
           </Numeric.Container>
         </div>
       </div>
