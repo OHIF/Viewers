@@ -6,6 +6,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
+  Button,
 } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
@@ -37,51 +38,59 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
   return (
     <div className={className}>
       <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
-        {viewportDisplaySets.length > 1 && (
-          <div className="mx-auto mb-4 flex items-center justify-center space-x-2">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
             <span className="text-muted-foreground text-base">Threshold</span>
-            <div className="w-32">
-              <Select
-                value={selectedDisplaySetUID}
-                onValueChange={setSelectedDisplaySetUID}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Display Set" />
-                </SelectTrigger>
-                <SelectContent>
-                  {viewportDisplaySets.map(ds => (
-                    <SelectItem
-                      key={ds.displaySetInstanceUID}
-                      value={ds.displaySetInstanceUID}
-                    >
-                      {`${ds.SeriesDescription || ''}`.trim()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {viewportDisplaySets.length > 1 && (
+              <div className="w-32">
+                <Select
+                  value={selectedDisplaySetUID}
+                  onValueChange={setSelectedDisplaySetUID}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Display Set" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {viewportDisplaySets.map(ds => (
+                      <SelectItem
+                        key={ds.displaySetInstanceUID}
+                        value={ds.displaySetInstanceUID}
+                      >
+                        {`${ds.SeriesDescription || ''}`.trim()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
-        )}
-        <div className="mb-2">
-          <Numeric.Container
-            mode="singleRange"
-            value={thresholdValue}
-            onChange={(val: number | [number, number]) => {
-              if (typeof val === 'number') {
-                setThreshold(val);
-              }
-            }}
-            min={min}
-            max={max}
-            step={0.01}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setThreshold(min)}
+            className="text-sm"
           >
-            <Numeric.SingleRange />
-            <div className="mt-1 flex justify-between">
-              <span className="text-muted-foreground text-sm">{min.toFixed(0)}</span>
-              <span className="text-muted-foreground text-sm">{max.toFixed(0)}</span>
-            </div>
-          </Numeric.Container>
+            Reset
+          </Button>
         </div>
+        <Numeric.Container
+          mode="singleRange"
+          value={thresholdValue}
+          onChange={(val: number | [number, number]) => {
+            if (typeof val === 'number') {
+              setThreshold(val);
+            }
+          }}
+          min={min}
+          max={max}
+          step={0.01}
+        >
+          <Numeric.SingleRange />
+          <div className="mt-1 flex justify-between">
+            <span className="text-muted-foreground text-sm">{min.toFixed(0)}</span>
+            <span className="text-muted-foreground text-sm">{max.toFixed(0)}</span>
+          </div>
+        </Numeric.Container>
       </div>
     </div>
   );
