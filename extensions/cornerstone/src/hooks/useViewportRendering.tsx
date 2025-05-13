@@ -53,6 +53,10 @@ interface WindowLevelHook {
   setColormap: (params: { colormap: any; opacity?: number; immediate?: boolean }) => void;
   colormap: any;
 
+  // Opacity functions
+  opacity: number | undefined;
+  setOpacity: (opacity: number) => void;
+
   // 3D volume rendering functions
   setVolumeRenderingPreset: (preset: any) => void;
   setVolumeRenderingQuality: (quality: number) => void;
@@ -99,6 +103,7 @@ export function useViewportRendering(
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
   const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
+  const [opacity, setOpacityState] = useState<number | undefined>();
 
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
 
@@ -181,6 +186,13 @@ export function useViewportRendering(
             if (properties.voiRange) {
               setVoiRange(properties.voiRange);
               voiRangeRef.current = properties.voiRange;
+            }
+
+            // Get opacity from colormap if available
+            if (properties.colormap && properties.colormap.opacity !== undefined) {
+              const colormapOpacity =
+                typeof properties.colormap.opacity === 'number' ? properties.colormap.opacity : 1;
+              setOpacityState(colormapOpacity);
             }
           }
         }
@@ -423,6 +435,11 @@ export function useViewportRendering(
 
       const displaySetInstanceUID = validateActiveDisplaySet();
 
+      // Update local opacity state
+      if (opacity !== undefined) {
+        setOpacityState(opacity);
+      }
+
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {
@@ -436,6 +453,50 @@ export function useViewportRendering(
       });
     },
     [commandsManager, viewportId, validateActiveDisplaySet]
+  );
+
+  const setOpacity = useCallback(
+    (opacityValue: number) => {
+      if (!viewportId) {
+        return;
+      }
+
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+        return;
+      }
+
+      setOpacityState(opacityValue);
+
+      const displaySetInstanceUID = validateActiveDisplaySet();
+      const volumeIds = viewport.getAllVolumeIds();
+      const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
+
+      if (!volumeId) {
+        return;
+      }
+
+      // Get current properties including colormap
+      const properties = viewport.getProperties(volumeId);
+      const currentColormap = properties.colormap || {};
+
+      // Update colormap with new opacity
+      const updatedColormap = {
+        ...currentColormap,
+        opacity: opacityValue,
+      };
+
+      // Apply updated colormap
+      viewport.setProperties(
+        {
+          colormap: updatedColormap,
+        },
+        volumeId
+      );
+
+      viewport.render();
+    },
+    [cornerstoneViewportService, viewportId, validateActiveDisplaySet]
   );
 
   // Get the current colormap for the active display set
@@ -592,6 +653,10 @@ export function useViewportRendering(
     // Colormap functions
     setColormap,
     colormap,
+
+    // Opacity functions
+    opacity,
+    setOpacity,
 
     // 3D volume rendering functions
     setVolumeRenderingPreset,

@@ -11,6 +11,7 @@ import NavigationComponent from './components/NavigationComponent/NavigationComp
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
 import AdvancedWindowLevelControls from './components/AdvancedWindowLevelControls';
+import { BaseVolumeViewport } from '@cornerstonejs/core';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -307,18 +308,25 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport) {
+        if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
           return {
             disabled: true,
           };
         }
 
-        // For now, enable it for all viewports that have display sets
         const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (displaySetUIDs.length <= 1) {
+          return {
+            disabled: true,
+          };
+        }
+
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const hasNonOverlayable = displaySets.some(displaySet => displaySet?.isOverlayDisplaySet);
 
         return {
-          disabled: !displaySets.length,
+          disabled: hasNonOverlayable,
         };
       },
     },

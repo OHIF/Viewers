@@ -146,7 +146,10 @@ const toolbarButtons: Button[] = [
       icon: 'Opacity',
       label: 'Opacity',
       tooltip: 'Image opacity settings',
-      evaluate: 'evaluate.opacityMenu',
+      evaluate: {
+        name: 'evaluate.opacityMenu',
+        hideWhenDisabled: true,
+      },
     },
   },
   {

@@ -115,8 +115,8 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection('advancedWindowLevelControls', [
         'windowLevelAdvancedMenu',
         'Colorbar',
-        'thresholdMenu',
         'opacityMenu',
+        'thresholdMenu',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
