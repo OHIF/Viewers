@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.31...v3.11.0-beta.32) (2025-05-13)
+
+
+### Bug Fixes
+
+* Added missing export for LayoutSelector in ui-next ([#5040](https://github.com/OHIF/Viewers/issues/5040)) ([da51e6e](https://github.com/OHIF/Viewers/commit/da51e6e3c185e4d11d50679fd0deaa804b07511c))
+
+
+
+
+
 # [3.11.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.30...v3.11.0-beta.31) (2025-05-12)
 
 **Note:** Version bump only for package @ohif/ui-next
