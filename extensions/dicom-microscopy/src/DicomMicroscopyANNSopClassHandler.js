@@ -46,6 +46,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   } = instance;
 
   const displaySet = {
+    isOverlayDisplaySet: true,
     plugin: 'microscopy',
     Modality: 'ANN',
     thumbnailSrc: null,
