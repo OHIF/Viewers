@@ -39,15 +39,16 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.topMiddle]: classNames(
     commonClasses,
-    'absolute top-[4px] left-1/2 -translate-x-1/2'
+    // Todo: to place on right side of the viewport orientation label
+    'absolute top-[25px] left-1/2 -translate-x-1/2'
   ),
   [ViewportActionCornersLocations.bottomMiddle]: classNames(
     commonClasses,
-    'absolute bottom-[3px] left-1/2 -translate-x-1/2 w-full'
+    'absolute bottom-[3px] left-1/2 -translate-x-1/2'
   ),
   [ViewportActionCornersLocations.leftMiddle]: classNames(
     commonClasses,
-    'absolute left-[20px] top-1/2 -translate-y-1/2 pl-[4px]'
+    'absolute left-[20px] top-[calc(50%+2px)] -translate-y-1/2 pl-[4px]'
   ),
   [ViewportActionCornersLocations.rightMiddle]: classNames(
     commonClasses,

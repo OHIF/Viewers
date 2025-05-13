@@ -108,8 +108,8 @@ function modeFactory({ modeConfiguration }) {
         'dataOverlayMenu',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.leftMiddle, [
-        'Colorbar',
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'dataOverlayMenu',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
