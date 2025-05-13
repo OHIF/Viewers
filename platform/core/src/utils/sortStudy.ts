@@ -131,30 +131,33 @@ export default function sortStudy(
 }
 
 /**
- * Sort by image position, calculated using ImageOrientationPatient and ImagePositionPatient
+ * Sort by image position, calculated using imageOrientationPatient and ImagePositionPatient
+ * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided fallbackSort function
  * Note: Images are sorted in-place and a reference to the sorted image array is returned.
  *
  * @returns images - reference to images after sorting
  */
-const sortStudyByImagePositionPatient = images => {
+const sortStudyByImagePositionPatient = (images, fallbackSort) => {
   if (images.length <= 1) {
     return; // No need to sort if there's only one image
   }
 
   // Use the first image as a reference
   const referenceImagePositionPatient = images[0].ImagePositionPatient;
-  const ImageOrientationPatient = images[0].ImageOrientationPatient;
+  const imageOrientationPatient = images[0].imageOrientationPatient;
 
   if (!referenceImagePositionPatient) {
-    // Cannot sort ImageSet by real-world positions - ImagePositionPatient is undefined
+    // Cannot sort ImageSet by real-world positions - ImagePositionPatient is undefined, sort by fallbackSort provided
+    fallbackSort();
     return;
-  } else if (!ImageOrientationPatient) {
-    // Cannot sort ImageSet by real-world positions - ImageOrientationPatient is undefined
+  } else if (!imageOrientationPatient) {
+    // Cannot sort ImageSet by real-world positions - imageOrientationPatient is undefined, sort by fallbackSort provided
+    fallbackSort();
     return;
   }
 
   // Calculate the scan axis normal using the cross product
-  const scanAxisNormal = calculateScanAxisNormal(ImageOrientationPatient);
+  const scanAxisNormal = calculateScanAxisNormal(imageOrientationPatient);
 
   // Compute distances from each image to the reference image
   const distanceInstancePairs = images.map(image => {

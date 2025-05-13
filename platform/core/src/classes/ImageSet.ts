@@ -79,13 +79,13 @@ class ImageSet {
   /**
    * Default image sorting. Sorts by the following (in order of priority)
    * 1. Image position (if ImagePositionPatient and ImageOrientationPatient are defined)
-   * 2. InstanceNumber
+   * 2. Sort by a provided sortingCallback Criteria
    * Note: Images are sorted in-place and a reference to the sorted image array is returned.
    *
    * @returns images - reference to images after sorting
    */
   sort(sortingCallback: (a: Image, b: Image) => number): Image[] {
-    return sortStudyByImagePositionPatient(this.images) || this.sortBy(sortingCallback);
+    return sortStudyByImagePositionPatient(this.images, this.sortBy.bind(this, sortingCallback));
   }
 
   /**
