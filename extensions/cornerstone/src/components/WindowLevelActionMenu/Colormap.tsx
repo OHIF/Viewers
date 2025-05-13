@@ -1,10 +1,14 @@
-import React, { ReactElement, useRef, useState } from 'react';
+import React, { MutableRefObject, ReactElement, useRef, useState } from 'react';
 import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 
 export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
-  const { colorbarProperties, displaySets, setColormap, getViewportColormap } =
-    useViewportRendering(viewportId);
+  const {
+    colorbarProperties,
+    viewportDisplaySets: displaySets,
+    setColormap,
+    getViewportColormap,
+  } = useViewportRendering(viewportId);
 
   // Use state to keep track of the active display set for this component
   const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets?.[0]);
@@ -18,7 +22,7 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
   showPreviewRef.current = showPreview;
   const prePreviewColormapRef = useRef(prePreviewColormap);
   prePreviewColormapRef.current = prePreviewColormap;
-  const activeDisplaySetRef = useRef(activeDisplaySet);
+  const activeDisplaySetRef = useRef(activeDisplaySet) as MutableRefObject<AppTypes.DisplaySet>;
   activeDisplaySetRef.current = activeDisplaySet;
 
   const handleSetColorLUT = props => {
@@ -96,7 +100,9 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
             }}
             onMouseEnter={() => {
               if (showPreviewRef.current && activeDisplaySetRef.current) {
-                setPrePreviewColormap(getViewportColormap(activeDisplaySetRef.current));
+                setPrePreviewColormap(
+                  getViewportColormap(activeDisplaySetRef.current.displaySetInstanceUID)
+                );
                 handleSetColorLUT({
                   viewportId,
                   colormap,

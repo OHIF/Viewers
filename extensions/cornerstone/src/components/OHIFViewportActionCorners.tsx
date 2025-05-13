@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { ViewportActionCorners, IconPresentationProvider, ToolButton } from '@ohif/ui-next';
 import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
@@ -8,7 +8,7 @@ export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
-function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
+function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCornersProps) {
   // Use the viewport hover hook to track if viewport is hovered or active
   const { isHovered, isActive } = useViewportHover(viewportId);
 
@@ -88,5 +88,7 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
     </IconPresentationProvider>
   );
 }
+
+const OHIFViewportActionCorners = memo(OHIFViewportActionCornersComponent);
 
 export default OHIFViewportActionCorners;

@@ -139,27 +139,60 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
             </Numeric.Container>
           </TabsContent>
           <TabsContent value={TABS.MANUAL}>
-            <Numeric.Container
-              mode="doubleRange"
-              min={minMax.min}
-              max={minMax.max}
-              step={1}
-              values={[windowWidth, windowCenter]}
-              className="space-y-1"
-              onChange={(vals: [number, number]) => {
-                const [newWidth, newCenter] = vals;
-                const { lower, upper } = utilities.windowLevel.toLowHighRange(newWidth, newCenter);
-                csViewport.setProperties({
-                  voiRange: {
-                    lower,
-                    upper,
-                  },
-                });
-                csViewport.render();
-              }}
-            >
-              <Numeric.DoubleRange showNumberInputs />
-            </Numeric.Container>
+            <div className="space-y-4">
+              <Numeric.Container
+                mode="singleRange"
+                min={minMax.min}
+                max={minMax.max}
+                step={1}
+                value={windowWidth}
+                className="space-y-1"
+                onChange={(val: number) => {
+                  const newWidth = val as number;
+                  const { lower, upper } = utilities.windowLevel.toLowHighRange(
+                    newWidth,
+                    windowCenter
+                  );
+                  csViewport.setProperties({
+                    voiRange: {
+                      lower,
+                      upper,
+                    },
+                  });
+                  csViewport.render();
+                }}
+              >
+                <Numeric.Label>Window Width</Numeric.Label>
+                <Numeric.SingleRange showNumberInput />
+              </Numeric.Container>
+
+              {/* Window Center Slider */}
+              <Numeric.Container
+                mode="singleRange"
+                min={0}
+                max={minMax.max - minMax.min}
+                step={1}
+                value={windowCenter}
+                className="space-y-1"
+                onChange={(val: number) => {
+                  const newCenter = val as number;
+                  const { lower, upper } = utilities.windowLevel.toLowHighRange(
+                    windowWidth,
+                    newCenter
+                  );
+                  csViewport.setProperties({
+                    voiRange: {
+                      lower,
+                      upper,
+                    },
+                  });
+                  csViewport.render();
+                }}
+              >
+                <Numeric.Label>Window Center</Numeric.Label>
+                <Numeric.SingleRange showNumberInput />
+              </Numeric.Container>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

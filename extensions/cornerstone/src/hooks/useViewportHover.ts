@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useViewportGrid } from '@ohif/ui-next';
 
 /**
@@ -24,6 +24,7 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
     }
 
     let elementRect = (element as HTMLElement).getBoundingClientRect();
+    let lastIsInside = false;
 
     // Update rectangle when window is resized
     const updateRect = () => {
@@ -41,25 +42,36 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
 
     const handleMouseMove = event => {
       const isInside = isPointInViewport(event.clientX, event.clientY);
-      setIsHovered(isInside);
+
+      if (isInside !== lastIsInside) {
+        lastIsInside = isInside;
+        setIsHovered(isInside);
+      }
     };
 
-    window.addEventListener('resize', updateRect);
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updateRect, 10);
+    };
+
+    window.addEventListener('resize', handleResize);
     document.addEventListener('mousemove', handleMouseMove);
 
     updateRect();
 
     return () => {
-      window.removeEventListener('resize', updateRect);
+      window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(resizeTimeout);
     };
   }, [viewportId]);
 
   useEffect(() => {
     const cleanup = setupListeners();
-
     return cleanup;
   }, [setupListeners]);
 
-  return { isHovered, isActive };
+  // Memoize the return value to prevent unnecessary re-renders
+  return useMemo(() => ({ isHovered, isActive }), [isHovered, isActive]);
 }

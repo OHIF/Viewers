@@ -640,10 +640,20 @@ function commandsModule({
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
 
-    setViewportWindowLevel({ viewportId, window, level }) {
+    setViewportWindowLevel({
+      viewportId,
+      windowWidth,
+      windowCenter,
+      displaySetInstanceUID,
+    }: {
+      viewportId: string;
+      windowWidth: number;
+      windowCenter: number;
+      displaySetInstanceUID?: string;
+    }) {
       // convert to numbers
-      const windowWidthNum = Number(window);
-      const windowCenterNum = Number(level);
+      const windowWidthNum = Number(windowWidth);
+      const windowCenterNum = Number(windowCenter);
 
       // get actor from the viewport
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
@@ -651,12 +661,28 @@ function commandsModule({
 
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
 
-      viewport.setProperties({
-        voiRange: {
-          upper,
-          lower,
-        },
-      });
+      if (viewport instanceof BaseVolumeViewport) {
+        const volumeId = actions.getVolumeIdForDisplaySet({
+          viewportId,
+          displaySetInstanceUID,
+        });
+        viewport.setProperties(
+          {
+            voiRange: {
+              upper,
+              lower,
+            },
+          },
+          volumeId
+        );
+      } else {
+        viewport.setProperties({
+          voiRange: {
+            upper,
+            lower,
+          },
+        });
+      }
       viewport.render();
     },
     toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
@@ -705,9 +731,18 @@ function commandsModule({
 
       actions.setViewportWindowLevel({
         viewportId: activeViewport,
-        window: windowLevelPreset.window,
-        level: windowLevelPreset.level,
+        windowWidth: windowLevelPreset.window,
+        windowCenter: windowLevelPreset.level,
       });
+    },
+    getVolumeIdForDisplaySet: ({ viewportId, displaySetInstanceUID }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (viewport instanceof BaseVolumeViewport) {
+        const volumeIds = viewport.getAllVolumeIds();
+        const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
+        return volumeId;
+      }
+      return null;
     },
     setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
@@ -2130,6 +2165,7 @@ function commandsModule({
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
+    getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
   };
 
   return {

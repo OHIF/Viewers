@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useSystem } from '@ohif/core';
 import { useViewportDisplaySets } from './useViewportDisplaySets';
 import { StackViewport, Types, VolumeViewport3D, utilities } from '@cornerstonejs/core';
@@ -12,10 +12,22 @@ interface WindowLevelHook {
   // Viewport information
   is3DVolume: boolean;
   isViewportBackgroundLight: boolean;
-  displaySets: AppTypes.DisplaySet[] | undefined;
+  viewportDisplaySets: AppTypes.DisplaySet[] | undefined;
+  voiRange: { lower: number; upper: number } | undefined;
 
   // Window level functions
-  setWindowLevelPreset: (preset: WindowLevelPreset) => void;
+  setWindowLevelPreset: (
+    preset: { windowWidth: number; windowCenter: number },
+    displaySetInstanceUID?: string
+  ) => void;
+  setVOIRange: (params: { lower: number; upper: number }, displaySetInstanceUID?: string) => void;
+  setVOIWindowLevel: (
+    params: {
+      windowWidth: number;
+      windowCenter: number;
+    },
+    displaySetInstanceUID?: string
+  ) => void;
   windowLevelPresets: Array<Record<string, any>>;
 
   // Colorbar functions
@@ -32,7 +44,7 @@ interface WindowLevelHook {
     opacity?: number;
     immediate?: boolean;
   }) => void;
-  getViewportColormap: (displaySet: AppTypes.DisplaySet) => any;
+  getViewportColormap: (displaySetInstanceUID?: string) => any;
 
   // 3D volume rendering functions
   setVolumeRenderingPreset: (preset: any) => void;
@@ -66,60 +78,94 @@ const getPosition = (location: number): ColorbarPositionType => {
  */
 export function useViewportRendering(
   viewportId?: string,
-  options?: { location?: number }
+  options?: { location?: number; displaySetInstanceUID?: string }
 ): WindowLevelHook {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, colorbarService, customizationService } =
     servicesManager.services;
 
-  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
-
-  const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
-
-  // Get customizations
-  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
-  const colorbarProperties = customizationService.getCustomization(
-    'cornerstone.colorbar'
-  ) as ColorbarProperties;
-
-  const {
-    volumeRenderingPresets = [],
-    volumeRenderingQualityRange = { min: 0, max: 1, step: 0.1 },
-  } =
-    (customizationService.getCustomization(
-      'cornerstone.3dVolumeRendering'
-    ) as VolumeRenderingConfig) || {};
-
-  // State
   const [is3DVolume, setIs3DVolume] = useState(false);
   const [hasColorbar, setHasColorbar] = useState(colorbarService.hasColorbar(viewportId));
   const [colorbarPosition, setColorbarPosition] = useState<ColorbarPositionType>(
     options?.location ? getPosition(options.location) : 'bottom'
   );
+  const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
 
-  // Get background color for light/dark detection
+  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+
+  const viewportInfo = viewportId ? cornerstoneViewportService.getViewportInfo(viewportId) : null;
+
+  const { presets, colorbarProperties, volumeRenderingPresets, volumeRenderingQualityRange } =
+    getCustomizationData(customizationService);
+
   const backgroundColor = viewportInfo?.getViewportOptions().background;
   const isViewportBackgroundLight = backgroundColor
     ? utilities.isEqual(backgroundColor, [1, 1, 1])
     : false;
 
-  // Calculate filtered presets
   const windowLevelPresets =
-    displaySets
+    viewportDisplaySets
       ?.filter(displaySet => presets?.[displaySet.Modality as string])
       .map(displaySet => {
         return { [displaySet.Modality as string]: presets[displaySet.Modality as string] };
       }) || [];
 
-  // Check if viewport is 3D
   useEffect(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     setIs3DVolume(viewport instanceof VolumeViewport3D);
-  }, [cornerstoneViewportService, viewportId, displaySets]);
+  }, [cornerstoneViewportService, viewportId]);
 
-  // Update colorbar state when it changes
+  // useEffect(() => {
+  //   if (!viewportId) {
+  //     return;
+  //   }
+
+  //   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  //   if (!viewport) {
+  //     return;
+  //   }
+
+  //   // Initialize VOI range state from current properties
+  //   const updateVOIFromViewport = () => {
+  //     if (viewport instanceof StackViewport) {
+  //       const { voiRange: currentVoiRange } = viewport.getProperties();
+  //       if (currentVoiRange) {
+  //         setVoiRange(currentVoiRange);
+  //       }
+  //     } else if (viewport instanceof BaseVolumeViewport) {
+  //       if (displaySets && displaySets.length > 0) {
+  //         throw new Error('Volume viewports with display sets are not yet supported');
+  //       }
+  //     }
+  //   };
+
+  //   updateVOIFromViewport();
+
+  //   const callback = evt => {
+  //     const { viewportId: eventViewportId, voiRange: newVoiRange } = evt.detail;
+  //     if (eventViewportId === viewportId && newVoiRange) {
+  //       setVoiRange(newVoiRange);
+  //     }
+  //   };
+
+  //   const element = viewport.element;
+  //   if (element) {
+  //     element.addEventListener(EVENTS.VOI_MODIFIED, callback);
+
+  //     voiEventUnsubscribe.current = () => {
+  //       element.removeEventListener(EVENTS.VOI_MODIFIED, callback);
+  //     };
+  //   }
+
+  //   return () => {
+  //     if (voiEventUnsubscribe.current) {
+  //       voiEventUnsubscribe.current();
+  //       voiEventUnsubscribe.current = null;
+  //     }
+  //   };
+  // }, [viewportId, cornerstoneViewportService, displaySets]);
+
   useEffect(() => {
-    // Only subscribe if viewportId is valid
     if (!viewportId) {
       return;
     }
@@ -129,7 +175,6 @@ export function useViewportRendering(
       setHasColorbar(hasColorbarValue);
     };
 
-    // Initial state check
     updateColorbarState();
 
     const { unsubscribe } = colorbarService.subscribe(
@@ -142,43 +187,45 @@ export function useViewportRendering(
     };
   }, [colorbarService, viewportId]);
 
-  // Window level functions
   const setWindowLevelPreset = useCallback(
-    (preset: WindowLevelPreset) => {
+    (preset: WindowLevelPreset, displaySetInstanceUID?: string) => {
       if (!viewportId) {
         return;
       }
+
+      if (!displaySetInstanceUID && viewportDisplaySets.length > 1) {
+        throw new Error(
+          'You need to provide a displaySetInstanceUID when there are multiple display sets to setWindowLevelPreset'
+        );
+      }
+
+      const displaySetInstanceUIDToUse =
+        displaySetInstanceUID ?? viewportDisplaySets[0].displaySetInstanceUID;
 
       commandsManager.run({
         commandName: 'setViewportWindowLevel',
         commandOptions: {
           ...preset,
           viewportId,
+          displaySetInstanceUID: displaySetInstanceUIDToUse,
         },
         context: 'CORNERSTONE',
       });
     },
-    [commandsManager, viewportId]
+    [commandsManager, viewportId, viewportDisplaySets]
   );
 
-  // Colorbar functions
   const toggleColorbar = useCallback(
     (options?: Partial<ColorbarOptions>) => {
-      // Ensure viewportId is defined
       if (!viewportId) {
-        console.error('Cannot toggle colorbar: viewportId is undefined');
         return;
       }
 
-      // Ensure we have display sets
-      if (!displaySets || displaySets.length === 0) {
-        console.warn('Cannot toggle colorbar: no display sets available for viewport', viewportId);
+      if (viewportDisplaySets?.length === 0) {
         return;
       }
 
-      // Ensure we have colorbar properties
       if (!colorbarProperties) {
-        console.error('Cannot toggle colorbar: colorbar properties not available');
         return;
       }
 
@@ -223,7 +270,7 @@ export function useViewportRendering(
         };
       }
 
-      const displaySetInstanceUIDs = displaySets.map(ds => ds.displaySetInstanceUID);
+      const displaySetInstanceUIDs = viewportDisplaySets.map(ds => ds.displaySetInstanceUID);
 
       try {
         commandsManager.run('toggleViewportColorbar', {
@@ -240,7 +287,7 @@ export function useViewportRendering(
       viewportId,
       colorbarProperties,
       isViewportBackgroundLight,
-      displaySets,
+      viewportDisplaySets,
       colorbarPosition,
     ]
   );
@@ -251,31 +298,44 @@ export function useViewportRendering(
         return;
       }
 
+      if (!displaySetInstanceUID && viewportDisplaySets.length > 1) {
+        throw new Error(
+          'You need to provide a displaySetInstanceUID when there are multiple display sets to setColormap'
+        );
+      }
+
+      const displaySetInstanceUIDToUse =
+        displaySetInstanceUID ?? viewportDisplaySets[0].displaySetInstanceUID;
+
       commandsManager.run({
         commandName: 'setViewportColormap',
         commandOptions: {
           viewportId,
           colormap,
-          displaySetInstanceUID,
+          displaySetInstanceUID: displaySetInstanceUIDToUse,
           opacity,
           immediate,
         },
         context: 'CORNERSTONE',
       });
     },
-    [commandsManager, viewportId]
+    [commandsManager, viewportId, viewportDisplaySets]
   );
 
   const getViewportColormap = useCallback(
-    (displaySet: AppTypes.DisplaySet) => {
-      if (!displaySet) {
+    (displaySetInstanceUID?: string) => {
+      if (!displaySetInstanceUID && viewportDisplaySets.length > 1) {
+        throw new Error(
+          'You need to provide a displaySetInstanceUID when there are multiple display sets to getViewportColormap'
+        );
+      }
+
+      if (!displaySetInstanceUID || !viewportId) {
         return null;
       }
 
-      const { displaySetInstanceUID } = displaySet;
-      if (!viewportId) {
-        return null;
-      }
+      const displaySetInstanceUIDToUse =
+        displaySetInstanceUID ?? viewportDisplaySets[0].displaySetInstanceUID;
 
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -296,7 +356,7 @@ export function useViewportRendering(
 
       const actorEntries = viewport.getActors();
       const actorEntry = actorEntries?.find(entry =>
-        entry.referencedId.includes(displaySetInstanceUID)
+        entry.referencedId.includes(displaySetInstanceUIDToUse)
       );
 
       if (!actorEntry) {
@@ -319,7 +379,7 @@ export function useViewportRendering(
 
       return colormap;
     },
-    [cornerstoneViewportService, viewportId, colorbarProperties?.colormaps]
+    [cornerstoneViewportService, viewportId, viewportDisplaySets, colorbarProperties?.colormaps]
   );
 
   // 3D volume rendering functions
@@ -334,10 +394,11 @@ export function useViewportRendering(
         commandOptions: {
           preset,
           viewportId,
+          displaySetInstanceUID: displaySetInstanceUIDToUse,
         },
       });
     },
-    [commandsManager, viewportId]
+    [commandsManager, viewportId, viewportDisplaySets]
   );
 
   const setVolumeRenderingQuality = useCallback(
@@ -399,6 +460,9 @@ export function useViewportRendering(
 
     // Window level functions
     setWindowLevelPreset,
+    // setVOIRange,
+    // setVOIWindowLevel,
+    voiRange,
 
     // Colorbar functions
     hasColorbar,
@@ -415,7 +479,7 @@ export function useViewportRendering(
     setVolumeShading,
 
     // Display sets
-    displaySets,
+    viewportDisplaySets,
 
     // Colorbar properties
     colorbarProperties,
@@ -430,3 +494,25 @@ export function useViewportRendering(
 }
 
 export default useViewportRendering;
+
+function getCustomizationData(customizationService) {
+  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
+  const colorbarProperties = customizationService.getCustomization(
+    'cornerstone.colorbar'
+  ) as ColorbarProperties;
+
+  const {
+    volumeRenderingPresets = [],
+    volumeRenderingQualityRange = { min: 0, max: 1, step: 0.1 },
+  } =
+    (customizationService.getCustomization(
+      'cornerstone.3dVolumeRendering'
+    ) as VolumeRenderingConfig) || {};
+
+  return {
+    presets,
+    colorbarProperties,
+    volumeRenderingPresets,
+    volumeRenderingQualityRange,
+  };
+}

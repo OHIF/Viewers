@@ -118,6 +118,7 @@ function modeFactory({ modeConfiguration }) {
         'navigationComponent',
       ]);
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
         'windowLevelAdvancedMenu',
       ]);
 
