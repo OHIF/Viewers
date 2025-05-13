@@ -326,11 +326,10 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         }
 
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-        // We want to be enabled when at least one displaySet is overlayable
         const hasOverlayable = displaySets.some(displaySet => displaySet?.isOverlayDisplaySet);
 
         return {
-          disabled: !hasOverlayable,
+          disabled: hasOverlayable,
         };
       },
     },
