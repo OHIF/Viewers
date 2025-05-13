@@ -10,12 +10,9 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
   );
 
   // Use the hook with the active display set
-  const { colorbarProperties, setColormap, getViewportColormap } = useViewportRendering(
-    viewportId,
-    {
-      displaySetInstanceUID: activeDisplaySetUID,
-    }
-  );
+  const { colorbarProperties, setColormap } = useViewportRendering(viewportId, {
+    displaySetInstanceUID: activeDisplaySetUID,
+  });
 
   const { colormaps } = colorbarProperties;
 
@@ -109,8 +106,7 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
                 onMouseEnter={() => {
                   if (showPreviewRef.current) {
                     if (!prePreviewColormapRef.current) {
-                      const currentMap = getViewportColormap();
-                      setPrePreviewColormap(currentMap || colormap);
+                      setPrePreviewColormap(colormap);
                     }
                     handleSetColorLUT(colormap);
                   }

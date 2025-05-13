@@ -29,7 +29,7 @@ const TABS = {
 
 function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedMenuProps) {
   const { servicesManager } = useSystem();
-  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
+  const { displaySetService } = servicesManager.services;
   const [activeTab, setActiveTab] = useState(TABS.MINMAX);
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
   const [selectedDisplaySetUID, setSelectedDisplaySetUID] = useState<string | undefined>(
@@ -37,7 +37,9 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
   );
 
   // Get viewport rendering helper hook
-  const { setWindowLevel, voiRange, setVOIRange, is3DVolume } = useViewportRendering(viewportId);
+  const { voiRange, setVOIRange } = useViewportRendering(viewportId, {
+    displaySetInstanceUID: selectedDisplaySetUID,
+  });
 
   useEffect(() => {
     if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {
@@ -120,10 +122,7 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
               className="space-y-1"
               onChange={(vals: [number, number]) => {
                 const [newLower, newUpper] = vals;
-                csViewport.setProperties({
-                  voiRange: { lower: newLower, upper: newUpper },
-                });
-                csViewport.render();
+                setVOIRange({ lower: newLower, upper: newUpper });
               }}
             >
               <Numeric.DoubleRange showNumberInputs />
@@ -144,13 +143,7 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
                     newWidth,
                     windowCenter
                   );
-                  csViewport.setProperties({
-                    voiRange: {
-                      lower,
-                      upper,
-                    },
-                  });
-                  csViewport.render();
+                  setVOIRange({ lower, upper });
                 }}
               >
                 <Numeric.Label>Window Width</Numeric.Label>
@@ -171,13 +164,7 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
                     windowWidth,
                     newCenter
                   );
-                  csViewport.setProperties({
-                    voiRange: {
-                      lower,
-                      upper,
-                    },
-                  });
-                  csViewport.render();
+                  setVOIRange({ lower, upper });
                 }}
               >
                 <Numeric.Label>Window Center</Numeric.Label>
