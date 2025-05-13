@@ -112,12 +112,12 @@ function modeFactory({ modeConfiguration }) {
         'advancedWindowLevelControls',
       ]);
 
-      // toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
-      //   'windowLevelAdvancedMenu',
-      //   'Colorbar',
-      //   'thresholdMenu',
-      //   'opacityMenu',
-      // ]);
+      toolbarService.updateSection('advancedWindowLevelControls', [
+        'windowLevelAdvancedMenu',
+        'Colorbar',
+        'thresholdMenu',
+        'opacityMenu',
+      ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
         'modalityLoadBadge',
