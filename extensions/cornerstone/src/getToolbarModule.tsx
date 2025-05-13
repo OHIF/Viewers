@@ -4,6 +4,8 @@ import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlay
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 import { WindowLevelAdvancedMenuWrapper } from './components/WindowLevelAdvancedMenu';
+import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
+import { OpacityMenuWrapper } from './components/OpacityMenu/OpacityMenuWrapper';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
@@ -208,6 +210,14 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       defaultComponent: WindowLevelAdvancedMenuWrapper,
     },
     {
+      name: 'ohif.thresholdMenu',
+      defaultComponent: ThresholdMenuWrapper,
+    },
+    {
+      name: 'ohif.opacityMenu',
+      defaultComponent: OpacityMenuWrapper,
+    },
+    {
       name: 'evaluate.windowLevelMenu',
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -246,6 +256,46 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         return {
           disabled: !supportWindowLevel,
+        };
+      },
+    },
+    {
+      name: 'evaluate.thresholdMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // For now, enable it for all viewports that have display sets
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        return {
+          disabled: !displaySets.length,
+        };
+      },
+    },
+    {
+      name: 'evaluate.opacityMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // For now, enable it for all viewports that have display sets
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        return {
+          disabled: !displaySets.length,
         };
       },
     },

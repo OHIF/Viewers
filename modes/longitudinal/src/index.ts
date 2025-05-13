@@ -120,6 +120,8 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
         'windowLevelMenu',
         'windowLevelAdvancedMenu',
+        'thresholdMenu',
+        'opacityMenu',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.measurementSection, [

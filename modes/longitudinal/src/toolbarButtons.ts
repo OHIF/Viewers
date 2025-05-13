@@ -120,6 +120,26 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'thresholdMenu',
+    uiType: 'ohif.thresholdMenu',
+    props: {
+      icon: 'Threshold',
+      label: 'Threshold',
+      tooltip: 'Image threshold settings',
+      evaluate: 'evaluate.thresholdMenu',
+    },
+  },
+  {
+    id: 'opacityMenu',
+    uiType: 'ohif.opacityMenu',
+    props: {
+      icon: 'Opacity',
+      label: 'Opacity',
+      tooltip: 'Image opacity settings',
+      evaluate: 'evaluate.opacityMenu',
+    },
+  },
+  {
     id: 'Reset',
     uiType: 'ohif.toolButton',
     props: {
