@@ -8,6 +8,7 @@ import {
   utilities,
   Enums,
   BaseVolumeViewport,
+  cache,
 } from '@cornerstonejs/core';
 import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
@@ -18,6 +19,11 @@ import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarSe
 interface ViewportRenderingOptions {
   location?: number;
   displaySetInstanceUID?: string;
+}
+
+interface PixelValueRange {
+  min: number;
+  max: number;
 }
 
 interface WindowLevelHook {
@@ -60,6 +66,7 @@ interface WindowLevelHook {
   // Threshold functions
   threshold: number | undefined;
   setThreshold: (threshold: number) => void;
+  pixelValueRange: PixelValueRange;
 
   // 3D volume rendering functions
   setVolumeRenderingPreset: (preset: any) => void;
@@ -109,8 +116,10 @@ export function useViewportRendering(
   const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
   const [opacity, setOpacityState] = useState<number | undefined>();
   const [threshold, setThresholdState] = useState<number | undefined>();
+  const [pixelValueRange, setPixelValueRange] = useState<PixelValueRange>({ min: 0, max: 255 });
 
   const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+  const { displaySetService } = servicesManager.services;
 
   // Determine the active display set instance UID (internal only, not exposed)
   const activeDisplaySetInstanceUID = useMemo(() => {
@@ -148,6 +157,37 @@ export function useViewportRendering(
         }) || []
     );
   }, [viewportDisplaySets, presets]);
+  
+  // Calculate pixel value range for the active display set
+  useEffect(() => {
+    if (!activeDisplaySetInstanceUID) {
+      return;
+    }
+
+    const selectedDisplaySet = displaySetService.getDisplaySetByUID(activeDisplaySetInstanceUID);
+    if (!selectedDisplaySet?.imageIds?.length) {
+      return;
+    }
+
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (const imageId of selectedDisplaySet.imageIds) {
+      const image = cache.getImage(imageId);
+      if (image) {
+        min = Math.min(min, image.minPixelValue);
+        max = Math.max(max, image.maxPixelValue);
+      }
+    }
+
+    // Provide reasonable defaults if min/max couldn't be determined
+    if (min === Infinity || max === -Infinity) {
+      min = 0;
+      max = 255;
+    }
+
+    setPixelValueRange({ min, max });
+  }, [activeDisplaySetInstanceUID, displaySetService]);
 
   // Get the presets specifically for the active display set
   const activeDisplaySetPresets = useMemo(() => {
@@ -715,6 +755,7 @@ export function useViewportRendering(
     // Threshold functions
     threshold,
     setThreshold,
+    pixelValueRange,
 
     // 3D volume rendering functions
     setVolumeRenderingPreset,

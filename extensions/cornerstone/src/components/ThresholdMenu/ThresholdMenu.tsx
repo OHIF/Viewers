@@ -21,11 +21,12 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
     viewportDisplaySets.length > 0 ? viewportDisplaySets[0].displaySetInstanceUID : undefined
   );
 
-  const { threshold, setThreshold } = useViewportRendering(viewportId, {
+  const { threshold, setThreshold, pixelValueRange } = useViewportRendering(viewportId, {
     displaySetInstanceUID: selectedDisplaySetUID,
   });
 
   const thresholdValue = threshold;
+  const { min, max } = pixelValueRange;
 
   useEffect(() => {
     if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {
@@ -61,7 +62,7 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
             </div>
           </div>
         )}
-        <div className="py-2">
+        <div className="mb-2">
           <Numeric.Container
             mode="singleRange"
             value={thresholdValue}
@@ -70,11 +71,11 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
                 setThreshold(val);
               }
             }}
-            min={0}
-            max={1}
+            min={min}
+            max={max}
             step={0.01}
           >
-            <Numeric.SingleRange showNumberInput={false} />
+            <Numeric.SingleRange showNumberInput />
           </Numeric.Container>
         </div>
       </div>
