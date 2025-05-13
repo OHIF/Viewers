@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
-import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import ViewportColorbar from './ViewportColorbar';
-import { deepMerge } from '@cornerstonejs/core/utilities';
 import useViewportRendering from '../../hooks/useViewportRendering';
 
 type ViewportColorbarsContainerProps = {
@@ -69,30 +67,10 @@ const ViewportColorbarsContainer = ({ viewportId, location }: ViewportColorbarsC
   const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
 
   const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
-  const positionStyles = colorbarCustomization?.positionStyles;
-
-  const positionStyle = positionStyles?.[position];
-
-  const defaultPositionStyle =
-    position === 'bottom'
-      ? {
-          width: '100%',
-          height: '20px',
-          minWidth: '100px',
-        }
-      : {
-          height: colorbars.length === 1 ? '55%' : '75%',
-          top: '50%',
-          transform: 'translateY(-50%)',
-        };
-
-  const finalPositionStyle = deepMerge(defaultPositionStyle, positionStyle);
 
   return (
     <div
-      className="absolute"
       style={{
-        ...finalPositionStyle,
         pointerEvents: 'auto',
       }}
     >

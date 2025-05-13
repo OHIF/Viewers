@@ -35,6 +35,13 @@ const toolbarButtons: Button[] = [
       buttonSection: 'moreToolsSection',
     },
   },
+  {
+    id: 'AdvancedWindowLevelControls',
+    uiType: 'ohif.row',
+    props: {
+      buttonSection: 'advancedWindowLevelControlsSection',
+    },
+  },
   // tool defs
   {
     id: 'modalityLoadBadge',

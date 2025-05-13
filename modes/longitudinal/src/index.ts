@@ -109,7 +109,10 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
-        'dataOverlayMenu',
+        'windowLevelAdvancedMenu',
+        'Colorbar',
+        'thresholdMenu',
+        'opacityMenu',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
@@ -117,11 +120,9 @@ function modeFactory({ modeConfiguration }) {
         'trackingStatus',
         'navigationComponent',
       ]);
+
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
         'windowLevelMenu',
-        'windowLevelAdvancedMenu',
-        'thresholdMenu',
-        'opacityMenu',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.measurementSection, [
