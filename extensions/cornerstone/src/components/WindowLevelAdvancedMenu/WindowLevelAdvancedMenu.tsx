@@ -38,7 +38,6 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
   const { voiRange, setVOIRange, windowLevel, setWindowLevel } = useViewportRendering(viewportId, {
     displaySetInstanceUID: selectedDisplaySetUID,
   });
-  console.debug('🚀 ~ voiRange:', voiRange);
 
   useEffect(() => {
     if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {

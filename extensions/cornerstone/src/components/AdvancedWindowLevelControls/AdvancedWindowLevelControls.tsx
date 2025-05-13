@@ -1,6 +1,7 @@
 import { useToolbar } from '@ohif/core/src/hooks/useToolbar';
 import React from 'react';
 
+// Todo: This component shares a lot of logic with Toolbar, but there's really no other way around it.
 function AdvancedWindowLevelControls({
   viewportId,
   location,
