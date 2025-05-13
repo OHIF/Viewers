@@ -1,11 +1,12 @@
+import { Types as csTypes } from '@cornerstonejs/core';
 import guid from '../utils/guid.js';
-import calculateScanAxisNormal from '../utils/calculateScanAxisNormal';
+import { sortStudyByImagePositionPatient } from '../utils/sortStudy';
 
-type Attributes = Record<string, unknown>;
+type Attributes = Record;
 type Image = {
   StudyInstanceUID?: string;
-  ImagePositionPatient?: string;
-  ImageOrientationPatient?: string;
+  ImagePositionPatient?: csTypes.Point3;
+  ImageOrientationPatient?: csTypes.Point3;
 };
 
 /**
@@ -47,7 +48,7 @@ class ImageSet {
     this.StudyInstanceUID = this.instance?.StudyInstanceUID;
   }
 
-  load: () => Promise<void>;
+  load: () => Promise;
 
   getUID(): string {
     return this.uid;
@@ -84,11 +85,7 @@ class ImageSet {
    * @returns images - reference to images after sorting
    */
   sort(sortingCallback: (a: Image, b: Image) => number): Image[] {
-    try {
-      return this.sortByImagePositionPatient();
-    } catch (error) {
-      return this.sortBy(sortingCallback);
-    }
+    return sortStudyByImagePositionPatient(this.images) || this.sortBy(sortingCallback);
   }
 
   /**
@@ -100,70 +97,6 @@ class ImageSet {
    */
   sortBy(sortingCallback: (a: Image, b: Image) => number): Image[] {
     return this.images.sort(sortingCallback);
-  }
-
-  /**
-   * Sort by InstanceNumber
-   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
-   *
-   * @returns images - reference to images after sorting
-   */
-  sortByInstanceNumber(): Image[] {
-    return this.sortBy((a, b) => {
-      // Sort by InstanceNumber (0020,0013)
-      // @ts-ignore
-      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
-    });
-  }
-
-  /**
-   * Sort by image position, calculated using ImageOrientationPatient and ImagePositionPatient
-   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
-   *
-   * @returns images - reference to images after sorting
-   */
-  sortByImagePositionPatient(): Image[] {
-    const images = this.images;
-
-    if (images.length <= 1) {
-      return; // No need to sort if there's only one image
-    }
-
-    // Use the first image as a reference
-    const referenceImagePositionPatient = images[0].ImagePositionPatient;
-    const ImageOrientationPatient = images[0].ImageOrientationPatient;
-
-    if (!referenceImagePositionPatient) {
-      throw new Error(
-        'Cannot sort ImageSet by real-world positions - ImagePositionPatient is undefined'
-      );
-    } else if (!ImageOrientationPatient) {
-      throw new Error(
-        'Cannot sort ImageSet by real-world positions - ImageOrientationPatient is undefined'
-      );
-    }
-
-    // Calculate the scan axis normal using the cross product
-    const scanAxisNormal = calculateScanAxisNormal(ImageOrientationPatient);
-
-    // Compute distances from each image to the reference image
-    const distanceInstancePairs = images.map(image => {
-      const imagePositionPatient = image.ImagePositionPatient;
-      const distance = scanAxisNormal.reduce((sum, normalComponent, index) => {
-        return (
-          sum +
-          normalComponent * (imagePositionPatient[index] - referenceImagePositionPatient[index])
-        );
-      }, 0);
-      return { distance, image };
-    });
-    // Sort images based on the computed distances
-    distanceInstancePairs.sort((a, b) => b.distance - a.distance);
-    // Reorder the images in the original array
-    const sortedImages = distanceInstancePairs.map(pair => pair.image);
-
-    images.sort((a, b) => sortedImages.indexOf(a) - sortedImages.indexOf(b));
-    return images;
   }
 }
 
