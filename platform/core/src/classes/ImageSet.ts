@@ -2,7 +2,7 @@ import { Types as csTypes } from '@cornerstonejs/core';
 import guid from '../utils/guid.js';
 import { sortStudyByImagePositionPatient } from '../utils/sortStudy';
 
-type Attributes = Record;
+type Attributes = Record<string, unknown>;
 type Image = {
   StudyInstanceUID?: string;
   ImagePositionPatient?: csTypes.Point3;
@@ -48,7 +48,7 @@ class ImageSet {
     this.StudyInstanceUID = this.instance?.StudyInstanceUID;
   }
 
-  load: () => Promise;
+  load: () => Promise<void>;
 
   getUID(): string {
     return this.uid;
