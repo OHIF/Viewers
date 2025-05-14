@@ -16,6 +16,17 @@ import { useSystem } from '@ohif/core';
 
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
+const SelectItemWithModality = ({ item }: { item: AppTypes.DisplaySet }): JSX.Element => (
+  <div className="flex w-full items-center justify-between">
+    <span className="text-foreground truncate text-base">{item.label}</span>
+    {item.Modality && (
+      <span className="text-muted-foreground ml-auto flex-shrink-0 whitespace-nowrap text-xs">
+        {item.Modality}
+      </span>
+    )}
+  </div>
+);
+
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
   const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
@@ -215,15 +226,17 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <SelectItem
                     key={displaySet.displaySetInstanceUID}
                     value={displaySet.displaySetInstanceUID}
+                    className="pr-2"
                   >
-                    {displaySet.label}
+                    <SelectItemWithModality item={displaySet} />
                   </SelectItem>
                   {potentialOverlayDisplaySets.map(item => (
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality item={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -267,8 +280,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality item={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -317,15 +331,17 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <SelectItem
                     key={displaySet.displaySetInstanceUID}
                     value={displaySet.displaySetInstanceUID}
+                    className="pr-2"
                   >
-                    {displaySet.label}
+                    <SelectItemWithModality item={displaySet} />
                   </SelectItem>
                   {potentialForegroundDisplaySets.map(item => (
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality item={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -369,8 +385,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality item={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -427,8 +444,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 <SelectItem
                   key={displaySet.displaySetInstanceUID}
                   value={displaySet.displaySetInstanceUID}
+                  className="pr-2"
                 >
-                  {displaySet.label}
+                  <SelectItemWithModality item={displaySet} />
                 </SelectItem>
               ))}
             </SelectContent>
