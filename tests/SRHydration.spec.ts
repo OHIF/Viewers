@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate SR reports correctly ', async ({ page }) => {
+test('should hydrate SR reports correctly', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('trackedMeasurements-btn').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
