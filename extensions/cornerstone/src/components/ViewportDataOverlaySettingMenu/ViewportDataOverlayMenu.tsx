@@ -172,12 +172,12 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   };
 
   // Check if the advanced window level components exist in toolbar
-  const hasAdvancedWindowLevelControls = !!toolbarService.getButton('advancedWindowLevelControls');
+  const hasAdvancedRenderingControls = !!toolbarService.getButton('advancedRenderingControls');
   const hasOpacityMenu = !!toolbarService.getButton('opacityMenu');
 
   const handleThresholdOpacityToggle = () => {
     const newValue = !thresholdOpacityEnabled;
-    if (hasAdvancedWindowLevelControls) {
+    if (hasAdvancedRenderingControls) {
       toggleColorbar();
     }
     setThresholdOpacityEnabled(newValue);
@@ -460,7 +460,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </Select>
         </div>
       </div>
-      {foregroundDisplaySets.length > 0 && (hasAdvancedWindowLevelControls || hasOpacityMenu) && (
+      {foregroundDisplaySets.length > 0 && (hasAdvancedRenderingControls || hasOpacityMenu) && (
         <div className="mt-1 ml-7">
           <div className="flex items-center">
             <Switch

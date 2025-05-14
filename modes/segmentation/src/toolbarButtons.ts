@@ -19,11 +19,11 @@ const callbacks = (toolName: string) => [
 
 const toolbarButtons: Button[] = [
   {
-    id: 'advancedWindowLevelControls',
-    uiType: 'ohif.advancedWindowLevelControls',
+    id: 'advancedRenderingControls',
+    uiType: 'ohif.advancedRenderingControls',
     props: {
       evaluate: {
-        name: 'evaluate.advancedWindowLevelControls',
+        name: 'evaluate.advancedRenderingControls',
         hideWhenDisabled: true,
       },
     },

@@ -39,11 +39,11 @@ const toolbarButtons = [
     },
   },
   {
-    id: 'advancedWindowLevelControls',
-    uiType: 'ohif.advancedWindowLevelControls',
+    id: 'advancedRenderingControls',
+    uiType: 'ohif.advancedRenderingControls',
     props: {
       evaluate: {
-        name: 'evaluate.advancedWindowLevelControls',
+        name: 'evaluate.advancedRenderingControls',
         hideWhenDisabled: true,
       },
     },

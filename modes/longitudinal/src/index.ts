@@ -109,10 +109,10 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
-        'advancedWindowLevelControls',
+        'advancedRenderingControls',
       ]);
 
-      toolbarService.updateSection('advancedWindowLevelControls', [
+      toolbarService.updateSection('advancedRenderingControls', [
         'windowLevelMenuEmbedded',
         'windowLevelAdvancedMenu',
         'Colorbar',

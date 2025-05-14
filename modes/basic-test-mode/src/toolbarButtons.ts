@@ -74,11 +74,11 @@ const toolbarButtons: Button[] = [
 
   // tool defs
   {
-    id: 'advancedWindowLevelControls',
-    uiType: 'ohif.advancedWindowLevelControls',
+    id: 'advancedRenderingControls',
+    uiType: 'ohif.advancedRenderingControls',
     props: {
       evaluate: {
-        name: 'evaluate.advancedWindowLevelControls',
+        name: 'evaluate.advancedRenderingControls',
         hideWhenDisabled: true,
       },
     },
@@ -138,7 +138,8 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'OrientationSwitch',
       label: 'Orientation',
-      tooltip: 'Change viewport orientation between axial, sagittal, coronal and acquisition planes',
+      tooltip:
+        'Change viewport orientation between axial, sagittal, coronal and acquisition planes',
       evaluate: {
         name: 'evaluate.orientationMenu',
       },

@@ -1,7 +1,8 @@
 import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
 import React, { useState, useEffect, useRef } from 'react';
 import { useViewportRendering } from '../../hooks';
-function AdvancedWindowLevelControls({
+
+function AdvancedRenderingControls({
   viewportId,
   location,
 }: {
@@ -17,7 +18,7 @@ function AdvancedWindowLevelControls({
     closeItem,
     toggleLock,
   } = useToolbar({
-    buttonSection: 'advancedWindowLevelControls',
+    buttonSection: 'advancedRenderingControls',
   });
 
   const mousePosition = useViewportMousePosition(viewportId);
@@ -110,4 +111,4 @@ function AdvancedWindowLevelControls({
   );
 }
 
-export default AdvancedWindowLevelControls;
+export default AdvancedRenderingControls;
