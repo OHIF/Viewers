@@ -11,18 +11,21 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 import SelectItemWithModality from '../SelectItemWithModality';
+import { useViewportRendering } from '../../hooks';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
   const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
   const [pendingSegmentations, setPendingSegmentations] = useState<string[]>([]);
+  const { toggleColorbar } = useViewportRendering(viewportId);
 
-  const { hangingProtocolService } = servicesManager.services;
+  const { hangingProtocolService, toolbarService } = servicesManager.services;
 
   const {
     backgroundDisplaySet,
@@ -32,6 +35,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     overlayDisplaySets,
     foregroundDisplaySets,
   } = useViewportDisplaySets(viewportId);
+
+  const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
   /**
    * Change the background display set
@@ -164,6 +169,18 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       // Remove this pending foreground from the list
       setPendingForegrounds(pendingForegrounds.filter(id => id !== pendingId));
     }
+  };
+
+  // Check if the advanced window level components exist in toolbar
+  const hasAdvancedWindowLevelControls = !!toolbarService.getButton('advancedWindowLevelControls');
+  const hasOpacityMenu = !!toolbarService.getButton('opacityMenu');
+
+  const handleThresholdOpacityToggle = () => {
+    const newValue = !thresholdOpacityEnabled;
+    if (hasAdvancedWindowLevelControls) {
+      toggleColorbar();
+    }
+    setThresholdOpacityEnabled(newValue);
   };
 
   return (
@@ -443,6 +460,25 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </Select>
         </div>
       </div>
+      {foregroundDisplaySets.length > 0 && (hasAdvancedWindowLevelControls || hasOpacityMenu) && (
+        <div className="mt-1 ml-7">
+          <div className="flex items-center">
+            <Switch
+              id="threshold-opacity-switch"
+              className="mr-2"
+              checked={thresholdOpacityEnabled}
+              onCheckedChange={handleThresholdOpacityToggle}
+            />
+            <label
+              htmlFor="threshold-opacity-switch"
+              className="text-muted-foreground cursor-pointer text-sm"
+              onClick={() => setThresholdOpacityEnabled(!thresholdOpacityEnabled)}
+            >
+              Control threshold & opacity
+            </label>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

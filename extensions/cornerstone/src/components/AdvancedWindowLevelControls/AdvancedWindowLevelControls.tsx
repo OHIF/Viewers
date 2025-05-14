@@ -1,6 +1,6 @@
 import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
 import React, { useState, useEffect, useRef } from 'react';
-
+import { useViewportRendering } from '../../hooks';
 function AdvancedWindowLevelControls({
   viewportId,
   location,
@@ -24,6 +24,7 @@ function AdvancedWindowLevelControls({
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showAllIcons, setShowAllIcons] = useState(true);
   const firstMountRef = useRef(true);
+  const { hasColorbar } = useViewportRendering(viewportId);
 
   useEffect(() => {
     if (firstMountRef.current) {
@@ -51,58 +52,62 @@ function AdvancedWindowLevelControls({
     return null;
   }
 
-  const renderButtons = () => {
-    return toolbarButtons.map(toolDef => {
-      if (!toolDef) {
-        return null;
-      }
+  if (!hasColorbar) {
+    return null;
+  }
 
-      const { id, Component, componentProps } = toolDef;
+  return (
+    <div className="flex flex-row gap-2">
+      {toolbarButtons.map(toolDef => {
+        if (!toolDef) {
+          return null;
+        }
 
-      // Enhanced props with state and actions - respecting viewport specificity
-      const enhancedProps = {
-        ...componentProps,
-        isOpen: isItemOpen(id, viewportId),
-        isLocked: isItemLocked(id, viewportId),
-        onOpen: () => openItem(id, viewportId),
-        onClose: () => closeItem(id, viewportId),
-        onToggleLock: () => toggleLock(id, viewportId),
-        viewportId,
-      };
+        const { id, Component, componentProps } = toolDef;
 
-      const tool = (
-        <Component
-          key={id}
-          id={id}
-          location={location}
-          onInteraction={args => {
-            onInteraction({
-              ...args,
-              itemId: id,
-              viewportId,
-            });
-          }}
-          {...enhancedProps}
-        />
-      );
+        // Enhanced props with state and actions - respecting viewport specificity
+        const enhancedProps = {
+          ...componentProps,
+          isOpen: isItemOpen(id, viewportId),
+          isLocked: isItemLocked(id, viewportId),
+          onOpen: () => openItem(id, viewportId),
+          onClose: () => closeItem(id, viewportId),
+          onToggleLock: () => toggleLock(id, viewportId),
+          viewportId,
+        };
 
-      // Always show all icons on first mount for 3 seconds
-      // After that, always show Colorbar, show others only when mouse is at bottom
-      const shouldBeVisible = showAllIcons || id === 'Colorbar' || isAtBottom;
+        const tool = (
+          <Component
+            key={id}
+            id={id}
+            location={location}
+            onInteraction={args => {
+              onInteraction({
+                ...args,
+                itemId: id,
+                viewportId,
+              });
+            }}
+            {...enhancedProps}
+          />
+        );
 
-      return (
-        <div
-          key={id}
-          className={shouldBeVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}
-          style={{ transition: 'opacity 0.2s ease-in-out' }}
-        >
-          {tool}
-        </div>
-      );
-    });
-  };
+        // Always show all icons on first mount for 3 seconds
+        // After that, always show Colorbar, show others only when mouse is at bottom
+        const shouldBeVisible = showAllIcons || id === 'Colorbar' || isAtBottom;
 
-  return <div className="flex flex-row gap-2">{renderButtons()}</div>;
+        return (
+          <div
+            key={id}
+            className={shouldBeVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}
+            style={{ transition: 'opacity 0.2s ease-in-out' }}
+          >
+            {tool}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default AdvancedWindowLevelControls;

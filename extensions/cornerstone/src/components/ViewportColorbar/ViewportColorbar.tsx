@@ -93,7 +93,7 @@ const ViewportColorbar = memo(function ViewportColorbar({
 
     const viewportElement = viewportElementRef?.current;
 
-    if (!viewportElement) {
+    if (!viewportElement || !colormaps?.length) {
       return;
     }
 

@@ -452,6 +452,7 @@ export function useViewportRendering(
 
   const toggleColorbar = useCallback(
     (options?: Partial<ColorbarOptions>) => {
+      console.debug('🚀 ~ toggleColorbar');
       if (!viewportId) {
         return;
       }
