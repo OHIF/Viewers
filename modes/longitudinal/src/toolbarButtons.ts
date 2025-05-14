@@ -35,17 +35,14 @@ const toolbarButtons: Button[] = [
       buttonSection: 'moreToolsSection',
     },
   },
-  // tool defs
   {
-    id: 'advancedRenderingControls',
+    id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
     props: {
-      evaluate: {
-        name: 'evaluate.advancedRenderingControls',
-        hideWhenDisabled: true,
-      },
+      buttonSection: 'advancedRenderingControlsSection',
     },
   },
+  // tool defs
   {
     id: 'modalityLoadBadge',
     uiType: 'ohif.modalityLoadBadge',

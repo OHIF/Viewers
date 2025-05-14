@@ -5,9 +5,11 @@ import { useViewportRendering } from '../../hooks';
 function AdvancedRenderingControls({
   viewportId,
   location,
+  buttonSection,
 }: {
   viewportId: string;
   location: number;
+  buttonSection: string;
 }) {
   const {
     onInteraction,
@@ -18,7 +20,7 @@ function AdvancedRenderingControls({
     closeItem,
     toggleLock,
   } = useToolbar({
-    buttonSection: 'advancedRenderingControls',
+    buttonSection,
   });
 
   const mousePosition = useViewportMousePosition(viewportId);

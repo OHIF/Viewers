@@ -268,8 +268,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
 
         const supportWindowLevel = displaySets.some(displaySet => displaySet?.supportsWindowLevel);
 
+        const isInAnySection = toolbarService.isInAnySection('windowLevelMenuEmbedded');
+
         return {
           disabled: !supportWindowLevel,
+          hasEmbeddedVariantToUse: !!isInAnySection,
         };
       },
     },

@@ -36,6 +36,7 @@ export function WindowLevelActionMenuWrapper(
     disabled,
     isEmbedded = false,
     onInteraction: onInteractionProps,
+    hasEmbeddedVariantToUse,
     ...rest
   } = props;
 
@@ -78,7 +79,7 @@ export function WindowLevelActionMenuWrapper(
   }
 
   const Icon =
-    hasColorbar && !isEmbedded ? (
+    hasColorbar && !isEmbedded && hasEmbeddedVariantToUse ? (
       <Icons.Close className={iconClassName} />
     ) : (
       <Icons.ViewportWindowLevel className={iconClassName} />

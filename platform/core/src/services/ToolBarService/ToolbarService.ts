@@ -46,6 +46,11 @@ export const TOOLBAR_SECTIONS = {
    * More tools section
    */
   moreToolsSection: 'moreToolsSection',
+
+  /**
+   * Advanced rendering controls section
+   */
+  advancedRenderingControlsSection: 'advancedRenderingControlsSection',
 };
 
 export enum ButtonLocation {
@@ -288,7 +293,8 @@ export default class ToolbarService extends PubSubService {
    * which buttons to evaluate based on the props
    */
   public refreshToolbarState(refreshProps) {
-    const buttons = this.state.buttons;
+    const originalButtons = this.state.buttons;
+    const updatedButtons = { ...originalButtons };
     const evaluationResults = new Map();
 
     const evaluateButtonProps = (button, props, refreshProps) => {
@@ -314,7 +320,14 @@ export default class ToolbarService extends PubSubService {
       }
     };
 
-    Object.values(buttons).forEach(button => {
+    const updatedIds = new Set();
+    Object.values(originalButtons).forEach(button => {
+      // Note: do not re-evaluate buttons that have already been evaluated
+      // this will result in inconsistencies in the toolbar state
+      if (updatedIds.has(button.id)) {
+        return;
+      }
+
       const hasSection = (button.props as NestedButtonProps)?.buttonSection;
 
       if (!hasSection) {
@@ -322,10 +335,12 @@ export default class ToolbarService extends PubSubService {
         const buttonProps = button.props as ButtonProps;
 
         const updatedProps = evaluateButtonProps(button, buttonProps, refreshProps);
-        buttons[button.id] = {
+        updatedButtons[button.id] = {
           ...button,
           props: updatedProps,
         };
+
+        updatedIds.add(button.id);
       } else {
         let buttonProps = button.props as NestedButtonProps;
         const { evaluate: groupEvaluate } = buttonProps;
@@ -347,17 +362,27 @@ export default class ToolbarService extends PubSubService {
         }
 
         toolButtonIds.forEach(buttonId => {
-          const button = buttons[buttonId];
+          const button = originalButtons[buttonId];
+          if (!button) {
+            return;
+          }
+
+          if (updatedIds.has(buttonId)) {
+            return;
+          }
+
           const updatedProps = evaluateButtonProps(button, button.props, refreshProps);
-          buttons[buttonId] = {
+          updatedButtons[buttonId] = {
             ...button,
             props: updatedProps,
           };
+
+          updatedIds.add(buttonId);
         });
       }
     });
 
-    this.setButtons(buttons);
+    this.setButtons(updatedButtons);
     return this.state;
   }
 
@@ -708,6 +733,23 @@ export default class ToolbarService extends PubSubService {
   clearButtonSection(buttonSection: string) {
     this.state.buttonSections[buttonSection] = [];
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
+  }
+
+  /**
+   * Checks if a button exists in any toolbar section.
+   *
+   * @param buttonId - The button ID to check for
+   * @returns True if the button exists in any section, false otherwise
+   */
+  isInAnySection(buttonId: string): boolean {
+    if (!buttonId) {
+      return false;
+    }
+
+    // Check all sections to see if the button ID exists in any of them
+    return Object.values(this.state.buttonSections).some(
+      section => Array.isArray(section) && section.includes(buttonId)
+    );
   }
 
   /**
