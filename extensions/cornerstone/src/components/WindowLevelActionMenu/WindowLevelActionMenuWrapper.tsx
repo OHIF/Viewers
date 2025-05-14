@@ -49,25 +49,20 @@ export function WindowLevelActionMenuWrapper(
   const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
 
   const handleOpenChange = (openState: boolean) => {
-    if (isOpen) {
-      if (hasColorbar && !isEmbedded && openState !== false) {
-        toggleColorbar();
-        onClose?.();
-        return;
-      }
+    const shouldToggleColorbar = hasColorbar && !isEmbedded;
 
-      if (openState) {
-        onOpen?.();
-      } else {
-        onClose?.();
-      }
+    if (isOpen && shouldToggleColorbar && openState) {
+      toggleColorbar();
+      onClose?.();
+      return;
+    }
+
+    if (!isOpen && openState && shouldToggleColorbar) {
+      toggleColorbar();
+      return;
     }
 
     if (openState) {
-      if (hasColorbar && !isEmbedded) {
-        toggleColorbar();
-        return;
-      }
       onOpen?.();
     } else {
       onClose?.();
