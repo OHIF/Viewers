@@ -4,7 +4,7 @@ import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import ViewportColorbar from './ViewportColorbar';
 import useViewportRendering from '../../hooks/useViewportRendering';
-
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 type ViewportColorbarsContainerProps = {
   viewportId: string;
   location: number;
@@ -29,9 +29,13 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
 }: ViewportColorbarsContainerProps) {
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
-  const { colorbarService, customizationService } = servicesManager.services;
-  const { colorbarPosition: position } = useViewportRendering(viewportId, { location });
+  const { colorbarService, customizationService, displaySetService } = servicesManager.services;
+  const { backgroundDisplaySet, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
+  const { colorbarPosition: position, opacity } = useViewportRendering(viewportId, {
+    location,
+  });
 
+  console.debug('🚀 ~ opacity:', opacity);
   // Memoize the customization to prevent recomputation
   const colorbarCustomization = useMemo(() => {
     return customizationService.getCustomization(
@@ -82,6 +86,22 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
     return null;
   }
 
+  const isBottom = position === 'bottom';
+
+  // if bottom use the displaySet that is
+  const colorbarsToUse = !isBottom
+    ? colorbars
+    : colorbars.filter(colorbar => {
+        const { displaySetInstanceUID } = colorbar;
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+        if (opacity === 0 || opacity == null) {
+          return displaySet.displaySetInstanceUID === backgroundDisplaySet?.displaySetInstanceUID;
+        }
+
+        return displaySet.displaySetInstanceUID === foregroundDisplaySets[0].displaySetInstanceUID;
+      });
+
   return (
     <div
       style={{
@@ -92,7 +112,7 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
         className="flex h-full flex-col items-center justify-center"
         style={{ pointerEvents: 'auto' }}
       >
-        {colorbars.map(colorbarInfo => {
+        {colorbarsToUse.map(colorbarInfo => {
           const { colorbar, displaySetInstanceUID } = colorbarInfo;
           return (
             <ViewportColorbar

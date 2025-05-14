@@ -242,7 +242,7 @@ export function useViewportRendering(
             if (properties.colormap && properties.colormap.opacity !== undefined) {
               const isArray = Array.isArray(properties.colormap.opacity);
               const opacity = isArray
-                ? properties.colormap.opacity[0].opacity
+                ? properties.colormap.opacity.reduce((max, current) => Math.max(max, current), 0)
                 : properties.colormap.opacity;
 
               setOpacityState(opacity);
@@ -315,10 +315,30 @@ export function useViewportRendering(
       }
     };
 
+    const updateColormap = eventDetail => {
+      const { colormap } = eventDetail.detail;
+
+      if (!colormap) {
+        return;
+      }
+
+      // Extract threshold from colormap in the event detail
+      if (colormap.threshold !== undefined) {
+        setThresholdState(colormap.threshold);
+      }
+
+      if (colormap.opacity !== undefined) {
+        setOpacityState(colormap.opacity);
+        setOpacityLinearState(opacityToLinear(colormap.opacity));
+      }
+    };
+
     element.addEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
+    element.addEventListener(Enums.Events.COLORMAP_MODIFIED, updateColormap);
 
     return () => {
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
+      element.removeEventListener(Enums.Events.COLORMAP_MODIFIED, updateColormap);
     };
   }, [viewportId, activeDisplaySetInstanceUID, cornerstoneViewportService]);
 
