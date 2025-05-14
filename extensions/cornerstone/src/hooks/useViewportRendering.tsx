@@ -343,7 +343,6 @@ export function useViewportRendering(
         return;
       }
 
-      console.debug('🚀 ~ threshold from event detail:', colormap.threshold);
       // Extract threshold from colormap in the event detail
       if (colormap.threshold !== undefined) {
         setThresholdState(colormap.threshold);
