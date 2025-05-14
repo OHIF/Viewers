@@ -288,7 +288,13 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        if (viewport.type !== 'orthographic') {
           return {
             disabled: true,
           };
@@ -311,7 +317,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+        if (!viewport || viewport.type !== 'orthographic') {
           return {
             disabled: true,
           };

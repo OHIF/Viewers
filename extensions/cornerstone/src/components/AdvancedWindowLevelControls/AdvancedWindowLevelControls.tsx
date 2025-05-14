@@ -1,5 +1,5 @@
 import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function AdvancedWindowLevelControls({
   viewportId,
@@ -22,6 +22,29 @@ function AdvancedWindowLevelControls({
 
   const mousePosition = useViewportMousePosition(viewportId);
   const [isAtBottom, setIsAtBottom] = useState(false);
+  const [showAllControls, setShowAllControls] = useState(true);
+  const initialShowTimerRef = useRef<number | null>(null);
+
+  // Initially show all controls for a few seconds
+  useEffect(() => {
+    setShowAllControls(true);
+
+    // Clear any existing timeout
+    if (initialShowTimerRef.current) {
+      window.clearTimeout(initialShowTimerRef.current);
+    }
+
+    // Set a new timeout to switch to mouse-position based rendering
+    initialShowTimerRef.current = window.setTimeout(() => {
+      setShowAllControls(false);
+    }, 3000);
+
+    return () => {
+      if (initialShowTimerRef.current) {
+        window.clearTimeout(initialShowTimerRef.current);
+      }
+    };
+  }, [viewportId]);
 
   useEffect(() => {
     if (mousePosition.isInViewport) {
@@ -36,6 +59,8 @@ function AdvancedWindowLevelControls({
   if (!toolbarButtons?.length) {
     return null;
   }
+
+  debugger;
 
   const renderButtons = () => {
     return toolbarButtons.map(toolDef => {
@@ -72,8 +97,8 @@ function AdvancedWindowLevelControls({
         />
       );
 
-      // Always show Colorbar, show others only when mouse is at bottom
-      const shouldBeVisible = id === 'Colorbar' || isAtBottom;
+      // Show all controls initially or Colorbar always, show others only when mouse is at bottom
+      const shouldBeVisible = showAllControls || id === 'Colorbar' || isAtBottom;
 
       // Apply visibility classes based on shouldBeVisible
       return (
