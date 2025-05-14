@@ -110,13 +110,28 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'windowLevelMenuEmbedded',
+    uiType: 'ohif.windowLevelMenuEmbedded',
+    props: {
+      icon: 'WindowLevel',
+      label: 'Window Level',
+      tooltip: 'Adjust window/level presets and customize image contrast settings',
+      evaluate: {
+        name: 'evaluate.windowLevelMenuEmbedded',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'windowLevelMenu',
     uiType: 'ohif.windowLevelMenu',
     props: {
       icon: 'WindowLevel',
       label: 'Window Level',
       tooltip: 'Adjust window/level presets and customize image contrast settings',
-      evaluate: 'evaluate.windowLevelMenu',
+      evaluate: {
+        name: 'evaluate.windowLevelMenu',
+      },
     },
   },
   {

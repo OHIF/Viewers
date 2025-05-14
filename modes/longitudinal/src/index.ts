@@ -113,6 +113,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection('advancedWindowLevelControls', [
+        'windowLevelMenuEmbedded',
         'windowLevelAdvancedMenu',
         'Colorbar',
         'opacityMenu',

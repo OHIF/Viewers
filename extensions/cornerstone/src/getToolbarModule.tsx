@@ -11,7 +11,6 @@ import NavigationComponent from './components/NavigationComponent/NavigationComp
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
 import AdvancedWindowLevelControls from './components/AdvancedWindowLevelControls';
-import { BaseVolumeViewport } from '@cornerstonejs/core';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -24,6 +23,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     toolbarService,
     syncGroupService,
     cornerstoneViewportService,
+    colorbarService,
     displaySetService,
     viewportGridService,
     segmentationService,
@@ -37,7 +37,6 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     {
       name: 'evaluate.advancedWindowLevelControls',
       evaluate: ({ viewportId }) => {
-        const { colorbarService } = servicesManager.services;
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         if (!viewport) {
@@ -232,6 +231,18 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     {
       name: 'ohif.windowLevelAdvancedMenu',
       defaultComponent: WindowLevelAdvancedMenuWrapper,
+    },
+    {
+      name: 'ohif.windowLevelMenuEmbedded',
+      defaultComponent: WindowLevelActionMenuWrapper,
+    },
+    {
+      name: 'evaluate.windowLevelMenuEmbedded',
+      evaluate: () => {
+        return {
+          isEmbedded: true,
+        };
+      },
     },
     {
       name: 'ohif.thresholdMenu',

@@ -11,6 +11,7 @@ import {
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import { useViewportRendering } from '../../hooks';
 
 export function WindowLevelActionMenuWrapper(
   props: withAppTypes<{
@@ -22,6 +23,7 @@ export function WindowLevelActionMenuWrapper(
     onClose?: () => void;
     displaySets?: Array<AppTypes.DisplaySet>;
     disabled?: boolean;
+    isEmbedded?: boolean;
   }>
 ): ReactNode {
   const {
@@ -32,6 +34,8 @@ export function WindowLevelActionMenuWrapper(
     onOpen,
     onClose,
     disabled,
+    isEmbedded = false,
+    onInteraction: onInteractionProps,
     ...rest
   } = props;
 
@@ -42,9 +46,28 @@ export function WindowLevelActionMenuWrapper(
   const { servicesManager } = useSystem();
   const { toolbarService } = servicesManager.services;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
+  const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
 
   const handleOpenChange = (openState: boolean) => {
+    if (isOpen) {
+      if (hasColorbar && !isEmbedded && openState !== false) {
+        toggleColorbar();
+        onClose?.();
+        return;
+      }
+
+      if (openState) {
+        onOpen?.();
+      } else {
+        onClose?.();
+      }
+    }
+
     if (openState) {
+      if (hasColorbar && !isEmbedded) {
+        toggleColorbar();
+        return;
+      }
       onOpen?.();
     } else {
       onClose?.();
@@ -59,7 +82,12 @@ export function WindowLevelActionMenuWrapper(
     return null;
   }
 
-  const Icon = <Icons.ViewportWindowLevel className={iconClassName} />;
+  const Icon =
+    hasColorbar && !isEmbedded ? (
+      <Icons.Close className={iconClassName} />
+    ) : (
+      <Icons.ViewportWindowLevel className={iconClassName} />
+    );
 
   return (
     <Popover
