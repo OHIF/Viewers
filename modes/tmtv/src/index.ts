@@ -89,17 +89,37 @@ function modeFactory({ modeConfiguration }) {
 
       unsubscriptions.push(unsubscribe);
       toolbarService.register(toolbarButtons);
-      toolbarService.updateSection('primary', [
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
+        'Pan',
         'WindowLevel',
         'Crosshairs',
-        'Pan',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
         'orientationMenu',
         'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'advancedWindowLevelControls',
+      ]);
+
+      toolbarService.updateSection('advancedWindowLevelControls', [
+        'windowLevelAdvancedMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
         'windowLevelMenu',
       ]);
 

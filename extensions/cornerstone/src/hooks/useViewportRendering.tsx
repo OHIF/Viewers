@@ -96,6 +96,14 @@ const getPosition = (location: number): ColorbarPositionType => {
 
 const GAMMA = 1 / 5;
 
+const linearToOpacity = (linearValue: number): number => {
+  return Math.pow(linearValue, GAMMA);
+};
+
+const opacityToLinear = (opacityValue: number): number => {
+  return Math.pow(opacityValue, 1.0 / GAMMA);
+};
+
 /**
  * Hook to access window level functionality for a specific viewport
  *
@@ -174,25 +182,38 @@ export function useViewportRendering(
       return;
     }
 
-    let min = Infinity;
-    let max = -Infinity;
+    const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-    for (const imageId of selectedDisplaySet.imageIds) {
-      const image = cache.getImage(imageId);
-      if (image) {
-        min = Math.min(min, image.minPixelValue);
-        max = Math.max(max, image.maxPixelValue);
-      }
+    if (!csViewport) {
+      return;
     }
 
-    // Provide reasonable defaults if min/max couldn't be determined
-    if (min === Infinity || max === -Infinity) {
-      min = 0;
-      max = 255;
+    if (!(csViewport instanceof BaseVolumeViewport)) {
+      return;
     }
 
-    setPixelValueRange({ min, max });
-  }, [activeDisplaySetInstanceUID, displaySetService]);
+    const volumeIds = csViewport.getAllVolumeIds();
+    const volumeId = volumeIds.find(id => id.includes(activeDisplaySetInstanceUID));
+
+    if (!volumeId) {
+      return;
+    }
+
+    // only handle volume viewports for now
+    const imageData = csViewport.getImageData(volumeId);
+
+    if (!imageData) {
+      return;
+    }
+
+    const imageDataVtk = imageData.imageData;
+
+    const { voxelManager } = imageDataVtk.get('voxelManager');
+
+    const range = voxelManager.getRange();
+
+    setPixelValueRange({ min: range[0], max: range[1] });
+  }, [activeDisplaySetInstanceUID, displaySetService, cornerstoneViewportService, viewportId]);
 
   // Get the presets specifically for the active display set
   const activeDisplaySetPresets = useMemo(() => {
@@ -322,6 +343,7 @@ export function useViewportRendering(
         return;
       }
 
+      console.debug('🚀 ~ threshold from event detail:', colormap.threshold);
       // Extract threshold from colormap in the event detail
       if (colormap.threshold !== undefined) {
         setThresholdState(colormap.threshold);
@@ -340,7 +362,7 @@ export function useViewportRendering(
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
       element.removeEventListener(Enums.Events.COLORMAP_MODIFIED, updateColormap);
     };
-  }, [viewportId, activeDisplaySetInstanceUID, cornerstoneViewportService]);
+  }, [viewportId, activeDisplaySetInstanceUID, cornerstoneViewportService, opacityToLinear]);
 
   const validateActiveDisplaySet = useCallback(() => {
     if (!activeDisplaySetInstanceUID) {
@@ -534,14 +556,6 @@ export function useViewportRendering(
     [commandsManager, viewportId, validateActiveDisplaySet]
   );
 
-  const linearToOpacity = useCallback((linearValue: number): number => {
-    return Math.pow(linearValue, GAMMA);
-  }, []);
-
-  const opacityToLinear = useCallback((opacityValue: number): number => {
-    return Math.pow(opacityValue, 1.0 / GAMMA);
-  }, []);
-
   const setOpacity = useCallback(
     (opacityValue: number) => {
       if (!viewportId) {
@@ -619,20 +633,13 @@ export function useViewportRendering(
         return;
       }
 
-      // Get current properties including colormap
-      const properties = viewport.getProperties(volumeId);
-      const currentColormap = properties.colormap || {};
+      console.debug('🚀 ~ thresholdValue:', thresholdValue);
 
-      // Update colormap with new threshold
-      const updatedColormap = {
-        ...currentColormap,
-        threshold: thresholdValue,
-      };
-
-      // Apply updated colormap
       viewport.setProperties(
         {
-          colormap: updatedColormap,
+          colormap: {
+            threshold: thresholdValue,
+          },
         },
         volumeId
       );

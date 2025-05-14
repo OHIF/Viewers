@@ -17,23 +17,23 @@ interface ThresholdMenuProps {
 }
 
 function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
-  const { viewportDisplaySets } = useViewportDisplaySets(viewportId);
+  const { viewportDisplaySets, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
   const [selectedDisplaySetUID, setSelectedDisplaySetUID] = useState<string | undefined>(
-    viewportDisplaySets.length > 0 ? viewportDisplaySets[0].displaySetInstanceUID : undefined
+    foregroundDisplaySets.length > 0 ? foregroundDisplaySets[0].displaySetInstanceUID : undefined
   );
 
   const { threshold, setThreshold, pixelValueRange } = useViewportRendering(viewportId, {
     displaySetInstanceUID: selectedDisplaySetUID,
   });
 
-  const thresholdValue = threshold;
   const { min, max } = pixelValueRange;
+  const thresholdValue = threshold ?? min;
 
   useEffect(() => {
-    if (viewportDisplaySets.length > 0 && !selectedDisplaySetUID) {
-      setSelectedDisplaySetUID(viewportDisplaySets[0].displaySetInstanceUID);
+    if (foregroundDisplaySets.length > 0 && !selectedDisplaySetUID) {
+      setSelectedDisplaySetUID(foregroundDisplaySets[0].displaySetInstanceUID);
     }
-  }, [viewportDisplaySets, selectedDisplaySetUID]);
+  }, [foregroundDisplaySets, selectedDisplaySetUID]);
 
   return (
     <div className={className}>
@@ -56,7 +56,7 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
                         key={ds.displaySetInstanceUID}
                         value={ds.displaySetInstanceUID}
                       >
-                        {`${ds.SeriesDescription || ''}`.trim()}
+                        {`${ds.SeriesDescription !== '' ? ds.SeriesDescription : ds.Modality}`.trim()}
                       </SelectItem>
                     ))}
                   </SelectContent>

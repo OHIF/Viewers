@@ -35,7 +35,6 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
     location,
   });
 
-  console.debug('🚀 ~ opacity:', opacity);
   // Memoize the customization to prevent recomputation
   const colorbarCustomization = useMemo(() => {
     return customizationService.getCustomization(

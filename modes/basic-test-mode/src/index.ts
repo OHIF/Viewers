@@ -91,16 +91,42 @@ function modeFactory() {
 
       toolbarService.register(toolbarButtons);
       console.debug('toolbarButtons', toolbarButtons);
-      toolbarService.updateSection('primary', [
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
-        'WindowLevelGroup',
         'Pan',
+        'TrackballRotate',
+        'WindowLevel',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'advancedWindowLevelControls',
+      ]);
+
+      toolbarService.updateSection('advancedWindowLevelControls', [
+        'windowLevelAdvancedMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
       ]);
 
       toolbarService.updateSection('windowLevelSection', [
@@ -112,7 +138,7 @@ function modeFactory() {
         'Brain',
       ]);
 
-      toolbarService.updateSection('measurementSection', [
+      toolbarService.updateSection(toolbarService.sections.measurementSection, [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -123,7 +149,7 @@ function modeFactory() {
         'LivewireContour',
       ]);
 
-      toolbarService.updateSection('moreToolsSection', [
+      toolbarService.updateSection(toolbarService.sections.moreToolsSection, [
         'Reset',
         'rotate-right',
         'flipHorizontal',

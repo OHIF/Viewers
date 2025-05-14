@@ -7,6 +7,15 @@ const setToolActiveToolbar = {
   },
 };
 
+const callbacks = (toolName: string) => [
+  {
+    commandName: 'setViewportForToolConfiguration',
+    commandOptions: {
+      toolName,
+    },
+  },
+];
+
 const toolbarButtons = [
   {
     id: 'MeasurementTools',
@@ -27,6 +36,63 @@ const toolbarButtons = [
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: 'brushToolsSection',
+    },
+  },
+  {
+    id: 'advancedWindowLevelControls',
+    uiType: 'ohif.advancedWindowLevelControls',
+    props: {
+      evaluate: {
+        name: 'evaluate.advancedWindowLevelControls',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
+    id: 'modalityLoadBadge',
+    uiType: 'ohif.modalityLoadBadge',
+    props: {
+      icon: 'Status',
+      label: 'Status',
+      tooltip: 'Status',
+      evaluate: {
+        name: 'evaluate.modalityLoadBadge',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
+    id: 'Colorbar',
+    uiType: 'ohif.colorbar',
+    props: {
+      type: 'tool',
+      label: 'Colorbar',
+    },
+  },
+  {
+    id: 'navigationComponent',
+    uiType: 'ohif.navigationComponent',
+    props: {
+      icon: 'Navigation',
+      label: 'Navigation',
+      tooltip: 'Navigate between segments/measurements and manage their visibility',
+      evaluate: {
+        name: 'evaluate.navigationComponent',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
+    id: 'trackingStatus',
+    uiType: 'ohif.trackingStatus',
+    props: {
+      icon: 'TrackingStatus',
+      label: 'Tracking Status',
+      tooltip: 'View and manage tracking status of measurements and annotations',
+      evaluate: {
+        name: 'evaluate.trackingStatus',
+        hideWhenDisabled: true,
+      },
     },
   },
   {
@@ -324,6 +390,42 @@ const toolbarButtons = [
       label: 'Window Level',
       tooltip: 'Adjust window/level presets and customize image contrast settings',
       evaluate: 'evaluate.windowLevelMenu',
+    },
+  },
+  {
+    id: 'windowLevelAdvancedMenu',
+    uiType: 'ohif.windowLevelAdvancedMenu',
+    props: {
+      icon: 'WindowLevelAdvanced',
+      label: 'Advanced Window Level',
+      tooltip: 'Advanced window/level settings with manual controls and presets',
+      evaluate: 'evaluate.windowLevelAdvancedMenu',
+    },
+  },
+  {
+    id: 'thresholdMenu',
+    uiType: 'ohif.thresholdMenu',
+    props: {
+      icon: 'Threshold',
+      label: 'Threshold',
+      tooltip: 'Image threshold settings',
+      evaluate: {
+        name: 'evaluate.thresholdMenu',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
+    id: 'opacityMenu',
+    uiType: 'ohif.opacityMenu',
+    props: {
+      icon: 'Opacity',
+      label: 'Opacity',
+      tooltip: 'Image opacity settings',
+      evaluate: {
+        name: 'evaluate.opacityMenu',
+        hideWhenDisabled: true,
+      },
     },
   },
 ];
