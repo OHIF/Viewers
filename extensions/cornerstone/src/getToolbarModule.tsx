@@ -3,7 +3,7 @@ import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
-import { WindowLevelAdvancedMenuWrapper } from './components/WindowLevelAdvancedMenu';
+import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
 import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
 import { OpacityMenuWrapper } from './components/OpacityMenu/OpacityMenuWrapper';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
@@ -229,8 +229,8 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       defaultComponent: WindowLevelActionMenuWrapper,
     },
     {
-      name: 'ohif.windowLevelAdvancedMenu',
-      defaultComponent: WindowLevelAdvancedMenuWrapper,
+      name: 'ohif.voiManualControlMenu',
+      defaultComponent: VOIManualControlMenuWrapper,
     },
     {
       name: 'ohif.windowLevelMenuEmbedded',
@@ -274,7 +274,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       },
     },
     {
-      name: 'evaluate.windowLevelAdvancedMenu',
+      name: 'evaluate.voiManualControlMenu',
       evaluate: ({ viewportId }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 

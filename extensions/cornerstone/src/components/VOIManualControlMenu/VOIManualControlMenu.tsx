@@ -16,7 +16,7 @@ import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { useSystem } from '@ohif/core';
 import { cache } from '@cornerstonejs/core';
 
-interface WindowLevelAdvancedMenuProps {
+interface VOIManualControlMenuProps {
   viewportId: string;
   className?: string;
 }
@@ -26,7 +26,7 @@ const TABS = {
   MANUAL: 'manual',
 };
 
-function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedMenuProps) {
+function VOIManualControlMenu({ viewportId, className }: VOIManualControlMenuProps) {
   const { servicesManager } = useSystem();
   const { displaySetService } = servicesManager.services;
   const [activeTab, setActiveTab] = useState(TABS.MINMAX);
@@ -187,4 +187,4 @@ function WindowLevelAdvancedMenu({ viewportId, className }: WindowLevelAdvancedM
   );
 }
 
-export default WindowLevelAdvancedMenu;
+export default VOIManualControlMenu;

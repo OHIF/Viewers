@@ -8,9 +8,9 @@ import {
   PopoverTrigger,
   useIconPresentation,
 } from '@ohif/ui-next';
-import WindowLevelAdvancedMenu from './WindowLevelAdvancedMenu';
+import VOIManualControlMenu from './VOIManualControlMenu';
 
-type WindowLevelAdvancedMenuWrapperProps = {
+type VOIManualControlMenuWrapperProps = {
   viewportId: string;
   location: string;
   isOpen?: boolean;
@@ -19,9 +19,7 @@ type WindowLevelAdvancedMenuWrapperProps = {
   disabled?: boolean;
 };
 
-export function WindowLevelAdvancedMenuWrapper(
-  props: WindowLevelAdvancedMenuWrapperProps
-): ReactNode {
+export function VOIManualControlMenuWrapper(props: VOIManualControlMenuWrapperProps): ReactNode {
   const { viewportId, location, isOpen = false, onOpen, onClose, disabled, ...rest } = props;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
@@ -77,7 +75,7 @@ export function WindowLevelAdvancedMenuWrapper(
         alignOffset={0}
         sideOffset={5}
       >
-        <WindowLevelAdvancedMenu
+        <VOIManualControlMenu
           className="w-full"
           viewportId={viewportId}
         />

@@ -102,13 +102,13 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'windowLevelAdvancedMenu',
-    uiType: 'ohif.windowLevelAdvancedMenu',
+    id: 'voiManualControlMenu',
+    uiType: 'ohif.voiManualControlMenu',
     props: {
       icon: 'WindowLevelAdvanced',
       label: 'Advanced Window Level',
       tooltip: 'Advanced window/level settings with manual controls and presets',
-      evaluate: 'evaluate.windowLevelAdvancedMenu',
+      evaluate: 'evaluate.voiManualControlMenu',
     },
   },
   {

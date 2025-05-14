@@ -113,7 +113,7 @@ function modeFactory() {
       ]);
 
       toolbarService.updateSection('advancedRenderingControls', [
-        'windowLevelAdvancedMenu',
+        'voiManualControlMenu',
         'Colorbar',
         'opacityMenu',
         'thresholdMenu',
