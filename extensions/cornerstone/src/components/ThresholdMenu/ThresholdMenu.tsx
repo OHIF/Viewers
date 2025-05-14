@@ -10,6 +10,7 @@ import {
 } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import SelectItemWithModality from '../SelectItemWithModality';
 
 interface ThresholdMenuProps {
   viewportId: string;
@@ -35,6 +36,10 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
     }
   }, [foregroundDisplaySets, selectedDisplaySetUID]);
 
+  const selectedDisplaySet = viewportDisplaySets.find(
+    ds => ds.displaySetInstanceUID === selectedDisplaySetUID
+  );
+
   return (
     <div className={className}>
       <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
@@ -48,7 +53,7 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
                   onValueChange={setSelectedDisplaySetUID}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Display Set" />
+                    <SelectValue>{selectedDisplaySet?.label || 'Select Display Set'}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {viewportDisplaySets.map(ds => (
@@ -56,7 +61,7 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
                         key={ds.displaySetInstanceUID}
                         value={ds.displaySetInstanceUID}
                       >
-                        {`${ds.SeriesDescription !== '' ? ds.SeriesDescription : ds.Modality}`.trim()}
+                        <SelectItemWithModality displaySet={ds} />
                       </SelectItem>
                     ))}
                   </SelectContent>

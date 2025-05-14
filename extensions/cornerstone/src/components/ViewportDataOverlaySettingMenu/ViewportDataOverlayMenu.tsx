@@ -15,17 +15,7 @@ import {
 import { useSystem } from '@ohif/core';
 
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
-
-const SelectItemWithModality = ({ item }: { item: AppTypes.DisplaySet }): JSX.Element => (
-  <div className="flex w-full items-center justify-between">
-    <span className="text-foreground truncate text-base">{item.label}</span>
-    {item.Modality && (
-      <span className="text-muted-foreground ml-auto flex-shrink-0 whitespace-nowrap text-xs">
-        {item.Modality}
-      </span>
-    )}
-  </div>
-);
+import SelectItemWithModality from '../SelectItemWithModality';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
@@ -228,7 +218,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     value={displaySet.displaySetInstanceUID}
                     className="pr-2"
                   >
-                    <SelectItemWithModality item={displaySet} />
+                    <SelectItemWithModality displaySet={displaySet} />
                   </SelectItem>
                   {potentialOverlayDisplaySets.map(item => (
                     <SelectItem
@@ -236,7 +226,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                       value={item.displaySetInstanceUID}
                       className="pr-2"
                     >
-                      <SelectItemWithModality item={item} />
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -282,7 +272,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                       value={item.displaySetInstanceUID}
                       className="pr-2"
                     >
-                      <SelectItemWithModality item={item} />
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -333,7 +323,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     value={displaySet.displaySetInstanceUID}
                     className="pr-2"
                   >
-                    <SelectItemWithModality item={displaySet} />
+                    <SelectItemWithModality displaySet={displaySet} />
                   </SelectItem>
                   {potentialForegroundDisplaySets.map(item => (
                     <SelectItem
@@ -341,7 +331,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                       value={item.displaySetInstanceUID}
                       className="pr-2"
                     >
-                      <SelectItemWithModality item={item} />
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -387,7 +377,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                       value={item.displaySetInstanceUID}
                       className="pr-2"
                     >
-                      <SelectItemWithModality item={item} />
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -446,7 +436,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   value={displaySet.displaySetInstanceUID}
                   className="pr-2"
                 >
-                  <SelectItemWithModality item={displaySet} />
+                  <SelectItemWithModality displaySet={displaySet} />
                 </SelectItem>
               ))}
             </SelectContent>
