@@ -26,9 +26,7 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
   }, [backgroundDisplaySet, overlayDisplaySets]);
 
   useEffect(() => {
-    const displaySet = allDisplaySets.find(
-      ds => ds?.Modality === 'SEG' || ds?.Modality === 'RTSTRUCT' || ds?.Modality === 'SR'
-    );
+    const displaySet = allDisplaySets.find(ds => ds.isOverlayDisplaySet || ds?.Modality === 'SR');
 
     setSpecialDisplaySet(displaySet || null);
   }, [allDisplaySets]);

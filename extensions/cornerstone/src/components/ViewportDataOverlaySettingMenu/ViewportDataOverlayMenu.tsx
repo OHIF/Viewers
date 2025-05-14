@@ -11,7 +11,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  useIconPresentation,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
@@ -21,7 +20,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   const { commandsManager, servicesManager } = useSystem();
   const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
   const [pendingSegmentations, setPendingSegmentations] = useState<string[]>([]);
-  const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
   const { hangingProtocolService } = servicesManager.services;
 
@@ -46,21 +44,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     commandsManager.run('setDisplaySetsForViewports', {
       viewportsToUpdate: updatedViewports,
     });
-  };
-
-  /**
-   * Handle threshold and opacity toggle
-   */
-  const handleThresholdOpacityToggle = (checked: boolean) => {
-    setThresholdOpacityEnabled(checked);
-
-    if (foregroundDisplaySets.length > 0) {
-      // Example implementation of threshold/opacity adjustment
-      commandsManager.runCommand('setForegroundThresholdOpacity', {
-        viewportId,
-        enabled: checked,
-      });
-    }
   };
 
   /**
@@ -452,25 +435,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </Select>
         </div>
       </div>
-      {/* {foregroundDisplaySets.length > 0 && (
-        <div className="mt-1 ml-7">
-          <div className="flex items-center">
-            <Switch
-              id="threshold-opacity-switch"
-              className="mr-2"
-              checked={thresholdOpacityEnabled}
-              onCheckedChange={handleThresholdOpacityToggle}
-            />
-            <label
-              htmlFor="threshold-opacity-switch"
-              className="text-muted-foreground cursor-pointer text-sm"
-              onClick={() => setThresholdOpacityEnabled(!thresholdOpacityEnabled)}
-            >
-              Control threshold & opacity
-            </label>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 }

@@ -133,8 +133,7 @@ function commandsModule({
         return;
       }
 
-      // if segmentation, we can't use the isOverlay, since PMAP is also an overlay but not a segmentation
-      if (['SEG', 'RTSTRUCT'].includes(displaySet.Modality)) {
+      if (displaySet.isOverlayDisplaySet) {
         // update the previously stored segmentationPresentation with the new viewportId
         // presentation so that when we put the referencedDisplaySet back in the viewport
         // it will have the correct segmentation representation hydrated
