@@ -30,7 +30,8 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
   const { colorbarService, customizationService, displaySetService } = servicesManager.services;
-  const { backgroundDisplaySet, foregroundDisplaySets } = useViewportDisplaySets(viewportId);
+  const { viewportDisplaySets, backgroundDisplaySet, foregroundDisplaySets } =
+    useViewportDisplaySets(viewportId);
   const { colorbarPosition: position, opacity } = useViewportRendering(viewportId, {
     location,
   });
@@ -47,18 +48,6 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
     const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
     return colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
   }, [colorbarCustomization]);
-
-  // Handler for closing colorbars
-  const handleClose = useCallback(
-    (displaySetInstanceUID?: string): void => {
-      if (displaySetInstanceUID) {
-        colorbarService.removeColorbar(viewportId, displaySetInstanceUID);
-      } else {
-        colorbarService.removeColorbar(viewportId);
-      }
-    },
-    [viewportId, colorbarService]
-  );
 
   // Initial load of colorbars
   useEffect(() => {
@@ -87,18 +76,21 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
 
   const isBottom = position === 'bottom';
 
-  // if bottom use the displaySet that is
-  const colorbarsToUse = !isBottom
+  const isSingleViewport = viewportDisplaySets.length === 1;
+  const showFullList = isSingleViewport || !isBottom;
+
+  const colorbarsToUse = showFullList
     ? colorbars
-    : colorbars.filter(colorbar => {
-        const { displaySetInstanceUID } = colorbar;
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    : colorbars.filter(({ displaySetInstanceUID }) => {
+        const { displaySetInstanceUID: dsUID } =
+          displaySetService.getDisplaySetByUID(displaySetInstanceUID) ?? {};
 
-        if (opacity === 0 || opacity == null) {
-          return displaySet.displaySetInstanceUID === backgroundDisplaySet?.displaySetInstanceUID;
-        }
+        const targetUID =
+          opacity === 0 || opacity == null
+            ? backgroundDisplaySet?.displaySetInstanceUID
+            : foregroundDisplaySets[0].displaySetInstanceUID;
 
-        return displaySet.displaySetInstanceUID === foregroundDisplaySets[0].displaySetInstanceUID;
+        return dsUID === targetUID;
       });
 
   return (
