@@ -168,6 +168,14 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'Colorbar',
+    uiType: 'ohif.colorbar',
+    props: {
+      type: 'tool',
+      label: 'Colorbar',
+    },
+  },
+  {
     id: 'Reset',
     uiType: 'ohif.toolButton',
     props: {
@@ -587,14 +595,6 @@ const toolbarButtons: Button[] = [
       label: 'Zoom',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'Colorbar',
-    uiType: 'ohif.colorbar',
-    props: {
-      type: 'tool',
-      label: 'Colorbar',
     },
   },
   {

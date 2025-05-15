@@ -19,13 +19,10 @@ const callbacks = (toolName: string) => [
 
 const toolbarButtons: Button[] = [
   {
-    id: 'advancedRenderingControls',
+    id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
     props: {
-      evaluate: {
-        name: 'evaluate.advancedRenderingControls',
-        hideWhenDisabled: true,
-      },
+      buttonSection: 'advancedRenderingControlsSection',
     },
   },
   {
@@ -88,6 +85,19 @@ const toolbarButtons: Button[] = [
       evaluate: {
         name: 'evaluate.orientationMenu',
         // hideWhenDisabled: true,
+      },
+    },
+  },
+  {
+    id: 'windowLevelMenuEmbedded',
+    uiType: 'ohif.windowLevelMenuEmbedded',
+    props: {
+      icon: 'WindowLevel',
+      label: 'Window Level',
+      tooltip: 'Adjust window/level presets and customize image contrast settings',
+      evaluate: {
+        name: 'evaluate.windowLevelMenuEmbedded',
+        hideWhenDisabled: true,
       },
     },
   },

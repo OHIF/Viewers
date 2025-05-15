@@ -63,11 +63,17 @@ function modeFactory({ modeConfiguration }) {
         'dataOverlayMenu',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
-        'advancedRenderingControls',
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
       ]);
 
-      toolbarService.updateSection('advancedRenderingControls', [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'AdvancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+        'windowLevelMenuEmbedded',
         'voiManualControlMenu',
         'Colorbar',
         'opacityMenu',
