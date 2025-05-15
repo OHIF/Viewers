@@ -13,6 +13,10 @@ export enum ViewportActionCornersLocations {
   topRight,
   bottomLeft,
   bottomRight,
+  topMiddle,
+  bottomMiddle,
+  leftMiddle,
+  rightMiddle,
 }
 
 const commonClasses = 'pointer-events-auto flex items-center';
@@ -27,11 +31,28 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,
-    'absolute bottom-[4px] left-[0px] pl-[4px]'
+    'absolute bottom-[3px] left-[0px] pl-[4px]'
   ),
   [ViewportActionCornersLocations.bottomRight]: classNames(
     commonClasses,
-    'absolute bottom-[4px] right-[0px] right-viewport-scrollbar'
+    'absolute bottom-[3px] right-[16px] right-viewport-scrollbar'
+  ),
+  [ViewportActionCornersLocations.topMiddle]: classNames(
+    commonClasses,
+    // Todo: to place on right side of the viewport orientation label
+    'absolute top-[25px] left-1/2 -translate-x-1/2'
+  ),
+  [ViewportActionCornersLocations.bottomMiddle]: classNames(
+    commonClasses,
+    'absolute bottom-[3px] left-1/2 -translate-x-1/2'
+  ),
+  [ViewportActionCornersLocations.leftMiddle]: classNames(
+    commonClasses,
+    'absolute left-[20px] top-[calc(50%+2px)] -translate-y-1/2 pl-[4px]'
+  ),
+  [ViewportActionCornersLocations.rightMiddle]: classNames(
+    commonClasses,
+    'absolute right-[16px] top-1/2 -translate-y-1/2 right-viewport-scrollbar'
   ),
 };
 
@@ -45,6 +66,10 @@ function Container({ children }: { children: ReactNode }) {
     [ViewportActionCornersLocations.topRight]: null,
     [ViewportActionCornersLocations.bottomLeft]: null,
     [ViewportActionCornersLocations.bottomRight]: null,
+    [ViewportActionCornersLocations.topMiddle]: null,
+    [ViewportActionCornersLocations.bottomMiddle]: null,
+    [ViewportActionCornersLocations.leftMiddle]: null,
+    [ViewportActionCornersLocations.rightMiddle]: null,
   });
 
   const registerCorner = useCallback(
@@ -127,10 +152,30 @@ function BottomRight({ children }: { children: ReactNode }) {
   return <Corner location={ViewportActionCornersLocations.bottomRight}>{children}</Corner>;
 }
 
+function TopMiddle({ children }: { children: ReactNode }) {
+  return <Corner location={ViewportActionCornersLocations.topMiddle}>{children}</Corner>;
+}
+
+function BottomMiddle({ children }: { children: ReactNode }) {
+  return <Corner location={ViewportActionCornersLocations.bottomMiddle}>{children}</Corner>;
+}
+
+function LeftMiddle({ children }: { children: ReactNode }) {
+  return <Corner location={ViewportActionCornersLocations.leftMiddle}>{children}</Corner>;
+}
+
+function RightMiddle({ children }: { children: ReactNode }) {
+  return <Corner location={ViewportActionCornersLocations.rightMiddle}>{children}</Corner>;
+}
+
 export const ViewportActionCorners = {
   Container,
   TopLeft,
   TopRight,
   BottomLeft,
   BottomRight,
+  TopMiddle,
+  BottomMiddle,
+  LeftMiddle,
+  RightMiddle,
 };

@@ -1,6 +1,5 @@
 import ViewportColorbar from './ViewportColorbar';
 import ViewportColorbarsContainer from './ViewportColorbarsContainer';
-import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 
-export { ViewportColorbar, ViewportColorbarsContainer, AdvancedColorbarWithControls };
+export { ViewportColorbar, ViewportColorbarsContainer };
 export default ViewportColorbarsContainer;

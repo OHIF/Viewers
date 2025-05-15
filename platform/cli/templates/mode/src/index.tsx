@@ -61,7 +61,7 @@ function modeFactory({ modeConfiguration }) {
         'moreToolsSection',
       ]);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection('measurementSection', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -73,7 +73,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.updateSection('moreToolsSection', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
