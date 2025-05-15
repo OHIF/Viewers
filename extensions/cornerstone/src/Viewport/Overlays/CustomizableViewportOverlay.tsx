@@ -381,6 +381,7 @@ function OverlayItem(props) {
 
 /**
  * Window Level / Center Overlay item
+ * //
  */
 function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
   const { windowWidth, windowCenter } = voi;
