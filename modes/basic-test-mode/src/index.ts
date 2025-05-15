@@ -94,13 +94,22 @@ function modeFactory() {
       toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
+        'WindowLevelGroup',
         'Pan',
-        'TrackballRotate',
-        'WindowLevel',
         'Capture',
         'Layout',
+        'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      toolbarService.updateSection('windowLevelSection', [
+        'WindowLevel',
+        'Soft tissue',
+        'Lung',
+        'Liver',
+        'Bone',
+        'Brain',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
