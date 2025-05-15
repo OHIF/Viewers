@@ -70,20 +70,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   );
 
   return (
-    <div className={className}>
-      {isDynamic && dynamicInfo && (
-        <Numeric.Container
-          mode="singleRange"
-          min={1}
-          max={dynamicInfo.numDimensionGroups}
-          step={1}
-          value={dynamicInfo.dimensionGroupNumber}
-          onChange={val => handleDimensionGroupNumberChange(val as number)}
-          className="mb-3 w-full"
-        >
-          <Numeric.SingleRange showNumberInput={false} />
-        </Numeric.Container>
-      )}
+    <div className={`absolute top-10 left-1/2 z-50 -translate-x-1/2 ${className}`}>
       <div className={'bg-muted inline-flex select-none items-center gap-2 rounded-md px-2 py-2'}>
         <Button
           variant="ghost"
@@ -139,7 +126,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              side="top"
+              side="bottom"
               align="center"
               className="cine-fps-range-popover z-50 w-auto p-2"
               sideOffset={8}
@@ -171,6 +158,20 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           <Icons.Close />
         </Button>
       </div>
+
+      {isDynamic && dynamicInfo && (
+        <Numeric.Container
+          mode="singleRange"
+          min={1}
+          max={dynamicInfo.numDimensionGroups}
+          step={1}
+          value={dynamicInfo.dimensionGroupNumber}
+          onChange={val => handleDimensionGroupNumberChange(val as number)}
+          className="mt-3 w-full"
+        >
+          <Numeric.SingleRange showNumberInput={false} />
+        </Numeric.Container>
+      )}
     </div>
   );
 };

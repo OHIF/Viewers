@@ -10,13 +10,13 @@ import {
 } from '../types/Colorbar';
 import { ColorMapPreset } from '../types/Colormap';
 
-const defaultPosition: ColorbarPositionType = 'right';
+const defaultPosition: ColorbarPositionType = 'bottom';
 const DefaultColormap = 'Grayscale';
 
 const positionStyles: PositionStylesMapType = {
-  left: { left: '5%', width: '15px' },
-  right: { right: '5%', width: '15px' },
-  bottom: { bottom: '1%', height: '18px' },
+  left: { width: '15px' },
+  right: { width: '15px' },
+  bottom: { height: '15px' },
 };
 
 // Typed position-specific tick styles

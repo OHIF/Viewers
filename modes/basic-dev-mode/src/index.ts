@@ -94,8 +94,8 @@ function modeFactory({ modeConfiguration }) {
 
       toolGroupService.createToolGroupAndAddTools('default', tools);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection('primary', [
         'measurementSection',
         'Zoom',
         'WindowLevel',
