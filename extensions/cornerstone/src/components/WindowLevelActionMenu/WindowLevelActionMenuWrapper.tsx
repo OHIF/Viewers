@@ -2,63 +2,75 @@ import React, { ReactNode } from 'react';
 import { useSystem } from '@ohif/core';
 import {
   Button,
-  cn,
   Icons,
   Popover,
   PopoverContent,
   PopoverTrigger,
   useViewportGrid,
-  useViewportActionCorners,
-  AllInOneMenu,
+  useIconPresentation,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
-import { MENU_IDS } from '../menus/menu-ids';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import { useViewportRendering } from '../../hooks';
 
-export function WindowLevelActionMenuWrapper({
-  viewportId,
-  element,
-  location,
-  displaySets,
-}: withAppTypes<{
-  viewportId: string;
-  element: HTMLElement;
-  location: string;
-  displaySets: Array<AppTypes.DisplaySet>;
-}>): ReactNode {
-  const [viewportGrid] = useViewportGrid();
-  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
-  const isActiveViewport = viewportId === viewportGrid.activeViewportId;
+export function WindowLevelActionMenuWrapper(
+  props: withAppTypes<{
+    viewportId: string;
+    element?: HTMLElement;
+    location?: number;
+    isOpen?: boolean;
+    onOpen?: () => void;
+    onClose?: () => void;
+    displaySets?: Array<AppTypes.DisplaySet>;
+    disabled?: boolean;
+    isEmbedded?: boolean;
+  }>
+): ReactNode {
+  const {
+    viewportId,
+    element,
+    location,
+    isOpen = false,
+    onOpen,
+    onClose,
+    disabled,
+    isEmbedded = false,
+    onInteraction: onInteractionProps,
+    hasEmbeddedVariantToUse,
+    ...rest
+  } = props;
+
+  const [gridState] = useViewportGrid();
+  const viewportIdToUse = viewportId || gridState.activeViewportId;
+
+  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
-  const { customizationService } = servicesManager.services;
-
-  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
-  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
-  const { volumeRenderingPresets, volumeRenderingQualityRange } =
-    customizationService.getCustomization('cornerstone.3dVolumeRendering');
-
-  const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(
-      item => item.id === MENU_IDS.WINDOW_LEVEL_MENU
-    )?.isOpen ?? false;
+  const { toolbarService } = servicesManager.services;
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
+  const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
 
   const handleOpenChange = (openState: boolean) => {
+    const shouldToggleColorbar = hasColorbar && !isEmbedded;
+
+    if (isOpen && shouldToggleColorbar && openState) {
+      toggleColorbar();
+      onClose?.();
+      return;
+    }
+
+    if (!isOpen && openState && shouldToggleColorbar) {
+      toggleColorbar();
+      return;
+    }
+
     if (openState) {
-      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.WINDOW_LEVEL_MENU);
+      onOpen?.();
     } else {
-      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.WINDOW_LEVEL_MENU);
+      onClose?.();
     }
   };
 
-  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(
-    location,
-    viewportActionCornersAPI
-  );
-
-  const displaySetPresets = displaySets
-    .filter(displaySet => presets[displaySet.Modality])
-    .map(displaySet => {
-      return { [displaySet.Modality]: presets[displaySet.Modality] };
-    });
+  const { align, side } = toolbarService.getAlignAndSide(location);
 
   const modalities = displaySets.map(displaySet => displaySet.supportsWindowLevel);
 
@@ -66,25 +78,41 @@ export function WindowLevelActionMenuWrapper({
     return null;
   }
 
+  const Icon =
+    hasColorbar && !isEmbedded && hasEmbeddedVariantToUse ? (
+      <Icons.Close className={iconClassName} />
+    ) : (
+      <Icons.ViewportWindowLevel className={iconClassName} />
+    );
+
   return (
     <Popover
-      open={isMenuOpen}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible',
-            'text-highlight'
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              disabled={disabled}
+              {...rest}
+              {...containerProps}
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+            >
+              {Icon}
+            </Button>
           )}
-        >
-          <Icons.ByName name="viewport-window-level" />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"
@@ -94,45 +122,12 @@ export function WindowLevelActionMenuWrapper({
         sideOffset={5}
       >
         <WindowLevelActionMenu
-          viewportId={viewportId}
+          viewportId={viewportIdToUse}
           element={element}
-          presets={displaySetPresets}
-          horizontalDirection={horizontalDirection}
-          verticalDirection={verticalDirection}
-          colorbarProperties={colorbarProperties}
-          displaySets={displaySets}
-          volumeRenderingPresets={volumeRenderingPresets}
-          volumeRenderingQualityRange={volumeRenderingQualityRange}
+          align={align}
+          side={side}
         />
       </PopoverContent>
     </Popover>
   );
 }
-
-const getMenuDirections = (location, viewportActionCornersAPI) => {
-  let align = 'center';
-  let side = 'bottom';
-
-  if (location !== undefined) {
-    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
-  }
-
-  let horizontalDirection;
-  let verticalDirection;
-
-  if (side === 'bottom') {
-    verticalDirection = AllInOneMenu.VerticalDirection.TopToBottom;
-  } else {
-    verticalDirection = AllInOneMenu.VerticalDirection.BottomToTop;
-  }
-
-  if (align === 'start') {
-    horizontalDirection = AllInOneMenu.HorizontalDirection.LeftToRight;
-  } else {
-    horizontalDirection = AllInOneMenu.HorizontalDirection.RightToLeft;
-  }
-
-  return { align, side, horizontalDirection, verticalDirection };
-};
