@@ -67,6 +67,11 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       return;
     }
 
+    // if not active viewport, return
+    if (viewportId !== activeViewportId) {
+      return;
+    }
+
     promptHydrateRT({
       servicesManager,
       viewportId,
@@ -78,7 +83,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
         });
       },
     });
-  }, [servicesManager, viewportId, rtDisplaySet, rtIsLoading, commandsManager]);
+  }, [servicesManager, viewportId, rtDisplaySet, rtIsLoading, commandsManager, activeViewportId]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(

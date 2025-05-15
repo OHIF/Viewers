@@ -92,6 +92,11 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       return;
     }
 
+    // if not active viewport, return
+    if (viewportId !== activeViewportId) {
+      return;
+    }
+
     promptHydrateSEG({
       servicesManager,
       viewportId,
@@ -105,7 +110,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         return true;
       },
     });
-  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, commandsManager]);
+  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, commandsManager, activeViewportId]);
 
   useEffect(() => {
     // on new seg display set, remove all segmentations from all viewports
