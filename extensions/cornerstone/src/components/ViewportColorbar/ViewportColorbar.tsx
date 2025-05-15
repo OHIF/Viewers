@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo, memo } from 'react';
 import { utilities } from '@cornerstonejs/tools';
-import { useSystem } from '@ohif/core';
+import { useSystem, useViewportRef, useViewportSize } from '@ohif/core';
 import {
   ColorbarPositionType,
   TickPositionType,
@@ -24,6 +24,7 @@ type ColorbarProps = {
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
   viewportElementRef?: React.RefObject<HTMLDivElement>;
+  numColorbars: number;
 };
 
 /**
@@ -31,7 +32,7 @@ type ColorbarProps = {
  * A React wrapper for the cornerstone ViewportColorbar that adds a close button
  * positioned appropriately based on the colorbar position.
  */
-const ViewportColorbar = ({
+const ViewportColorbar = memo(function ViewportColorbar({
   viewportId,
   displaySetInstanceUID,
   colormaps,
@@ -40,11 +41,50 @@ const ViewportColorbar = ({
   position,
   tickPosition,
   tickStyles,
-  viewportElementRef,
-}: ColorbarProps) => {
+  numColorbars,
+}: ColorbarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
+  const viewportElementRef = useViewportRef(viewportId);
+  const { height, width } = useViewportSize(viewportId);
+
+  // Memoize colorbar customization to prevent rerenders from unrelated customization changes
+  const colorbarCustomization = useMemo(() => {
+    return customizationService.getCustomization(
+      'cornerstone.colorbar'
+    ) as unknown as ColorbarCustomization;
+  }, [customizationService]);
+
+  const appropriateTickPosition = useMemo(() => {
+    let tickPos = tickPosition;
+    if (position === 'left' || position === 'right') {
+      tickPos = position === 'left' ? 'right' : 'left';
+    } else {
+      tickPos = position === 'top' ? 'bottom' : 'top';
+    }
+    return tickPos;
+  }, [position, tickPosition]);
+
+  const positionTickStyles = useMemo(() => {
+    return colorbarCustomization?.positionTickStyles?.[position];
+  }, [colorbarCustomization, position]);
+
+  const positionStylesFromConfig = useMemo(() => {
+    return colorbarCustomization?.positionStyles?.[position] || {};
+  }, [colorbarCustomization, position]);
+
+  const mergedTickStyles = useMemo(() => {
+    return {
+      ...(colorbarCustomization?.tickStyles || {}),
+      ...(positionTickStyles?.style || {}),
+      ...(tickStyles || {}),
+    };
+  }, [colorbarCustomization, positionTickStyles, tickStyles]);
+
+  const colorbarId = useMemo(() => {
+    return `Colorbar-${viewportId}-${displaySetInstanceUID}`;
+  }, [viewportId, displaySetInstanceUID]);
 
   useEffect(() => {
     if (!containerRef.current || !colormaps || !activeColormapName) {
@@ -53,29 +93,21 @@ const ViewportColorbar = ({
 
     const viewportElement = viewportElementRef?.current;
 
-    if (!viewportElement) {
+    if (!viewportElement || !colormaps?.length) {
       return;
     }
 
-    const colorbarCustomization = customizationService.getCustomization(
-      'cornerstone.colorbar'
-    ) as unknown as ColorbarCustomization;
-
-    const positionTickStyles = colorbarCustomization?.positionTickStyles?.[position];
+    // Using stable references from memoized values
     const csColorbar = new CornerstoneViewportColorbar({
-      id: `Colorbar-${viewportId}-${displaySetInstanceUID}`,
+      id: colorbarId,
       element: viewportElement,
       container: containerRef.current,
       colormaps: colormaps,
       activeColormapName: activeColormapName,
       volumeId,
       ticks: {
-        position: tickPosition as ColorbarRangeTextPosition,
-        style: {
-          ...(colorbarCustomization?.tickStyles || {}),
-          ...(positionTickStyles?.style || {}),
-          ...(tickStyles || {}),
-        },
+        position: appropriateTickPosition as ColorbarRangeTextPosition,
+        style: mergedTickStyles,
       },
     });
 
@@ -90,37 +122,33 @@ const ViewportColorbar = ({
     colormaps,
     activeColormapName,
     volumeId,
-    position,
-    tickPosition,
-    tickStyles,
+    colorbarId,
+    appropriateTickPosition,
+    mergedTickStyles,
     viewportElementRef,
-    customizationService,
   ]);
 
-  // Get position styles from customization service
-  const colorbarCustomization = customizationService.getCustomization(
-    'cornerstone.colorbar'
-  ) as unknown as ColorbarCustomization;
-
-  const positionStylesFromConfig = colorbarCustomization?.positionStyles?.[position] || {};
+  if (!height || !width) {
+    return null;
+  }
 
   return (
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
       ref={containerRef}
       style={{
-        width: position === 'bottom' ? '100%' : '20px',
-        height: position === 'bottom' ? '20px' : '100%',
         position: 'relative',
         zIndex: 1000,
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
         pointerEvents: 'auto',
+        minWidth: position === 'bottom' ? width / 2.5 : '17px',
+        minHeight: position === 'bottom' ? '20px' : numColorbars === 1 ? height / 3 : height / 4,
         ...positionStylesFromConfig,
       }}
     ></div>
   );
-};
+});
 
 export default ViewportColorbar;

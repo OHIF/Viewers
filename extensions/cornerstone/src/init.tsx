@@ -98,7 +98,12 @@ export default async function init({
     measurementService,
     colorbarService,
     displaySetService,
+    toolbarService,
   } = servicesManager.services;
+
+  toolbarService.registerEventForToolbarUpdate(colorbarService, [
+    colorbarService.EVENTS.STATE_CHANGED,
+  ]);
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
