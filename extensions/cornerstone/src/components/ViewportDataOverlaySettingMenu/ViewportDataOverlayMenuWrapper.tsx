@@ -1,73 +1,74 @@
 import React, { ReactNode } from 'react';
+import { useSystem } from '@ohif/core';
 import {
   Button,
-  cn,
   Icons,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  useViewportGrid,
-  useViewportActionCorners,
+  useIconPresentation,
 } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
-import classNames from 'classnames';
-import { MENU_IDS } from '../menus/menu-ids';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
-export function ViewportDataOverlayMenuWrapper({
-  viewportId,
-  displaySets,
-  location,
-}: withAppTypes<{
+type DataOverlayMenuProps = {
   viewportId: string;
-  element: HTMLElement;
   location: string;
-}>): ReactNode {
-  const [viewportGrid] = useViewportGrid();
-  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+  disabled?: boolean;
+};
 
-  const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(
-      item => item.id === MENU_IDS.DATA_OVERLAY_MENU
-    )?.isOpen ?? false;
+export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): ReactNode {
+  const { viewportId, location, isOpen = false, onOpen, onClose, disabled, ...rest } = props;
+  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
+      onOpen?.();
     } else {
-      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
+      onClose?.();
     }
   };
 
-  // Get proper alignment and side based on the location
-  let align = 'center';
-  let side = 'bottom';
+  const { servicesManager } = useSystem();
+  const { toolbarService } = servicesManager.services;
 
-  if (location !== undefined) {
-    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
-  }
+  const { align, side } = toolbarService.getAlignAndSide(location);
+
+  const Icon = <Icons.ViewportViews className={iconClassName} />;
 
   return (
     <Popover
-      open={isMenuOpen}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            viewportGrid.activeViewportId === viewportId
-              ? 'visible'
-              : 'invisible group-hover/pane:visible'
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              disabled={disabled}
+              icon="ViewportViews"
+              {...rest}
+              {...containerProps}
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+            >
+              {Icon}
+            </Button>
           )}
-        >
-          <Icons.ViewportViews className={classNames('text-primary')} />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"

@@ -16,7 +16,11 @@ import {
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
+import ViewportInfo, {
+  DisplaySetOptions,
+  PublicViewportOptions,
+  ViewportOptions,
+} from './Viewport';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import {
   LutPresentation,
@@ -477,6 +481,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportId,
       });
     });
+  }
+
+  public getViewportOptions(viewportId: string): ViewportOptions {
+    return this.viewportsById.get(viewportId).getViewportOptions();
   }
 
   /**

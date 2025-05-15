@@ -117,6 +117,7 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
 } from './ToolButton';
+import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
@@ -268,4 +269,5 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
+  LayoutSelector
 };
