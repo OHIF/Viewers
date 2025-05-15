@@ -1,0 +1,59 @@
+name: Cypress Tests
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cypress-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Split the tests across 8 parallel runners as was done in CircleCI
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    env:
+      TERM: xterm
+      DISPLAY: :99
+      QUICK_BUILD: true
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.1
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
+
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1920x1080x24 &
+
+      - name: Install dependencies
+        run: bun install --no-save
+
+      - name: Fetch test data
+        run: bun run test:data
+
+      - name: Run Cypress tests
+        run: |
+          cd platform/app
+          npx cypress run --record --parallel --group "GitHub Actions" --ci-build-id ${{ github.run_id }}-${{ github.run_attempt }} --shard=${{ matrix.shard }}/8
+        env:
+          # Start the server for Cypress
+          START_SERVER_AND_TEST_COMMAND: bun run test:e2e:serve
