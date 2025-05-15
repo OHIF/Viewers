@@ -1,5 +1,5 @@
 import { hotkeys } from '@ohif/core';
-import { initToolGroups, toolbarButtons, moreTools } from '@ohif/mode-longitudinal';
+import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
 import { id } from './id';
 
 const ohif = {
@@ -48,7 +48,7 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+      toolbarService.addButtons([...toolbarButtons]);
       toolbarService.createButtonSection('primary', [
         'measurementSection',
         'Zoom',
