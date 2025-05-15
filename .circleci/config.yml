@@ -352,7 +352,7 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-command: yarn run install --no-save
+          install-command: yarn install --no-save
       - cypress/run-tests:
           cypress-command: |
             npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
