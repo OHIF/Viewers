@@ -89,9 +89,9 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      toolbarService.addButtons(toolbarButtons);
+      toolbarService.register(toolbarButtons);
       console.debug('toolbarButtons', toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
         'WindowLevelGroup',
@@ -103,7 +103,7 @@ function modeFactory() {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection('windowLevelSection', [
+      toolbarService.updateSection('windowLevelSection', [
         'WindowLevel',
         'Soft tissue',
         'Lung',
@@ -112,7 +112,42 @@ function modeFactory() {
         'Brain',
       ]);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'advancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection('advancedRenderingControls', [
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('windowLevelSection', [
+        'WindowLevel',
+        'Soft tissue',
+        'Lung',
+        'Liver',
+        'Bone',
+        'Brain',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.measurementSection, [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -123,7 +158,7 @@ function modeFactory() {
         'LivewireContour',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.updateSection(toolbarService.sections.moreToolsSection, [
         'Reset',
         'rotate-right',
         'flipHorizontal',

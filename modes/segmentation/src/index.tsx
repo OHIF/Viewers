@@ -61,9 +61,9 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
+      toolbarService.register(toolbarButtons);
 
-      toolbarService.createButtonSection('primary', [
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'WindowLevel',
         'Pan',
         'Zoom',
@@ -74,7 +74,34 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection('moreToolsSection', [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'AdvancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('moreToolsSection', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
@@ -87,22 +114,22 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.createButtonSection('segmentationToolbox', [
+      toolbarService.updateSection('segmentationToolbox', [
         'SegmentationUtilities',
         'SegmentationTools',
       ]);
-      toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
+      toolbarService.updateSection('segmentationToolboxUtilitySection', [
         'LabelmapSlicePropagation',
         'InterpolateLabelmap',
         'SegmentBidirectional',
       ]);
-      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+      toolbarService.updateSection('segmentationToolboxToolsSection', [
         'BrushTools',
         'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
       ]);
-      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
+      toolbarService.updateSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -165,7 +192,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool, cornerstone.measurements],
+              rightPanels: [cornerstone.panelTool],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

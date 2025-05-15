@@ -13,6 +13,7 @@ import {
   HotkeysManager,
   ServiceProvidersManager,
   SystemContextProvider,
+  ViewportRefsProvider,
 } from '@ohif/core';
 import {
   ThemeWrapper as ThemeWrapperNext,
@@ -26,7 +27,6 @@ import {
   ModalProvider,
   ViewportDialogProvider,
   UserAuthenticationProvider,
-  ViewportActionCornersProvider,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -105,7 +105,6 @@ function App({
     userAuthenticationService,
     uiNotificationService,
     customizationService,
-    viewportActionCornersService,
   } = servicesManager.services;
 
   const providers = [
@@ -114,6 +113,7 @@ function App({
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
     [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
+    [ViewportRefsProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
@@ -121,7 +121,6 @@ function App({
     [TooltipProvider],
     [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
     [ModalProvider, { service: uiModalService, modal: ModalNext }],
-    [ViewportActionCornersProvider, { service: viewportActionCornersService }],
     [ShepherdJourneyProvider],
   ];
 

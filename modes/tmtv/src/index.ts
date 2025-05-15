@@ -88,28 +88,56 @@ function modeFactory({ modeConfiguration }) {
       );
 
       unsubscriptions.push(unsubscribe);
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
+        'Pan',
         'WindowLevel',
         'Crosshairs',
-        'Pan',
       ]);
-      toolbarService.createButtonSection('measurementSection', [
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
+        'orientationMenu',
+        'dataOverlayMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+        'AdvancedRenderingControls',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('measurementSection', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
         'EllipticalROI',
       ]);
 
-      toolbarService.createButtonSection('ROIThresholdToolbox', ['SegmentationTools']);
-      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+      toolbarService.updateSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.updateSection('segmentationToolboxToolsSection', [
         'RectangleROIStartEndThreshold',
         'BrushTools',
       ]);
 
-      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
+      toolbarService.updateSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
 
       customizationService.setCustomizations({
         'panelSegmentation.tableMode': {

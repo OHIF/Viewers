@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, memo, useCallback } from 'react';
 import { useSystem } from '@ohif/core';
-import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import ViewportColorbar from './ViewportColorbar';
-import { deepMerge } from '@cornerstonejs/core/utilities';
-
+import useViewportRendering from '../../hooks/useViewportRendering';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 type ViewportColorbarsContainerProps = {
   viewportId: string;
-  viewportElementRef?: React.RefObject<HTMLDivElement>;
+  location: number;
 };
 
 type ColorbarData = {
@@ -24,18 +23,38 @@ type ColorbarData = {
  * Container component that manages multiple colorbars for a viewport
  * It interacts with the colorbarService to get/set colorbar states
  */
-const ViewportColorbarsContainer = ({
+const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
   viewportId,
-  viewportElementRef,
-}: ViewportColorbarsContainerProps) => {
+  location,
+}: ViewportColorbarsContainerProps) {
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
-  const { colorbarService, customizationService } = servicesManager.services;
+  const { colorbarService, customizationService, displaySetService } = servicesManager.services;
+  const { viewportDisplaySets, backgroundDisplaySet, foregroundDisplaySets } =
+    useViewportDisplaySets(viewportId);
+  const { colorbarPosition: position, opacity } = useViewportRendering(viewportId, {
+    location,
+  });
 
+  // Memoize the customization to prevent recomputation
+  const colorbarCustomization = useMemo(() => {
+    return customizationService.getCustomization(
+      'cornerstone.colorbar'
+    ) as unknown as ColorbarCustomization;
+  }, [customizationService]);
+
+  // Memoize tick position
+  const tickPosition = useMemo(() => {
+    const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
+    return colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
+  }, [colorbarCustomization]);
+
+  // Initial load of colorbars
   useEffect(() => {
     setColorbars(colorbarService.getViewportColorbar(viewportId) || []);
   }, [viewportId, colorbarService]);
 
+  // Subscribe to colorbar state changes
   useEffect(() => {
     const { unsubscribe } = colorbarService.subscribe(
       colorbarService.EVENTS.STATE_CHANGED,
@@ -51,90 +70,59 @@ const ViewportColorbarsContainer = ({
     };
   }, [viewportId, colorbarService]);
 
-  const handleClose = (displaySetInstanceUID?: string): void => {
-    if (displaySetInstanceUID) {
-      colorbarService.removeColorbar(viewportId, displaySetInstanceUID);
-    } else {
-      colorbarService.removeColorbar(viewportId);
-    }
-  };
-
   if (!colorbars.length) {
     return null;
   }
 
-  const colorbarCustomization = customizationService.getCustomization(
-    'cornerstone.colorbar'
-  ) as unknown as ColorbarCustomization;
+  const isBottom = position === 'bottom';
 
-  const defaultPosition = colorbarCustomization?.colorbarContainerPosition;
-  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
+  const isSingleViewport = viewportDisplaySets.length === 1;
+  const showFullList = isSingleViewport || !isBottom;
 
-  const position = colorbarCustomization?.colorbarContainerPosition || defaultPosition;
-  const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
-  const positionStyles = colorbarCustomization?.positionStyles;
+  const colorbarsToUse = showFullList
+    ? colorbars
+    : colorbars.filter(({ displaySetInstanceUID }) => {
+        const { displaySetInstanceUID: dsUID } =
+          displaySetService.getDisplaySetByUID(displaySetInstanceUID) ?? {};
 
-  const positionStyle = positionStyles?.[position];
+        const targetUID =
+          opacity === 0 || opacity == null
+            ? backgroundDisplaySet?.displaySetInstanceUID
+            : foregroundDisplaySets[0].displaySetInstanceUID;
 
-  const defaultPositionStyle =
-    position !== 'bottom'
-      ? {
-          width: '20px',
-          height: colorbars.length === 1 ? '55%' : '75%',
-          top: '50%',
-          transform: 'translateY(-50%)',
-        }
-      : {
-          width: '100%',
-          height: '20px',
-        };
-
-  const finalPositionStyle = deepMerge(defaultPositionStyle, positionStyle);
+        return dsUID === targetUID;
+      });
 
   return (
     <div
-      className="absolute"
       style={{
-        ...finalPositionStyle,
         pointerEvents: 'auto',
       }}
     >
-      {position !== 'bottom' ? (
-        <div
-          className="flex h-full flex-col items-center justify-center"
-          style={{ pointerEvents: 'auto' }}
-        >
-          {colorbars.map((colorbarInfo, index) => {
-            const { colorbar, displaySetInstanceUID } = colorbarInfo;
-            return (
-              <ViewportColorbar
-                key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
-                viewportId={viewportId}
-                displaySetInstanceUID={displaySetInstanceUID}
-                colormaps={colorbar.colormaps}
-                activeColormapName={colorbar.activeColormapName}
-                volumeId={colorbar.volumeId}
-                viewportElementRef={viewportElementRef}
-                position={position}
-                tickPosition={tickPosition}
-                tickStyles={colorbarCustomization?.tickStyles}
-              />
-            );
-          })}
-        </div>
-      ) : (
-        <AdvancedColorbarWithControls
-          viewportId={viewportId}
-          colorbars={colorbars}
-          position={position}
-          tickPosition={defaultTickPosition}
-          colorbarCustomization={colorbarCustomization}
-          onClose={handleClose}
-          viewportElementRef={viewportElementRef}
-        />
-      )}
+      <div
+        className="flex h-full flex-col items-center justify-center"
+        style={{ pointerEvents: 'auto' }}
+      >
+        {colorbarsToUse.map(colorbarInfo => {
+          const { colorbar, displaySetInstanceUID } = colorbarInfo;
+          return (
+            <ViewportColorbar
+              key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
+              viewportId={viewportId}
+              displaySetInstanceUID={displaySetInstanceUID}
+              colormaps={colorbar.colormaps}
+              activeColormapName={colorbar.activeColormapName}
+              volumeId={colorbar.volumeId}
+              position={position}
+              tickPosition={tickPosition}
+              tickStyles={colorbarCustomization?.tickStyles}
+              numColorbars={colorbars.length}
+            />
+          );
+        })}
+      </div>
     </div>
   );
-};
+});
 
 export default ViewportColorbarsContainer;
