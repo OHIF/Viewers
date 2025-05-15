@@ -13,11 +13,6 @@ jobs:
   cypress-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Split the tests across 8 parallel runners as was done in CircleCI
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     env:
       TERM: xterm
       DISPLAY: :99
@@ -53,7 +48,7 @@ jobs:
       - name: Run Cypress tests
         run: |
           cd platform/app
-          npx cypress run --record --parallel --group "GitHub Actions" --ci-build-id ${{ github.run_id }}-${{ github.run_attempt }} --shard=${{ matrix.shard }}/8
+          npx cypress run --record --group "GitHub Actions" --ci-build-id ${{ github.run_id }}-${{ github.run_attempt }}
         env:
           # Start the server for Cypress
           START_SERVER_AND_TEST_COMMAND: bun run test:e2e:serve
