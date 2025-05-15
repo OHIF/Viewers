@@ -10,6 +10,7 @@ import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 
 import './CustomizableViewportOverlay.css';
+import { useViewportRendering } from '../../hooks';
 
 const EPSILON = 1e-4;
 const { formatPN } = utils;
@@ -67,7 +68,7 @@ function CustomizableViewportOverlay({
     servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
-  const [isLight, setIsLight] = useState(false);
+  const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { imageIndex } = imageSliceData;
 
   // Historical usage defined the overlays as separate items due to lack of
@@ -160,26 +161,6 @@ function CustomizableViewportOverlay({
       element.removeEventListener(Enums.Events.CAMERA_MODIFIED, updateScale);
     };
   }, [viewportId, viewportData, cornerstoneViewportService, element]);
-
-  // Determine if viewport has light background
-  useEffect(() => {
-    const updateIsLight = () => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-      if (!viewportInfo) {
-        return;
-      }
-
-      const backgroundColor = viewportInfo.getViewportOptions().background;
-      const isLightBackground = backgroundColor
-        ? utilities.isEqual(backgroundColor, [1, 1, 1])
-        : false;
-
-      setIsLight(isLightBackground);
-    };
-
-    // Initialize isLight state
-    updateIsLight();
-  }, [viewportId, cornerstoneViewportService]);
 
   const _renderOverlayItem = useCallback(
     (item, props) => {

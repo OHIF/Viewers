@@ -11,7 +11,7 @@ import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
-
+import { useViewportRendering } from '../../hooks';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
 function ViewportOrientationMarkers({
@@ -26,7 +26,7 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
-  const [isLight, setIsLight] = useState(false);
+  const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { cornerstoneViewportService } = servicesManager.services;
 
   // Store initial viewUp and viewRight for volume viewports
@@ -53,26 +53,6 @@ function ViewportOrientationMarkers({
       initialVolumeOrientationRef.current.initialViewRight = [...viewRight];
     }
   }, [element, viewportData]);
-
-  // Determine if viewport has light background
-  useEffect(() => {
-    const updateIsLight = () => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-      if (!viewportInfo) {
-        return;
-      }
-
-      const backgroundColor = viewportInfo.getViewportOptions().background;
-      const isLightBackground = backgroundColor
-        ? coreUtilities.isEqual(backgroundColor, [1, 1, 1])
-        : false;
-
-      setIsLight(isLightBackground);
-    };
-
-    // Initialize isLight state
-    updateIsLight();
-  }, [viewportId, cornerstoneViewportService]);
 
   useEffect(() => {
     const cameraModifiedListener = (evt: Types.EventTypes.CameraModifiedEvent) => {
