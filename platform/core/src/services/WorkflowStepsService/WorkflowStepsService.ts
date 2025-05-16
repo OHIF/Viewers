@@ -27,7 +27,7 @@ export const EVENTS = {
             sections: [
               {
                 key: 'primary',
-                buttons: [ 'measurementSection', 'Zoom', ... ],
+                buttons: [ 'MeasurementTools', 'Zoom', ... ],
               },
             ],
           },

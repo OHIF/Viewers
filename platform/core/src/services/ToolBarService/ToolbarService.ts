@@ -37,20 +37,10 @@ export const TOOLBAR_SECTIONS = {
     rightMiddle: 'viewportActionMenu.rightMiddle',
   },
 
-  /**
-   * Measurement tools section
-   */
-  measurementSection: 'measurementSection',
-
-  /**
-   * More tools section
-   */
-  moreToolsSection: 'moreToolsSection',
-
-  /**
-   * Advanced rendering controls section
-   */
-  advancedRenderingControlsSection: 'advancedRenderingControlsSection',
+  // mode specific
+  segmentationToolbox: 'segmentationToolbox',
+  dynamicToolbox: 'dynamic-toolbox',
+  roiThresholdToolbox: 'ROIThresholdToolbox',
 };
 
 export enum ButtonLocation {
@@ -197,6 +187,11 @@ export default class ToolbarService extends PubSubService {
       if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
           button.props = {} as ButtonProps;
+        }
+
+        // if button section is true as boolean, we assign the id of the button to the buttonSection
+        if (button.props.buttonSection === true) {
+          button.props.buttonSection = button.id;
         }
 
         this.state.buttons[button.id] = button;

@@ -103,7 +103,7 @@ function modeFactory() {
         'MoreTools',
       ]);
 
-      toolbarService.updateSection('windowLevelSection', [
+      toolbarService.updateSection('WindowLevelGroup', [
         'WindowLevel',
         'Soft tissue',
         'Lung',
@@ -118,10 +118,10 @@ function modeFactory() {
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
-        'advancedRenderingControls',
+        'AdvancedRenderingControls',
       ]);
 
-      toolbarService.updateSection('advancedRenderingControls', [
+      toolbarService.updateSection('AdvancedRenderingControls', [
         'voiManualControlMenu',
         'Colorbar',
         'opacityMenu',
@@ -138,7 +138,7 @@ function modeFactory() {
         'windowLevelMenu',
       ]);
 
-      toolbarService.updateSection('windowLevelSection', [
+      toolbarService.updateSection('WindowLevelGroup', [
         'WindowLevel',
         'Soft tissue',
         'Lung',
@@ -147,7 +147,7 @@ function modeFactory() {
         'Brain',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.measurementSection, [
+      toolbarService.updateSection('MeasurementTools', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -158,7 +158,7 @@ function modeFactory() {
         'LivewireContour',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.moreToolsSection, [
+      toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',

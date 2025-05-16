@@ -83,7 +83,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedRenderingControls',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+      toolbarService.updateSection('AdvancedRenderingControls', [
         'windowLevelMenuEmbedded',
         'voiManualControlMenu',
         'Colorbar',
@@ -101,7 +101,7 @@ function modeFactory({ modeConfiguration }) {
         'windowLevelMenu',
       ]);
 
-      toolbarService.updateSection('moreToolsSection', [
+      toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
@@ -114,22 +114,22 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.updateSection('segmentationToolbox', [
+      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
         'SegmentationUtilities',
         'SegmentationTools',
       ]);
-      toolbarService.updateSection('segmentationToolboxUtilitySection', [
+      toolbarService.updateSection('SegmentationUtilities', [
         'LabelmapSlicePropagation',
         'InterpolateLabelmap',
         'SegmentBidirectional',
       ]);
-      toolbarService.updateSection('segmentationToolboxToolsSection', [
+      toolbarService.updateSection('SegmentationTools', [
         'BrushTools',
         'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
       ]);
-      toolbarService.updateSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
+      toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
