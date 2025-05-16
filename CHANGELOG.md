@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
+
+
+### Bug Fixes
+
+* **cli:** removing missing imports in mode template ([#5049](https://github.com/OHIF/Viewers/issues/5049)) ([dcde841](https://github.com/OHIF/Viewers/commit/dcde8418390f7070d6830ebf6257dc08969e8136))
+
+
+
+
+
 # [3.11.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.35...v3.11.0-beta.36) (2025-05-16)
 
 
