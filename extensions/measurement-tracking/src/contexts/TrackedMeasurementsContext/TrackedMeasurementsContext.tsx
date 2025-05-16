@@ -26,6 +26,12 @@ const SR_SOP_CLASS_HANDLER_ID =
 const COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID =
   '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d';
 
+const hasValidSOPClassHandlerId = displaySet => {
+  return [SR_SOP_CLASS_HANDLER_ID, COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID].includes(
+    displaySet.SOPClassHandlerId
+  );
+};
+
 /**
  *
  * @param {*} param0
@@ -328,22 +334,14 @@ function TrackedMeasurementsContextProvider(
         // The issue here is that this handler in TrackedMeasurementsContext
         // ends up occurring before the Viewport is created, so the displaySet
         // is not loaded yet, and isRehydratable is undefined unless we call load().
-        if (
-          [SR_SOP_CLASS_HANDLER_ID, COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID].includes(
-            displaySet.SOPClassHandlerId
-          ) &&
-          !displaySet.isLoaded &&
-          displaySet.load
-        ) {
+        if (hasValidSOPClassHandlerId(displaySet) && !displaySet.isLoaded && displaySet.load) {
           await displaySet.load();
         }
 
         // Magic string
         // load function added by our sopClassHandler module
         if (
-          [SR_SOP_CLASS_HANDLER_ID, COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID].includes(
-            displaySet.SOPClassHandlerId
-          ) &&
+          hasValidSOPClassHandlerId(displaySet) &&
           displaySet.isRehydratable === true &&
           !displaySet.isHydrated
         ) {

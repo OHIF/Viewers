@@ -216,7 +216,7 @@ async function _load(
   });
 }
 
-function _measurementSharesFrameOfReferenceUID({ measurement, displaySet }) {
+function _measurementBelongsToDisplaySet({ measurement, displaySet }) {
   return (
     measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.FrameOfReferenceUID
   );
@@ -242,7 +242,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (unloadedMeasurements.length === 0 || newDisplaySet.unsupported) {
+  if (!unloadedMeasurements.length || newDisplaySet.unsupported) {
     return;
   }
 
@@ -282,7 +282,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     if (
       is3DSR &&
       is3DMeasurement &&
-      _measurementSharesFrameOfReferenceUID({ measurement, displaySet: newDisplaySet })
+      _measurementBelongsToDisplaySet({ measurement, displaySet: newDisplaySet })
     ) {
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
