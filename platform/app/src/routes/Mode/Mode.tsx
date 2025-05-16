@@ -11,6 +11,7 @@ import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
+import SplitViewLayout from '@components/SplitViewLayout';
 
 const { getSplitParam } = utils;
 
@@ -359,15 +360,17 @@ export default function ModeRoute({
   });
 
   return (
-    <ImageViewerProvider StudyInstanceUIDs={studyInstanceUIDs}>
-      {CombinedExtensionsContextProvider ? (
-        <CombinedExtensionsContextProvider>
+    <SplitViewLayout>
+      <ImageViewerProvider StudyInstanceUIDs={studyInstanceUIDs}>
+        {CombinedExtensionsContextProvider ? (
+          <CombinedExtensionsContextProvider>
+            <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
+          </CombinedExtensionsContextProvider>
+        ) : (
           <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
-        </CombinedExtensionsContextProvider>
-      ) : (
-        <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
-      )}
-    </ImageViewerProvider>
+        )}
+      </ImageViewerProvider>
+    </SplitViewLayout>
   );
 }
 
