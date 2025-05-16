@@ -1,10 +1,11 @@
 import { annotation } from '@cornerstonejs/tools';
+import { NO_IMAGE_ID } from '@cornerstonejs/adapters';
 
 function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes) {
   const filteredToolState = {};
 
   function addToFilteredToolState(annotation, toolType) {
-    const imageId = annotation.metadata?.referencedImageId ?? 'none';
+    const imageId = annotation.metadata?.referencedImageId ?? NO_IMAGE_ID;
 
     if (!filteredToolState[imageId]) {
       filteredToolState[imageId] = {};
