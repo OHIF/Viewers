@@ -34,15 +34,20 @@ export default {
       if (!viewportId) {
         return [];
       }
-      const displaySetInsaneUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+      const displaySetInstanceUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
-      if (!displaySetInsaneUIDs) {
+      if (!displaySetInstanceUIDs) {
         return [];
       }
 
-      const displaySets = displaySetInsaneUIDs.map(uid =>
-        displaySetService.getDisplaySetByUID(uid)
-      );
+      const displaySets = displaySetInstanceUIDs.map(uid => {
+        const displaySet = displaySetService.getDisplaySetByUID(uid);
+        const referencedDisplaySetUID = displaySet?.measurements?.[0]?.displaySetInstanceUID;
+        if (displaySet.Modality === 'SR' && referencedDisplaySetUID) {
+          return displaySetService.getDisplaySetByUID(referencedDisplaySetUID);
+        }
+        return displaySet;
+      });
 
       return hangingProtocols
         .map(hp => {
