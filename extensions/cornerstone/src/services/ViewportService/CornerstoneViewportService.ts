@@ -742,6 +742,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
+   * Creates a volume based on the displaySet's imageIds
+   */
+  _createVolumeFromDisplaySet({ displaySet }) {
+    const volume = csToolsUtils.getOrCreateImageVolume(
+      displaySet.images.map(image => image.imageId)
+    );
+
+    return volume;
+  }
+
+  /**
    * This function will iterate over the data entries of the viewport and look for one
    * displaySet that is referencing another one. If it finds one, then it'll return the
    * information necessary to construct an entry of the volumeInputArray with the
@@ -771,9 +782,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         continue;
       }
 
-      const volume = csToolsUtils.getOrCreateImageVolume(
-        referencedDisplaySet.images.map(image => image.imageId)
-      );
+      const volume = this._createVolumeFromDisplaySet({ displaySet: referencedDisplaySet });
 
       if (!volume) {
         console.log('Volume display set not found');
@@ -817,7 +826,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       if (!volume && displaySet.images) {
-        volume = csToolsUtils.getOrCreateImageVolume(displaySet.images.map(image => image.imageId));
+        volume = this._createVolumeFromDisplaySet({ displaySet });
       }
 
       displaySetInstanceUIDs.push(displaySetInstanceUID);
