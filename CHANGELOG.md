@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
+
+
+### Bug Fixes
+
+* **cli:** removing missing imports in mode template ([#5049](https://github.com/OHIF/Viewers/issues/5049)) ([dcde841](https://github.com/OHIF/Viewers/commit/dcde8418390f7070d6830ebf6257dc08969e8136))
+
+
+
+
+
+# [3.11.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.35...v3.11.0-beta.36) (2025-05-16)
+
+
+### Bug Fixes
+
+* backward compatibility with toolbar service ([#5052](https://github.com/OHIF/Viewers/issues/5052)) ([9b1b501](https://github.com/OHIF/Viewers/commit/9b1b501d83502d13b285050bd5fca102b7f7612c))
+* **segmentation:** segmentation stats calculations were not being done on a subsequent navigation to a mode ([#5046](https://github.com/OHIF/Viewers/issues/5046)) ([c6b2865](https://github.com/OHIF/Viewers/commit/c6b28654b507981d1dc5038b4f8a869ed53470fe))
+
+
+
+
+
+# [3.11.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.34...v3.11.0-beta.35) (2025-05-16)
+
+
+### Features
+
+* **viewport:** Added getter for presentation id provider. ([#5053](https://github.com/OHIF/Viewers/issues/5053)) ([338bd86](https://github.com/OHIF/Viewers/commit/338bd865c3bc660bd5b377020977181939002856))
+
+
+
+
+
 # [3.11.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.33...v3.11.0-beta.34) (2025-05-15)
 
 **Note:** Version bump only for package ohif-monorepo-root
