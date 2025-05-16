@@ -12,6 +12,7 @@ import {
   triggerAnnotationRenderForViewportIds,
 } from '@cornerstonejs/tools/utilities';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import { triggerCreateAnnotationMemo } from './utils/triggerCreateMemo';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
@@ -350,7 +351,13 @@ const connectMeasurementServiceToTools = (
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
       }
+      const removedAnnotation = annotation.state.getAnnotation(uid);
       removeAnnotation(uid);
+      triggerCreateAnnotationMemo({
+        annotation: removedAnnotation,
+        FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
+        options: { deleting: true },
+      });
     }
 
     // trigger a render
@@ -441,7 +448,7 @@ const connectMeasurementServiceToTools = (
        * This is not the read-only annotation rendered by the SR viewport.
        */
       const annotationManager = annotation.state.getAnnotationManager();
-      annotationManager.addAnnotation({
+      const newAnnotation = {
         annotationUID: measurement.uid,
         highlighted: false,
         isLocked: false,
@@ -463,6 +470,12 @@ const connectMeasurementServiceToTools = (
           label: data.annotation.data.label,
           frameNumber,
         },
+      };
+      annotationManager.addAnnotation(newAnnotation);
+      triggerCreateAnnotationMemo({
+        annotation: newAnnotation,
+        FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
+        options: { newAnnotation: true },
       });
     }
   );
@@ -473,7 +486,13 @@ const connectMeasurementServiceToTools = (
       if (source?.name && source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
+      const removedAnnotation = annotation.state.getAnnotation(removedMeasurementId);
       removeAnnotation(removedMeasurementId);
+      triggerCreateAnnotationMemo({
+        annotation: removedAnnotation,
+        FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
+        options: { deleting: true },
+      });
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       // Note: We could do a better job by triggering the render on the
       // viewport itself, but the removeAnnotation does not include that info...
