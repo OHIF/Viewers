@@ -50,7 +50,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.register([...toolbarButtons, ...moreTools]);
       toolbarService.updateSection('primary', [
-        'measurementSection',
+        'MeasurementTools',
         'Zoom',
         'Pan',
         'TrackballRotate',
@@ -58,10 +58,10 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'moreToolsSection',
+        'MoreTools',
       ]);
 
-      toolbarService.updateSection('measurementSection', [
+      toolbarService.updateSection('MeasurementTools', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -73,7 +73,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.updateSection('moreToolsSection', [
+      toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',

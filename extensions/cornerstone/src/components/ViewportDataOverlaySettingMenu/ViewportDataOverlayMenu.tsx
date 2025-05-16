@@ -172,7 +172,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   };
 
   // Check if the advanced window level components exist in toolbar
-  const hasAdvancedRenderingControls = !!toolbarService.getButton('advancedRenderingControls');
+  const hasAdvancedRenderingControls = !!toolbarService.getButton('AdvancedRenderingControls');
   const hasOpacityMenu = !!toolbarService.getButton('opacityMenu');
 
   const handleThresholdOpacityToggle = () => {

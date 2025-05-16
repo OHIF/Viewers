@@ -106,7 +106,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedRenderingControls',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+      toolbarService.updateSection('AdvancedRenderingControls', [
         'windowLevelMenuEmbedded',
         'voiManualControlMenu',
         'Colorbar',
@@ -124,7 +124,7 @@ function modeFactory({ modeConfiguration }) {
         'windowLevelMenu',
       ]);
 
-      toolbarService.updateSection('measurementSection', [
+      toolbarService.updateSection('MeasurementTools', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',

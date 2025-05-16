@@ -40,35 +40,26 @@ export const setToolActiveToolbar = {
   },
 };
 
-const callbacks = (toolName: string) => [
-  {
-    commandName: 'setViewportForToolConfiguration',
-    commandOptions: {
-      toolName,
-    },
-  },
-];
-
 const toolbarButtons: Button[] = [
   {
     id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'measurementSection',
+      buttonSection: true,
     },
   },
   {
     id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'moreToolsSection',
+      buttonSection: true,
     },
   },
   {
     id: 'WindowLevelGroup',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'windowLevelSection',
+      buttonSection: true,
     },
   },
 

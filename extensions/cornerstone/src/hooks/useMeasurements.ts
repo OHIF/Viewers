@@ -56,7 +56,7 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
  * @param {Object} options.valueTypes - The value types for mapping measurements.
  * @returns {Array} An array of mapped and filtered measurements.
  */
-export function useMeasurements({ measurementFilter }) {
+export function useMeasurements({ measurementFilter } = { measurementFilter: () => true }) {
   const { servicesManager } = useSystem();
   const { measurementService, displaySetService } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);

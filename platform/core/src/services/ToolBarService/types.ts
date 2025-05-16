@@ -13,8 +13,6 @@ export type ToolbarSections = {
     bottomLeft: string;
     bottomRight: string;
   };
-  measurementSection: string;
-  moreToolsSection: string;
 };
 
 export type EvaluatePublic =
@@ -59,7 +57,7 @@ export type ButtonProps = {
   evaluate?: EvaluatePublic;
   listeners?: Record<string, RunCommand>;
   options?: ButtonOptions[];
-  buttonSection?: string;
+  buttonSection?: string | boolean;
 };
 
 export type Button = {

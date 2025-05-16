@@ -56,6 +56,7 @@ import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata'
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
+import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -91,9 +92,16 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({ servicesManager }: withAppTypes): void => {
+  onModeEnter: ({ servicesManager, commandsManager }: withAppTypes): void => {
     const { cornerstoneViewportService, toolbarService, segmentationService } =
       servicesManager.services;
+
+    const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
+      servicesManager,
+      commandsManager,
+    });
+    unsubscriptions.push(...segmentationUnsubscriptions);
+
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
     ]);
@@ -144,6 +152,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     segmentationService.removeAllSegmentations();
 
     unsubscriptions.forEach(unsubscribe => unsubscribe());
+    // Clear the unsubscriptions
+    unsubscriptions.length = 0;
   },
 
   /**
@@ -163,13 +173,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     const { syncGroupService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
 
-    const initResult = await init.call(this, props);
-
-    unsubscriptions.push(...initResult.unsubscriptions);
-
-    return {
-      ...initResult,
-    };
+    await init.call(this, props);
   },
   getToolbarModule,
   getHangingProtocolModule,
