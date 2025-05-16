@@ -741,6 +741,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return 0;
   }
 
+  /**
+   * This function will iterate over the data entries of the viewport and look for one
+   * displaySet that is referencing another one. If it finds one, then it'll return the
+   * information necessary to construct an entry of the volumeInputArray with the
+   * referencedDisplaySet information. This is needed when the viewport only contains
+   * derived datasets and can't provide a volume by itself.
+   *
+   * @param params.viewportData the viewportData to provide the display set entries
+   * @param params.displaySetService ohif's displaySetService
+   * @returns all information needed to populate on entry of the volumeInputArray
+   */
   getVolumeDataForSomeReferencedDisplaySet({ viewportData, displaySetService }) {
     for (const [index, data] of viewportData.data.entries()) {
       const { imageIds, displaySetInstanceUID } = data;
