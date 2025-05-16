@@ -275,21 +275,21 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
-  // whiteLabeling: {
-  //   createLogoComponentFn: function (React) {
-  //     return React.createElement(
-  //       'a',
-  //       {
-  //         target: '_self',
-  //         rel: 'noopener noreferrer',
-  //         className: 'text-purple-600 line-through',
-  //         href: '_X___IDC__LOGO__LINK___Y_',
-  //       },
-  //       React.createElement('img', {
-  //         src: './Logo.svg',
-  //         className: 'w-14 h-14',
-  //       })
-  //     );
-  //   },
-  // },
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          className: 'text-purple-600 line-through',
+          href: '_X___IDC__LOGO__LINK___Y_',
+        },
+        React.createElement('img', {
+          src: './logo.png',
+          className: 'w-12 h-12',
+        })
+      );
+    },
+  },
 };
