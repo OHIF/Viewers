@@ -296,6 +296,43 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     }
   }
 
+  // Add waveform animation component
+  const WaveformAnimation: React.FC = () => (
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        margin: '0 0 24px 0',
+        height: 32,
+        pointerEvents: 'none',
+      }}
+    >
+      {[0, 1, 2, 3, 4, 5, 6].map(i => (
+        <div
+          key={i}
+          style={{
+            width: 6,
+            height: 18,
+            margin: '0 3px',
+            borderRadius: 4,
+            background: 'linear-gradient(180deg, #3fa9f5 60%, #11214c 100%)',
+            animation: `waveformBar 1.2s ${i * 0.12}s infinite cubic-bezier(.4,0,.2,1)`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes waveformBar {
+          0%, 100% { height: 18px; opacity: 0.7; }
+          20% { height: 32px; opacity: 1; }
+          40% { height: 12px; opacity: 0.6; }
+          60% { height: 28px; opacity: 0.9; }
+          80% { height: 10px; opacity: 0.5; }
+        }
+      `}</style>
+    </div>
+  );
+
   return (
     <div
       style={{
@@ -372,12 +409,12 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
               borderLeft: `1px solid ${theme.panelBorder}`,
               background: theme.panelBg,
               boxShadow: theme.panelShadow,
-              padding: '32px 24px 24px 24px',
+              padding: '24px 18px 18px 18px',
               boxSizing: 'border-box',
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               justifyContent: 'flex-start',
               minWidth: 0,
               transition: 'flex-basis 0.2s',
@@ -386,115 +423,95 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
               margin: '12px 12px 12px 0',
             }}
           >
-            <h2
-              style={{
-                marginTop: 0,
-                color: theme.heading,
-                fontWeight: 700,
-                fontSize: 22,
-                letterSpacing: 0.2,
-              }}
-            >
-              AI Summary
-            </h2>
-            <button
-              style={{
-                marginTop: 24,
-                background: theme.aiButtonBg,
-                color: theme.aiButtonText,
-                border: 'none',
-                borderRadius: 8,
-                padding: '12px 24px',
-                fontWeight: 600,
-                fontSize: 16,
-                cursor: 'pointer',
-                boxShadow: theme.buttonShadow,
-                transition: 'background 0.2s',
-                letterSpacing: 0.5,
-              }}
-              onClick={handleAnalyzeViewport}
-              disabled={loading}
-              onMouseOver={e => (e.currentTarget.style.background = theme.aiButtonHover)}
-              onMouseOut={e => (e.currentTarget.style.background = theme.aiButtonBg)}
-            >
-              {loading ? 'Analyzing...' : 'Analyze Viewport'}
-            </button>
-            <div
-              style={{
-                marginTop: 24,
-                color: theme.text,
-                background: 'rgba(0,0,0,0.18)',
-                padding: 24,
-                borderRadius: 12,
-                width: '100%',
-                boxShadow: theme.panelShadow,
-              }}
-            >
-              {parsedJson && typeof parsedJson === 'object' && 'analysis' in parsedJson ? (
-                <>
-                  {/* Summary Card */}
-                  <div
-                    style={{
-                      background: 'rgba(63, 169, 245, 0.10)',
-                      borderLeft: `4px solid ${theme.accent}`,
-                      borderRadius: 8,
-                      padding: '16px 20px',
-                      marginBottom: 28,
-                      fontSize: 18,
-                      fontWeight: 600,
-                      color: theme.heading,
-                      boxShadow: '0 1px 4px rgba(63,169,245,0.08)',
-                    }}
-                  >
-                    <span style={{ marginRight: 8, fontSize: 22, verticalAlign: 'middle' }}>
-                      🩺
-                    </span>
-                    {(parsedJson as FastAPIResponse).analysis?.summary}
-                  </div>
-
-                  {/* Anatomical Analysis */}
-                  {(parsedJson as FastAPIResponse).analysis?.anatomical_analysis && (
-                    <div style={{ marginBottom: 28 }}>
-                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>
-                        Anatomical Analysis
-                      </h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {(
-                          parsedJson as FastAPIResponse
-                        ).analysis?.anatomical_analysis.structures.map((structure, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              background: 'rgba(255,255,255,0.05)',
-                              borderRadius: 8,
-                              padding: 16,
-                            }}
-                          >
-                            <div style={{ fontWeight: 600, marginBottom: 8 }}>{structure.name}</div>
-                            <div style={{ color: theme.subText, fontSize: 14 }}>
-                              {structure.description}
-                            </div>
-                            <div style={{ display: 'flex', gap: 12, marginTop: 8, fontSize: 14 }}>
-                              <span style={{ color: theme.accent }}>
-                                Quality: {structure.quality}
-                              </span>
-                              <span style={{ color: theme.subText }}>
-                                {structure.spatial_relationship}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+            {/* Analyze Button - top left */}
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%', marginBottom: 18 }}>
+              <button
+                style={{
+                  marginTop: 0,
+                  marginBottom: 0,
+                  alignSelf: 'flex-start',
+                  background: theme.aiButtonBg,
+                  color: theme.aiButtonText,
+                  border: 'none',
+                  borderRadius: 7,
+                  padding: '7px 14px',
+                  fontWeight: 500,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  boxShadow: loading
+                    ? '0 0 0 0 #3fa9f5, 0 0 8px 2px #3fa9f5bb, 0 0 16px 4px #3fa9f555'
+                    : theme.buttonShadow,
+                  transition: 'box-shadow 0.4s, background 0.2s',
+                  letterSpacing: 0.2,
+                  position: 'relative',
+                  zIndex: 2,
+                  animation: loading ? 'pulsateAura 1.2s infinite cubic-bezier(.4,0,.2,1)' : 'none',
+                  marginRight: 12,
+                  minWidth: 90,
+                  outline: 'none',
+                }}
+                onClick={handleAnalyzeViewport}
+                disabled={loading}
+                onMouseOver={e => (e.currentTarget.style.background = theme.aiButtonHover)}
+                onMouseOut={e => (e.currentTarget.style.background = theme.aiButtonBg)}
+              >
+                {loading ? '...' : 'Analyze'}
+                <style>{`
+                  @keyframes pulsateAura {
+                    0% { box-shadow: 0 0 0 0 #3fa9f5, 0 0 8px 2px #3fa9f5bb, 0 0 16px 4px #3fa9f555; }
+                    50% { box-shadow: 0 0 0 0 #3fa9f5, 0 0 16px 6px #3fa9f555, 0 0 32px 12px #3fa9f522; }
+                    100% { box-shadow: 0 0 0 0 #3fa9f5, 0 0 8px 2px #3fa9f5bb, 0 0 16px 4px #3fa9f555; }
+                  }
+                `}</style>
+              </button>
+              {loading && <WaveformAnimation />}
+            </div>
+            {/* Only render the summary/analysis/error if present */}
+            {aiResponse && (
+              <div
+                style={{
+                  marginTop: loading ? 0 : 24,
+                  color: theme.text,
+                  background: 'rgba(0,0,0,0.18)',
+                  padding: 24,
+                  borderRadius: 12,
+                  width: '100%',
+                  boxShadow: theme.panelShadow,
+                  minHeight: 120,
+                }}
+              >
+                {parsedJson && typeof parsedJson === 'object' && 'analysis' in parsedJson ? (
+                  <>
+                    {/* Summary Card */}
+                    <div
+                      style={{
+                        background: 'rgba(63, 169, 245, 0.10)',
+                        borderLeft: `4px solid ${theme.accent}`,
+                        borderRadius: 8,
+                        padding: '16px 20px',
+                        marginBottom: 28,
+                        fontSize: 18,
+                        fontWeight: 600,
+                        color: theme.heading,
+                        boxShadow: '0 1px 4px rgba(63,169,245,0.08)',
+                      }}
+                    >
+                      <span style={{ marginRight: 8, fontSize: 22, verticalAlign: 'middle' }}>
+                        🩺
+                      </span>
+                      {(parsedJson as FastAPIResponse).analysis?.summary}
                     </div>
-                  )}
 
-                  {/* Abnormalities */}
-                  {(parsedJson as FastAPIResponse).analysis?.abnormalities && (
-                    <div style={{ marginBottom: 28 }}>
-                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>Abnormalities</h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {(parsedJson as FastAPIResponse).analysis?.abnormalities.map(
-                          (abnormality, index) => (
+                    {/* Anatomical Analysis */}
+                    {(parsedJson as FastAPIResponse).analysis?.anatomical_analysis && (
+                      <div style={{ marginBottom: 28 }}>
+                        <h3 style={{ color: theme.heading, marginBottom: 16 }}>
+                          Anatomical Analysis
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                          {(
+                            parsedJson as FastAPIResponse
+                          ).analysis?.anatomical_analysis.structures.map((structure, index) => (
                             <div
                               key={index}
                               style={{
@@ -504,154 +521,186 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
                               }}
                             >
                               <div style={{ fontWeight: 600, marginBottom: 8 }}>
-                                {abnormality.finding}
+                                {structure.name}
                               </div>
                               <div style={{ color: theme.subText, fontSize: 14 }}>
-                                {abnormality.characteristics}
+                                {structure.description}
                               </div>
+                              <div style={{ display: 'flex', gap: 12, marginTop: 8, fontSize: 14 }}>
+                                <span style={{ color: theme.accent }}>
+                                  Quality: {structure.quality}
+                                </span>
+                                <span style={{ color: theme.subText }}>
+                                  {structure.spatial_relationship}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Abnormalities */}
+                    {(parsedJson as FastAPIResponse).analysis?.abnormalities && (
+                      <div style={{ marginBottom: 28 }}>
+                        <h3 style={{ color: theme.heading, marginBottom: 16 }}>Abnormalities</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                          {(parsedJson as FastAPIResponse).analysis?.abnormalities.map(
+                            (abnormality, index) => (
                               <div
+                                key={index}
                                 style={{
-                                  display: 'flex',
-                                  flexWrap: 'wrap',
-                                  gap: 8,
-                                  marginTop: 8,
-                                  fontSize: 14,
+                                  background: 'rgba(255,255,255,0.05)',
+                                  borderRadius: 8,
+                                  padding: 16,
                                 }}
                               >
-                                <span style={{ color: theme.accent }}>
-                                  Location: {abnormality.location}
-                                </span>
-                                <span style={{ color: theme.accent }}>
-                                  Size: {abnormality.size}
-                                </span>
-                                <span style={{ color: theme.accent }}>
-                                  Density: {abnormality.density}
-                                </span>
-                                <span style={{ color: theme.accent }}>
-                                  Confidence: {abnormality.confidence}
-                                </span>
+                                <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                                  {abnormality.finding}
+                                </div>
+                                <div style={{ color: theme.subText, fontSize: 14 }}>
+                                  {abnormality.characteristics}
+                                </div>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: 8,
+                                    marginTop: 8,
+                                    fontSize: 14,
+                                  }}
+                                >
+                                  <span style={{ color: theme.accent }}>
+                                    Location: {abnormality.location}
+                                  </span>
+                                  <span style={{ color: theme.accent }}>
+                                    Size: {abnormality.size}
+                                  </span>
+                                  <span style={{ color: theme.accent }}>
+                                    Density: {abnormality.density}
+                                  </span>
+                                  <span style={{ color: theme.accent }}>
+                                    Confidence: {abnormality.confidence}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          )
-                        )}
+                            )
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Clinical Implications */}
-                  {(parsedJson as FastAPIResponse).analysis?.clinical_implications && (
-                    <div style={{ marginBottom: 28 }}>
-                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>
-                        Clinical Implications
-                      </h3>
-                      <div
-                        style={{
-                          background: 'rgba(255,255,255,0.05)',
-                          borderRadius: 8,
-                          padding: 16,
-                        }}
-                      >
-                        {(parsedJson as FastAPIResponse).analysis?.clinical_implications
-                          .potential_diagnoses.length > 0 && (
+                    {/* Clinical Implications */}
+                    {(parsedJson as FastAPIResponse).analysis?.clinical_implications && (
+                      <div style={{ marginBottom: 28 }}>
+                        <h3 style={{ color: theme.heading, marginBottom: 16 }}>
+                          Clinical Implications
+                        </h3>
+                        <div
+                          style={{
+                            background: 'rgba(255,255,255,0.05)',
+                            borderRadius: 8,
+                            padding: 16,
+                          }}
+                        >
+                          {(parsedJson as FastAPIResponse).analysis?.clinical_implications
+                            .potential_diagnoses.length > 0 && (
+                            <div style={{ marginBottom: 12 }}>
+                              <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                                Potential Diagnoses:
+                              </div>
+                              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                                {(
+                                  parsedJson as FastAPIResponse
+                                ).analysis?.clinical_implications.potential_diagnoses.map(
+                                  (diagnosis, index) => (
+                                    <li
+                                      key={index}
+                                      style={{ color: theme.subText }}
+                                    >
+                                      {diagnosis}
+                                    </li>
+                                  )
+                                )}
+                              </ul>
+                            </div>
+                          )}
                           <div style={{ marginBottom: 12 }}>
                             <div style={{ fontWeight: 600, marginBottom: 8 }}>
-                              Potential Diagnoses:
+                              Critical Findings:
                             </div>
-                            <ul style={{ margin: 0, paddingLeft: 20 }}>
-                              {(
-                                parsedJson as FastAPIResponse
-                              ).analysis?.clinical_implications.potential_diagnoses.map(
-                                (diagnosis, index) => (
-                                  <li
-                                    key={index}
-                                    style={{ color: theme.subText }}
-                                  >
-                                    {diagnosis}
-                                  </li>
-                                )
-                              )}
-                            </ul>
+                            <div style={{ color: theme.subText }}>
+                              {
+                                (parsedJson as FastAPIResponse).analysis?.clinical_implications
+                                  .critical_findings
+                              }
+                            </div>
                           </div>
-                        )}
-                        <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Critical Findings:</div>
-                          <div style={{ color: theme.subText }}>
-                            {
-                              (parsedJson as FastAPIResponse).analysis?.clinical_implications
-                                .critical_findings
-                            }
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 600, marginBottom: 8 }}>
-                            Further Examination:
-                          </div>
-                          <div style={{ color: theme.subText }}>
-                            {
-                              (parsedJson as FastAPIResponse).analysis?.clinical_implications
-                                .further_examination
-                            }
+                          <div>
+                            <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                              Further Examination:
+                            </div>
+                            <div style={{ color: theme.subText }}>
+                              {
+                                (parsedJson as FastAPIResponse).analysis?.clinical_implications
+                                  .further_examination
+                              }
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Technical Quality */}
-                  {(parsedJson as FastAPIResponse).analysis?.technical_quality && (
-                    <div>
-                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>Technical Quality</h3>
-                      <div
-                        style={{
-                          background: 'rgba(255,255,255,0.05)',
-                          borderRadius: 8,
-                          padding: 16,
-                        }}
-                      >
-                        <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Assessment:</div>
-                          <div style={{ color: theme.subText }}>
-                            {(parsedJson as FastAPIResponse).analysis?.technical_quality.assessment}
+                    {/* Technical Quality */}
+                    {(parsedJson as FastAPIResponse).analysis?.technical_quality && (
+                      <div>
+                        <h3 style={{ color: theme.heading, marginBottom: 16 }}>
+                          Technical Quality
+                        </h3>
+                        <div
+                          style={{
+                            background: 'rgba(255,255,255,0.05)',
+                            borderRadius: 8,
+                            padding: 16,
+                          }}
+                        >
+                          <div style={{ marginBottom: 12 }}>
+                            <div style={{ fontWeight: 600, marginBottom: 8 }}>Assessment:</div>
+                            <div style={{ color: theme.subText }}>
+                              {
+                                (parsedJson as FastAPIResponse).analysis?.technical_quality
+                                  .assessment
+                              }
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Limitations:</div>
-                          <div style={{ color: theme.subText }}>
-                            {
-                              (parsedJson as FastAPIResponse).analysis?.technical_quality
-                                .limitations
-                            }
+                          <div>
+                            <div style={{ fontWeight: 600, marginBottom: 8 }}>Limitations:</div>
+                            <div style={{ color: theme.subText }}>
+                              {
+                                (parsedJson as FastAPIResponse).analysis?.technical_quality
+                                  .limitations
+                              }
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </>
-              ) : parsedJson && typeof parsedJson === 'object' && 'error' in parsedJson ? (
-                <div
-                  style={{
-                    color: '#ff4d4f',
-                    background: 'rgba(255,77,79,0.1)',
-                    padding: 16,
-                    borderRadius: 8,
-                    border: '1px solid rgba(255,77,79,0.2)',
-                  }}
-                >
-                  Error: {(parsedJson as { error: string }).error}
-                </div>
-              ) : (
-                <div
-                  style={{
-                    color: theme.subText,
-                    fontStyle: 'italic',
-                    textAlign: 'center',
-                    padding: 24,
-                  }}
-                >
-                  AI summary or diagnosis will appear here.
-                </div>
-              )}
-            </div>
+                    )}
+                  </>
+                ) : parsedJson && typeof parsedJson === 'object' && 'error' in parsedJson ? (
+                  <div
+                    style={{
+                      color: '#ff4d4f',
+                      background: 'rgba(255,77,79,0.1)',
+                      padding: 16,
+                      borderRadius: 8,
+                      border: '1px solid rgba(255,77,79,0.2)',
+                    }}
+                  >
+                    Error: {(parsedJson as { error: string }).error}
+                  </div>
+                ) : null}
+              </div>
+            )}
           </div>
         </>
       )}
