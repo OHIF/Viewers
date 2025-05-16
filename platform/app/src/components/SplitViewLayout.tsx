@@ -18,12 +18,21 @@ const theme = {
   buttonHover: '#63c1ff',
   icon: '#fff',
   dragHandle: '#3fa9f5',
+  aiButtonBg: '#3fa9f5',
+  aiButtonText: '#fff',
+  aiButtonHover: '#63c1ff',
 };
+
+// TODO: Replace with your real OpenAI API key or use process.env for production
+const OPENAI_API_KEY = 'sk-proj-';
 
 const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [aiPanelWidth, setAiPanelWidth] = useState<number>(DEFAULT_WIDTH_PERCENT);
   const [isClosed, setIsClosed] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [viewportImage, setViewportImage] = useState<string | null>(null);
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const dragHandleRef = useRef<HTMLDivElement>(null);
 
   // Handle mouse drag for resizing
@@ -129,6 +138,75 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     </div>
   );
 
+  // --- AI Summary Button Logic ---
+  const handleAnalyzeViewport = async () => {
+    setLoading(true);
+    setAiResponse(null);
+    setViewportImage(null);
+    try {
+      // Find the active Cornerstone viewport element
+      const viewportEl = document.querySelector('.cornerstone-viewport-element');
+      if (!viewportEl) {
+        throw new Error('No active Cornerstone viewport found.');
+      }
+      // Try to find a canvas inside it
+      const canvas = viewportEl.querySelector('canvas');
+      if (!canvas) {
+        throw new Error('No canvas found in Cornerstone viewport.');
+      }
+      // Get image data
+      const dataUrl = (canvas as HTMLCanvasElement).toDataURL('image/png');
+      setViewportImage(dataUrl);
+
+      // --- OpenAI Vision API call ---
+      // See: https://platform.openai.com/docs/guides/images-vision#analyze-images
+      // and https://platform.openai.com/docs/api-reference/introduction
+      //
+      // Update the prompt here as needed:
+      const prompt = 'You are a medical imaging AI. Analyze this image.';
+      const apiUrl = 'https://api.openai.com/v1/chat/completions';
+      const imagePayload = {
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: dataUrl } },
+            ],
+          },
+        ],
+        max_tokens: 1000,
+      };
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify(imagePayload),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
+      }
+      const result = await response.json();
+      // Extract the response text
+      const aiText = result.choices?.[0]?.message?.content || 'No response from OpenAI.';
+      setAiResponse(aiText);
+      setLoading(false);
+    } catch (err: unknown) {
+      let message = 'Unknown error';
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (typeof err === 'string') {
+        message = err;
+      }
+      setAiResponse(message);
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       style={{
@@ -230,6 +308,42 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
             >
               AI Summary
             </h2>
+            <button
+              style={{
+                marginTop: 24,
+                background: theme.aiButtonBg,
+                color: theme.aiButtonText,
+                border: 'none',
+                borderRadius: 8,
+                padding: '12px 24px',
+                fontWeight: 600,
+                fontSize: 16,
+                cursor: 'pointer',
+                boxShadow: theme.buttonShadow,
+                transition: 'background 0.2s',
+                letterSpacing: 0.5,
+              }}
+              onClick={handleAnalyzeViewport}
+              disabled={loading}
+              onMouseOver={e => (e.currentTarget.style.background = theme.aiButtonHover)}
+              onMouseOut={e => (e.currentTarget.style.background = theme.aiButtonBg)}
+            >
+              {loading ? 'Analyzing...' : 'Analyze Viewport'}
+            </button>
+            {viewportImage && (
+              <div style={{ marginTop: 24, width: '100%', textAlign: 'center' }}>
+                <div style={{ color: theme.subText, marginBottom: 8 }}>Viewport Screenshot:</div>
+                <img
+                  src={viewportImage}
+                  alt="Viewport Screenshot"
+                  style={{
+                    maxWidth: '100%',
+                    borderRadius: 8,
+                    border: `1px solid ${theme.panelBorder}`,
+                  }}
+                />
+              </div>
+            )}
             <div
               style={{
                 color: theme.subText,
@@ -241,6 +355,20 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
             >
               AI summary or diagnosis will appear here.
             </div>
+            {aiResponse && (
+              <div
+                style={{
+                  marginTop: 24,
+                  color: theme.text,
+                  background: 'rgba(0,0,0,0.18)',
+                  padding: 16,
+                  borderRadius: 8,
+                  width: '100%',
+                }}
+              >
+                {aiResponse}
+              </div>
+            )}
           </div>
         </>
       )}
