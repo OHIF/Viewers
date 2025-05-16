@@ -411,6 +411,19 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
+   * @deprecated Use register() instead. This method will be removed in a future version.
+   * Adds buttons to the toolbar.
+   * @param buttons - The buttons to be added.
+   * @param replace - Flag indicating if any existing button with the same id as one being added should be replaced
+   */
+  public addButtons(buttons: Button[], replace: boolean = false): void {
+    console.warn(
+      'ToolbarService.addButtons() is deprecated. Use ToolbarService.register() instead.'
+    );
+    this.register(buttons, replace);
+  }
+
+  /**
    * Retrieves the buttons from the toolbar service.
    * @returns An array of buttons.
    */
@@ -468,6 +481,19 @@ export default class ToolbarService extends PubSubService {
       this.state.buttonSections[key] = buttons;
     }
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
+  }
+
+  /**
+   * @deprecated Use updateSection() instead. This method will be removed in a future version.
+   * Creates a button section with the specified key and buttons.
+   * @param {string} key - The key of the button section.
+   * @param {Array} buttons - The buttons to be added to the section.
+   */
+  createButtonSection(key, buttons) {
+    console.warn(
+      'ToolbarService.createButtonSection() is deprecated. Use ToolbarService.updateSection() instead.'
+    );
+    this.updateSection(key, buttons);
   }
 
   /**
