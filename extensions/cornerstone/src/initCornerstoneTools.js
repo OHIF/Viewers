@@ -31,6 +31,7 @@ import {
   TrackballRotateTool,
   AdvancedMagnifyTool,
   UltrasoundDirectionalTool,
+  UltrasoundAnnotationTool,
   PlanarFreehandROITool,
   PlanarFreehandContourSegmentationTool,
   SplineROITool,
@@ -95,6 +96,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(ImageOverlayViewerTool);
   addTool(AdvancedMagnifyTool);
   addTool(UltrasoundDirectionalTool);
+  addTool(UltrasoundAnnotationTool);
   addTool(PlanarFreehandROITool);
   addTool(SplineROITool);
   addTool(LivewireContourTool);
@@ -151,6 +153,7 @@ const toolNames = {
   ImageOverlayViewer: ImageOverlayViewerTool.toolName,
   AdvancedMagnify: AdvancedMagnifyTool.toolName,
   UltrasoundDirectional: UltrasoundDirectionalTool.toolName,
+  UltrasoundAnnotation: UltrasoundAnnotationTool.toolName,
   SplineROI: SplineROITool.toolName,
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
