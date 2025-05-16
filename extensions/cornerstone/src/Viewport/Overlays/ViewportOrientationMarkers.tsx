@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import classNames from 'classnames';
-import { metaData, Enums, Types, getEnabledElement } from '@cornerstonejs/core';
+import {
+  metaData,
+  Enums,
+  Types,
+  getEnabledElement,
+  utilities as coreUtilities,
+} from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
-
+import { useViewportRendering } from '../../hooks';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
 function ViewportOrientationMarkers({
@@ -20,6 +26,7 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
+  const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { cornerstoneViewportService } = servicesManager.services;
 
   // Store initial viewUp and viewRight for volume viewports
@@ -151,7 +158,8 @@ function ViewportOrientationMarkers({
         className={classNames(
           'overlay-text',
           `${m}-mid orientation-marker`,
-          'text-highlight/65',
+          isLight ? 'text-neutral-dark/70' : 'text-neutral-light/70',
+          isLight ? 'shadow-light' : 'shadow-dark',
           'text-base',
           'leading-5'
         )}
@@ -168,6 +176,7 @@ function ViewportOrientationMarkers({
     flipHorizontal,
     orientationMarkers,
     element,
+    isLight,
   ]);
 
   return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
