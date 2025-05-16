@@ -108,6 +108,7 @@ export const CustomDropdownMenuContent = () => {
                 e.preventDefault();
                 actions.downloadCSVSegmentationReport(segmentationId);
               }}
+              disabled={!allowExport}
             >
               {t('CSV Report')}
             </DropdownMenuItem>
