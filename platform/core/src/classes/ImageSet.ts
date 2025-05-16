@@ -1,15 +1,12 @@
+import { Types as csTypes } from '@cornerstonejs/core';
 import guid from '../utils/guid.js';
-import { Vector3 } from 'cornerstone-math';
+import { sortStudyByImagePositionPatient } from '../utils/sortStudy';
 
 type Attributes = Record<string, unknown>;
 type Image = {
   StudyInstanceUID?: string;
-  getData(): {
-    metadata: {
-      ImagePositionPatient: number[];
-      ImageOrientationPatient: number[];
-    };
-  };
+  ImagePositionPatient?: csTypes.Point3;
+  ImageOrientationPatient?: csTypes.Point3;
 };
 
 /**
@@ -79,63 +76,28 @@ class ImageSet {
     return this.images[index];
   }
 
+  /**
+   * Default image sorting. Sorts by the following (in order of priority)
+   * 1. Image position (if ImagePositionPatient and ImageOrientationPatient are defined)
+   * 2. Sort by a provided sortingCallback Criteria
+   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+   *
+   * @returns images - reference to images after sorting
+   */
+  sort(sortingCallback: (a: Image, b: Image) => number): Image[] {
+    return sortStudyByImagePositionPatient(this.images, this.sortBy.bind(this, sortingCallback));
+  }
+
+  /**
+   * Sort using the provided callback function.
+   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+   *
+   * @param sortingCallback - sorting function
+   * @returns images - reference to images after sorting
+   */
   sortBy(sortingCallback: (a: Image, b: Image) => number): Image[] {
     return this.images.sort(sortingCallback);
   }
-
-  sortByImagePositionPatient(): void {
-    const images = this.images;
-    const referenceImagePositionPatient = _getImagePositionPatient(images[0]);
-
-    const refIppVec = new Vector3(
-      referenceImagePositionPatient[0],
-      referenceImagePositionPatient[1],
-      referenceImagePositionPatient[2]
-    );
-
-    const ImageOrientationPatient = _getImageOrientationPatient(images[0]);
-
-    const scanAxisNormal = new Vector3(
-      ImageOrientationPatient[0],
-      ImageOrientationPatient[1],
-      ImageOrientationPatient[2]
-    ).cross(
-      new Vector3(
-        ImageOrientationPatient[3],
-        ImageOrientationPatient[4],
-        ImageOrientationPatient[5]
-      )
-    );
-
-    const distanceImagePairs = images.map(function (image: Image) {
-      const ippVec = new Vector3(..._getImagePositionPatient(image));
-      const positionVector = refIppVec.clone().sub(ippVec);
-      const distance = positionVector.dot(scanAxisNormal);
-
-      return {
-        distance,
-        image,
-      };
-    });
-
-    distanceImagePairs.sort(function (a, b) {
-      return b.distance - a.distance;
-    });
-
-    const sortedImages = distanceImagePairs.map(a => a.image);
-
-    images.sort(function (a, b) {
-      return sortedImages.indexOf(a) - sortedImages.indexOf(b);
-    });
-  }
-}
-
-function _getImagePositionPatient(image) {
-  return image.getData().metadata.ImagePositionPatient;
-}
-
-function _getImageOrientationPatient(image) {
-  return image.getData().metadata.ImageOrientationPatient;
 }
 
 export default ImageSet;
