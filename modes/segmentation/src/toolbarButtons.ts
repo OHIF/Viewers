@@ -22,7 +22,7 @@ const toolbarButtons: Button[] = [
     id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
     props: {
-      buttonSection: 'advancedRenderingControlsSection',
+      buttonSection: true,
     },
   },
   {
@@ -160,14 +160,14 @@ const toolbarButtons: Button[] = [
     id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'moreToolsSection',
+      buttonSection: true,
     },
   },
   {
     id: 'BrushTools',
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
-      buttonSection: 'brushToolsSection',
+      buttonSection: true,
     },
   },
   // Section containers for the nested toolbox
@@ -175,14 +175,14 @@ const toolbarButtons: Button[] = [
     id: 'SegmentationUtilities',
     uiType: 'ohif.toolBoxButton',
     props: {
-      buttonSection: 'segmentationToolboxUtilitySection',
+      buttonSection: true,
     },
   },
   {
     id: 'SegmentationTools',
     uiType: 'ohif.toolBoxButton',
     props: {
-      buttonSection: 'segmentationToolboxToolsSection',
+      buttonSection: true,
     },
   },
   // tool defs

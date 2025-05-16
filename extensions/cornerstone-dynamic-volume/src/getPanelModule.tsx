@@ -5,6 +5,8 @@ import { PanelSegmentation } from '@ohif/extension-cornerstone';
 import DynamicExport from './panels/DynamicExport';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager, configuration }) {
+  const { toolbarService } = servicesManager.services;
+
   const wrappedDynamicDataPanel = () => {
     return (
       <DynamicDataPanel
@@ -19,7 +21,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
     return (
       <>
         <Toolbox
-          buttonSectionId="dynamic-toolbox"
+          buttonSectionId={toolbarService.sections.dynamicToolbox}
           title="Threshold Tools"
         />
         <PanelSegmentation

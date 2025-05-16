@@ -12,28 +12,28 @@ const toolbarButtons = [
     id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'measurementSection',
+      buttonSection: true,
     },
   },
   {
     id: 'SegmentationTools',
     uiType: 'ohif.toolBoxButton',
     props: {
-      buttonSection: 'segmentationToolboxToolsSection',
+      buttonSection: true,
     },
   },
   {
     id: 'BrushTools',
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
-      buttonSection: 'brushToolsSection',
+      buttonSection: true,
     },
   },
   {
     id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
     props: {
-      buttonSection: 'advancedRenderingControlsSection',
+      buttonSection: true,
     },
   },
   {

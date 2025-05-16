@@ -31,6 +31,7 @@ summary: Migration guide for OHIF 3.11's toolbar service changes, including the 
 **Migration Steps:**
 
 1.  **Update `ToolbarService` Method Calls:**
+    *   Although the previous method also works but gives warning in the console when used.
     *   Replace all instances of `toolbarService.addButtons(...)` with `toolbarService.register(...)`.
     *   Replace all instances of `toolbarService.createButtonSection(...)` with `toolbarService.updateSection(...)`.
 
@@ -96,36 +97,60 @@ summary: Migration guide for OHIF 3.11's toolbar service changes, including the 
     ```
 
 3.  **Adapt Toolbar Button and Component Configurations:**
-    *   For `ohif.toolButtonList` or `ohif.toolBoxButtonGroup` (and their wrappers), the `groupId` prop is no longer the primary way to define the set of buttons. Instead, ensure the `buttonSection` prop correctly points to the section name containing the desired buttons. The `id` prop on these wrapper components should be unique for the component instance.
 
-    ```diff
-    // Before
-    - {
-    -   id: 'MeasurementTools',
-    -   uiType: 'ohif.toolButtonList',
-    -   props: {
-    -     buttonSection: 'measurementSection',
-    -     groupId: 'MeasurementTools', // groupId often matched buttonSection
-    -   },
-    - },
+    The configuration of toolbar buttons, especially how they relate to sections
 
-    // After
-    + {
-    +   id: 'MeasurementTools', // This is the ID of the ToolButtonList/ToolBox component itself
-    +   uiType: 'ohif.toolButtonList',
-    +   props: {
-    +     // This section contains the actual tool buttons (e.g., Length, Bidirectional)
-    +     buttonSection: 'measurementSection',
-    +   },
-    + },
-    ```
-    *   Update wrappers like `ToolBoxButtonGroupWrapper` and `ToolButtonListWrapper`:
-        *   The `groupId` prop is replaced by `id` (which is the ID of the wrapper button itself).
-        *   The `onInteraction` callback in these wrappers now provides `id` (the wrapper's ID) instead of `groupId`.
-    *   If you have custom `evaluate` functions, you can now use `evaluateProps: { hideWhenDisabled: true }` in your button definition to automatically hide the button if it evaluates to disabled.
+    *   **Button Section Association via `props.buttonSection`:**
+
+        The toolbar service now offers two ways to define this association:
+
+        *   **A. Simple Approach: `buttonSection: true` (Implicitly Uses Button's Own ID)**
+
+            If a button definition includes `props: { buttonSection: true }`, the `ToolbarService` automatically sets the effective `buttonSection` ID to be the same as the button's own `id`.
+
+            ```javascript
+            // Example: A ToolButtonList component's definition in toolbarButtons.ts
+            // {
+            //   id: 'MeasurementTools', // ID of this ToolButtonList component
+            //   uiType: 'ohif.toolButtonList',
+            //   props: {
+            //     buttonSection: true  // This ToolButtonList will render the section named 'MeasurementTools'
+            //   }
+            // }
+            ```
+
+            later you can use it like
 
 
-5.  **Adopt `IconPresentationProvider` (Optional but Recommended):**
+            ```javascript
+            toolbarService.updateSection('MeasurementTools', ['Length', 'Bidirectional', ...]);
+            ```
+
+        *   **B. Flexible Approach: `buttonSection: 'customSectionName'` (Explicit Section ID)**
+
+            You can explicitly provide a string for `props.buttonSection` if the button should be associated with a section ID that is different from its own `id`, or if you prefer explicit naming.
+
+            ```javascript
+            // Example: A ToolButtonList component's definition
+            // {
+            //   id: 'MySpecialToolList', // ID of this ToolButtonList component
+            //   uiType: 'ohif.toolButtonList',
+            //   props: {
+            //     buttonSection: 'toolsForAdvancedUsers',  // This list renders 'toolsForAdvancedUsers' section
+            //   }
+            // }
+            ```
+
+    *   **`evaluate` Function Enhancement:**
+        *   Button `evaluate` functions can now leverage `evaluateProps: { hideWhenDisabled: true }` in your button definition to automatically hide a button when it's disabled.
+
+    *   **Wrapper Component `onInteraction` (e.g., `ToolButtonListWrapper`):**
+        *   Update wrappers like `ToolBoxButtonGroupWrapper` and `ToolButtonListWrapper`:
+            *   The `groupId` prop is replaced by `id` (which is the ID of the wrapper button component itself).
+            *   The `onInteraction` callback in these wrappers now provides `id` (the wrapper's ID) instead of `groupId`.
+
+
+4.  **Adopt `IconPresentationProvider` (Optional but Recommended):**
     *   For consistent icon styling across your application's toolbars, wrap a high-level component (like your main `Header` or layout component) with `<IconPresentationProvider size="yourDefaultSize">`.
     *   Custom tool button components can then use the `useIconPresentation` hook to get appropriate class names for icons or a pre-styled `IconContainer`.
 
@@ -149,5 +174,5 @@ summary: Migration guide for OHIF 3.11's toolbar service changes, including the 
     + }
     ```
 
-6.  **Remove Legacy Component Usage:**
+5.  **Remove Legacy Component Usage:**
     *   Replace any usage of `ToolbarSplitButtonWithServicesLegacy` and `ToolbarButtonGroupWithServicesLegacy` with the newer patterns, typically by configuring individual buttons and using `ToolButtonList` or `ButtonGroup` from `@ohif/ui-next` directly, driven by `useToolbar`.
