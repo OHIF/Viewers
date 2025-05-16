@@ -183,7 +183,10 @@ export default async function init({
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
-  this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
+  this.measurementServiceSource = connectToolsToMeasurementService({
+    servicesManager,
+    commandsManager,
+  });
 
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);

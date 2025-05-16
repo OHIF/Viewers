@@ -12,7 +12,7 @@ import {
   triggerAnnotationRenderForViewportIds,
 } from '@cornerstonejs/tools/utilities';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-import { triggerCreateAnnotationMemo } from './utils/triggerCreateMemo';
+import { servicesManager } from 'platform/app/src/App';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
@@ -189,13 +189,18 @@ const initMeasurementService = (
   return csTools3DVer1MeasurementSource;
 };
 
-const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesManager) => {
+const connectToolsToMeasurementService = ({
+  commandsManager,
+  servicesManager,
+}: {
+  commandsManager: AppTypes.CommandsManager;
+  servicesManager: AppTypes.ServicesManager;
+}) => {
   const {
     measurementService,
     displaySetService,
     cornerstoneViewportService,
     customizationService,
-    viewportGridService,
   } = servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
@@ -203,11 +208,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
     cornerstoneViewportService,
     customizationService
   );
-  connectMeasurementServiceToTools(
-    measurementService,
-    cornerstoneViewportService,
-    viewportGridService
-  );
+  connectMeasurementServiceToTools({ servicesManager, commandsManager });
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
 
   //
@@ -333,11 +334,9 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
   return csTools3DVer1MeasurementSource;
 };
 
-const connectMeasurementServiceToTools = (
-  measurementService,
-  cornerstoneViewportService,
-  viewportGridService
-) => {
+const connectMeasurementServiceToTools = ({ servicesManager, commandsManager }) => {
+  const { measurementService, cornerstoneViewportService, viewportGridService } =
+    servicesManager.services;
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
 
@@ -353,7 +352,7 @@ const connectMeasurementServiceToTools = (
       }
       const removedAnnotation = annotation.state.getAnnotation(uid);
       removeAnnotation(uid);
-      triggerCreateAnnotationMemo({
+      commandsManager.run('triggerCreateAnnotationMemo', {
         annotation: removedAnnotation,
         FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
         options: { deleting: true },
@@ -472,7 +471,7 @@ const connectMeasurementServiceToTools = (
         },
       };
       annotationManager.addAnnotation(newAnnotation);
-      triggerCreateAnnotationMemo({
+      commandsManager.run('triggerCreateAnnotationMemo', {
         annotation: newAnnotation,
         FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
         options: { newAnnotation: true },
@@ -488,7 +487,7 @@ const connectMeasurementServiceToTools = (
       }
       const removedAnnotation = annotation.state.getAnnotation(removedMeasurementId);
       removeAnnotation(removedMeasurementId);
-      triggerCreateAnnotationMemo({
+      commandsManager.run('triggerCreateAnnotationMemo', {
         annotation: removedAnnotation,
         FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
         options: { deleting: true },
