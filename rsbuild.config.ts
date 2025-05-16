@@ -93,8 +93,6 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
       '@routes': path.resolve(__dirname, './platform/app/src/routes'),
       '@state': path.resolve(__dirname, './platform/app/src/state'),
-      'dicom-microscopy-viewer':
-        'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
     },
   },
   output: {
