@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 
 const MIN_WIDTH_PERCENT = 5;
 const MAX_WIDTH_PERCENT = 50;
-const DEFAULT_WIDTH_PERCENT = 20;
+const DEFAULT_WIDTH_PERCENT = 35;
 
 const theme = {
   panelBg: '#11214c', // dark blue
@@ -23,14 +23,10 @@ const theme = {
   aiButtonHover: '#63c1ff',
 };
 
-// TODO: Replace with your real OpenAI API key or use process.env for production
-const OPENAI_API_KEY = 'sk-proj-';
-
 const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [aiPanelWidth, setAiPanelWidth] = useState<number>(DEFAULT_WIDTH_PERCENT);
   const [isClosed, setIsClosed] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [viewportImage, setViewportImage] = useState<string | null>(null);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const dragHandleRef = useRef<HTMLDivElement>(null);
@@ -138,11 +134,58 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     </div>
   );
 
+  // Types for the FastAPI response
+  type FastAPIResponse = {
+    status: 'complete' | 'processing' | 'error';
+    analysis?: {
+      summary: string;
+      anatomical_analysis: {
+        structures: Array<{
+          name: string;
+          description: string;
+          quality: string;
+          spatial_relationship: string;
+        }>;
+        quality: string;
+        spatial_relationships: string;
+      };
+      abnormalities: Array<{
+        finding: string;
+        characteristics: string;
+        location: string;
+        size: string;
+        density: string;
+        confidence: string;
+      }>;
+      clinical_implications: {
+        potential_diagnoses: string[];
+        critical_findings: string;
+        further_examination: string;
+      };
+      technical_quality: {
+        assessment: string;
+        limitations: string;
+      };
+      metadata?: {
+        modality?: string;
+        image_type?: string;
+        original_filename?: string;
+        [key: string]: string | undefined;
+      };
+    };
+    metadata?: {
+      modality?: string;
+      image_type?: string;
+      original_filename?: string;
+      [key: string]: string | undefined;
+    };
+    error?: string;
+  };
+
   // --- AI Summary Button Logic ---
   const handleAnalyzeViewport = async () => {
     setLoading(true);
     setAiResponse(null);
-    setViewportImage(null);
     try {
       // Find the active Cornerstone viewport element
       const viewportEl = document.querySelector('.cornerstone-viewport-element');
@@ -156,44 +199,69 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
       }
       // Get image data
       const dataUrl = (canvas as HTMLCanvasElement).toDataURL('image/png');
-      setViewportImage(dataUrl);
 
-      // --- OpenAI Vision API call ---
-      // See: https://platform.openai.com/docs/guides/images-vision#analyze-images
-      // and https://platform.openai.com/docs/api-reference/introduction
-      //
-      // Update the prompt here as needed:
-      const prompt = 'You are a medical imaging AI. Analyze this image.';
-      const apiUrl = 'https://api.openai.com/v1/chat/completions';
-      const imagePayload = {
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: dataUrl } },
-            ],
-          },
-        ],
-        max_tokens: 1000,
-      };
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify(imagePayload),
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
+      // Convert base64 to blob
+      const base64Data = dataUrl.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
       }
-      const result = await response.json();
-      // Extract the response text
-      const aiText = result.choices?.[0]?.message?.content || 'No response from OpenAI.';
-      setAiResponse(aiText);
+      const blob = new Blob(byteArrays, { type: 'image/png' });
+
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', blob, 'screenshot.png');
+
+      // Upload to FastAPI backend
+      const uploadResponse = await fetch('http://localhost:8002/api/v1/dicom/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+      }
+
+      const { file_id } = await uploadResponse.json();
+
+      // Poll for analysis results
+      let analysisResult: FastAPIResponse | null = null;
+      let attempts = 0;
+      const maxAttempts = 30; // 30 attempts * 2 seconds = 60 seconds max wait time
+
+      while (attempts < maxAttempts) {
+        const analysisResponse = await fetch(
+          `http://localhost:8002/api/v1/dicom/analysis/${file_id}`
+        );
+        if (!analysisResponse.ok) {
+          throw new Error(`Analysis failed: ${analysisResponse.statusText}`);
+        }
+
+        const result = await analysisResponse.json();
+        if (result.status === 'complete') {
+          analysisResult = result;
+          break;
+        } else if (result.status === 'error') {
+          throw new Error(result.error || 'Analysis failed');
+        }
+
+        // Wait 2 seconds before next attempt
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        attempts++;
+      }
+
+      if (!analysisResult) {
+        throw new Error('Analysis timed out');
+      }
+
+      setAiResponse(JSON.stringify(analysisResult));
       setLoading(false);
     } catch (err: unknown) {
       let message = 'Unknown error';
@@ -202,10 +270,31 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
       } else if (typeof err === 'string') {
         message = err;
       }
-      setAiResponse(message);
+      setAiResponse(JSON.stringify({ error: message }));
       setLoading(false);
     }
   };
+
+  // Helper to parse and render JSON response (with code block stripping)
+  let parsedJson: unknown = null;
+  if (aiResponse) {
+    let cleaned = aiResponse.trim();
+    if (cleaned.startsWith('```json')) {
+      cleaned = cleaned.slice(7);
+    }
+    if (cleaned.startsWith('```')) {
+      cleaned = cleaned.slice(3);
+    }
+    if (cleaned.endsWith('```')) {
+      cleaned = cleaned.slice(0, -3);
+    }
+    cleaned = cleaned.trim();
+    try {
+      parsedJson = JSON.parse(cleaned);
+    } catch (e) {
+      parsedJson = null;
+    }
+  }
 
   return (
     <div
@@ -330,45 +419,239 @@ const SplitViewLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
             >
               {loading ? 'Analyzing...' : 'Analyze Viewport'}
             </button>
-            {viewportImage && (
-              <div style={{ marginTop: 24, width: '100%', textAlign: 'center' }}>
-                <div style={{ color: theme.subText, marginBottom: 8 }}>Viewport Screenshot:</div>
-                <img
-                  src={viewportImage}
-                  alt="Viewport Screenshot"
-                  style={{
-                    maxWidth: '100%',
-                    borderRadius: 8,
-                    border: `1px solid ${theme.panelBorder}`,
-                  }}
-                />
-              </div>
-            )}
             <div
               style={{
-                color: theme.subText,
-                fontStyle: 'italic',
-                marginTop: '20px',
-                fontSize: 16,
-                textAlign: 'center',
+                marginTop: 24,
+                color: theme.text,
+                background: 'rgba(0,0,0,0.18)',
+                padding: 24,
+                borderRadius: 12,
+                width: '100%',
+                boxShadow: theme.panelShadow,
               }}
             >
-              AI summary or diagnosis will appear here.
+              {parsedJson && typeof parsedJson === 'object' && 'analysis' in parsedJson ? (
+                <>
+                  {/* Summary Card */}
+                  <div
+                    style={{
+                      background: 'rgba(63, 169, 245, 0.10)',
+                      borderLeft: `4px solid ${theme.accent}`,
+                      borderRadius: 8,
+                      padding: '16px 20px',
+                      marginBottom: 28,
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: theme.heading,
+                      boxShadow: '0 1px 4px rgba(63,169,245,0.08)',
+                    }}
+                  >
+                    <span style={{ marginRight: 8, fontSize: 22, verticalAlign: 'middle' }}>
+                      🩺
+                    </span>
+                    {(parsedJson as FastAPIResponse).analysis?.summary}
+                  </div>
+
+                  {/* Anatomical Analysis */}
+                  {(parsedJson as FastAPIResponse).analysis?.anatomical_analysis && (
+                    <div style={{ marginBottom: 28 }}>
+                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>
+                        Anatomical Analysis
+                      </h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {(
+                          parsedJson as FastAPIResponse
+                        ).analysis?.anatomical_analysis.structures.map((structure, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              background: 'rgba(255,255,255,0.05)',
+                              borderRadius: 8,
+                              padding: 16,
+                            }}
+                          >
+                            <div style={{ fontWeight: 600, marginBottom: 8 }}>{structure.name}</div>
+                            <div style={{ color: theme.subText, fontSize: 14 }}>
+                              {structure.description}
+                            </div>
+                            <div style={{ display: 'flex', gap: 12, marginTop: 8, fontSize: 14 }}>
+                              <span style={{ color: theme.accent }}>
+                                Quality: {structure.quality}
+                              </span>
+                              <span style={{ color: theme.subText }}>
+                                {structure.spatial_relationship}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Abnormalities */}
+                  {(parsedJson as FastAPIResponse).analysis?.abnormalities && (
+                    <div style={{ marginBottom: 28 }}>
+                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>Abnormalities</h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {(parsedJson as FastAPIResponse).analysis?.abnormalities.map(
+                          (abnormality, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                borderRadius: 8,
+                                padding: 16,
+                              }}
+                            >
+                              <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                                {abnormality.finding}
+                              </div>
+                              <div style={{ color: theme.subText, fontSize: 14 }}>
+                                {abnormality.characteristics}
+                              </div>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  flexWrap: 'wrap',
+                                  gap: 8,
+                                  marginTop: 8,
+                                  fontSize: 14,
+                                }}
+                              >
+                                <span style={{ color: theme.accent }}>
+                                  Location: {abnormality.location}
+                                </span>
+                                <span style={{ color: theme.accent }}>
+                                  Size: {abnormality.size}
+                                </span>
+                                <span style={{ color: theme.accent }}>
+                                  Density: {abnormality.density}
+                                </span>
+                                <span style={{ color: theme.accent }}>
+                                  Confidence: {abnormality.confidence}
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Clinical Implications */}
+                  {(parsedJson as FastAPIResponse).analysis?.clinical_implications && (
+                    <div style={{ marginBottom: 28 }}>
+                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>
+                        Clinical Implications
+                      </h3>
+                      <div
+                        style={{
+                          background: 'rgba(255,255,255,0.05)',
+                          borderRadius: 8,
+                          padding: 16,
+                        }}
+                      >
+                        {(parsedJson as FastAPIResponse).analysis?.clinical_implications
+                          .potential_diagnoses.length > 0 && (
+                          <div style={{ marginBottom: 12 }}>
+                            <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                              Potential Diagnoses:
+                            </div>
+                            <ul style={{ margin: 0, paddingLeft: 20 }}>
+                              {(
+                                parsedJson as FastAPIResponse
+                              ).analysis?.clinical_implications.potential_diagnoses.map(
+                                (diagnosis, index) => (
+                                  <li
+                                    key={index}
+                                    style={{ color: theme.subText }}
+                                  >
+                                    {diagnosis}
+                                  </li>
+                                )
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Critical Findings:</div>
+                          <div style={{ color: theme.subText }}>
+                            {
+                              (parsedJson as FastAPIResponse).analysis?.clinical_implications
+                                .critical_findings
+                            }
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                            Further Examination:
+                          </div>
+                          <div style={{ color: theme.subText }}>
+                            {
+                              (parsedJson as FastAPIResponse).analysis?.clinical_implications
+                                .further_examination
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Technical Quality */}
+                  {(parsedJson as FastAPIResponse).analysis?.technical_quality && (
+                    <div>
+                      <h3 style={{ color: theme.heading, marginBottom: 16 }}>Technical Quality</h3>
+                      <div
+                        style={{
+                          background: 'rgba(255,255,255,0.05)',
+                          borderRadius: 8,
+                          padding: 16,
+                        }}
+                      >
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Assessment:</div>
+                          <div style={{ color: theme.subText }}>
+                            {(parsedJson as FastAPIResponse).analysis?.technical_quality.assessment}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, marginBottom: 8 }}>Limitations:</div>
+                          <div style={{ color: theme.subText }}>
+                            {
+                              (parsedJson as FastAPIResponse).analysis?.technical_quality
+                                .limitations
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : parsedJson && typeof parsedJson === 'object' && 'error' in parsedJson ? (
+                <div
+                  style={{
+                    color: '#ff4d4f',
+                    background: 'rgba(255,77,79,0.1)',
+                    padding: 16,
+                    borderRadius: 8,
+                    border: '1px solid rgba(255,77,79,0.2)',
+                  }}
+                >
+                  Error: {(parsedJson as { error: string }).error}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    color: theme.subText,
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    padding: 24,
+                  }}
+                >
+                  AI summary or diagnosis will appear here.
+                </div>
+              )}
             </div>
-            {aiResponse && (
-              <div
-                style={{
-                  marginTop: 24,
-                  color: theme.text,
-                  background: 'rgba(0,0,0,0.18)',
-                  padding: 16,
-                  borderRadius: 8,
-                  width: '100%',
-                }}
-              >
-                {aiResponse}
-              </div>
-            )}
           </div>
         </>
       )}
