@@ -17,9 +17,9 @@ export default function PanelSegmentation({ children }: withAppTypes) {
   const segmentationTableMode = customizationService.getCustomization(
     'panelSegmentation.tableMode'
   ) as unknown as string;
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
+  const onSegmentationAdd = async () => {
+    commandsManager.runCommand('createLabelmapForViewport');
+  };
   const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
   const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
   const CustomDropdownMenuContent = customizationService.getCustomization(

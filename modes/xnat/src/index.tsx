@@ -54,6 +54,7 @@ const dicomRT = {
 const xnat = {
   xnatNavList: '@ohif/extension-xnat.panelModule.xnatNavigation',
   studyBrowser: '@ohif/extension-xnat.panelModule.xnatStudyBrowser',
+  segmentation: '@ohif/extension-xnat.panelModule.panelSegmentationWithTools',
 };
 
 
@@ -160,6 +161,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        'SegmentationToolbox',
       ]);
 
       toolbarService.createButtonSection('moreToolsSection', [
@@ -173,11 +175,6 @@ function modeFactory({ modeConfiguration }) {
         'Cine',
         'Magnify',
         'TagBrowser',
-      ]);
-
-      toolbarService.createButtonSection('segmentationToolbox', [
-        'SegmentationUtilities',
-        'SegmentationTools',
       ]);
       toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
         'LabelmapSlicePropagation',
@@ -243,8 +240,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              // rightPanels: [cornerstone.segmentation, cornerstone.measurements],
-              rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+              rightPanels: [xnat.segmentation, cornerstone.measurements],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

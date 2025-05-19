@@ -8,6 +8,8 @@ interface BidirectionalAxis {
 interface BidirectionalData {
   majorAxis: BidirectionalAxis;
   minorAxis: BidirectionalAxis;
+  maxMajor?: number;
+  maxMinor?: number;
 }
 
 /**
@@ -73,7 +75,8 @@ export async function updateSegmentationStats({
           return;
         }
 
-        if (stat && stat.name) {
+        // Ensure stat, stat.name, and stat.value are defined
+        if (stat && stat.name && stat.value !== undefined) {
           namedStats[stat.name] = {
             name: stat.name,
             label: readableText[stat.name],
@@ -81,6 +84,11 @@ export async function updateSegmentationStats({
             unit: stat.unit,
             order: Object.keys(readableText).indexOf(stat.name),
           };
+        } else if (stat && stat.name) {
+          // Log if value is undefined for a stat that's in readableText
+          console.warn(
+            `Statistic "${stat.name}" is in readableText but its value is undefined. Skipping.`
+          );
         }
       });
 
@@ -157,7 +165,7 @@ export function updateSegmentBidirectionalStats({
   }
 
   let hasUpdates = false;
-  const namedStats = segment.cachedStats.namedStats;
+  const namedStats: any = segment.cachedStats.namedStats;
 
   // Only calculate and update if we have valid measurements
   if (maxMajor > 0 && maxMinor > 0) {

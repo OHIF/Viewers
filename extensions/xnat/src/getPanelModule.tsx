@@ -1,13 +1,54 @@
 import React from 'react';
 import { WrappedPanelStudyBrowser, WrappedXNATNavigationPanel, WrappedXNATStudyBrowserPanel } from './Panels';
 import i18n from 'i18next';
+import PanelSegmentation from './Panels/PanelSegmentation';
+import SegmentationToolbox from './Panels/SegmentationToolbox';
+import { useAppConfig } from '@state';
 
-// TODO:
-// - No loading UI exists yet
-// - cancel promises when component is destroyed
-// - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
+  const wrappedPanelSegmentation = configuration => {
+    const [appConfig] = useAppConfig();
+    const { customizationService } = servicesManager.services;
+
+    const disableEditingForMode = customizationService.get('segmentation.disableEditing');
+
+    return (
+      <PanelSegmentation
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        configuration={{
+          ...configuration,
+          disableEditing: appConfig.disableEditing || disableEditingForMode?.value,
+        }}
+      />
+    );
+  };
+
+  const wrappedPanelSegmentationWithTools = configuration => {
+    const [appConfig] = useAppConfig();
+    return (
+      <>
+        <SegmentationToolbox
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          configuration={{
+            ...configuration,
+          }}
+        />
+        <PanelSegmentation
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          configuration={{
+            ...configuration,
+          }}
+        />
+      </>
+    );
+  };
   return [
     {
       name: 'xnatNavigation',
@@ -36,6 +77,20 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           servicesManager={servicesManager}
         />
       ),
+    },
+    {
+      name: 'panelSegmentation',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentation,
+    },
+    {
+      name: 'panelSegmentationWithTools',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentationWithTools,
     },
   ];
 }
