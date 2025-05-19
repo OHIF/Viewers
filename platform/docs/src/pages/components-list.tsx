@@ -43,6 +43,7 @@ export default function ComponentsList() {
           const SliderShowcase = require('./components/SliderShowcase').default;
           const SwitchShowcase = require('./components/SwitchShowcase').default;
           const TabsShowcase = require('./components/TabsShowcase').default;
+          const TagInputShowcase = require('./components/TagInputShowcase').default;
           const ToastShowcase = require('./components/ToastShowcase').default;
           const ToolButtonShowcase = require('./components/ToolButtonShowcase').default;
           const ToolButtonListShowcase = require('./components/ToolButtonListShowcase').default;
@@ -127,6 +128,7 @@ export default function ComponentsList() {
                   <SliderShowcase />
                   <SwitchShowcase />
                   <TabsShowcase />
+                  <TagInputShowcase />
                   <ToastShowcase />
                   <ToolButtonShowcase />
                   <ToolButtonListShowcase />
