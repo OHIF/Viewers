@@ -1,12 +1,12 @@
 import React from 'react';
-import { utils } from '@ohif/core';
-import { AccordionTrigger, MeasurementTable, useViewportGrid } from '@ohif/ui-next';
+import { useSystem, utils } from '@ohif/core';
+import { AccordionTrigger, MeasurementTable, ScrollArea, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
   StudyMeasurements,
-  StudyMeasurementsActions,
   StudySummaryFromMetadata,
   AccordionGroup,
+  StudyMeasurementsActions,
   MeasurementsOrAdditionalFindings,
 } from '@ohif/extension-cornerstone';
 
@@ -18,7 +18,9 @@ const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
 
 function PanelMeasurementTableTracking(props) {
   const [viewportGrid] = useViewportGrid();
-  const { measurementService, uiModalService } = props.servicesManager.services;
+  const { servicesManager } = useSystem();
+  const { measurementService, uiModalService } = servicesManager.services;
+
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy
@@ -83,29 +85,31 @@ function PanelMeasurementTableTracking(props) {
   );
 
   return (
-    <div data-cy="trackedMeasurements-panel">
-      <PanelMeasurement
-        measurementFilter={measurementFilter}
-        emptyComponent={EmptyComponent}
-        sourceChildren={props.children}
-      >
-        <StudyMeasurements grouping={props.grouping}>
-          <AccordionGroup.Trigger
-            key="trackingMeasurementsHeader"
-            asChild={true}
-          >
-            <Header key="trackingHeadChild" />
-          </AccordionGroup.Trigger>
-          <MeasurementsOrAdditionalFindings
-            key="measurementsOrAdditionalFindings"
-            activeStudyUID={trackedStudy}
-            customHeader={StudyMeasurementsActions}
-            measurementFilter={measurementFilter}
-            actions={actions}
-          />
-        </StudyMeasurements>
-      </PanelMeasurement>
-    </div>
+    <ScrollArea>
+      <div data-cy="trackedMeasurements-panel">
+        <PanelMeasurement
+          measurementFilter={measurementFilter}
+          emptyComponent={EmptyComponent}
+          sourceChildren={props.children}
+        >
+          <StudyMeasurements grouping={props.grouping}>
+            <AccordionGroup.Trigger
+              key="trackingMeasurementsHeader"
+              asChild={true}
+            >
+              <Header key="trackingHeadChild" />
+            </AccordionGroup.Trigger>
+            <MeasurementsOrAdditionalFindings
+              key="measurementsOrAdditionalFindings"
+              activeStudyUID={trackedStudy}
+              customHeader={StudyMeasurementsActions}
+              measurementFilter={measurementFilter}
+              actions={actions}
+            />
+          </StudyMeasurements>
+        </PanelMeasurement>
+      </div>
+    </ScrollArea>
   );
 }
 

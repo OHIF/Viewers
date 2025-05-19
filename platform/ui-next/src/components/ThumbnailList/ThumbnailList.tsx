@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { Thumbnail } from '../Thumbnail';
 import { useDynamicMaxHeight } from '../../hooks/useDynamicMaxHeight';
-import { ScrollArea } from '../ScrollArea';
 
 const ThumbnailList = ({
   thumbnails,
@@ -27,11 +26,10 @@ const ThumbnailList = ({
   );
 
   return (
-    <ScrollArea className="flex flex-col gap-[4px] pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]">
+    <div className="flex flex-col">
       <div
         ref={ref}
-        style={{ maxHeight: maxHeight, minHeight: '300px' }}
-        className="flex flex-col gap-[4px] pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]"
+        className="flex flex-col gap-[2px] pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]"
       >
         {thumbnailItems.length > 0 && (
           <div
@@ -88,7 +86,7 @@ const ThumbnailList = ({
           </div>
         )}
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 

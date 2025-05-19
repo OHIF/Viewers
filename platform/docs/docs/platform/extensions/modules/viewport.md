@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Viewport
+title: Viewport Module
+summary: Documentation for OHIF Viewport Module, which provides React components that consume displaySets for viewing medical images and documents, with examples of 2D image viewing, structured reports, PDFs, and performance optimization techniques.
 ---
 
 # Module: Viewport

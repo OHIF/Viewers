@@ -1,19 +1,22 @@
 ---
 sidebar_position: 11
 sidebar_label: Playwright Testing
+title: Playwright End-to-End Testing
+summary: Guide to writing and running end-to-end tests for OHIF Viewer using Playwright, covering test configuration, screenshot verification, simulating user interactions, accessing application services, and using the VSCode extension for test recording.
 ---
 
 
 
 :::note
-You might need to run the `yarn playwright install ` for the first time if you have not
+You might need to run the `bun playwright install ` for the first time if you have not
 :::
 
 # Running the tests
 
 ```bash
+#
 # run the tests
-yarn test:e2e:ui
+bun test:e2e:ui
 ```
 
 

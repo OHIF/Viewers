@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Getting Started
+title: Getting Started with OHIF Development
+summary: Quick start guide for OHIF development, covering repository setup options, branch organization, development environment requirements, project initialization, and steps for building production-ready assets.
 ---
 
 # Getting Started

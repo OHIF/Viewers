@@ -26,6 +26,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
+const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 // read from ../version.txt
 const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
@@ -100,14 +101,30 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         ...(isProdBuild
           ? []
           : [
-              {
-                test: /\.[jt]sx?$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader',
-                options: {
-                  plugins: isProdBuild ? [] : ['react-refresh/babel'],
-                },
-              },
+              ...(IS_COVERAGE
+                ? [
+                    {
+                      test: /\.[jt]sx?$/,
+                      exclude: /node_modules/,
+                      use: {
+                        loader: 'babel-loader',
+                        options: {
+                          presets: ['@babel/preset-typescript', '@babel/preset-react'],
+                          plugins: ['istanbul'],
+                        },
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      test: /\.[jt]sx?$/,
+                      exclude: /node_modules/,
+                      loader: 'babel-loader',
+                      options: {
+                        plugins: isProdBuild ? [] : ['react-refresh/babel'],
+                      },
+                    },
+                  ]),
             ]),
         {
           test: /\.svg?$/,

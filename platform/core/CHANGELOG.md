@@ -3,6 +3,333 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.35...v3.11.0-beta.36) (2025-05-16)
+
+
+### Bug Fixes
+
+* backward compatibility with toolbar service ([#5052](https://github.com/OHIF/Viewers/issues/5052)) ([9b1b501](https://github.com/OHIF/Viewers/commit/9b1b501d83502d13b285050bd5fca102b7f7612c))
+
+
+
+
+
+# [3.11.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.34...v3.11.0-beta.35) (2025-05-16)
+
+
+### Features
+
+* **viewport:** Added getter for presentation id provider. ([#5053](https://github.com/OHIF/Viewers/issues/5053)) ([338bd86](https://github.com/OHIF/Viewers/commit/338bd865c3bc660bd5b377020977181939002856))
+
+
+
+
+
+# [3.11.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.33...v3.11.0-beta.34) (2025-05-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.32...v3.11.0-beta.33) (2025-05-15)
+
+
+### Features
+
+* **actions:** simplify action corner api through the toolbarService ([#5033](https://github.com/OHIF/Viewers/issues/5033)) ([7c15bb8](https://github.com/OHIF/Viewers/commit/7c15bb8901001eefedc72498176ac24f6662bfab))
+
+
+
+
+
+# [3.11.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.31...v3.11.0-beta.32) (2025-05-13)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.30...v3.11.0-beta.31) (2025-05-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.29...v3.11.0-beta.30) (2025-05-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.28...v3.11.0-beta.29) (2025-05-08)
+
+
+### Features
+
+* **app:** Decouple colorbar UI from service and enable action menu programatic control ([#5018](https://github.com/OHIF/Viewers/issues/5018)) ([1445e12](https://github.com/OHIF/Viewers/commit/1445e1212415e6e6957fce4a8fc6908aed69a93c))
+
+
+
+
+
+# [3.11.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.27...v3.11.0-beta.28) (2025-05-08)
+
+
+### Features
+
+* **thumbnails:** Enhance DICOM Thumbnail Rendering with different strategies ([#5004](https://github.com/OHIF/Viewers/issues/5004)) ([578c393](https://github.com/OHIF/Viewers/commit/578c3939f0271f762d6a1290216dbc4bf59dd88b))
+
+
+
+
+
+# [3.11.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.26...v3.11.0-beta.27) (2025-05-07)
+
+
+### Bug Fixes
+
+* **orientationMarker:** MPR orientation change should get reflected too ([#5020](https://github.com/OHIF/Viewers/issues/5020)) ([a5ea3e1](https://github.com/OHIF/Viewers/commit/a5ea3e15c70f6b8f2d16257f5f5c774c921d82cb))
+
+
+
+
+
+# [3.11.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.25...v3.11.0-beta.26) (2025-05-07)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.24...v3.11.0-beta.25) (2025-05-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.23...v3.11.0-beta.24) (2025-05-05)
+
+
+### Features
+
+* **data overlay:** add foreground background control plus orientation change in the UI and add RTDOSE support ([#5007](https://github.com/OHIF/Viewers/issues/5007)) ([cd4e640](https://github.com/OHIF/Viewers/commit/cd4e6408bc2964e5ee27427cdc328751eaf4d088))
+
+
+
+
+
+# [3.11.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.22...v3.11.0-beta.23) (2025-05-05)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.21...v3.11.0-beta.22) (2025-05-02)
+
+
+### Features
+
+* improve menu modals customizations ([#5011](https://github.com/OHIF/Viewers/issues/5011)) ([7dbe5e3](https://github.com/OHIF/Viewers/commit/7dbe5e37b06056fdd5262a131417013d112c3d30))
+
+
+
+
+
+# [3.11.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.20...v3.11.0-beta.21) (2025-05-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.19...v3.11.0-beta.20) (2025-05-01)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.18...v3.11.0-beta.19) (2025-05-01)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.17...v3.11.0-beta.18) (2025-04-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.16...v3.11.0-beta.17) (2025-04-29)
+
+
+### Bug Fixes
+
+* **referencelines:** and bring back the notification for worker updates but disallow duplication ([#5005](https://github.com/OHIF/Viewers/issues/5005)) ([98f8187](https://github.com/OHIF/Viewers/commit/98f8187dfeb8aec6eca145da75c855aec0da4e1d))
+
+
+
+
+
+# [3.11.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.15...v3.11.0-beta.16) (2025-04-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.14...v3.11.0-beta.15) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.13...v3.11.0-beta.14) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.12...v3.11.0-beta.13) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.11...v3.11.0-beta.12) (2025-04-22)
+
+
+### Features
+
+* Improve unsupported displayset messages ([#4979](https://github.com/OHIF/Viewers/issues/4979)) ([3b8faa8](https://github.com/OHIF/Viewers/commit/3b8faa8a76dde5088815431a947fec07db4a3c7f))
+
+
+
+
+
+# [3.11.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.10...v3.11.0-beta.11) (2025-04-18)
+
+
+### Bug Fixes
+
+* **dicomWebClient:** use public getter for activeDataSourceName instead of accessing private property ([#4973](https://github.com/OHIF/Viewers/issues/4973)) ([5688a2b](https://github.com/OHIF/Viewers/commit/5688a2b4b8f872163ff6492bb80d12cade4385cd))
+
+
+
+
+
+# [3.11.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.9...v3.11.0-beta.10) (2025-04-17)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.8...v3.11.0-beta.9) (2025-04-17)
+
+
+### Bug Fixes
+
+* **ExtensionManager:** getDataSources method ([#4959](https://github.com/OHIF/Viewers/issues/4959)) ([66a16cd](https://github.com/OHIF/Viewers/commit/66a16cd22f6cedc6e4287dd1304e1f87de4c0d08))
+
+
+
+
+
+# [3.11.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.7...v3.11.0-beta.8) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.6...v3.11.0-beta.7) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.5...v3.11.0-beta.6) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.4...v3.11.0-beta.5) (2025-04-14)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.3...v3.11.0-beta.4) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.2...v3.11.0-beta.3) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.1...v3.11.0-beta.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* make datasource selection work ([#4944](https://github.com/OHIF/Viewers/issues/4944)) ([a9b180c](https://github.com/OHIF/Viewers/commit/a9b180c5d427ec5a6823991cf0c6604be7af1cc2))
+
+
+
+
+
 # [3.11.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.0...v3.11.0-beta.1) (2025-04-10)
 
 **Note:** Version bump only for package @ohif/core

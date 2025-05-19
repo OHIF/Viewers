@@ -1,7 +1,7 @@
 # Packages
 node_modules
 .cursor/
-
+.nyc_output/
 # Output
 build
 dist
@@ -13,6 +13,7 @@ coverage/
 .yarn/
 .nx/
 addOns/yarn.lock
+playwright-report/
 
 # YALC (for Erik)
 .yalc
@@ -57,3 +58,5 @@ tests/test-results/
 tests/playwright-report/
 /blob-report/
 /playwright/.cache/
+
+**/.claude/settings.local.json

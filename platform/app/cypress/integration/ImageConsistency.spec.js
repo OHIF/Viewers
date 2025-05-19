@@ -56,7 +56,7 @@ describe('CS3D Image Consistency and Quality', () => {
       '2.16.124.113543.6004.101.103.20021117.061159.1.004'
     );
 
-    cy.wait(2000);
+    cy.wait(3000);
     testPixel(1018, 1028, 255);
     // Horizontal and vertical delta from this should not be contaminated
     // by values from center

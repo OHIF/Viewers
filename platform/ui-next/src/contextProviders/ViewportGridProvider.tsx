@@ -124,6 +124,7 @@ interface ViewportGridApi {
   getActiveViewportOptionByKey: (key: string) => any;
   setViewportGridSizeChanged: (props: any) => void;
   publishViewportsReady: () => void;
+  getDisplaySetsUIDsForViewport: (viewportId: string) => string[];
 }
 
 // Update the context type
@@ -539,6 +540,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
     setViewportGridSizeChanged: props => service.setViewportGridSizeChanged(props),
     publishViewportsReady: () => service.publishViewportsReady(),
     getLayoutOptionsFromState: state => service.getLayoutOptionsFromState(state),
+    getDisplaySetsUIDsForViewport: viewportId => service.getDisplaySetsUIDsForViewport(viewportId),
   };
 
   return (

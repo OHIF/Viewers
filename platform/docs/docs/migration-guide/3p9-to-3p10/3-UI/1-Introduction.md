@@ -1,6 +1,7 @@
 ---
 title: Introduction
 position: 1
+summary: Introduction to UI changes in OHIF 3.10, covering the migration of the image viewer to the @ohif/ui-next library, a complete rewrite of UI components offering extensibility, accessibility, and a modern design, with guidance on updating custom panels.
 ---
 
 
