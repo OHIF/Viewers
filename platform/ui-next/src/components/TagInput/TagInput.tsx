@@ -73,8 +73,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
   return (
     <div
       className={cn(
-        // caveat: :has() variant requires tailwind v3.4 or above: https://tailwindcss.com/blog/tailwindcss-v3-4#new-has-variant
-        'flex min-h-10 w-full flex-wrap gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-neutral-950 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:outline-none dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:has-[:focus-visible]:ring-neutral-300',
+        'border-input text-foreground bg-background hover:bg-primary/10 flex h-auto min-h-7 w-full flex-wrap gap-1.5 rounded border px-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-base file:font-medium focus-within:outline-none focus-within:ring-1 focus-within:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
     >
@@ -82,13 +81,14 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
         <Badge
           key={item}
           variant={'secondary'}
+          className="h-5 py-0 px-1.5 my-0.5"
         >
           {item}
           <Button
             type="button"
             variant={'ghost'}
             size={'icon'}
-            className={'ml-2 h-3 w-3'}
+            className={'ml-1 h-3.5 w-3.5 p-0'}
             onClick={() => {
               onChange(value.filter((i) => i !== item));
             }}
@@ -99,7 +99,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
       ))}
       <input
         className={
-          'flex-1 outline-none placeholder:text-neutral-500 dark:placeholder:text-neutral-400'
+          'flex-1 bg-transparent outline-none text-base placeholder:text-muted-foreground'
         }
         value={pendingDataPoint}
         onChange={(e) => setPendingDataPoint(e.target.value)}
