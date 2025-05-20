@@ -25,21 +25,21 @@ const toolbarButtons: Button[] = [
     id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'measurementSection',
+      buttonSection: true,
     },
   },
   {
     id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'moreToolsSection',
+      buttonSection: true,
     },
   },
   {
     id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
     props: {
-      buttonSection: 'advancedRenderingControlsSection',
+      buttonSection: true,
     },
   },
   // tool defs

@@ -50,7 +50,7 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.register(toolbarButtons);
       toolbarService.updateSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
 
-      toolbarService.updateSection('measurementSection', [
+      toolbarService.updateSection('MeasurementTools', [
         'line',
         'point',
         'polygon',

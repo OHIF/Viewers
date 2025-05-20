@@ -112,7 +112,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedRenderingControls',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+      toolbarService.updateSection('AdvancedRenderingControls', [
         'windowLevelMenuEmbedded',
         'voiManualControlMenu',
         'Colorbar',
@@ -130,7 +130,7 @@ function modeFactory({ modeConfiguration }) {
         'windowLevelMenu',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.measurementSection, [
+      toolbarService.updateSection('MeasurementTools', [
         'Length',
         'Bidirectional',
         'ArrowAnnotate',
@@ -142,7 +142,7 @@ function modeFactory({ modeConfiguration }) {
         'LivewireContour',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.moreToolsSection, [
+      toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
