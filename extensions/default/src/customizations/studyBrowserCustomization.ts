@@ -94,4 +94,34 @@ export default {
         },
     ],
   },
+  'studyBrowser.thumbnailClickCallback': {
+    callbacks: [
+      ({ activeViewportId, servicesManager, commandsManager, isHangingProtocolLayout }) =>
+        async displaySetInstanceUID => {
+          const { hangingProtocolService, uiNotificationService } = servicesManager.services;
+          let updatedViewports = [];
+          const viewportId = activeViewportId;
+
+          try {
+            updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+              viewportId,
+              displaySetInstanceUID,
+              isHangingProtocolLayout
+            );
+          } catch (error) {
+            console.warn(error);
+            uiNotificationService.show({
+              title: 'Thumbnail Click',
+              message: 'The selected display sets could not be added to the viewport.',
+              type: 'error',
+              duration: 3000,
+            });
+          }
+
+          commandsManager.run('setDisplaySetsForViewports', {
+            viewportsToUpdate: updatedViewports,
+          });
+        },
+    ],
+  },
 };
