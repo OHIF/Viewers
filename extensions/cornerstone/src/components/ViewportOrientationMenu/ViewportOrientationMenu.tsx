@@ -1,32 +1,36 @@
 import React from 'react';
-import { Icons, useViewportGrid } from '@ohif/ui-next';
+import { cn, Icons, ToolButton, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  Button,
-} from '@ohif/ui-next';
+import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
 
-function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
+function ViewportOrientationMenu({
+  location,
+  viewportId,
+  displaySets,
+  isOpen = false,
+  onOpen,
+  onClose,
+  disabled,
+  ...props
+}: withAppTypes<{
+  location?: string;
+  viewportId: string;
+  displaySets: AppTypes.DisplaySet[];
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+  disabled?: boolean;
+}>) {
+  const [gridState] = useViewportGrid();
+  const viewportIdToUse = viewportId || gridState.activeViewportId;
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
   const { servicesManager, commandsManager } = useSystem();
-  const [viewportGridState, viewportGridService] = useViewportGrid();
-  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
-
-  const viewportId = viewportGridState.activeViewportId;
+  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
 
   const handleOrientationChange = (orientation: string) => {
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportIdToUse);
     const currentViewportType = viewportInfo?.getViewportType();
-
-    // Get the displaySets in this viewport
-    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-    const displaySets = displaySetUIDs
-      .map(uid => displaySetService.getDisplaySetByUID(uid))
-      .filter(Boolean);
 
     if (!displaySets.length) {
       return;
@@ -56,11 +60,13 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
         orientationEnum = Enums.OrientationAxis.ACQUISITION;
     }
 
+    const displaySetUIDs = displaySets.map(ds => ds.displaySetInstanceUID);
+
     // If viewport is not already a volume type, we need to convert it
     if (currentViewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
       // Configure the viewport to be a volume viewport with current display sets
       const updatedViewport = {
-        viewportId,
+        viewportId: viewportIdToUse,
         displaySetInstanceUIDs: displaySetUIDs,
         viewportOptions: {
           viewportType: Enums.ViewportType.ORTHOGRAPHIC,
@@ -76,64 +82,99 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
     } else {
       // Set the viewport orientation
       commandsManager.runCommand('setViewportOrientation', {
-        viewportId,
+        viewportId: viewportIdToUse,
         orientation: orientationEnum,
       });
     }
+
+    // Close the menu after selection
+    onClose?.();
   };
-  const { viewportActionCornersService } = servicesManager.services;
-  const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-  const displaySets = displaySetUIDs
-    .map(uid => displaySetService.getDisplaySetByUID(uid))
-    .filter(Boolean);
+
+  const handleOpenChange = (openState: boolean) => {
+    if (openState) {
+      onOpen?.();
+    } else {
+      onClose?.();
+    }
+  };
 
   if (!displaySets.length) {
     return null;
   }
 
-  const hasReconstructableDisplaySet = displaySets.some(ds => ds.isReconstructable);
+  // Get proper alignment and side based on the location using toolbar service
+  const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
-  // Get proper alignment and side based on the location
-  let align = 'center';
-  let side = 'bottom';
-
-  if (location !== undefined) {
-    const positioning = viewportActionCornersService.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
-  }
-
+  const Icon = <Icons.OrientationSwitch className={iconClassName} />;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-highlight"
-          disabled={!hasReconstructableDisplaySet}
-        >
-          <Icons.OrientationSwitch />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="min-w-[160px]"
+    <Popover
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+    >
+      <PopoverTrigger
+        asChild
+        className={cn('flex items-center justify-center')}
+      >
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              disabled={disabled}
+              icon="OrientationSwitch"
+              {...props}
+              {...containerProps}
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+              onClick={() => {}}
+            >
+              {Icon}
+            </Button>
+          )}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-[100px] p-1"
         align={align}
         side={side}
-        sideOffset={5}
       >
-        <DropdownMenuLabel className="-ml-1">Orientation</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => handleOrientationChange('axial')}>Axial</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOrientationChange('sagittal')}>
-          Sagittal
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOrientationChange('coronal')}>
-          Coronal
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOrientationChange('acquisition')}>
-          Acquisition
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <div className="flex flex-col">
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('axial')}
+          >
+            Axial
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('sagittal')}
+          >
+            Sagittal
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('coronal')}
+          >
+            Coronal
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('acquisition')}
+          >
+            Acquisition
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 

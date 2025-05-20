@@ -16,6 +16,8 @@ export type DisplaySet = {
   label?: string;
   /** Flag indicating if this is an overlay display set (e.g., SEG, RTSTRUCT) */
   isOverlayDisplaySet?: boolean;
+  /** flag indicating if it supports window level */
+  supportsWindowLevel?: boolean;
 
   // Details about how to display:
   /**
@@ -33,9 +35,19 @@ export type DisplaySet = {
    */
   renderedUrl?: string;
 
+  /**
+   * The instance UID of the display set that this display set references.
+   * This is used to determine if the display set is a referenced display set.
+   * It usually is for SEG, RTSTRUCT, etc.
+   */
+  referencedDisplaySetInstanceUID?: string;
+
   SeriesDate?: string;
   SeriesTime?: string;
   instance?: InstanceMetadata;
+
+  isHydrated?: boolean;
+  isRehydratable?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

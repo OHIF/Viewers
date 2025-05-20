@@ -23,7 +23,6 @@ import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
-import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
 import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
 import captureViewportModal from '../../../assets/img/captureViewportModal.png';
 import aboutModal from '../../../assets/img/aboutModal.png';
@@ -905,56 +904,6 @@ window.config = {
           {
             'ohif.aboutModal': {
               $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'viewportActionMenu.windowLevelActionMenu',
-    description:
-      'Configures the display and location of the window level action menu in the viewport.',
-    image: windowLevelActionMenu,
-    default: null,
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportActionMenu.windowLevelActionMenu': {
-              $merge: {
-               location: 0, // Set the location of the menu in the viewport.
-                            // 0: topLeft
-                            // 1: topRight
-                            // 2: bottomLeft
-                            // 3: bottomRight
-              }
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'viewportActionMenu.dataOverlay',
-    description: 'Configures the display and location of the data overlay in the viewport.',
-    image: segmentationOverlay,
-    default: null,
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportActionMenu.dataOverlay': {
-               $merge: {
-                 enabled: true,
-                 location: 1, // Set the location of the overlay in the viewport.
-                              // 0: topLeft
-                              // 1: topRight
-                              // 2: bottomLeft
-                              // 3: bottomRight
-               }
             },
           },
         ],

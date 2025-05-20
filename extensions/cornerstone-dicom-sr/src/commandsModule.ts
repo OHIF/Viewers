@@ -160,36 +160,18 @@ const commandsModule = (props: withAppTypes) => {
      * Loads measurements by hydrating and loading the SR for the given display set instance UID
      * and displays it in the active viewport.
      */
-    loadSRMeasurements: ({ displaySetInstanceUID }) => {
-      const { SeriesInstanceUIDs } = hydrateStructuredReport(
+    hydrateStructuredReport: ({ displaySetInstanceUID }) => {
+      return hydrateStructuredReport(
         { servicesManager, extensionManager, commandsManager },
         displaySetInstanceUID
       );
-
-      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
-      if (displaySets.length) {
-        commandsManager.run('setDisplaySetsForViewports', {
-          viewportsToUpdate: [
-            {
-              viewportId: viewportGridService.getActiveViewportId(),
-              displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-            },
-          ],
-        });
-      }
     },
   };
 
   const definitions = {
-    downloadReport: {
-      commandFn: actions.downloadReport,
-    },
-    storeMeasurements: {
-      commandFn: actions.storeMeasurements,
-    },
-    loadSRMeasurements: {
-      commandFn: actions.loadSRMeasurements,
-    },
+    downloadReport: actions.downloadReport,
+    storeMeasurements: actions.storeMeasurements,
+    hydrateStructuredReport: actions.hydrateStructuredReport,
   };
 
   return {

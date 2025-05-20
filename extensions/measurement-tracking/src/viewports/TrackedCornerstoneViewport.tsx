@@ -2,32 +2,28 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { ViewportActionArrows } from '@ohif/ui-next';
-import { useViewportGrid, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
-import { useTranslation } from 'react-i18next';
+import { useSystem } from '@ohif/core';
 
 function TrackedCornerstoneViewport(
   props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
 ) {
-  const { displaySets, viewportId, servicesManager, extensionManager } = props;
+  const { servicesManager } = useSystem();
+  const { displaySets, viewportId } = props as {
+    displaySets: AppTypes.DisplaySet[];
+    viewportId: string;
+    servicesManager: AppTypes.Services;
+  };
 
-  const {
-    measurementService,
-    cornerstoneViewportService,
-    viewportGridService,
-    viewportActionCornersService,
-  } = servicesManager.services;
+  const { measurementService, cornerstoneViewportService, viewportGridService, toolbarService } =
+    servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
-  const { t } = useTranslation('Common');
-
-  const [viewportGrid] = useViewportGrid();
-  const { activeViewportId } = viewportGrid;
-
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
 
   const [isTracked, setIsTracked] = useState(false);
@@ -193,39 +189,9 @@ function TrackedCornerstoneViewport(
     [measurementService, servicesManager, trackedMeasurementUID, trackedMeasurements, viewportId]
   );
 
-  useEffect(() => {
-    const statusComponent = _getStatusComponent(isTracked, t);
-    const arrowsComponent = _getArrowsComponent(
-      isTracked,
-      switchMeasurement,
-      viewportId === activeViewportId
-    );
-
-    viewportActionCornersService.addComponents([
-      {
-        viewportId,
-        id: 'viewportStatusComponent',
-        component: statusComponent,
-        indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-      {
-        viewportId,
-        id: 'viewportActionArrowsComponent',
-        component: arrowsComponent,
-        indexPriority: 0,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-    ]);
-  }, [activeViewportId, isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
-
   const getCornerstoneViewport = () => {
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
-
     return (
-      <Component
+      <OHIFCornerstoneViewport
         {...props}
         onElementEnabled={evt => {
           props.onElementEnabled?.(evt);
@@ -315,31 +281,5 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
     />
   );
 };
-
-function _getStatusComponent(isTracked, t) {
-  if (!isTracked) {
-    return null;
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span>
-          <Icons.StatusTracking className="text-muted-foreground mt-0.5 ml-0.5" />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent
-        align="start"
-        side="bottom"
-      >
-        {isTracked ? (
-          <>{t('Series is tracked and can be viewed in the measurement panel')}</>
-        ) : (
-          <>{t('Measurements for untracked series will not be shown in the measurements panel')}</>
-        )}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
 
 export default TrackedCornerstoneViewport;

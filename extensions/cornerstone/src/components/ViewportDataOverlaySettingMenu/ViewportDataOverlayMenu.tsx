@@ -16,14 +16,16 @@ import {
 import { useSystem } from '@ohif/core';
 
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import SelectItemWithModality from '../SelectItemWithModality';
+import { useViewportRendering } from '../../hooks';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
   const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
   const [pendingSegmentations, setPendingSegmentations] = useState<string[]>([]);
-  const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
+  const { toggleColorbar } = useViewportRendering(viewportId);
 
-  const { hangingProtocolService } = servicesManager.services;
+  const { hangingProtocolService, toolbarService } = servicesManager.services;
 
   const {
     backgroundDisplaySet,
@@ -33,6 +35,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     overlayDisplaySets,
     foregroundDisplaySets,
   } = useViewportDisplaySets(viewportId);
+
+  const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
   /**
    * Change the background display set
@@ -46,21 +50,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     commandsManager.run('setDisplaySetsForViewports', {
       viewportsToUpdate: updatedViewports,
     });
-  };
-
-  /**
-   * Handle threshold and opacity toggle
-   */
-  const handleThresholdOpacityToggle = (checked: boolean) => {
-    setThresholdOpacityEnabled(checked);
-
-    if (foregroundDisplaySets.length > 0) {
-      // Example implementation of threshold/opacity adjustment
-      commandsManager.runCommand('setForegroundThresholdOpacity', {
-        viewportId,
-        enabled: checked,
-      });
-    }
   };
 
   /**
@@ -182,6 +171,18 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     }
   };
 
+  // Check if the advanced window level components exist in toolbar
+  const hasAdvancedRenderingControls = !!toolbarService.getButton('AdvancedRenderingControls');
+  const hasOpacityMenu = !!toolbarService.getButton('opacityMenu');
+
+  const handleThresholdOpacityToggle = () => {
+    const newValue = !thresholdOpacityEnabled;
+    if (hasAdvancedRenderingControls) {
+      toggleColorbar();
+    }
+    setThresholdOpacityEnabled(newValue);
+  };
+
   return (
     <div className="bg-popover flex h-full w-[275px] flex-col rounded rounded-md p-1.5">
       {/* Top buttons row */}
@@ -232,15 +233,17 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <SelectItem
                     key={displaySet.displaySetInstanceUID}
                     value={displaySet.displaySetInstanceUID}
+                    className="pr-2"
                   >
-                    {displaySet.label}
+                    <SelectItemWithModality displaySet={displaySet} />
                   </SelectItem>
                   {potentialOverlayDisplaySets.map(item => (
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -284,8 +287,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -334,15 +338,17 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <SelectItem
                     key={displaySet.displaySetInstanceUID}
                     value={displaySet.displaySetInstanceUID}
+                    className="pr-2"
                   >
-                    {displaySet.label}
+                    <SelectItemWithModality displaySet={displaySet} />
                   </SelectItem>
                   {potentialForegroundDisplaySets.map(item => (
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -386,8 +392,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     <SelectItem
                       key={item.displaySetInstanceUID}
                       value={item.displaySetInstanceUID}
+                      className="pr-2"
                     >
-                      {item.label}
+                      <SelectItemWithModality displaySet={item} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -420,7 +427,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         <div className="mt-1 mb-1 flex items-center px-1">
           <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
           <Select
-            value={backgroundDisplaySet.displaySetInstanceUID}
+            value={backgroundDisplaySet?.displaySetInstanceUID}
             onValueChange={value => {
               const selectedDisplaySet = potentialBackgroundDisplaySets.find(
                 ds => ds.displaySetInstanceUID === value
@@ -433,8 +440,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             <SelectTrigger className="flex-1">
               <SelectValue>
                 {(
-                  backgroundDisplaySet.SeriesDescription ||
-                  backgroundDisplaySet.label ||
+                  backgroundDisplaySet?.SeriesDescription ||
+                  backgroundDisplaySet?.label ||
                   'background'
                 ).toUpperCase()}
               </SelectValue>
@@ -444,15 +451,16 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 <SelectItem
                   key={displaySet.displaySetInstanceUID}
                   value={displaySet.displaySetInstanceUID}
+                  className="pr-2"
                 >
-                  {displaySet.label}
+                  <SelectItemWithModality displaySet={displaySet} />
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
-      {/* {foregroundDisplaySets.length > 0 && (
+      {foregroundDisplaySets.length > 0 && (hasAdvancedRenderingControls || hasOpacityMenu) && (
         <div className="mt-1 ml-7">
           <div className="flex items-center">
             <Switch
@@ -470,7 +478,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             </label>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
