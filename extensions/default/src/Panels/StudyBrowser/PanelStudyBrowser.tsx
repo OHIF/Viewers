@@ -86,7 +86,7 @@ function PanelStudyBrowser({
         appConfig: extensionManager._appConfig,
       };
 
-      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs)) ?? [];
 
       for (const handler of handlers) {
         await handler(displaySetInstanceUID);
