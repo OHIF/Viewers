@@ -11,6 +11,7 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '../../hooks';
 import { utils, Types as coreTypes } from '@ohif/core';
+import { history } from '../../utils/history';
 
 import {
   StudyListExpandedRow,
@@ -67,6 +68,10 @@ function WorkList({
   // ~ Filters
   const searchParams = useSearchParams();
   const navigate = useNavigate();
+
+  // Expose the react router dom navigation.
+  history.navigate ??= navigate;
+
   const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(searchParams);
   const [sessionQueryFilterValues, updateSessionQueryFilterValues] = useSessionStorage({
