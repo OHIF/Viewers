@@ -22,7 +22,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
   const tools = {
     active: [
       {
-        toolName: toolNames.WindowLevel,
+        toolName: toolNames.UltrasoundAnnotation,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
@@ -79,7 +79,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         },
       },
       { toolName: toolNames.UltrasoundDirectional },
-      { toolName: toolNames.UltrasoundAnnotation },
+      { toolName: toolNames.WindowLevel },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },

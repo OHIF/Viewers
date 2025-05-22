@@ -1,4 +1,7 @@
 import { id } from './id';
+import getPanelModule from './getPanelModule';
+import getCommandsModule from './getCommandsModule';
+import getCustomizationModule from './getCustomizationModule';
 
 /**
  * You can remove any of the following modules if you don't need them.
@@ -23,7 +26,7 @@ export default {
    * iconName, iconLabel, label, component} object. Example of a panel module
    * is the StudyBrowserPanel that is provided by the default extension in OHIF.
    */
-  getPanelModule: ({ servicesManager, commandsManager, extensionManager }) => {},
+  getPanelModule,
   /**
    * ViewportModule should provide a list of viewports that will be available in OHIF
    * for Modes to consume and use in the viewports. Each viewport is defined by
@@ -69,7 +72,8 @@ export default {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({ servicesManager, commandsManager, extensionManager }) => {},
+  getCommandsModule,
+  getCustomizationModule,
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.

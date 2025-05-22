@@ -57,6 +57,10 @@ const dicomRT = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
 
+const usAnnotation = {
+  panel: '@ohif/extension-usAnnotation.panelModule.USAnnotationPanel',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -68,6 +72,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
+  '@ohif/extension-usAnnotation': '^0.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -77,7 +82,7 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'usAnnotation',
-    displayName: i18n.t('Modes:Basic Viewer'),
+    displayName: i18n.t('US Annotation'),
     /**
      * Lifecycle hooks
      */
@@ -169,6 +174,45 @@ function modeFactory({ modeConfiguration }) {
           $set: true,
         },
       });
+      customizationService.setCustomizations({
+        autoCineModalities: {
+          $set: [],
+        },
+      });
+      customizationService.setCustomizations(
+        {
+          'ohif.hotkeyBindings': {
+            $push: [
+              {
+                commandName: 'switchUSAnnotationToPleuraLine',
+                label: 'Add new pleura line',
+                keys: ['W'],
+              },
+              {
+                commandName: 'switchUSAnnotationToBLine',
+                label: 'Add new B-line',
+                keys: ['S'],
+              },
+              {
+                commandName: 'deleteLastPleuraAnnotation',
+                label: 'Delete last pleura line',
+                keys: ['E'],
+              },
+              {
+                commandName: 'deleteLastBLineAnnotation',
+                label: 'Delete last B-line',
+                keys: ['D'],
+              },
+              {
+                commandName: 'toggleDisplayFanAnnotation',
+                label: 'Toggle overlay',
+                keys: ['O'],
+              },
+            ],
+          },
+        },
+        'mode'
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -215,8 +259,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.segmentation, tracked.measurements],
-              rightPanelClosed: true,
+              rightPanels: [usAnnotation.panel, cornerstone.segmentation, tracked.measurements],
               rightPanelResizable: true,
               viewports: [
                 {
