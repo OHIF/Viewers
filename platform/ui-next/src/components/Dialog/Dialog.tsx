@@ -65,6 +65,7 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 interface DialogContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   unstyled?: boolean;
+  shouldAnimate?: boolean;
 }
 
 const DialogContent = React.forwardRef<
@@ -72,7 +73,7 @@ const DialogContent = React.forwardRef<
   DialogContentProps & {
     children?: React.ReactNode;
   }
->(({ className, children, unstyled, ...props }, ref) => {
+>(({ className, children, unstyled, shouldAnimate, ...props }, ref) => {
   const { isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick, showOverlay } =
     React.useContext(DialogContext);
 
@@ -87,7 +88,10 @@ const DialogContent = React.forwardRef<
   // When isDraggable, we remove the built‑in centering so our inline transform takes over.
   const contentClassName = cn(
     unstyled ? '' : 'w-full',
-    'max-w-md bg-muted data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 grid gap-4 p-4 shadow-lg duration-200 sm:rounded-lg',
+    'max-w-md bg-muted fixed left-[50%] top-[50%] z-50 grid gap-4 p-4 shadow-lg sm:rounded-lg',
+    shouldAnimate
+      ? 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] duration-200'
+      : '',
     !isDraggable ? 'translate-x-[-50%] translate-y-[-50%]' : '',
     className
   );
