@@ -83,7 +83,6 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
         ref={contentRef}
         className={cn(unstyled ? 'p-0' : '', containerClassName, contentVisibility)}
         unstyled={unstyled}
-        shouldAnimate={!defaultPosition}
         style={{
           ...(defaultPosition
             ? {
@@ -92,6 +91,8 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
                 top: `${defaultPosition.y}px`,
                 transform: 'translate(0, 0)',
                 margin: 0,
+                animation: 'none',
+                transition: 'none',
               }
             : {}),
         }}
