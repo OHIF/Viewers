@@ -58,7 +58,7 @@ const dicomRT = {
 };
 
 const usAnnotation = {
-  panel: '@ohif/extension-usAnnotation.panelModule.USAnnotationPanel',
+  panel: '@ohif/extension-ultrasound-pleura-bline.panelModule.USAnnotationPanel',
 };
 
 const extensionDependencies = {
@@ -72,7 +72,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
-  '@ohif/extension-usAnnotation': '^0.0.1',
+  '@ohif/extension-ultrasound-pleura-bline': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -82,7 +82,7 @@ function modeFactory({ modeConfiguration }) {
     // We should not be.
     id,
     routeName: 'usAnnotation',
-    displayName: i18n.t('US Annotation'),
+    displayName: i18n.t('US Pleura B-line Annotations'),
     /**
      * Lifecycle hooks
      */
@@ -165,22 +165,18 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
-        'UltrasoundAnnotationTool',
+        'UltrasoundPleuraBLineTool',
         'WindowLevelRegion',
       ]);
 
-      customizationService.setCustomizations({
-        'panelSegmentation.disableEditing': {
-          $set: true,
-        },
-      });
-      customizationService.setCustomizations({
-        autoCineModalities: {
-          $set: [],
-        },
-      });
       customizationService.setCustomizations(
         {
+          'panelSegmentation.disableEditing': {
+            $set: true,
+          },
+          autoCineModalities: {
+            $set: [],
+          },
           'ohif.hotkeyBindings': {
             $push: [
               {
@@ -244,7 +240,7 @@ function modeFactory({ modeConfiguration }) {
 
       return {
         valid: modalities_list.includes('US'),
-        description: 'US Annotation mode only supports the US modality',
+        description: 'Pleura b-lines annotation mode when the study involves US modality series',
       };
     },
     routes: [

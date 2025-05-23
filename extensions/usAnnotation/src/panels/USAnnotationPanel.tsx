@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Enums as csToolsEnums, UltrasoundAnnotationTool } from '@cornerstonejs/tools';
+import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import { eventTarget, utilities } from '@cornerstonejs/core';
+import { useSystem } from '@ohif/core';
 
 import {
   /* Layout */
@@ -19,26 +20,14 @@ import {
 import MultiLabelInput from './MultiLabelInput';
 
 /**
- * Props for the USAnnotationPanel component
- */
-interface USAnnotationPanelProps {
-  /** Manager for executing commands */
-  commandsManager: any;
-  /** Manager for accessing services */
-  servicesManager: any;
-}
-
-/**
  * A side panel that drives the ultrasound annotation workflow.
  * It provides controls for managing annotations, toggling display options,
  * and downloading annotations as JSON.
- * @param props - Component props
  * @returns The USAnnotationPanel component
  */
-export default function USAnnotationPanel({
-  commandsManager,
-  servicesManager,
-}: USAnnotationPanelProps) {
+export default function USAnnotationPanel() {
+  const { servicesManager, commandsManager } = useSystem();
+
   /** ──────────────────────────────────────────────────────
    * Local state – purely UI related (no business logic).   */
 
@@ -63,8 +52,10 @@ export default function USAnnotationPanel({
    * Switches the active annotation type (pleura or B-line)
    * @param type - The annotation type to switch to
    */
-  const switchAnnotation = (type: string) =>
+  const switchAnnotation = (type: string) => {
+    commandsManager.runCommand('setToolActive', { toolName: UltrasoundPleuraBLineTool.toolName });
     commandsManager.runCommand('switchUSAnnotation', { annotationType: type });
+  };
 
   /**
    * Deletes the last annotation of the specified type
@@ -217,7 +208,9 @@ export default function USAnnotationPanel({
           <Button
             variant="secondary"
             className="flex-1 py-3"
-            onClick={() => switchAnnotation(UltrasoundAnnotationTool.USAnnotationType.PLEURA)}
+            onClick={() =>
+              switchAnnotation(UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA)
+            }
           >
             <Icons.Plus /> Pleura line
           </Button>
@@ -225,7 +218,9 @@ export default function USAnnotationPanel({
           <Button
             variant="secondary"
             className="flex-1 py-3"
-            onClick={() => switchAnnotation(UltrasoundAnnotationTool.USAnnotationType.BLINE)}
+            onClick={() =>
+              switchAnnotation(UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE)
+            }
           >
             <Icons.Plus /> B-line
           </Button>
@@ -238,13 +233,17 @@ export default function USAnnotationPanel({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={() => deleteLast(UltrasoundAnnotationTool.USAnnotationType.BLINE)}
+                onClick={() =>
+                  deleteLast(UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE)
+                }
               >
                 <Icons.Delete className="text-foreground" />
                 <span className="pl-2">B-line annotation</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => deleteLast(UltrasoundAnnotationTool.USAnnotationType.PLEURA)}
+                onClick={() =>
+                  deleteLast(UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA)
+                }
               >
                 <Icons.Delete className="text-foreground" />
                 <span className="pl-2">Pleura annotation</span>
@@ -353,7 +352,7 @@ export default function USAnnotationPanel({
    */
   const annotationModified = React.useCallback(
     event => {
-      if (event.detail.annotation.metadata.toolName === UltrasoundAnnotationTool.toolName) {
+      if (event.detail.annotation.metadata.toolName === UltrasoundPleuraBLineTool.toolName) {
         const activeViewportId = viewportGridService.getActiveViewportId();
         const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
         // copying to avoid mutating the original array
@@ -364,7 +363,7 @@ export default function USAnnotationPanel({
           }
           return imageIdsMonitored.includes(imageId);
         };
-        const mapping = UltrasoundAnnotationTool.countAnnotations(viewport.element, imageIdFilter);
+        const mapping = UltrasoundPleuraBLineTool.countAnnotations(viewport.element, imageIdFilter);
         const keys = Array.from(mapping.keys());
         const updatedFrames = keys.map((key, index) => {
           const { pleura, bLine, frame } = mapping.get(key) || { pleura: 0, bLine: 0, frame: 0 };

@@ -90,42 +90,22 @@ const MultiLabelInput: React.FC<MultiLabelInputProps> = ({
         placeholder={placeholder}
         className={className}
       />
-      <div>
+      <div className="flex flex-wrap">
         {internalLabels.map((label, index) => (
-          <span key={index} className="label">
+          <span
+            key={index}
+            className="m-1 inline-flex items-center rounded-full bg-[#2a2a4a] px-4 py-1 text-white"
+          >
             {label}
-            <button className="remove-btn" onClick={() => handleRemoveLabel(label)}>
-              X
+            <button
+              className="ml-2.5 cursor-pointer rounded-full bg-blue-800 px-2 py-0.5 text-xs text-white transition-colors hover:bg-blue-600"
+              onClick={() => handleRemoveLabel(label)}
+            >
+              ×
             </button>
           </span>
         ))}
       </div>
-      <style>{`
-        .label {
-          background-color: #2a2a4a;
-          color: #ffffff;
-          padding: 5px 15px;
-          margin: 5px;
-          border-radius: 50px; /* Makes the label look like an ellipse */
-          display: inline-flex;
-          align-items: center;
-        }
-
-        .remove-btn {
-          background-color: #1e3a8a; /* Dark blue color */
-          color: white;
-          border: none;
-          margin-left: 10px;
-          cursor: pointer;
-          padding: 3px 8px;
-          font-size: 12px;
-          border-radius: 50%; /* Makes the "X" button circular */
-        }
-
-        .remove-btn:hover {
-          background-color: #2563eb; /* Lighter blue on hover */
-        }
-      `}</style>
     </div>
   );
 };

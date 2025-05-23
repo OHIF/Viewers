@@ -1,4 +1,4 @@
-import { UltrasoundAnnotationTool, Enums as csToolsEnums } from '@cornerstonejs/tools';
+import { UltrasoundPleuraBLineTool, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
 import { setShowPercentage } from './getCustomizationModule';
 import { eventTarget, triggerEvent, utilities } from '@cornerstonejs/core';
@@ -34,13 +34,13 @@ function commandsModule({
      * Switches the active ultrasound annotation type
      * @param options - Object containing the annotationType to switch to
      */
-    switchUSAnnotation: ({ annotationType }) => {
+    switchUSPleuraBLineAnnotation: ({ annotationType }) => {
       const activeViewportId = viewportGridService.getActiveViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(activeViewportId);
       if (!toolGroup) {
         return;
       }
-      const usAnnotation = toolGroup.getToolInstance(UltrasoundAnnotationTool.toolName);
+      const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
       if (usAnnotation) {
         usAnnotation.setActiveAnnotationType(annotationType);
       }
@@ -48,30 +48,30 @@ function commandsModule({
     /**
      * Convenience method to switch to pleura line annotation type
      */
-    switchUSAnnotationToPleuraLine: () => {
-      actions.switchUSAnnotation({
-        annotationType: UltrasoundAnnotationTool.USAnnotationType.PLEURA,
+    switchUSPleuraBLineAnnotationToPleuraLine: () => {
+      actions.switchUSPleuraBLineAnnotation({
+        annotationType: UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA,
       });
     },
     /**
      * Convenience method to switch to B-line annotation type
      */
-    switchUSAnnotationToBLine: () => {
-      actions.switchUSAnnotation({
-        annotationType: UltrasoundAnnotationTool.USAnnotationType.BLINE,
+    switchUSPleuraBLineAnnotationToBLine: () => {
+      actions.switchUSPleuraBLineAnnotation({
+        annotationType: UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE,
       });
     },
     /**
      * Deletes the last annotation of the specified type
      * @param options - Object containing the annotationType to delete
      */
-    deleteLastAnnotation: ({ annotationType }) => {
+    deleteLastUSPleuraBLineAnnotation: ({ annotationType }) => {
       const activeViewportId = viewportGridService.getActiveViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(activeViewportId);
       if (!toolGroup) {
         return;
       }
-      const usAnnotation = toolGroup.getToolInstance(UltrasoundAnnotationTool.toolName);
+      const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
       if (usAnnotation) {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
         usAnnotation.deleteLastAnnotationType(viewport.element, annotationType);
@@ -83,16 +83,16 @@ function commandsModule({
      * Convenience method to delete the last pleura line annotation
      */
     deleteLastPleuraAnnotation: () => {
-      actions.deleteLastAnnotation({
-        annotationType: UltrasoundAnnotationTool.USAnnotationType.PLEURA,
+      actions.deleteLastUSPleuraBLineAnnotation({
+        annotationType: UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA,
       });
     },
     /**
      * Convenience method to delete the last B-line annotation
      */
     deleteLastBLineAnnotation: () => {
-      actions.deleteLastAnnotation({
-        annotationType: UltrasoundAnnotationTool.USAnnotationType.BLINE,
+      actions.deleteLastUSPleuraBLineAnnotation({
+        annotationType: UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE,
       });
     },
     /**
@@ -105,11 +105,11 @@ function commandsModule({
       if (!toolGroup) {
         return;
       }
-      const configuration = toolGroup.getToolConfiguration(UltrasoundAnnotationTool.toolName);
+      const configuration = toolGroup.getToolConfiguration(UltrasoundPleuraBLineTool.toolName);
       if (!configuration) {
         return;
       }
-      toolGroup.setToolConfiguration(UltrasoundAnnotationTool.toolName, {
+      toolGroup.setToolConfiguration(UltrasoundPleuraBLineTool.toolName, {
         [attribute]: !configuration[attribute],
       });
       const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
@@ -125,11 +125,11 @@ function commandsModule({
       if (!toolGroup) {
         return;
       }
-      const configuration = toolGroup.getToolConfiguration(UltrasoundAnnotationTool.toolName);
+      const configuration = toolGroup.getToolConfiguration(UltrasoundPleuraBLineTool.toolName);
       if (!configuration) {
         return;
       }
-      toolGroup.setToolConfiguration(UltrasoundAnnotationTool.toolName, {
+      toolGroup.setToolConfiguration(UltrasoundPleuraBLineTool.toolName, {
         [attribute]: value,
       });
       const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
@@ -181,7 +181,7 @@ function commandsModule({
       triggerEvent(eventTarget, csToolsEnums.Events.ANNOTATION_MODIFIED, {
         annotation: {
           metadata: {
-            toolName: UltrasoundAnnotationTool.toolName,
+            toolName: UltrasoundPleuraBLineTool.toolName,
           },
         },
       });
@@ -192,7 +192,7 @@ function commandsModule({
      * @param imageIds - Array of image IDs to include in the JSON
      * @returns A JSON object containing the annotations data or undefined if generation fails
      */
-    generateJSON: (labels: string[] = [], imageIds: string[] = []) => {
+    generateUSPleuraBLineAnnotationsJSON: (labels: string[] = [], imageIds: string[] = []) => {
       const activeViewportId = viewportGridService.getActiveViewportId();
       const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
       if (!viewport) {
@@ -207,9 +207,9 @@ function commandsModule({
       if (!toolGroup) {
         return;
       }
-      const usAnnotation = toolGroup.getToolInstance(UltrasoundAnnotationTool.toolName);
+      const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
       if (usAnnotation) {
-        const configuration = toolGroup.getToolConfiguration(UltrasoundAnnotationTool.toolName);
+        const configuration = toolGroup.getToolConfiguration(UltrasoundPleuraBLineTool.toolName);
         const imageId = viewport.getCurrentImageId();
         const filterImageIds = (imageId: string) => {
           if (imageIds.length === 0) {
@@ -218,7 +218,7 @@ function commandsModule({
             return imageIds.includes(imageId);
           }
         };
-        const annotations = UltrasoundAnnotationTool.filterAnnotations(
+        const annotations = UltrasoundPleuraBLineTool.filterAnnotations(
           viewport.element,
           filterImageIds
         );
@@ -237,12 +237,14 @@ function commandsModule({
               b_lines: [],
             };
           }
-          if (annotationType === UltrasoundAnnotationTool.USAnnotationType.PLEURA) {
+          if (annotationType === UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA) {
             frame_annotations[imageIdIndex].pleura_lines.push([
               [p1[0], p1[1], 0],
               [p2[0], p2[1], 0],
             ]);
-          } else if (annotationType === UltrasoundAnnotationTool.USAnnotationType.BLINE) {
+          } else if (
+            annotationType === UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE
+          ) {
             frame_annotations[imageIdIndex].b_lines.push([
               [p1[0], p1[1], 0],
               [p2[0], p2[1], 0],
@@ -273,8 +275,8 @@ function commandsModule({
      * Downloads the ultrasound annotations as a JSON file
      * @param options - Object containing labels and imageIds arrays
      */
-    downloadJSON({ labels = [], imageIds = [] }) {
-      const json = actions.generateJSON(labels, imageIds);
+    downloadUSPleuraBLineAnnotationsJSON({ labels = [], imageIds = [] }) {
+      const json = actions.generateUSPleuraBLineAnnotationsJSON(labels, imageIds);
       if (!json) {
         return;
       }
@@ -305,10 +307,10 @@ function commandsModule({
 
   const definitions = {
     switchUSAnnotation: {
-      commandFn: actions.switchUSAnnotation,
+      commandFn: actions.switchUSPleuraBLineAnnotation,
     },
     deleteLastAnnotation: {
-      commandFn: actions.deleteLastAnnotation,
+      commandFn: actions.deleteLastUSPleuraBLineAnnotation,
     },
     toggleDepthGuide: {
       commandFn: actions.toggleDepthGuide,
@@ -332,16 +334,16 @@ function commandsModule({
       commandFn: actions.setDisplayFanAnnotation,
     },
     generateJSON: {
-      commandFn: actions.generateJSON,
+      commandFn: actions.generateUSPleuraBLineAnnotationsJSON,
     },
     downloadJSON: {
-      commandFn: actions.downloadJSON,
+      commandFn: actions.downloadUSPleuraBLineAnnotationsJSON,
     },
     switchUSAnnotationToPleuraLine: {
-      commandFn: actions.switchUSAnnotationToPleuraLine,
+      commandFn: actions.switchUSPleuraBLineAnnotationToPleuraLine,
     },
     switchUSAnnotationToBLine: {
-      commandFn: actions.switchUSAnnotationToBLine,
+      commandFn: actions.switchUSPleuraBLineAnnotationToBLine,
     },
     deleteLastPleuraAnnotation: {
       commandFn: actions.deleteLastPleuraAnnotation,

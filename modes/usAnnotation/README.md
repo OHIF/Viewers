@@ -1,7 +1,7 @@
-# usAnnotation 
-## Description 
- 
-## Author 
-Rodrigo Basilio 
-## License 
+# usAnnotation
+## Description
+
+## Author
+OHIF
+## License
 MIT

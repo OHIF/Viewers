@@ -443,12 +443,12 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'UltrasoundAnnotationTool',
+    id: 'UltrasoundPleuraBLineTool',
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-ultrasound-bidirectional',
-      label: 'Ultrasound Annotation',
-      tooltip: 'Ultrasound Annotation',
+      label: 'US Pleura B-line Annotation',
+      tooltip: 'US Pleura B-line Annotation',
       commands: setToolActiveToolbar,
       evaluate: [
         'evaluate.cornerstoneTool',

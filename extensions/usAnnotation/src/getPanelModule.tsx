@@ -14,16 +14,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
    * @returns The wrapped USAnnotationPanel component
    */
   const wrappedUSAnnotationPanel = ({ configuration }) => {
-    return (
-      <USAnnotationPanel
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-        configuration={{
-          ...configuration,
-        }}
-      />
-    );
+    return <USAnnotationPanel />;
   };
 
   return [

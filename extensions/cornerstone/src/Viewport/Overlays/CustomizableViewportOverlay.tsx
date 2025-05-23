@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
-import { Enums as csToolsEnums, UltrasoundAnnotationTool } from '@cornerstonejs/tools';
+import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
@@ -135,7 +135,7 @@ function CustomizableViewportOverlay({
   }, [viewportId, viewportData, voi, element]);
 
   const annotationModified = useCallback(evt => {
-    if (evt.detail.annotation.metadata.toolName === UltrasoundAnnotationTool.toolName) {
+    if (evt.detail.annotation.metadata.toolName === UltrasoundPleuraBLineTool.toolName) {
       // Update the annotation state to trigger a re-render
       setAnnotationState(prevState => prevState + 1);
     }

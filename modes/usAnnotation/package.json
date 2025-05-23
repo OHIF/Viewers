@@ -1,8 +1,8 @@
 {
-  "name": "@ohif/mode-usAnnotation",
-  "version": "0.0.1",
-  "description": "",
-  "author": "Rodrigo Basilio",
+  "name": "@ohif/mode-ultrasound-pleura-bline",
+  "version": "3.0.0",
+  "description": "Allows users to annotate ultrasound images with pleura B-line annotations.",
+  "author": "OHIF",
   "license": "MIT",
   "main": "dist/umd/usAnnotation/index.umd.js",
   "files": [

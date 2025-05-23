@@ -1,4 +1,4 @@
-import { UltrasoundAnnotationTool } from '@cornerstonejs/tools';
+import { UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 
 // Global state to control whether to show the percentage in the overlay
 let showPercentage = true;
@@ -39,7 +39,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
               if (!toolGroup) {
                 return 'B-Line/Pleura : N/A';
               }
-              const usAnnotation = toolGroup.getToolInstance(UltrasoundAnnotationTool.toolName);
+              const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
               if (usAnnotation) {
                 const viewport =
                   cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
