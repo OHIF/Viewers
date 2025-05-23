@@ -132,27 +132,23 @@ export default function sortStudy(
 
 /**
  * Sort by image position, calculated using imageOrientationPatient and ImagePositionPatient
- * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided fallbackSort function
+ * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided sortingCriteria
  * Note: Images are sorted in-place and a reference to the sorted image array is returned.
  *
  * @returns images - reference to images after sorting
  */
-const sortStudyByImagePositionPatient = (images, fallbackSort) => {
+const sortStudyByImagePositionPatient = (images, sortingCriteria) => {
   if (images.length <= 1) {
     return; // No need to sort if there's only one image
   }
 
   // Use the first image as a reference
   const referenceImagePositionPatient = images[0].ImagePositionPatient;
-  const imageOrientationPatient = images[0].imageOrientationPatient;
+  const imageOrientationPatient = images[0].ImageOrientationPatient;
 
-  if (!referenceImagePositionPatient) {
-    // Cannot sort ImageSet by real-world positions - ImagePositionPatient is undefined, sort by fallbackSort provided
-    fallbackSort();
-    return;
-  } else if (!imageOrientationPatient) {
-    // Cannot sort ImageSet by real-world positions - imageOrientationPatient is undefined, sort by fallbackSort provided
-    fallbackSort();
+  if (!referenceImagePositionPatient || !imageOrientationPatient) {
+    // Cannot sort ImageSet by real-world positions - ImagePositionPatient or imageOrientationPatient is undefined, sort by fallbackSort provided
+    images.sort(sortingCriteria);
     return;
   }
 
@@ -172,9 +168,10 @@ const sortStudyByImagePositionPatient = (images, fallbackSort) => {
   // Sort images based on the computed distances
   distanceInstancePairs.sort((a, b) => b.distance - a.distance);
   // Reorder the images in the original array
-  const sortedImages = distanceInstancePairs.map(pair => pair.image);
+  for (const [index, item] of distanceInstancePairs.entries()) {
+    images[index] = item.image;
+  }
 
-  images.sort((a, b) => sortedImages.indexOf(a) - sortedImages.indexOf(b));
   return images;
 };
 

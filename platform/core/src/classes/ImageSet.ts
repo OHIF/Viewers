@@ -85,7 +85,7 @@ class ImageSet {
    * @returns images - reference to images after sorting
    */
   sort(sortingCallback: (a: Image, b: Image) => number): Image[] {
-    return sortStudyByImagePositionPatient(this.images, this.sortBy.bind(this, sortingCallback));
+    return sortStudyByImagePositionPatient(this.images, sortingCallback);
   }
 
   /**
