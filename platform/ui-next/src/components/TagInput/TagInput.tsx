@@ -73,15 +73,15 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
   return (
     <div
       className={cn(
-        'border-input text-foreground bg-background hover:bg-primary/10 flex h-auto min-h-7 w-full flex-wrap gap-1.5 rounded border px-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-base file:font-medium focus-within:outline-none focus-within:ring-1 focus-within:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
-        className,
+        'border-input text-foreground bg-background hover:bg-primary/10 min-h-7 focus-within:ring-ring flex h-auto w-full flex-wrap gap-1.5 rounded border px-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-base file:font-medium focus-within:outline-none focus-within:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
+        className
       )}
     >
-      {value.map((item) => (
+      {value.map(item => (
         <Badge
           key={item}
-          variant={'secondary'}
-          className="h-5 py-0 px-1.5 my-0.5"
+          variant={'default'}
+          className="my-0.5 h-5 py-0 px-1.5"
         >
           {item}
           <Button
@@ -90,7 +90,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
             size={'icon'}
             className={'ml-1 h-3.5 w-3.5 p-0'}
             onClick={() => {
-              onChange(value.filter((i) => i !== item));
+              onChange(value.filter(i => i !== item));
             }}
           >
             <XIcon className={'w-3'} />
@@ -98,20 +98,14 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
         </Badge>
       ))}
       <input
-        className={
-          'flex-1 bg-transparent outline-none text-base placeholder:text-muted-foreground'
-        }
+        className={'placeholder:text-muted-foreground flex-1 bg-transparent text-base outline-none'}
         value={pendingDataPoint}
-        onChange={(e) => setPendingDataPoint(e.target.value)}
-        onKeyDown={(e) => {
+        onChange={e => setPendingDataPoint(e.target.value)}
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ',') {
             e.preventDefault();
             addPendingDataPoint();
-          } else if (
-            e.key === 'Backspace' &&
-            pendingDataPoint.length === 0 &&
-            value.length > 0
-          ) {
+          } else if (e.key === 'Backspace' && pendingDataPoint.length === 0 && value.length > 0) {
             e.preventDefault();
             onChange(value.slice(0, -1));
           }
