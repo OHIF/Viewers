@@ -1,9 +1,13 @@
 import { NavigateFunction } from 'react-router';
 
-type History = {
-  navigate: NavigateFunction;
-};
+interface History {
+  getNavigate(): NavigateFunction;
+  setNavigate(navigate: NavigateFunction);
+}
+
+let navigate;
 
 export const history: History = {
-  navigate: null,
+  getNavigate: () => navigate,
+  setNavigate: (nav: NavigateFunction) => (navigate ??= nav),
 };
