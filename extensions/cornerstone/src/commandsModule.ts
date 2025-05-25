@@ -886,7 +886,21 @@ function commandsModule({
         });
       }
     },
-    rotateViewport: ({ rotation, viewportId = 'currentlyActive' }) => {
+    /**
+     * Rotates the viewport by the given rotation amount.
+     * @param rotation - Degrees clockwise to rotate the viewport by.
+     * @param viewportId - The ID of the viewport to rotate.
+     * @param rotationMode - The mode to use for the rotation. 'apply' will add the rotation to the current rotation, 'set' will set the rotation to the given rotation.
+     */
+    rotateViewport: ({
+      rotation,
+      viewportId = 'currentlyActive',
+      rotationMode = 'apply',
+    }: {
+      rotation: number;
+      viewportId?: string;
+      rotationMode?: 'apply' | 'set';
+    }) => {
       let enabledElement;
 
       if (viewportId && viewportId !== 'currentlyActive') {
@@ -912,7 +926,16 @@ function commandsModule({
       } else if (viewport.getRotation !== undefined) {
         const presentation = viewport.getViewPresentation();
         const { rotation: currentRotation } = presentation;
-        const newRotation = (currentRotation + rotation + 360) % 360;
+
+        let newRotation;
+        if (rotationMode === 'apply') {
+          // in 'apply' mode we rotate from the current rotation
+          newRotation = (currentRotation + rotation + 360) % 360;
+        } else {
+          // in 'set' mode we rotate from 0 degrees
+          newRotation = (0 + rotation + 360) % 360;
+        }
+
         viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
@@ -2001,11 +2024,15 @@ function commandsModule({
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
-      options: { rotation: 90, viewportId: 'currentlyActive' },
+      options: { rotation: 90, viewportId: 'currentlyActive', rotationMode: 'apply' },
     },
     rotateViewportCCW: {
       commandFn: actions.rotateViewport,
-      options: { rotation: -90, viewportId: 'currentlyActive' },
+      options: { rotation: -90, viewportId: 'currentlyActive', rotationMode: 'apply' },
+    },
+    rotateViewportCWSet: {
+      commandFn: actions.rotateViewport,
+      options: { rotation: 90, viewportId: 'currentlyActive', rotationMode: 'set' },
     },
     incrementActiveViewport: {
       commandFn: actions.changeActiveViewport,
