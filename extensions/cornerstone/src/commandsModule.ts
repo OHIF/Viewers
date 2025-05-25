@@ -1866,6 +1866,12 @@ function commandsModule({
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
+
+    /**
+     * Loads the segmentation display sets for a viewport
+     * @param props.viewportId - The ID of the viewport to load into
+     * @param props.displaySetInstanceUIDs - The display set instance UIDs to load
+     */
     loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
       const updatedViewports = getUpdatedViewportsForSegmentation({
         viewportId,
