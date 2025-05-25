@@ -886,7 +886,7 @@ function commandsModule({
         });
       }
     },
-    rotateViewport: ({ rotation, viewportId }) => {
+    rotateViewport: ({ rotation, viewportId = 'currentlyActive' }) => {
       let enabledElement;
 
       if (viewportId && viewportId !== 'currentlyActive') {
@@ -917,7 +917,13 @@ function commandsModule({
         viewport.render();
       }
     },
-    flipViewportHorizontal: ({ viewportId }) => {
+    flipViewportHorizontal: ({
+      viewportId = 'currentlyActive',
+      newValue = 'toggle',
+    }: {
+      viewportId?: string;
+      newValue?: 'toggle' | boolean;
+    }) => {
       let enabledElement;
       if (viewportId && viewportId !== 'currentlyActive') {
         enabledElement = _getViewportEnabledElement(viewportId);
@@ -931,11 +937,24 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { flipHorizontal } = viewport.getCamera();
-      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      let flipHorizontal: boolean;
+      if (newValue === 'toggle') {
+        const { flipHorizontal: currentHorizontalFlip } = viewport.getCamera();
+        flipHorizontal = !currentHorizontalFlip;
+      } else {
+        flipHorizontal = newValue;
+      }
+
+      viewport.setCamera({ flipHorizontal });
       viewport.render();
     },
-    flipViewportVertical: ({ viewportId }) => {
+    flipViewportVertical: ({
+      viewportId = 'currentlyActive',
+      newValue = 'toggle',
+    }: {
+      viewportId?: string;
+      newValue?: 'toggle' | boolean;
+    }) => {
       let enabledElement;
       if (viewportId && viewportId !== 'currentlyActive') {
         enabledElement = _getViewportEnabledElement(viewportId);
@@ -949,8 +968,14 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { flipVertical } = viewport.getCamera();
-      viewport.setCamera({ flipVertical: !flipVertical });
+      let flipVertical: boolean;
+      if (newValue === 'toggle') {
+        const { flipVertical: currentVerticalFlip } = viewport.getCamera();
+        flipVertical = !currentVerticalFlip;
+      } else {
+        flipVertical = newValue;
+      }
+      viewport.setCamera({ flipVertical });
       viewport.render();
     },
     invertViewport: ({ element }) => {
@@ -1991,11 +2016,11 @@ function commandsModule({
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,
-      options: { viewportId: 'currentlyActive' },
+      options: { viewportId: 'currentlyActive', newValue: 'toggle' },
     },
     flipViewportVertical: {
       commandFn: actions.flipViewportVertical,
-      options: { viewportId: 'currentlyActive' },
+      options: { viewportId: 'currentlyActive', newValue: 'toggle' },
     },
     invertViewport: {
       commandFn: actions.invertViewport,
