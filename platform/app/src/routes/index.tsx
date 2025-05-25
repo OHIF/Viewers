@@ -128,7 +128,7 @@ const createRoutes = ({
   ];
 
   function RouteWithErrorBoundary({ route, ...rest }) {
-    history.setNavigate(useNavigate());
+    history.navigate = useNavigate();
 
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (

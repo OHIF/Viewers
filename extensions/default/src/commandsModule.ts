@@ -634,8 +634,7 @@ const commandsModule = ({
      *                      for `replace` is false
      */
     navigateHistory(historyArgs: NavigateHistory) {
-      const navigate = history.getNavigate();
-      navigate(historyArgs.to, historyArgs.options);
+      history.navigate(historyArgs.to, historyArgs.options);
     },
 
     openDICOMTagViewer({ displaySetInstanceUID }: { displaySetInstanceUID?: string }) {
