@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.39...v3.11.0-beta.40) (2025-05-26)
+
+
+### Bug Fixes
+
+* **capture:** Disable or enable the tool group based on the show flag. ([#5069](https://github.com/OHIF/Viewers/issues/5069)) ([ebfa1ff](https://github.com/OHIF/Viewers/commit/ebfa1ff5f22ea5318328722dd9f1929b37f16b0c))
+* **frame-view:** After pan and/or zoom, stack scroll is now synchronized for frame view ([#5067](https://github.com/OHIF/Viewers/issues/5067)) ([1873a84](https://github.com/OHIF/Viewers/commit/1873a8405f6c8d112035d47049582c52f00f640b))
+
+
+
+
+
 # [3.11.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.38...v3.11.0-beta.39) (2025-05-26)
 
 
