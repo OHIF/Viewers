@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.40...v3.11.0-beta.41) (2025-05-26)
+
+
+### Bug Fixes
+
+* e2e playwright tests runnigns ([#5070](https://github.com/OHIF/Viewers/issues/5070)) ([b9ca76e](https://github.com/OHIF/Viewers/commit/b9ca76ea6714726a13bceec73dbddc12280ca5bf))
+
+
+
+
+
 # [3.11.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.39...v3.11.0-beta.40) (2025-05-26)
 
 
