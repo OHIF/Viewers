@@ -12,7 +12,6 @@ import {
   triggerAnnotationRenderForViewportIds,
 } from '@cornerstonejs/tools/utilities';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-import { servicesManager } from 'platform/app/src/App';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
@@ -192,9 +191,11 @@ const initMeasurementService = (
 const connectToolsToMeasurementService = ({
   commandsManager,
   servicesManager,
+  extensionManager,
 }: {
   commandsManager: AppTypes.CommandsManager;
   servicesManager: AppTypes.ServicesManager;
+  extensionManager: AppTypes.ExtensionManager;
 }) => {
   const {
     measurementService,
@@ -208,7 +209,7 @@ const connectToolsToMeasurementService = ({
     cornerstoneViewportService,
     customizationService
   );
-  connectMeasurementServiceToTools({ servicesManager, commandsManager });
+  connectMeasurementServiceToTools({ servicesManager, commandsManager, extensionManager });
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
 
   //
@@ -334,7 +335,11 @@ const connectToolsToMeasurementService = ({
   return csTools3DVer1MeasurementSource;
 };
 
-const connectMeasurementServiceToTools = ({ servicesManager, commandsManager }) => {
+const connectMeasurementServiceToTools = ({
+  servicesManager,
+  commandsManager,
+  extensionManager,
+}) => {
   const { measurementService, cornerstoneViewportService, viewportGridService } =
     servicesManager.services;
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =

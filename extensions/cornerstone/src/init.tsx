@@ -182,6 +182,7 @@ export default async function init({
   this.measurementServiceSource = connectToolsToMeasurementService({
     servicesManager,
     commandsManager,
+    extensionManager,
   });
 
   initCineService(servicesManager);
