@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "docy": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-server-docy"
+      ],
+      "env": {
+        "DOCY_DOCUMENTATION_URLS": "https://github.com/OHIF/Viewers,https://registry.terraform.io/modules/cloudposse/cloudfront-s3-cdn/aws/latest"
+      }
+    },
+    "mcpServers": {
+      "pacman": {
+        "command": "uvx",
+        "args": [
+          "mcp-server-pacman"
+        ]
+      }
+    }
+  }
+}
