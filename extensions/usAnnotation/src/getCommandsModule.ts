@@ -2,20 +2,9 @@ import { UltrasoundPleuraBLineTool, Enums as csToolsEnums } from '@cornerstonejs
 import { Types as OhifTypes } from '@ohif/core';
 import { setShowPercentage } from './getCustomizationModule';
 import { eventTarget, triggerEvent, utilities } from '@cornerstonejs/core';
+import getInstanceByImageId from './getInstanceByImageId';
 
 const { transformWorldToIndex } = utilities;
-
-/**
- * Retrieves the DICOM instance associated with a specific imageId
- * @param services - The OHIF services object
- * @param imageId - The image ID to find the instance for
- * @returns The DICOM instance object or undefined if not found
- */
-function getInstanceByImageId(services: AppTypes.Services, imageId: string) {
-  const activeDisplaySets = services.displaySetService.getActiveDisplaySets();
-  const displaySet = activeDisplaySets.find(displaySet => displaySet?.imageIds?.includes(imageId));
-  return displaySet?.instance;
-}
 
 /**
  * Creates and returns the commands module for ultrasound annotation

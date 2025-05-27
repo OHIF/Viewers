@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import { eventTarget, utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
-import update from 'immutability-helper';
 
 import {
   /* Layout */
@@ -62,8 +61,11 @@ export default function USAnnotationPanel() {
    * Deletes the last annotation of the specified type
    * @param type - The annotation type to delete
    */
-  const deleteLast = (type: string) =>
+  const deleteLast = (type: string) => {
     commandsManager.runCommand('deleteLastAnnotation', { annotationType: type });
+    updateAnnotatedFrames();
+  };
+
   /**
    * Sets the depth guide display state
    * @param value - Boolean indicating whether to show the depth guide
@@ -166,7 +168,7 @@ export default function USAnnotationPanel() {
           </label>
         </div>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <Switch
             id="auto-add-switch"
             className="mr-3"
@@ -180,7 +182,7 @@ export default function USAnnotationPanel() {
           >
             Auto-add annotations
           </label>
-        </div>
+        </div> */}
 
         <div className="flex items-center">
           <Switch
@@ -323,7 +325,7 @@ export default function USAnnotationPanel() {
                   style={{ cursor: 'pointer' }}
                 >
                   <td className="py-3 px-3">{item.index}</td>
-                  <td className="py-3 px-3">{item.frame}</td>
+                  <td className="py-3 px-3">{item.frame + 1}</td>
                   <td className="py-3 px-3 text-center">{item.pleura}</td>
                   <td className="py-3 px-3 text-center">{item.bLine}</td>
                   <td className="py-3 px-3 text-right">
@@ -359,6 +361,9 @@ export default function USAnnotationPanel() {
       return imageIdsMonitored.includes(imageId);
     };
     const mapping = UltrasoundPleuraBLineTool.countAnnotations(viewport.element, imageIdFilter);
+    if (!mapping) {
+      return;
+    }
     const keys = Array.from(mapping.keys());
     const updatedFrames = keys.map((key, index) => {
       const { pleura, bLine, frame } = mapping.get(key) || { pleura: 0, bLine: 0, frame: 0 };

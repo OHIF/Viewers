@@ -86,7 +86,14 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
+    onModeEnter: function ({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+      appConfig,
+    }: withAppTypes) {
+      appConfig.disableConfirmationPrompts = true;
+      appConfig.measurementTrackingMode = 'simplified';
       const { measurementService, toolbarService, toolGroupService, customizationService } =
         servicesManager.services;
 
