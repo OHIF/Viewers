@@ -38,6 +38,7 @@ const initMeasurementService = (
     LivewireContour,
     Probe,
     UltrasoundDirectional,
+    UltrasoundPleuraBLine,
     SegmentBidirectional,
   } = measurementServiceMappingsFactory(
     measurementService,
@@ -175,6 +176,14 @@ const initMeasurementService = (
     UltrasoundDirectional.matchingCriteria,
     UltrasoundDirectional.toAnnotation,
     UltrasoundDirectional.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'UltrasoundPleuraBLineTool',
+    UltrasoundPleuraBLine.matchingCriteria,
+    UltrasoundPleuraBLine.toAnnotation,
+    UltrasoundPleuraBLine.toMeasurement
   );
 
   measurementService.addMapping(

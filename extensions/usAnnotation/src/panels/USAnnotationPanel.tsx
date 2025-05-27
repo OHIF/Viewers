@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import { eventTarget, utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
+import update from 'immutability-helper';
 
 import {
   /* Layout */
@@ -16,8 +17,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  TagInput,
 } from '@ohif/ui-next';
-import MultiLabelInput from './MultiLabelInput';
 
 /**
  * A side panel that drives the ultrasound annotation workflow.
@@ -31,7 +32,7 @@ export default function USAnnotationPanel() {
   /** ──────────────────────────────────────────────────────
    * Local state – purely UI related (no business logic).   */
 
-  const { viewportGridService, cornerstoneViewportService } =
+  const { viewportGridService, cornerstoneViewportService, measurementService } =
     servicesManager.services as AppTypes.Services;
 
   // UI state variables
@@ -269,11 +270,11 @@ export default function USAnnotationPanel() {
 
         {/* Label Annotations Section */}
         <Label>Label Annotations</Label>
-        <MultiLabelInput
+        <TagInput
           className="pe-2"
           placeholder="Type or select a label"
-          labels={labels}
-          onLabelsChange={setLabels}
+          value={labels}
+          onChange={setLabels}
         />
       </div>
     </PanelSection.Content>
@@ -346,6 +347,31 @@ export default function USAnnotationPanel() {
     </ScrollArea>
   );
 
+  const updateAnnotatedFrames = () => {
+    const activeViewportId = viewportGridService.getActiveViewportId();
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
+    // copying to avoid mutating the original array
+    const imageIdsMonitored = [...imageIdsToObserve];
+    const imageIdFilter = (imageId: string) => {
+      if (imageIdsMonitored.length === 0) {
+        return true;
+      }
+      return imageIdsMonitored.includes(imageId);
+    };
+    const mapping = UltrasoundPleuraBLineTool.countAnnotations(viewport.element, imageIdFilter);
+    const keys = Array.from(mapping.keys());
+    const updatedFrames = keys.map((key, index) => {
+      const { pleura, bLine, frame } = mapping.get(key) || { pleura: 0, bLine: 0, frame: 0 };
+      return {
+        imageId: key,
+        index: index + 1,
+        frame,
+        pleura,
+        bLine,
+      };
+    });
+    setAnnotatedFrames(updatedFrames);
+  };
   /**
    * Callback function that is called when an annotation is modified
    * Updates the annotatedFrames state with the latest annotation data
@@ -353,29 +379,7 @@ export default function USAnnotationPanel() {
   const annotationModified = React.useCallback(
     event => {
       if (event.detail.annotation.metadata.toolName === UltrasoundPleuraBLineTool.toolName) {
-        const activeViewportId = viewportGridService.getActiveViewportId();
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
-        // copying to avoid mutating the original array
-        const imageIdsMonitored = [...imageIdsToObserve];
-        const imageIdFilter = (imageId: string) => {
-          if (imageIdsMonitored.length === 0) {
-            return true;
-          }
-          return imageIdsMonitored.includes(imageId);
-        };
-        const mapping = UltrasoundPleuraBLineTool.countAnnotations(viewport.element, imageIdFilter);
-        const keys = Array.from(mapping.keys());
-        const updatedFrames = keys.map((key, index) => {
-          const { pleura, bLine, frame } = mapping.get(key) || { pleura: 0, bLine: 0, frame: 0 };
-          return {
-            imageId: key,
-            index: index + 1,
-            frame,
-            pleura,
-            bLine,
-          };
-        });
-        setAnnotatedFrames(updatedFrames);
+        updateAnnotatedFrames();
       }
     },
     [viewportGridService, cornerstoneViewportService, imageIdsToObserve]
@@ -383,6 +387,12 @@ export default function USAnnotationPanel() {
 
   useEffect(() => {
     eventTarget.addEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
+    const unsubscribe = measurementService.subscribe(
+      measurementService.EVENTS.MEASUREMENT_REMOVED,
+      () => {
+        updateAnnotatedFrames();
+      }
+    );
 
     return () => {
       eventTarget.removeEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);

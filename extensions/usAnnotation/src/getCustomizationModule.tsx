@@ -43,7 +43,12 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
               if (usAnnotation) {
                 const viewport =
                   cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
-                return `B-Line/Pleura : ${usAnnotation.calculateBLinePleuraPercentage(viewport).toFixed(2)} %`;
+                const percentage = usAnnotation.calculateBLinePleuraPercentage(viewport);
+                if (percentage !== undefined) {
+                  return `B-Line/Pleura : ${percentage.toFixed(2)} %`;
+                } else {
+                  return 'B-Line/Pleura : N/A';
+                }
               }
               return 'B-Line/Pleura : N/A';
             },

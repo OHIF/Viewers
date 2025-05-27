@@ -1478,10 +1478,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-3.15.1.tgz#b55e51ff0105ded60d2c45eeefe0b8bd4ce63cbc"
-  integrity sha512-nwUPk2SXukPkkKrpzAOIOMI0lNqwTl1euI1iTLP1DB1gt8r2wy1V1vYu7+TVT9CfifhfJ+yrJnYCo1VwqnnPDA==
+"@cornerstonejs/adapters@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-3.16.0.tgz#abca60be5a6e1f93e5fe7f90a8789546108633b1"
+  integrity sha512-DOS1Omd6WaeCHVWyMCJzKG81zWshJ2HMdqy6x2lerVw1JklSQA32xQD/BQrR8uIYOoCCJ++A08n2aWvU8T8Irg==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1489,10 +1489,10 @@
     gl-matrix "^3.4.3"
     ndarray "^1.0.19"
 
-"@cornerstonejs/ai@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-3.15.1.tgz#61f31a6108ef9172c602d10eb4ed67568dfe328b"
-  integrity sha512-rFcS8Hcu7Bjr+BLYMR8Y0m/eno+ynEE3Wd2gM48VNV5pXQ4HfjbA4kl7r4JyZKqyPZYgV2Api42v0vKLeSSZ6g==
+"@cornerstonejs/ai@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-3.16.0.tgz#8f748df3e0a572c174a0c337e839dc1494290492"
+  integrity sha512-ZPe823rTiMywK+V+XFUUFksSKR67UYQTZKQGh4WKx97mSB154NPMoEMuv1G6PvaZ3gtBMoX5+i8zYy6IZcWgwA==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1528,20 +1528,20 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-3.15.1.tgz#a856ea98973b30acf5071563c039425a73a958ea"
-  integrity sha512-yXYjNyAlbKOfx6Xjd2xXnRuFrOCEHRP3yC6SQDywp8/WJ4aIiIXqU8Hgxht+/22UDjjoe5DcF2H+d5yX6SZLMg==
+"@cornerstonejs/core@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-3.16.0.tgz#e59bef68e36a1d8b515b63d52c2acb638b011afc"
+  integrity sha512-8Yy8DnVwkB50lJDf3jeAA1RfOlrBNtlHT/hVIH1f8BCdPybmg8a0/W95isvICuGp8mWu3NJQFAgCDQlH3rgYvw==
   dependencies:
     "@kitware/vtk.js" "32.12.1"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
     loglevel "^1.9.2"
 
-"@cornerstonejs/dicom-image-loader@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.15.1.tgz#5fa30aeb1824e4875564454cc16c6dc6a943ab70"
-  integrity sha512-/L2pL8121Vx4OgCw4R5ZxLLfZbBSGTItWASFDeImlT9jI++KHnOpVQRugYHChMj4dHb45yX8dAify+AhSMNkXg==
+"@cornerstonejs/dicom-image-loader@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.16.0.tgz#6d09aabad9ae61f3b9b9563e3570be01faae02a6"
+  integrity sha512-LqBhgko89KapFx5PVYP/XnXqcL/4jNJAOMaFV6+UmCYIhvlFdMnLHLb+BIZrp9o3IaRRAuGD+N5sxgOGwckIGw==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -1553,25 +1553,25 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/labelmap-interpolation@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/labelmap-interpolation/-/labelmap-interpolation-3.15.1.tgz#948e6cebb68264e87ddca0e44308cbcee3abd804"
-  integrity sha512-94zxc91G9V+Dp3dodqSVde5ia9sUZNaP7Eud3Tsyej4unu4frIIx2/fRGVNSdq3pLNM7MT0KLfGeut+I7S3cHQ==
+"@cornerstonejs/labelmap-interpolation@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/labelmap-interpolation/-/labelmap-interpolation-3.16.0.tgz#1e68fcdc5d6513489a5cdfcd0812ea140a9bd122"
+  integrity sha512-Cpzv04mBDFtyn/xQRthr5YY0GZYKjpQ06WHYVGTOHH20jzFI1S0gsBMyC6K3lkuGCxcCUW0CxkVGMPRj7KA8/g==
   dependencies:
     "@itk-wasm/morphological-contour-interpolation" "1.1.0"
     itk-wasm "1.0.0-b.165"
 
-"@cornerstonejs/polymorphic-segmentation@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-3.15.1.tgz#b6bea5e93d5b3a02a0aa0ce0fbd3175e6f7a90da"
-  integrity sha512-C/A/SLhOkUi0I7yXkWwu96LhaajQSIcMZX6kmU2KEuBIwRNZ2oaZm4vDF2srTJZtxKeJ/gaD0BJEn5LJFYHFfw==
+"@cornerstonejs/polymorphic-segmentation@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-3.16.0.tgz#e549e7971198bc0a68e80b15ac7135cec73d18fe"
+  integrity sha512-Lb+VXcbPuHiMkHoBAYOvTdV2CVQUt/0uwmvKvdRhXng4yp2+M2wNB6tyxckH0ptoCYDT/Bm7DcSvufPL8bIvzA==
   dependencies:
     "@icr/polyseg-wasm" "0.4.0"
 
-"@cornerstonejs/tools@^3.15.1":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-3.15.1.tgz#db9f3ffeaa507fa234434328c0d58069cfe60e0b"
-  integrity sha512-QyowzqiitrwFomZGKvIeAbVMpjlzPjOOiMkLZUAGoSvLCBCjS9zDZFtnZ33cRgIqzVrzmVFWAn1Fi3fzqugQZQ==
+"@cornerstonejs/tools@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-3.16.0.tgz#d68c43f86307c45baa7a6e7b97dc21c78ca42473"
+  integrity sha512-T2PXdVxgXZw4Jxg2DH2DF/UfasC9uLVaOhrORVjYcmzlFhcgw03jT5GpmwCkAD9OJlxIAXowDrUaJN8DQNKOdA==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
