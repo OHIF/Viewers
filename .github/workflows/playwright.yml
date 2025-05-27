@@ -23,8 +23,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      # - name: Install Playwright browsers
-      #   run: bun x playwright install-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
