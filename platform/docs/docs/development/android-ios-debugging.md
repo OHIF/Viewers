@@ -1,6 +1,8 @@
 ---
 sidebar_position: 12
 sidebar_label: Android & iOS Debugging
+title: Android & iOS Debugging
+summary: Comprehensive guide for debugging OHIF Viewer on mobile devices, covering setup of Android and iOS emulators, step-by-step instructions for connecting Chrome DevTools and Safari Web Inspector, and video tutorials demonstrating the debugging workflow.
 ---
 
 # Android & iOS Debugging for OHIF using Emulators

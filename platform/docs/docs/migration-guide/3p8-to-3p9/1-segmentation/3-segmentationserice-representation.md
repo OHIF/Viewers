@@ -1,6 +1,7 @@
 ---
 id: seg-representation
 title: Segmentation Representations
+summary: Migration guide for segmentation representation management in OHIF 3.9, explaining the transition from toolGroup-based to viewport-centric representation handling, and introducing the new specifier pattern for more flexible API usage.
 ---
 
 

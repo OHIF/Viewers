@@ -1,5 +1,7 @@
 ---
 sidebar_position: 9
+title: Google Cloud Healthcare Integration
+summary: Guide to setting up Google Cloud Healthcare API as a DICOM data source for OHIF, including project creation, API configuration, OAuth authentication setup, and implementation details for connecting the viewer to Google-hosted medical imaging data.
 ---
 
 # Google Cloud Healthcare

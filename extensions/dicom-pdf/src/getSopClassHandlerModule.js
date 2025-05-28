@@ -1,7 +1,6 @@
 import { SOPClassHandlerId } from './id';
-import { utils, classes } from '@ohif/core';
-
-const { ImageSet } = classes;
+import { utils, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 
 const SOP_CLASS_UIDS = {
   ENCAPSULATED_PDF: '1.2.840.10008.5.1.4.1.1.104.1',
@@ -15,7 +14,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
     const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
-    const pdfUrl = dataSource.retrieve.directURL({
+    const renderedUrl = dataSource.retrieve.directURL({
       instance,
       tag: 'EncapsulatedDocument',
       defaultType: MIMETypeOfEncapsulatedDocument || 'application/pdf',
@@ -36,26 +35,24 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       SOPClassUID,
       referencedImages: null,
       measurements: null,
-      pdfUrl,
+      renderedUrl: renderedUrl,
       instances: [instance],
-      thumbnailSrc: dataSource.retrieve.directURL({
-        instance,
-        defaultPath: '/thumbnail',
-        defaultType: 'image/jpeg',
-        tag: 'Absent',
-      }),
+      thumbnailSrc: null,
       isDerivedDisplaySet: true,
       isLoaded: false,
       sopClassUids,
       numImageFrames: 0,
       numInstances: 1,
       instance,
+      supportsWindowLevel: true,
+      label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
     };
     return displaySet;
   });
 };
 
-export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+export default function getSopClassHandlerModule(params) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

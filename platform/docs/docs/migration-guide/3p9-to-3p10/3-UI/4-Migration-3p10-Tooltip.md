@@ -1,5 +1,6 @@
 ---
 title: Tooltip
+summary: Migration guide for Tooltip components in OHIF 3.10, explaining the new composable structure with TooltipTrigger and TooltipContent, and replacement of TooltipClipboard with the Clipboard component.
 ---
 
 ##  Tooltip Updates

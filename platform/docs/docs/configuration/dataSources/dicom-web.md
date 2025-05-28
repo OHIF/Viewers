@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: DICOMweb
+title: DICOMweb
+summary: Comprehensive guide to configuring DICOMweb data sources in OHIF, including setting up local DICOM servers (Orthanc, DCM4CHEE), configurations for PDF, video, and bulkdata handling, and detailed instructions for development environments.
 ---
 
 # DICOMweb

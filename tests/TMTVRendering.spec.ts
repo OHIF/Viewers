@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index.js';
 
 test.skip('should render TMTV correctly.', async ({ page }) => {

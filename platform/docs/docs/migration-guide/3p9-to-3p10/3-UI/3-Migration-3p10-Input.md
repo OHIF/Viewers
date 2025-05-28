@@ -1,5 +1,6 @@
 ---
 title: Input
+summary: Migration guide for input components in OHIF 3.10, covering the transition from Input, InputNumber, InputRange, InputDoubleRange and others to the new Numeric component system and updated input patterns in @ohif/ui-next.
 ---
 
 

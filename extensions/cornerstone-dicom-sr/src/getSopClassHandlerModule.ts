@@ -1,5 +1,6 @@
-import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import { imageToWorldCoords } from '@cornerstonejs/core/utilities';
+import { utils, classes, DisplaySetService, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -123,6 +124,7 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     addInstances,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };
 
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
@@ -361,7 +363,8 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
  * @param {Object} options.extensionManager - The extension manager.
  * @returns {Array} An array containing the SOP class handler module.
  */
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

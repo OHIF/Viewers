@@ -1,6 +1,8 @@
 ---
 sidebar_position: 8
 sidebar_label: Hanging Protocol
+title: Hanging Protocol Module
+summary: Documentation for OHIF Hanging Protocol Module, which controls image arrangement in viewports based on matching rules, with capabilities for layout configuration, viewport settings, synchronization, and advanced study comparison workflows.
 ---
 # Module: Hanging Protocol
 

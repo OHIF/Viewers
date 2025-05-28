@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Overview
+title: Deployment Overview
+summary: Comprehensive guide to deploying the OHIF Viewer as a standalone web application or embedded iframe, covering data source configuration, security considerations, and various deployment options with examples for different hosting environments.
 ---
 
 # Deployment

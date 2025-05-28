@@ -1,4 +1,4 @@
-import { Page, test } from '@playwright/test';
+import { Page, test } from 'playwright-test-coverage';
 import {
   visitStudy,
   checkForScreenshot,
@@ -104,6 +104,8 @@ test.describe('Crosshairs Test', async () => {
     await rotateCrosshairs(page, '#svg-layer-mpr-coronal', 3);
 
     await page.getByTestId('study-browser-thumbnail').nth(1).dblclick();
+
+    await page.waitForTimeout(5000);
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsNewDisplayset);
   });

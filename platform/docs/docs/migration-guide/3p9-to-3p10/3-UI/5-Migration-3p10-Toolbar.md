@@ -1,5 +1,6 @@
 ---
 title: Toolbar
+summary: Migration guide for toolbar components in OHIF 3.10, covering the new uiType values (ohif.toolButton and ohif.toolButtonList), section-based definitions replacing nested structures, ToolBox updates, and changes to tool option handlers.
 ---
 
 # Toolbar

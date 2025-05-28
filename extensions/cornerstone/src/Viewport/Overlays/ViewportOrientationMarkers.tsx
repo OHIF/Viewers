@@ -1,11 +1,17 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import classNames from 'classnames';
-import { metaData, Enums, Types, getEnabledElement } from '@cornerstonejs/core';
+import {
+  metaData,
+  Enums,
+  Types,
+  getEnabledElement,
+  utilities as coreUtilities,
+} from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
-
+import { useViewportRendering } from '../../hooks';
 const { getOrientationStringLPS, invertOrientationStringLPS } = utilities.orientation;
 
 function ViewportOrientationMarkers({
@@ -20,7 +26,33 @@ function ViewportOrientationMarkers({
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
   const [flipVertical, setFlipVertical] = useState(false);
+  const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { cornerstoneViewportService } = servicesManager.services;
+
+  // Store initial viewUp and viewRight for volume viewports
+  const initialVolumeOrientationRef = useRef<{
+    initialViewUp: number[] | null;
+    initialViewRight: number[] | null;
+  }>({
+    initialViewUp: null,
+    initialViewRight: null,
+  });
+
+  useEffect(() => {
+    initialVolumeOrientationRef.current.initialViewUp = null;
+    initialVolumeOrientationRef.current.initialViewRight = null;
+
+    if (viewportData?.viewportType !== 'stack' && element && getEnabledElement(element)) {
+      const { viewport } = getEnabledElement(element);
+      const { viewUp, viewPlaneNormal } = viewport.getCamera();
+
+      const viewRight = vec3.create();
+      vec3.cross(viewRight, viewUp, viewPlaneNormal);
+
+      initialVolumeOrientationRef.current.initialViewUp = [...viewUp];
+      initialVolumeOrientationRef.current.initialViewRight = [...viewRight];
+    }
+  }, [element, viewportData]);
 
   useEffect(() => {
     const cameraModifiedListener = (evt: Types.EventTypes.CameraModifiedEvent) => {
@@ -79,14 +111,21 @@ function ViewportOrientationMarkers({
         return '';
       }
 
-      const { viewport } = getEnabledElement(element);
-      const { viewUp, viewPlaneNormal } = viewport.getCamera();
-
-      const viewRight = vec3.create();
-      vec3.cross(viewRight, viewUp, viewPlaneNormal);
-
-      columnCosines = [-viewUp[0], -viewUp[1], -viewUp[2]];
-      rowCosines = viewRight;
+      if (
+        initialVolumeOrientationRef.current.initialViewUp &&
+        initialVolumeOrientationRef.current.initialViewRight
+      ) {
+        // Use initial orientation values for consistency, even as the camera changes
+        columnCosines = [
+          -initialVolumeOrientationRef.current.initialViewUp[0],
+          -initialVolumeOrientationRef.current.initialViewUp[1],
+          -initialVolumeOrientationRef.current.initialViewUp[2],
+        ];
+        rowCosines = initialVolumeOrientationRef.current.initialViewRight;
+      } else {
+        console.warn('ViewportOrientationMarkers::No initial orientation values');
+        return '';
+      }
     }
 
     if (
@@ -119,7 +158,8 @@ function ViewportOrientationMarkers({
         className={classNames(
           'overlay-text',
           `${m}-mid orientation-marker`,
-          'text-highlight/65',
+          isLight ? 'text-neutral-dark/70' : 'text-neutral-light/70',
+          isLight ? 'shadow-light' : 'shadow-dark',
           'text-base',
           'leading-5'
         )}
@@ -136,6 +176,7 @@ function ViewportOrientationMarkers({
     flipHorizontal,
     orientationMarkers,
     element,
+    isLight,
   ]);
 
   return <div className="ViewportOrientationMarkers select-none">{markers}</div>;

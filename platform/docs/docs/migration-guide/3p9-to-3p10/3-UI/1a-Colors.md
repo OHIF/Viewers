@@ -1,5 +1,6 @@
 ---
 title: Colors
+summary: Migration guide for OHIF 3.10's new color system, explaining the transition from custom color names to a semantic color palette using CSS variables, with detailed mapping of old color classes to new Tailwind equivalents.
 ---
 
 

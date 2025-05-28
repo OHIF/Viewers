@@ -1,8 +1,8 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths, simulateClicksOnElement } from './utils';
 
 test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1';
+  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
@@ -60,8 +60,25 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   // scroll away
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
 
-  // use mouse wheel to scroll away
-  await page.mouse.wheel(0, 100);
+  // Focus on the canvas first, then use mouse wheel to scroll away
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setImageIdIndex(0);
+      viewport.render();
+    }
+  });
 
   // wait 2 seconds
   await page.waitForTimeout(2000);

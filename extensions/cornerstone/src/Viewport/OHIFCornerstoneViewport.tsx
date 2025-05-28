@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
-import { MeasurementService } from '@ohif/core';
-import { AllInOneMenu } from '@ohif/ui-next';
+import { MeasurementService, useViewportRef } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
@@ -15,14 +13,16 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
-import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
-import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
+import ViewportColorbarsContainer from '../components/ViewportColorbar';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 
 const STACK = 'stack';
+
+// Cache for viewport dimensions, persists across component remounts
+const viewportDimensions = new Map<string, { width: number; height: number }>();
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
@@ -41,7 +41,6 @@ const OHIFCornerstoneViewport = React.memo(
       viewportOptions,
       displaySetOptions,
       servicesManager,
-      commandsManager,
       onElementEnabled,
       // eslint-disable-next-line react/prop-types
       onElementDisabled,
@@ -83,6 +82,7 @@ const OHIFCornerstoneViewport = React.memo(
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
     const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+    const viewportRef = useViewportRef(viewportId);
 
     const {
       displaySetService,
@@ -92,7 +92,6 @@ const OHIFCornerstoneViewport = React.memo(
       cornerstoneViewportService,
       segmentationService,
       cornerstoneCacheService,
-      viewportActionCornersService,
       customizationService,
       measurementService,
     } = servicesManager.services;
@@ -105,12 +104,44 @@ const OHIFCornerstoneViewport = React.memo(
     }, [elementRef]);
 
     // useCallback for onResize
-    const onResize = useCallback(() => {
-      if (elementRef.current) {
-        cornerstoneViewportService.resize();
-        setImageScrollBarHeight();
+    const onResize = useCallback(
+      (entries: ResizeObserverEntry[]) => {
+        if (elementRef.current && entries?.length) {
+          const entry = entries[0];
+          const { width, height } = entry.contentRect;
+
+          const prevDimensions = viewportDimensions.get(viewportId) || { width: 0, height: 0 };
+
+          // Check if dimensions actually changed and then only resize if they have changed
+          const hasDimensionsChanged =
+            prevDimensions.width !== width || prevDimensions.height !== height;
+
+          if (width > 0 && height > 0 && hasDimensionsChanged) {
+            viewportDimensions.set(viewportId, { width, height });
+            // Perform resize operations
+            cornerstoneViewportService.resize();
+            setImageScrollBarHeight();
+          }
+        }
+      },
+      [viewportId, elementRef, cornerstoneViewportService, setImageScrollBarHeight]
+    );
+
+    useEffect(() => {
+      const element = elementRef.current;
+      if (!element) {
+        return;
       }
-    }, [elementRef]);
+
+      const resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(element);
+
+      // Cleanup function
+      return () => {
+        resizeObserver.unobserve(element);
+        resizeObserver.disconnect();
+      };
+    }, [onResize]);
 
     const cleanUpServices = useCallback(
       viewportInfo => {
@@ -121,16 +152,8 @@ const OHIFCornerstoneViewport = React.memo(
         syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
 
         segmentationService.clearSegmentationRepresentations(viewportId);
-
-        viewportActionCornersService.clear(viewportId);
       },
-      [
-        viewportId,
-        segmentationService,
-        syncGroupService,
-        toolGroupService,
-        viewportActionCornersService,
-      ]
+      [viewportId, segmentationService, syncGroupService, toolGroupService]
     );
 
     const elementEnabledHandler = useCallback(
@@ -198,6 +221,7 @@ const OHIFCornerstoneViewport = React.memo(
         }
 
         cornerstoneViewportService.disableElement(viewportId);
+        viewportRef.unregister();
 
         eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
       };
@@ -306,54 +330,6 @@ const OHIFCornerstoneViewport = React.memo(
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
 
-    // Set up the window level action menu in the viewport action corners.
-    useEffect(() => {
-      const windowLevelActionMenu = customizationService.getCustomization(
-        'viewportActionMenu.windowLevelActionMenu'
-      );
-      const segmentationOverlay = customizationService.getCustomization(
-        'viewportActionMenu.segmentationOverlay'
-      );
-
-      if (windowLevelActionMenu?.enabled) {
-        viewportActionCornersService.addComponent({
-          viewportId,
-          id: 'windowLevelActionMenu',
-          component: getWindowLevelActionMenu({
-            viewportId,
-            element: elementRef.current,
-            displaySets,
-            servicesManager,
-            commandsManager,
-            location: windowLevelActionMenu.location,
-            verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
-            horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
-          }),
-          location: windowLevelActionMenu.location,
-        });
-      }
-
-      if (segmentationOverlay?.enabled) {
-        viewportActionCornersService.addComponent({
-          viewportId,
-          id: 'segmentation',
-          component: getViewportDataOverlaySettingsMenu({
-            viewportId,
-            element: elementRef.current,
-            displaySets,
-            servicesManager,
-            commandsManager,
-            location: segmentationOverlay.location,
-          }),
-          location: segmentationOverlay.location,
-        });
-      }
-    }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
-
-    const { ref: resizeRef } = useResizeDetector({
-      onResize,
-    });
-
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -364,9 +340,10 @@ const OHIFCornerstoneViewport = React.memo(
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
             onMouseDown={e => e.preventDefault()}
+            data-viewportId={viewportId}
             ref={el => {
-              resizeRef.current = el;
               elementRef.current = el;
+              if (el) viewportRef.register(el);
             }}
           ></div>
           <CornerstoneOverlays
@@ -516,22 +493,18 @@ OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
 
 function areEqual(prevProps, nextProps) {
   if (nextProps.needsRerendering) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: needsRerendering');
     return false;
   }
 
   if (prevProps.displaySets.length !== nextProps.displaySets.length) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySets length change');
     return false;
   }
 
   if (prevProps.viewportOptions.orientation !== nextProps.viewportOptions.orientation) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: orientation change');
     return false;
   }
 
   if (prevProps.viewportOptions.toolGroupId !== nextProps.viewportOptions.toolGroupId) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: toolGroupId change');
     return false;
   }
 
@@ -539,12 +512,10 @@ function areEqual(prevProps, nextProps) {
     nextProps.viewportOptions.viewportType &&
     prevProps.viewportOptions.viewportType !== nextProps.viewportOptions.viewportType
   ) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: viewportType change');
     return false;
   }
 
   if (nextProps.viewportOptions.needsRerendering) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: viewportOptions.needsRerendering');
     return false;
   }
 
@@ -552,7 +523,6 @@ function areEqual(prevProps, nextProps) {
   const nextDisplaySets = nextProps.displaySets;
 
   if (prevDisplaySets.length !== nextDisplaySets.length) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySets length mismatch');
     return false;
   }
 
@@ -565,13 +535,11 @@ function areEqual(prevProps, nextProps) {
     );
 
     if (!foundDisplaySet) {
-      console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySet not found');
       return false;
     }
 
     // check they contain the same image
     if (foundDisplaySet.images?.length !== prevDisplaySet.images?.length) {
-      console.debug('OHIFCornerstoneViewport: Rerender caused by: images length mismatch');
       return false;
     }
 
@@ -579,7 +547,6 @@ function areEqual(prevProps, nextProps) {
     if (foundDisplaySet.images?.length) {
       for (let j = 0; j < foundDisplaySet.images.length; j++) {
         if (foundDisplaySet.images[j].imageId !== prevDisplaySet.images[j].imageId) {
-          console.debug('OHIFCornerstoneViewport: Rerender caused by: imageId mismatch');
           return false;
         }
       }

@@ -63,7 +63,7 @@ function CornerstoneImageScrollbar({
     }
     const { viewportType } = viewportData;
     const eventId =
-      (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_VIEWPORT_SCROLL) ||
+      (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_NEW_IMAGE) ||
       (viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE) ||
       Enums.Events.IMAGE_RENDERED;
 
@@ -72,11 +72,11 @@ function CornerstoneImageScrollbar({
       if (!viewport || viewport instanceof VolumeViewport3D) {
         return;
       }
-      const { imageIndex, newImageIdIndex = imageIndex } = event.detail;
+      const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;
       const numberOfSlices = viewport.getNumberOfSlices();
       // find the index of imageId in the imageIds
       setImageSliceData({
-        imageIndex: newImageIdIndex,
+        imageIndex: newImageIdIndex ?? imageIdIndex,
         numberOfSlices,
       });
     };
