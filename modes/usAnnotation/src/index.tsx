@@ -2,6 +2,8 @@ import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
+import { UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
+import { showPercentage } from '@ohif/extension-ultrasound-pleura-bline';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -61,6 +63,7 @@ const usAnnotation = {
   panel: '@ohif/extension-ultrasound-pleura-bline.panelModule.USAnnotationPanel',
 };
 
+let settingsSaved = {};
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -92,6 +95,10 @@ function modeFactory({ modeConfiguration }) {
       commandsManager,
       appConfig,
     }: withAppTypes) {
+      settingsSaved = {
+        disableConfirmationPrompts: appConfig?.disableConfirmationPrompts,
+        measurementTrackingMode: appConfig?.measurementTrackingMode,
+      };
       appConfig.disableConfirmationPrompts = true;
       appConfig.measurementTrackingMode = 'simplified';
       const { measurementService, toolbarService, toolGroupService, customizationService } =
@@ -213,11 +220,63 @@ function modeFactory({ modeConfiguration }) {
               },
             ],
           },
+          measurementsContextMenu: {
+            inheritsFrom: 'ohif.contextMenu',
+            menus: [
+              // Get the items from the UI Customization for the menu name (and have a custom name)
+              {
+                id: 'forExistingMeasurement',
+                selector: ({ nearbyToolData }) => !!nearbyToolData,
+                items: [
+                  {
+                    label: 'Delete annotation',
+                    commands: 'removeMeasurement',
+                  },
+                ],
+              },
+            ],
+          },
+          'viewportOverlay.topLeft': [
+            {
+              id: 'BLinePleuraPercentage',
+              inheritsFrom: 'ohif.overlayItem',
+              label: '',
+              title: 'BLinePleuraPercentage',
+              condition: ({ referenceInstance }) => referenceInstance?.Modality.includes('US'),
+              contentF: () => {
+                if (!showPercentage) {
+                  return;
+                }
+                const { viewportGridService, toolGroupService, cornerstoneViewportService } =
+                  servicesManager.services;
+                const activeViewportId = viewportGridService.getActiveViewportId();
+                const toolGroup = toolGroupService.getToolGroupForViewport(activeViewportId);
+                if (!toolGroup) {
+                  return 'B-Line/Pleura : N/A';
+                }
+                const usAnnotation = toolGroup.getToolInstance(UltrasoundPleuraBLineTool.toolName);
+                if (usAnnotation) {
+                  const viewport =
+                    cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
+                  const percentage = usAnnotation.calculateBLinePleuraPercentage(viewport);
+                  if (percentage !== undefined) {
+                    return `B-Line/Pleura : ${percentage.toFixed(2)} %`;
+                  } else {
+                    return 'B-Line/Pleura : N/A';
+                  }
+                }
+                return 'B-Line/Pleura : N/A';
+              },
+            },
+          ],
         },
         'mode'
       );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
+      appConfig.disableConfirmationPrompts = settingsSaved.disableConfirmationPrompts;
+      appConfig.measurementTrackingMode = settingsSaved.measurementTrackingMode;
+
       const {
         toolGroupService,
         syncGroupService,

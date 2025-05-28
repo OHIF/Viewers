@@ -1,8 +1,8 @@
 import { UltrasoundPleuraBLineTool, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
-import { setShowPercentage } from './getCustomizationModule';
 import { eventTarget, triggerEvent, utilities } from '@cornerstonejs/core';
 import getInstanceByImageId from './getInstanceByImageId';
+import { setShowPercentage } from './PleuraBlinePercentage';
 
 const { transformWorldToIndex } = utilities;
 

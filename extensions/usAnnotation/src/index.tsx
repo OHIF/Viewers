@@ -1,8 +1,7 @@
 import { id } from './id';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
-import getCustomizationModule from './getCustomizationModule';
-
+import { showPercentage, setShowPercentage } from './PleuraBlinePercentage';
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -73,7 +72,6 @@ export default {
    * options, and defaultContext is the default context for the command to run against.
    */
   getCommandsModule,
-  getCustomizationModule,
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
@@ -88,3 +86,5 @@ export default {
    */
   getDataSourcesModule: ({ servicesManager, commandsManager, extensionManager }) => {},
 };
+
+export { showPercentage, setShowPercentage };
