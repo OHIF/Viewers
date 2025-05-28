@@ -12,7 +12,6 @@ import metadata from '@ohif/core/src/classes'; // Fixed import statement
 // Local imports
 import { isLoggedIn, xnatAuthenticate } from '../../../../extensions/xnat/src/index';
 import retrieveDicomWebMetadata from '../lib/xnatDicomWeb/retrieveDicomWebMetadata';
-import { ViewportGrid } from '@ohif/ui';
 
 const { OHIFStudyMetadata } = metadata;
 

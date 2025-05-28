@@ -1,4 +1,4 @@
-import { XNATConfig } from '../index'; // Import the type if needed
+import { XNATConfig } from '../indexbackup.ts'; // Import the type if needed
 import { DicomMetadataStore } from '@ohif/core';
 
 const log = {

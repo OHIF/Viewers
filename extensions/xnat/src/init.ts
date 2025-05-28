@@ -35,7 +35,7 @@ export default function init({
   configuration?: any;
 }): void {
   const { toolbarService, cineService, viewportGridService, cornerstoneViewportService } = servicesManager.services;
-  console.log('XNAT Extension init', { servicesManager, configuration, commandsManager });
+  console.log("XNAT Extension - DEFAULT init() function: STARTING", { servicesManager, configuration, commandsManager });
   
   // Initialize XNAT DICOM loader with the configuration, returning a standard promise
   const initializeXNATLoader = async () => {
@@ -142,6 +142,6 @@ export function preRegistration({
   configuration = {},
 }) {
   // Implementation details
-  console.log('XNAT Extension preRegistration');
+  console.log("XNAT Extension - NAMED preRegistration() function: STARTING", { servicesManager, configuration, commandsManager });
   // ... rest of the implementation
 }

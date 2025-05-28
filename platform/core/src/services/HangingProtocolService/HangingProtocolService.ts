@@ -1499,7 +1499,6 @@ export default class HangingProtocolService extends PubSubService {
     const matchingScores = [];
     let highestSeriesMatchingScore = 0;
 
-    console.log('ProtocolEngine::matchImages', studyMatchingRules, seriesMatchingRules);
     const matchActiveOnly = this.protocol.numberOfPriorsReferenced === -1;
     this.studies.forEach((study, studyInstanceUIDsIndex) => {
       // Skip non-active if active only
@@ -1510,7 +1509,6 @@ export default class HangingProtocolService extends PubSubService {
       const studyDisplaySets = this.displaySets.filter(
         it => it.StudyInstanceUID === study.StudyInstanceUID && !it?.unsupported
       );
-      console.log('ProtocolEngine::matchImages studyDisplaySets', studyDisplaySets);
       const studyMatchDetails = this.protocolEngine.findMatch(study, studyMatchingRules, {
         studies: this.studies,
         displaySets: studyDisplaySets,
@@ -1599,7 +1597,6 @@ export default class HangingProtocolService extends PubSubService {
 
     const bestMatch = matchingScores[0];
 
-    console.log('ProtocolEngine::matchImages bestMatch', bestMatch, matchingScores);
 
     return {
       bestMatch,
@@ -1667,8 +1664,6 @@ export default class HangingProtocolService extends PubSubService {
     // Sets the new stage
     this.stageIndex = i;
 
-    // Log the new stage
-    this.debug(`ProtocolEngine::setCurrentProtocolStage stage = ${this.stageIndex}`);
 
     // Since stage has changed, we need to update the viewports
     // and redo matchings

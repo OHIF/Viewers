@@ -131,10 +131,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       getAuthorizationHeader = () => {
         console.log('Default getAuthorizationHeader');
-        const xhrRequestHeaders = {};
+        const xhrRequestHeaders: Record<string, string> = {};
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
-        if (authHeaders && authHeaders.Authorization) {
-          xhrRequestHeaders.Authorization = authHeaders.Authorization;
+        if (authHeaders && typeof authHeaders === 'object' && 'Authorization' in authHeaders && authHeaders.Authorization) {
+          xhrRequestHeaders.Authorization = authHeaders.Authorization as string;
         }
         return xhrRequestHeaders;
       };
@@ -185,21 +185,28 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     },
     query: {
       studies: {
-        mapParams: mapParams.bind(),
+        mapParams: mapParams,
         search: async function (origParams) {
           console.log('Default studies search');
           qidoDicomWebClient.headers = getAuthorizationHeader();
-          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams, {
-              supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
-              supportsWildcard: dicomWebConfig.supportsWildcard,
-            }) || {};
+          const mappedResult = mapParams(origParams, {
+            supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
+            supportsWildcard: dicomWebConfig.supportsWildcard,
+          });
 
-          const results = await qidoSearch(qidoDicomWebClient, undefined, undefined, mappedParams);
+          const MAPPED_RESULT_OBJECT = typeof mappedResult === 'object' && mappedResult !== null ? mappedResult : {};
+
+          const {
+            studyInstanceUid = undefined,
+            seriesInstanceUid = undefined,
+            ...mappedParams
+          } = MAPPED_RESULT_OBJECT;
+
+          const results = await qidoSearch(qidoDicomWebClient, studyInstanceUid, seriesInstanceUid, mappedParams);
 
           return processResults(results);
         },
-        processResults: processResults.bind(),
+        processResults: processResults,
       },
       series: {
         // mapParams: mapParams.bind(),

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useReducer } from 'react';
-import { AdvancedToolbox, InputDoubleRange, useViewportGrid } from '@ohif/ui';
+import { AdvancedToolbox, InputDoubleRange, useViewportGrid } from '@ohif/ui-next';
 import { Types } from '@ohif/extension-cornerstone';
 import { utilities } from '@cornerstonejs/tools';
 import { commandsManager } from '../../../../platform/app/src/App';

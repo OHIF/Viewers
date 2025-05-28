@@ -10,16 +10,15 @@ import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByMRN from './Panels/getStudiesForPatientByMRN';
 import getCustomizationModule from './getCustomizationModule';
 import getViewportModule from './getViewportModule';
-import preRegistration from './init';
+import { preRegistration } from './init';
 import getLayoutTemplateModule from './getLayoutTemplateModule';
-
+import getSopClassHandlerModule from './getSopClassHandlerModule';
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useViewportGridStore } from './stores/useViewportGridStore';
 import { useUIStateStore } from './stores/useUIStateStore';
 import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
-import ViewportGrid from '@ohif/ui/src/components/ViewportGrid';
 
 // Export the study browser components
 import XNATStudyBrowser from './xnat-components/XNATStudyBrowser/XNATStudyBrowser';
@@ -41,11 +40,13 @@ const xnatExtension: Types.Extensions.Extension = {
     useViewportsByPositionStore.getState().clearViewportsByPosition();
   },
   getDataSourcesModule,
+  getSopClassHandlerModule,
   getViewportModule,
   getPanelModule,
   getHangingProtocolModule,
   getToolbarModule,
   getCommandsModule,
+  getLayoutTemplateModule,
   getUtilityModule({ servicesManager }) {
     return [
       {
@@ -56,18 +57,7 @@ const xnatExtension: Types.Extensions.Extension = {
       },
     ];
   },
-
   getCustomizationModule,
-
-  getLayoutTemplateModule() {
-    return [
-      {
-        id: 'xnat-basic-layout',
-        name: 'XNAT Basic Viewport',
-        component: ViewportGrid
-      }
-    ];
-  }
 };
 
 export { isLoggedIn, xnatAuthenticate } from './utils/xnatDev.js';
