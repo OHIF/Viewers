@@ -138,27 +138,29 @@ export function useViewportDisplaySets(
     });
   }, [includeOverlay, segmentationRepresentations, displaySetService]);
 
-  const overlayDisplaySetUIDs = useMemo(
-    () => overlayDisplaySets.map(ds => ds.displaySetInstanceUID),
-    [overlayDisplaySets]
-  );
+  const overlayDisplaySetUIDs = useMemo(() => {
+    return overlayDisplaySets.map(ds => ds.displaySetInstanceUID);
+  }, [overlayDisplaySets]);
 
   // Get enhanced display sets (only if needed)
   const needsEnhancedDisplaySets =
     includeBackground || includeForeground || includePotentialOverlay || includePotentialForeground;
 
-  const { viewportDisplaySets, enhancedDisplaySets } = useMemo(() => {
+  const { viewportDisplaySets = [], enhancedDisplaySets = [] } = useMemo(() => {
     if (!needsEnhancedDisplaySets) {
       return { viewportDisplaySets: [], enhancedDisplaySets: [] };
     }
-    return getEnhancedDisplaySets({
-      viewportId: viewportIdToUse,
-      services: { displaySetService, viewportGridService },
-    });
+    return (
+      getEnhancedDisplaySets({
+        viewportId: viewportIdToUse,
+        services: { displaySetService, viewportGridService },
+      }) || { viewportDisplaySets: [], enhancedDisplaySets: [] }
+    );
   }, [viewportIdToUse, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
 
   const backgroundDisplaySet = useMemo(
-    () => (includeBackground ? viewportDisplaySets[0] : undefined),
+    () =>
+      includeBackground && viewportDisplaySets.length > 0 ? viewportDisplaySets[0] : undefined,
     [includeBackground, viewportDisplaySets]
   );
 
@@ -227,7 +229,10 @@ export function useViewportDisplaySets(
     foregroundDisplaySetUIDs,
   ]);
 
-  const result: ViewportDisplaySets = { allDisplaySets, viewportDisplaySets };
+  const result: ViewportDisplaySets = {
+    allDisplaySets: allDisplaySets || [],
+    viewportDisplaySets: viewportDisplaySets || [],
+  };
 
   if (includeBackground) {
     result.backgroundDisplaySet = backgroundDisplaySet;

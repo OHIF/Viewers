@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.40...v3.11.0-beta.41) (2025-05-26)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.39...v3.11.0-beta.40) (2025-05-26)
+
+
+### Bug Fixes
+
+* **capture:** Disable or enable the tool group based on the show flag. ([#5069](https://github.com/OHIF/Viewers/issues/5069)) ([ebfa1ff](https://github.com/OHIF/Viewers/commit/ebfa1ff5f22ea5318328722dd9f1929b37f16b0c))
+* **frame-view:** After pan and/or zoom, stack scroll is now synchronized for frame view ([#5067](https://github.com/OHIF/Viewers/issues/5067)) ([1873a84](https://github.com/OHIF/Viewers/commit/1873a8405f6c8d112035d47049582c52f00f640b))
+
+
+
+
+
+# [3.11.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.38...v3.11.0-beta.39) (2025-05-26)
+
+
+### Bug Fixes
+
+* **router:** Expose the react router from the worklist too. ([#5062](https://github.com/OHIF/Viewers/issues/5062)) ([14f5f0c](https://github.com/OHIF/Viewers/commit/14f5f0c074738ba251b40c6a8ebd26bc287ceb4e))
+
+
+
+
+
+# [3.11.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.37...v3.11.0-beta.38) (2025-05-24)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.35...v3.11.0-beta.36) (2025-05-16)
+
+
+### Bug Fixes
+
+* backward compatibility with toolbar service ([#5052](https://github.com/OHIF/Viewers/issues/5052)) ([9b1b501](https://github.com/OHIF/Viewers/commit/9b1b501d83502d13b285050bd5fca102b7f7612c))
+* **segmentation:** segmentation stats calculations were not being done on a subsequent navigation to a mode ([#5046](https://github.com/OHIF/Viewers/issues/5046)) ([c6b2865](https://github.com/OHIF/Viewers/commit/c6b28654b507981d1dc5038b4f8a869ed53470fe))
+
+
+
+
+
+# [3.11.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.34...v3.11.0-beta.35) (2025-05-16)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.11.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.33...v3.11.0-beta.34) (2025-05-15)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

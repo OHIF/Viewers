@@ -37,20 +37,10 @@ export const TOOLBAR_SECTIONS = {
     rightMiddle: 'viewportActionMenu.rightMiddle',
   },
 
-  /**
-   * Measurement tools section
-   */
-  measurementSection: 'measurementSection',
-
-  /**
-   * More tools section
-   */
-  moreToolsSection: 'moreToolsSection',
-
-  /**
-   * Advanced rendering controls section
-   */
-  advancedRenderingControlsSection: 'advancedRenderingControlsSection',
+  // mode specific
+  segmentationToolbox: 'segmentationToolbox',
+  dynamicToolbox: 'dynamic-toolbox',
+  roiThresholdToolbox: 'ROIThresholdToolbox',
 };
 
 export enum ButtonLocation {
@@ -197,6 +187,11 @@ export default class ToolbarService extends PubSubService {
       if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
           button.props = {} as ButtonProps;
+        }
+
+        // if button section is true as boolean, we assign the id of the button to the buttonSection
+        if (button.props.buttonSection === true) {
+          button.props.buttonSection = button.id;
         }
 
         this.state.buttons[button.id] = button;
@@ -411,6 +406,19 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
+   * @deprecated Use register() instead. This method will be removed in a future version.
+   * Adds buttons to the toolbar.
+   * @param buttons - The buttons to be added.
+   * @param replace - Flag indicating if any existing button with the same id as one being added should be replaced
+   */
+  public addButtons(buttons: Button[], replace: boolean = false): void {
+    console.warn(
+      'ToolbarService.addButtons() is deprecated. Use ToolbarService.register() instead.'
+    );
+    this.register(buttons, replace);
+  }
+
+  /**
    * Retrieves the buttons from the toolbar service.
    * @returns An array of buttons.
    */
@@ -468,6 +476,19 @@ export default class ToolbarService extends PubSubService {
       this.state.buttonSections[key] = buttons;
     }
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
+  }
+
+  /**
+   * @deprecated Use updateSection() instead. This method will be removed in a future version.
+   * Creates a button section with the specified key and buttons.
+   * @param {string} key - The key of the button section.
+   * @param {Array} buttons - The buttons to be added to the section.
+   */
+  createButtonSection(key, buttons) {
+    console.warn(
+      'ToolbarService.createButtonSection() is deprecated. Use ToolbarService.updateSection() instead.'
+    );
+    this.updateSection(key, buttons);
   }
 
   /**

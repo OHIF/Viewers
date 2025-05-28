@@ -56,7 +56,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.register(toolbarButtons);
 
-      toolbarService.updateSection('secondary', ['ProgressDropdown']);
+      toolbarService.updateSection(toolbarService.sections.secondary, ['ProgressDropdown']);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
         'orientationMenu',
@@ -72,7 +72,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedRenderingControls',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.advancedRenderingControlsSection, [
+      toolbarService.updateSection('AdvancedRenderingControls', [
         'windowLevelMenuEmbedded',
         'voiManualControlMenu',
         'Colorbar',
