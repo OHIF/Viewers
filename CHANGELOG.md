@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+
+### Features
+
+* create memo when manually adding and removing annotations ([#5051](https://github.com/OHIF/Viewers/issues/5051)) ([5891505](https://github.com/OHIF/Viewers/commit/5891505c51f82ecad22fb8182b88fb3fb52255b3))
+
+
+
+
+
+# [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
+
+
+### Bug Fixes
+
+* **ui:** Prevent unintended text selection and improve component behavior ([#5077](https://github.com/OHIF/Viewers/issues/5077)) ([c6327ac](https://github.com/OHIF/Viewers/commit/c6327acdc1c00e1f2922af54012c79b274252532))
+
+
+
+
+
+# [3.11.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.41...v3.11.0-beta.42) (2025-05-28)
+
+
+### Bug Fixes
+
+* **Customization:** Fixed incorrect events broadcast  ([#5075](https://github.com/OHIF/Viewers/issues/5075)) ([c88bdac](https://github.com/OHIF/Viewers/commit/c88bdac4b1d9da89dcda74133045be776d73cfb3))
+
+
+
+
+
+# [3.11.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.40...v3.11.0-beta.41) (2025-05-26)
+
+
+### Bug Fixes
+
+* e2e playwright tests runnigns ([#5070](https://github.com/OHIF/Viewers/issues/5070)) ([b9ca76e](https://github.com/OHIF/Viewers/commit/b9ca76ea6714726a13bceec73dbddc12280ca5bf))
+
+
+
+
+
+# [3.11.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.39...v3.11.0-beta.40) (2025-05-26)
+
+
+### Bug Fixes
+
+* **capture:** Disable or enable the tool group based on the show flag. ([#5069](https://github.com/OHIF/Viewers/issues/5069)) ([ebfa1ff](https://github.com/OHIF/Viewers/commit/ebfa1ff5f22ea5318328722dd9f1929b37f16b0c))
+* **frame-view:** After pan and/or zoom, stack scroll is now synchronized for frame view ([#5067](https://github.com/OHIF/Viewers/issues/5067)) ([1873a84](https://github.com/OHIF/Viewers/commit/1873a8405f6c8d112035d47049582c52f00f640b))
+
+
+
+
+
+# [3.11.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.38...v3.11.0-beta.39) (2025-05-26)
+
+
+### Bug Fixes
+
+* **router:** Expose the react router from the worklist too. ([#5062](https://github.com/OHIF/Viewers/issues/5062)) ([14f5f0c](https://github.com/OHIF/Viewers/commit/14f5f0c074738ba251b40c6a8ebd26bc287ceb4e))
+
+
+
+
+
+# [3.11.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.37...v3.11.0-beta.38) (2025-05-24)
+
+
+### Bug Fixes
+
+* **context-menu:** Move the reposition logic from the context menu to the dialog component. ([#5060](https://github.com/OHIF/Viewers/issues/5060)) ([cb814e6](https://github.com/OHIF/Viewers/commit/cb814e6a6076847caf46200c49adbac31f3d5236))
+
+
+
+
+
 # [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
 
 
