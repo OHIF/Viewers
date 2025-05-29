@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useReducer } from 'react';
-import { AdvancedToolbox, InputDoubleRange, useViewportGrid } from '@ohif/ui-next';
+import { AdvancedToolbox, InputDoubleRange, useViewportGrid } from '@ohif/ui';
 import { Types } from '@ohif/extension-cornerstone';
 import { utilities } from '@cornerstonejs/tools';
 import { commandsManager } from '../../../../platform/app/src/App';
@@ -62,6 +62,8 @@ function toolboxReducer(state, action) {
 }
 
 function SegmentationToolbox({ servicesManager, extensionManager }) {
+  console.log('XNAT DEBUG: SegmentationToolbox rendering. Props:', { servicesManager, extensionManager });
+
   const { toolbarService, segmentationService, toolGroupService } =
     servicesManager.services as Types.CornerstoneServices;
 

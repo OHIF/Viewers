@@ -148,6 +148,7 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
 
           
           currentDisplaySets.forEach(displaySet => {
+        console.log('XNAT: WrappedPanel - Processing displaySet:', JSON.parse(JSON.stringify(displaySet)));
         const {
           StudyInstanceUID,
           displaySetInstanceUID,

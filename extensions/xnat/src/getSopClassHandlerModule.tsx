@@ -234,6 +234,8 @@ const makeDisplaySet = instances => {
     label: '',
   };
 
+  console.info(`XNAT_SOP_Handler: DisplaySet ${imageSet.uid} initialAttributes.SeriesDescription: '${initialAttributes.SeriesDescription}'`);
+
   const labelSeriesDesc = initialAttributes.SeriesDescription;
   const labelSeriesNumber = initialAttributes.SeriesNumber;
   const labelModality = initialAttributes.Modality;

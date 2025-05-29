@@ -31,12 +31,8 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     return (
       <>
         <SegmentationToolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
+          servicesManager={servicesManager} 
           extensionManager={extensionManager}
-          configuration={{
-            ...configuration,
-          }}
         />
         <PanelSegmentation
           commandsManager={commandsManager}
@@ -44,6 +40,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           extensionManager={extensionManager}
           configuration={{
             ...configuration,
+            // disableEditing: appConfig.disableEditing || disableEditingForMode?.value, 
           }}
         />
       </>

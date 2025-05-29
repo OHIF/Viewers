@@ -671,6 +671,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                   HighBit: naturalized.HighBit,
                   wadoRoot: xnatConfigCopy.wadoRoot,
                   wadoUri: xnatConfigCopy.wadoUri,
+                  SeriesDescription: series.SeriesDescription || '',
                 };
                 instancesToStoreForThisSeries.push(storable);
 
@@ -699,14 +700,17 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
             }
 
             // Add Series level metadata (summary) to DicomMetadataStore
-            const seriesSummaryMetadata = study.series.map(s => ({
-                StudyInstanceUID,
-                SeriesInstanceUID: s.SeriesInstanceUID,
-                Modality: s.Modality || "Unknown",
-                SeriesDescription: s.SeriesDescription || "XNAT Series",
-                SeriesNumber: s.SeriesNumber || "1",
-                // Add other relevant series tags from XNAT if available
-            }));
+            const seriesSummaryMetadata = study.series.map(s => {
+                log.info(`XNAT: Mapping series ${s.SeriesInstanceUID}, SeriesDescription from XNAT: '${s.SeriesDescription}'`);
+                return {
+                    StudyInstanceUID,
+                    SeriesInstanceUID: s.SeriesInstanceUID,
+                    Modality: s.Modality || "Unknown",
+                    SeriesDescription: s.SeriesDescription || "XNAT Series",
+                    SeriesNumber: s.SeriesNumber || "1",
+                    // Add other relevant series tags from XNAT if available
+                };
+            });
             DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
 
