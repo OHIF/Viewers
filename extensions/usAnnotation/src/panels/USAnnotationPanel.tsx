@@ -16,6 +16,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  Separator,
   TagInput,
 } from '@ohif/ui-next';
 
@@ -208,25 +212,21 @@ export default function USAnnotationPanel() {
       <div className="flex flex-col gap-4 p-2">
         <Label>Sector Annotations</Label>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            className="flex-1 py-3"
-            onClick={() =>
-              switchAnnotation(UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA)
-            }
+          <Tabs
+            defaultValue={UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE}
+            onValueChange={newValue => switchAnnotation(newValue)}
           >
-            <Icons.Plus /> Pleura line
-          </Button>
-
-          <Button
-            variant="secondary"
-            className="flex-1 py-3"
-            onClick={() =>
-              switchAnnotation(UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE)
-            }
-          >
-            <Icons.Plus /> B-line
-          </Button>
+            <TabsList>
+              <TabsTrigger value={UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA}>
+                <Icons.Plus /> Pleura line
+              </TabsTrigger>
+              <TabsTrigger value={UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE}>
+                <Icons.Plus /> B-line
+              </TabsTrigger>
+              <Separator orientation="vertical" />
+              <Separator orientation="vertical" />
+            </TabsList>
+          </Tabs>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -286,7 +286,7 @@ export default function USAnnotationPanel() {
     <ScrollArea className="h-full">
       <PanelSection.Content>
         <div className="mb-4 flex items-center justify-between">
-          <Button
+          {/* <Button
             variant="ghost"
             size="sm"
             className="text-blue-300"
@@ -294,7 +294,7 @@ export default function USAnnotationPanel() {
             onClick={addCurrentImageId}
           >
             <Icons.Plus className="mr-2" /> Add current frame
-          </Button>
+          </Button> */}
           <Button variant="ghost" onClick={() => downloadJSON()}>
             <Icons.Download className="h-5 w-5" />
             <span>JSON</span>
@@ -362,7 +362,7 @@ export default function USAnnotationPanel() {
     };
     const mapping = UltrasoundPleuraBLineTool.countAnnotations(viewport.element, imageIdFilter);
     if (!mapping) {
-      return;
+      setAnnotatedFrames([]);
     }
     const keys = Array.from(mapping.keys());
     const updatedFrames = keys.map((key, index) => {
@@ -392,7 +392,7 @@ export default function USAnnotationPanel() {
 
   useEffect(() => {
     eventTarget.addEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
-    const unsubscribe = measurementService.subscribe(
+    const { unsubscribe } = measurementService.subscribe(
       measurementService.EVENTS.MEASUREMENT_REMOVED,
       () => {
         updateAnnotatedFrames();
@@ -401,8 +401,9 @@ export default function USAnnotationPanel() {
 
     return () => {
       eventTarget.removeEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
+      unsubscribe();
     };
-  }, [annotationModified]);
+  }, [annotationModified, measurementService]);
 
   /**
    * ──────────────────────────────────────────────────────
