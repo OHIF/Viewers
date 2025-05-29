@@ -79,6 +79,10 @@ function PanelStudyBrowser({
         'studyBrowser.thumbnailDoubleClickCallback'
       ) as CallbackCustomization;
 
+      if (!customHandler) {
+        return;
+      }
+
       const setupArgs = {
         activeViewportId,
         commandsManager,
@@ -108,6 +112,10 @@ function PanelStudyBrowser({
       const customHandler = customizationService.getCustomization(
         'studyBrowser.thumbnailClickCallback'
       ) as CallbackCustomization;
+
+      if (!customHandler) {
+        return;
+      }
 
       const setupArgs = {
         activeViewportId,
