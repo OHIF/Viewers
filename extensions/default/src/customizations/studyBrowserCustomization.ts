@@ -66,22 +66,31 @@ export default {
   'studyBrowser.studyMode': 'all',
   'studyBrowser.thumbnailDoubleClickCallback': {
     callbacks: [
-      ({ activeViewportId, commandsManager, servicesManager }) =>
+      ({ activeViewportId, servicesManager, commandsManager, isHangingProtocolLayout }) =>
         async displaySetInstanceUID => {
+          const { hangingProtocolService, uiNotificationService } = servicesManager.services;
+          let updatedViewports = [];
+          const viewportId = activeViewportId;
+
           try {
-            commandsManager.run('loadSegmentationDisplaySetsForViewport', {
-              viewportId: activeViewportId,
-              displaySetInstanceUIDs: [displaySetInstanceUID],
-            });
+            updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+              viewportId,
+              displaySetInstanceUID,
+              isHangingProtocolLayout
+            );
           } catch (error) {
             console.warn(error);
-            servicesManager.services.uiNotificationService.show({
+            uiNotificationService.show({
               title: 'Thumbnail Double Click',
               message: 'The selected display sets could not be added to the viewport.',
               type: 'error',
               duration: 3000,
             });
           }
+
+          commandsManager.run('setDisplaySetsForViewports', {
+            viewportsToUpdate: updatedViewports,
+          });
         },
     ],
   },
