@@ -363,6 +363,7 @@ export default function USAnnotationPanel() {
     const mapping = UltrasoundPleuraBLineTool.countAnnotations(viewport.element, imageIdFilter);
     if (!mapping) {
       setAnnotatedFrames([]);
+      return;
     }
     const keys = Array.from(mapping.keys());
     const updatedFrames = keys.map((key, index) => {
