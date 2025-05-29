@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
 # [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg

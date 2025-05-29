@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+
+### Features
+
+* create memo when manually adding and removing annotations ([#5051](https://github.com/OHIF/Viewers/issues/5051)) ([5891505](https://github.com/OHIF/Viewers/commit/5891505c51f82ecad22fb8182b88fb3fb52255b3))
+
+
+
+
+
 # [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
 
 
