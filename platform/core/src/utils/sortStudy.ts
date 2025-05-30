@@ -1,4 +1,6 @@
+import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
+import calculateScanAxisNormal from './calculateScanAxisNormal';
 
 const compareSeriesDateTime = (a, b) => {
   const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
@@ -128,6 +130,51 @@ export default function sortStudy(
   return study;
 }
 
+/**
+ * Sort by image position, calculated using imageOrientationPatient and ImagePositionPatient
+ * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided sortingCriteria
+ * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+ *
+ * @returns images - reference to images after sorting
+ */
+const sortStudyByImagePositionPatient = (images, sortingCriteria) => {
+  if (images.length <= 1) {
+    return; // No need to sort if there's only one image
+  }
+
+  // Use the first image as a reference
+  const referenceImagePositionPatient = images[0].ImagePositionPatient;
+  const imageOrientationPatient = images[0].ImageOrientationPatient;
+
+  if (!referenceImagePositionPatient || !imageOrientationPatient) {
+    // Cannot sort ImageSet by real-world positions - ImagePositionPatient or imageOrientationPatient is undefined, sort by fallbackSort provided
+    images.sort(sortingCriteria);
+    return;
+  }
+
+  // Calculate the scan axis normal using the cross product
+  const scanAxisNormal = calculateScanAxisNormal(imageOrientationPatient);
+
+  // Compute distances from each image to the reference image
+  const distanceInstancePairs = images.map(image => {
+    const imagePositionPatient = image.ImagePositionPatient;
+    const deltaVector = vec3.create();
+    const distance = vec3.dot(
+      scanAxisNormal,
+      vec3.subtract(deltaVector, imagePositionPatient, referenceImagePositionPatient)
+    );
+    return { distance, image };
+  });
+  // Sort images based on the computed distances
+  distanceInstancePairs.sort((a, b) => b.distance - a.distance);
+  // Reorder the images in the original array
+  for (const [index, item] of distanceInstancePairs.entries()) {
+    images[index] = item.image;
+  }
+
+  return images;
+};
+
 export {
   sortStudy,
   sortStudySeries,
@@ -135,4 +182,5 @@ export {
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
+  sortStudyByImagePositionPatient,
 };
