@@ -32,6 +32,7 @@
   "ROI Window": "Janela ROI",
   "Rectangle": "Retângulo",
   "Reset": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) todas as visualizações",
   "Reset to defaults": "$t(Common:Reset) para o Padrão",
   "Rotate Right": "Girar à direita",
   "Sagittal": "Sagital",

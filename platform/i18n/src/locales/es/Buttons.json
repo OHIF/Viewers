@@ -32,6 +32,7 @@
   "ROI Window": "Ventana ROI",
   "Rectangle": "Rectángulo",
   "Reset": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) todas las vistas",
   "Reset to defaults": "$t(Common:Reset) por defecto",
   "Rotate Right": "Girar ->",
   "Sagittal": "Sagital",
