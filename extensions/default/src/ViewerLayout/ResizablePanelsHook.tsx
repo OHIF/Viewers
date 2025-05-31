@@ -41,7 +41,7 @@ const useResizablePanels = (
   const [leftResizablePanelMinimumSize, setLeftResizablePanelMinimumSize] = useState(0);
   const [rightResizablePanelMinimumSize, setRightResizablePanelMinimumSize] = useState(0);
   const [leftResizablePanelCollapsedSize, setLeftResizePanelCollapsedSize] = useState(0);
-  const [rightResizePanelCollapsedSize, setRightResizePanelCollapsedSize] = useState(0);
+  const [rightResizePanelCollapsedSize, setRightResizePanelCollapsedSize] = useState(400);
 
   const resizablePanelGroupElemRef = useRef(null);
   const resizableLeftPanelElemRef = useRef(null);
@@ -223,16 +223,18 @@ const useResizablePanels = (
   }, []);
 
   const onRightPanelClose = useCallback(() => {
-    setRightPanelClosed(true);
-    setMinMaxWidth(resizableRightPanelElemRef.current);
-    resizableRightPanelAPIRef?.current?.collapse();
-  }, [setRightPanelClosed]);
+    // setRightPanelClosed(true);
+    // setMinMaxWidth(resizableRightPanelElemRef.current);
+    setRightPanelExpandedWidth(400);
+  }, [setRightPanelExpandedWidth]);
 
   const onRightPanelOpen = useCallback(() => {
-    resizableRightPanelAPIRef?.current?.expand(
-      getPercentageSize(panelGroupDefinition.right.initialExpandedOffsetWidth)
-    );
-    setRightPanelClosed(false);
+    // resizableRightPanelAPIRef?.current?.expand(
+    //   getPercentageSize(panelGroupDefinition.right.initialExpandedOffsetWidth)
+    // );
+    // setRightPanelClosed(false);
+    setRightPanelExpandedWidth(600);
+    resizableLeftPanelAPIRef?.current?.collapse();
   }, [setRightPanelClosed]);
 
   const onRightPanelResize = useCallback(size => {

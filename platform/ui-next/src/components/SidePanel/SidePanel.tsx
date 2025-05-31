@@ -358,15 +358,37 @@ const SidePanel = ({
     );
   };
 
+  const getOpenIcon = () => {
+    return (
+      <div
+        className={classnames(
+          'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
+          side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
+        )}
+        onClick={() => {
+          updatePanelOpen(!panelOpen);
+        }}
+        style={{ width: `${closeIconWidth}px` }}
+        data-cy={`side-panel-header-${side}`}
+      >
+        <Icons.NavigationPanelReveal
+          className={classnames('text-primary', side === 'left' && 'rotate-180 transform')}
+        />
+      </div>
+    );
+  };
+
   const getTabGridComponent = () => {
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
       <>
-        {getCloseIcon()}
+        {!panelOpen && side === 'right' ? getOpenIcon() : getCloseIcon()}
+
         <div className={classnames('flex grow justify-center')}>
-          <div className={classnames('bg-primary-dark text-primary flex flex-wrap')}>
-            {tabs.map((tab, tabIndex) => {
+          <div className={classnames('flex flex-wrap text-white')}>
+            Reporting
+            {/* {tabs.map((tab, tabIndex) => {
               const { disabled } = tab;
               return (
                 <React.Fragment key={tabIndex}>
@@ -418,7 +440,7 @@ const SidePanel = ({
                   </Tooltip>
                 </React.Fragment>
               );
-            })}
+            })} */}
           </div>
         </div>
       </>
@@ -443,7 +465,9 @@ const SidePanel = ({
   const getOpenStateComponent = () => {
     return (
       <>
-        <div className="bg-bkg-med flex h-[40px] flex-shrink-0 select-none rounded-t p-2">
+        <div
+          className={`bg-bkg-med flex h-[40px] flex-shrink-0 select-none rounded-t p-2 ${className} ${side === 'right' ? 'w-full pl-0' : ''}`}
+        >
           {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
         </div>
         <Separator
@@ -460,7 +484,7 @@ const SidePanel = ({
       className={classnames(className, baseClasses)}
       style={style}
     >
-      {panelOpen ? (
+      {panelOpen || side === 'right' ? (
         <>
           {getOpenStateComponent()}
           {tabs.map((tab, tabIndex) => {

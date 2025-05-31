@@ -199,7 +199,7 @@ function ViewerLayout({
                 <ResizablePanel {...resizableRightPanelProps}>
                   <SidePanelWithServices
                     side="right"
-                    isExpanded={!rightPanelClosedState}
+                    isExpanded={false}
                     servicesManager={servicesManager}
                     {...rightPanelProps}
                   />

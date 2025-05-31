@@ -3,7 +3,7 @@ const collapsedInsideBorderSize = 4;
 const collapsedOutsideBorderSize = 4;
 const collapsedWidth = 25;
 
-const rightPanelInitialExpandedWidth = 280;
+const rightPanelInitialExpandedWidth = 400;
 const leftPanelInitialExpandedWidth = 292;
 
 const panelGroupDefinition = {
@@ -30,7 +30,7 @@ const panelGroupDefinition = {
     panelId: 'viewerLayoutResizableRightPanel',
     initialExpandedWidth: rightPanelInitialExpandedWidth,
     minimumExpandedOffsetWidth: rightPanelInitialExpandedWidth + expandedInsideBorderSize,
-    initialExpandedOffsetWidth: rightPanelInitialExpandedWidth + expandedInsideBorderSize,
+    initialExpandedOffsetWidth: rightPanelInitialExpandedWidth + 200,
     collapsedOffsetWidth: collapsedWidth + collapsedInsideBorderSize + collapsedOutsideBorderSize,
   },
 };
