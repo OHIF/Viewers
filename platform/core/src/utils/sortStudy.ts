@@ -137,7 +137,7 @@ export default function sortStudy(
  *
  * @returns images - reference to images after sorting
  */
-const sortStudyByImagePositionPatient = (images, sortingCriteria) => {
+const sortImagesByPatientPosition = (images, sortingCriteria) => {
   if (images.length <= 1) {
     return; // No need to sort if there's only one image
   }
@@ -182,5 +182,5 @@ export {
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
-  sortStudyByImagePositionPatient,
+  sortImagesByPatientPosition,
 };

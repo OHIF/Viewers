@@ -1,6 +1,6 @@
 import { Types as csTypes } from '@cornerstonejs/core';
 import guid from '../utils/guid.js';
-import { sortStudyByImagePositionPatient } from '../utils/sortStudy';
+import { sortImagesByPatientPosition } from '../utils/sortStudy';
 
 type Attributes = Record<string, unknown>;
 type Image = {
@@ -85,7 +85,7 @@ class ImageSet {
    * @returns images - reference to images after sorting
    */
   sort(sortingCallback: (a: Image, b: Image) => number): Image[] {
-    return sortStudyByImagePositionPatient(this.images, sortingCallback);
+    return sortImagesByPatientPosition(this.images, sortingCallback);
   }
 
   /**
