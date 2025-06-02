@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.44...v3.11.0-beta.45) (2025-05-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+
+### Features
+
+* create memo when manually adding and removing annotations ([#5051](https://github.com/OHIF/Viewers/issues/5051)) ([5891505](https://github.com/OHIF/Viewers/commit/5891505c51f82ecad22fb8182b88fb3fb52255b3))
+
+
+
+
+
+# [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
+
+
+### Bug Fixes
+
+* **ui:** Prevent unintended text selection and improve component behavior ([#5077](https://github.com/OHIF/Viewers/issues/5077)) ([c6327ac](https://github.com/OHIF/Viewers/commit/c6327acdc1c00e1f2922af54012c79b274252532))
+
+
+
+
+
 # [3.11.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.41...v3.11.0-beta.42) (2025-05-28)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
