@@ -1,6 +1,10 @@
 import { Types as csTypes } from '@cornerstonejs/core';
 import guid from '../utils/guid.js';
-import { sortImagesByPatientPosition } from '../utils/sortStudy';
+import {
+  instancesSortCriteria,
+  isValidForPositionSort,
+  sortImagesByPatientPosition,
+} from '../utils/sortStudy';
 
 type Attributes = Record<string, unknown>;
 type Image = {
@@ -84,8 +88,26 @@ class ImageSet {
    *
    * @returns images - reference to images after sorting
    */
-  sort(sortingCallback: (a: Image, b: Image) => number): Image[] {
-    return sortImagesByPatientPosition(this.images, sortingCallback);
+  sort(customizationService): Image[] {
+    // Check instanceSort customization
+    const customizedSortingCriteria =
+      customizationService.getCustomization('instanceSortingCriteria');
+    const combinedSortFunctions = Object.assign(
+      {},
+      instancesSortCriteria,
+      customizedSortingCriteria.sortFunctions
+    );
+    const userSpecifiedCriteria = customizedSortingCriteria.defaultSortFunctionName;
+    // Prefer customized sort function when available
+    if (typeof combinedSortFunctions[userSpecifiedCriteria] === 'function') {
+      return this.images.sort(combinedSortFunctions[userSpecifiedCriteria]);
+    }
+    // If image position patient is not available, sort by InstanceNumber
+    if (!isValidForPositionSort(this.images)) {
+      return this.images.sort(instancesSortCriteria.sortByInstanceNumber);
+    }
+    // Do image position patient sorting as default sort
+    return sortImagesByPatientPosition(this.images);
   }
 
   /**

@@ -43,20 +43,23 @@ const seriesSortCriteria = {
   seriesInfoSortingCriteria,
 };
 
+const sortByInstanceNumber = (a, b) => {
+  // Sort by InstanceNumber (0020,0013)
+  const aInstance = parseInt(a.InstanceNumber) || 0;
+  const bInstance = parseInt(b.InstanceNumber) || 0;
+  if (aInstance !== bInstance) {
+    return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+  }
+  // Fallback rule to enable consistent sorting
+  if (a.SOPInstanceUID === b.SOPInstanceUID) {
+    return 0;
+  }
+  return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
+};
+
 const instancesSortCriteria = {
-  default: (a, b) => {
-    // Sort by InstanceNumber (0020,0013)
-    const aInstance = parseInt(a.InstanceNumber) || 0;
-    const bInstance = parseInt(b.InstanceNumber) || 0;
-    if (aInstance !== bInstance) {
-      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
-    }
-    // Fallback rule to enable consistent sorting
-    if (a.SOPInstanceUID === b.SOPInstanceUID) {
-      return 0;
-    }
-    return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
-  },
+  default: sortByInstanceNumber,
+  sortByInstanceNumber,
 };
 
 const sortingCriteria = {
@@ -130,16 +133,9 @@ export default function sortStudy(
   return study;
 }
 
-/**
- * Sort by image position, calculated using imageOrientationPatient and ImagePositionPatient
- * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided sortingCriteria
- * Note: Images are sorted in-place and a reference to the sorted image array is returned.
- *
- * @returns images - reference to images after sorting
- */
-const sortImagesByPatientPosition = (images, sortingCriteria) => {
+function isValidForPositionSort(images): boolean {
   if (images.length <= 1) {
-    return; // No need to sort if there's only one image
+    return false; // No need to sort if there's only one image
   }
 
   // Use the first image as a reference
@@ -147,10 +143,21 @@ const sortImagesByPatientPosition = (images, sortingCriteria) => {
   const imageOrientationPatient = images[0].ImageOrientationPatient;
 
   if (!referenceImagePositionPatient || !imageOrientationPatient) {
-    // Cannot sort ImageSet by real-world positions - ImagePositionPatient or imageOrientationPatient is undefined, sort by fallbackSort provided
-    images.sort(sortingCriteria);
-    return;
+    return false;
   }
+  return true;
+}
+
+/**
+ * Sort by image position, calculated using imageOrientationPatient and ImagePositionPatient
+ * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided sortingCriteria
+ * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+ *
+ * @returns images - reference to images after sorting
+ */
+const sortImagesByPatientPosition = images => {
+  const referenceImagePositionPatient = images[0].ImagePositionPatient;
+  const imageOrientationPatient = images[0].ImageOrientationPatient;
 
   // Calculate the scan axis normal using the cross product
   const scanAxisNormal = calculateScanAxisNormal(imageOrientationPatient);
@@ -182,5 +189,6 @@ export {
   sortingCriteria,
   seriesSortCriteria,
   instancesSortCriteria,
+  isValidForPositionSort,
   sortImagesByPatientPosition,
 };

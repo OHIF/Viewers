@@ -22,6 +22,7 @@ import userPreferencesCustomization from './customizations/userPreferencesCustom
 import reportDialogCustomization from './customizations/reportDialogCustomization';
 import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomization';
 import onboardingCustomization from './customizations/onboardingCustomization';
+import instanceSortingCriteriaCustomization from './customizations/instanceSortingCriteriaCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -69,6 +70,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...reportDialogCustomization,
         ...hotkeyBindingsCustomization,
         ...onboardingCustomization,
+        ...instanceSortingCriteriaCustomization,
       },
     },
   ];
