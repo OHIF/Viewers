@@ -6,6 +6,7 @@ import {
   Enums as CoreEnums,
   Types as CoreTypes,
   BaseVolumeViewport,
+  getRenderingEngines,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -1987,10 +1988,49 @@ function commandsModule({
         const newRotation =
           rotationMode === 'apply'
             ? (currentRotation + rotation + 360) % 360
-            : (0 + rotation + 360) % 360;
+            : (() => {
+                // In 'set' mode, account for the effect horizontal/vertical flips
+                // have on the perceived rotation direction. A single flip mirrors
+                // the image and inverses rotation direction, while two flips
+                // restore the original parity. We therefore invert the rotation
+                // angle when an odd number of flips are applied so that the
+                // requested absolute rotation matches the user expectation.
+                const { flipHorizontal = false, flipVertical = false } =
+                  viewport.getViewPresentation();
+
+                const flipsParity = (flipHorizontal ? 1 : 0) + (flipVertical ? 1 : 0);
+                const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
+
+                return (effectiveRotation + 360) % 360;
+              })();
         viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
+    },
+    triggerCreateAnnotationMemo: ({
+      annotation,
+      FrameOfReferenceUID,
+      options,
+    }: {
+      annotation: ToolTypes.Annotation;
+      FrameOfReferenceUID: string;
+      options: { newAnnotation?: boolean; deleting?: boolean };
+    }): void => {
+      const { newAnnotation, deleting } = options;
+      const renderingEngines = getRenderingEngines();
+      const viewports = renderingEngines.flatMap(re => re.getViewports());
+      const validViewport = viewports.find(
+        vp => vp.getFrameOfReferenceUID() === FrameOfReferenceUID
+      );
+
+      if (!validViewport) {
+        return;
+      }
+
+      cornerstoneTools.AnnotationTool.createAnnotationMemo(validViewport.element, annotation, {
+        newAnnotation,
+        deleting,
+      });
     },
   };
 
@@ -2287,6 +2327,7 @@ function commandsModule({
     setViewportOrientation: actions.setViewportOrientation,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
+    triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
   };
 
   return {

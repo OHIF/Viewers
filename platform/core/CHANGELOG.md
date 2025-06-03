@@ -3,6 +3,95 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.46...v3.11.0-beta.47) (2025-06-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.45...v3.11.0-beta.46) (2025-06-02)
+
+
+### Bug Fixes
+
+* **segmentation:** Allow for debounced pub/sub events to be reliably cancelled when unsubscribed to. ([#5092](https://github.com/OHIF/Viewers/issues/5092)) ([38ed7ba](https://github.com/OHIF/Viewers/commit/38ed7ba744528f7c3289e8b795d549adbb7342d0))
+
+
+
+
+
+# [3.11.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.44...v3.11.0-beta.45) (2025-05-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.41...v3.11.0-beta.42) (2025-05-28)
+
+
+### Bug Fixes
+
+* **Customization:** Fixed incorrect events broadcast  ([#5075](https://github.com/OHIF/Viewers/issues/5075)) ([c88bdac](https://github.com/OHIF/Viewers/commit/c88bdac4b1d9da89dcda74133045be776d73cfb3))
+
+
+
+
+
+# [3.11.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.40...v3.11.0-beta.41) (2025-05-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.39...v3.11.0-beta.40) (2025-05-26)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.38...v3.11.0-beta.39) (2025-05-26)
+
+
+### Bug Fixes
+
+* **router:** Expose the react router from the worklist too. ([#5062](https://github.com/OHIF/Viewers/issues/5062)) ([14f5f0c](https://github.com/OHIF/Viewers/commit/14f5f0c074738ba251b40c6a8ebd26bc287ceb4e))
+
+
+
+
+
+# [3.11.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.37...v3.11.0-beta.38) (2025-05-24)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.11.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.36...v3.11.0-beta.37) (2025-05-16)
 
 **Note:** Version bump only for package @ohif/core
