@@ -888,16 +888,16 @@ function commandsModule({
       }
     },
     /**
-     * Rotates the viewport by `deltaDeg` relative to its current rotation.
+     * Rotates the viewport by `rotation` relative to its current rotation.
      */
-    rotateViewportBy: ({ deltaDeg, viewportId }: { deltaDeg: number; viewportId?: string }) => {
-      actions._rotateViewport({ rotation: deltaDeg, viewportId, rotationMode: 'apply' });
+    rotateViewportBy: ({ rotation, viewportId }: { rotation: number; viewportId?: string }) => {
+      actions._rotateViewport({ rotation, viewportId, rotationMode: 'apply' });
     },
     /**
-     * Sets the viewport rotation to an absolute value `absDeg`.
+     * Sets the viewport rotation to an absolute value `rotation`.
      */
-    setViewportRotation: ({ absDeg, viewportId }: { absDeg: number; viewportId?: string }) => {
-      actions._rotateViewport({ rotation: absDeg, viewportId, rotationMode: 'set' });
+    setViewportRotation: ({ rotation, viewportId }: { rotation: number; viewportId?: string }) => {
+      actions._rotateViewport({ rotation, viewportId, rotationMode: 'set' });
     },
     flipViewportHorizontal: ({
       viewportId,
@@ -2104,15 +2104,15 @@ function commandsModule({
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewportBy,
-      options: { deltaDeg: 90 },
+      options: { rotation: 90 },
     },
     rotateViewportCCW: {
       commandFn: actions.rotateViewportBy,
-      options: { deltaDeg: -90 },
+      options: { rotation: -90 },
     },
     rotateViewportCWSet: {
       commandFn: actions.setViewportRotation,
-      options: { absDeg: 90 },
+      options: { rotation: 90 },
     },
     incrementActiveViewport: {
       commandFn: actions.changeActiveViewport,
