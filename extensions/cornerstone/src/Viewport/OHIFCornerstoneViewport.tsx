@@ -343,7 +343,9 @@ const OHIFCornerstoneViewport = React.memo(
             data-viewportId={viewportId}
             ref={el => {
               elementRef.current = el;
-              if (el) viewportRef.register(el);
+              if (el) {
+                viewportRef.register(el);
+              }
             }}
           ></div>
           <CornerstoneOverlays

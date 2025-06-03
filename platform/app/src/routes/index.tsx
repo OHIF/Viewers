@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
@@ -11,8 +11,9 @@ import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
 import PropTypes from 'prop-types';
-import { routerBase, routerBasename } from '../utils/publicUrl';
+import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
+import { history } from '../utils/history';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -127,6 +128,8 @@ const createRoutes = ({
   ];
 
   function RouteWithErrorBoundary({ route, ...rest }) {
+    history.navigate = useNavigate();
+
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
       <ErrorBoundary context={`Route ${route.path}`}>
