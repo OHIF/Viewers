@@ -17,6 +17,8 @@ jobs:
         shardTotal: [5]
     steps:
       - uses: actions/checkout@v4
+      - name: Fix Git ownership
+        run: git config --global --add safe.directory /__w/OHIF-Viewer/OHIF-Viewer
       - uses: actions/setup-node@v4
         with:
           node-version: 18
