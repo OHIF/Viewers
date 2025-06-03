@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
@@ -7,7 +7,6 @@ import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
@@ -51,9 +50,6 @@ export default function ModeRoute({
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
   const isMounted = useRef(false);
-
-  // Expose the react router dom navigation.
-  history.navigate = useNavigate();
 
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
