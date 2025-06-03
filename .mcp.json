@@ -7,7 +7,7 @@
         "mcp-server-docy"
       ],
       "env": {
-        "DOCY_DOCUMENTATION_URLS": "https://github.com/OHIF/Viewers,https://registry.terraform.io/modules/cloudposse/cloudfront-s3-cdn/aws/latest"
+        "DOCY_DOCUMENTATION_URLS": "https://github.com/OHIF/Viewers,https://registry.terraform.io/modules/cloudposse/cloudfront-s3-cdn/aws/latest,https://docs.ohif.org"
       }
     },
     "mcpServers": {

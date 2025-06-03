@@ -1,0 +1,159 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  NODE_VERSION: '18'
+  # Set default environment variables for build
+  PUBLIC_URL: /
+  APP_CONFIG: config/default.js
+  USE_HASH_ROUTER: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+      
+      - name: Enable Yarn workspaces
+        run: yarn config set workspaces-experimental true
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --network-timeout 300000
+        env:
+          NODE_OPTIONS: '--max_old_space_size=8192'
+      
+      - name: Set environment variables for production
+        if: github.ref == 'refs/heads/master' || github.event.inputs.environment == 'production'
+        run: |
+          echo "PUBLIC_URL=${{ vars.PRODUCTION_PUBLIC_URL || env.PUBLIC_URL }}" >> $GITHUB_ENV
+          echo "APP_CONFIG=${{ vars.PRODUCTION_APP_CONFIG || env.APP_CONFIG }}" >> $GITHUB_ENV
+          echo "USE_HASH_ROUTER=${{ vars.PRODUCTION_USE_HASH_ROUTER || env.USE_HASH_ROUTER }}" >> $GITHUB_ENV
+          echo "REACT_APP_CONFIG=${{ vars.REACT_APP_CONFIG || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_OIDC_AUTHORITY=${{ vars.REACT_APP_OIDC_AUTHORITY || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_OIDC_CLIENT_ID=${{ vars.REACT_APP_OIDC_CLIENT_ID || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_ORTHANC_URL=${{ vars.REACT_APP_ORTHANC_URL || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_QIDO_ROOT=${{ vars.REACT_APP_QIDO_ROOT || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_WADO_ROOT=${{ vars.REACT_APP_WADO_ROOT || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_WADO_URI_ROOT=${{ vars.REACT_APP_WADO_URI_ROOT || '' }}" >> $GITHUB_ENV
+      
+      - name: Set environment variables for staging
+        if: github.event.inputs.environment == 'staging'
+        run: |
+          echo "PUBLIC_URL=${{ vars.STAGING_PUBLIC_URL || env.PUBLIC_URL }}" >> $GITHUB_ENV
+          echo "APP_CONFIG=${{ vars.STAGING_APP_CONFIG || env.APP_CONFIG }}" >> $GITHUB_ENV
+          echo "USE_HASH_ROUTER=${{ vars.STAGING_USE_HASH_ROUTER || env.USE_HASH_ROUTER }}" >> $GITHUB_ENV
+          echo "REACT_APP_CONFIG=${{ vars.STAGING_REACT_APP_CONFIG || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_OIDC_AUTHORITY=${{ vars.STAGING_REACT_APP_OIDC_AUTHORITY || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_OIDC_CLIENT_ID=${{ vars.STAGING_REACT_APP_OIDC_CLIENT_ID || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_ORTHANC_URL=${{ vars.STAGING_REACT_APP_ORTHANC_URL || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_QIDO_ROOT=${{ vars.STAGING_REACT_APP_QIDO_ROOT || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_WADO_ROOT=${{ vars.STAGING_REACT_APP_WADO_ROOT || '' }}" >> $GITHUB_ENV
+          echo "REACT_APP_WADO_URI_ROOT=${{ vars.STAGING_REACT_APP_WADO_URI_ROOT || '' }}" >> $GITHUB_ENV
+      
+      - name: Build application
+        run: yarn run build
+        env:
+          NODE_OPTIONS: '--max_old_space_size=8192'
+          CI: true
+      
+      - name: Run linting
+        run: yarn run lint --max-warnings 0
+        continue-on-error: false
+      
+      - name: Run type checking
+        run: yarn run type-check
+        continue-on-error: false
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ohif-build-${{ github.sha }}
+          path: platform/app/dist/
+          retention-days: 30
+          compression-level: 6
+      
+      - name: Upload build to S3 (if configured)
+        if: env.AWS_S3_BUCKET != ''
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+        run: |
+          aws s3 sync platform/app/dist/ s3://$AWS_S3_BUCKET/ --delete --cache-control "public, max-age=31536000, immutable"
+      
+      - name: Invalidate CloudFront (if configured)
+        if: env.AWS_CLOUDFRONT_DISTRIBUTION_ID != ''
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build, security-scan]
+    if: always() && github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Notify on success
+        if: needs.build.result == 'success'
+        run: |
+          echo "✅ Build completed successfully"
+          echo "Build artifacts: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      
+      - name: Notify on failure
+        if: needs.build.result == 'failure'
+        run: |
+          echo "❌ Build failed"
+          echo "Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          exit 1

@@ -63,13 +63,13 @@ module "frontend_cdn" {
     {
       error_code            = 404
       response_page_path    = "/index.html"
-      response_code         = 404
+      response_code         = 200
       error_caching_min_ttl = 300
     },
     {
       error_code            = 403
       response_page_path    = "/index.html"
-      response_code         = 403
+      response_code         = 200
       error_caching_min_ttl = 300
     }
   ]
