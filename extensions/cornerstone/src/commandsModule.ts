@@ -65,6 +65,33 @@ const getLabelmapTools = ({ toolGroupService }) => {
   return labelmapTools;
 };
 
+const MARKER_TOOLS = ['MarkerInclude', 'MarkerExclude'];
+
+const getActiveLabelmapTools = ({ toolGroupService }) => {
+  const labelmapTools = getLabelmapTools({ toolGroupService });
+  const activeTools = labelmapTools.filter(
+    tool => tool.mode === 'Active' || tool.mode === 'Enabled'
+  );
+
+  // Include passive MarkerLabelmap if corresponding marker tools are active
+  labelmapTools
+    .filter(tool => tool.getToolName?.() === 'MarkerLabelmap' && tool.mode === 'Passive')
+    .forEach(passiveTool => {
+      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(passiveTool.toolGroupId);
+      const hasActiveMarkerTool = Object.keys(toolGroup.getToolInstances()).some(
+        toolName =>
+          MARKER_TOOLS.includes(toolName) &&
+          toolGroup.getToolInstances()[toolName].mode === 'Active'
+      );
+
+      if (hasActiveMarkerTool && !activeTools.includes(passiveTool)) {
+        activeTools.push(passiveTool);
+      }
+    });
+
+  return activeTools;
+};
+
 const segmentAI = new ONNXSegmentationController({
   autoSegmentMode: true,
   models: {
@@ -1709,11 +1736,8 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = labelmapTools.filter(
-        tool => tool.mode === 'Active' || tool.mode === 'Enabled'
-      );
+      const activeTools = getActiveLabelmapTools({ toolGroupService });
 
       activeTools.forEach(tool => {
         tool[`${action}Preview`]();
