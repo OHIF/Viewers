@@ -42,6 +42,7 @@ import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
 import { Slider } from './Slider';
 import { ScrollArea, ScrollBar } from './ScrollArea';
+import { TagInput } from './TagInput';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './Accordion';
 import { Icons } from './Icons';
 import { SidePanel } from './SidePanel';
@@ -220,6 +221,7 @@ export {
   SelectContent,
   SelectItem,
   SelectValue,
+  TagInput,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -269,5 +271,5 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
-  LayoutSelector
+  LayoutSelector,
 };
