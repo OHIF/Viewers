@@ -60,3 +60,4 @@ tests/playwright-report/
 /playwright/.cache/
 
 **/.claude/settings.local.json
+CLAUDE.md

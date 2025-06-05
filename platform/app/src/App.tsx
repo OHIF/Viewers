@@ -35,6 +35,7 @@ import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 import { ShepherdJourneyProvider } from 'react-shepherd';
+import { initializeColors, ColorTheme } from './utils/colorHelper';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
@@ -138,6 +139,9 @@ function App({
 
   // Should there be a generic call to init on the extension manager?
   customizationService.init(extensionManager);
+
+  const customizationColors = customizationService.getCustomization('app.colors');
+  initializeColors(customizationColors as ColorTheme);
 
   // Use config to create routes
   const appRoutes = createRoutes({
