@@ -96,11 +96,11 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.register(toolbarButtons);
       toolbarService.updateSection('primary', [
+        'Layout',
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Pan',
-        'Layout',
         'MoreTools',
       ]);
     },
