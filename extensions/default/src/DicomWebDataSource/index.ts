@@ -48,8 +48,6 @@ export type DicomWebConfig = {
 */
   /** Whether the server supports reject calls (i.e. DCM4CHEE) */
   supportsReject?: boolean;
-  /** Request series meta async instead of blocking */
-  lazyLoadStudy?: boolean;
   /** indicates if the retrieves can fetch singlepart. Options are bulkdata, video, image, or  true */
   singlepart?: boolean | string;
   /** Transfer syntax to request from the server */

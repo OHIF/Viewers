@@ -270,7 +270,7 @@ based on the proximity to the current series/display set. This can be useful to 
     /* Enable/disable study prefetching service (default: false) */
     enabled: true,
     /* Number of displaysets to be prefetched  (default: 2)*/
-    displaySetCount: 2,
+    displaySetsCount: 2,
     /**
      * Max number of concurrent prefetch requests (default: 10)
      * High numbers may impact on the time to load a new dropped series because
