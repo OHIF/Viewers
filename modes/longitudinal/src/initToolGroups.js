@@ -23,11 +23,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     active: [
       {
         toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
       },
       {
         toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
         toolName: toolNames.Zoom,
@@ -122,7 +122,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
         toolName: toolNames.WindowLevel,
         bindings: [
           {
-            mouseButton: Enums.MouseBindings.Primary,
+            mouseButton: Enums.MouseBindings.Auxiliary,
           },
         ],
       },
@@ -130,7 +130,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
         toolName: toolNames.Pan,
         bindings: [
           {
-            mouseButton: Enums.MouseBindings.Auxiliary,
+            mouseButton: Enums.MouseBindings.Primary,
           },
         ],
       },
@@ -183,11 +183,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     active: [
       {
         toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
       },
       {
         toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
         toolName: toolNames.Zoom,
