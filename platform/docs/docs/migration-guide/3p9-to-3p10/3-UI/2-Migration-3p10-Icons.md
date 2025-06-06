@@ -133,6 +133,90 @@ import { Icons } from '@ohif/ui-next';
 ```
 
 
+
+
+### Creating New Custom Icons
+
+This section explains how to migrate your custom icons from the old SVG import method to the new React component-based system in `@ohif/ui-next`. The new approach improves consistency, allows for better tree-shaking, and provides type safety.
+
+The process involves converting your existing SVG files into React components and then registering them.
+
+#### 1. Convert SVG to a React Component
+
+First, take your raw SVG file and convert it into a `.tsx` React functional component.
+
+**Before: Raw SVG File**
+
+Previously, you might have had a file like `Baseline.svg`:
+
+```xml
+// Baseline.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="currentColor" font-size="146" font-family="Arial" font-weight="400">BL</text>
+  <rect fill="none" stroke="currentColor" stroke-width="12" stroke-linejoin="round" x="8" y="8" width="240" height="240" rx="48" />
+</svg>
+```
+
+**After: React Icon Component**
+
+Now, create a `.tsx` file that exports a React component. Note the following changes:
+- SVG attributes like `text-anchor` and `stroke-width` are converted to camelCase (`textAnchor`, `strokeWidth`).
+- The component accepts `IconProps` and spreads them onto the root `<svg>` element.
+
+```typescript
+// Baseline.tsx
+import React from 'react';
+import type { IconProps } from '../types';
+
+export const Baseline = (props: IconProps) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" {...props}>
+    <text
+      x="50%"
+      y="50%"
+      textAnchor="middle"
+      dominantBaseline="central"
+      fill="currentColor"
+      fontSize="146"
+      fontFamily="Arial"
+      fontWeight="400"
+    >
+      BL
+    </text>
+    <rect
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="12"
+      strokeLinejoin="round"
+      x="8"
+      y="8"
+      width="240"
+      height="240"
+      rx="48"
+    />
+  </svg>
+);
+
+export default Baseline;
+```
+
+#### 2. Register the New Icon
+
+After creating the component, you must register it with the `Icons` service from `@ohif/ui-next`. This is typically done in a centralized location where you initialize your UI components. You'll need a unique name for the icon, which can be managed with an enum for consistency.
+
+```typescript
+// Example: in your setup/initialization code
+import { Icons, IconNameEnum } from '@ohif/ui-next';
+import Baseline from './sources/Baseline'; // Import your new icon component
+
+// Add the icon to the registry
+Icons.addIcon(IconNameEnum.BASELINE, Baseline);
+```
+
+By following these steps, your custom icon will be available for use throughout the application just like any of the default icons.
+
+
+
+
 ### Detailed Renaming Table
 
 | Old Icon Name                   | New Icon Component Name                     | Example Usage (`Icons.`)                                  | Notes                                                                                                                                                                                             |
