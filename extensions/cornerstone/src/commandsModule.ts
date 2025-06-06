@@ -1843,11 +1843,10 @@ function commandsModule({
       const { segmentationService } = servicesManager.services;
       const { activeViewportId } = viewportGridService.getState();
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
-      if (activeSegmentation) {
-        segmentationService.addSegment(activeSegmentation.segmentationId);
-      } else {
+      if (!activeSegmentation) {
         console.warn('No active segmentation found for viewport:', activeViewportId);
       }
+      segmentationService.addSegment(activeSegmentation.segmentationId);
     },
     loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
       const updatedViewports = getUpdatedViewportsForSegmentation({
