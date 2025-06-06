@@ -1,0 +1,131 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+  # Set default environment variables for build
+  PUBLIC_URL: /
+  APP_CONFIG: config/default.js
+  USE_HASH_ROUTER: false
+
+jobs:
+  build:
+    runs-on: aws-cpu-runner
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+      
+      - name: Enable Yarn workspaces
+        run: yarn config set workspaces-experimental true
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --network-timeout 300000
+        env:
+          NODE_OPTIONS: '--max_old_space_size=8192'
+      
+      
+      - name: Build application
+        run: yarn run build
+        env:
+          NODE_OPTIONS: '--max_old_space_size=8192'
+          CI: true
+      
+      - name: Run linting
+        run: yarn run lint --max-warnings 0
+        continue-on-error: false
+      
+      - name: Run type checking
+        run: yarn run type-check
+        continue-on-error: false
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ohif-build-${{ github.sha }}
+          path: platform/app/dist/
+          retention-days: 30
+          compression-level: 6
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
+          aws-region: eu-west-1
+      
+      - name: Get S3 bucket and CloudFront distribution from Parameter Store
+        id: aws-params
+        run: |
+          S3_BUCKET=$(aws ssm get-parameter --name "/ohif-viewer-frontend/bucket/id" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+          CLOUDFRONT_DIST=$(aws ssm get-parameter --name "/ohif-viewer-frontend/cdn/id" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+          echo "s3-bucket=$S3_BUCKET" >> $GITHUB_OUTPUT
+          echo "cloudfront-distribution=$CLOUDFRONT_DIST" >> $GITHUB_OUTPUT
+      
+      - name: Upload build to S3 (if configured)
+        if: steps.aws-params.outputs.s3-bucket != ''
+        run: |
+          aws s3 sync platform/app/dist/ s3://${{ steps.aws-params.outputs.s3-bucket }}/ --delete --cache-control "public, max-age=31536000, immutable"
+      
+      - name: Invalidate CloudFront (if configured)
+        if: steps.aws-params.outputs.cloudfront-distribution != ''
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ steps.aws-params.outputs.cloudfront-distribution }} --paths "/*"
+
+  security-scan:
+    runs-on: aws-cpu-runner
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  notify:
+    runs-on: aws-cpu-runner
+    needs: [build, security-scan]
+    if: always() && github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Notify on success
+        if: needs.build.result == 'success'
+        run: |
+          echo "✅ Build completed successfully"
+          echo "Build artifacts: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      
+      - name: Notify on failure
+        if: needs.build.result == 'failure'
+        run: |
+          echo "❌ Build failed"
+          echo "Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          exit 1
