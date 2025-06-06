@@ -14,6 +14,10 @@ on:
         - production
         - staging
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   NODE_VERSION: '18'
   # Set default environment variables for build
@@ -23,7 +27,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: aws-cpu-runner
     timeout-minutes: 30
     
     steps:
@@ -46,33 +50,6 @@ jobs:
         env:
           NODE_OPTIONS: '--max_old_space_size=8192'
       
-      - name: Set environment variables for production
-        if: github.ref == 'refs/heads/master' || github.event.inputs.environment == 'production'
-        run: |
-          echo "PUBLIC_URL=${{ vars.PRODUCTION_PUBLIC_URL || env.PUBLIC_URL }}" >> $GITHUB_ENV
-          echo "APP_CONFIG=${{ vars.PRODUCTION_APP_CONFIG || env.APP_CONFIG }}" >> $GITHUB_ENV
-          echo "USE_HASH_ROUTER=${{ vars.PRODUCTION_USE_HASH_ROUTER || env.USE_HASH_ROUTER }}" >> $GITHUB_ENV
-          echo "REACT_APP_CONFIG=${{ vars.REACT_APP_CONFIG || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_OIDC_AUTHORITY=${{ vars.REACT_APP_OIDC_AUTHORITY || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_OIDC_CLIENT_ID=${{ vars.REACT_APP_OIDC_CLIENT_ID || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_ORTHANC_URL=${{ vars.REACT_APP_ORTHANC_URL || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_QIDO_ROOT=${{ vars.REACT_APP_QIDO_ROOT || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_WADO_ROOT=${{ vars.REACT_APP_WADO_ROOT || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_WADO_URI_ROOT=${{ vars.REACT_APP_WADO_URI_ROOT || '' }}" >> $GITHUB_ENV
-      
-      - name: Set environment variables for staging
-        if: github.event.inputs.environment == 'staging'
-        run: |
-          echo "PUBLIC_URL=${{ vars.STAGING_PUBLIC_URL || env.PUBLIC_URL }}" >> $GITHUB_ENV
-          echo "APP_CONFIG=${{ vars.STAGING_APP_CONFIG || env.APP_CONFIG }}" >> $GITHUB_ENV
-          echo "USE_HASH_ROUTER=${{ vars.STAGING_USE_HASH_ROUTER || env.USE_HASH_ROUTER }}" >> $GITHUB_ENV
-          echo "REACT_APP_CONFIG=${{ vars.STAGING_REACT_APP_CONFIG || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_OIDC_AUTHORITY=${{ vars.STAGING_REACT_APP_OIDC_AUTHORITY || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_OIDC_CLIENT_ID=${{ vars.STAGING_REACT_APP_OIDC_CLIENT_ID || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_ORTHANC_URL=${{ vars.STAGING_REACT_APP_ORTHANC_URL || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_QIDO_ROOT=${{ vars.STAGING_REACT_APP_QIDO_ROOT || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_WADO_ROOT=${{ vars.STAGING_REACT_APP_WADO_ROOT || '' }}" >> $GITHUB_ENV
-          echo "REACT_APP_WADO_URI_ROOT=${{ vars.STAGING_REACT_APP_WADO_URI_ROOT || '' }}" >> $GITHUB_ENV
       
       - name: Build application
         run: yarn run build
@@ -96,28 +73,32 @@ jobs:
           retention-days: 30
           compression-level: 6
       
-      - name: Upload build to S3 (if configured)
-        if: env.AWS_S3_BUCKET != ''
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
-          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
+          aws-region: eu-west-1
+      
+      - name: Get S3 bucket and CloudFront distribution from Parameter Store
+        id: aws-params
         run: |
-          aws s3 sync platform/app/dist/ s3://$AWS_S3_BUCKET/ --delete --cache-control "public, max-age=31536000, immutable"
+          S3_BUCKET=$(aws ssm get-parameter --name "/ohif-viewer-frontend/bucket/id" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+          CLOUDFRONT_DIST=$(aws ssm get-parameter --name "/ohif-viewer-frontend/cdn/id" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+          echo "s3-bucket=$S3_BUCKET" >> $GITHUB_OUTPUT
+          echo "cloudfront-distribution=$CLOUDFRONT_DIST" >> $GITHUB_OUTPUT
+      
+      - name: Upload build to S3 (if configured)
+        if: steps.aws-params.outputs.s3-bucket != ''
+        run: |
+          aws s3 sync platform/app/dist/ s3://${{ steps.aws-params.outputs.s3-bucket }}/ --delete --cache-control "public, max-age=31536000, immutable"
       
       - name: Invalidate CloudFront (if configured)
-        if: env.AWS_CLOUDFRONT_DISTRIBUTION_ID != ''
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+        if: steps.aws-params.outputs.cloudfront-distribution != ''
         run: |
-          aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ steps.aws-params.outputs.cloudfront-distribution }} --paths "/*"
 
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: aws-cpu-runner
     needs: build
     if: github.ref == 'refs/heads/master'
     
@@ -140,7 +121,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
   notify:
-    runs-on: ubuntu-latest
+    runs-on: aws-cpu-runner
     needs: [build, security-scan]
     if: always() && github.ref == 'refs/heads/master'
     
