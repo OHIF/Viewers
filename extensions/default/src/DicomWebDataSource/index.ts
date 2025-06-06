@@ -22,7 +22,7 @@ const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
-const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
+const ImplementationVersionName = 'OHIF-3.11.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
 const metadataProvider = classes.MetadataProvider;
