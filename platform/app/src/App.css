@@ -1,4 +1,4 @@
 body {
-  overscroll-behavior-y: contain;
+  overscroll-behavior: none;
   touch-action: pan-x pan-y;
 }
