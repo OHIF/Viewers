@@ -129,6 +129,9 @@ const commandsModule = (props: withAppTypes) => {
           console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
         }
+        if (!naturalizedReport.SOPClassUID) {
+          throw new Error('No sop class uid');
+        }
 
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
 

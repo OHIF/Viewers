@@ -16,7 +16,7 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
   const isActive = activeViewportId === viewportId;
 
   const setupListeners = useCallback(() => {
-    const viewportElement = document.querySelector(`[data-viewportId="${viewportId}"]`);
+    const viewportElement = document.querySelector(`[data-viewportid="${viewportId}"]`);
     const element = viewportElement?.closest('.viewport-wrapper') || viewportElement;
 
     if (!element) {

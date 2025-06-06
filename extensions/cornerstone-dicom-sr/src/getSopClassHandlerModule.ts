@@ -15,7 +15,7 @@ import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 
 const { sopClassDictionary } = utils;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-const { ImageSet, MetadataProvider: metadataProvider } = classes;
+const { MetadataProvider: metadataProvider } = classes;
 const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 type InstanceMetadata = Types.InstanceMetadata;
