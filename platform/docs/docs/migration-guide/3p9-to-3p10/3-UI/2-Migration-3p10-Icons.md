@@ -152,8 +152,7 @@ Previously, you might have had a file like `Baseline.svg`:
 ```xml
 // Baseline.svg
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="currentColor" font-size="146" font-family="Arial" font-weight="400">BL</text>
-  <rect fill="none" stroke="currentColor" stroke-width="12" stroke-linejoin="round" x="8" y="8" width="240" height="240" rx="48" />
+  < some svg content>
 </svg>
 ```
 
@@ -170,29 +169,7 @@ import type { IconProps } from '../types';
 
 export const Baseline = (props: IconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" {...props}>
-    <text
-      x="50%"
-      y="50%"
-      textAnchor="middle"
-      dominantBaseline="central"
-      fill="currentColor"
-      fontSize="146"
-      fontFamily="Arial"
-      fontWeight="400"
-    >
-      BL
-    </text>
-    <rect
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="12"
-      strokeLinejoin="round"
-      x="8"
-      y="8"
-      width="240"
-      height="240"
-      rx="48"
-    />
+     < some svg content>
   </svg>
 );
 
