@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.47...v3.11.0-beta.48) (2025-06-05)
+
+
+### Bug Fixes
+
+* **touch:** Allow for multi-touch in OHIF ([#5099](https://github.com/OHIF/Viewers/issues/5099)) ([1a6aa09](https://github.com/OHIF/Viewers/commit/1a6aa09a7708c943af3a1d920489311b3a0ee5da))
+
+
+
+
+
 # [3.11.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.46...v3.11.0-beta.47) (2025-06-02)
 
 **Note:** Version bump only for package @ohif/mode-segmentation
