@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
-import { metaData, Enums, utilities } from '@cornerstonejs/core';
+import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
+import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
@@ -68,6 +69,7 @@ function CustomizableViewportOverlay({
     servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
+  const [annotationState, setAnnotationState] = useState(0);
   const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
   const { imageIndex } = imageSliceData;
 
@@ -132,6 +134,20 @@ function CustomizableViewportOverlay({
     };
   }, [viewportId, viewportData, voi, element]);
 
+  const annotationModified = useCallback(evt => {
+    if (evt.detail.annotation.metadata.toolName === UltrasoundPleuraBLineTool.toolName) {
+      // Update the annotation state to trigger a re-render
+      setAnnotationState(prevState => prevState + 1);
+    }
+  }, []);
+
+  useEffect(() => {
+    eventTarget.addEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
+
+    return () => {
+      eventTarget.removeEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, annotationModified);
+    };
+  }, [annotationModified]);
   /**
    * Updating the scale when the viewport changes its zoom
    */
@@ -209,6 +225,7 @@ function CustomizableViewportOverlay({
       voi,
       scale,
       instanceNumber,
+      annotationState,
     ]
   );
 
