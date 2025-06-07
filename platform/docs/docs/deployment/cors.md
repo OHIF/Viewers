@@ -144,3 +144,14 @@ If the dcm4chee server and the OHIF server are hosted on the same site, then the
 add_header 'Cross-Origin-Resource-Policy' 'same-site' always;
 ```
 :::
+
+#### Manifest from a Cross Origin
+
+If the `manifest.json` file is hosted on a different origin that requires
+authentication, browsers fetch it without credentials by default, which can
+result in a `401` response. Include credentials in the request by adding the
+`crossorigin="use-credentials"` attribute to the manifest link:
+
+```html
+<link rel="manifest" href="<%= PUBLIC_URL %>manifest.json" crossorigin="use-credentials" />
+```
