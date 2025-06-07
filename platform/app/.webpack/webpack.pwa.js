@@ -138,15 +138,15 @@ module.exports = (env, argv) => {
       ...(IS_COVERAGE
         ? []
         : [
-            new InjectManifest({
-              swDest: 'sw.js',
-              swSrc: path.join(SRC_DIR, 'service-worker.js'),
-              // Need to exclude the theme as it is updated independently
-              exclude: [/theme/],
-              // Cache large files for the manifests to avoid warning messages
-              maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
-            }),
-          ]),
+          new InjectManifest({
+            swDest: 'sw.js',
+            swSrc: path.join(SRC_DIR, 'service-worker.js'),
+            // Need to exclude the theme as it is updated independently
+            exclude: [/theme/],
+            // Cache large files for the manifests to avoid warning messages
+            maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
+          }),
+        ]),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
