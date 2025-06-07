@@ -35,7 +35,7 @@
   "ROI Window": "ROI Fenster",
   "Rectangle": "Rechteck",
   "Reset": "$t(Common:Reset)",
-  "Reset View": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) alle Ansichten",
   "Reset to defaults": "Auf Default zurücksetzen",
   "Rotate Right": "Nach rechts drehen",
   "Rotate +90": "Drehen +90",
