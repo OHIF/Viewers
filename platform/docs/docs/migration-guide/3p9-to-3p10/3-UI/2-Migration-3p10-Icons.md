@@ -159,7 +159,7 @@ Previously, you might have had a file like `Baseline.svg`:
 **After: React Icon Component**
 
 Now, create a `.tsx` file that exports a React component. Note the following changes:
-- SVG attributes like `text-anchor` and `stroke-width` are converted to camelCase (`textAnchor`, `strokeWidth`).
+- SVG attributes like `text-anchor` and `stroke-width` are converted to camel case (i.e. `textAnchor`, `strokeWidth`).
 - The component accepts `IconProps` and spreads them onto the root `<svg>` element.
 
 ```typescript
@@ -178,7 +178,7 @@ export default Baseline;
 
 #### 2. Register the New Icon
 
-After creating the component, you must register it with the `Icons` service from `@ohif/ui-next`. This is typically done in a centralized location where you initialize your UI components. You'll need a unique name for the icon, which can be managed with an enum for consistency.
+After creating the component, you must register it with the `Icons` service from `@ohif/ui-next`. This is typically done in a centralized location where you initialize your UI components (for example, an extension's preRegistration is a good spot for this). You'll need a unique name for the icon, which can be managed with an enum for consistency.
 
 ```typescript
 // Example: in your setup/initialization code
