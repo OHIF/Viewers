@@ -255,7 +255,7 @@ class SegmentationService extends PubSubService {
       this._onSegmentationAddedFromSource
     );
 
-    this.listeners = {};
+    this.reset();
   };
 
   public async addSegmentationRepresentation(
