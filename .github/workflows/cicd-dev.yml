@@ -62,7 +62,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GithubActionsRole
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID_DEV }}:role/GithubActionsRole
           aws-region: eu-west-1
       
       - name: Get S3 bucket and CloudFront distribution from Parameter Store
