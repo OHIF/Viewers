@@ -6,6 +6,7 @@ import {
   Enums as CoreEnums,
   Types as CoreTypes,
   BaseVolumeViewport,
+  getRenderingEngines,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -1882,6 +1883,31 @@ function commandsModule({
       const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       viewportInfo.setOrientation(orientation);
     },
+    triggerCreateAnnotationMemo: ({
+      annotation,
+      FrameOfReferenceUID,
+      options,
+    }: {
+      annotation: ToolTypes.Annotation;
+      FrameOfReferenceUID: string;
+      options: { newAnnotation?: boolean; deleting?: boolean };
+    }): void => {
+      const { newAnnotation, deleting } = options;
+      const renderingEngines = getRenderingEngines();
+      const viewports = renderingEngines.flatMap(re => re.getViewports());
+      const validViewport = viewports.find(
+        vp => vp.getFrameOfReferenceUID() === FrameOfReferenceUID
+      );
+
+      if (!validViewport) {
+        return;
+      }
+
+      cornerstoneTools.AnnotationTool.createAnnotationMemo(validViewport.element, annotation, {
+        newAnnotation,
+        deleting,
+      });
+    },
   };
 
   const definitions = {
@@ -2165,6 +2191,7 @@ function commandsModule({
     setViewportOrientation: actions.setViewportOrientation,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
+    triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
   };
 
   return {

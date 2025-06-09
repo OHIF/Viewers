@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.50...v3.11.0-beta.51) (2025-06-09)
+
+
+### Bug Fixes
+
+* **touch:** Prevent touch drag to refresh the browser page. ([#5108](https://github.com/OHIF/Viewers/issues/5108)) ([a361e55](https://github.com/OHIF/Viewers/commit/a361e556ef0cf221ac1e1ffe450bf546f7997ca9))
+
+
+
+
+
+# [3.11.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.49...v3.11.0-beta.50) (2025-06-09)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.48...v3.11.0-beta.49) (2025-06-07)
+
+
+### Bug Fixes
+
+* **WindowLevelActionMenu:** The window level menu must show different contents for 3D volume viewports ([#5113](https://github.com/OHIF/Viewers/issues/5113)) ([0afb3fc](https://github.com/OHIF/Viewers/commit/0afb3fc75314c1d8d6c50d13f31d5c2fc6849ce2))
+
+
+
+
+
+# [3.11.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.47...v3.11.0-beta.48) (2025-06-05)
+
+
+### Bug Fixes
+
+* **touch:** Allow for multi-touch in OHIF ([#5099](https://github.com/OHIF/Viewers/issues/5099)) ([1a6aa09](https://github.com/OHIF/Viewers/commit/1a6aa09a7708c943af3a1d920489311b3a0ee5da))
+
+
+
+
+
+# [3.11.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.46...v3.11.0-beta.47) (2025-06-02)
+
+
+### Bug Fixes
+
+* **tmtv:** Corrected the various section names being referenced. ([#5093](https://github.com/OHIF/Viewers/issues/5093)) ([316d5a7](https://github.com/OHIF/Viewers/commit/316d5a76445839dd15720a2e1e228e9b0bab3b6e))
+
+
+
+
+
+# [3.11.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.45...v3.11.0-beta.46) (2025-06-02)
+
+
+### Bug Fixes
+
+* **segmentation:** Allow for debounced pub/sub events to be reliably cancelled when unsubscribed to. ([#5092](https://github.com/OHIF/Viewers/issues/5092)) ([38ed7ba](https://github.com/OHIF/Viewers/commit/38ed7ba744528f7c3289e8b795d549adbb7342d0))
+
+
+
+
+
+# [3.11.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.44...v3.11.0-beta.45) (2025-05-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.43...v3.11.0-beta.44) (2025-05-29)
+
+
+### Features
+
+* create memo when manually adding and removing annotations ([#5051](https://github.com/OHIF/Viewers/issues/5051)) ([5891505](https://github.com/OHIF/Viewers/commit/5891505c51f82ecad22fb8182b88fb3fb52255b3))
+
+
+
+
+
+# [3.11.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.42...v3.11.0-beta.43) (2025-05-29)
+
+
+### Bug Fixes
+
+* **ui:** Prevent unintended text selection and improve component behavior ([#5077](https://github.com/OHIF/Viewers/issues/5077)) ([c6327ac](https://github.com/OHIF/Viewers/commit/c6327acdc1c00e1f2922af54012c79b274252532))
+
+
+
+
+
+# [3.11.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.41...v3.11.0-beta.42) (2025-05-28)
+
+
+### Bug Fixes
+
+* **Customization:** Fixed incorrect events broadcast  ([#5075](https://github.com/OHIF/Viewers/issues/5075)) ([c88bdac](https://github.com/OHIF/Viewers/commit/c88bdac4b1d9da89dcda74133045be776d73cfb3))
+
+
+
+
+
 # [3.11.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.40...v3.11.0-beta.41) (2025-05-26)
 
 

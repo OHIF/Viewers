@@ -36,6 +36,17 @@ summary: Migration guide for the uiModalService in OHIF 3.10, covering props tha
 | `closeButton` | The component now manages modal closing internally. If you need a close button, you can add one, perhaps by checking out the `FooterActions` component. |
 
 
+### Frequently Asked Questions
+
+**Q: Why did my dialog's background color change?**
+
+A: This can happen if you were previously setting the background color on the dialog's content directly. With the new API, the dialog's content is wrapped in a container. You should now pass any background or text color classes using the `containerClassName` property.
+
+For example:
+```diff
+- containerClassName: 'w-[70%] max-w-[900px]',
++ containerClassName: 'w-[70%] max-w-[900px]  bg-primary-dark text-foreground',
+```
 
 
 **Migration Steps:**
@@ -102,4 +113,61 @@ Previously, you had to pass in the `onClose` as `hide` function automatically ad
 +     hide, // passed in automatically in the background
 +   },
 + });
+```
+
+6.  **Update Footer Action Buttons:**
+
+    Previously, footer buttons might have been implemented using generic `<Button>` components. The new approach uses a dedicated `<FooterAction>` component for better structure and consistency.
+
+    ```diff
+    - <Button
+    -   name="Cancel"
+    -   size={ButtonEnums.size.medium}
+    -   type={ButtonEnums.type.secondary}
+    -   onClick={onClose}
+    - > Cancel </Button>
+    + <FooterAction>
+    +   <FooterAction.Right>
+    +     <FooterAction.Secondary onClick={hide}>Cancel</FooterAction.Secondary>
+    +   </FooterAction.Right>
+    + </FooterAction>
+    ```
+
+**Example: Simple Alert Modal**
+
+This example shows how to migrate a simple alert modal.
+
+*Before:*
+
+```js
+uiModalService.show({
+  title: 'Untrack Series',
+  content: UntrackSeriesModal,
+  contentProps: {
+    onConfirm,
+    hide, // passed in automatically in the background
+  },
+});
+```
+
+*After:*
+
+```js
+function UntrackSeriesModal({ onConfirm, hide }) {
+  return (
+    <div>
+      {/* Modal content */}
+    </div>
+  );
+}
+
+// Show the modal
+uiModalService.show({
+  title: 'Untrack Series',
+  content: UntrackSeriesModal,
+  contentProps: {
+    onConfirm,
+    hide, // passed in automatically in the background
+  },
+});
 ```
