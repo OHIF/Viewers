@@ -43,6 +43,7 @@ import {
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
 } from './utils/segmentationHandlers';
+import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgressHandler';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -289,10 +290,16 @@ export default async function init({
   eventTarget.addEventListenerDebounced(
     EVENTS.ERROR_EVENT,
     ({ detail }) => {
+      // Create a stable ID for deduplication based on error type and message
+      const errorId = `cornerstone-error-${detail.type}-${detail.message.substring(0, 50)}`;
+
       uiNotificationService.show({
         title: detail.type,
         message: detail.message,
         type: 'error',
+        id: errorId,
+        allowDuplicates: false, // Prevent duplicate error notifications
+        deduplicationInterval: 30000, // 30 seconds deduplication window
       });
     },
     100
@@ -307,40 +314,6 @@ export default async function init({
   ];
 
   return { unsubscriptions };
-}
-
-function initializeWebWorkerProgressHandler(uiNotificationService) {
-  const activeToasts = new Map();
-
-  // eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
-  //   const { progress, type, id } = detail;
-
-  //   const cacheKey = `${type}-${id}`;
-  //   if (progress === 0 && !activeToasts.has(cacheKey)) {
-  //     const progressPromise = new Promise((resolve, reject) => {
-  //       activeToasts.set(cacheKey, { resolve, reject });
-  //     });
-
-  //     uiNotificationService.show({
-  //       id: cacheKey,
-  //       title: `${type}`,
-  //       message: `${type}: ${progress}%`,
-  //       autoClose: false,
-  //       promise: progressPromise,
-  //       promiseMessages: {
-  //         loading: `Computing...`,
-  //         success: `Completed successfully`,
-  //         error: 'Web Worker failed',
-  //       },
-  //     });
-  //   } else {
-  //     if (progress === 100) {
-  //       const { resolve } = activeToasts.get(cacheKey);
-  //       resolve({ progress, type });
-  //       activeToasts.delete(cacheKey);
-  //     }
-  //   }
-  // });
 }
 
 /**
