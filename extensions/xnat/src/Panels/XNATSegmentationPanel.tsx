@@ -1,19 +1,12 @@
 import React from 'react';
-import { SegmentationTable } from '@ohif/ui-next';
+import { SegmentationTable, DropdownMenuContent, DropdownMenuItem } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { metaData } from '@cornerstonejs/core';
-import { Enums as csToolsEnums } from '@cornerstonejs/tools'; // Import Enums
 import { useSystem } from '@ohif/core/src';
 
-// Define a more specific type for the props if withAppTypes is too generic
-interface PanelSegmentationProps {
-  children?: React.ReactNode; // Explicitly type children
-  // Add other props from withAppTypes if necessary
-}
-
-export default function PanelSegmentation({ children }: PanelSegmentationProps) {
+export default function XNATSegmentationPanel({ children, configuration }) {
   const { commandsManager, servicesManager } = useSystem();
-  const { customizationService, displaySetService } = servicesManager.services;
+  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations();
@@ -22,18 +15,22 @@ export default function PanelSegmentation({ children }: PanelSegmentationProps) 
   const segmentationTableMode = customizationService.getCustomization(
     'panelSegmentation.tableMode'
   ) as unknown as string;
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
-  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
+  
+  const onSegmentationAdd = async () => {
+    try {
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      await commandsManager.runCommand('createLabelmapForViewport', { 
+        viewportId: activeViewportId 
+      });
+    } catch (error) {
+      console.warn('Error creating segmentation:', error);
+      // Still allow the operation to complete - the segmentation might be created
+      // but with statistics calculation errors
+    }
+  };
+  
+  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing') || configuration?.disableEditing;
   const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = customizationService.getCustomization(
-    'panelSegmentation.customDropdownMenuContent'
-  ) as React.ElementType | undefined;
-
-  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
-    'panelSegmentation.customSegmentStatisticsHeader'
-  ) as React.ElementType | undefined;
 
   // Create handlers object for all command runs
   const handlers = {
@@ -105,38 +102,19 @@ export default function PanelSegmentation({ children }: PanelSegmentationProps) 
   // Generate export options
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;
-    const Labelmap = representationData[csToolsEnums.SegmentationRepresentations.Labelmap];
-
+    const { Labelmap } = representationData;
 
     if (!Labelmap) {
       return { segmentationId, isExportable: true };
     }
 
-    let firstImageId: string | undefined;
-
-    // Check the type of Labelmap data
-    if ('imageIdReferenceMap' in Labelmap && Labelmap.imageIdReferenceMap instanceof Map) {
-      // It's LabelmapSegmentationDataStack
-      const imageIdReferenceMap = Labelmap.imageIdReferenceMap as Map<string, string>; // Explicit cast
-      if (imageIdReferenceMap.size > 0) {
-        firstImageId = imageIdReferenceMap.keys().next().value;
-      }
-    } else if ('volumeId' in Labelmap && typeof Labelmap.volumeId === 'string') {
-      // It's LabelmapSegmentationDataVolume
-      const volumeId = Labelmap.volumeId as string; // Explicit cast
-      const volume = metaData.get('volume', volumeId) as any; // Cast to any for now if type is complex
-      if (volume && volume.imageIds && volume.imageIds.length > 0) {
-        firstImageId = volume.imageIds[0];
-      }
-    }
-
-
-    if (!firstImageId) {
-      console.warn(`Could not determine firstImageId for segmentation ${segmentationId}. Defaulting isExportable to false.`);
+    // Handle potential type issues with referencedImageIds
+    const referencedImageIds = (Labelmap as any).referencedImageIds;
+    if (!referencedImageIds || !Array.isArray(referencedImageIds) || referencedImageIds.length === 0) {
       return { segmentationId, isExportable: false };
     }
 
-
+    const firstImageId = referencedImageIds[0];
     const instance = metaData.get('instance', firstImageId);
 
     if (!instance) {
@@ -173,13 +151,20 @@ export default function PanelSegmentation({ children }: PanelSegmentationProps) 
   const renderSegments = () => {
     return (
       <SegmentationTable.Segments>
-        <SegmentationTable.SegmentStatistics.Header>
-          {CustomSegmentStatisticsHeader && <CustomSegmentStatisticsHeader />}
-        </SegmentationTable.SegmentStatistics.Header>
+        <SegmentationTable.SegmentStatistics.Header />
         <SegmentationTable.SegmentStatistics.Body />
       </SegmentationTable.Segments>
     );
   };
+
+  // Simple dropdown content component
+  const SimpleDropdownContent = () => (
+    <DropdownMenuContent>
+      <DropdownMenuItem onClick={() => onSegmentationAdd()}>
+        Add Segmentation
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  );
 
   // Render content based on mode
   const renderModeContent = () => {
@@ -188,7 +173,7 @@ export default function PanelSegmentation({ children }: PanelSegmentationProps) 
         <SegmentationTable.Collapsed>
           <SegmentationTable.Collapsed.Header>
             <SegmentationTable.Collapsed.DropdownMenu>
-              {CustomDropdownMenuContent && <CustomDropdownMenuContent />}
+              <SimpleDropdownContent />
             </SegmentationTable.Collapsed.DropdownMenu>
             <SegmentationTable.Collapsed.Selector />
             <SegmentationTable.Collapsed.Info />
@@ -206,7 +191,7 @@ export default function PanelSegmentation({ children }: PanelSegmentationProps) 
         <SegmentationTable.Expanded>
           <SegmentationTable.Expanded.Header>
             <SegmentationTable.Expanded.DropdownMenu>
-              {CustomDropdownMenuContent && <CustomDropdownMenuContent />}
+              <SimpleDropdownContent />
             </SegmentationTable.Expanded.DropdownMenu>
             <SegmentationTable.Expanded.Label />
             <SegmentationTable.Expanded.Info />

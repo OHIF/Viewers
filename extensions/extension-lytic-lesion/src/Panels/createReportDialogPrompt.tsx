@@ -16,7 +16,7 @@ export default function createReportDialogPrompt(
 
     const _handleClose = () => {
       // Dismiss dialog
-      uiDialogService.dismiss({ id: dialogId });
+      uiDialogService.hide(dialogId);
       // Notify of cancel action
       resolve({
         action: CREATE_REPORT_DIALOG_RESPONSE.CANCEL,
@@ -31,7 +31,7 @@ export default function createReportDialogPrompt(
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      uiDialogService.dismiss({ id: dialogId });
+      uiDialogService.hide(dialogId);
       switch (action.id) {
         case 'save':
           resolve({
@@ -93,7 +93,7 @@ export default function createReportDialogPrompt(
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              uiDialogService.dismiss({ id: dialogId });
+              uiDialogService.hide(dialogId);
               resolve({
                 action: CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT,
                 value: value.label,

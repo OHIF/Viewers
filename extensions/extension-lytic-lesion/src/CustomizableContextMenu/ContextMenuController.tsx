@@ -28,7 +28,7 @@ export default class ContextMenuController {
   }
 
   closeContextMenu() {
-    this.services.uiDialogService.dismiss({ id: 'context-menu' });
+    this.services.uiDialogService.hide('context-menu');
   }
 
   /**
@@ -58,7 +58,7 @@ export default class ContextMenuController {
       menuId
     );
 
-    this.services.uiDialogService.dismiss({ id: 'context-menu' });
+    this.services.uiDialogService.hide('context-menu');
     this.services.uiDialogService.create({
       id: 'context-menu',
       isDraggable: false,
@@ -75,7 +75,7 @@ export default class ContextMenuController {
       // This naming is part of hte uiDialogService convention
       // Clicking outside simpy closes the dialog box.
       onClickOutside: () =>
-        this.services.uiDialogService.dismiss({ id: 'context-menu' }),
+        this.services.uiDialogService.hide('context-menu'),
 
       contentProps: {
         items,
@@ -86,7 +86,7 @@ export default class ContextMenuController {
         eventData: event?.detail,
 
         onClose: () => {
-          this.services.uiDialogService.dismiss({ id: 'context-menu' });
+          this.services.uiDialogService.hide('context-menu');
         },
 
         /**

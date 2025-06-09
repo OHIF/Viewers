@@ -13,7 +13,7 @@ function callInputDialog(uiDialogService, label, callback) {
         callback('', action.id);
         break;
     }
-    uiDialogService.dismiss({ id: dialogId });
+    uiDialogService.hide(dialogId);
   };
 
   if (uiDialogService) {
@@ -27,7 +27,7 @@ function callInputDialog(uiDialogService, label, callback) {
         title: 'Segment',
         value: { label },
         noCloseButton: true,
-        onClose: () => uiDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.hide(dialogId),
         actions: [
           { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
           { id: 'save', text: 'Confirm', type: ButtonEnums.type.primary },

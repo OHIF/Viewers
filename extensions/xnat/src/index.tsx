@@ -19,6 +19,7 @@ import { useUIStateStore } from './stores/useUIStateStore';
 import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
+import { version } from '../package.json';
 
 // Export the study browser components
 import XNATStudyBrowser from './xnat-components/XNATStudyBrowser/XNATStudyBrowser';

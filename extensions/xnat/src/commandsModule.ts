@@ -1,4 +1,5 @@
-import { Types, DicomMetadataStore } from '@ohif/core';
+import { Types, DicomMetadataStore, utils } from '@ohif/core';
+import { utilities as csUtils, Enums } from '@cornerstonejs/tools';
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -8,7 +9,6 @@ import findViewportsByPosition, {
 } from './findViewportsByPosition';
 
 import { ContextMenuProps } from './CustomizableContextMenu/types';
-import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/app';
 import { useViewportGridStore } from './stores/useViewportGridStore';
 import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
@@ -18,13 +18,23 @@ import { useViewportsByPositionStore } from './stores/useViewportsByPositionStor
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 
+const { segmentation: segmentationUtils } = csUtils;
+
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
   activeStudyUID?: string;
+  StudyInstanceUID?: string;
   stageId?: string;
-  reset?: false;
+  reset?: boolean;
 };
+
+export interface NavigateHistory {
+  to: string;
+  options?: {
+    replace?: boolean;
+  };
+}
 
 export type UpdateViewportDisplaySetParams = {
   direction: number;
@@ -564,7 +574,7 @@ const commandsModule = ({
           sessionInfo, // Pass session info to DicomTagBrowser if available
           studyInstanceUID,
         },
-        containerDimensions: 'w-[70%] max-w-[900px]',
+        containerClassName: 'w-[70%] max-w-[900px]',
         title: 'DICOM Tag Browser',
       });
     },
@@ -712,21 +722,8 @@ const commandsModule = ({
   return segmentationId;
 },
 /**
- * Generates a segmentation from a given segmentation ID.
- * This function retrieves the associated segmentation and
- * its referenced volume, extracts label maps from the
- * segmentation volume, and produces segmentation data
- * alongside associated metadata.
- *
- * @param {Object} params - Parameters for the function.
- * @param params.segmentationId - ID of the segmentation to be generated.
- * @param params.options - Optional configuration for the generation process.
- *
- * @returns Returns the generated segmentation data.
+ * Creates a labelmap for the active viewport using modern OHIF segmentation service
  */
-    /**
-     * Creates a labelmap for the active viewport
-     */
     createLabelmapForViewport: async ({ viewportId, options = {} }) => {
       const { viewportGridService, displaySetService, segmentationService } =
         servicesManager.services;
@@ -742,52 +739,7 @@ const commandsModule = ({
       const segs = segmentationService.getSegmentations();
 
       const label = options.label || `Segmentation ${segs.length + 1}`;
-      const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
-
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-      const generatedSegmentationId = await segmentationService.createLabelmapForDisplaySet(
-        displaySet,
-        {
-          label,
-          segmentationId,
-          segments: options.createInitialSegment
-            ? {
-                1: {
-                  label: `${i18n.t('Segment')} 1`,
-                  active: true,
-                },
-              }
-            : {},
-        }
-      );
-
-      await segmentationService.addSegmentationRepresentation(viewportId, {
-        segmentationId,
-        type: Enums.SegmentationRepresentations.Labelmap,
-      });
-
-      return generatedSegmentationId;
-    },
-    /**
-     * Creates a labelmap for the active viewport
-     */
-    createLabelmapForViewport: async ({ viewportId, options = {} }) => {
-      const { viewportGridService, displaySetService, segmentationService } =
-        servicesManager.services;
-      const { viewports } = viewportGridService.getState();
-      const targetViewportId = viewportId;
-
-      const viewport = viewports.get(targetViewportId);
-
-      // Todo: add support for multiple display sets
-      const displaySetInstanceUID =
-        options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
-
-      const segs = segmentationService.getSegmentations();
-
-      const label = options.label || `Segmentation ${segs.length + 1}`;
-      const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
+      const segmentationId = options.segmentationId || `${csUtils.guid()}`;
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -935,17 +887,136 @@ downloadRTSS: async ({ segmentationId }) => {
     console.warn(e);
   }
 },
+
+// Segmentation Tool Commands
+setBrushSize: ({ value, toolNames }) => {
+  const { toolGroupService } = servicesManager.services;
+  const brushSize = Number(value);
+
+  toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+    if (toolNames?.length === 0) {
+      segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+    } else {
+      toolNames?.forEach(toolName => {
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
+      });
+    }
+  });
+},
+
+setThresholdRange: ({
+  value,
+  toolNames = [
+    'ThresholdCircularBrush',
+    'ThresholdSphereBrush',
+    'ThresholdCircularBrushDynamic',
+    'ThresholdSphereBrushDynamic',
+  ],
+}) => {
+  const { toolGroupService } = servicesManager.services;
+  const toolGroupIds = toolGroupService.getToolGroupIds();
+  if (!toolGroupIds?.length) {
+    return;
+  }
+
+  for (const toolGroupId of toolGroupIds) {
+    const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+    toolNames?.forEach(toolName => {
+      toolGroup.setToolConfiguration(toolName, {
+        threshold: {
+          range: value,
+        },
+      });
+    });
+  }
+},
+
+increaseBrushSize: () => {
+  const { toolGroupService } = servicesManager.services;
+  const toolGroupIds = toolGroupService.getToolGroupIds();
+  if (!toolGroupIds?.length) {
+    return;
+  }
+
+  for (const toolGroupId of toolGroupIds) {
+    const currentBrushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+    // Handle case where getBrushSizeForToolGroup might return undefined
+    const brushSize = typeof currentBrushSize === 'number' ? currentBrushSize : 25;
+    segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize + 3);
+  }
+},
+
+decreaseBrushSize: () => {
+  const { toolGroupService } = servicesManager.services;
+  const toolGroupIds = toolGroupService.getToolGroupIds();
+  if (!toolGroupIds?.length) {
+    return;
+  }
+
+  for (const toolGroupId of toolGroupIds) {
+    const currentBrushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+    // Handle case where getBrushSizeForToolGroup might return undefined
+    const brushSize = typeof currentBrushSize === 'number' ? currentBrushSize : 25;
+    segmentationUtils.setBrushSizeForToolGroup(toolGroupId, Math.max(1, brushSize - 3));
+  }
+},
+
+addNewSegment: () => {
+  const { activeViewportId } = viewportGridService.getState();
+  const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
+  segmentationService.addSegment(activeSegmentation.segmentationId);
+},
+
+xnatRunSegmentBidirectional: async () => {
+  try {
+    await commandsManager.runCommand('runSegmentBidirectional');
+  } catch (error) {
+    if (error.message.includes('No suitable viewport found')) {
+      uiNotificationService.show({
+        title: 'Segment Bidirectional',
+        message: 'Measurement created, but no suitable viewport was found to display it.',
+        type: 'info',
+      });
+    } else {
+      console.error('Error running Segment Bidirectional:', error);
+      uiNotificationService.show({
+        title: 'Segment Bidirectional',
+        message:
+          'Could not compute bidirectional data for the segment. The segmented area may be too small.',
+        type: 'error',
+      });
+    }
+  }
+},
 };
   const definitions = {
-    multimonitor: actions.multimonitor,
-    loadStudy: actions.loadStudy,
-    showContextMenu: actions.showContextMenu,
-    closeContextMenu: actions.closeContextMenu,
-    clearMeasurements: actions.clearMeasurements,
-    displayNotification: actions.displayNotification,
-    setHangingProtocol: actions.setHangingProtocol,
-    toggleHangingProtocol: actions.toggleHangingProtocol,
-    navigateHistory: actions.navigateHistory,
+    multimonitor: {
+      commandFn: actions.multimonitor,
+    },
+    loadStudy: {
+      commandFn: actions.loadStudy,
+    },
+    showContextMenu: {
+      commandFn: actions.showContextMenu,
+    },
+    closeContextMenu: {
+      commandFn: actions.closeContextMenu,
+    },
+    clearMeasurements: {
+      commandFn: actions.clearMeasurements,
+    },
+    displayNotification: {
+      commandFn: actions.displayNotification,
+    },
+    setHangingProtocol: {
+      commandFn: actions.setHangingProtocol,
+    },
+    toggleHangingProtocol: {
+      commandFn: actions.toggleHangingProtocol,
+    },
+    navigateHistory: {
+      commandFn: actions.navigateHistory,
+    },
     nextStage: {
       commandFn: actions.deltaStage,
       options: { direction: 1 },
@@ -954,14 +1025,21 @@ downloadRTSS: async ({ segmentationId }) => {
       commandFn: actions.deltaStage,
       options: { direction: -1 },
     },
-    setViewportGridLayout: actions.setViewportGridLayout,
-    toggleOneUp: actions.toggleOneUp,
-    openDICOMTagViewer: actions.openDICOMTagViewer,
-    updateViewportDisplaySet: actions.updateViewportDisplaySet,
+    setViewportGridLayout: {
+      commandFn: actions.setViewportGridLayout,
+    },
+    toggleOneUp: {
+      commandFn: actions.toggleOneUp,
+    },
+    openDICOMTagViewer: {
+      commandFn: actions.openDICOMTagViewer,
+    },
+    updateViewportDisplaySet: {
+      commandFn: actions.updateViewportDisplaySet,
+    },
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
     },
-
     generateSegmentation: {
       commandFn: actions.generateSegmentation,
     },
@@ -973,6 +1051,24 @@ downloadRTSS: async ({ segmentationId }) => {
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
+    },
+    setBrushSize: {
+      commandFn: actions.setBrushSize,
+    },
+    setThresholdRange: {
+      commandFn: actions.setThresholdRange,
+    },
+    increaseBrushSize: {
+      commandFn: actions.increaseBrushSize,
+    },
+    decreaseBrushSize: {
+      commandFn: actions.decreaseBrushSize,
+    },
+    addNewSegment: {
+      commandFn: actions.addNewSegment,
+    },
+    xnatRunSegmentBidirectional: {
+      commandFn: actions.xnatRunSegmentBidirectional,
     },
   };
 

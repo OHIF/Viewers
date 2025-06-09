@@ -144,7 +144,7 @@ export default function PanelMeasurementTable({
           );
         }
       }
-      uiDialogService.dismiss({ id: 'enter-annotation' });
+      uiDialogService.hide(enter-annotation);
     };
 
     uiDialogService.create({

@@ -13,7 +13,7 @@ import getViewportModule from './getViewportModule';
 import { id } from './id';
 import preRegistration from './init';
 import { createReportDialogPrompt } from './Panels';
-
+import { NavigateHistory } from './types/commandModuleTypes';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
 import createReportAsync from './Actions/createReportAsync';
@@ -104,3 +104,4 @@ export {
   callInputDialog,
   createReportDialogPrompt,
 };
+export type { NavigateHistory };

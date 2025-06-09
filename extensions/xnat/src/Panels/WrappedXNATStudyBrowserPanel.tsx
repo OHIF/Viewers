@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import XNATStudyBrowser from '../xnat-components/XNATStudyBrowser/XNATStudyBrowser';
-import { useImageViewer } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { DicomMetadataStore } from '@ohif/core';
 import sessionMap from '../utils/sessionMap';

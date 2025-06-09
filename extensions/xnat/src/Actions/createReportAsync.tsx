@@ -47,7 +47,7 @@ async function createReportAsync({
     });
     throw new Error(`Failed to store ${reportType}. Error: ${error.message || 'Unknown error'}`);
   } finally {
-    uiDialogService.dismiss({ id: loadingDialogId });
+    uiDialogService.hide(loadingDialogId);
   }
 }
 

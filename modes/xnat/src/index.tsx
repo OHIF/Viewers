@@ -61,14 +61,14 @@ const xnat = {
 
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
-  '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
-  '@ohif/extension-dicom-pdf': '^3.0.1',
-  '@ohif/extension-dicom-video': '^3.0.1',
+  '@ohif/extension-default': '^3.11.0-beta.44',
+  '@ohif/extension-cornerstone': '^3.11.0-beta.44',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.11.0-beta.44',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.11.0-beta.44',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.11.0-beta.44',
+  '@ohif/extension-cornerstone-dicom-rt': '^3.11.0-beta.44',
+  '@ohif/extension-dicom-pdf': '^3.11.0-beta.44',
+  '@ohif/extension-dicom-video': '^3.11.0-beta.44',
   '@ohif/extension-xnat': '^0.0.1',
 
 };
@@ -141,12 +141,46 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
 
+      // Set up segmentation panel customizations
+      customizationService.setCustomizations({
+        'panelSegmentation.readableText': {
+          $set: {
+            // the values will appear in this order
+            min: 'Min Value',
+            max: 'Max Value',
+            mean: 'Mean Value',
+            stdDev: 'Standard Deviation',
+            count: 'Voxel Count',
+            volume: 'Volume',
+          },
+        },
+        'panelSegmentation.disableEditing': { $set: false },
+        'panelSegmentation.showAddSegment': { $set: true },
+        'panelSegmentation.tableMode': { $set: 'collapsed' },
+        // Add viewport click commands to prevent button1 undefined error
+        'cornerstoneViewportClickCommands': {
+          $set: {
+            doubleClick: ['toggleOneUp'],
+            button1: ['closeContextMenu'],
+            button3: [
+              {
+                commandName: 'showCornerstoneContextMenu',
+                commandOptions: {
+                  requireNearbyToolData: true,
+                  menuId: 'measurementsContextMenu',
+                },
+              },
+            ],
+          },
+        },
+      });
+
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.register(toolbarButtons);
       toolbarService.updateSection(toolbarService.sections.primary, [
-        'MeasurementTools',
+        // 'MeasurementTools', // This is a section, not a button in the primary toolbar list.
         'Zoom',
         'Pan',
         'TrackballRotate',
@@ -166,56 +200,47 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedRenderingControls',
       ]);
 
-      toolbarService.updateSection('AdvancedRenderingControls', [
-        'windowLevelMenuEmbedded',
-        'voiManualControlMenu',
-        'Colorbar',
-        'opacityMenu',
-        'thresholdMenu',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
-        'modalityLoadBadge',
-        'trackingStatus',
-        'navigationComponent',
-      ]);
-
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
-        'windowLevelMenu',
-      ]);
-
-      toolbarService.updateSection('MeasurementTools', [
-        'Length',
-        'Bidirectional',
-        'ArrowAnnotate',
-        'EllipticalROI',
-        'RectangleROI',
-        'CircleROI',
-        'PlanarFreehandROI',
-        'SplineROI',
-        'LivewireContour',
-      ]);
 
       toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
-        'ImageSliceSync',
+        // 'ImageSliceSync',         // Not in XNAT's toolbarButtons.ts, likely from default extension
         'ReferenceLines',
         'ImageOverlayViewer',
         'StackScroll',
         'invert',
-        'Probe',
+        'Probe',                  // Not in XNAT's toolbarButtons.ts, likely from default extension
         'Cine',
-        'Angle',
-        'CobbAngle',
+        'Angle',                  // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'CobbAngle',              // Not in XNAT's toolbarButtons.ts, likely from default extension
         'Magnify',
-        'CalibrationLine',
+        // 'CalibrationLine',        // Not in XNAT's toolbarButtons.ts, likely from default extension
         'TagBrowser',
-        'AdvancedMagnify',
-        'UltrasoundDirectionalTool',
-        'WindowLevelRegion',
+        // 'AdvancedMagnify',        // Not in XNAT's toolbarButtons.ts, likely from default extension
+        // 'UltrasoundDirectionalTool',// Not in XNAT's toolbarButtons.ts, likely from default extension
       ]);
+
+      // Set up segmentation toolbox sections
+      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
+        'SegmentationUtilities',
+        'SegmentationTools',
+      ]);
+      toolbarService.updateSection('SegmentationUtilities', [
+        'LabelmapSlicePropagation',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ]);
+      toolbarService.updateSection('SegmentationTools', [
+        'MarkerLabelmap',
+        'RegionSegmentPlus',
+        'Shapes',
+        'Threshold',
+        'Brush',
+        'Eraser',
+
+      ]);
+      toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
 
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -278,7 +303,6 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
               rightPanels: [xnat.segmentation, cornerstone.measurements],
-              // rightPanels: [cornerstone.measurements],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

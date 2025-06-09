@@ -62,7 +62,7 @@ async function createReportAsync(
       type: 'error',
     });
   } finally {
-    uiDialogService.dismiss({ id: loadingDialogId });
+    uiDialogService.hide(loadingDialogId);
   }
 }
 

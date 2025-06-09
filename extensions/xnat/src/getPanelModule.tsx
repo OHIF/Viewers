@@ -1,20 +1,23 @@
 import React from 'react';
 import { WrappedPanelStudyBrowser, WrappedXNATNavigationPanel, WrappedXNATStudyBrowserPanel } from './Panels';
 import i18n from 'i18next';
-import PanelSegmentation from './Panels/PanelSegmentation';
-import SegmentationToolbox from './Panels/SegmentationToolbox';
+import XNATSegmentationPanel from './Panels/XNATSegmentationPanel';
 import { useAppConfig } from '@state';
+import { Toolbox } from '@ohif/extension-default';
+import ActiveViewportWindowLevel from '@ohif/extension-cornerstone';
 
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
+
+  const { customizationService } = servicesManager.services;
+
   const wrappedPanelSegmentation = configuration => {
     const [appConfig] = useAppConfig();
-    const { customizationService } = servicesManager.services;
 
-    const disableEditingForMode = customizationService.get('segmentation.disableEditing');
+    const disableEditingForMode = customizationService.getCustomization('segmentation.disableEditing');
 
     return (
-      <PanelSegmentation
+      <XNATSegmentationPanel
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
@@ -26,27 +29,33 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
-  const wrappedPanelSegmentationWithTools = configuration => {
-    const [appConfig] = useAppConfig();
+  const wrappedPanelSegmentationWithTools = ({ configuration }) => {
+    const { toolbarService } = servicesManager.services;
+
     return (
       <>
-        <SegmentationToolbox
-          servicesManager={servicesManager} 
-          extensionManager={extensionManager}
+        <Toolbox
+          buttonSectionId={toolbarService.sections.segmentationToolbox}
+          title="Segmentation Tools"
         />
-        <PanelSegmentation
+        <XNATSegmentationPanel
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           configuration={{
             ...configuration,
-            // disableEditing: appConfig.disableEditing || disableEditingForMode?.value, 
           }}
         />
       </>
     );
   };
   return [
+    {
+      name: 'activeViewportWindowLevel',
+      component: () => {
+        return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
+      },
+    },
     {
       name: 'xnatNavigation',
       iconName: 'tab-studies',
