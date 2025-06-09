@@ -1567,15 +1567,10 @@
   dependencies:
     core-js-pure "^3.30.2"
 
-"@babel/runtime@7.22.11", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.3", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.6", "@babel/runtime@^7.23.2", "@babel/runtime@^7.24.4", "@babel/runtime@^7.25.9", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@7.22.11", "@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.3", "@babel/runtime@^7.20.13", "@babel/runtime@^7.20.6", "@babel/runtime@^7.23.2", "@babel/runtime@^7.24.4", "@babel/runtime@^7.25.9", "@babel/runtime@^7.27.6", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.4", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.27.4"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.4.tgz#a91ec580e6c00c67118127777c316dfd5a5a6abf"
   integrity sha512-t3yaEOuGu9NlIZ+hIeGbBjFtZT7j2cb2tg0fuaJKeGotchRjjLfrBA9Kwf8quhpP1EUuxModQg04q/mBwyg8uA==
-
-"@babel/runtime@^7.27.6":
-  version "7.27.6"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.6.tgz#ec4070a04d76bae8ddbb10770ba55714a417b7c6"
-  integrity sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==
 
 "@babel/template@^7.24.7", "@babel/template@^7.27.1", "@babel/template@^7.27.2", "@babel/template@^7.3.3":
   version "7.27.2"
@@ -20307,6 +20302,11 @@ regenerate@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.2.tgz#b9346d8827e8f5a32f7ba29637d398b69014848a"
   integrity sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==
+
+regenerator-runtime@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
+  integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==
 
 regexp.prototype.flags@^1.5.1, regexp.prototype.flags@^1.5.3, regexp.prototype.flags@^1.5.4:
   version "1.5.4"

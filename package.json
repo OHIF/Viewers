@@ -65,7 +65,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.27.6",
-    "execa": "^8.0.1"
+    "execa": "^8.0.1",
+    "regenerator-runtime": "^0.14.1"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
