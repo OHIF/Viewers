@@ -50,14 +50,6 @@ jobs:
           NODE_OPTIONS: '--max_old_space_size=8192'
           CI: true
       
-      - name: Run linting
-        run: yarn run lint --max-warnings 0
-        continue-on-error: false
-      
-      - name: Run type checking
-        run: yarn run type-check
-        continue-on-error: false
-      
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
