@@ -6,7 +6,10 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    'custom-route.customizationModule.custom-route',
+    'custom-route.customizationModule.custom-route-2',
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,

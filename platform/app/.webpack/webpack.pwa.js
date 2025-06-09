@@ -79,6 +79,14 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          '/Users/lcoutinho/sandbox/radical/ohif/extensions/custom-route/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '/Users/lcoutinho/sandbox/radical/ohif/modes/custom-route-mode/node_modules'
+        ),
       ],
     },
     plugins: [
