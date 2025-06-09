@@ -64,6 +64,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "@babel/runtime": "^7.27.6",
     "execa": "^8.0.1"
   },
   "optionalDependencies": {
