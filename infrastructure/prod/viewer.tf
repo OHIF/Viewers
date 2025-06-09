@@ -1,5 +1,5 @@
 ###############################################################################
-# API ohif_viewer Configuration - Development Environment
+# API ohif_viewer Configuration - Production Environment
 ###############################################################################
 
 locals {
@@ -32,7 +32,7 @@ module "frontend_cdn" {
   external_aliases                    = [local.domain]
   acm_certificate_arn                 = local.acm_floy_certificate_arn_us_east_1
   dns_alias_enabled                   = true
-  parent_zone_name                    = "dev.floy.com"
+  parent_zone_name                    = "floy.com"
   cors_expose_headers                 = ["ETag"]
   cors_allowed_headers                = ["*"]
   cors_allowed_methods                = ["GET", "HEAD"]
@@ -54,7 +54,7 @@ module "frontend_cdn" {
   realtime_log_config_arn             = null
   wait_for_deployment                 = true
   viewer_protocol_policy              = "redirect-to-https"
-  comment                             = "OHIF viewer Frontend Development CDN managed by Terraform"
+  comment                             = "OHIF viewer Frontend Production CDN managed by Terraform"
   default_root_object                 = "index.html"
   forward_query_string                = true
   forward_header_values               = local.forward_header_values

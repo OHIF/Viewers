@@ -64,7 +64,9 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "execa": "^8.0.1"
+    "@babel/runtime": "^7.27.6",
+    "execa": "^8.0.1",
+    "regenerator-runtime": "^0.14.1"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
@@ -101,7 +103,7 @@
     ]
   },
   "resolutions": {
-    "**/@babel/runtime": "^7.20.13",
+    "**/@babel/runtime": "^7.27.6",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
