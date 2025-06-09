@@ -65,31 +65,12 @@ const getLabelmapTools = ({ toolGroupService }) => {
   return labelmapTools;
 };
 
-const MARKER_TOOLS = ['MarkerInclude', 'MarkerExclude'];
-
-const getActiveLabelmapTools = ({ toolGroupService }) => {
+const getPreviewTools = ({ toolGroupService }) => {
   const labelmapTools = getLabelmapTools({ toolGroupService });
-  const activeTools = labelmapTools.filter(
-    tool => tool.mode === 'Active' || tool.mode === 'Enabled'
-  );
 
-  // Include passive MarkerLabelmap if corresponding marker tools are active
-  labelmapTools
-    .filter(tool => tool.getToolName?.() === 'MarkerLabelmap' && tool.mode === 'Passive')
-    .forEach(passiveTool => {
-      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(passiveTool.toolGroupId);
-      const hasActiveMarkerTool = Object.keys(toolGroup.getToolInstances()).some(
-        toolName =>
-          MARKER_TOOLS.includes(toolName) &&
-          toolGroup.getToolInstances()[toolName].mode === 'Active'
-      );
+  const previewTools = labelmapTools.filter(tool => tool.acceptPreview || tool.rejectPreview);
 
-      if (hasActiveMarkerTool && !activeTools.includes(passiveTool)) {
-        activeTools.push(passiveTool);
-      }
-    });
-
-  return activeTools;
+  return previewTools;
 };
 
 const segmentAI = new ONNXSegmentationController({
@@ -1737,10 +1718,14 @@ function commandsModule({
     },
     _handlePreviewAction: action => {
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = getActiveLabelmapTools({ toolGroupService });
+      const previewTools = getPreviewTools({ toolGroupService });
 
-      activeTools.forEach(tool => {
-        tool[`${action}Preview`]();
+      previewTools.forEach(tool => {
+        try {
+          tool[`${action}Preview`]();
+        } catch (error) {
+          console.debug('Error accepting preview for tool', tool.toolName);
+        }
       });
 
       if (segmentAI.enabled) {
