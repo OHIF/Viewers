@@ -326,60 +326,87 @@ function initializeWebWorkerProgressHandler(uiNotificationService) {
   };
 
   eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
-    const { progress, type, id } = detail;
+    let normalizedKey;
+    let shouldCleanup = false;
+    
+    try {
+      const { progress, type, id } = detail;
 
-    // Skip notifications for compute statistics
-    if (type === cornerstoneTools.Enums.WorkerTypes.COMPUTE_STATISTICS) {
-      return;
-    }
-
-    const normalizedKey = getNormalizedTaskKey(type);
-
-    if (progress === 0) {
-      // Check if we're already tracking a task of this type
-      if (!activeWorkerTasks.has(normalizedKey)) {
-        const progressPromise = new Promise((resolve, reject) => {
-          activeWorkerTasks.set(normalizedKey, {
-            resolve,
-            reject,
-            originalId: id,
-            type,
-          });
-        });
-
-        uiNotificationService.show({
-          id: normalizedKey, // Use the normalized key as ID for better deduplication
-          title: `${type}`,
-          message: `Computing...`,
-          autoClose: false,
-          allowDuplicates: false,
-          deduplicationInterval: 60000, // 60 seconds - prevent frequent notifications of same type
-          promise: progressPromise,
-          promiseMessages: {
-            loading: `Computing...`,
-            success: `Completed successfully`,
-            error: 'Web Worker failed',
-          },
-        });
-      } else {
-        // Already tracking this type of task, just let it continue
-        console.debug(`Already tracking a "${type}" task, skipping duplicate notification`);
+      // Skip notifications for compute statistics
+      if (type === cornerstoneTools.Enums.WorkerTypes.COMPUTE_STATISTICS) {
+        return;
       }
-    }
-    // Task completed
-    else if (progress === 100) {
-      // Check if we have this task type in our tracking map
-      const taskData = activeWorkerTasks.get(normalizedKey);
 
-      if (taskData) {
-        // Resolve the promise to update the notification
-        const { resolve } = taskData;
-        resolve({ progress, type });
+      normalizedKey = getNormalizedTaskKey(type);
 
-        // Remove from tracking
-        activeWorkerTasks.delete(normalizedKey);
+      if (progress === 0) {
+        // Check if we're already tracking a task of this type
+        if (!activeWorkerTasks.has(normalizedKey)) {
+          const progressPromise = new Promise((resolve, reject) => {
+            try {
+              activeWorkerTasks.set(normalizedKey, {
+                resolve,
+                reject,
+                originalId: id,
+                type,
+              });
+            } catch (error) {
+              console.error('Error setting active worker task:', error);
+              reject(error);
+            }
+          });
 
-        console.debug(`Worker task "${type}" completed successfully`);
+          try {
+            uiNotificationService.show({
+              id: normalizedKey, // Use the normalized key as ID for better deduplication
+              title: `${type}`,
+              message: `Computing...`,
+              autoClose: false,
+              allowDuplicates: false,
+              deduplicationInterval: 60000, // 60 seconds - prevent frequent notifications of same type
+              promise: progressPromise,
+              promiseMessages: {
+                loading: `Computing...`,
+                success: `Completed successfully`,
+                error: 'Web Worker failed',
+              },
+            });
+          } catch (error) {
+            console.error('Error showing web worker notification:', error);
+            shouldCleanup = true;
+          }
+        } else {
+          // Already tracking this type of task, just let it continue
+          console.debug(`Already tracking a "${type}" task, skipping duplicate notification`);
+        }
+      }
+      // Task completed
+      else if (progress === 100) {
+        // Check if we have this task type in our tracking map
+        const taskData = activeWorkerTasks.get(normalizedKey);
+
+        if (taskData) {
+          // Resolve the promise to update the notification
+          const { resolve } = taskData;
+          resolve({ progress, type });
+
+          // Mark for cleanup
+          shouldCleanup = true;
+
+          console.debug(`Worker task "${type}" completed successfully`);
+        }
+      }
+    } catch (error) {
+      console.error('Error in web worker progress handler:', error);
+      shouldCleanup = true;
+    } finally {
+      // Clean up if needed
+      if (shouldCleanup && normalizedKey) {
+        try {
+          activeWorkerTasks.delete(normalizedKey);
+        } catch (cleanupError) {
+          console.error('Error cleaning up active worker task:', cleanupError);
+        }
       }
     }
   });
