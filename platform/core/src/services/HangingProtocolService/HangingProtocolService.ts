@@ -1374,6 +1374,25 @@ export default class HangingProtocolService extends PubSubService {
         };
 
         displaySetsInfo.push(displaySetInfo);
+
+        if (id === 'activeDisplaySet') {
+          // Check if there are multiple display sets to restore for the active display set viewport.
+          // We break out of the loop from within when no more display sets are found for the viewport.
+          for (let displaySetIndex = 1; ; displaySetIndex += 1) {
+            const reuseDisplaySetUID =
+              displaySetSelectorMap[`${activeStudyUID}:${id}:${displaySetIndex}`];
+            if (reuseDisplaySetUID) {
+              const displaySetInfo: HangingProtocol.DisplaySetInfo = {
+                displaySetInstanceUID: reuseDisplaySetUID,
+                displaySetOptions,
+              };
+              displaySetsInfo.push(displaySetInfo);
+            } else {
+              // We've exhausted all the display sets cached for the active viewport.
+              break;
+            }
+          }
+        }
         return;
       }
 

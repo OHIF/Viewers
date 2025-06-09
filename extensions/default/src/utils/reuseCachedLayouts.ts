@@ -58,8 +58,10 @@ const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService
       if (!displaySetUID) {
         continue;
       }
-      if (viewportId === activeViewportId && i === 0) {
-        setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:0`, displaySetUID);
+      if (viewportId === activeViewportId) {
+        // For the active viewport, overload the `matchedDisplaySetsIndex` position in the cache key
+        // to enumerate multiple display sets that might be contained in the viewport.
+        setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:${i}`, displaySetUID);
       }
       // The activeDisplaySet selector should only be set once (i.e. for the actual active display set)
       if (displaySetOptions[i]?.id && displaySetOptions[i].id !== 'activeDisplaySet') {
