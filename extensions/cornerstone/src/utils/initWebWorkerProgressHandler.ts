@@ -4,7 +4,7 @@ import * as cornerstoneTools from '@cornerstonejs/tools';
 /**
  * Initializes a handler for web worker progress events.
  * Tracks active worker tasks and shows notifications for their progress.
- * 
+ *
  * @param uiNotificationService - The UI notification service for showing progress notifications
  */
 export function initializeWebWorkerProgressHandler(uiNotificationService: any) {
@@ -67,6 +67,7 @@ export function initializeWebWorkerProgressHandler(uiNotificationService: any) {
           } catch (error) {
             console.error(`Error showing web worker notification for type "${type}":`, error);
             shouldCleanup = true;
+            throw error;
           }
         } else {
           // Already tracking this type of task, just let it continue
