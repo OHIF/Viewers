@@ -27,7 +27,7 @@ import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset, setEnabledElement } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-
+import { initCustomImageLoader, wadorsStackRetrieveOptions } from './utils/customImageLoader';
 import { id } from './id';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import PlanarFreehandROI from './utils/measurementServiceMappings/PlanarFreehandROI';
@@ -115,6 +115,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
 
+    // Initialize custom image loader
+    initCustomImageLoader();
+
     // Configure the interleaved/HTJ2K loader
     imageRetrieveMetadataProvider.clear();
     // The default volume interleaved options are to interleave the
@@ -124,11 +127,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     imageRetrieveMetadataProvider.add(
       'volume',
       cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
-    );
-    // The default stack loading option is to progressive load HTJ2K images
+    ); // The default stack loading option is to progressive load HTJ2K images
     // There are other possible options, but these need more thought about
     // how to define them.
-    imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
+    // imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
+    // Use our custom WADORS progressive loader for multi-level quality progression (10 → 30 → 60 → 100)
+    imageRetrieveMetadataProvider.add('stack', wadorsStackRetrieveOptions);
   },
   getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
