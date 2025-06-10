@@ -255,13 +255,12 @@ function modeFactory({ modeConfiguration }) {
                   displaySetsToDisplay: [
                     ohif.sopClassHandler,
                     dicomvideo.sopClassHandler,
-                    dicomsr.sopClassHandler3D,
                     ohif.wsiSopClassHandler,
                   ],
                 },
                 {
                   namespace: dicomsr.viewport,
-                  displaySetsToDisplay: [dicomsr.sopClassHandler],
+                  displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
                 },
                 {
                   namespace: dicompdf.viewport,

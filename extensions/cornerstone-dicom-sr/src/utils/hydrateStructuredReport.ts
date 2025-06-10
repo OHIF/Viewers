@@ -1,4 +1,4 @@
-import { utilities, metaData } from '@cornerstonejs/core';
+import { utilities, metaData, type Types } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -7,9 +7,8 @@ import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 
 const { locking } = CsAnnotation;
 const { guid } = OHIF.utils;
-const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
+const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {
   if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') {
@@ -147,6 +146,9 @@ export default function hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
+    if (!imageId) {
+      continue;
+    }
     const { SeriesInstanceUID, StudyInstanceUID } = metaData.get('instance', imageId);
 
     if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
@@ -160,28 +162,41 @@ export default function hydrateStructuredReport(
     }
   }
 
+  function getReferenceData(toolData) {
+    // Add the measurement to toolState
+    // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
+    // files, and looking up the imageId from sopInstanceUIDToImageId results
+    // in the wrong value.
+    const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+    const imageId =
+      imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+      sopInstanceUIDToImageId[toolData.sopInstanceUid];
+
+    if (!imageId) {
+      console.warn('No image id, assuming only FOR', toolData.annotation);
+      return getReferenceData3D(toolData, servicesManager);
+    }
+
+    const instance = metaData.get('instance', imageId);
+    const {
+      FrameOfReferenceUID,
+      // SOPInstanceUID,
+      // SeriesInstanceUID,
+      // StudyInstanceUID,
+    } = instance;
+
+    return {
+      imageId,
+      FrameOfReferenceUID,
+    };
+  }
+
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
     const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
 
     toolDataForAnnotationType.forEach(toolData => {
-      // Add the measurement to toolState
-      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
-      // files, and looking up the imageId from sopInstanceUIDToImageId results
-      // in the wrong value.
-      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
-
       toolData.uid = guid();
-
-      const instance = metaData.get('instance', imageId);
-      const {
-        FrameOfReferenceUID,
-        // SOPInstanceUID,
-        // SeriesInstanceUID,
-        // StudyInstanceUID,
-      } = instance;
+      const { imageId, FrameOfReferenceUID } = getReferenceData(toolData);
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
@@ -236,5 +251,33 @@ export default function hydrateStructuredReport(
   return {
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
+  };
+}
+
+function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
+  const { FrameOfReferenceUID } = toolData.annotation.metadata;
+  const { displaySetService } = servicesManager.services;
+  const displaySetsFOR = displaySetService.getDisplaySetsBy(
+    ds => ds.FrameOfReferenceUID === FrameOfReferenceUID
+  );
+  if (!displaySetsFOR.length) {
+    console.warn('No display set has the same frame of reference');
+    return {
+      FrameOfReferenceUID,
+    };
+  }
+  const [ds] = displaySetsFOR;
+
+  // Got up to three points, starting with handles[0], then the next
+  // point in handles not really close to handles[0], then a non-co-linear
+  // point in handles that is not really close to either of the two previous points
+  // Use point[0] as the focal point
+  // If 3 points, create a normal from them
+  // If 2 points, just record them in the point information
+  // If co-planar, then record as a coplanar measurement.
+
+  return {
+    volumeId: ds.displaySetInstanceUID,
+    FrameOfReferenceUID,
   };
 }
