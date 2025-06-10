@@ -1,6 +1,5 @@
 import {
   imageLoader,
-  cache,
   imageLoadPoolManager,
   metaData,
   eventTarget,
@@ -14,6 +13,9 @@ import { RequestType, ImageQualityStatus, Events } from '@cornerstonejs/core/enu
  */
 
 const customImageLoaderScheme = 'wadors';
+
+// Map to track WADORS quality levels for each imageId
+const wadorsQualityMap = new Map();
 
 // Stage configurations for 4-level quality progression
 // Each image will go through ALL 4 stages: 10 → 30 → 60 → 100
@@ -149,17 +151,25 @@ class WadorsProgressiveImageLoaderInstance {
         return;
       }
 
-      // Check if we already have better quality (use original imageId for cache check)
-      const oldStatus = cache.getImageQuality?.(imageId);
-      if (oldStatus !== undefined && oldStatus > image.imageQualityStatus) {
+      // Check if we already have better quality using WADORS quality parameter
+      const currentQuality = options.quality || request.stage.quality;
+      const existingQuality = wadorsQualityMap.get(imageId);
+
+      if (existingQuality && existingQuality >= currentQuality) {
         console.log(
-          `Skipping ${imageId} - already have better quality ${oldStatus} > ${image.imageQualityStatus}`
+          `Skipping ${imageId} - already have better/equal WADORS quality ${existingQuality} >= ${currentQuality}`
         );
         this.updateStageStatus(request.stage, null, true);
         return;
       }
 
-      console.log(`Successfully loaded ${imageId} with quality ${image.imageQualityStatus}`);
+      console.log(
+        `Successfully loaded ${imageId} with WADORS quality ${currentQuality} (imageQualityStatus: ${image.imageQualityStatus})`
+      );
+
+      // Store the WADORS quality for this imageId
+      wadorsQualityMap.set(imageId, currentQuality);
+
       this.listener.successCallback(imageId, image);
       this.updateStageStatus(request.stage);
 
