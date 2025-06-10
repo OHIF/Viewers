@@ -1,4 +1,4 @@
-import { utilities, metaData } from '@cornerstonejs/core';
+import { utilities, metaData, type Types } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -173,9 +173,8 @@ export default function hydrateStructuredReport(
       sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
     if (!imageId) {
-      return {
-        FrameOfReferenceUID: toolData.annotation.metadata.FrameOfReferenceUID,
-      };
+      console.warn('No image id, assuming only FOR', toolData.annotation);
+      return getReferenceData3D(toolData, servicesManager);
     }
 
     const instance = metaData.get('instance', imageId);
@@ -252,5 +251,33 @@ export default function hydrateStructuredReport(
   return {
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
+  };
+}
+
+function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
+  const { FrameOfReferenceUID } = toolData.annotation.metadata;
+  const { displaySetService } = servicesManager.services;
+  const displaySetsFOR = displaySetService.getDisplaySetsBy(
+    ds => ds.FrameOfReferenceUID === FrameOfReferenceUID
+  );
+  if (!displaySetsFOR.length) {
+    console.warn('No display set has the same frame of reference');
+    return {
+      FrameOfReferenceUID,
+    };
+  }
+  const [ds] = displaySetsFOR;
+
+  // Got up to three points, starting with handles[0], then the next
+  // point in handles not really close to handles[0], then a non-co-linear
+  // point in handles that is not really close to either of the two previous points
+  // Use point[0] as the focal point
+  // If 3 points, create a normal from them
+  // If 2 points, just record them in the point information
+  // If co-planar, then record as a coplanar measurement.
+
+  return {
+    volumeId: ds.displaySetInstanceUID,
+    FrameOfReferenceUID,
   };
 }
