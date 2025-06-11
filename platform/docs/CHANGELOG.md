@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.52...v3.11.0-beta.53) (2025-06-11)
+
+
+### Bug Fixes
+
+* data-viewportId name is illegal, renamed to data-viewportid ([#5121](https://github.com/OHIF/Viewers/issues/5121)) ([75271ca](https://github.com/OHIF/Viewers/commit/75271ca416173ddb71972ed311f9d729443cf763))
+
+
+
+
+
 # [3.11.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.51...v3.11.0-beta.52) (2025-06-10)
 
 **Note:** Version bump only for package ohif-docs
