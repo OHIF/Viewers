@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.53...v3.11.0-beta.54) (2025-06-11)
+
+
+### Features
+
+* **commandsModule:** Enhanced flipViewport and rotateViewport commands ([#5065](https://github.com/OHIF/Viewers/issues/5065)) ([4da7fc3](https://github.com/OHIF/Viewers/commit/4da7fc307f2054675510dd44062f8c94a37f9585))
+
+
+
+
+
 # [3.11.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.52...v3.11.0-beta.53) (2025-06-11)
 
 
