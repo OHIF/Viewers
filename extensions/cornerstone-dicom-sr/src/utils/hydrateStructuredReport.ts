@@ -1,5 +1,7 @@
 import { utilities, metaData, type Types } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
+import { vec3 } from 'gl-matrix';
+
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
@@ -256,28 +258,58 @@ export default function hydrateStructuredReport(
 
 function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   const { FrameOfReferenceUID } = toolData.annotation.metadata;
+  const { points } = toolData.annotation.handles;
   const { displaySetService } = servicesManager.services;
   const displaySetsFOR = displaySetService.getDisplaySetsBy(
     ds => ds.FrameOfReferenceUID === FrameOfReferenceUID
   );
-  if (!displaySetsFOR.length) {
-    console.warn('No display set has the same frame of reference');
+  if (!displaySetsFOR.length || !points?.length) {
     return {
       FrameOfReferenceUID,
     };
   }
+  // TODO - choose which display set to apply this too
   const [ds] = displaySetsFOR;
-
-  // Got up to three points, starting with handles[0], then the next
-  // point in handles not really close to handles[0], then a non-co-linear
-  // point in handles that is not really close to either of the two previous points
-  // Use point[0] as the focal point
-  // If 3 points, create a normal from them
-  // If 2 points, just record them in the point information
-  // If co-planar, then record as a coplanar measurement.
+  const cameraView = chooseCameraView(ds, points);
 
   return {
+    ...cameraView,
     volumeId: ds.displaySetInstanceUID,
     FrameOfReferenceUID,
   };
+}
+
+function chooseCameraView(ds, points) {
+  const selectedPoints = choosePoints(points);
+  const cameraFocalPoint = centerOf(selectedPoints);
+  let viewPlaneNormal: Types.Point3 = null;
+  let viewUp: Types.Point3 = null;
+
+  return {
+    cameraFocalPoint,
+    viewPlaneNormal,
+    viewUp,
+  };
+}
+
+function centerOf(points) {
+  const scale = 1 / points.length;
+  const center = vec3.create();
+  for (const point of points) {
+    vec3.scaleAndAdd(center, point, scale);
+  }
+  return center;
+}
+
+function choosePoints(points) {
+  if (points.length === 1 || points.length === 2) {
+    return points;
+  }
+  const firstIndex = 0;
+  const secondIndex = Math.ceil(points.length / 4);
+  const thirdIndex = Math.ceil(points.length / 2);
+  // TODO - check if colinear, if so try to find another 3 points.
+
+  const newPoints = [points[firstIndex], points[secondIndex], points[thirdIndex]];
+  return newPoints;
 }
