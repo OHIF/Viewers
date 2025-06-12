@@ -37,7 +37,6 @@ const frameView: Types.HangingProtocol.Protocol = {
     displaySets: [
       {
         id: 'activeDisplaySet',
-        matchedDisplaySetsIndex: -1,
       },
     ],
   },
