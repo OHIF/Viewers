@@ -160,6 +160,7 @@ function modeFactory() {
 
       toolbarService.updateSection('MoreTools', [
         'Reset',
+        'reset-all',
         'rotate-right',
         'flipHorizontal',
         'ImageSliceSync',
