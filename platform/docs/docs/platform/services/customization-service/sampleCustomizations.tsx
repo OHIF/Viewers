@@ -1821,6 +1821,31 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'instanceSortingCriteria',
+    description: 'Defines the instance sorting criteria to sort the images',
+    default: `{
+    sortFunctions: {},
+    defaultSortFunctionName: '',
+  }`,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+   {
+      'instanceSortingCriteria': {
+        $set: {
+          sortFunctions: {
+            sort: (a, b) => {}
+          },
+          defaultSortFunctionName: 'sort',
+        },
+      },
+    }
+  ],
+};
+  `,
+  },
 ];
 
 export const TableGenerator = (customizations: any[]) => {
