@@ -29,7 +29,7 @@ export const groupByStudy = (items, grouping, childProps) => {
     if (!groups.has(studyUID)) {
       const items = [];
       const filter = MeasurementFilters.filterAnd(
-        MeasurementFilters.filterMeasurementsByStudyUID(activeStudyUID),
+        MeasurementFilters.filterMeasurementsByStudyUID(studyUID),
         grouping.filter
       );
       const group = {
@@ -38,7 +38,7 @@ export const groupByStudy = (items, grouping, childProps) => {
         displayMeasurements: items,
         key: studyUID,
         isSelected: studyUID === activeStudyUID,
-        StudyInstanceUID: activeStudyUID,
+        StudyInstanceUID: studyUID,
         filter,
         measurementFilter: filter,
       };
