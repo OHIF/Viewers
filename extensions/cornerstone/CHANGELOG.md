@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.54...v3.11.0-beta.55) (2025-06-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.53...v3.11.0-beta.54) (2025-06-11)
+
+
+### Features
+
+* **commandsModule:** Enhanced flipViewport and rotateViewport commands ([#5065](https://github.com/OHIF/Viewers/issues/5065)) ([4da7fc3](https://github.com/OHIF/Viewers/commit/4da7fc307f2054675510dd44062f8c94a37f9585))
+
+
+
+
+
+# [3.11.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.52...v3.11.0-beta.53) (2025-06-11)
+
+
+### Bug Fixes
+
+* data-viewportId name is illegal, renamed to data-viewportid ([#5121](https://github.com/OHIF/Viewers/issues/5121)) ([75271ca](https://github.com/OHIF/Viewers/commit/75271ca416173ddb71972ed311f9d729443cf763))
+
+
+
+
+
+# [3.11.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.51...v3.11.0-beta.52) (2025-06-10)
+
+
+### Bug Fixes
+
+* **markerlabelmap:** accept preview/reject preview not working when the marker annotation tools are active ([#5101](https://github.com/OHIF/Viewers/issues/5101)) ([26fd51f](https://github.com/OHIF/Viewers/commit/26fd51f53589244a47807106c3065e3926a16903))
+
+
+
+
+
+# [3.11.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.50...v3.11.0-beta.51) (2025-06-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.49...v3.11.0-beta.50) (2025-06-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.48...v3.11.0-beta.49) (2025-06-07)
+
+
+### Bug Fixes
+
+* **WindowLevelActionMenu:** The window level menu must show different contents for 3D volume viewports ([#5113](https://github.com/OHIF/Viewers/issues/5113)) ([0afb3fc](https://github.com/OHIF/Viewers/commit/0afb3fc75314c1d8d6c50d13f31d5c2fc6849ce2))
+
+
+
+
+
 # [3.11.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.47...v3.11.0-beta.48) (2025-06-05)
 
 
