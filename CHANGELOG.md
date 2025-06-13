@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.54...v3.11.0-beta.55) (2025-06-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.53...v3.11.0-beta.54) (2025-06-11)
+
+
+### Bug Fixes
+
+* **ToolbarService:** Fixed removeButton bug for removing buttons inside sections ([#5123](https://github.com/OHIF/Viewers/issues/5123)) ([d3c9ff5](https://github.com/OHIF/Viewers/commit/d3c9ff50c7eaec0edad55213d73bc1ed61a40723))
+
+
+### Features
+
+* **commandsModule:** Enhanced flipViewport and rotateViewport commands ([#5065](https://github.com/OHIF/Viewers/issues/5065)) ([4da7fc3](https://github.com/OHIF/Viewers/commit/4da7fc307f2054675510dd44062f8c94a37f9585))
+
+
+
+
+
+# [3.11.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.52...v3.11.0-beta.53) (2025-06-11)
+
+
+### Bug Fixes
+
+* data-viewportId name is illegal, renamed to data-viewportid ([#5121](https://github.com/OHIF/Viewers/issues/5121)) ([75271ca](https://github.com/OHIF/Viewers/commit/75271ca416173ddb71972ed311f9d729443cf763))
+
+
+
+
+
 # [3.11.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.51...v3.11.0-beta.52) (2025-06-10)
 
 
