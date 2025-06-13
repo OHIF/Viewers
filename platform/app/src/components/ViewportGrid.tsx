@@ -4,7 +4,9 @@ import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import { useAppConfig } from '@state';
+import { utils } from '@ohif/core';
 
+const { getClosestOrientation } = utils;
 function ViewerViewportGrid(props: withAppTypes) {
   const { servicesManager, viewportComponents = [], dataSource, commandsManager } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -190,6 +192,17 @@ function ViewerViewportGrid(props: withAppTypes) {
             })
           ) {
             canAnyViewportDisplayMeasurement = true;
+          } else {
+            const isSameMeasurementOrientation =
+              getClosestOrientation(measurement.metadata.viewPlaneNormal) ===
+              viewport?.viewportOptions?.orientation;
+            if (isSameMeasurementOrientation) {
+              const { cornerstoneViewportService } = servicesManager.services;
+              const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+              const viewportInstance = renderingEngine.getViewport(id);
+              viewportInstance.setViewReference(measurement.metadata);
+              return;
+            }
           }
         });
 
