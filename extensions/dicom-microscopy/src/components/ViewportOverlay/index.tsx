@@ -36,10 +36,10 @@ export const generateFromConfig = ({ config, overlayData, ...props }) => {
     bottomLeft?: OverlayItem[];
     bottomRight?: OverlayItem[];
   } = overlayData ?? {};
-  const topLeftClass = 'top-viewport left-viewport text-primary-light';
-  const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
-  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';
-  const bottomLeftClass = 'bottom-viewport left-viewport text-primary-light';
+  const topLeftClass = 'top-viewport left-viewport text-white-light';
+  const topRightClass = 'top-viewport right-viewport-scrollbar text-white-light';
+  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-white-light';
+  const bottomLeftClass = 'bottom-viewport left-viewport text-white-light';
   const overlay = 'absolute pointer-events-none microscopy-viewport-overlay';
 
   return (

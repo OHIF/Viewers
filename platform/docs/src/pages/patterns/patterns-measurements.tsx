@@ -60,7 +60,7 @@ export default function Measurements() {
               >
                 {/* Segmentation Tools */}
                 <AccordionItem value="measurements-list">
-                  <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                  <AccordionTrigger className="bg-popover hover:bg-primary-light text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                     <span>Measurements</span>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -117,11 +117,11 @@ export default function Measurements() {
 
                 {/* Additional Findings */}
                 <AccordionItem value="measurements-additional">
-                  <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                  <AccordionTrigger className="bg-popover hover:bg-primary-light text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                     <span>Additional Findings</span>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="bg-muted mb-0.5 h-12 rounded-b pb-3"></div>
+                    <div className="bg-primary-main mb-0.5 h-12 rounded-b pb-3"></div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

@@ -44,7 +44,7 @@ const StudyListFilter = ({
                 {getDataSourceConfigurationComponent && getDataSourceConfigurationComponent()}
                 {onUploadClick && (
                   <div
-                    className="text-primary-active flex cursor-pointer items-center gap-2 self-center text-lg font-semibold"
+                    className="text-white-active flex cursor-pointer items-center gap-2 self-center text-lg font-semibold"
                     onClick={onUploadClick}
                   >
                     <Icons.Upload />
@@ -77,7 +77,7 @@ const StudyListFilter = ({
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="text-primary-light"
+                  className="text-white-light"
                 >
                   {`${t('Studies')} `}
                 </Typography>

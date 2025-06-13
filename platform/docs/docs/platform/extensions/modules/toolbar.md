@@ -109,7 +109,7 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
       disabled: false,
       className: isPrimaryActive
         ? '!text-black bg-primary-light'
-        : '!text-common-bright hover:!bg-primary-dark hover:!text-primary-light',
+        : '!text-common-bright hover:!bg-primary-dark hover:!text-white-light',
     };
   },
 },

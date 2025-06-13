@@ -132,7 +132,7 @@ function Local({ modePath }: LocalProps) {
           style={{ width: '100%', height: '100%' }}
         >
           <div className="flex h-screen w-screen items-center justify-center">
-            <div className="bg-muted border-primary/60 mx-auto space-y-2 rounded-xl border border-dashed py-12 px-12 drop-shadow-md">
+            <div className="bg-primary-main border-primary/60 mx-auto space-y-2 rounded-xl border border-dashed py-12 px-12 drop-shadow-md">
               <div className="flex items-center justify-center">
                 <Icons.OHIFLogoColorDarkBackground className="h-18" />
               </div>
@@ -143,7 +143,7 @@ function Local({ modePath }: LocalProps) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-primary pt-0 text-xl">
+                    <p className="pt-0 text-xl text-white">
                       Drag and drop your DICOM files & folders here <br />
                       to load them locally.
                     </p>

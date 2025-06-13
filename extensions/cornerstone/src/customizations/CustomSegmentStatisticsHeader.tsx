@@ -41,7 +41,7 @@ export const CustomSegmentStatisticsHeader = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-primary flex items-center gap-2"
+                className="flex items-center gap-2 text-white"
                 onClick={() => {
                   commandsManager.run('runSegmentBidirectional', {
                     segmentationId,

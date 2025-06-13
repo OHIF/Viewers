@@ -140,6 +140,7 @@ import {
   ToolContract,
   ToolExpand,
   ToolClickSegment,
+  EditIcon,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -735,6 +736,7 @@ export const Icons = {
   'old-trash': (props: IconProps) => Trash(props),
   'tool-point': (props: IconProps) => ToolCircle(props),
   'tool-freehand-line': (props: IconProps) => ToolFreehand(props),
+  'edit-icon': (props: IconProps) => EditIcon(props),
   clipboard: (props: IconProps) => Clipboard(props),
   Undo,
   Redo,

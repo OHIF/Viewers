@@ -12,7 +12,7 @@ const EmptyStudies = ({ className = '' }) => {
     <div className={classnames('inline-flex flex-col items-center', className)}>
       <Icons.Magnifier className="mb-4" />
       <Typography
-        className="text-primary-light"
+        className="text-white-light"
         variant="h5"
       >
         {t('No studies available')}

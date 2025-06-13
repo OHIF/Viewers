@@ -24,7 +24,7 @@ function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCo
       IconContainer={ToolButton}
       containerProps={{
         size: 'tiny',
-        className: 'font-normal text-primary hover:bg-primary/25',
+        className: 'font-normal text-white hover:bg-primary/25',
       }}
     >
       <ViewportActionCorners.Container>

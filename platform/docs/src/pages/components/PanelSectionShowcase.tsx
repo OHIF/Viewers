@@ -28,7 +28,7 @@ export default function PanelSectionShowcase() {
     >
       <PanelSection
         defaultOpen
-        className="bg-muted w-[280px]"
+        className="bg-primary-main w-[280px]"
       >
         <PanelSection.Header className="bg-popover">Series Information</PanelSection.Header>
         <PanelSection.Content>

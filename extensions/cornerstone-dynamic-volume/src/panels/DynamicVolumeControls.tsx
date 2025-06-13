@@ -28,7 +28,7 @@ const Header = ({ title, tooltip }) => (
         <span>
           <Icons.ByName
             name="info-link"
-            className="text-primary h-3 w-3"
+            className="h-3 w-3 text-white"
           />
         </span>
       </TooltipTrigger>
@@ -80,7 +80,7 @@ const DynamicVolumeControls = ({
     <div className="flex select-none flex-col">
       <PanelSection defaultOpen={true}>
         <PanelSection.Header>Controls</PanelSection.Header>
-        <PanelSection.Content className="bg-muted space-y-4 px-5 pt-2 pb-4">
+        <PanelSection.Content className="bg-primary-main space-y-4 px-5 pt-2 pb-4">
           <div className="mb-4">
             <Header
               title="View"

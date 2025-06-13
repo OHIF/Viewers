@@ -17,7 +17,7 @@ const SubMenu = (props: SubMenuProps) => {
 
   return (
     <div
-      className="hover:bg-accent flex h-8 w-full cursor-pointer items-center px-2 text-base hover:rounded"
+      className="hover:bg-primary-light flex h-8 w-full cursor-pointer items-center px-2 text-base hover:rounded"
       onClick={onClickHandler}
     >
       {props.itemIcon && (

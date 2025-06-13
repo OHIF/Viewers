@@ -32,7 +32,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
   }
 
   return (
-    <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
+    <div className="bg-primary-main mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
       <div className="my-1 flex items-center justify-between">
         <span className="text-aqua-pale text-xs">
           {t('Show')}:{' '}
@@ -61,13 +61,13 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
         >
           <TabsList>
             <TabsTrigger value="fill-and-outline">
-              <Icons.FillAndOutline className="text-primary" />
+              <Icons.FillAndOutline className="text-white" />
             </TabsTrigger>
             <TabsTrigger value="outline">
-              <Icons.OutlineOnly className="text-primary" />
+              <Icons.OutlineOnly className="text-white" />
             </TabsTrigger>
             <TabsTrigger value="fill">
-              <Icons.FillOnly className="text-primary" />
+              <Icons.FillOnly className="text-white" />
             </TabsTrigger>
           </TabsList>
         </Tabs>

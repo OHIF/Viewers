@@ -84,7 +84,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
         {CustomConfigComponent && (
           <div className="ml-auto mr-2">
             <Icons.Settings
-              className="text-primary h-4 w-4"
+              className="h-4 w-4 text-white"
               onClick={e => {
                 e.stopPropagation();
                 setShowConfig(!showConfig);
@@ -94,7 +94,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
         )}
       </PanelSection.Header>
 
-      <PanelSection.Content className="bg-muted flex-shrink-0 border-none">
+      <PanelSection.Content className="bg-primary-main flex-shrink-0 border-none">
         {showConfig && <CustomConfigComponent />}
         {toolboxSections.map(section => {
           const sectionId = section.componentProps.buttonSection;
@@ -103,7 +103,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
           return (
             <div
               key={sectionId}
-              className="bg-muted flex flex-wrap space-x-2 py-2 px-1"
+              className="bg-primary-main flex flex-wrap space-x-2 py-2 px-1"
             >
               {buttons.map(tool => {
                 if (!tool) {

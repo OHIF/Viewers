@@ -341,7 +341,7 @@ function WorkList({
             <>
               <Icons.GroupLayers
                 className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary': isExpanded,
+                  'text-white': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
               />

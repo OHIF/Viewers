@@ -56,7 +56,7 @@ const DicomUploadProgressItem = memo(
           return (
             <Icons.ByName
               name="status-tracked"
-              className="text-primary-light"
+              className="text-white-light"
             />
           );
         case UploadStatus.InProgress:
@@ -89,7 +89,7 @@ const DicomUploadProgressItem = memo(
               )}
               <div className="ml-auto flex cursor-pointer">
                 <Icons.Close
-                  className="text-primary self-center"
+                  className="self-center text-white"
                   onClick={cancelUpload}
                 />
               </div>

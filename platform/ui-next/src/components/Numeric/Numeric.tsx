@@ -419,7 +419,7 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
           size="icon"
           onClick={() => setSingleValue(singleValue + step)}
           disabled={singleValue >= max}
-          className="text-primary h-3 w-5"
+          className="h-3 w-5 text-white"
         >
           <ChevronUp className="h-3 w-3" />
         </Button>
@@ -428,7 +428,7 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
           size="icon"
           onClick={() => setSingleValue(singleValue - step)}
           disabled={singleValue <= min}
-          className="text-primary h-3 w-5"
+          className="h-3 w-5 text-white"
         >
           <ChevronDown className="h-3 w-3" />
         </Button>
@@ -449,7 +449,7 @@ function LeftControl({ min, step, value, setValue }) {
       variant="ghost"
       size="icon"
       onClick={decrement}
-      className="text-primary h-full w-4 cursor-pointer p-0"
+      className="h-full w-4 cursor-pointer p-0 text-white"
     >
       <ChevronLeft className="h-4 w-4" />
     </Button>
@@ -467,7 +467,7 @@ function RightControl({ max, step, value, setValue }) {
       variant="ghost"
       size="icon"
       onClick={increment}
-      className="text-primary h-full w-4 cursor-pointer p-0"
+      className="h-full w-4 cursor-pointer p-0 text-white"
     >
       <ChevronRight className="h-4 w-4" />
     </Button>

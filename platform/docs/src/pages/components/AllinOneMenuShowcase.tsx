@@ -39,7 +39,12 @@ export default function AllinOneMenuShowcase() {
       'GE 256',
       'GE',
       'Siemens',
-    ].map(name => <Item key={name} label={name} />);
+    ].map(name => (
+      <Item
+        key={name}
+        label={name}
+      />
+    ));
 
   const renderWindowPresetItems = () =>
     [
@@ -49,7 +54,11 @@ export default function AllinOneMenuShowcase() {
       { desc: 'Bone', wl: '2500 / 480' },
       { desc: 'Brain', wl: '80 / 40' },
     ].map(p => (
-      <Item key={p.desc} label={p.desc} secondaryLabel={p.wl} />
+      <Item
+        key={p.desc}
+        label={p.desc}
+        secondaryLabel={p.wl}
+      />
     ));
 
   return (
@@ -61,7 +70,7 @@ export default function AllinOneMenuShowcase() {
       <div className="border-input/70 relative flex h-12 items-center rounded border bg-black px-4">
         <IconMenu
           icon="viewport-window-level"
-          iconClassName="text-xl text-highlight hover:bg-primary/30 cursor-pointer rounded"
+          iconClassName="text-xl text-highlight hover:bg-primary-dark/30 cursor-pointer rounded"
           horizontalDirection={HorizontalDirection.LeftToRight}
           verticalDirection={VerticalDirection.TopToBottom}
           menuStyle={{ width: 212, maxHeight: 500 }}
@@ -79,7 +88,10 @@ export default function AllinOneMenuShowcase() {
               useIconSpace={false}
             />
             <DividerItem />
-            <SubMenu itemLabel="Color LUT" itemIcon="icon-color-lut">
+            <SubMenu
+              itemLabel="Color LUT"
+              itemIcon="icon-color-lut"
+            >
               <ItemPanel
                 label="Color LUTs"
                 maxHeight="calc(100vh - 250px)"
@@ -103,9 +115,7 @@ export default function AllinOneMenuShowcase() {
               itemLabel="Window Presets"
               itemIcon="viewport-window-level"
             >
-              <ItemPanel label="CT Presets">
-                {renderWindowPresetItems()}
-              </ItemPanel>
+              <ItemPanel label="CT Presets">{renderWindowPresetItems()}</ItemPanel>
             </SubMenu>
           </ItemPanel>
         </IconMenu>

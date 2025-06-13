@@ -139,7 +139,7 @@ export default function ComponentShowcase() {
               href="/colors-and-type"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
-              <Card className="hover:bg-primary/30 w-full transition-colors">
+              <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
@@ -155,7 +155,7 @@ export default function ComponentShowcase() {
               href="/components-list"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
-              <Card className="hover:bg-primary/30 w-full transition-colors">
+              <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
@@ -171,7 +171,7 @@ export default function ComponentShowcase() {
               href="/patterns"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
-              <Card className="hover:bg-primary/30 w-full transition-colors">
+              <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
@@ -222,11 +222,11 @@ export default function ComponentShowcase() {
             <div className="mb-8 grid grid-cols-[28%,1fr] items-start gap-x-8">
               <div className="space-y-2.5">
                 <div className="flex items-center space-x-3">
-                  <div className="bg-popover h-[30px] w-[30px] rounded"></div>
+                  <div className="bg-primary-main h-[30px] w-[30px] rounded"></div>
                   <span className="text-foreground text-lg">popover</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="bg-muted h-[30px] w-[30px] rounded"></div>
+                  <div className="bg-primary-main h-[30px] w-[30px] rounded"></div>
                   <span className="text-foreground text-lg">muted</span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -248,7 +248,7 @@ export default function ComponentShowcase() {
                   <span className="text-foreground text-lg">foreground</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="bg-muted-foreground h-[30px] w-[30px] rounded"></div>
+                  <div className="bg-primary-main-foreground h-[30px] w-[30px] rounded"></div>
                   <span className="text-foreground text-lg">muted-foreground</span>
                 </div>
               </div>
@@ -379,7 +379,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
           <h2 className="text-highlight text-2xl">{title}</h2>
         </div>
         <Button
-          className="text-primary"
+          className="text-white"
           variant="ghost"
           size="sm"
           onClick={() => setShowCode(!showCode)}
@@ -415,7 +415,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
 //           {description && <p className="text-secondary-foreground mt-1">{description}</p>}
 //         </div>
 //         <Button
-//           className="text-primary"
+//           className="text-white"
 //           variant="outline"
 //           size="sm"
 //           onClick={() => setShowCode(!showCode)}

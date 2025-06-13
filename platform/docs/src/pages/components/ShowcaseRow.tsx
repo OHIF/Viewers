@@ -23,7 +23,7 @@ export default function ShowcaseRow({ title, description, children, code }: Show
           <h2 className="text-highlight text-2xl">{title}</h2>
         </div>
         <Button
-          className="text-primary"
+          className="text-white"
           variant="ghost"
           size="sm"
           onClick={() => setShowCode(!showCode)}

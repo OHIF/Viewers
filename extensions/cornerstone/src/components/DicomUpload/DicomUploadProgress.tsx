@@ -303,7 +303,7 @@ function DicomUploadProgress({
             <span
               className={classNames(
                 NO_WRAP_ELLIPSIS_CLASS_NAMES,
-                'text-primary hover:text-primary-light active:text-aqua-pale ml-auto cursor-pointer'
+                'hover:text-white-light active:text-aqua-pale ml-auto cursor-pointer text-white'
               )}
               onClick={cancelAllUploads}
             >
@@ -336,7 +336,7 @@ function DicomUploadProgress({
         <div className="min-h-14 flex w-full items-center p-2.5">
           {numFilesCompleted === dicomFileUploaderArr.length ? (
             <>
-              <div className="text-primary-light text-xl">
+              <div className="text-white-light text-xl">
                 {numFails > 0
                   ? `Completed with ${numFails} ${numFails > 1 ? 'errors' : 'error'}!`
                   : 'Completed!'}

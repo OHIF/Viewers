@@ -75,7 +75,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
     >
       <div
         className={
-          'bg-muted pointer-events-auto inline-flex select-none items-center gap-2 rounded-md px-2 py-2'
+          'bg-primary-main pointer-events-auto inline-flex select-none items-center gap-2 rounded-md px-2 py-2'
         }
       >
         <Button

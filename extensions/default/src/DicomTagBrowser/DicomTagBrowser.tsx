@@ -124,7 +124,7 @@ const DicomTagBrowser = ({
   }, [rows, filterValue]);
 
   return (
-    <div className="dicom-tag-browser-content bg-muted">
+    <div className="dicom-tag-browser-content bg-primary-main">
       <div className="mb-6 flex flex-row items-start pl-1">
         <div className="flex w-full flex-row items-start gap-4">
           <div className="flex w-1/3 flex-col">
@@ -184,7 +184,7 @@ const DicomTagBrowser = ({
                 placeholder="Search metadata"
                 className="pl-9 pr-9"
               />
-              <InputFilter.ClearButton className="text-primary mr-0.5 p-0.5" />
+              <InputFilter.ClearButton className="mr-0.5 p-0.5 text-white" />
             </InputFilter>
           </div>
         </div>

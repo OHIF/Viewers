@@ -8,12 +8,14 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
  */
 export default function ComponentsList() {
   return (
-    <Layout title="Components" description="OHIF Viewer Components">
+    <Layout
+      title="Components"
+      description="OHIF Viewer Components"
+    >
       <BrowserOnly fallback={<></>}>
         {() => {
           // Dynamically require all sub-components to avoid SSR issues
-          const { TooltipProvider } =
-            require('../../../ui-next/src/components/Tooltip');
+          const { TooltipProvider } = require('../../../ui-next/src/components/Tooltip');
 
           const {
             Card,
@@ -58,7 +60,7 @@ export default function ComponentsList() {
                       href="/colors-and-type"
                       className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
                     >
-                      <Card className="hover:bg-primary/30 w-full transition-colors">
+                      <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                         <CardHeader>
                           <CardTitle className="text-foreground text-xl">
                             <Icons.ColorChange className="h-12 w-12" />
@@ -74,7 +76,7 @@ export default function ComponentsList() {
                       href="/components-list"
                       className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
                     >
-                      <Card className="hover:bg-primary/30 w-full transition-colors">
+                      <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                         <CardHeader>
                           <CardTitle className="text-foreground text-xl">
                             <Icons.ColorChange className="h-12 w-12" />
@@ -90,7 +92,7 @@ export default function ComponentsList() {
                       href="/patterns"
                       className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
                     >
-                      <Card className="hover:bg-primary/30 w-full transition-colors">
+                      <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                         <CardHeader>
                           <CardTitle className="text-foreground text-xl">
                             <Icons.ColorChange className="h-12 w-12" />
@@ -104,9 +106,7 @@ export default function ComponentsList() {
                     </a>
                   </div>
 
-                  <h1 className="text-foreground ml-6 mb-6 text-5xl">
-                    Components
-                  </h1>
+                  <h1 className="text-foreground ml-6 mb-6 text-5xl">Components</h1>
 
                   <AllinOneMenuShowcase />
                   <ButtonShowcase />

@@ -159,7 +159,7 @@ const Tooltip = ({
           {typeof secondaryContent === 'string' ? t(secondaryContent) : secondaryContent}
         </div>
         <svg
-          className="text-primary-dark stroke-secondary-light absolute h-4"
+          className="text-white-dark stroke-secondary-light absolute h-4"
           style={arrowPositionStyle[position]}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

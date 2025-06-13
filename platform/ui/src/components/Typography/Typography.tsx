@@ -45,9 +45,9 @@ const classes = {
   color: {
     initial: 'text-white',
     inherit: 'text-inherit',
-    primary: 'text-primary-main',
-    primaryActive: 'text-primary-active',
-    primaryLight: 'text-primary-light',
+    primary: 'text-white-main',
+    primaryActive: 'text-white-active',
+    primaryLight: 'text-white-light',
     secondary: 'text-common-light',
     error: 'text-red-600',
   },

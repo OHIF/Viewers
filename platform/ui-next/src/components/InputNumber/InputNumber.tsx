@@ -261,7 +261,7 @@ const InputNumberHorizontalControls = React.forwardRef<
         size="icon"
         onClick={decrement}
         disabled={disabled}
-        className="text-primary h-6 w-4 cursor-pointer p-0"
+        className="h-6 w-4 cursor-pointer p-0 text-white"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -273,7 +273,7 @@ const InputNumberHorizontalControls = React.forwardRef<
         size="icon"
         onClick={increment}
         disabled={disabled}
-        className="text-primary h-6 w-4 cursor-pointer p-0"
+        className="h-6 w-4 cursor-pointer p-0 text-white"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -339,7 +339,7 @@ const InputNumberVerticalControls = React.forwardRef<
           size="icon"
           onClick={increment}
           disabled={disabled}
-          className="text-primary h-3 w-5 pr-px"
+          className="h-3 w-5 pr-px text-white"
         >
           <ChevronUp className="h-3 w-3" />
         </Button>
@@ -348,7 +348,7 @@ const InputNumberVerticalControls = React.forwardRef<
           size="icon"
           onClick={decrement}
           disabled={disabled}
-          className="text-primary h-3 w-5 pr-px"
+          className="h-3 w-5 pr-px text-white"
         >
           <ChevronDown className="h-3 w-3" />
         </Button>

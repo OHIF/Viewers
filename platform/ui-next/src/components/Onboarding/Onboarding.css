@@ -1,5 +1,5 @@
 .shepherd-header {
-  @apply !bg-popover !w-[100%] !p-0;
+  @apply !bg-primary-main !w-[100%] !p-0;
 }
 
 .shepherd-title {
@@ -11,7 +11,7 @@
 }
 
 .shepherd-element {
-  @apply !bg-popover !max-w-[260px];
+  @apply !bg-primary-main !max-w-[260px];
 }
 
 .shepherd-text {
@@ -31,7 +31,7 @@
 }
 
 .shepherd-arrow::before {
-  @apply !bg-popover !h-[30px] !w-[30px];
+  @apply !bg-primary-main !h-[30px] !w-[30px];
 }
 
 .shepherd-element[data-popper-placement^='left'] > .shepherd-arrow {

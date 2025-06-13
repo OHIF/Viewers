@@ -131,7 +131,7 @@ const Trigger = ({
       className={cn(
         'inline-flex h-10 w-10 items-center justify-center !rounded-lg',
         disabled
-          ? 'text-common-bright hover:bg-primary-dark hover:text-primary-light cursor-not-allowed opacity-40'
+          ? 'text-common-bright hover:bg-primary-dark hover:text-white-light cursor-not-allowed opacity-40'
           : isOpen
             ? 'bg-background text-foreground/80'
             : 'text-foreground/80 hover:bg-background hover:text-highlight bg-transparent',
@@ -257,7 +257,7 @@ const Preset = ({
     <div
       className={cn(
         'group cursor-pointer rounded transition',
-        'hover:bg-accent flex items-center gap-2 p-1.5',
+        'hover:bg-primary-light flex items-center gap-2 p-1.5',
         disabled && 'pointer-events-none opacity-50',
         className
       )}
@@ -267,7 +267,7 @@ const Preset = ({
       <div className="flex-shrink-0">
         <Icons.ByName
           name={icon}
-          className={cn('group-hover:text-primary', iconSize)}
+          className={cn('group-hover:text-white', iconSize)}
         />
       </div>
       {title && <div className="text-foreground text-base">{title}</div>}

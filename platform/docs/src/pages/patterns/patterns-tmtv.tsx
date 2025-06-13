@@ -85,29 +85,29 @@ export default function TMTVPatterns() {
             >
               {/* Segmentation Tools */}
               <AccordionItem value="segmentation-tools">
-                <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                <AccordionTrigger className="bg-primary-main hover:bg-primary-light text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                   <span>Segmentation Tools</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="bg-muted mb-0.5 h-32 rounded-b pb-3"></div>
+                  <div className="bg-primary-main mb-0.5 h-32 rounded-b pb-3"></div>
                 </AccordionContent>
               </AccordionItem>
               {/* Segmentation List */}
               <AccordionItem value="segmentation-list">
-                <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                <AccordionTrigger className="bg-primary-main hover:bg-primary-light text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                   <span>Segmentation List</span>
                 </AccordionTrigger>
                 <AccordionContent>
                   {/* Appearance Settings */}
                   <AccordionItem value="segmentation-display">
-                    <AccordionTrigger className="bg-muted hover:bg-accent mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
+                    <AccordionTrigger className="bg-primary-main hover:bg-primary-light mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
                       <div className="flex space-x-2">
-                        <Icons.Controls className="text-primary" />
-                        <span className="text-primary pr-1">Appearance Settings</span>
+                        <Icons.Controls className="text-white" />
+                        <span className="pr-1 text-white">Appearance Settings</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent>
-                      <div className="bg-muted mb-0.5 space-y-2 rounded-b px-px pt-0.5 pb-3">
+                      <div className="bg-primary-main mb-0.5 space-y-2 rounded-b px-px pt-0.5 pb-3">
                         <div className="mx-1 mb-2.5 mt-1 flex items-center justify-between space-x-4">
                           {/* Display Label with Selected Tab */}
                           <div className="text-muted-foreground text-xs">Show: {selectedTab}</div>
@@ -118,13 +118,13 @@ export default function TMTVPatterns() {
                           >
                             <TabsList>
                               <TabsTrigger value="Fill & Outline">
-                                <Icons.DisplayFillAndOutline className="text-primary" />
+                                <Icons.DisplayFillAndOutline className="text-white" />
                               </TabsTrigger>
                               <TabsTrigger value="Outline Only">
-                                <Icons.DisplayOutlineOnly className="text-primary" />
+                                <Icons.DisplayOutlineOnly className="text-white" />
                               </TabsTrigger>
                               <TabsTrigger value="Fill Only">
-                                <Icons.DisplayFillOnly className="text-primary" />
+                                <Icons.DisplayFillOnly className="text-white" />
                               </TabsTrigger>
                             </TabsList>
                           </Tabs>
@@ -197,7 +197,7 @@ export default function TMTVPatterns() {
                   </AccordionItem>
                   {/* TMTV1 Group */}
                   <AccordionItem value="tmv1-group">
-                    <AccordionTrigger className="hover:bg-popover mr-0 flex h-8 w-full items-center pl-0 pr-1">
+                    <AccordionTrigger className="hover:bg-primary-main mr-0 flex h-8 w-full items-center pl-0 pr-1">
                       <div className="text-foreground border-input flex h-8 w-full items-center justify-between border-t-2">
                         {/* Left Group: DropdownMenu and TMTV1 Label */}
                         <div className="flex items-center space-x-1">
@@ -288,7 +288,7 @@ export default function TMTVPatterns() {
                   </AccordionItem>
                   {/* TMTV2 Group */}
                   <AccordionItem value="tmv2-group">
-                    <AccordionTrigger className="hover:bg-popover mr-0 flex h-8 w-full items-center pl-0 pr-1">
+                    <AccordionTrigger className="hover:bg-primary-main mr-0 flex h-8 w-full items-center pl-0 pr-1">
                       <div className="text-foreground border-input flex h-8 w-full items-center justify-between border-t-2">
                         <div className="flex items-center space-x-1">
                           <DropdownMenu>
@@ -378,7 +378,7 @@ export default function TMTVPatterns() {
                     </AccordionContent>
                   </AccordionItem>
                   {/* Footer or Additional Information */}
-                  <div className="bg-popover text-foreground flex h-8 items-center justify-between pl-9 pr-3 text-sm font-semibold">
+                  <div className="bg-primary-main text-foreground flex h-8 items-center justify-between pl-9 pr-3 text-sm font-semibold">
                     <span>TMTV</span>
                     <span>21.555 mL</span>
                   </div>

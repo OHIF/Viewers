@@ -80,9 +80,9 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
             className="flex h-[26px] items-center justify-center bg-black"
           >
             {sortDirection === 'ascending' ? (
-              <Icons.SortingAscending className="text-primary-main w-2" />
+              <Icons.SortingAscending className="text-white-main w-2" />
             ) : (
-              <Icons.SortingDescending className="text-primary-main w-2" />
+              <Icons.SortingDescending className="text-white-main w-2" />
             )}
           </button>
         </TooltipTrigger>

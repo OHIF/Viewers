@@ -203,7 +203,7 @@ const ViewportWindowLevel = ({
   return (
     <PanelSection defaultOpen={true}>
       <PanelSection.Header>Window Level</PanelSection.Header>
-      <PanelSection.Content className="bg-muted py-1">
+      <PanelSection.Content className="bg-primary-main py-1">
         {windowLevels.map((windowLevel, i) => {
           if (!windowLevel.histogram) {
             return null;

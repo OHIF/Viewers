@@ -45,7 +45,7 @@ export default function NumericShowcase() {
   <Numeric.NumberInput className="w-32 text-center" />
 </Numeric.Container>`}
       >
-        <div className="bg-muted flex w-[300px] flex-col space-y-4 rounded p-4">
+        <div className="bg-primary-main flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="number"
             min={0}
@@ -136,7 +136,7 @@ const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
   </div>
 </Numeric.Container>`}
       >
-        <div className="bg-muted flex w-[300px] flex-col space-y-4 rounded p-4">
+        <div className="bg-primary-main flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="stepper"
             value={dimensionGroupNumber}
@@ -229,7 +229,7 @@ const [controlledValue, setControlledValue] = useState(0);
   <Numeric.SingleRange showNumberInput />
 </Numeric.Container>`}
       >
-        <div className="bg-muted flex w-[300px] flex-col space-y-4 rounded p-4">
+        <div className="bg-primary-main flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="singleRange"
             min={0}
@@ -314,7 +314,7 @@ const [controlledValues, setControlledValues] = useState<[number, number]>([0, 1
   <Numeric.DoubleRange />
 </Numeric.Container>`}
       >
-        <div className="bg-muted flex w-[300px] flex-col space-y-4 rounded p-4">
+        <div className="bg-primary-main flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="doubleRange"
             min={0}
@@ -407,7 +407,7 @@ const [controlledValues, setControlledValues] = useState<[number, number]>([0, 1
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>`}
       >
-        <div className="bg-muted flex w-[300px] flex-col space-y-4 rounded p-4">
+        <div className="bg-primary-main flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="number"
             min={0}

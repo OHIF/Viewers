@@ -97,7 +97,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         )
       }
       UndoRedo={
-        <div className="text-primary flex cursor-pointer items-center">
+        <div className="flex cursor-pointer items-center text-white">
           <Button
             variant="ghost"
             className="hover:bg-primary-dark"

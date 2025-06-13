@@ -25,10 +25,12 @@ export default function PanelAccordionTrigger(props) {
       style={{ marginLeft: `${marginLeft}px`, padding: 0 }}
       asChild={true}
     >
-      <div className={`inline-flex text-base ${isActive ? 'bg-popover' : 'bg-muted'} flex-grow`}>
+      <div
+        className={`inline-flex text-base ${isActive ? 'bg-primary-main' : 'bg-primary-main'} flex-grow`}
+      >
         <button onClick={onClickDefault.bind(props)}>
           <span
-            className={`inline-flex rounded-l border-r border-black ${isActive ? 'bg-highlight' : 'bg-muted'}`}
+            className={`inline-flex rounded-l border-r border-black ${isActive ? 'bg-highlight' : 'bg-primary-main'}`}
           >
             {count !== undefined ? <span className="px-2">{count}</span> : null}
             {colorHex && <ColorCircle colorHex={colorHex} />}
@@ -41,7 +43,7 @@ export default function PanelAccordionTrigger(props) {
             classNames="justify-end flex-grow"
           />
         )}
-        <ChevronDownIcon className="text-primary h-4 w-4 shrink-0 transition-transform duration-200" />
+        <ChevronDownIcon className="h-4 w-4 shrink-0 text-white transition-transform duration-200" />
       </div>
     </AccordionTrigger>
   );

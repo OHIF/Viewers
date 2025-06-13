@@ -91,7 +91,7 @@ function DefaultAccordion(props) {
     return null;
   }
 
-  if (Boolean(asChild)) {
+  if (asChild) {
     return React.cloneElement(props.children, props);
   }
 
@@ -181,7 +181,7 @@ function Trigger(props) {
         {React.cloneElement(children, childProps)}
         <ChevronDownIcon
           key="chevronDown"
-          className="text-primary h-4 w-4 shrink-0 transition-transform duration-200"
+          className="h-4 w-4 shrink-0 text-white transition-transform duration-200"
         />
       </div>
     </AccordionTrigger>

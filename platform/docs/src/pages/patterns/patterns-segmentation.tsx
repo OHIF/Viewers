@@ -250,23 +250,23 @@ export default function SegmentationPanel() {
           >
             {/* Segmentation Tools */}
             <AccordionItem value="segmentation-tools">
-              <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+              <AccordionTrigger className="bg-primary-main hover:bg-primary-light text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                 <span>Segmentation Tools</span>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="bg-muted mb-0.5 h-32 rounded-b pb-3"></div>
+                <div className="bg-primary-main mb-0.5 h-32 rounded-b pb-3"></div>
               </AccordionContent>
             </AccordionItem>
 
             {/* Segmentation List */}
             <AccordionItem value="segmentation-list">
-              <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+              <AccordionTrigger className="bg-primary-main hover:bg-primary-light text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
                 <span>Segmentation List</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="mb-0">
                   {/* Header Controls */}
-                  <div className="bg-muted flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
+                  <div className="bg-primary-main flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -331,14 +331,14 @@ export default function SegmentationPanel() {
 
                   {/* Appearance Settings */}
                   <AccordionItem value="segmentation-display">
-                    <AccordionTrigger className="bg-muted hover:bg-accent mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
+                    <AccordionTrigger className="bg-primary-main hover:bg-primary-light mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
                       <div className="flex space-x-2">
-                        <Icons.Controls className="text-primary" />
-                        <span className="text-primary pr-1">Appearance Settings</span>
+                        <Icons.Controls className="text-white" />
+                        <span className="pr-1 text-white">Appearance Settings</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent>
-                      <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
+                      <div className="bg-primary-main mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
                         <div className="mx-1 mb-2.5 mt-1 flex items-center justify-between space-x-4">
                           {/* Display Label with Selected Tab */}
                           <div className="text-muted-foreground text-xs">Show: {selectedTab}</div>
@@ -349,13 +349,13 @@ export default function SegmentationPanel() {
                           >
                             <TabsList>
                               <TabsTrigger value="Fill & Outline">
-                                <Icons.DisplayFillAndOutline className="text-primary" />
+                                <Icons.DisplayFillAndOutline className="text-white" />
                               </TabsTrigger>
                               <TabsTrigger value="Outline Only">
-                                <Icons.DisplayOutlineOnly className="text-primary" />
+                                <Icons.DisplayOutlineOnly className="text-white" />
                               </TabsTrigger>
                               <TabsTrigger value="Fill Only">
-                                <Icons.DisplayFillOnly className="text-primary" />
+                                <Icons.DisplayFillOnly className="text-white" />
                               </TabsTrigger>
                             </TabsList>
                           </Tabs>

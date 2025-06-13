@@ -71,11 +71,11 @@ const InvestigationalUseDialog = ({
           <div className="flex flex-col">
             <div className="text-[19px] text-white">
               OHIF Viewer is{' '}
-              <span className="text-primary-light">{t('for investigational use only')}</span>
+              <span className="text-white-light">{t('for investigational use only')}</span>
             </div>
             <div className="text-[13px] text-white">
               <span
-                className="text-primary-active cursor-pointer"
+                className="text-white-active cursor-pointer"
                 onClick={() => window.open('https://ohif.org/', '_blank')}
               >
                 {t('Learn more about OHIF Viewer')}

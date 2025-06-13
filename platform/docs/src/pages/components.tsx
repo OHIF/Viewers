@@ -138,7 +138,7 @@ export default function ComponentShowcase() {
               href="/colors-and-type"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
-              <Card className="hover:bg-primary/30 w-full transition-colors">
+              <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
@@ -154,7 +154,7 @@ export default function ComponentShowcase() {
               href="/components-list"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
-              <Card className="hover:bg-primary/30 w-full transition-colors">
+              <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
@@ -170,7 +170,7 @@ export default function ComponentShowcase() {
               href="/patterns"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
             >
-              <Card className="hover:bg-primary/30 w-full transition-colors">
+              <Card className="hover:bg-primary-dark/30 w-full transition-colors">
                 <CardHeader>
                   <CardTitle className="text-foreground text-xl">
                     <Icons.ColorChange className="h-12 w-12" />
@@ -203,7 +203,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
           <h2 className="text-foreground text-2xl">{title}</h2>
         </div>
         <Button
-          className="text-primary"
+          className="text-white"
           variant="ghost"
           size="sm"
           onClick={() => setShowCode(!showCode)}
@@ -246,7 +246,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
 //           {description && <p className="text-muted-foreground mt-1">{description}</p>}
 //         </div>
 //         <Button
-//           className="text-primary"
+//           className="text-white"
 //           variant="outline"
 //           size="sm"
 //           onClick={() => setShowCode(!showCode)}

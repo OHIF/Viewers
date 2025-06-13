@@ -100,7 +100,7 @@ function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: Hot
       <Input
         className={cn(
           'w-16 text-center transition-colors',
-          isRecording && 'bg-accent text-accent-foreground caret-accent-foreground'
+          isRecording && 'bg-primary-light text-accent-foreground caret-accent-foreground'
         )}
         placeholder={isRecording ? 'Press keys...' : placeholder}
         value={value}

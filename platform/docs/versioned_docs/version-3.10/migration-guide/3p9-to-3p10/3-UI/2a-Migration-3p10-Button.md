@@ -10,7 +10,7 @@ title: Button
 *   **`IconButton` Replacement:** The pattern of using a dedicated `IconButton` component is often replaced by using `<Button variant="ghost" size="icon">` and embedding an icon component (like `<Icons.ByName name="..." />`) within it.
 *   **`ButtonGroup` Deprecated:** The `ButtonGroup` component is deprecated and replaced by the `Tabs`, `TabsList`, and `TabsTrigger` components from `@ohif/ui-next` for creating selectable groups.
 *   **Specific Action Buttons:** In certain contexts (like viewport actions or footers), generic buttons or styled `div` elements might be replaced by more specific components like `ViewportActionButton` or composite components like `FooterAction`.
-*   **Color System:** Custom color classes (e.g., `text-primary-active`, `bg-primary-main`) are replaced by a new semantic color system (e.g., `text-primary`, `bg-primary`, `text-muted-foreground`). Variants often handle color states (hover, active) automatically.
+*   **Color System:** Custom color classes (e.g., `text-white-active`, `bg-primary-main`) are replaced by a new semantic color system (e.g., `text-white`, `bg-primary`, `text-muted-foreground`). Variants often handle color states (hover, active) automatically.
 
 ## Migration Steps:
 
@@ -52,7 +52,7 @@ title: Button
     - >
     -   <Icon
     -     name={getPlayPauseIconName()}
-    -     className="active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
+    -     className="active:text-white-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
     -   />
     - </IconButton>
     + <Button

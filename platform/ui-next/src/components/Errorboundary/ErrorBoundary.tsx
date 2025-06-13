@@ -182,7 +182,7 @@ const DefaultFallback = ({
       onOpenChange={setShowDetails}
     >
       <DialogContent
-        className="bg-muted max-w-3xl overflow-hidden border-0 p-0"
+        className="bg-primary-main max-w-3xl overflow-hidden border-0 p-0"
         onInteractOutside={e => e.preventDefault()}
       >
         <div className="p-5 pb-4">
@@ -227,7 +227,7 @@ const DefaultFallback = ({
         <div className="flex items-center justify-end p-6 pt-2">
           <Button
             variant="link"
-            className="text-primary p-0"
+            className="p-0 text-white"
             onClick={() =>
               window.open(
                 'https://github.com/OHIF/Viewers/issues/new?template=bug-report.yml',
