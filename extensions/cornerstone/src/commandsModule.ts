@@ -1844,7 +1844,7 @@ function commandsModule({
       const { activeViewportId } = viewportGridService.getState();
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
       if (!activeSegmentation) {
-        console.warn('No active segmentation found for viewport:', activeViewportId);
+        return;
       }
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
