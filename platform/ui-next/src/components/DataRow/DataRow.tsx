@@ -199,7 +199,7 @@ export const DataRow: React.FC<DataRowProps> = ({
     >
       <div
         className={`flex items-center ${
-          isSelected ? 'bg-popover' : 'bg-primary-main'
+          isSelected ? 'bg-primary-main' : 'bg-primary-main'
         } group relative cursor-pointer`}
         onClick={onSelect}
         data-cy="data-row"

@@ -23,7 +23,7 @@ export default function ToolButtonShowcase() {
 />
       `}
     >
-      <div className="bg-popover flex h-11 w-[450px] items-center justify-center rounded">
+      <div className="bg-primary-main flex h-11 w-[450px] items-center justify-center rounded">
         <TooltipProvider>
           <ToolButton
             id="Zoom"

@@ -139,7 +139,7 @@ function ToolbarLayoutSelectorWithServices({
         <LayoutSelector.Content>
           {/* Left side - Presets */}
           {(commonPresets.length > 0 || advancedPresets.length > 0) && (
-            <div className="bg-popover flex flex-col gap-2.5 rounded-lg p-2">
+            <div className="bg-primary-main flex flex-col gap-2.5 rounded-lg p-2">
               {commonPresets.length > 0 && (
                 <>
                   <LayoutSelector.PresetSection title="Common">

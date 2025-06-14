@@ -42,7 +42,7 @@ function ThresholdMenu({ viewportId, className }: ThresholdMenuProps) {
 
   return (
     <div className={className}>
-      <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
+      <div className="bg-primary-main w-72 rounded-lg p-4 shadow-md">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-muted-foreground text-base">Threshold</span>

@@ -80,7 +80,7 @@ function VOIManualControlMenu({ viewportId, className }: VOIManualControlMenuPro
 
   return (
     <div className={className}>
-      <div className="bg-popover w-72 rounded-lg p-4 shadow-md">
+      <div className="bg-primary-main w-72 rounded-lg p-4 shadow-md">
         <Tabs
           defaultValue={activeTab}
           onValueChange={setActiveTab}

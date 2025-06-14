@@ -36,7 +36,7 @@ const StudyItem = ({
     >
       <AccordionItem value="study-item">
         <AccordionTrigger
-          className={classnames('hover:bg-primary-light bg-popover group w-full rounded')}
+          className={classnames('hover:bg-primary-light bg-primary-main group w-full rounded')}
         >
           <div className="flex h-[40px] w-full flex-row overflow-hidden">
             <div className="flex w-full flex-row items-center justify-between">
