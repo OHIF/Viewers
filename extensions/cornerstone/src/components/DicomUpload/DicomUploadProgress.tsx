@@ -359,7 +359,7 @@ function DicomUploadProgress({
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
-                <div className="w-10 text-right text-white">{`${getPercentCompleteRounded()}%`}</div>
+                <div className="w-10 text-right text-foreground">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
             </>
