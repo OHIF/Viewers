@@ -1,0 +1,232 @@
+.xnat-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.xnat-segmentation-import-modal {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    min-width: 500px;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.xnat-segmentation-import-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.xnat-segmentation-import-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.xnat-close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.xnat-close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: scale(1.1);
+}
+
+.xnat-segmentation-import-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.xnat-loading,
+.xnat-error {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.xnat-no-segmentations {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.xnat-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.xnat-no-segmentations p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.xnat-error {
+    color: #d32f2f;
+}
+
+.xnat-retry-button {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.xnat-retry-button:hover {
+    background: #1565c0;
+}
+
+.xnat-segmentation-selection {
+    padding: 0;
+}
+
+.xnat-selection-instruction {
+    margin: 0 0 20px 0;
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+}
+
+.xnat-segmentation-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.xnat-segmentation-card {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.xnat-segmentation-card:hover:not(.importing) {
+    border-color: #667eea;
+    background: #f8f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.xnat-segmentation-card.importing {
+    border-color: #ff9800;
+    background: #fff8e1;
+    cursor: not-allowed;
+}
+
+.xnat-segmentation-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    opacity: 0.7;
+}
+
+.xnat-segmentation-details {
+    flex: 1;
+}
+
+.xnat-segmentation-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.xnat-segmentation-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.xnat-import-status {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.xnat-import-arrow {
+    font-size: 18px;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.xnat-importing-spinner {
+    font-size: 18px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.xnat-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.xnat-cancel-button {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.xnat-cancel-button:hover {
+    background: #5a6268;
+}

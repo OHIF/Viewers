@@ -31,6 +31,28 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     displaySetService,
     viewportGridService,
   } = servicesManager.services;
+
+  // helper reused by multiple evaluators
+  const evaluateCornerstoneToolFn = ({ viewportId, toolNames, disabledText = 'Not available' }) => {
+    const { toolGroupService } = servicesManager.services;
+    if (!viewportId) {
+      return { disabled: true, disabledText };
+    }
+    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+    if (!toolGroup) {
+      return { disabled: true, disabledText };
+    }
+    if (!toolNames || !toolNames.length) {
+      return { disabled: false };
+    }
+    const hasAll = toolNames.every(name => toolGroup.hasTool(name));
+    return {
+      disabled: !hasAll,
+      disabledText: hasAll ? undefined : disabledText,
+      isActive: hasAll && toolNames.includes(toolGroup.getActivePrimaryMouseButtonTool()),
+    };
+  };
+
   return [
     // new
     {
@@ -205,6 +227,24 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
           disabled: false,
         };
       },
+    },
+    {
+      name: 'evaluate.cornerstoneTool',
+      evaluate: evaluateCornerstoneToolFn,
+    },
+    {
+      name: 'evaluate.cornerstoneTool.toggle',
+      evaluate: args => {
+        const res: any = evaluateCornerstoneToolFn(args);
+        if (res?.disabled) {
+          return res;
+        }
+        return { ...res, isActive: !res?.isActive };
+      },
+    },
+    {
+      name: 'evaluate.action',
+      evaluate: () => ({}),
     },
   ];
 }

@@ -100,11 +100,9 @@ export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
           console.info('XNAT: Configuring WADO URI loader');
           wadoUriLoader.configure({
             beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
-              console.info('XNAT: Loading image with ID:', imageId);
               xhr.withCredentials = true;
               xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
               if (imageId.startsWith('dicomweb:')) {
-                console.info('XNAT: Processing dicomweb: imageId');
                 const urlPart = imageId.substring('dicomweb:'.length);
                 if (!urlPart.startsWith('http://') && !urlPart.startsWith('https://')) {
                   const baseUrl = xnatConfig.wadoUriRoot || 'http://localhost';
@@ -143,7 +141,6 @@ export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
           console.info('XNAT: Configuring WADO RS loader');
           wadoRsLoader.configure({
             beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
-              console.info('XNAT: wadors loading image with ID:', imageId);
               xhr.withCredentials = true;
               xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
               Object.entries(xnatAuthHeaders).forEach(([key, value]) => xhr.setRequestHeader(key, value));
