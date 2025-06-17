@@ -2,14 +2,43 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-import { Icons } from '../Icons';
-import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
-import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+import { Icons } from '@ohif/ui-next';
+import { DisplaySetMessageListTooltip } from '@ohif/ui-next';
+import { TooltipTrigger, TooltipContent, Tooltip } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
+import moment from 'moment';
+
+export interface CustomThumbnailProps {
+  displaySetInstanceUID: string;
+  className?: string;
+  imageSrc?: string;
+  imageAltText?: string;
+  description: string;
+  seriesNumber?: any;
+  numInstances: number;
+  loadingProgress?: number;
+  countIcon?: string;
+  messages?: any;
+  isActive: boolean;
+  onClick: (event: any) => void;
+  onDoubleClick: (event: any) => void;
+  thumbnailType?: string;
+  modality?: string;
+  viewPreset?: string;
+  isHydratedForDerivedDisplaySet?: boolean;
+  isTracked?: boolean;
+  canReject?: boolean;
+  dragData?: any;
+  onReject?: () => void;
+  onClickUntrack?: () => void;
+  ThumbnailMenuItems?: React.ComponentType<any>;
+}
 
 /**
- * Display a thumbnail for a display set.
+ * SignalPET Custom Thumbnail Component
+ * Based on OHIF Thumbnail with SignalPET-specific modifications
  */
-const Thumbnail = ({
+const CustomThumbnail: React.FC<CustomThumbnailProps> = ({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -32,11 +61,15 @@ const Thumbnail = ({
   dragData = {},
   onReject = () => {},
   onClickUntrack = () => {},
-  ThumbnailMenuItems = () => {},
-}: withAppTypes): React.ReactNode => {
-  // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
-  // this will still allow for "drag", even if there is no drop target for the
-  // specified item.
+  ThumbnailMenuItems = () => null,
+}) => {
+  // Access DisplaySetService via useSystem hook
+  const { servicesManager } = useSystem();
+  const displaySetService = servicesManager?.services?.displaySetService;
+
+  const displaySet = displaySetService?.getDisplaySetByUID(displaySetInstanceUID);
+  const instance = displaySet?.instances?.[0];
+
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
     item: { ...dragData },
@@ -47,7 +80,7 @@ const Thumbnail = ({
 
   const [lastTap, setLastTap] = useState(0);
 
-  const handleTouchEnd = e => {
+  const handleTouchEnd = (e: any) => {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
     if (tapLength < 300 && tapLength > 0) {
@@ -57,6 +90,20 @@ const Thumbnail = ({
     }
     setLastTap(currentTime);
   };
+
+  function formatDicomDateTime(instance: any): string {
+    const date = instance?.InstanceCreationDate || instance?.AcquisitionDate;
+    const time = instance?.InstanceCreationTime || instance?.AcquisitionTime;
+    if (!date) return '';
+    // DICOM time can be HHmmss, HHmm, or HH
+    let formatted = moment(date, 'YYYYMMDD');
+    if (time) {
+      // Pad time to at least 6 digits
+      const paddedTime = time.padEnd(6, '0');
+      formatted = moment(date + paddedTime, 'YYYYMMDDHHmmss');
+    }
+    return formatted.format('MMM, D, YYYY hh:mma');
+  }
 
   const renderThumbnailPreset = () => {
     return (
@@ -71,7 +118,7 @@ const Thumbnail = ({
             {imageSrc ? (
               <img
                 src={imageSrc}
-                alt={imageAltText}
+                alt={imageAltText || ''}
                 className="h-[114px] w-[128px] rounded object-contain"
                 crossOrigin="anonymous"
               />
@@ -127,11 +174,13 @@ const Thumbnail = ({
             </div>
             {/* bottom right */}
             <div className="absolute bottom-0 right-0 flex items-center gap-[4px] p-[4px]">
-              <ThumbnailMenuItems
-                displaySetInstanceUID={displaySetInstanceUID}
-                canReject={canReject}
-                onReject={onReject}
-              />
+              {ThumbnailMenuItems && (
+                <ThumbnailMenuItems
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  canReject={canReject}
+                  onReject={onReject}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -145,16 +194,8 @@ const Thumbnail = ({
             </TooltipTrigger>
           </Tooltip>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-            <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
-            <div className="text-muted-foreground text-[11px]">
-              <div className="flex items-center gap-[4px]">
-                {countIcon ? (
-                  React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                ) : (
-                  <Icons.InfoSeries className="w-3" />
-                )}
-                <div>{numInstances}</div>
-              </div>
+            <div className="text-muted-foreground text-center text-[11px]">
+              {formatDicomDateTime(instance)}
             </div>
           </div>
         </div>
@@ -192,17 +233,8 @@ const Thumbnail = ({
             </div>
 
             <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-              <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
-              <div className="text-muted-foreground text-[12px]">
-                <div className="flex items-center gap-[4px]">
-                  {' '}
-                  {countIcon ? (
-                    React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                  ) : (
-                    <Icons.InfoSeries className="w-3" />
-                  )}
-                  <div>{numInstances}</div>
-                </div>
+              <div className="text-muted-foreground text-center text-[11px]">
+                {formatDicomDateTime(instance)}
               </div>
             </div>
           </div>
@@ -239,11 +271,13 @@ const Thumbnail = ({
               </TooltipContent>
             </Tooltip>
           )}
-          <ThumbnailMenuItems
-            displaySetInstanceUID={displaySetInstanceUID}
-            canReject={canReject}
-            onReject={onReject}
-          />
+          {ThumbnailMenuItems && (
+            <ThumbnailMenuItems
+              displaySetInstanceUID={displaySetInstanceUID}
+              canReject={canReject}
+              onReject={onReject}
+            />
+          )}
         </div>
       </div>
     );
@@ -269,10 +303,7 @@ const Thumbnail = ({
       onTouchEnd={handleTouchEnd}
       role="button"
     >
-      <div
-        ref={drag}
-        className="h-full w-full"
-      >
+      <div ref={drag} className="h-full w-full">
         {viewPreset === 'thumbnails' && renderThumbnailPreset()}
         {viewPreset === 'list' && renderListPreset()}
       </div>
@@ -280,7 +311,7 @@ const Thumbnail = ({
   );
 };
 
-Thumbnail.propTypes = {
+CustomThumbnail.propTypes = {
   displaySetInstanceUID: PropTypes.string.isRequired,
   className: PropTypes.string,
   imageSrc: PropTypes.string,
@@ -313,4 +344,4 @@ Thumbnail.propTypes = {
   thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
 };
 
-export { Thumbnail };
+export default CustomThumbnail;

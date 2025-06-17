@@ -1,4 +1,5 @@
 import { id } from './id';
+import getCustomizationModule from './getCustomizationModule';
 
 /**
  * You can remove any of the following modules if you don't need them.
@@ -9,6 +10,12 @@ export default {
    * You ID can be anything you want, but it should be unique.
    */
   id,
+
+  /**
+   * CustomizationModule provides customizations for UI components and behaviors.
+   * This is where SignalPET-specific customizations are defined.
+   */
+  getCustomizationModule,
 
   /**
    * Perform any pre-registration tasks here. This is called before the extension
