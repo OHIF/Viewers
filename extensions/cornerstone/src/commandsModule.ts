@@ -66,6 +66,14 @@ const getLabelmapTools = ({ toolGroupService }) => {
   return labelmapTools;
 };
 
+const getPreviewTools = ({ toolGroupService }) => {
+  const labelmapTools = getLabelmapTools({ toolGroupService });
+
+  const previewTools = labelmapTools.filter(tool => tool.acceptPreview || tool.rejectPreview);
+
+  return previewTools;
+};
+
 const segmentAI = new ONNXSegmentationController({
   autoSegmentMode: true,
   models: {
@@ -1731,14 +1739,15 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = labelmapTools.filter(
-        tool => tool.mode === 'Active' || tool.mode === 'Enabled'
-      );
+      const previewTools = getPreviewTools({ toolGroupService });
 
-      activeTools.forEach(tool => {
-        tool[`${action}Preview`]();
+      previewTools.forEach(tool => {
+        try {
+          tool[`${action}Preview`]();
+        } catch (error) {
+          console.debug('Error accepting preview for tool', tool.toolName);
+        }
       });
 
       if (segmentAI.enabled) {
