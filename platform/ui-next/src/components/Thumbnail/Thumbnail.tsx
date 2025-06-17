@@ -6,6 +6,7 @@ import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 import { useSystem } from '@ohif/core';
+import moment from 'moment';
 
 /**
  * Display a thumbnail for a display set.
@@ -62,6 +63,20 @@ const Thumbnail = ({
     }
     setLastTap(currentTime);
   };
+
+  function formatDicomDateTime(instance: any): string {
+    const date = instance?.InstanceCreationDate || instance?.AcquisitionDate;
+    const time = instance?.InstanceCreationTime || instance?.AcquisitionTime;
+    if (!date) return '';
+    // DICOM time can be HHmmss, HHmm, or HH
+    let formatted = moment(date, 'YYYYMMDD');
+    if (time) {
+      // Pad time to at least 6 digits
+      const paddedTime = time.padEnd(6, '0');
+      formatted = moment(date + paddedTime, 'YYYYMMDDHHmmss');
+    }
+    return formatted.format('MMM, D, YYYY hh:mma');
+  }
 
   const renderThumbnailPreset = () => {
     return (
@@ -150,16 +165,8 @@ const Thumbnail = ({
             </TooltipTrigger>
           </Tooltip>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-            <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
-            <div className="text-muted-foreground text-[11px]">
-              <div className="flex items-center gap-[4px]">
-                {countIcon ? (
-                  React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                ) : (
-                  <Icons.InfoSeries className="w-3" />
-                )}
-                <div>{numInstances}</div>
-              </div>
+            <div className="text-muted-foreground text-center text-[11px]">
+              {formatDicomDateTime(instance)}
             </div>
           </div>
         </div>
@@ -197,17 +204,8 @@ const Thumbnail = ({
             </div>
 
             <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-              <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
-              <div className="text-muted-foreground text-[12px]">
-                <div className="flex items-center gap-[4px]">
-                  {' '}
-                  {countIcon ? (
-                    React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                  ) : (
-                    <Icons.InfoSeries className="w-3" />
-                  )}
-                  <div>{numInstances}</div>
-                </div>
+              <div className="text-muted-foreground text-center text-[11px]">
+                {formatDicomDateTime(instance)}
               </div>
             </div>
           </div>
