@@ -5,6 +5,7 @@ import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+import { useSystem } from '@ohif/core';
 
 /**
  * Display a thumbnail for a display set.
@@ -34,9 +35,13 @@ const Thumbnail = ({
   onClickUntrack = () => {},
   ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
-  // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
-  // this will still allow for "drag", even if there is no drop target for the
-  // specified item.
+  // Access DisplaySetService via useSystem hook
+  const { servicesManager } = useSystem();
+  const displaySetService = servicesManager?.services?.displaySetService;
+
+  const displaySet = displaySetService?.getDisplaySetByUID(displaySetInstanceUID);
+  const instance = displaySet?.instances[0];
+
   const [collectedProps, drag, dragPreview] = useDrag({
     type: 'displayset',
     item: { ...dragData },
