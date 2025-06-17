@@ -172,6 +172,14 @@ export default class ToolbarService extends PubSubService {
     if (this.state.buttons[buttonId]) {
       delete this.state.buttons[buttonId];
     }
+
+    // Remove button from all sections
+    Object.keys(this.state.buttonSections).forEach(sectionKey => {
+      this.state.buttonSections[sectionKey] = this.state.buttonSections[sectionKey].filter(
+        id => id !== buttonId
+      );
+    });
+
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
       ...this.state,
     });
