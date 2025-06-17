@@ -548,8 +548,8 @@
         "dotenv": "^14.1.0",
         "eslint": "^8.39.0",
         "eslint-loader": "^2.0.0",
-        "webpack": "^5.94.0",
-        "webpack-cli": "^5.0.1",
+        "webpack": "5.94.0",
+        "webpack-cli": "^4.7.2",
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
@@ -1496,7 +1496,7 @@
 
     "@ohif/mode-preclinical-4d": ["@ohif/mode-preclinical-4d@workspace:modes/preclinical-4d", { "dependencies": { "@babel/runtime": "^7.20.13" }, "devDependencies": { "webpack": "5.94.0", "webpack-merge": "^5.7.3" }, "peerDependencies": { "@ohif/core": "platform/core", "@ohif/extension-cornerstone": "extensions/cornerstone", "@ohif/extension-cornerstone-dicom-seg": "extensions/cornerstone-dicom-seg", "@ohif/extension-cornerstone-dynamic-volume": "extensions/cornerstone-dynamic-volume", "@ohif/extension-default": "extensions/default", "@ohif/extension-tmtv": "extensions/tmtv" } }],
 
-    "@ohif/mode-segmentation": ["@ohif/mode-segmentation@workspace:modes/segmentation", { "dependencies": { "@babel/runtime": "^7.20.13", "i18next": "^17.0.3" }, "devDependencies": { "@babel/core": "7.24.7", "@babel/plugin-proposal-class-properties": "^7.16.7", "@babel/plugin-proposal-object-rest-spread": "^7.17.3", "@babel/plugin-proposal-private-methods": "^7.18.6", "@babel/plugin-syntax-dynamic-import": "^7.8.3", "@babel/plugin-transform-arrow-functions": "^7.16.7", "@babel/plugin-transform-regenerator": "^7.16.7", "@babel/plugin-transform-runtime": "7.24.7", "@babel/plugin-transform-typescript": "^7.13.0", "@babel/preset-env": "7.23.2", "@babel/preset-react": "^7.16.7", "@babel/preset-typescript": "^7.13.0", "@svgr/webpack": "^8.1.0", "babel-eslint": "^10.1.0", "babel-loader": "^8.0.0-beta.4", "clean-webpack-plugin": "^4.0.0", "copy-webpack-plugin": "^10.2.0", "cross-env": "^7.0.3", "dotenv": "^14.1.0", "eslint": "^8.39.0", "eslint-loader": "^2.0.0", "webpack": "^5.94.0", "webpack-cli": "^5.0.1", "webpack-merge": "^5.7.3" }, "peerDependencies": { "@ohif/core": "platform/core", "@ohif/extension-cornerstone": "extensions/cornerstone", "@ohif/extension-cornerstone-dicom-rt": "extensions/cornerstone-dicom-rt", "@ohif/extension-cornerstone-dicom-seg": "extensions/cornerstone-dicom-seg", "@ohif/extension-cornerstone-dicom-sr": "extensions/cornerstone-dicom-sr", "@ohif/extension-default": "extensions/default", "@ohif/extension-dicom-pdf": "extensions/dicom-pdf", "@ohif/extension-dicom-video": "extensions/dicom-video" } }],
+    "@ohif/mode-segmentation": ["@ohif/mode-segmentation@workspace:modes/segmentation", { "dependencies": { "@babel/runtime": "^7.20.13", "i18next": "^17.0.3" }, "devDependencies": { "@babel/core": "7.24.7", "@babel/plugin-proposal-class-properties": "^7.16.7", "@babel/plugin-proposal-object-rest-spread": "^7.17.3", "@babel/plugin-proposal-private-methods": "^7.18.6", "@babel/plugin-syntax-dynamic-import": "^7.8.3", "@babel/plugin-transform-arrow-functions": "^7.16.7", "@babel/plugin-transform-regenerator": "^7.16.7", "@babel/plugin-transform-runtime": "7.24.7", "@babel/plugin-transform-typescript": "^7.13.0", "@babel/preset-env": "7.23.2", "@babel/preset-react": "^7.16.7", "@babel/preset-typescript": "^7.13.0", "@svgr/webpack": "^8.1.0", "babel-eslint": "^10.1.0", "babel-loader": "^8.0.0-beta.4", "clean-webpack-plugin": "^4.0.0", "copy-webpack-plugin": "^10.2.0", "cross-env": "^7.0.3", "dotenv": "^14.1.0", "eslint": "^8.39.0", "eslint-loader": "^2.0.0", "webpack": "5.94.0", "webpack-cli": "^4.7.2", "webpack-merge": "^5.7.3" }, "peerDependencies": { "@ohif/core": "platform/core", "@ohif/extension-cornerstone": "extensions/cornerstone", "@ohif/extension-cornerstone-dicom-rt": "extensions/cornerstone-dicom-rt", "@ohif/extension-cornerstone-dicom-seg": "extensions/cornerstone-dicom-seg", "@ohif/extension-cornerstone-dicom-sr": "extensions/cornerstone-dicom-sr", "@ohif/extension-default": "extensions/default", "@ohif/extension-dicom-pdf": "extensions/dicom-pdf", "@ohif/extension-dicom-video": "extensions/dicom-video" } }],
 
     "@ohif/mode-test": ["@ohif/mode-test@workspace:modes/basic-test-mode", { "dependencies": { "@babel/runtime": "^7.20.13", "i18next": "^17.0.3" }, "devDependencies": { "webpack": "5.94.0", "webpack-merge": "^5.7.3" }, "peerDependencies": { "@ohif/core": "platform/core", "@ohif/extension-cornerstone": "extensions/cornerstone", "@ohif/extension-cornerstone-dicom-sr": "extensions/cornerstone-dicom-sr", "@ohif/extension-default": "extensions/default", "@ohif/extension-dicom-pdf": "extensions/dicom-pdf", "@ohif/extension-dicom-video": "extensions/dicom-video", "@ohif/extension-measurement-tracking": "extensions/measurement-tracking", "@ohif/extension-test": "extensions/test-extension" } }],
 
@@ -5630,6 +5630,10 @@
 
     "@ohif/mode-segmentation/dotenv": ["dotenv@14.3.2", "", {}, "sha512-vwEppIphpFdvaMCaHfCEv9IgwcxMljMw2TnAQBB4VWPvzXQLTb82jwmdOKzlEVUL3gNFT4l4TPKO+Bn+sqcrVQ=="],
 
+    "@ohif/mode-segmentation/webpack": ["webpack@5.94.0", "", { "dependencies": { "@types/estree": "^1.0.5", "@webassemblyjs/ast": "^1.12.1", "@webassemblyjs/wasm-edit": "^1.12.1", "@webassemblyjs/wasm-parser": "^1.12.1", "acorn": "^8.7.1", "acorn-import-attributes": "^1.9.5", "browserslist": "^4.21.10", "chrome-trace-event": "^1.0.2", "enhanced-resolve": "^5.17.1", "es-module-lexer": "^1.2.1", "eslint-scope": "5.1.1", "events": "^3.2.0", "glob-to-regexp": "^0.4.1", "graceful-fs": "^4.2.11", "json-parse-even-better-errors": "^2.3.1", "loader-runner": "^4.2.0", "mime-types": "^2.1.27", "neo-async": "^2.6.2", "schema-utils": "^3.2.0", "tapable": "^2.1.1", "terser-webpack-plugin": "^5.3.10", "watchpack": "^2.4.1", "webpack-sources": "^3.2.3" }, "bin": { "webpack": "bin/webpack.js" } }, "sha512-KcsGn50VT+06JH/iunZJedYGUJS5FGjow8wb9c0v5n1Om8O1g4L6LjtfxwlXIATopoQu+vOXXa7gYisWxCoPyg=="],
+
+    "@ohif/mode-segmentation/webpack-cli": ["webpack-cli@4.10.0", "", { "dependencies": { "@discoveryjs/json-ext": "^0.5.0", "@webpack-cli/configtest": "^1.2.0", "@webpack-cli/info": "^1.5.0", "@webpack-cli/serve": "^1.7.0", "colorette": "^2.0.14", "commander": "^7.0.0", "cross-spawn": "^7.0.3", "fastest-levenshtein": "^1.0.12", "import-local": "^3.0.2", "interpret": "^2.2.0", "rechoir": "^0.7.0", "webpack-merge": "^5.7.3" }, "peerDependencies": { "webpack": "4.x.x || 5.x.x" }, "bin": { "webpack-cli": "bin/cli.js" } }, "sha512-NLhDfH/h4O6UOy+0LSso42xvYypClINuMNBVVzX4vX98TmTaTUxwRbXdhucbFMd2qLaCTcLq/PdYrvi8onw90w=="],
+
     "@ohif/mode-test/webpack": ["webpack@5.94.0", "", { "dependencies": { "@types/estree": "^1.0.5", "@webassemblyjs/ast": "^1.12.1", "@webassemblyjs/wasm-edit": "^1.12.1", "@webassemblyjs/wasm-parser": "^1.12.1", "acorn": "^8.7.1", "acorn-import-attributes": "^1.9.5", "browserslist": "^4.21.10", "chrome-trace-event": "^1.0.2", "enhanced-resolve": "^5.17.1", "es-module-lexer": "^1.2.1", "eslint-scope": "5.1.1", "events": "^3.2.0", "glob-to-regexp": "^0.4.1", "graceful-fs": "^4.2.11", "json-parse-even-better-errors": "^2.3.1", "loader-runner": "^4.2.0", "mime-types": "^2.1.27", "neo-async": "^2.6.2", "schema-utils": "^3.2.0", "tapable": "^2.1.1", "terser-webpack-plugin": "^5.3.10", "watchpack": "^2.4.1", "webpack-sources": "^3.2.3" }, "bin": { "webpack": "bin/webpack.js" } }, "sha512-KcsGn50VT+06JH/iunZJedYGUJS5FGjow8wb9c0v5n1Om8O1g4L6LjtfxwlXIATopoQu+vOXXa7gYisWxCoPyg=="],
 
     "@ohif/mode-tmtv/webpack": ["webpack@5.94.0", "", { "dependencies": { "@types/estree": "^1.0.5", "@webassemblyjs/ast": "^1.12.1", "@webassemblyjs/wasm-edit": "^1.12.1", "@webassemblyjs/wasm-parser": "^1.12.1", "acorn": "^8.7.1", "acorn-import-attributes": "^1.9.5", "browserslist": "^4.21.10", "chrome-trace-event": "^1.0.2", "enhanced-resolve": "^5.17.1", "es-module-lexer": "^1.2.1", "eslint-scope": "5.1.1", "events": "^3.2.0", "glob-to-regexp": "^0.4.1", "graceful-fs": "^4.2.11", "json-parse-even-better-errors": "^2.3.1", "loader-runner": "^4.2.0", "mime-types": "^2.1.27", "neo-async": "^2.6.2", "schema-utils": "^3.2.0", "tapable": "^2.1.1", "terser-webpack-plugin": "^5.3.10", "watchpack": "^2.4.1", "webpack-sources": "^3.2.3" }, "bin": { "webpack": "bin/webpack.js" } }, "sha512-KcsGn50VT+06JH/iunZJedYGUJS5FGjow8wb9c0v5n1Om8O1g4L6LjtfxwlXIATopoQu+vOXXa7gYisWxCoPyg=="],
@@ -6900,6 +6904,22 @@
 
     "@ohif/mode-segmentation/copy-webpack-plugin/globby": ["globby@12.2.0", "", { "dependencies": { "array-union": "^3.0.1", "dir-glob": "^3.0.1", "fast-glob": "^3.2.7", "ignore": "^5.1.9", "merge2": "^1.4.1", "slash": "^4.0.0" } }, "sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA=="],
 
+    "@ohif/mode-segmentation/webpack/eslint-scope": ["eslint-scope@5.1.1", "", { "dependencies": { "esrecurse": "^4.3.0", "estraverse": "^4.1.1" } }, "sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw=="],
+
+    "@ohif/mode-segmentation/webpack/schema-utils": ["schema-utils@3.3.0", "", { "dependencies": { "@types/json-schema": "^7.0.8", "ajv": "^6.12.5", "ajv-keywords": "^3.5.2" } }, "sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg=="],
+
+    "@ohif/mode-segmentation/webpack/webpack-sources": ["webpack-sources@3.3.2", "", {}, "sha512-ykKKus8lqlgXX/1WjudpIEjqsafjOTcOJqxnAbMLAu/KCsDCJ6GBtvscewvTkrn24HsnvFwrSCbenFrhtcCsAA=="],
+
+    "@ohif/mode-segmentation/webpack-cli/@webpack-cli/configtest": ["@webpack-cli/configtest@1.2.0", "", { "peerDependencies": { "webpack": "4.x.x || 5.x.x", "webpack-cli": "4.x.x" } }, "sha512-4FB8Tj6xyVkyqjj1OaTqCjXYULB9FMkqQ8yGrZjRDrYh0nOE+7Lhs45WioWQQMV+ceFlE368Ukhe6xdvJM9Egg=="],
+
+    "@ohif/mode-segmentation/webpack-cli/@webpack-cli/info": ["@webpack-cli/info@1.5.0", "", { "dependencies": { "envinfo": "^7.7.3" }, "peerDependencies": { "webpack-cli": "4.x.x" } }, "sha512-e8tSXZpw2hPl2uMJY6fsMswaok5FdlGNRTktvFk2sD8RjH0hE2+XistawJx1vmKteh4NmGmNUrp+Tb2w+udPcQ=="],
+
+    "@ohif/mode-segmentation/webpack-cli/@webpack-cli/serve": ["@webpack-cli/serve@1.7.0", "", { "peerDependencies": { "webpack-cli": "4.x.x" } }, "sha512-oxnCNGj88fL+xzV+dacXs44HcDwf1ovs3AuEzvP7mqXw7fQntqIhQ1BRmynh4qEKQSSSRSWVyXRjmTbZIX9V2Q=="],
+
+    "@ohif/mode-segmentation/webpack-cli/interpret": ["interpret@2.2.0", "", {}, "sha512-Ju0Bz/cEia55xDwUWEa8+olFpCiQoypjnQySseKtmjNrnps3P+xfpUmGr90T7yjlVJmOtybRvPXhKMbHr+fWnw=="],
+
+    "@ohif/mode-segmentation/webpack-cli/rechoir": ["rechoir@0.7.1", "", { "dependencies": { "resolve": "^1.9.0" } }, "sha512-/njmZ8s1wVeR6pjTZ+0nCnv8SpZNRMT2D1RLOJQESlYFDBvwpTA4KWJpZ+sBJ4+vhjILRcK7JIFdGCdxEAAitg=="],
+
     "@ohif/mode-test/webpack/eslint-scope": ["eslint-scope@5.1.1", "", { "dependencies": { "esrecurse": "^4.3.0", "estraverse": "^4.1.1" } }, "sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw=="],
 
     "@ohif/mode-test/webpack/schema-utils": ["schema-utils@3.3.0", "", { "dependencies": { "@types/json-schema": "^7.0.8", "ajv": "^6.12.5", "ajv-keywords": "^3.5.2" } }, "sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg=="],
@@ -7713,6 +7733,14 @@
     "@ohif/mode-segmentation/copy-webpack-plugin/globby/array-union": ["array-union@3.0.1", "", {}, "sha512-1OvF9IbWwaeiM9VhzYXVQacMibxpXOMYVNIvMtKRyX9SImBXpKcFr8XvFDeEslCyuH/t6KRt7HEO94AlP8Iatw=="],
 
     "@ohif/mode-segmentation/copy-webpack-plugin/globby/slash": ["slash@4.0.0", "", {}, "sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew=="],
+
+    "@ohif/mode-segmentation/webpack-cli/@webpack-cli/info/envinfo": ["envinfo@7.14.0", "", { "bin": { "envinfo": "dist/cli.js" } }, "sha512-CO40UI41xDQzhLB1hWyqUKgFhs250pNcGbyGKe1l/e4FSaI/+YE4IMG76GDt0In67WLPACIITC+sOi08x4wIvg=="],
+
+    "@ohif/mode-segmentation/webpack-cli/rechoir/resolve": ["resolve@1.22.10", "", { "dependencies": { "is-core-module": "^2.16.0", "path-parse": "^1.0.7", "supports-preserve-symlinks-flag": "^1.0.0" }, "bin": { "resolve": "bin/resolve" } }, "sha512-NPRy+/ncIMeDlTAsuqwKIiferiawhefFJtkNSW0qZJEqMEb+qBt/77B/jGeeek+F0uOeN05CDa6HXbbIgtVX4w=="],
+
+    "@ohif/mode-segmentation/webpack/eslint-scope/estraverse": ["estraverse@4.3.0", "", {}, "sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw=="],
+
+    "@ohif/mode-segmentation/webpack/schema-utils/ajv-keywords": ["ajv-keywords@3.5.2", "", { "peerDependencies": { "ajv": "^6.9.1" } }, "sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ=="],
 
     "@ohif/mode-test/webpack/eslint-scope/estraverse": ["estraverse@4.3.0", "", {}, "sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw=="],
 
