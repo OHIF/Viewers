@@ -72,6 +72,7 @@ interface ImportSegmentationParams {
   studyInstanceUID: string;
   seriesInstanceUID: string;
   servicesManager: any;
+  label?: string; // Optional custom label for the imported segmentation
 }
 
 /**
@@ -82,6 +83,7 @@ export const importSegmentation = async ({
   studyInstanceUID,
   seriesInstanceUID,
   servicesManager,
+  label,
 }: ImportSegmentationParams): Promise<string> => {
   const { segmentationService, displaySetService, viewportGridService, uiNotificationService } = servicesManager.services;
 
@@ -170,11 +172,13 @@ export const importSegmentation = async ({
     const segmentationId = `imported_seg_${Date.now()}`;
     
     // Create a segDisplaySet object similar to what cornerstone-dicom-seg creates
+    const segmentationLabel = label || `XNAT Import ${new Date().toLocaleTimeString()}`;
     const segDisplaySet = {
       displaySetInstanceUID: segmentationId,
       referencedDisplaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
       isOverlayDisplaySet: true,
-      label: `Imported Segmentation ${new Date().toLocaleTimeString()}`,
+      label: segmentationLabel,
+      SeriesDescription: segmentationLabel, // This is what the cornerstone service uses for the segmentation label
       SeriesDate: new Date().toISOString().split('T')[0], // Add SeriesDate for modifiedTime
       ...results, // Include all the parsed SEG data
     };

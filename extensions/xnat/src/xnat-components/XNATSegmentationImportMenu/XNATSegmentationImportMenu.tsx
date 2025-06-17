@@ -88,6 +88,7 @@ const XNATSegmentationImportMenu: React.FC<XNATSegmentationImportMenuProps> = ({
         studyInstanceUID,
         seriesInstanceUID,
         servicesManager,
+        label: segmentation.label, // Pass the user-selected segmentation name
       });
       
       // Show success notification

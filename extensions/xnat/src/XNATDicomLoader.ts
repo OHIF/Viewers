@@ -105,7 +105,17 @@ export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
               if (imageId.startsWith('dicomweb:')) {
                 const urlPart = imageId.substring('dicomweb:'.length);
                 if (!urlPart.startsWith('http://') && !urlPart.startsWith('https://')) {
-                  const baseUrl = xnatConfig.wadoUriRoot || 'http://localhost';
+                  // Dynamic server URL detection for robust deployment
+                  const getServerUrl = () => {
+                    if (typeof window !== 'undefined' && window.location) {
+                      const { protocol, hostname, port } = window.location;
+                      const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                      return `${protocol}//${hostname}${portPart}`;
+                    }
+                    return 'http://localhost'; // Development fallback
+                  };
+                  
+                  const baseUrl = xnatConfig.wadoUriRoot || getServerUrl();
                   const fullUrl = new URL(urlPart.startsWith('/') ? urlPart : `/${urlPart}`, baseUrl).href;
                   console.info('XNAT: Modified URL:', fullUrl);
                   xhr.open('GET', fullUrl); // Overwrite the default open behavior
