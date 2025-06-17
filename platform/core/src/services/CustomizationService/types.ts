@@ -45,6 +45,7 @@ export type MenuComponentCustomization = React.ComponentType & {
   menuTitle?: string;
   title?: string;
   containerClassName?: string;
+  hidden?: boolean;
 };
 
 export type Customization =
