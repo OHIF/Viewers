@@ -1,49 +1,54 @@
-import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import {
   mergeMap,
   callForAllDataSourcesAsync,
   callForAllDataSources,
   callForDefaultDataSource,
   callByRetrieveAETitle,
-  createMergeDataSourceApi,
 } from './index';
 
 jest.mock('@ohif/core');
 
+/** Those types aren't exported by their respective modules, thus defined here */
+type DataSourceDefinition = {
+  sourceName: string;
+  configuration: object;
+};
+type SeriesData = Record<string, unknown>;
+type DataSourceAndSeriesMap = Record<string, SeriesData>;
+type DisplaySet = {
+  StudyInstanceUID: string;
+  SeriesInstanceUID: string;
+};
+type DataSourceAndDSMap = Record<string, { displaySet: DisplaySet }>;
+type QuerySeriesSearchMock = jest.Mock<Promise<SeriesData[]>, []>;
+type GetImageIdsForInstanceFn = () => string[];
+type DataSourceInstance = {
+  [key: string]: QuerySeriesSearchMock | GetImageIdsForInstanceFn;
+};
+
 describe('MergeDataSource', () => {
-  let path,
-    sourceName,
-    mergeConfig,
-    extensionManager,
-    series1,
-    series2,
-    series3,
-    series4,
-    mergeKey,
-    tagFunc,
-    dataSourceAndSeriesMap,
-    dataSourceAndUIDsMap,
-    dataSourceAndDSMap,
-    pathSync;
+  let path: string, pathSync: string;
+
+  let extensionManager: {
+      dataSourceDefs: Record<string, DataSourceDefinition>;
+      getDataSources: jest.Mock<DataSourceInstance[], [string]>;
+    },
+    series1: SeriesData,
+    series2: SeriesData,
+    series3: SeriesData,
+    mergeKey: string,
+    dataSourceAndSeriesMap: DataSourceAndSeriesMap,
+    dataSourceAndUIDsMap: Record<string, string[]>,
+    dataSourceAndDSMap: DataSourceAndDSMap;
 
   beforeAll(() => {
     path = 'query.series.search';
     pathSync = 'getImageIdsForInstance';
-    tagFunc = jest.fn((data, sourceName) =>
-      data.map(item => ({ ...item, RetrieveAETitle: sourceName }))
-    );
-    sourceName = 'dicomweb1';
     mergeKey = 'seriesInstanceUid';
     series1 = { [mergeKey]: '123' };
     series2 = { [mergeKey]: '234' };
     series3 = { [mergeKey]: '345' };
-    series4 = { [mergeKey]: '456' };
-    mergeConfig = {
-      seriesMerge: {
-        dataSourceNames: ['dicomweb1', 'dicomweb2'],
-        defaultDataSourceName: 'dicomweb1',
-      },
-    };
     dataSourceAndSeriesMap = {
       dataSource1: series1,
       dataSource2: series2,
@@ -115,8 +120,9 @@ describe('MergeDataSource', () => {
         mergeMap,
         path,
         args: [],
-        extensionManager,
+        extensionManager: extensionManager as any,
         dataSourceNames: ['dataSource1', 'dataSource2'],
+        defaultDataSourceName: 'dataSource1',
       });
 
       /** Assert */
@@ -140,8 +146,9 @@ describe('MergeDataSource', () => {
       const data = callForAllDataSources({
         path: pathSync,
         args: [],
-        extensionManager,
+        extensionManager: extensionManager as any,
         dataSourceNames: ['dataSource2', 'dataSource3'],
+        defaultDataSourceName: 'dataSource1',
       });
 
       /** Assert */
@@ -165,7 +172,7 @@ describe('MergeDataSource', () => {
       const data = callForDefaultDataSource({
         path: pathSync,
         args: [],
-        extensionManager,
+        extensionManager: extensionManager as any,
         defaultDataSourceName: 'dataSource2',
       });
 
@@ -178,8 +185,10 @@ describe('MergeDataSource', () => {
 
   describe('callByRetrieveAETitle', () => {
     it('should call the correct function and return the data', () => {
+      const mockedGetSeries = DicomMetadataStore.getSeries as jest.Mock;
+
       /** Arrange */
-      DicomMetadataStore.getSeries.mockImplementationOnce(() => [series2]);
+      mockedGetSeries.mockImplementationOnce(() => [series2]);
       extensionManager.getDataSources = jest.fn(dataSourceName => [
         {
           [pathSync]: () => dataSourceAndUIDsMap[dataSourceName],
@@ -190,7 +199,7 @@ describe('MergeDataSource', () => {
       const data = callByRetrieveAETitle({
         path: pathSync,
         args: [dataSourceAndDSMap['dataSource2']],
-        extensionManager,
+        extensionManager: extensionManager as any,
         defaultDataSourceName: 'dataSource2',
       });
 
