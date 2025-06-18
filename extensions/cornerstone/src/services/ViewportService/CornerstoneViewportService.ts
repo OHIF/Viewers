@@ -774,7 +774,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       if (!volume && displaySet.images) {
         const volumeLoaderSchema = displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
-        const volumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
+        const volumeId = `:${displaySet.displaySetInstanceUID}`;
         volume = await volumeLoader.createAndCacheVolume(volumeId, {
           imageIds: displaySet.images.map(image => image.imageId),
         });
