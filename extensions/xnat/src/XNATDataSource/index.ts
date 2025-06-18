@@ -960,7 +960,18 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         const currentConfig = xnatConfigCopy || xnatConfig;
         log.info(`XNATDataSource: xnat.getExperimentMetadata attempting for ${projectId}/${experimentId} with URL ${currentConfig.wadoRoot}`);
         const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
-        const baseUrl = currentConfig.wadoRoot || 'http://localhost';
+        
+        // Dynamic server URL detection for robust deployment
+        const getServerUrl = () => {
+          if (typeof window !== 'undefined' && window.location) {
+            const { protocol, hostname, port } = window.location;
+            const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
+            return `${protocol}//${hostname}${portPart}`;
+          }
+          return 'http://localhost'; // Development fallback
+        };
+        
+        const baseUrl = currentConfig.wadoRoot || getServerUrl();
         const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
         const headers = getAuthorizationHeader();
         log.info(`XNATDataSource: Fetching from apiUrl: ${apiUrl}`);
@@ -1000,7 +1011,18 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         }
         try {
           const currentConfig = xnatConfigCopy || xnatConfig;
-          const baseUrl = currentConfig.wadoRoot || 'http://localhost';
+          
+          // Dynamic server URL detection for robust deployment
+          const getServerUrl = () => {
+            if (typeof window !== 'undefined' && window.location) {
+              const { protocol, hostname, port } = window.location;
+              const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
+              return `${protocol}//${hostname}${portPart}`;
+            }
+            return 'http://localhost'; // Development fallback
+          };
+          
+          const baseUrl = currentConfig.wadoRoot || getServerUrl();
           const apiPath = `/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
           const headers = getAuthorizationHeader();
@@ -1026,7 +1048,18 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         }
         try {
           const currentConfig = xnatConfigCopy || xnatConfig;
-          const baseUrl = currentConfig.wadoRoot || 'http://localhost';
+          
+          // Dynamic server URL detection for robust deployment
+          const getServerUrl = () => {
+            if (typeof window !== 'undefined' && window.location) {
+              const { protocol, hostname, port } = window.location;
+              const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
+              return `${protocol}//${hostname}${portPart}`;
+            }
+            return 'http://localhost'; // Development fallback
+          };
+          
+          const baseUrl = currentConfig.wadoRoot || getServerUrl();
           const apiPath = `/xapi/viewer/projects/${projectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
           log.info('XNAT: Constructed API URL for Project Metadata:', apiUrl);

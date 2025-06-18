@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SegmentationTable, DropdownMenuContent, DropdownMenuItem } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { metaData } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
+import XNATSegmentationImportMenu from '../xnat-components/XNATSegmentationImportMenu/XNATSegmentationImportMenu';
 
 export default function XNATSegmentationPanel({ children, configuration }) {
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
+  const [showImportMenu, setShowImportMenu] = useState(false);
+  const [viewportData, setViewportData] = useState<any>(null);
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations();
@@ -27,6 +30,38 @@ export default function XNATSegmentationPanel({ children, configuration }) {
       // Still allow the operation to complete - the segmentation might be created
       // but with statistics calculation errors
     }
+  };
+
+  const onImportFromXNAT = () => {
+    // Get current viewport data
+    const { activeViewportId, viewports } = viewportGridService.getState();
+    
+    if (activeViewportId && viewports.has(activeViewportId)) {
+      const viewport = viewports.get(activeViewportId);
+      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+      
+      if (displaySetInstanceUID) {
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        
+        if (displaySet) {
+          setViewportData({
+            studyInstanceUID: displaySet.StudyInstanceUID,
+            seriesInstanceUID: displaySet.SeriesInstanceUID,
+          });
+          setShowImportMenu(true);
+        }
+      }
+    }
+  };
+
+  const onImportComplete = () => {
+    setShowImportMenu(false);
+    setViewportData(null);
+  };
+
+  const onImportCancel = () => {
+    setShowImportMenu(false);
+    setViewportData(null);
   };
   
   const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing') || configuration?.disableEditing;
@@ -157,14 +192,56 @@ export default function XNATSegmentationPanel({ children, configuration }) {
     );
   };
 
-  // Simple dropdown content component
-  const SimpleDropdownContent = () => (
-    <DropdownMenuContent>
-      <DropdownMenuItem onClick={() => onSegmentationAdd()}>
-        Add Segmentation
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  );
+  // Enhanced dropdown content component with XNAT import/export
+  const SimpleDropdownContent = () => {
+    if (showImportMenu && viewportData) {
+      return (
+        <XNATSegmentationImportMenu
+          studyInstanceUID={viewportData.studyInstanceUID}
+          seriesInstanceUID={viewportData.seriesInstanceUID}
+          onClose={onImportCancel}
+          servicesManager={servicesManager}
+        />
+      );
+    }
+
+    // Get the active segmentation for export options
+    const activeViewportId = viewportGridService.getActiveViewportId();
+    const { segmentationService } = servicesManager.services;
+    const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
+    const hasActiveSegmentation = !!activeSegmentation;
+    const activeSegmentationId = activeSegmentation?.segmentationId;
+
+    return (
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => onSegmentationAdd()}>
+          ➕ Add Segmentation
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onImportFromXNAT}>
+          📥 Import from XNAT
+        </DropdownMenuItem>
+        {hasActiveSegmentation && (
+          <>
+            <DropdownMenuItem 
+              onClick={() => handlers.onSegmentationDownload(activeSegmentationId)}
+            >
+              💾 Download DICOM SEG
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => commandsManager.run('downloadRTSS', { segmentationId: activeSegmentationId })}
+            >
+              💾 Download RTSS
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => commandsManager.run('XNATExportSegmentation', { segmentationId: activeSegmentationId })}
+            >
+              📤 Export to XNAT as SEG
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    );
+  };
 
   // Render content based on mode
   const renderModeContent = () => {

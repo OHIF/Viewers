@@ -1,5 +1,9 @@
 import { Types, DicomMetadataStore, utils } from '@ohif/core';
 import { utilities as csUtils, Enums } from '@cornerstonejs/tools';
+import { adaptersSEG, adaptersRT, helpers } from '@cornerstonejs/adapters';
+import { cache, metaData } from '@cornerstonejs/core';
+import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
+import dcmjs from 'dcmjs';
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -7,6 +11,10 @@ import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
+import { createReportDialogPrompt } from './Panels';
+import PROMPT_RESPONSES from './utils/_shared/PROMPT_RESPONSES';
+import DICOMSEGExporter from './utils/IO/classes/DICOMSEGExporter';
+import sessionMap from './utils/sessionMap';
 
 import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { history } from '@ohif/app';
@@ -19,6 +27,29 @@ import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewport
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 
 const { segmentation: segmentationUtils } = csUtils;
+const { datasetToBlob } = dcmjs.data;
+
+const {
+  Cornerstone3D: {
+    Segmentation: { generateSegmentation },
+  },
+} = adaptersSEG;
+
+const { downloadDICOMData } = helpers;
+
+// Helper function to get target viewport
+const getTargetViewport = ({ viewportId, viewportGridService }) => {
+  const { viewports, activeViewportId } = viewportGridService.getState();
+  const targetViewportId = viewportId || activeViewportId;
+  return viewports.get(targetViewportId);
+};
+
+// Use downloadDICOMData from helpers
+
+// Helper function to generate RTSS from segmentations
+const generateRTSSFromSegmentations = async (segmentations, MetadataProvider, DicomMetadataStore) => {
+  return adaptersRT.Cornerstone3D.RTSS.generateRTSSFromSegmentations(segmentations, MetadataProvider, DicomMetadataStore);
+};
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -130,7 +161,7 @@ const commandsModule = ({
       // TODO - make the selectorProps richer by including the study metadata and display set.
       const { protocol, stage } = hangingProtocolService.getActiveProtocol();
       optionsToUse.selectorProps = {
-        event,
+        event: event as unknown as Event,
         protocol,
         stage,
         ...selectorProps,
@@ -734,12 +765,12 @@ const commandsModule = ({
 
       // Todo: add support for multiple display sets
       const displaySetInstanceUID =
-        options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
+        (options as any).displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
 
       const segs = segmentationService.getSegmentations();
 
-      const label = options.label || `Segmentation ${segs.length + 1}`;
-      const segmentationId = options.segmentationId || `${csUtils.guid()}`;
+      const label = (options as any).label || `Segmentation ${segs.length + 1}`;
+      const segmentationId = (options as any).segmentationId || `seg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -748,10 +779,10 @@ const commandsModule = ({
         {
           label,
           segmentationId,
-          segments: options.createInitialSegment
+          segments: (options as any).createInitialSegment
             ? {
                 1: {
-                  label: `${i18n.t('Segment')} 1`,
+                  label: 'Segment 1',
                   active: true,
                 },
               }
@@ -767,6 +798,141 @@ const commandsModule = ({
       return generatedSegmentationId;
     },
 
+/**
+ * Generates a DICOM SEG dataset from a segmentation
+ * Uses a more robust approach that works with XNAT segmentation structure
+ */
+generateSegmentation: ({ segmentationId, options = {} }) => {
+  try {
+    // Get segmentation from both sources to ensure compatibility
+    const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
+    const cornerstoneSegmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
+    
+    if (!segmentationInOHIF || !cornerstoneSegmentation) {
+      throw new Error('Segmentation not found');
+    }
+
+    // Get the labelmap representation data
+    const { representationData } = cornerstoneSegmentation;
+    const labelmapData = representationData.Labelmap || representationData.LABELMAP;
+    
+    if (!labelmapData) {
+      throw new Error('No labelmap data found in segmentation');
+    }
+
+    // Get image IDs - handle both volumeId and imageIds cases
+    let imageIds = [];
+    if (labelmapData.imageIds) {
+      imageIds = labelmapData.imageIds;
+    } else if (labelmapData.volumeId) {
+      // Get imageIds from volume cache
+      const volume = cache.getVolume(labelmapData.volumeId);
+      if (volume && volume.imageIds) {
+        imageIds = volume.imageIds;
+      }
+    }
+
+    if (!imageIds || imageIds.length === 0) {
+      throw new Error('No image IDs found for segmentation');
+    }
+
+    const segImages = imageIds.map(imageId => cache.getImage(imageId));
+    const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
+
+    const labelmaps2D = [];
+    let z = 0;
+
+    for (const segImage of segImages) {
+      const segmentsOnLabelmap = new Set();
+      const pixelData = segImage.getPixelData();
+      const { rows, columns } = segImage;
+
+      // Use a single pass through the pixel data
+      for (let i = 0; i < pixelData.length; i++) {
+        const segment = pixelData[i];
+        if (segment !== 0) {
+          segmentsOnLabelmap.add(segment);
+        }
+      }
+
+      labelmaps2D[z++] = {
+        segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
+        pixelData,
+        rows,
+        columns,
+      };
+    }
+
+    const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
+
+    const labelmap3D = {
+      segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+      metadata: [],
+      labelmaps2D,
+    };
+
+    // Get representations for color information
+    const representations = segmentationService.getRepresentationsForSegmentation(segmentationId);
+
+    // Build segment metadata
+    Object.entries(segmentationInOHIF.segments || {}).forEach(([segmentIndex, segment]) => {
+      if (!segment) {
+        return;
+      }
+
+      const segmentLabel = segment.label || `Segment ${segmentIndex}`;
+      
+      // Get color information
+      let color = [255, 0, 0]; // Default red
+      if (representations && representations.length > 0) {
+        try {
+          color = segmentationService.getSegmentColor(
+            representations[0].viewportId,
+            segmentationId,
+            parseInt(segmentIndex)
+          );
+        } catch (e) {
+          console.warn('Could not get segment color, using default');
+        }
+      }
+
+      const RecommendedDisplayCIELabValue = dcmjs.data.Colors.rgb2DICOMLAB(
+        color.slice(0, 3).map(value => value / 255)
+      ).map(value => Math.round(value));
+
+      const segmentMetadata = {
+        SegmentNumber: segmentIndex.toString(),
+        SegmentLabel: segmentLabel,
+        SegmentAlgorithmType: 'MANUAL',
+        SegmentAlgorithmName: 'OHIF Brush',
+        RecommendedDisplayCIELabValue,
+        SegmentedPropertyCategoryCodeSequence: {
+          CodeValue: 'T-D0050',
+          CodingSchemeDesignator: 'SRT',
+          CodeMeaning: 'Tissue',
+        },
+        SegmentedPropertyTypeCodeSequence: {
+          CodeValue: 'T-D0050',
+          CodingSchemeDesignator: 'SRT',
+          CodeMeaning: 'Tissue',
+        },
+      };
+      labelmap3D.metadata[segmentIndex] = segmentMetadata;
+    });
+
+    const generatedSegmentation = generateSegmentation(
+      referencedImages,
+      labelmap3D,
+      metaData,
+      options
+    );
+
+    return generatedSegmentation;
+  } catch (error) {
+    console.error('Error generating segmentation:', error);
+    throw new Error(`Failed to generate segmentation dataset: ${error.message}`);
+  }
+},
 /**
  * Downloads a segmentation based on the provided segmentation ID.
  * This function retrieves the associated segmentation and
@@ -786,106 +952,386 @@ downloadSegmentation: ({ segmentationId }) => {
   downloadDICOMData(generatedSegmentation.dataset, `${segmentationInOHIF.label}`);
 },
 /**
- * Stores a segmentation based on the provided segmentationId into a specified data source.
- * The SeriesDescription is derived from user input or defaults to the segmentation label,
- * and in its absence, defaults to 'Research Derived Series'.
- *
- * @param {Object} params - Parameters for the function.
- * @param params.segmentationId - ID of the segmentation to be stored.
- * @param params.dataSource - Data source where the generated segmentation will be stored.
- *
- * @returns {Object|void} Returns the naturalized report if successfully stored,
- * otherwise throws an error.
+ * Stores a segmentation to XNAT using the existing DICOMSEGExporter
  */
-storeSegmentation: async ({ segmentationId, dataSource }) => {
+XNATStoreSegmentation: async ({ segmentationId }) => {
   const segmentation = segmentationService.getSegmentation(segmentationId);
 
   if (!segmentation) {
     throw new Error('No segmentation found');
   }
 
-  const { label } = segmentation;
-  const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource();
-
-  const {
-    value: reportName,
-    dataSourceName: selectedDataSource,
-    action,
-  } = await createReportDialogPrompt({
-    servicesManager,
-    extensionManager,
-    title: 'Store Segmentation',
-  });
-
-  if (action === PROMPT_RESPONSES.CREATE_REPORT) {
-    try {
-      const selectedDataSourceConfig = selectedDataSource
-        ? extensionManager.getDataSources(selectedDataSource)[0]
-        : defaultDataSource;
-
-      const generatedData = actions.generateSegmentation({
-        segmentationId,
-        options: {
-          SeriesDescription: reportName || label || 'Research Derived Series',
-        },
-      });
-
-      if (!generatedData || !generatedData.dataset) {
-        throw new Error('Error during segmentation generation');
+  try {
+    // Get the series instance UID from the segmentation
+    const { activeViewportId } = viewportGridService.getState();
+    const viewport = viewportGridService.getState().viewports.get(activeViewportId);
+    const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    const seriesInstanceUID = displaySet.SeriesInstanceUID;
+    
+    // Create default label for the export
+    const defaultLabel = segmentation.label || `Segmentation_${Date.now()}`;
+    
+    // Function to sanitize label for XNAT (remove special characters)
+    const sanitizeLabel = (label) => {
+      return label.replace(/[^a-zA-Z0-9_-]/g, '_');
+    };
+    
+    // Show dialog to get user input for segmentation label
+    const userLabel = await new Promise((resolve) => {
+      // Use a simple prompt for now since the dialog service API has changed
+      const promptMessage = `Enter a name for the segmentation export to XNAT.\nOnly letters, numbers, underscores, and hyphens are allowed.\n\nCurrent name: ${sanitizeLabel(defaultLabel)}`;
+      
+      const userInput = window.prompt(promptMessage, sanitizeLabel(defaultLabel));
+      
+      if (userInput === null) {
+        // User cancelled
+        resolve(null);
+      } else if (userInput.trim() === '') {
+        // Empty input, use default
+        resolve(sanitizeLabel(defaultLabel));
+      } else {
+        // Sanitize user input
+        const sanitizedInput = sanitizeLabel(userInput.trim());
+        resolve(sanitizedInput);
       }
-
-      const { dataset: naturalizedReport } = generatedData;
-
-      await selectedDataSourceConfig.store.dicom(naturalizedReport);
-
-      // add the information for where we stored it to the instance as well
-      naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
-
-      DicomMetadataStore.addInstances([naturalizedReport], true);
-
-      return naturalizedReport;
-    } catch (error) {
-      console.debug('Error storing segmentation:', error);
-      throw error;
+    });
+    
+    // If user cancelled, exit early
+    if (!userLabel) {
+      return;
     }
+    
+    // Generate the DICOM SEG dataset
+    const generatedData = actions.generateSegmentation({
+      segmentationId,
+    });
+
+    if (!generatedData || !generatedData.dataset) {
+      throw new Error('Error during segmentation generation');
+    }
+
+    // Convert dataset to blob
+    const segBlob = datasetToBlob(generatedData.dataset);
+    
+    // Try multiple approaches to get the experiment ID
+    let experimentId = null;
+    
+    // 1. Try to get from sessionRouter service if available
+    const { sessionRouter } = servicesManager.services;
+    if (sessionRouter && sessionRouter.experimentId) {
+      experimentId = sessionRouter.experimentId;
+      console.log('Got experiment ID from sessionRouter:', experimentId);
+    }
+    
+    // 2. Try to get from sessionStorage
+    if (!experimentId && window.sessionStorage) {
+      experimentId = window.sessionStorage.getItem('xnat_experimentId');
+      if (experimentId) {
+        console.log('Got experiment ID from sessionStorage:', experimentId);
+      }
+    }
+    
+    // 3. Try to get from sessionMap using series UID
+    if (!experimentId) {
+      experimentId = sessionMap.getExperimentID(seriesInstanceUID);
+      if (experimentId) {
+        console.log('Got experiment ID from sessionMap with series UID:', experimentId);
+      }
+    }
+    
+    // 4. Try to get from sessionMap without series UID (single session case)
+    if (!experimentId) {
+      experimentId = sessionMap.getExperimentID();
+      if (experimentId) {
+        console.log('Got experiment ID from sessionMap (single session):', experimentId);
+      }
+    }
+    
+    // 5. Try to get from study session data
+    if (!experimentId) {
+      const sessionData = sessionMap.get(displaySet.StudyInstanceUID);
+      if (sessionData && sessionData.experimentId) {
+        experimentId = sessionData.experimentId;
+        console.log('Got experiment ID from study session data:', experimentId);
+      }
+    }
+    
+    // 6. Try to get from DicomMetadataStore study data
+    if (!experimentId) {
+      const study = DicomMetadataStore.getStudy(displaySet.StudyInstanceUID);
+      if (study) {
+        experimentId = study.experimentId || study.AccessionNumber;
+        if (experimentId) {
+          console.log('Got experiment ID from DicomMetadataStore:', experimentId);
+        }
+      }
+    }
+    
+    if (!experimentId) {
+      console.error('Failed to find experiment ID. Debug info:', {
+        seriesInstanceUID,
+        studyInstanceUID: displaySet.StudyInstanceUID,
+        sessionRouterExists: !!sessionRouter,
+        sessionStorageKeys: window.sessionStorage ? Object.keys(window.sessionStorage) : 'N/A',
+        sessionMapSessions: sessionMap.getSession(),
+        displaySet: displaySet
+      });
+      throw new Error('Could not determine experiment ID for XNAT export. Please ensure you are viewing data from XNAT and that the session is properly initialized.');
+    }
+    
+    console.log('Using experiment ID for export:', experimentId);
+    
+    // Use the existing XNAT DICOMSEGExporter with the experiment ID and user-provided label
+    const exporter = new DICOMSEGExporter(segBlob, seriesInstanceUID, userLabel, experimentId);
+    
+    // Export to XNAT with retry logic for overwrite
+    let exportSuccessful = false;
+    let attempts = 0;
+    const maxAttempts = 2;
+    
+    while (!exportSuccessful && attempts < maxAttempts) {
+      try {
+        const shouldOverwrite = attempts > 0; // First attempt without overwrite, second with overwrite
+        await exporter.exportToXNAT(shouldOverwrite);
+        exportSuccessful = true;
+        
+        // Show success notification
+        uiNotificationService.show({
+          title: 'Export Successful',
+          message: `Segmentation "${userLabel}" exported to XNAT successfully`,
+          type: 'success',
+          duration: 3000,
+        });
+        
+      } catch (error) {
+        attempts++;
+        
+        // Check if this is a collection exists error and we haven't tried overwrite yet
+        if ((error as any).isCollectionExistsError && attempts === 1) {
+          const shouldOverwrite = window.confirm(
+            `A segmentation collection named "${userLabel}" already exists in XNAT.\n\n` +
+            `Do you want to overwrite it?\n\n` +
+            `Click "OK" to overwrite or "Cancel" to abort the export.`
+          );
+          
+          if (!shouldOverwrite) {
+            // User chose not to overwrite, exit
+            uiNotificationService.show({
+              title: 'Export Cancelled',
+              message: `Export cancelled by user - collection "${userLabel}" already exists`,
+              type: 'info',
+              duration: 3000,
+            });
+            return;
+          }
+          // Continue to next attempt with overwrite=true
+        } else {
+          // Either not a collection exists error, or user already tried overwrite, or other error
+          throw error;
+        }
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error exporting segmentation to XNAT:', error);
+    uiNotificationService.show({
+      title: 'Export Failed',
+      message: `Failed to export segmentation to XNAT: ${error.message}`,
+      type: 'error',
+      duration: 5000,
+    });
+    throw error;
   }
 },
 /**
- * Converts segmentations into RTSS for download.
- * This sample function retrieves all segentations and passes to
- * cornerstone tool adapter to convert to DICOM RTSS format. It then
- * converts dataset to downloadable blob.
- *
+ * Downloads RTSS - simplified version
  */
 downloadRTSS: async ({ segmentationId }) => {
-  const segmentations = segmentationService.getSegmentation(segmentationId);
+  const segmentation = segmentationService.getSegmentation(segmentationId);
+  
+  if (!segmentation) {
+    throw new Error('No segmentation found');
+  }
 
-  // inject colors to the segmentIndex
-  const firstRepresentation =
-    segmentationService.getRepresentationsForSegmentation(segmentationId)[0];
-  Object.entries(segmentations.segments).forEach(([segmentIndex, segment]) => {
-    segment.color = segmentationService.getSegmentColor(
-      firstRepresentation.viewportId,
-      segmentationId,
-      segmentIndex
-    );
+  // For now, just download as DICOM SEG
+  // TODO: Implement RTSS conversion
+  actions.downloadSegmentation({ segmentationId });
+},
+
+/**
+ * Downloads CSV segmentation report
+ */
+downloadCSVSegmentationReport: ({ segmentationId }) => {
+  const segmentation = segmentationService.getSegmentation(segmentationId);
+
+  if (!segmentation) {
+    throw new Error('No segmentation found');
+  }
+
+  const { representationData } = segmentation;
+  const { Labelmap } = representationData;
+  const { referencedImageIds } = Labelmap;
+
+  const firstImageId = referencedImageIds[0];
+
+  // find displaySet for firstImageId
+  const displaySet = displaySetService
+    .getActiveDisplaySets()
+    .find(ds => ds.imageIds?.some(i => i === firstImageId));
+
+  const {
+    SeriesNumber,
+    SeriesInstanceUID,
+    StudyInstanceUID,
+    SeriesDate,
+    SeriesTime,
+    SeriesDescription,
+  } = displaySet;
+
+  const additionalInfo = {
+    reference: {
+      SeriesNumber,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+      SeriesDate,
+      SeriesTime,
+      SeriesDescription,
+    },
+  };
+
+  actions.generateSegmentationCSVReport(segmentation, additionalInfo);
+},
+
+/**
+ * Generates CSV report for segmentation
+ */
+generateSegmentationCSVReport: (segmentationData, info) => {
+  // Initialize the rows for our CSV
+  const csvRows = [];
+
+  // Add segmentation-level information
+  csvRows.push(['Segmentation ID', segmentationData.segmentationId || '']);
+  csvRows.push(['Segmentation Label', segmentationData.label || '']);
+
+  csvRows.push([]);
+
+  const additionalInfo = info.reference;
+  // Add reference information
+  const referenceKeys = [
+    ['Series Number', additionalInfo.SeriesNumber],
+    ['Series Instance UID', additionalInfo.SeriesInstanceUID],
+    ['Study Instance UID', additionalInfo.StudyInstanceUID],
+    ['Series Date', additionalInfo.SeriesDate],
+    ['Series Time', additionalInfo.SeriesTime],
+    ['Series Description', additionalInfo.SeriesDescription],
+  ];
+
+  referenceKeys.forEach(([key, value]) => {
+    if (value) {
+      csvRows.push([`reference ${key}`, value]);
+    }
   });
 
-  const RTSS = await generateRTSSFromSegmentations(
-    segmentations,
-    classes.MetadataProvider,
-    DicomMetadataStore
-  );
+  // Add a blank row for separation
+  csvRows.push([]);
 
-  try {
-    const reportBlob = datasetToBlob(RTSS);
+  csvRows.push(['Segments Statistics']);
 
-    //Create a URL for the binary.
-    const objectUrl = URL.createObjectURL(reportBlob);
-    window.location.assign(objectUrl);
-  } catch (e) {
-    console.warn(e);
+  // Add segment information in columns
+  if (segmentationData.segments) {
+    // First row: Segment headers
+    const segmentHeaderRow = ['Label'];
+    for (const segmentId in segmentationData.segments) {
+      const segment = segmentationData.segments[segmentId];
+      segmentHeaderRow.push(`${segment.label || ''}`);
+    }
+    csvRows.push(segmentHeaderRow);
+
+    // Add segment properties
+    csvRows.push([
+      'Segment Index',
+      ...Object.values(segmentationData.segments).map(s => s.segmentIndex || ''),
+    ]);
+    csvRows.push([
+      'Locked',
+      ...Object.values(segmentationData.segments).map(s => (s.locked ? 'Yes' : 'No')),
+    ]);
+    csvRows.push([
+      'Active',
+      ...Object.values(segmentationData.segments).map(s => (s.active ? 'Yes' : 'No')),
+    ]);
+
+    // Add segment statistics
+    // First, collect all unique statistics across all segments
+    const allStats = new Set();
+    for (const segment of Object.values(segmentationData.segments)) {
+      if (segment.cachedStats && segment.cachedStats.namedStats) {
+        for (const statKey in segment.cachedStats.namedStats) {
+          const stat = segment.cachedStats.namedStats[statKey];
+          const statLabel = stat.label || stat.name;
+          const statUnit = stat.unit ? ` (${stat.unit})` : '';
+          allStats.add(`${statLabel}${statUnit}`);
+        }
+      }
+    }
+
+    // Then create a row for each statistic
+    for (const statName of allStats) {
+      const statRow = [statName];
+
+      for (const segment of Object.values(segmentationData.segments)) {
+        let statValue = '';
+
+        if (segment.cachedStats && segment.cachedStats.namedStats) {
+          for (const statKey in segment.cachedStats.namedStats) {
+            const stat = segment.cachedStats.namedStats[statKey];
+            const currentStatName = `${stat.label || stat.name}${stat.unit ? ` (${stat.unit})` : ''}`;
+
+            if (currentStatName === statName) {
+              statValue = stat.value !== undefined ? stat.value : '';
+              break;
+            }
+          }
+        }
+
+        statRow.push(statValue);
+      }
+
+      csvRows.push(statRow);
+    }
   }
+
+  // Convert to CSV string
+  let csvString = '';
+  for (const row of csvRows) {
+    const formattedRow = row.map(cell => {
+      // Handle values that need to be quoted (contain commas, quotes, or newlines)
+      const cellValue = cell !== undefined && cell !== null ? cell.toString() : '';
+      if (cellValue.includes(',') || cellValue.includes('"') || cellValue.includes('\n')) {
+        // Escape quotes and wrap in quotes
+        return '"' + cellValue.replace(/"/g, '""') + '"';
+      }
+      return cellValue;
+    });
+    csvString += formattedRow.join(',') + '\n';
+  }
+
+  // Create a download link and trigger the download
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.setAttribute('href', url);
+  link.setAttribute(
+    'download',
+    `${segmentationData.label || 'Segmentation'}_Report_${new Date().toISOString().split('T')[0]}.csv`
+  );
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 },
 
 // Segmentation Tool Commands
@@ -988,6 +1434,70 @@ xnatRunSegmentBidirectional: async () => {
     }
   }
 },
+
+/**
+ * Safe override of setActiveSegmentAndCenter that avoids crashes when segment center is undefined
+ */
+setActiveSegmentAndCenter: ({ segmentationId, segmentIndex }) => {
+  const { segmentationService, viewportGridService } = servicesManager.services;
+  const viewportId = viewportGridService.getActiveViewportId();
+  
+  // Set both active segmentation and active segment
+  segmentationService.setActiveSegmentation(viewportId, segmentationId);
+  segmentationService.setActiveSegment(segmentationId, segmentIndex);
+  
+  // Safely attempt to jump to segment center, but catch any errors
+  try {
+    // Check if the segmentation and segment exist before attempting to jump
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+    if (segmentation && segmentation.segments && segmentation.segments[segmentIndex]) {
+      const segment = segmentation.segments[segmentIndex];
+      // Only attempt jump if we have cached stats with center data
+      if (segment.cachedStats && (segment.cachedStats.center || segment.cachedStats.namedStats?.center?.value)) {
+        segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+      } else {
+        console.log('XNAT: Segment center not available, skipping jump to center');
+      }
+    }
+  } catch (error) {
+    console.warn('XNAT: Error jumping to segment center:', error);
+    // Continue without jumping - the segment is still activated
+  }
+},
+
+/**
+ * XNAT Import Segmentation command
+ */
+XNATImportSegmentation: async ({ arrayBuffer, studyInstanceUID, seriesInstanceUID }) => {
+  const { importSegmentation } = await import('./utils/importSegmentation');
+  
+  try {
+    const segmentationId = await importSegmentation({
+      arrayBuffer,
+      studyInstanceUID,
+      seriesInstanceUID,
+      servicesManager,
+    });
+    
+    uiNotificationService.show({
+      title: 'Import Successful',
+      message: 'Segmentation imported successfully from XNAT',
+      type: 'success',
+      duration: 3000,
+    });
+    
+    return segmentationId;
+  } catch (error) {
+    console.error('Error importing segmentation:', error);
+    uiNotificationService.show({
+      title: 'Import Failed',
+      message: `Failed to import segmentation: ${error.message}`,
+      type: 'error',
+      duration: 5000,
+    });
+    throw error;
+  }
+},
 };
   const definitions = {
     multimonitor: {
@@ -1047,7 +1557,7 @@ xnatRunSegmentBidirectional: async () => {
       commandFn: actions.downloadSegmentation,
     },
     storeSegmentation: {
-      commandFn: actions.storeSegmentation,
+      commandFn: actions.XNATStoreSegmentation,
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
@@ -1069,6 +1579,18 @@ xnatRunSegmentBidirectional: async () => {
     },
     xnatRunSegmentBidirectional: {
       commandFn: actions.xnatRunSegmentBidirectional,
+    },
+    setActiveSegmentAndCenter: {
+      commandFn: actions.setActiveSegmentAndCenter,
+    },
+    XNATImportSegmentation: {
+      commandFn: actions.XNATImportSegmentation,
+    },
+    XNATExportSegmentation: {
+      commandFn: actions.XNATStoreSegmentation,
+    },
+    downloadCSVSegmentationReport: {
+      commandFn: actions.downloadCSVSegmentationReport,
     },
   };
 

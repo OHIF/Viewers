@@ -26,12 +26,46 @@ import XNATStudyBrowser from './xnat-components/XNATStudyBrowser/XNATStudyBrowse
 import XNATStudyItem from './xnat-components/XNATStudyBrowser/XNATStudyItem';
 import XNATThumbnail from './xnat-components/XNATStudyBrowser/XNATThumbnail';
 
+// Patch segmentation service to handle missing segment centers gracefully
+const patchSegmentationService = (servicesManager) => {
+  const { segmentationService } = servicesManager.services;
+  
+  if (segmentationService && segmentationService.jumpToSegmentCenter) {
+    const originalJumpToSegmentCenter = segmentationService.jumpToSegmentCenter.bind(segmentationService);
+    
+    segmentationService.jumpToSegmentCenter = function(segmentationId, segmentIndex, ...args) {
+      try {
+        // Check if segment center data exists before attempting jump
+        const segmentation = this.getSegmentation(segmentationId);
+        if (segmentation && segmentation.segments && segmentation.segments[segmentIndex]) {
+          const segment = segmentation.segments[segmentIndex];
+          if (segment.cachedStats && (segment.cachedStats.center || segment.cachedStats.namedStats?.center?.value)) {
+            return originalJumpToSegmentCenter(segmentationId, segmentIndex, ...args);
+          } else {
+            console.log('XNAT: Segment center not available, skipping jump to center');
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn('XNAT: Error in jumpToSegmentCenter, skipping:', error);
+        return;
+      }
+    };
+    
+    console.log('XNAT: Patched segmentationService.jumpToSegmentCenter with safe version');
+  }
+};
+
 const xnatExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id: '@ohif/extension-xnat',
   preRegistration,
+  onModeEnter: ({ servicesManager }) => {
+    // Patch the segmentation service when entering a mode
+    setTimeout(() => patchSegmentationService(servicesManager), 100);
+  },
   onModeExit() {
     useViewportGridStore.getState().clearViewportGridState();
     useUIStateStore.getState().clearUIState();

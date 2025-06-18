@@ -100,14 +100,22 @@ export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
           console.info('XNAT: Configuring WADO URI loader');
           wadoUriLoader.configure({
             beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
-              console.info('XNAT: Loading image with ID:', imageId);
               xhr.withCredentials = true;
               xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
               if (imageId.startsWith('dicomweb:')) {
-                console.info('XNAT: Processing dicomweb: imageId');
                 const urlPart = imageId.substring('dicomweb:'.length);
                 if (!urlPart.startsWith('http://') && !urlPart.startsWith('https://')) {
-                  const baseUrl = xnatConfig.wadoUriRoot || 'http://localhost';
+                  // Dynamic server URL detection for robust deployment
+                  const getServerUrl = () => {
+                    if (typeof window !== 'undefined' && window.location) {
+                      const { protocol, hostname, port } = window.location;
+                      const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                      return `${protocol}//${hostname}${portPart}`;
+                    }
+                    return 'http://localhost'; // Development fallback
+                  };
+                  
+                  const baseUrl = xnatConfig.wadoUriRoot || getServerUrl();
                   const fullUrl = new URL(urlPart.startsWith('/') ? urlPart : `/${urlPart}`, baseUrl).href;
                   console.info('XNAT: Modified URL:', fullUrl);
                   xhr.open('GET', fullUrl); // Overwrite the default open behavior
@@ -143,7 +151,6 @@ export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
           console.info('XNAT: Configuring WADO RS loader');
           wadoRsLoader.configure({
             beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
-              console.info('XNAT: wadors loading image with ID:', imageId);
               xhr.withCredentials = true;
               xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
               Object.entries(xnatAuthHeaders).forEach(([key, value]) => xhr.setRequestHeader(key, value));
