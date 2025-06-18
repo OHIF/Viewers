@@ -60,6 +60,32 @@ This guide details the migration steps for the `uiDialogService` API changes, ba
 | `shouldCloseOnOverlayClick` | Default off for dialogs - Controls whether clicking the overlay background will close the dialog. |
 
 
+### Frequently Asked Questions
+
+**Q: Why did my dialog's background color change?**
+
+A: This can happen if you were previously setting the background color on the dialog's content directly. With the new API, the dialog's content is wrapped in a container. You should now pass any background or text color classes using the `containerClassName` property.
+
+For example:
+```diff
+- containerClassName: 'w-[70%] max-w-[900px]',
++ containerClassName: 'w-[70%] max-w-[900px] bg-primary-dark text-foreground',
+```
+
+**Q: How do I create a dialog without the default container, like for a context menu?**
+
+A: If you need to render dialog content without the standard dialog container (e.g., for a context menu), you can use the `unstyled: true` prop. This will render your component without the default dialog wrapper, giving you full control over its appearance.
+
+```javascript
+uiDialogService.show({
+  id: 'context-menu',
+  content: MyContextMenuComponent,
+  contentProps: { /* ... */ },
+  unstyled: true,
+});
+```
+
+
 **Migration Steps:**
 
 1.  **Replace `.create()` with `.show()`:**
@@ -118,47 +144,109 @@ This guide details the migration steps for the `uiDialogService` API changes, ba
     }
     ```
 
+6.  **Update Footer Action Buttons:**
+
+    Previously, footer buttons might have been implemented using generic `<Button>` components. The new approach uses a dedicated `<FooterAction>` component for better structure and consistency.
+
+    ```diff
+    - <Button
+    -   name="Cancel"
+    -   size={ButtonEnums.size.medium}
+    -   type={ButtonEnums.type.secondary}
+    -   onClick={onClose}
+    - > Cancel </Button>
+    + <FooterAction>
+    +   <FooterAction.Right>
+    +     <FooterAction.Secondary onClick={hide}>Cancel</FooterAction.Secondary>
+    +   </FooterAction.Right>
+    + </FooterAction>
+    ```
 
 
-**Example:  Updating a Simple Alert Dialog**
+**Example: Migrating a Custom Dialog with Actions**
+
+This example shows how to migrate a dialog that used the generic `Dialog` component with a `body` function and an `actions` array to the new component-based pattern.
+
+**Before: Using a Generic `Dialog` with `contentProps`**
+
+Previously, you might have constructed a dialog by passing a title, a body-rendering function, and an actions array directly into `contentProps`. This approach mixed content, presentation, and logic in the `create` call.
 
 ```javascript
-// Before (using deprecated API)
-let dialogId;
-const showAlert = (message) => {
-  dialogId = uiDialogService.create({
+// Before
+const dialogId = 'my-complex-dialog';
+const showCompletionDialog = (successMessage) => {
+  const dismiss = () => uiDialogService.dismiss({ id: dialogId });
+  uiDialogService.create({
+    id: dialogId,
     centralize: true,
     isDraggable: false,
-    content: Dialog,
+    content: Dialog, // A generic Dialog component
     contentProps: {
-      title: 'Alert',
-      body: () => <p>{message}</p>,
-      onClose: () => uiDialogService.dismiss({ id: dialogId }),
+      title: 'Action Completed',
+      noCloseButton: true,
+      onClose: dismiss,
+      onSubmit: dismiss,
+      actions: [
+        { id: 'proceed', text: 'Proceed', type: 'primary' },
+      ],
+      body: () => (
+        <div className="text-secondary-light">{successMessage}</div>
+      ),
     },
   });
 };
+```
 
-// After (using new API)
-function AlertDialog({ message, hide }) {
+**After: Using a Dedicated Component**
+
+The new pattern involves creating a dedicated React component for your dialog's content. This component encapsulates its own layout, logic, and actions, leading to cleaner and more maintainable code.
+
+**1. Create a dedicated component for your dialog's content.**
+
+This component receives `hide` and any custom data via props. It manages its own UI, including the footer buttons, and handles the logic for what happens when a user interacts with it.
+
+```javascript
+// After: MyCompletionDialog.tsx
+function MyCompletionDialog({ hide, successMessage }) {
+  const closeAndProceed = () => {
+    hide();
+    // You can now handle any post-dialog logic here,
+    // such as navigating to a different page.
+    // navigate('/next-page');
+  };
+
   return (
-    <div>
-      <p>{message}</p>
-      <button onClick={hide}>OK</button>
+    <div className="flex flex-col gap-4">
+      <div className="text-body-text">{successMessage}</div>
+      <FooterAction>
+        <FooterAction.Right>
+          <FooterAction.Primary onClick={closeAndProceed}>
+            Proceed
+          </FooterAction.Primary>
+        </FooterAction.Right>
+      </FooterAction>
     </div>
   );
 }
-
-const showAlert = (message) => {
-  uiDialogService.show({
-    id: 'alert-dialog',
-    title: 'Alert',
-    content: AlertDialog,
-    contentProps: { message },
-  });
-};
-
 ```
 
+**2. Call `uiDialogService.show` with the new component.**
+
+The call to show the dialog is now much simpler. You pass the component itself to the `content` property and any necessary data through `contentProps`.
+
+```javascript
+// After: Calling the service
+const showCompletionDialog = (successMessage) => {
+  uiDialogService.show({
+    id: 'my-complex-dialog',
+    title: 'Action Completed',
+    content: MyCompletionDialog,
+    contentProps: {
+      successMessage,
+    },
+  });
+};
+```
 
 ---
 
