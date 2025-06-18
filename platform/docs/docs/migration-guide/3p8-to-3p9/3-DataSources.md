@@ -2,6 +2,7 @@
 id: 3-data-sources
 title: Data Sources
 sidebar_position: 3
+summary: Migration guide for BulkDataURI configuration changes in OHIF 3.9, explaining the transition from a simple boolean flag to a more flexible configuration object with additional control options.
 ---
 
 import Tabs from '@theme/Tabs';

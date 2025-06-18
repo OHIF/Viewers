@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Routes
+title: Mode Routes
+summary: Documentation for OHIF Mode routes, which define URL paths, initialization logic, and layout templates for specific viewer workflows, allowing multiple modes to coexist within a single application.
 ---
 
 # Mode: Routes

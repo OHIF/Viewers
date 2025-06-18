@@ -1,5 +1,6 @@
 ---
 title: Tests
+summary: Migration guide for test updates in OHIF 3.10, covering changes to how tools are identified and tested, including the transition from class-based to data-attribute-based selection in Cypress tests.
 ---
 
 

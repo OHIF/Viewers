@@ -1,6 +1,7 @@
 ---
 id: seg-other
 title: Other Changes
+summary: Migration guide for additional segmentation service changes in OHIF 3.9, covering updates to addOrUpdateSegmentation with new data structures, loadSegmentationsForViewport, highlightSegment, and jumpToSegmentCenter methods with viewport-centric approach.
 ---
 
 

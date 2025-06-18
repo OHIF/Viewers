@@ -1,3 +1,4 @@
-import { useDynamicMaxHeight } from './useDynamicMaxHeight';
+import useSessionStorage from './useSessionStorage';
+import useDynamicMaxHeight from './useDynamicMaxHeight';
 
-export { useDynamicMaxHeight };
+export { useSessionStorage, useDynamicMaxHeight };

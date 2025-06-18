@@ -1,0 +1,18 @@
+{
+  "Active": "نشط",
+  "Add new segmentation": "إضافة تجزئة جديدة",
+  "Add segment": "إضافة مقطع",
+  "Add segmentation": "إضافة تجزئة",
+  "Delete": "حذف",
+  "Display inactive segmentations": "عرض التجزئات غير النشطة",
+  "Export DICOM SEG": "تصدير دايكوم SEG",
+  "Download DICOM SEG": "تنزيل دايكوم SEG",
+  "Download DICOM RTSTRUCT": "تنزيل دايكوم RTSTRUCT",
+  "Fill": "ملء",
+  "Inactive segmentations": "تجزئات غير نشطة",
+  "Opacity": "العتامة",
+  "Outline": "حدود",
+  "Rename": "إعادة تسمية",
+  "Segmentation": "تجزئة",
+  "Size": "الحجم"
+}

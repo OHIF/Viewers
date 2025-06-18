@@ -29,6 +29,7 @@ import { updateLabelmapSegmentationImageReferences } from '@cornerstonejs/tools/
 import { triggerSegmentationRepresentationModified } from '@cornerstonejs/tools/segmentation/triggerSegmentationEvents';
 import { convertStackToVolumeLabelmap } from '@cornerstonejs/tools/segmentation/helpers/convertStackToVolumeLabelmap';
 import { getLabelmapImageIds } from '@cornerstonejs/tools/segmentation';
+import { VOLUME_LOADER_SCHEME } from '../../constants';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -79,8 +80,6 @@ const EVENTS = {
 };
 
 const VALUE_TYPES = {};
-
-const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class SegmentationService extends PubSubService {
   static REGISTRATION = {
@@ -256,7 +255,7 @@ class SegmentationService extends PubSubService {
       this._onSegmentationAddedFromSource
     );
 
-    this.listeners = {};
+    this.reset();
   };
 
   public async addSegmentationRepresentation(
@@ -292,7 +291,7 @@ class SegmentationService extends PubSubService {
       const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
         csViewport,
         segmentation
-      );
+      ) || { isVolumeViewport: false, isVolumeSegmentation: false };
 
       ({ representationTypeToUse, isConverted } = await this.handleViewportConversion(
         isVolumeViewport,
@@ -645,6 +644,7 @@ class SegmentationService extends PubSubService {
           locked: false,
           group: group,
           active: false,
+          group,
         };
 
         // Broadcast segment loading progress
@@ -676,7 +676,6 @@ class SegmentationService extends PubSubService {
 
     // Mark the RT display set as loaded
     rtDisplaySet.isLoaded = true;
-
     // Add or update the segmentation in the state
     this.addOrUpdateSegmentation(segmentation);
 

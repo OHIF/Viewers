@@ -1,5 +1,6 @@
 ---
 title: Switch
+summary: Migration guide for Switch component in OHIF 3.10, covering the transition from custom Toggle and CinePlayPauseButton components to the standardized Switch component, with details on prop changes and usage patterns.
 ---
 
 

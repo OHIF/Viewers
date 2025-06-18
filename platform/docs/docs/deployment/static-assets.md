@@ -1,5 +1,7 @@
 ---
 sidebar_position: 3
+title: Deploy Static Assets
+summary: Guide to deploying OHIF Viewer static assets using various hosting options, from simple drag-and-drop methods like Netlify to more advanced cloud platforms like AWS, GCP, and Azure, with step-by-step instructions for each deployment approach.
 ---
 
 # Deploy Static Assets

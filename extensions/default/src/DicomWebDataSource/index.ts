@@ -37,11 +37,17 @@ export type DicomWebConfig = {
   wadoUri?: string; // - Base URL to use for WADO URI requests
   qidoSupportsIncludeField?: boolean; // - Whether QIDO supports the "Include" option to request additional fields in response
   imageRendering?: string; // - wadors | ? (unsure of where/how this is used)
-  thumbnailRendering?: string; // - wadors | ? (unsure of where/how this is used)
+  thumbnailRendering?: string;
+  /**
+   wadors - render using the wadors fetch.  The full image is retrieved and rendered in cornerstone to thumbnail size  png and returned as binary data to the src attribute of the  image tag.
+           for example,  <img  src=data:image/png;base64,sdlfk;adkfadfk....asldfjkl;asdkf>
+   thumbnailDirect -  get the direct url endpoint for the thumbnail as the image src (eg not authentication required).
+           for example, <img src=http://server:port/wadors/studies/1.2.3/thumbnail?accept=image/jpeg>
+   thumbnail - render using the thumbnail endpoint on wadors using bulkDataURI, passing authentication params  to the url.
+    rendered - should use the rendered endpoint instead of the thumbnail endpoint
+*/
   /** Whether the server supports reject calls (i.e. DCM4CHEE) */
   supportsReject?: boolean;
-  /** Request series meta async instead of blocking */
-  lazyLoadStudy?: boolean;
   /** indicates if the retrieves can fetch singlepart. Options are bulkdata, video, image, or  true */
   singlepart?: boolean | string;
   /** Transfer syntax to request from the server */
@@ -225,6 +231,71 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
+
+      getGetThumbnailSrc: function (instance, imageId) {
+        if (dicomWebConfig.thumbnailRendering === 'wadors') {
+          return function getThumbnailSrc(options) {
+            if (!imageId) {
+              return null;
+            }
+            if (!options?.getImageSrc) {
+              return null;
+            }
+            return options.getImageSrc(imageId);
+          };
+        }
+        if (dicomWebConfig.thumbnailRendering === 'thumbnailDirect') {
+          return function getThumbnailSrc() {
+            return this.directURL({
+              instance: instance,
+              defaultPath: '/thumbnail',
+              defaultType: 'image/jpeg',
+              singlepart: true,
+              tag: 'Absent',
+            });
+          }.bind(this);
+        }
+
+        if (dicomWebConfig.thumbnailRendering === 'thumbnail') {
+          return async function getThumbnailSrc() {
+            const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/thumbnail?accept=image/jpeg`;
+            return URL.createObjectURL(
+              new Blob(
+                [
+                  await this.bulkDataURI({
+                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
+                    defaultType: 'image/jpeg',
+                    mediaTypes: ['image/jpeg'],
+                    thumbnail: true,
+                  }),
+                ],
+                { type: 'image/jpeg' }
+              )
+            );
+          }.bind(this);
+        }
+        if (dicomWebConfig.thumbnailRendering === 'rendered') {
+          return async function getThumbnailSrc() {
+            const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered?accept=image/jpeg`;
+            return URL.createObjectURL(
+              new Blob(
+                [
+                  await this.bulkDataURI({
+                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
+                    defaultType: 'image/jpeg',
+                    mediaTypes: ['image/jpeg'],
+                    thumbnail: true,
+                  }),
+                ],
+                { type: 'image/jpeg' }
+              )
+            );
+          }.bind(this);
+        }
+      },
+
       directURL: params => {
         return getDirectURL(
           {

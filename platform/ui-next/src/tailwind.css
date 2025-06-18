@@ -10,6 +10,8 @@
   :root {
     --highlight: 191 74% 63%;
     --neutral: 213 22% 59%;
+    --neutral-light: 214 69% 81%;
+    --neutral-dark: 214 16% 21%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
     --card: 234 64% 10%;
