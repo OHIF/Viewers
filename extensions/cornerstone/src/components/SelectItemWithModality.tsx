@@ -4,7 +4,7 @@ import React from 'react';
 const SelectItemWithModality = ({
   displaySet,
   showModality = true,
-  dataCY = '',
+  dataCY = `${displaySet.label}-${displaySet.Modality}`,
 }: {
   displaySet: AppTypes.DisplaySet;
   showModality?: boolean;
