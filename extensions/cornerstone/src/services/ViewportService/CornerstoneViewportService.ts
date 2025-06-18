@@ -11,7 +11,6 @@ import {
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
-  volumeLoader,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -773,11 +772,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       if (!volume && displaySet.images) {
-        const volumeLoaderSchema = displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
-        const volumeId = `:${displaySet.displaySetInstanceUID}`;
-        volume = await volumeLoader.createAndCacheVolume(volumeId, {
-          imageIds: displaySet.images.map(image => image.imageId),
-        });
+        volume = csToolsUtils.getOrCreateImageVolume(displaySet.images.map(image => image.imageId));
       }
 
       displaySetInstanceUIDs.push(displaySetInstanceUID);
@@ -839,11 +834,20 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
     const displaySetModality = displaySet?.Modality;
 
+    // filter overlay display sets (e.g. segmentation) since they will get handled below via the segmentation service
+    const filteredVolumeInputArray = volumeInputArray
+      .map((volumeInput, index) => {
+        return { volumeInput, displaySetOptions: displaySetOptions[index] };
+      })
+      .filter(({ volumeInput }) => {
+        const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
+        return !displaySet?.isOverlayDisplaySet;
+      });
+
     // Todo: use presentations states
-    const volumesProperties = volumeInputArray.map((volumeInput, index) => {
+    const volumesProperties = filteredVolumeInputArray.map(({ volumeInput, displaySetOptions }) => {
       const { volumeId } = volumeInput;
-      const displaySetOption = displaySetOptions[index];
-      const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
+      const { voi, voiInverted, colormap, displayPreset } = displaySetOptions;
       const properties = {} as ViewportProperties;
 
       if (voi && (voi.windowWidth || voi.windowCenter)) {
@@ -870,7 +874,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // For SEG and RT viewports
-    const { addOverlayFn } = this._processExtraDisplaySetsForViewport(viewport) || {};
+    const { addOverlayFn, imageIds } = this._processExtraDisplaySetsForViewport(viewport) || {};
+
+    if (!filteredVolumeInputArray.length && addOverlayFn) {
+      // if there is no volume input array, and there is an addOverlayFn, means we need to take
+      // care of the background overlay display set first then the addOverlayFn will add the
+      // SEG displaySet
+      const sampleImageId = imageIds[0];
+      const backgroundDisplaySet = displaySetService.getDisplaySetsBy(
+        displaySet =>
+          !displaySet.isOverlayDisplaySet &&
+          displaySet.images.some(image => image.imageId === sampleImageId)
+      );
+
+      if (backgroundDisplaySet.length !== 1) {
+        throw new Error('Background display set not found');
+      }
+    }
 
     await viewport.setVolumes(volumeInputArray);
 
