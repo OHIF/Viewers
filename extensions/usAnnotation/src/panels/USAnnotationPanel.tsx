@@ -20,7 +20,6 @@ import {
   TabsList,
   TabsTrigger,
   Separator,
-  TagInput,
 } from '@ohif/ui-next';
 
 /**
@@ -146,9 +145,7 @@ export default function USAnnotationPanel() {
   const handleRowClick = item => {
     const activeViewportId = viewportGridService.getActiveViewportId();
     const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
-    utilities.scroll(viewport, {
-      delta: item.frame - viewport.getCurrentImageIdIndex(),
-    });
+    utilities.scroll(viewport, { delta: item.frame - viewport.getCurrentImageIdIndex() });
   };
 
   /**
@@ -269,15 +266,6 @@ export default function USAnnotationPanel() {
 
         {/* Divider */}
         <hr className="border-t border-gray-800" />
-
-        {/* Label Annotations Section */}
-        <Label>Label Annotations</Label>
-        <TagInput
-          className="pe-2"
-          placeholder="Type or select a label"
-          value={labels}
-          onChange={setLabels}
-        />
       </div>
     </PanelSection.Content>
   );
@@ -368,13 +356,7 @@ export default function USAnnotationPanel() {
     const keys = Array.from(mapping.keys());
     const updatedFrames = keys.map((key, index) => {
       const { pleura, bLine, frame } = mapping.get(key) || { pleura: 0, bLine: 0, frame: 0 };
-      return {
-        imageId: key,
-        index: index + 1,
-        frame,
-        pleura,
-        bLine,
-      };
+      return { imageId: key, index: index + 1, frame, pleura, bLine };
     });
     setAnnotatedFrames(updatedFrames);
   };
