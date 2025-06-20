@@ -31,7 +31,7 @@ function _getDisplaySetsFromSeries(
   const displaySet = {
     Modality: 'RTSTRUCT',
     loading: false,
-    isReconstructable: false, // by default for now since it is a volumetric SEG currently
+    isReconstructable: true, // by default for now since it is a volumetric SEG currently
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,

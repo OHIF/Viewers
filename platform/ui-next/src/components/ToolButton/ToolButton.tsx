@@ -97,6 +97,7 @@ function ToolButton(props: ToolButtonProps) {
             size="icon"
             aria-label={defaultTooltip}
             disabled={disabled}
+            name={id}
           >
             {children || (
               <Icons.ByName
