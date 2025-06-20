@@ -1,4 +1,4 @@
-import { XNATConfig } from '../indexbackup.ts'; // Import the type if needed
+import { XNATDataSourceConfig } from '../index';
 import { DicomMetadataStore } from '@ohif/core';
 
 const log = {
@@ -20,11 +20,15 @@ const log = {
  * Placeholder function to convert relative URLs to absolute URLs.
  * Implement the actual logic based on your XNAT setup and configuration.
  */
-export function convertToAbsoluteUrl(relativePath: string, baseUrl: string, config?: XNATConfig): string {
+export function convertToAbsoluteUrl(relativePath: string, baseUrl: string, config?: XNATDataSourceConfig): string {
 
   // Simple check: If the path already starts with http, assume it's absolute
   if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-    return relativePath;
+    let newUrl = relativePath;
+    if (baseUrl.startsWith('https://') && newUrl.startsWith('http://')) {
+      newUrl = newUrl.replace('http://', 'https://');
+    }
+    return newUrl;
   }
 
   // Remove leading/trailing slashes for consistent joining
@@ -40,7 +44,7 @@ export function convertToAbsoluteUrl(relativePath: string, baseUrl: string, conf
  * Placeholder function to extract XNAT project and experiment IDs from a study instance UID.
  * Implement the actual logic based on how your StudyInstanceUIDs correlate to XNAT entities.
  */
-export function getXNATStatusFromStudyInstanceUID(studyInstanceUID: string, config: XNATConfig): { projectId?: string; experimentId?: string } {
+export function getXNATStatusFromStudyInstanceUID(studyInstanceUID: string, config: XNATDataSourceConfig): { projectId?: string; experimentId?: string } {
   log.debug('Getting XNAT status from StudyInstanceUID:', studyInstanceUID);
 
   // Example placeholder logic: Assumes StudyInstanceUID might *be* the experiment ID
@@ -100,7 +104,6 @@ export async function getSeriesXNATInstancesMetadata(params: {
       }
     });
 
-    log.info(`Found ${allSeries.length} total series in experiment ${experimentId}.`);
 
     // If a specific seriesUID is requested, filter for it
     if (seriesUID) {

@@ -2087,6 +2087,15 @@ function commandsModule({
     toggleActiveDisabledToolbar: {
       commandFn: actions.toggleActiveDisabledToolbar,
     },
+    setToolActiveToolbar: {
+      commandFn: actions.setToolActiveToolbar,
+    },
+    setToolActive: {
+      commandFn: actions.setToolActive,
+    },
+    setToolEnabled: {
+      commandFn: actions.setToolEnabled,
+    },
     updateStoredPositionPresentation: {
       commandFn: actions.updateStoredPositionPresentation,
     },

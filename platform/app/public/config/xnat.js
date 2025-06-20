@@ -30,7 +30,8 @@ const xnatConfig = {
     extensions: [
         '@ohif/extension-default',
         '@ohif/extension-cornerstone',
-        '@ohif/extension-xnat'
+        '@ohif/extension-xnat',
+        '@ohif/extension-measurement-tracking'
     ],
     modes: ['@ohif/mode-xnat'],
     customizationService: {

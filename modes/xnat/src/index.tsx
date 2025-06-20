@@ -69,6 +69,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.11.0-beta.44',
   '@ohif/extension-dicom-pdf': '^3.11.0-beta.44',
   '@ohif/extension-dicom-video': '^3.11.0-beta.44',
+  '@ohif/extension-measurement-tracking': '^3.11.0-beta.44',
   '@ohif/extension-xnat': '^0.0.1',
 
 };
@@ -102,13 +103,14 @@ function modeFactory({ modeConfiguration }) {
       // If we have experiment/session parameters, initialize the session router
       if (experimentId && projectId) {
         try {
-          const sessionRouter = new SessionRouter(
+          const sessionRouter = new SessionRouter({
+            servicesManager,
             projectId,
-            parentProjectId || projectId,
+            parentProjectId,
             subjectId,
             experimentId,
             experimentLabel
-          );
+        });
           
           // Store the router instance in the services manager
           servicesManager.services.sessionRouter = sessionRouter;
@@ -135,11 +137,41 @@ function modeFactory({ modeConfiguration }) {
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        customizationService,
+        userAuthenticationService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
+
+      // Suppress verbose J2K decoder logs
+      try {
+        const windowWithLog = window as any;
+        if (windowWithLog.log && windowWithLog.log.getLogger) {
+          const dicomLoader = windowWithLog.log.getLogger('cs3d.dicomImageLoader');
+          if (dicomLoader && dicomLoader.setLevel) {
+            dicomLoader.setLevel('WARN'); // Only show warnings and errors, not info logs
+          }
+        }
+      } catch (e) {
+        console.warn('Could not configure J2K logging level:', e);
+      }
+      
+      toolbarService.register(toolbarButtons);
+
+      // Load cornerstone extension's customizations first
+      try {
+        const cornerstoneCustomizations = extensionManager.getModuleEntry('@ohif/extension-cornerstone.customizationModule.default');
+        if (cornerstoneCustomizations && typeof cornerstoneCustomizations === 'object') {
+          customizationService.setCustomizations(cornerstoneCustomizations as Record<string, any>);
+        }
+      } catch (error) {
+        console.warn('Could not load cornerstone customizations:', error);
+      }
 
       // Set up segmentation panel customizations
       customizationService.setCustomizations({
@@ -178,14 +210,32 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.register(toolbarButtons);
+      // Set up toolbar refresh on tool activation
+      const { viewportGridService } = servicesManager.services;
+      
+      // Listen for tool activation events to refresh toolbar state
+      const toolGroupServiceSubscription = (toolGroupService as any).subscribe(
+        (toolGroupService as any).EVENTS.PRIMARY_TOOL_ACTIVATED,
+        () => {
+          const activeViewportId = viewportGridService.getActiveViewportId();
+          if (activeViewportId) {
+            toolbarService.refreshToolbarState({ 
+              viewportId: activeViewportId 
+            });
+          }
+        }
+      );
+      
+      // Store subscription for cleanup on mode exit
+      _activatePanelTriggersSubscriptions.push(toolGroupServiceSubscription);
+
       toolbarService.updateSection(toolbarService.sections.primary, [
-        // 'MeasurementTools', // This is a section, not a button in the primary toolbar list.
+        'MeasurementTools',
         'Zoom',
         'Pan',
         'TrackballRotate',
         'WindowLevel',
-        'Capture',
+        // 'Capture',
         'Layout',
         'Crosshairs',
         'MoreTools',
@@ -196,29 +246,59 @@ function modeFactory({ modeConfiguration }) {
         'dataOverlayMenu',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomRight, [
         'AdvancedRenderingControls',
       ]);
 
+      toolbarService.updateSection('AdvancedRenderingControls', [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('MeasurementTools', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
 
       toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
-        // 'ImageSliceSync',         // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'ImageSliceSync',
         'ReferenceLines',
         'ImageOverlayViewer',
         'StackScroll',
         'invert',
-        'Probe',                  // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'Probe',
         'Cine',
-        'Angle',                  // Not in XNAT's toolbarButtons.ts, likely from default extension
-        'CobbAngle',              // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'Angle',
+        'CobbAngle',
         'Magnify',
-        // 'CalibrationLine',        // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'CalibrationLine',
         'TagBrowser',
-        // 'AdvancedMagnify',        // Not in XNAT's toolbarButtons.ts, likely from default extension
-        // 'UltrasoundDirectionalTool',// Not in XNAT's toolbarButtons.ts, likely from default extension
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
       ]);
 
       // Set up segmentation toolbox sections
@@ -242,6 +322,32 @@ function modeFactory({ modeConfiguration }) {
       ]);
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
 
+      // The classic dev workflow uses query params to select the session
+      const query = new URLSearchParams(window.location.search);
+      const experimentId = query.get('experimentId');
+      if (experimentId) {
+        const projectId = query.get('projectId');
+        const subjectId = query.get('subjectId');
+        const experimentLabel = query.get('experimentLabel');
+        const parentProjectId = query.get('parentProjectId');
+
+        const sessionRouter = new SessionRouter({
+          servicesManager,
+          projectId,
+          parentProjectId,
+          subjectId,
+          experimentId,
+          experimentLabel
+        });
+        sessionRouter.go();
+      }
+
+      userAuthenticationService.subscribe(
+        userAuthenticationService.EVENTS.USER_AUTHENTICATION_CHANGED,
+        () => {
+          // Handle user authentication changed event
+        }
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

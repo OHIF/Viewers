@@ -5,7 +5,7 @@ import { metaData } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
 import XNATSegmentationImportMenu from '../xnat-components/XNATSegmentationImportMenu/XNATSegmentationImportMenu';
 
-export default function XNATSegmentationPanel({ children, configuration }) {
+export default function XNATSegmentationPanel({ configuration }) {
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const [showImportMenu, setShowImportMenu] = useState(false);
@@ -285,7 +285,6 @@ export default function XNATSegmentationPanel({ children, configuration }) {
 
   return (
     <SegmentationTable {...tableProps}>
-      {children}
       <SegmentationTable.Config />
       <SegmentationTable.AddSegmentationRow />
       {renderModeContent()}

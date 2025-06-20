@@ -21,7 +21,7 @@ export function ToolBoxButtonGroupWrapper({ groupId, items, onInteraction, ...pr
           size="small"
           className={props.disabled && 'text-primary'}
           onInteraction={() =>
-            onInteraction?.({ groupId, itemId: item.id, commands: item.commands })
+            onInteraction?.({ itemId: item.id, commands: item.commands })
           }
         />
       ))}
