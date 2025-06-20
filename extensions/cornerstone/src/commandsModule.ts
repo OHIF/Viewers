@@ -445,7 +445,7 @@ function commandsModule({
       });
 
       if (val !== undefined && val !== null) {
-        measurementService.update(uid, { ...val }, true);
+        measurementService.update(uid, { ...measurement, label: val }, true);
       }
     },
     /**
