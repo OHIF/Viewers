@@ -56,6 +56,7 @@ const xnat = {
   studyBrowser: '@ohif/extension-xnat.panelModule.xnatStudyBrowser',
   segmentation: '@ohif/extension-xnat.panelModule.panelSegmentationWithTools',
   sopClassHandler: '@ohif/extension-xnat.sopClassHandlerModule.xnatSopClassHandler',
+  measurements: '@ohif/extension-xnat.panelModule.xnatMeasurements',
 };
 
 
@@ -103,14 +104,13 @@ function modeFactory({ modeConfiguration }) {
       // If we have experiment/session parameters, initialize the session router
       if (experimentId && projectId) {
         try {
-          const sessionRouter = new SessionRouter({
-            servicesManager,
+          const sessionRouter = new SessionRouter(
             projectId,
             parentProjectId,
             subjectId,
             experimentId,
             experimentLabel
-        });
+          );
           
           // Store the router instance in the services manager
           servicesManager.services.sessionRouter = sessionRouter;
@@ -321,33 +321,6 @@ function modeFactory({ modeConfiguration }) {
 
       ]);
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
-
-      // The classic dev workflow uses query params to select the session
-      const query = new URLSearchParams(window.location.search);
-      const experimentId = query.get('experimentId');
-      if (experimentId) {
-        const projectId = query.get('projectId');
-        const subjectId = query.get('subjectId');
-        const experimentLabel = query.get('experimentLabel');
-        const parentProjectId = query.get('parentProjectId');
-
-        const sessionRouter = new SessionRouter({
-          servicesManager,
-          projectId,
-          parentProjectId,
-          subjectId,
-          experimentId,
-          experimentLabel
-        });
-        sessionRouter.go();
-      }
-
-      userAuthenticationService.subscribe(
-        userAuthenticationService.EVENTS.USER_AUTHENTICATION_CHANGED,
-        () => {
-          // Handle user authentication changed event
-        }
-      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -408,7 +381,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              rightPanels: [xnat.segmentation, cornerstone.measurements],
+              rightPanels: [xnat.segmentation, xnat.measurements],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

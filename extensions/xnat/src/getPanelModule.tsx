@@ -2,6 +2,7 @@ import React from 'react';
 import { WrappedPanelStudyBrowser, WrappedXNATNavigationPanel, WrappedXNATStudyBrowserPanel } from './Panels';
 import i18n from 'i18next';
 import XNATSegmentationPanel from './Panels/XNATSegmentationPanel';
+import XNATPanelMeasurement from './Panels/XNATPanelMeasurement';
 import { useAppConfig } from '@state';
 import { Toolbox } from '@ohif/extension-default';
 import ActiveViewportWindowLevel from '@ohif/extension-cornerstone';
@@ -97,6 +98,13 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentationWithTools,
+    },
+    {
+      name: 'xnatMeasurements',
+      iconName: 'tab-measurement',
+      iconLabel: 'Measurements',
+      label: 'Measurements',
+      component: XNATPanelMeasurement,
     },
   ];
 }

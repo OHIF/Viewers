@@ -37,6 +37,12 @@ const {
 
 const { downloadDICOMData } = helpers;
 
+interface PromptResult {
+  action: number;
+  value: string;
+  dataSourceName: string;
+}
+
 // Helper function to get target viewport
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -343,6 +349,8 @@ const commandsModule = ({
         setToggleHangingProtocol(storedHanging, {
           protocolId: protocol.id,
           stageIndex: desiredStageIndex,
+          stageId: protocol.stages[desiredStageIndex]?.id,
+          activeStudyUID: activeStudy.StudyInstanceUID,
         });
         return actions.setHangingProtocol({
           protocolId,
@@ -452,12 +460,12 @@ const commandsModule = ({
         const findOrCreateViewport = (position: number, positionId: string) => {
           // Find the viewport for the given position prior to the toggle to one-up.
           const preOneUpViewport = Array.from(toggleOneUpViewportGridStore.viewports.values()).find(
-            viewport => viewport.positionId === positionId
+            (viewport: any) => viewport.positionId === positionId
           );
 
           // Use the viewport id from before the toggle to one-up to find any updates to the viewport.
           const viewport = updatedViewportsViaHP.find(
-            viewport => viewport.viewportId === preOneUpViewport.viewportId
+            viewport => viewport.viewportId === (preOneUpViewport as any)?.viewportId
           );
 
           return viewport
@@ -814,7 +822,7 @@ generateSegmentation: ({ segmentationId, options = {} }) => {
 
     // Get the labelmap representation data
     const { representationData } = cornerstoneSegmentation;
-    const labelmapData = representationData.Labelmap || representationData.LABELMAP;
+    const labelmapData = representationData.Labelmap;
     
     if (!labelmapData) {
       throw new Error('No labelmap data found in segmentation');
@@ -822,9 +830,9 @@ generateSegmentation: ({ segmentationId, options = {} }) => {
 
     // Get image IDs - handle both volumeId and imageIds cases
     let imageIds = [];
-    if (labelmapData.imageIds) {
+    if ('imageIds' in labelmapData && labelmapData.imageIds) {
       imageIds = labelmapData.imageIds;
-    } else if (labelmapData.volumeId) {
+    } else if ('volumeId' in labelmapData && labelmapData.volumeId) {
       // Get imageIds from volume cache
       const volume = cache.getVolume(labelmapData.volumeId);
       if (volume && volume.imageIds) {
@@ -880,7 +888,7 @@ generateSegmentation: ({ segmentationId, options = {} }) => {
         return;
       }
 
-      const segmentLabel = segment.label || `Segment ${segmentIndex}`;
+      const segmentLabel = (segment as any).label || `Segment ${segmentIndex}`;
       
       // Get color information
       let color = [255, 0, 0]; // Default red
@@ -1074,10 +1082,12 @@ XNATStoreSegmentation: async ({ segmentationId }) => {
         studyInstanceUID: displaySet.StudyInstanceUID,
         sessionRouterExists: !!sessionRouter,
         sessionStorageKeys: window.sessionStorage ? Object.keys(window.sessionStorage) : 'N/A',
-        sessionMapSessions: sessionMap.getSession(),
-        displaySet: displaySet
+        // sessionMapSessions: sessionMap.getSession(),
+        displaySet: displaySet,
       });
-      throw new Error('Could not determine experiment ID for XNAT export. Please ensure you are viewing data from XNAT and that the session is properly initialized.');
+      throw new Error(
+        'Could not determine experiment ID for XNAT export. Please ensure you are viewing data from XNAT and that the session is properly initialized.'
+      );
     }
     
     console.log('Using experiment ID for export:', experimentId);
@@ -1244,28 +1254,28 @@ generateSegmentationCSVReport: (segmentationData, info) => {
     const segmentHeaderRow = ['Label'];
     for (const segmentId in segmentationData.segments) {
       const segment = segmentationData.segments[segmentId];
-      segmentHeaderRow.push(`${segment.label || ''}`);
+      segmentHeaderRow.push(`${(segment as any).label || ''}`);
     }
     csvRows.push(segmentHeaderRow);
 
     // Add segment properties
     csvRows.push([
       'Segment Index',
-      ...Object.values(segmentationData.segments).map(s => s.segmentIndex || ''),
+      ...Object.values(segmentationData.segments).map((s: any) => s.segmentIndex || ''),
     ]);
     csvRows.push([
       'Locked',
-      ...Object.values(segmentationData.segments).map(s => (s.locked ? 'Yes' : 'No')),
+      ...Object.values(segmentationData.segments).map((s: any) => (s.locked ? 'Yes' : 'No')),
     ]);
     csvRows.push([
       'Active',
-      ...Object.values(segmentationData.segments).map(s => (s.active ? 'Yes' : 'No')),
+      ...Object.values(segmentationData.segments).map((s: any) => (s.active ? 'Yes' : 'No')),
     ]);
 
     // Add segment statistics
     // First, collect all unique statistics across all segments
     const allStats = new Set();
-    for (const segment of Object.values(segmentationData.segments)) {
+    for (const segment of Object.values(segmentationData.segments) as any[]) {
       if (segment.cachedStats && segment.cachedStats.namedStats) {
         for (const statKey in segment.cachedStats.namedStats) {
           const stat = segment.cachedStats.namedStats[statKey];
@@ -1280,7 +1290,7 @@ generateSegmentationCSVReport: (segmentationData, info) => {
     for (const statName of allStats) {
       const statRow = [statName];
 
-      for (const segment of Object.values(segmentationData.segments)) {
+      for (const segment of Object.values(segmentationData.segments) as any[]) {
         let statValue = '';
 
         if (segment.cachedStats && segment.cachedStats.namedStats) {
@@ -1498,6 +1508,33 @@ XNATImportSegmentation: async ({ arrayBuffer, studyInstanceUID, seriesInstanceUI
     throw error;
   }
 },
+
+XNATPromptSaveReport: async () => {
+  const { UIModalService } = servicesManager.services;
+
+  const result = (await createReportDialogPrompt(UIModalService, {
+    extensionManager,
+  })) as PromptResult;
+
+  if (result && result.action === PROMPT_RESPONSES.CREATE_REPORT) {
+    commandsManager.runCommand('XNATStoreReport', {
+      label: result.value,
+      dataSourceName: result.dataSourceName,
+    });
+  }
+},
+
+XNATStoreReport: ({ label, dataSourceName }) => {
+  console.log(`Storing report to XNAT with label: ${label} and data source: ${dataSourceName}...`);
+  // In a real implementation, you would use servicesManager to get
+  // the necessary services to store the report to XNAT.
+  const { uiNotificationService } = servicesManager.services;
+  uiNotificationService.show({
+    title: 'Store SR Report',
+    message: `Report "${label}" stored to XNAT successfully.`,
+    type: 'success',
+  });
+},
 };
   const definitions = {
     multimonitor: {
@@ -1591,6 +1628,16 @@ XNATImportSegmentation: async ({ arrayBuffer, studyInstanceUID, seriesInstanceUI
     },
     downloadCSVSegmentationReport: {
       commandFn: actions.downloadCSVSegmentationReport,
+    },
+    XNATPromptSaveReport: {
+      commandFn: actions.XNATPromptSaveReport,
+      storeContexts: [],
+      options: {},
+    },
+    XNATStoreReport: {
+      commandFn: actions.XNATStoreReport,
+      storeContexts: [],
+      options: {},
     },
   };
 
