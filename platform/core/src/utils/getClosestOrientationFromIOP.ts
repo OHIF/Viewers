@@ -27,7 +27,10 @@ export default function getClosestOrientationFromIOP(displaySetService, displayS
     imageOrientationPatient[5]
   );
   const scanAxisNormal = vec3.cross(vec3.create(), rowCosineVec, colCosineVec);
+  return getClosestOrientation(scanAxisNormal);
+}
 
+export function getClosestOrientation(viewPlaneNormal) {
   // Define the reference vectors for axial, coronal, and sagittal planes
   const unitVectors = {
     axial: vec3.fromValues(0, 0, 1),
@@ -43,7 +46,7 @@ export default function getClosestOrientationFromIOP(displaySetService, displayS
     // Absolute value of dot product because we only care about alignment with the axis
     // For example, dot product of -1 for a given axis means perfect alignment
     // but the image is pointing in the "opposite" direction
-    const res = Math.abs(vec3.dot(scanAxisNormal, v));
+    const res = Math.abs(vec3.dot(viewPlaneNormal, v));
     if (res > maxDot) {
       maxDot = res;
       maxOrientation = k;
