@@ -1,0 +1,80 @@
+/* ---- General Layout ---- */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ---- Header ---- */
+header, .navbar, .navbar-default {
+  background-color: #1f1f1f;
+  border-bottom: 1px solid #333;
+  color: #fff;
+}
+
+/* ---- Sidebar / Menu ---- */
+.sidebar, .nav-pills > li > a {
+  background-color: #181818;
+  color: #ccc;
+}
+
+.sidebar a:hover,
+.nav-pills > li.active > a {
+  background-color: #333;
+  color: #fff;
+}
+
+/* ---- Tables ---- */
+table {
+  background-color: #1e1e1e;
+  color: #ccc;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th {
+  background-color: #2b2b2b;
+  color: #eee;
+  border-bottom: 1px solid #444;
+}
+
+table td {
+  border-top: 1px solid #333;
+}
+
+/* ---- Buttons ---- */
+.btn, .btn-default {
+  background-color: #2a2a2a;
+  color: #ddd;
+  border: 1px solid #444;
+}
+
+.btn:hover {
+  background-color: #3a3a3a;
+  color: #fff;
+  border-color: #666;
+}
+
+/* ---- Forms ---- */
+input, select, textarea {
+  background-color: #222;
+  color: #eee;
+  border: 1px solid #444;
+}
+
+/* ---- Alerts ---- */
+.alert {
+  background-color: #333;
+  color: #fdd;
+  border: 1px solid #a00;
+}
+
+/* ---- Links ---- */
+a {
+  color: #80d0ff;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #40bfff;
+}

@@ -22,6 +22,13 @@ const segmentation = {
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
 
+const rtstruct = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
+};
+
+
+
 /**
  * Just two dependencies to be able to render a viewport with panels in order
  * to make sure that the mode is working.
@@ -30,6 +37,7 @@ const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -44,13 +52,13 @@ function modeFactory({ modeConfiguration }) {
      * Mode name, which is displayed in the viewer's UI in the workList, for the
      * user to select the mode.
      */
-    displayName: 'Segmentation',
+    displayName: 'Bio-Grid SEG',
     /**
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService , hangingProtocolService } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -71,6 +79,72 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
       toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
+
+      // ✅ Register custom hanging protocol
+      // Register custom hanging protocol
+      // hangingProtocolService.addProtocol(
+      //   'bio-grid-segmentation-default',
+      //   {
+      //     name: 'Segmentation Protocol',
+      //     protocolMatchingRules: [
+      //       {
+      //         id: 'default',
+      //         weight: 10,
+      //         attribute: 'ModalitiesInStudy',
+      //         constraint: {
+      //           contains: ['CT'],
+      //         },
+      //       },
+      //     ],
+      //     displaySetSelectors: {
+      //       primary: {
+      //         studyInstanceAttributes: [],
+      //         seriesInstanceAttributes: [
+      //           {
+      //             attribute: 'Modality',
+      //             value: 'CT',
+      //           },
+      //         ],
+      //       },
+      //       derived: {
+      //         studyInstanceAttributes: [],
+      //         seriesInstanceAttributes: [
+      //           {
+      //             attribute: 'Modality',
+      //             value: 'SEG',
+      //           },
+      //           {
+      //             attribute: 'Modality',
+      //             value: 'RTSTRUCT',
+      //           },
+      //         ],
+      //       },
+      //     },
+      //     stages: [
+      //       {
+      //         name: 'CT + AI Results',
+      //         viewportStructure: {
+      //           layoutType: 'grid',
+      //           properties: {
+      //             rows: 1,
+      //             columns: 2,
+      //           },
+      //         },
+      //         viewports: [
+      //           {
+      //             displaySets: ['primary'],
+      //           },
+      //           {
+      //             displaySets: ['derived'],
+      //           },
+      //         ],
+      //       },
+      //     ],
+      //   }
+      // );
+
+
+     
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -125,12 +199,33 @@ function modeFactory({ modeConfiguration }) {
      * `${extensionId}.{moduleType}.${componentId}`.
      */
     routes: [
+      // {
+      //   path: '', // Match `/segmentation` root
+      //   layoutTemplate: ({ location, servicesManager }) => ({
+      //     id: ohif.layout,
+      //     props: {
+      //       leftPanels: [ohif.leftPanel],
+      //       rightPanels: [cornerstone.panelTool],
+      //       viewports: [
+      //         {
+      //           namespace: cornerstone.viewport,
+      //           displaySetsToDisplay: [ohif.sopClassHandler],
+      //         },
+      //         {
+      //           namespace: segmentation.viewport,
+      //           displaySetsToDisplay: [segmentation.sopClassHandler],
+      //         },
+      //       ],
+      //     },
+      //   }),
+      // },
       {
         path: 'template',
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
             props: {
+              // leftPanels: [ohif.leftPanel],
               leftPanels: [ohif.leftPanel],
               rightPanels: [cornerstone.panelTool],
               // leftPanelClosed: true,
@@ -142,6 +237,10 @@ function modeFactory({ modeConfiguration }) {
                 {
                   namespace: segmentation.viewport,
                   displaySetsToDisplay: [segmentation.sopClassHandler],
+                },
+                {
+                  namespace: rtstruct.viewport,
+                  displaySetsToDisplay: [rtstruct.sopClassHandler],
                 },
               ],
             },
@@ -156,7 +255,7 @@ function modeFactory({ modeConfiguration }) {
     // The example is used for a grid layout to specify that as a preferred layout
     // hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
+    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler , rtstruct.sopClassHandler],
     /** hotkeys for mode */
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };

@@ -64,6 +64,28 @@ window.config = {
         omitQuotationForMultipartRequest: true,
       },
     },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'orthancLocal',
+      configuration: {
+        friendlyName: 'Local Orthanc',
+        name: 'Orthanc',
+        wadoUriRoot: 'http://localhost:8042/wado',
+        qidoRoot: 'http://localhost:8042/dicom-web',
+        wadoRoot: 'http://localhost:8042/dicom-web',
+        qidoSupportsIncludeField: true,
+        supportsStow: true,
+        // dicomUploadEnabled: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        staticWado: false,
+        singlepart: 'bulkdata,video',
+        omitQuotationForMultipartRequest: true,
+      },
+    },
 
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',

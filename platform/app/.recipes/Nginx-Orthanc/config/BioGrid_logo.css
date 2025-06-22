@@ -1,0 +1,9 @@
+/* logo.css - scaled down version */
+
+#orthanc-logo {
+  max-height: 32px;     /* Match Orthanc default logo height */
+  max-width: 150px;      /* Keep logo proportionate */
+  margin: 10px auto;     /* Center with margin */
+  display: block;
+  object-fit: contain;
+}

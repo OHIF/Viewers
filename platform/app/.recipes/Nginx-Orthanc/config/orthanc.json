@@ -2,9 +2,9 @@
   "Name": "Orthanc inside Docker",
   "StorageDirectory": "/var/lib/orthanc/db",
   "IndexDirectory": "/var/lib/orthanc/db",
-  "StorageCompression": false,
-  "MaximumStorageSize": 0,
-  "MaximumPatientCount": 0,
+  "StorageCompression": true,
+  "MaximumStorageSize": 1024,
+  "MaximumPatientCount": 5,
   "LuaScripts": [],
   "Plugins": ["/usr/share/orthanc/plugins", "/usr/local/share/orthanc/plugins"],
   "ConcurrentJobs": 2,
@@ -12,6 +12,11 @@
   "HttpPort": 8042,
   "HttpDescribeErrors": true,
   "HttpCompressionEnabled": true,
+  "HttpHeaders": {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS , PUT, DELETE",
+    "Access-Control-Allow-Headers": "*"
+  },
   "DicomServerEnabled": true,
   "DicomAet": "ORTHANC",
   "DicomCheckCalledAet": false,
@@ -44,7 +49,7 @@
   "OrthancPeersInDatabase": false,
   "HttpProxy": "",
 
-  "HttpVerbose": true,
+  "HttpVerbose": false,
 
   "HttpTimeout": 10,
   "HttpsVerifyPeers": true,
@@ -70,20 +75,87 @@
   "SynchronousCMove": true,
   "JobsHistorySize": 10,
   "SaveJobs": true,
+  
   "OverwriteInstances": false,
   "MediaArchiveSize": 1,
-  "StorageAccessOnFind": "Always",
+  "StorageAccessOnFind": "Never",
   "MetricsEnabled": true,
+
+  // "DicomWeb": {
+  //   "Enable": true,
+  //   "Root": "/dicom-web/",
+  //   "EnableWado": true,
+  //   "WadoRoot": "/wado",
+  //   "Host": "127.0.0.1",
+  //   "Ssl": false,
+  //   "StowMaxInstances": 10,
+  //   "StowMaxSize": 10,
+  //   "QidoCaseSensitive": false
+  // }
 
   "DicomWeb": {
     "Enable": true,
     "Root": "/dicom-web/",
     "EnableWado": true,
     "WadoRoot": "/wado",
-    "Host": "127.0.0.1",
+    "Host": "0.0.0.0",
     "Ssl": false,
     "StowMaxInstances": 10,
     "StowMaxSize": 10,
-    "QidoCaseSensitive": false
+    "QidoCaseSensitive": false,
+    "OhifViewerPublicUrl": "http://localhost"  
+  },
+
+  "OrthancExplorer2": {
+    "Enable": true,
+    "Root": "/ui/",
+    "IsDefaultOrthancUI": true,
+    "Theme": "light",
+    "CustomLogoPath": "/orthanc/logo.png",
+    "CustomLogoCssPath": "/orthanc/logo.css",
+    "UiOptions": {
+      "EnableOpenInOhifViewer": false,
+      "EnableOpenInOhifViewer3": true,
+      "OhifViewer3PublicRoot": "http://localhost/template?",
+
+      "ViewersOrdering": [
+        "open-ohif-default",
+        "open-ohif-3d",
+        "open-ohif-seg"
+      ],
+
+      "CustomButtons": {
+        "study": [
+          {
+            "HttpMethod": "GET",
+            "Id": "open-ohif-default",
+            "Tooltip": "Open in OHIF Viewer",
+            "Icon": "bi bi-grid",
+            "Target": "_blank",
+            "Url": "http://localhost/template?StudyInstanceUIDs={StudyInstanceUID}"
+          },
+          {
+            "HttpMethod": "GET",
+            "Id": "open-ohif-3d",
+            "Tooltip": "3D Volume Rendering",
+            "Icon": "bi bi-bounding-box",
+            "Target": "_blank",
+            "Url": "http://localhost/template?hangingprotocolId=mprAnd3DVolumeViewport&StudyInstanceUIDs={StudyInstanceUID}"
+          },
+          {
+            "HttpMethod": "GET",
+            "Id": "open-ohif-seg",
+            "Tooltip": "Open in Segmentation Viewer",
+            "Icon": "bi bi-brush",
+            "Target": "_blank",
+            "Url": "http://localhost/segmentation?StudyInstanceUIDs={StudyInstanceUID}"
+          }
+        ]
+      }
+    }
   }
+
+
 }
+
+

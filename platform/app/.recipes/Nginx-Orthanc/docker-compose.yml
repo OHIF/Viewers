@@ -10,37 +10,51 @@ services:
       context: ./../../../../
       # Relative to context
       dockerfile: ./platform/app/.recipes/Nginx-Orthanc/dockerfile
-    image: webapp:latest
+    # image: webapp:latest
+    image: webapp-kubernetes:latest
     container_name: ohif_orthanc
     volumes:
       # Nginx config
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       # Logs
       - ./logs/nginx:/var/logs/nginx
+      # BioGrid logo
+      # - ./config/BioGrid.svg:/usr/share/nginx/html/BioGrid.svg
       # Let's Encrypt
       # - letsencrypt_certificates:/etc/letsencrypt
       # - letsencrypt_challenges:/var/www/letsencrypt
     ports:
-      - '443:443' # SSL
-      - '80:80' # Web
+      # - '443:443' # SSL
+      # - '80:80' # Web
+      - '127.0.0.1:80:80'      # Local only
     depends_on:
       #   - keycloak
       - orthanc
     restart: on-failure
+
+    #______for kubernetes deployment______
+    environment:
+      - ORTHANC_HOST=orthanc
 
   # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
   # TODO: Update to use Postgres
   # https://github.com/mrts/docker-postgresql-multiple-databases
   orthanc:
     image: jodogne/orthanc-plugins
+    # image: custom_orthanc_without_ohif
     hostname: orthanc
     container_name: orthancPACS
     volumes:
       # Config
       - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      # - E:/Bio-Grid/OHIF_3.9_APP/Viewers/platform/app/dist:/var/www/html
+      # - ../../../../config/BioGrid_PNG_File-08.png:/orthanc/logo.png
+      - ./config/BioGrid_PNG_File-08.png:/orthanc/logo.png
+      - ./config/BioGrid_logo.css:/orthanc/logo.css
       # Persist data
       - ./volumes/orthanc-db/:/var/lib/orthanc/db/
     restart: unless-stopped
     ports:
-      - '4242:4242' # Orthanc REST API
-      - '8042:8042' # Orthanc HTTP
+      # - '4242:4242' # Orthanc REST API
+      # - '8042:8042' # Orthanc HTTP
+      - '127.0.0.1:8042:8042'  # Local only

@@ -9,6 +9,10 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
+  showAboutModal: false,  // ✅ This hides the "investigational use only" banner
+  investigationalUseDialog: {
+    option: 'never',
+  },
   strictZSpacingForVolumeViewport: true,
   studyPrefetcher: {
     enabled: true,
@@ -16,6 +20,53 @@ window.config = {
     maxNumPrefetchRequests: 10,
     order: 'closest',
   },
+
+
+  whiteLabeling: {
+    createLogoComponentFn: function(React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          className: 'text-white no-underline',
+          href: 'http://radicalimaging.com',
+        },
+          React.createElement(
+          'h2',
+          {
+            style: {
+              color: '#0059B7',       // ← replace with your actual brand color
+              fontSize: '28px',
+              margin: 0,
+            },
+          },
+          'Bio-Grid'
+        )
+      );
+    },
+  },
+
+  //   whiteLabeling: {
+  //   createLogoComponentFn: function(React) {
+  //     return React.createElement(
+  //       'a',
+  //       {
+  //         target: '_self',
+  //         rel: 'noopener noreferrer',
+  //         className: 'text-purple-600 line-through',
+  //         href: '/',
+  //       },
+  //       React.createElement('img', {
+  //         src: './BioGrid.svg',
+  //         className: 'w-8 h-8',
+  //         alt: 'Bio-Grid Logo',
+  //       })
+  //     );
+  //   },
+  // },
+
+
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {

@@ -1,19 +1,11 @@
 {
   "extensions": [
     {
-      "packageName": "@ohif/extension-default"
-    },
-    {
       "packageName": "@ohif/extension-cornerstone",
       "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-measurement-tracking",
-      "default": false,
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/extension-cornerstone-dicom-sr",
       "default": false,
       "version": "3.0.0"
     },
@@ -58,17 +50,25 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "extension2",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@ohif/extension-cornerstone-dicom-sr",
+      "version": "3.10.2"
+    },
+    {
+      "packageName": "@ohif/extension-default",
+      "version": "3.10.2"
+    },
+    {
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
-      "default": false,
-      "version": "3.0.0"
+      "version": "3.10.2"
     }
   ],
   "modes": [
     {
       "packageName": "@ohif/mode-longitudinal"
-    },
-    {
-      "packageName": "@ohif/mode-segmentation"
     },
     {
       "packageName": "@ohif/mode-tmtv"
@@ -88,6 +88,14 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "mode2",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@ohif/mode-segmentation",
+      "version": "3.10.2"
     }
   ],
   "public": [

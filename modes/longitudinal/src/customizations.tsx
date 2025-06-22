@@ -4,7 +4,7 @@ export const performCustomizations = customizationService => {
     // To disable editing in the SegmentationTable
     {
       id: 'PanelSegmentation.disableEditing',
-      disableEditing: true,
+      disableEditing: false,
     },
     // To disable editing in the MeasurementTable
     // {

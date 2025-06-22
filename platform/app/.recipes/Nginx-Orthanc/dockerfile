@@ -14,6 +14,11 @@ RUN apt-get update && apt-get install -y build-essential python3
 
 COPY ./ /usr/src/app/
 
+# Corrected Gio-Grid logo path
+# COPY platform/app/.recipes/Nginx-Orthanc/config/BioGrid_PNG_File-08.png /etc/orthanc/logo.png
+# COPY platform/app/.recipes/Nginx-Orthanc/config/BioGrid_logo_style.css /etc/orthanc/logo.css
+
+
 # Install node dependencies
 RUN yarn config set workspaces-experimental true
 RUN yarn install
@@ -41,3 +46,23 @@ EXPOSE 80 443
 
 # # Start NGINX
 CMD ["nginx", "-g", "daemon off;"]
+
+
+# FROM jodogne/orthanc-plugins:1.12.3
+
+# # Install nginx manually
+# # RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+
+# # Copy OHIF web files
+# COPY dist/ /usr/share/nginx/html/
+
+# # Copy config files
+# COPY config/nginx.conf /etc/nginx/nginx.conf
+# COPY config/orthanc.json /etc/orthanc/orthanc.json
+
+# # Copy and configure entrypoint
+# COPY entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
+
+# EXPOSE 80 8042 4242
+# ENTRYPOINT ["/entrypoint.sh"]
