@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.58...v3.11.0-beta.59) (2025-06-20)
+
+
+### Bug Fixes
+
+* **action-corners:** check hideWhenDisabled at both the evaluator and prop levels ([#5149](https://github.com/OHIF/Viewers/issues/5149)) ([d6d3fa7](https://github.com/OHIF/Viewers/commit/d6d3fa7ef47cc56ad5c9d0e577023358a0c26381))
+
+
+
+
+
 # [3.11.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.57...v3.11.0-beta.58) (2025-06-18)
 
 **Note:** Version bump only for package @ohif/core
