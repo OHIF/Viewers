@@ -112,6 +112,9 @@ test('checks if measurement item can be relabeled through the context menu on th
   // Right click and click rename
   const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
   await measurementAnnotation.click({ button: 'right', force: true });
+
+  await page.waitForTimeout(500); // small delay for context menu
+
   const addLabelButton = page.getByTestId('context-menu-item').filter({ hasText: 'Add Label' });
   await expect(addLabelButton).toBeVisible();
   await addLabelButton.click();
@@ -148,6 +151,9 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   const viewportNotification = page.getByTestId('viewport-notification');
   await expect(viewportNotification).toBeVisible();
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+
+  // wait 2 seconds
+  await page.waitForTimeout(2000);
 
   // Change to slice 14
   await setVolumeViewportIndex(page, 'default', 13);
@@ -235,6 +241,9 @@ test('checks if measurement item can be deleted through the context menu on the 
   // Right click and click rename
   const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
   await measurementAnnotation.click({ button: 'right', force: true });
+
+  await page.waitForTimeout(500); // small delay for context menu
+
   const deleteButton = page.getByTestId('context-menu-item').filter({ hasText: 'Delete' });
   await expect(deleteButton).toBeVisible();
   await deleteButton.click();
