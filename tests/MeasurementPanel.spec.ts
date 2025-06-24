@@ -152,11 +152,11 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await expect(viewportNotification).toBeVisible();
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
 
-  // wait 2 seconds
-  await page.waitForTimeout(2000);
-
   // Change to slice 14
   await setVolumeViewportIndex(page, 'default', 13);
+
+  // wait 2 seconds
+  await page.waitForTimeout(2000);
 
   // Check currently on slice 14 then add measurement
   await expect(viewportInfoBottomRight).toContainText('14/', { timeout: 15000 });

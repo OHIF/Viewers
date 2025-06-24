@@ -9,6 +9,7 @@ const setVolumeViewportIndex = async (page, viewportId, index) => {
       const { cornerstoneViewportService } = services;
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId) as any;
       viewport.setImageIdIndex(index);
+      viewport.render();
     },
     { viewportId, index, services: await page.evaluateHandle('window.services') }
   );
