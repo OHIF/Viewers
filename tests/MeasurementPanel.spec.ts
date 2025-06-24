@@ -141,6 +141,9 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   const secondImageThumbnail = page.getByTestId('study-browser-thumbnail').nth(1);
   secondImageThumbnail.dblclick();
 
+  // wait 2 seconds
+  await page.waitForTimeout(2000);
+
   // Change to slice 1
   await setVolumeViewportIndex(page, 'default', 0);
 
@@ -151,6 +154,9 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   const viewportNotification = page.getByTestId('viewport-notification');
   await expect(viewportNotification).toBeVisible();
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+
+  // wait 2 seconds
+  await page.waitForTimeout(2000);
 
   // Change to slice 14
   await setVolumeViewportIndex(page, 'default', 13);
