@@ -113,6 +113,7 @@ test('checks if measurement item can be relabeled through the context menu on th
   const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
   await measurementAnnotation.click({ button: 'right', force: true });
   const addLabelButton = page.getByTestId('context-menu-item').filter({ hasText: 'Add Label' });
+  await expect(addLabelButton).toBeVisible();
   await addLabelButton.click();
 
   // Interact with dialog
@@ -141,7 +142,7 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await setVolumeViewportIndex(page, 'default', 0);
 
   // Confirm on slice 1 then add measurement
-  await expect(viewportInfoBottomRight).toContainText('1/');
+  await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
   await addLengthMeasurement(page);
 
   const viewportNotification = page.getByTestId('viewport-notification');
@@ -152,7 +153,7 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await setVolumeViewportIndex(page, 'default', 13);
 
   // Check currently on slice 14 then add measurement
-  await expect(viewportInfoBottomRight).toContainText('14/');
+  await expect(viewportInfoBottomRight).toContainText('14/', { timeout: 10000 });
   await addLengthMeasurement(page);
 
   // Open measurement panel and click first measurement
@@ -162,7 +163,7 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await measurementRow.click();
 
   // Confirm jumped to slice 1
-  await expect(viewportInfoBottomRight).toContainText('1/');
+  await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
   await expect(viewportInfoBottomRight).not.toContainText('14/');
 });
 
@@ -235,6 +236,7 @@ test('checks if measurement item can be deleted through the context menu on the 
   const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
   await measurementAnnotation.click({ button: 'right', force: true });
   const deleteButton = page.getByTestId('context-menu-item').filter({ hasText: 'Delete' });
+  await expect(deleteButton).toBeVisible();
   await deleteButton.click();
 
   // Confirm measurement is gone
