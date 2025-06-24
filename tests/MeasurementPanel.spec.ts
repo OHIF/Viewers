@@ -110,10 +110,10 @@ test('checks if measurement item can be relabeled through the context menu on th
   await expect(measurementRow).toContainText('(empty)');
 
   // Right click and click rename
+  await page.waitForTimeout(200); // small delay for context menu
   const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
   await measurementAnnotation.click({ button: 'right', force: true });
-
-  await page.waitForTimeout(500); // small delay for context menu
+  await page.waitForTimeout(200); // small delay for context menu
 
   const addLabelButton = page.getByTestId('context-menu-item').filter({ hasText: 'Add Label' });
   await expect(addLabelButton).toBeVisible();
@@ -235,20 +235,18 @@ test('checks if measurement item can be deleted through the context menu on the 
 
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
 
-  // Open measurement panel
-  await measurementsBtn.click();
-
   // Right click and click rename
+  await page.waitForTimeout(200); // small delay for context menu
   const measurementAnnotation = page.locator('g[data-annotation-uid]').first();
   await measurementAnnotation.click({ button: 'right', force: true });
-
-  await page.waitForTimeout(500); // small delay for context menu
+  await page.waitForTimeout(200); // small delay for context menu
 
   const deleteButton = page.getByTestId('context-menu-item').filter({ hasText: 'Delete' });
   await expect(deleteButton).toBeVisible();
   await deleteButton.click();
 
-  // Confirm measurement is gone
+  // Open measurement panel and confirm measurement is gone
+  await measurementsBtn.click();
   await expect(measurementAnnotation).toBeHidden();
   await expect(page.getByTestId('data-row')).toHaveCount(0);
 });
