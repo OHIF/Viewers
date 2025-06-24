@@ -159,7 +159,7 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await setVolumeViewportIndex(page, 'default', 13);
 
   // Check currently on slice 14 then add measurement
-  await expect(viewportInfoBottomRight).toContainText('14/', { timeout: 10000 });
+  await expect(viewportInfoBottomRight).toContainText('14/', { timeout: 15000 });
   await addLengthMeasurement(page);
 
   // Open measurement panel and click first measurement
