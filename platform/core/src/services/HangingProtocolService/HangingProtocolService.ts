@@ -1355,7 +1355,7 @@ export default class HangingProtocolService extends PubSubService {
     const { StudyInstanceUID: activeStudyUID } = this.activeStudy;
     viewport.displaySets.forEach(displaySetOptions => {
       const { id, matchedDisplaySetsIndex = 0 } = displaySetOptions;
-      const reuseDisplaySetUID =
+      const reuseDisplaySetUIDs =
         id && displaySetSelectorMap[`${activeStudyUID}:${id}:${matchedDisplaySetsIndex || 0}`];
       const viewportDisplaySetMain = this.displaySetMatchDetails.get(id);
 
@@ -1366,33 +1366,17 @@ export default class HangingProtocolService extends PubSubService {
       );
 
       // Use the display set provided instead
-      if (reuseDisplaySetUID) {
-        // This display set should have already been validated
-        const displaySetInfo: HangingProtocol.DisplaySetInfo = {
-          displaySetInstanceUID: reuseDisplaySetUID,
-          displaySetOptions,
-        };
+      if (reuseDisplaySetUIDs) {
+        reuseDisplaySetUIDs.forEach(reuseDisplaySetUID => {
+          // This display set should have already been validated
+          const displaySetInfo: HangingProtocol.DisplaySetInfo = {
+            displaySetInstanceUID: reuseDisplaySetUID,
+            displaySetOptions,
+          };
 
-        displaySetsInfo.push(displaySetInfo);
+          displaySetsInfo.push(displaySetInfo);
+        });
 
-        if (id === 'activeDisplaySet') {
-          // Check if there are multiple display sets to restore for the active display set viewport.
-          // We break out of the loop from within when no more display sets are found for the viewport.
-          for (let displaySetIndex = 1; ; displaySetIndex += 1) {
-            const reuseDisplaySetUID =
-              displaySetSelectorMap[`${activeStudyUID}:${id}:${displaySetIndex}`];
-            if (reuseDisplaySetUID) {
-              const displaySetInfo: HangingProtocol.DisplaySetInfo = {
-                displaySetInstanceUID: reuseDisplaySetUID,
-                displaySetOptions,
-              };
-              displaySetsInfo.push(displaySetInfo);
-            } else {
-              // We've exhausted all the display sets cached for the active viewport.
-              break;
-            }
-          }
-        }
         return;
       }
 
@@ -1402,7 +1386,7 @@ export default class HangingProtocolService extends PubSubService {
         const { displaySetInstanceUID } = viewportDisplaySet;
 
         const displaySetInfo: HangingProtocol.DisplaySetInfo = {
-          displaySetInstanceUID,
+          displaySetInstanceUID: displaySetInstanceUID,
           displaySetOptions,
         };
 
@@ -1495,14 +1479,16 @@ export default class HangingProtocolService extends PubSubService {
     const { displaySetService } = this._servicesManager.services;
     const { displaySetSelectorMap } = options;
     if (displaySetSelectorMap) {
-      Object.entries(displaySetSelectorMap).forEach(([key, displaySetInstanceUID]) => {
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      Object.entries(displaySetSelectorMap).forEach(([key, displaySetInstanceUIDs]) => {
+        displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
-        if (!displaySet) {
-          throw new Error(
-            `The displaySetInstanceUID ${displaySetInstanceUID} is not found in the displaySetService`
-          );
-        }
+          if (!displaySet) {
+            throw new Error(
+              `The displaySetInstanceUID ${displaySetInstanceUID} is not found in the displaySetService`
+            );
+          }
+        });
       });
     }
   }

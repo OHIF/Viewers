@@ -54,22 +54,29 @@ const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService
       return;
     }
     for (let i = 0; i < displaySetOptions.length; i++) {
+      const activeDisplaySetUIDs = [];
+
       const displaySetUID = displaySetInstanceUIDs[i];
       if (!displaySetUID) {
         continue;
       }
       if (viewportId === activeViewportId) {
-        // For the active viewport, overload the `matchedDisplaySetsIndex` position in the cache key
-        // to enumerate multiple display sets that might be contained in the viewport.
-        setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:${i}`, displaySetUID);
+        activeDisplaySetUIDs.push(displaySetUID);
+
+        // After going through all the display set options for the active viewport, store the display set selector array
+        if (i === displaySetOptions.length - 1) {
+          setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:0`, activeDisplaySetUIDs);
+        }
       }
+
       // The activeDisplaySet selector should only be set once (i.e. for the actual active display set)
       if (displaySetOptions[i]?.id && displaySetOptions[i].id !== 'activeDisplaySet') {
+        // TODO: handle multiple layers/display sets for the non-active viewports
         setDisplaySetSelector(
           `${activeStudyUID}:${displaySetOptions[i].id}:${
             displaySetOptions[i].matchedDisplaySetsIndex || 0
           }`,
-          displaySetUID
+          [displaySetUID]
         );
       }
     }
