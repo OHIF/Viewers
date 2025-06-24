@@ -160,15 +160,17 @@ module.exports = (env, argv) => {
       client: {
         overlay: { errors: true, warnings: false },
       },
-      proxy: {
-        '/dicomweb': 'http://localhost:5000',
-        '/dicom-microscopy-viewer': {
-          target: 'http://localhost:3000',
-          pathRewrite: {
-            '^/dicom-microscopy-viewer': `/${PUBLIC_URL}/dicom-microscopy-viewer`,
+      proxy: [
+        {
+          '/dicomweb': 'http://localhost:5000',
+          '/dicom-microscopy-viewer': {
+            target: 'http://localhost:3000',
+            pathRewrite: {
+              '^/dicom-microscopy-viewer': `/${PUBLIC_URL}/dicom-microscopy-viewer`,
+            },
           },
         },
-      },
+      ],
       static: [
         {
           directory: '../../testdata',
