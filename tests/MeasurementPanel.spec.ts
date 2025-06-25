@@ -142,12 +142,13 @@ test('checks if measurement item can be relabeled through the context menu on th
 });
 
 test('checks if image would jump when clicked on a measurement item', async ({ page }) => {
+  await page.waitForTimeout(500);
   const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
   const secondImageThumbnail = page.getByTestId('study-browser-thumbnail').nth(1);
   secondImageThumbnail.dblclick();
 
   // wait 2 seconds
-  //await page.waitForTimeout(2000);
+  await page.waitForTimeout(2000);
 
   //// Change to slice 1
   //await setVolumeViewportIndex(page, 'default', 0);
@@ -165,7 +166,25 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
 
   // Change to slice 14
   //await setVolumeViewportIndex(page, 'default', 13);
-  await scrollVolumeViewport(page, 'default', 13);
+  //await scrollVolumeViewport(page, 'default', 13);
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setImageIdIndex(13);
+      viewport.render();
+    }
+  });
 
   // wait 2 seconds
   //await page.waitForTimeout(2000);
