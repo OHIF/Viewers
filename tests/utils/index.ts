@@ -8,7 +8,6 @@ import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
-import { setVolumeViewportIndex } from './setVolumeViewportIndex';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 
@@ -26,5 +25,4 @@ export {
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
-  setVolumeViewportIndex,
 };

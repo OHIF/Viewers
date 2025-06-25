@@ -1,10 +1,5 @@
 import { test, expect } from 'playwright-test-coverage';
-import {
-  visitStudy,
-  addLengthMeasurement,
-  setVolumeViewportIndex,
-  scrollVolumeViewport,
-} from './utils';
+import { visitStudy, addLengthMeasurement, scrollVolumeViewport } from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -142,18 +137,9 @@ test('checks if measurement item can be relabeled through the context menu on th
 });
 
 test('checks if image would jump when clicked on a measurement item', async ({ page }) => {
-  //await page.waitForTimeout(500);
   const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
-  //const secondImageThumbnail = page.getByTestId('study-browser-thumbnail').nth(1);
-  //secondImageThumbnail.dblclick();
 
-  // wait 2 seconds
-  //await page.waitForTimeout(2000);
-
-  //// Change to slice 1
-  //await setVolumeViewportIndex(page, 'default', 0);
-
-  // Confirm on slice 1 then add measurement
+  // Image loads on slice 1, confirm on slice 1 then add measurement
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
   await addLengthMeasurement(page);
 
@@ -161,33 +147,8 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await expect(viewportNotification).toBeVisible();
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
 
-  // wait 2 seconds
-  //await page.waitForTimeout(2000);
-
   // Change to slice 2
-  //await setVolumeViewportIndex(page, 'default', 13);
   await scrollVolumeViewport(page, 'default', 1);
-  //await page.evaluate(() => {
-  //  // Access cornerstone directly from the window object
-  //  const cornerstone = window.cornerstone;
-  //  if (!cornerstone) {
-  //    return;
-  //  }
-
-  //  const enabledElements = cornerstone.getEnabledElements();
-  //  if (enabledElements.length === 0) {
-  //    return;
-  //  }
-
-  //  const viewport = enabledElements[0].viewport;
-  //  if (viewport) {
-  //    viewport.setImageIdIndex(13);
-  //    viewport.render();
-  //  }
-  //});
-
-  // wait 2 seconds
-  //await page.waitForTimeout(2000);
 
   // Check currently on slice 2 then add measurement
   await expect(viewportInfoBottomRight).toContainText('2/', { timeout: 15000 });
