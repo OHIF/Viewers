@@ -437,7 +437,7 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  const customStudyBrowser = (customizationService.getCustomization('studyBrowser') ||
+  const customStudyBrowser = (customizationService.getCustomization('ui.studyBrowser') ||
     StudyBrowser) as React.ComponentType<unknown>;
 
   return (
