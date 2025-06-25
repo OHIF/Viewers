@@ -437,6 +437,9 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
+  const customStudyBrowser = (customizationService.getCustomization('studyBrowser') ||
+    StudyBrowser) as React.ComponentType<unknown>;
+
   return (
     <>
       <>
@@ -454,32 +457,33 @@ function PanelStudyBrowser({
         />
       </>
 
-      <StudyBrowser
-        tabs={tabs}
-        servicesManager={servicesManager}
-        activeTabName={activeTabName}
-        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
-        onClickStudy={_handleStudyClick}
-        onClickTab={clickedTabName => {
+      {React.createElement(customStudyBrowser, {
+        // @ts-expect-error custom type
+        tabs,
+        servicesManager,
+        activeTabName,
+        expandedStudyInstanceUIDs,
+        onClickStudy: _handleStudyClick,
+        onClickTab: clickedTabName => {
           setActiveTabName(clickedTabName);
-        }}
-        onClickUntrack={onClickUntrack}
-        onClickThumbnail={onClickThumbnailHandler}
-        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
-        showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
-        viewPresets={viewPresets}
-        ThumbnailMenuItems={MoreDropdownMenu({
+        },
+        onClickUntrack,
+        onClickThumbnail: onClickThumbnailHandler,
+        onDoubleClickThumbnail: onDoubleClickThumbnailHandler,
+        activeDisplaySetInstanceUIDs,
+        showSettings: actionIcons.find(icon => icon.id === 'settings')?.value,
+        viewPresets,
+        ThumbnailMenuItems: MoreDropdownMenu({
           commandsManager,
           servicesManager,
           menuItemsKey: 'studyBrowser.thumbnailMenuItems',
-        })}
-        StudyMenuItems={MoreDropdownMenu({
+        }),
+        StudyMenuItems: MoreDropdownMenu({
           commandsManager,
           servicesManager,
           menuItemsKey: 'studyBrowser.studyMenuItems',
-        })}
-      />
+        }),
+      })}
     </>
   );
 }
