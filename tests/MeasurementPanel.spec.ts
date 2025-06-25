@@ -1,5 +1,10 @@
 import { test, expect } from 'playwright-test-coverage';
-import { visitStudy, addLengthMeasurement, setVolumeViewportIndex } from './utils';
+import {
+  visitStudy,
+  addLengthMeasurement,
+  setVolumeViewportIndex,
+  scrollVolumeViewport,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -142,10 +147,10 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   secondImageThumbnail.dblclick();
 
   // wait 2 seconds
-  await page.waitForTimeout(2000);
+  //await page.waitForTimeout(2000);
 
-  // Change to slice 1
-  await setVolumeViewportIndex(page, 'default', 0);
+  //// Change to slice 1
+  //await setVolumeViewportIndex(page, 'default', 0);
 
   // Confirm on slice 1 then add measurement
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
@@ -156,13 +161,14 @@ test('checks if image would jump when clicked on a measurement item', async ({ p
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
 
   // wait 2 seconds
-  await page.waitForTimeout(2000);
+  //await page.waitForTimeout(2000);
 
   // Change to slice 14
-  await setVolumeViewportIndex(page, 'default', 13);
+  //await setVolumeViewportIndex(page, 'default', 13);
+  await scrollVolumeViewport(page, 'default', 13);
 
   // wait 2 seconds
-  await page.waitForTimeout(2000);
+  //await page.waitForTimeout(2000);
 
   // Check currently on slice 14 then add measurement
   await expect(viewportInfoBottomRight).toContainText('14/', { timeout: 15000 });
