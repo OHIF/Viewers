@@ -392,7 +392,10 @@ export default function USAnnotationPanel() {
    * ──────────────────────────────────────────────────────
    *  🖼  Final Render                                      */
   return (
-    <div className="h-full w-64 bg-black text-white">
+    <div
+      className="h-full bg-black text-white"
+      style={{ minWidth: 240, maxWidth: 480, width: '100%' }}
+    >
       {/* Workflow */}
       <PanelSection>
         <PanelSection.Header>Workflow</PanelSection.Header>
