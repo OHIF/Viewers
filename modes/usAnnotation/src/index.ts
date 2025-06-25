@@ -3,11 +3,6 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import { UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
-import { showPercentage } from '@ohif/extension-ultrasound-pleura-bline';
-
-// Allow this mode by excluding non-imaging modalities such as SR, SEG
-// Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -244,9 +239,6 @@ function modeFactory({ modeConfiguration }) {
               title: 'BLinePleuraPercentage',
               condition: ({ referenceInstance }) => referenceInstance?.Modality.includes('US'),
               contentF: () => {
-                if (!showPercentage) {
-                  return;
-                }
                 const { viewportGridService, toolGroupService, cornerstoneViewportService } =
                   servicesManager.services;
                 const activeViewportId = viewportGridService.getActiveViewportId();
