@@ -31,7 +31,7 @@
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
+    --highlight: 140 61% 56%;
     --neutral: 213 22% 59%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
@@ -39,7 +39,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 219 90% 15%;
     --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
+    --primary: 140 61% 56%;
     --primary-foreground: 0 0% 98%;
     --secondary: 214 66% 48%;
     --secondary-foreground: 200 50% 84%;

@@ -77,7 +77,8 @@ function initI18n(
       // init i18next
       // for all options read: https://www.i18next.com/overview/configuration-options
       .init({
-        fallbackLng: DEFAULT_LANGUAGE,
+        lng: 'en',
+        fallbackLng: 'en',
         saveMissing: apiKeyAvailable,
         debug: debugMode,
         keySeparator: false,
@@ -113,7 +114,8 @@ function initI18n(
       // init i18next
       // for all options read: https://www.i18next.com/overview/configuration-options
       .init({
-        fallbackLng: DEFAULT_LANGUAGE,
+        lng: 'en',
+        fallbackLng: 'en',
         resources: locales,
         debug: debugMode,
         keySeparator: false,

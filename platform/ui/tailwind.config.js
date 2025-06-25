@@ -25,31 +25,31 @@ module.exports = {
       inherit: 'inherit',
 
       aqua: {
-        pale: '#7bb2ce',
+        pale: '#A6F0C5',
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#6CDC91',
+        main: '#4CD479',
+        dark: '#030d06',
+        active: '#4CD479',
       },
       inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#5acce6',
+        main: '#329653',
+        disabled: '#4CD479',
+        focus: '#6CDC91',
         placeholder: '#39383f',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
+        light: '#39383f',
+        main: '#030d06',
+        dark: '#000',
         active: '#1f1f27',
       },
 
       indigo: {
-        dark: '#0b1a42',
+        dark: '#0e361b',
       },
 
       common: {
@@ -57,7 +57,7 @@ module.exports = {
         light: '#a19fad',
         main: '#fff',
         dark: '#726f7e',
-        active: '#2c3074',
+        active: '#4CD479',
       },
       bkg: {
         low: '#050615',
@@ -79,16 +79,16 @@ module.exports = {
       },
 
       customblue: {
-        10: '#0A163F',
-        20: '#0B1F54',
-        30: '#09286e',
-        40: '#0E307F',
-        50: '#0F3A94',
-        80: '#1454D4',
-        100: '#c4fdff',
-        200: '#38daff',
-        300: '#1D204D',
-        400: '#90A0C1',
+        10: '#1B4332', // Plus sombre
+        20: '#23523F', // Plus sombre
+        30: '#2B614C', // Plus sombre
+        40: '#337059', // Plus sombre
+        50: '#3B7F66', // Plus sombre
+        80: '#4CD479', // Couleur de base
+        100: '#79E2A7', // Plus clair
+        200: '#A6F0C5', // Plus clair
+        300: '#D3F9E1', // Plus clair
+        400: '#E8F5F0', // Plus clair
       },
 
       customgray: {

@@ -61,6 +61,14 @@
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "deemea-extension-3d",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "deemea-extension",
+      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -88,6 +96,14 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "deemea-mode-3d",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "deemea-mode",
+      "version": "0.0.1"
     }
   ],
   "public": [

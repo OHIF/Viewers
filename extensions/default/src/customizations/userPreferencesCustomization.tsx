@@ -61,7 +61,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     <UserPreferencesModal>
       <UserPreferencesModal.Body>
         {/* Language Section */}
-        <div className="mb-3 flex items-center space-x-14">
+        {/* <div className="mb-3 flex items-center space-x-14">
           <UserPreferencesModal.SubHeading>{t('Language')}</UserPreferencesModal.SubHeading>
           <Select
             defaultValue={state.languageValue}
@@ -84,7 +84,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
 
         <UserPreferencesModal.SubHeading>{t('Hotkeys')}</UserPreferencesModal.SubHeading>
         <UserPreferencesModal.HotkeysGrid>

@@ -78,6 +78,14 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(__dirname, 'deemea-extension/node_modules'),
+        path.resolve(__dirname, 'deemea-extension-3d/node_modules'),
+        path.resolve(__dirname, 'deemea-mode/node_modules'),
+        path.resolve(__dirname, 'deemea-mode-3d/node_modules'),
+        path.resolve(__dirname, 'deemea-mode-3d/node_modules'),
+        path.resolve(__dirname, 'deemea-mode/node_modules'),
+        path.resolve(__dirname, 'deemea-extension-3d/node_modules'),
+        path.resolve(__dirname, 'deemea-extension/node_modules'),
       ],
     },
     plugins: [

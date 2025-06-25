@@ -71,6 +71,16 @@ export function onCompletedCalibrationLine(
   const adjustCalibration = newLength => {
     const spacingScale = newLength / length;
 
+    window.parent.postMessage(
+      {
+        type: 'update_calibration',
+        message: {
+          calibration: spacingScale,
+        },
+      },
+      '*'
+    );
+
     // trigger resize of the viewport to adjust the world/pixel mapping
     calibrateImageSpacing(imageId, viewport.getRenderingEngine(), {
       type: 'User',

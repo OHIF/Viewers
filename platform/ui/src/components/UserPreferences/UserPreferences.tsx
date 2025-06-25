@@ -15,9 +15,9 @@ const UserPreferences = ({
   disabled = false,
   hotkeyDefinitions,
   hotkeyDefaults,
-  onCancel = () => {},
-  onSubmit = () => {},
-  onReset = () => {},
+  onCancel = () => { },
+  onSubmit = () => { },
+  onReset = () => { },
   hotkeysModule,
 }) => {
   const { t } = useTranslation('UserPreferencesModal');
@@ -81,7 +81,7 @@ const UserPreferences = ({
 
   return (
     <>
-      <Section title={t('General')}>
+      {/* <Section title={t('General')}>
         <div className="flex w-72 flex-row items-center justify-center">
           <Typography
             variant="subtitle"
@@ -96,7 +96,7 @@ const UserPreferences = ({
             value={state.language}
           />
         </div>
-      </Section>
+      </Section> */}
       <Section title={t('Hotkeys')}>
         <HotkeysPreferences
           disabled={disabled}
@@ -134,7 +134,7 @@ const UserPreferences = ({
   );
 };
 
-const noop = () => {};
+const noop = () => { };
 
 UserPreferences.propTypes = {
   disabled: PropTypes.bool,

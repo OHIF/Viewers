@@ -36,6 +36,10 @@ export default {
       displayText: [],
       report: [],
     },
+    Probe: {
+      displayText: [],
+      report: [],
+    },
     SplineROI: {
       displayText: [
         {

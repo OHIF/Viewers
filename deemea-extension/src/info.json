@@ -1,0 +1,2140 @@
+[
+    {
+        "id": 4689,
+        "hashImageId": "Z0wzS+I3wWVczT8RcdDFvNt0QEYwQ7sgPv18lYAHNsNZlPTE2YSvHrJnx1KW975SwRuQfm/1qA9zhqaWmY/87O6quGxeBVa8JoDLFIAsP58kdYb2jNehUJAGxzEYYdW5gFrY9yU4JmZpFcrpftrgzarF9SEuXahCE5slI018jrd7tJPH48UZFwg8tR++r/CdZnONgN21niSh9YfKDixKaTK4ljjldtXSZ9D2lH1uP7qt0ffSyBp2XZMihhzx1msoba0zV8Z9bpEmByrJlZLZj6kScdD8nedJ49iDl3GPzwJSDQsnCkQOStv42Ed14SCPp2S6FyuUa108ts3jwBpaugV2evBbuvPVIocgDgwrXwG6l36yzSW6P2p+w7EzDP6N8N1370UxFyhynNFKLCM7PVVsKrJvYWFArMDLY/3KBG8dvZ9liOyKzAg4fBSzbDNqTEeMFurqI0X8BoOBR5sB7/Sol/ynX+kwnDyUfyi5mLH+kWm+IeGqEYdffsfpSpORhAe1CZorN/VoxBx2s99fBszlQ9fT9uBRkS6NhYiR6dyFlFvWIccT1SI3CRTOHO/tlFtGjQK1e3e69F9aHuOSMPXAVocEPYGxvVG+Lf682sVDB7fx4VHpsTVgB2VQD3Nr6vr5q40m9uYbyUXrZBe27dEDMvLhw89Gs2xfeR7VBTY=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Lateral",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "7154f76d400710ca5b88fb1b4f507a9fc90fcf2ca5e46534358b4cc34d1f1f19",
+        "createdAt": "2024-10-22T07:51:56.530Z",
+        "updatedAt": "2024-10-22T07:51:56.530Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35049,
+                "name": "patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6923537254333496",
+                "yOrigin": "0.4977678656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.353Z"
+            },
+            {
+                "id": 35044,
+                "name": "patella_proximal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6859419941902161",
+                "yOrigin": "0.3392857015132904",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.353Z"
+            },
+            {
+                "id": 35045,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.49358823895454407",
+                "yOrigin": "0.2935267686843872",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.353Z"
+            },
+            {
+                "id": 35046,
+                "name": "tibia_plateau_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6057945489883423",
+                "yOrigin": "0.589285671710968",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.353Z"
+            },
+            {
+                "id": 35047,
+                "name": "tibia_plateau_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.31405797600746155",
+                "yOrigin": "0.5803571343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.353Z"
+            },
+            {
+                "id": 35050,
+                "name": "femur_condyle_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.45511746406555176",
+                "yOrigin": "0.5691964030265808",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.356Z"
+            },
+            {
+                "id": 35051,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.38458773493766785",
+                "yOrigin": "0.015624999068677425",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.359Z"
+            },
+            {
+                "id": 35052,
+                "name": "projected_patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6873955726623535",
+                "yOrigin": "0.5763052701950073",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.369Z"
+            },
+            {
+                "id": 35048,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.46313220262527466",
+                "yOrigin": "0.8515625",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.353Z"
+            },
+            {
+                "id": 35053,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4134407937526703",
+                "yOrigin": "0.9832589626312256",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.369Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14230,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            },
+            {
+                "id": 14231,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "tibial_slope"
+            },
+            {
+                "id": 14232,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "blackburne_peel_index"
+            },
+            {
+                "id": 14233,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            }
+        ]
+    },
+    {
+        "id": 4691,
+        "hashImageId": "FBec6C4Uz7mStQx5OAd/S2vkIdilZSy6i1fe/zeK0i3UnYKPOfYP1/mxlHytd2rPOciLx407ukBp6+sI4lrHb0mldZ5q00PRSnW7ANrmZYiNQkHDKsk/TkS5D9lVTIBfl6Gw6dnH7ymDxydyL4d0Qq6mu0fFFBAQTQ3lrRP3SrP7E5+3s2CUQLheL2V+FZnqpJQtOE+NvAZ1FE8VuSLfmeXC+oUOpBzjdhBIQmJnL3m807nByWhK7CoiBrWiTrRTg+CQ0KsyL1owG6r0F5oGheNdZgz/5imKx6kG+y/zrTvIu7j9vF/Kv8uoa2XbeNHu3wz8E2xSwUKJfxqKzdlx6L65vh4e7qRBfukveU1xabMQj/fi5CAZwDtGq7UI+KIO8XzyYloz4b43UgRyRcD+qgsM+bWjpIfJnlIUhXFJ+bt3hGDVtSRlogpzo37GwMnc0L3I9gHilnE0j5TaSC3XJM0hvqzoYJP1yfzu+ddDMxINTGhl40EThntKj6bl9Vdt2eIJrJYMRp7ezQ3SS5uOpWTOAGhSn3EYJngftHY4e24QmL9Aprzh+bd45yD4EuJaH3PVqFgMz37fmAtCxYhrR9j8otEq9IJdtFJ4lpED9DrxvkdBBfSYu1uM8dFHM14H1uz/DM6+Si3osQa/gTBX1/Ex5zaPsT6LTCBuHt/NFpQ=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "AP",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "ecfae8b93d4ed5dd4092457ab2078f4e7d054c66fadb658c147d39d944fc245b",
+        "createdAt": "2024-10-22T07:51:56.555Z",
+        "updatedAt": "2024-10-22T07:51:56.555Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35145,
+                "name": "tibia_plateau_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.40407225489616394",
+                "yOrigin": "0.59375",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.284Z"
+            },
+            {
+                "id": 35148,
+                "name": "tibia_prosthesis_proximal_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.40824297070503235",
+                "yOrigin": "0.5602678656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.285Z"
+            },
+            {
+                "id": 35142,
+                "name": "femur_condyle_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.48748770356178284",
+                "yOrigin": "0.5401785969734192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.283Z"
+            },
+            {
+                "id": 35150,
+                "name": "femur_condyle_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7419049143791199",
+                "yOrigin": "0.5334821939468384",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.287Z"
+            },
+            {
+                "id": 35144,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6480624675750732",
+                "yOrigin": "0.6741071939468384",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.283Z"
+            },
+            {
+                "id": 35152,
+                "name": "tibia_prosthesis_plateau_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6028026938438416",
+                "yOrigin": "0.5517678260803223",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.289Z"
+            },
+            {
+                "id": 35149,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5604762434959412",
+                "yOrigin": "0.3348214328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.285Z"
+            },
+            {
+                "id": 35147,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4708045721054077",
+                "yOrigin": "0.008928571827709675",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.285Z"
+            },
+            {
+                "id": 35146,
+                "name": "tibia_plateau_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8211495280265808",
+                "yOrigin": "0.578125",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.285Z"
+            },
+            {
+                "id": 35143,
+                "name": "tibia_prosthesis_keel",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6626601815223694",
+                "yOrigin": "0.9441965222358704",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.284Z"
+            },
+            {
+                "id": 35151,
+                "name": "tibia_prosthesis_proximal_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8169787526130676",
+                "yOrigin": "0.5424107313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.287Z"
+            },
+            {
+                "id": 35153,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6876848340034485",
+                "yOrigin": "0.9955357313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.289Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14268,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "knee_joint_line_convergence_angle"
+            },
+            {
+                "id": 14271,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "prosthetic_overhang"
+            },
+            {
+                "id": 14273,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_lateral"
+            },
+            {
+                "id": 14267,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            },
+            {
+                "id": 14270,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            },
+            {
+                "id": 14269,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoral_angle"
+            },
+            {
+                "id": 14272,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_medial"
+            }
+        ]
+    },
+    {
+        "id": 4692,
+        "hashImageId": "Dfy1hW4GtfdV0nOdnm5CXffdjy4IxUoTqcG1mGOgLP0Y8YfmOBHxor0m9/Wv5z1s7CzbHgnx4YlwhXEogQPgPNadaiCGf2IQ/4InwmZnTzBugxm++iHwXvEh9DWsOJ8rfo10vKWcR/OJxCxJDxv3qKGb3IgBPgZ3brKCfZLBwRqxQmXgSt3OrDYgPIktzrafnDwXXL/C/LuNky5AzHmM9m7eNffyd2ZEU1CmzIFE+cQWkswiWYiIVhR7AEfReBcN9ncwDb0HTjl2H284flLNd8Pe8XtmnMYJyrF0fCs7SgyZ5qz8qrXP1A47JmzCTIinTILUrA9jlosjuk7368wn/BdMoHlV0pmTm0+s4rO2K6E+2Grea3UcmmrvqgoasSPRSOck2nfCrzH+vYSY/BO+B1B5Pg9Zu6nTDcxUx2xudXcghyI1j0//Djg3CBM/cI/jNs0NWHDSEs4X7t5aDiW352HcDd34vyhF4Mj2bqvwCM8DjOFJ/4RaqCqbAIrHgZL32MPMkvWg+Hp+hn725D0RPcLRweFCo65VxB5pczJafPS5JG36MbUrW9NqSWHFUnM+aj0VJ7aJsPIpVlomS8TL3L684gs5hEcGs3pwgoC6TYKpo1Bb28z3kCPWzDkSLRUkMObXQ1vZ2ywiB01Zw5pCNpKYgS5DyI2wCM4P2/mnQC0=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Lateral",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "4f3aa8742730b28143ffdb1f58090e8899c7b2e13cab60215bda0015e436b188",
+        "createdAt": "2024-10-22T07:51:56.576Z",
+        "updatedAt": "2024-10-22T07:51:56.576Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35086,
+                "name": "femur_condyle_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5795944333076477",
+                "yOrigin": "0.645089328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.133Z"
+            },
+            {
+                "id": 35089,
+                "name": "tibia_proximal_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7665860056877136",
+                "yOrigin": "0.680803656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.135Z"
+            },
+            {
+                "id": 35096,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6874741911888123",
+                "yOrigin": "0.0078125",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.138Z"
+            },
+            {
+                "id": 35093,
+                "name": "patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2775312066078186",
+                "yOrigin": "0.5736607313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.136Z"
+            },
+            {
+                "id": 35092,
+                "name": "patella_proximal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2559552788734436",
+                "yOrigin": "0.424107164144516",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.136Z"
+            },
+            {
+                "id": 35090,
+                "name": "tibia_proximal_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.3602389693260193",
+                "yOrigin": "0.71875",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.134Z"
+            },
+            {
+                "id": 35099,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5688064098358154",
+                "yOrigin": "0.9877232313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.139Z"
+            },
+            {
+                "id": 35087,
+                "name": "tibia_plateau_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.3638349771499634",
+                "yOrigin": "0.6852678656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.132Z"
+            },
+            {
+                "id": 35098,
+                "name": "projected_patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.304048091173172",
+                "yOrigin": "0.673334538936615",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.139Z"
+            },
+            {
+                "id": 35088,
+                "name": "tibia_plateau_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7557979822158813",
+                "yOrigin": "0.645089328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.132Z"
+            },
+            {
+                "id": 35097,
+                "name": "tibia_prosthesis_plateau_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5042415857315063",
+                "yOrigin": "0.6708754301071167",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.138Z"
+            },
+            {
+                "id": 35094,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5328465700149536",
+                "yOrigin": "0.871651828289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.136Z"
+            },
+            {
+                "id": 35091,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5058765411376953",
+                "yOrigin": "0.3828125298023224",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.136Z"
+            },
+            {
+                "id": 35095,
+                "name": "tibia_prosthesis_keel",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5508264899253845",
+                "yOrigin": "0.8459821939468384",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.136Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14245,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            },
+            {
+                "id": 14247,
+                "value": "true",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_posterior"
+            },
+            {
+                "id": 14242,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "blackburne_peel_index"
+            },
+            {
+                "id": 14244,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            },
+            {
+                "id": 14243,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "tibial_slope"
+            },
+            {
+                "id": 14246,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "prosthetic_overhang"
+            },
+            {
+                "id": 14248,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_anterior"
+            }
+        ]
+    },
+    {
+        "id": 4690,
+        "hashImageId": "B6QHJxtIGGyyxkcwKJPD+r2gzNpWIy98OCnBhU1lyQpnvqHHwrsQwn7p35HoO3KY4YJVOt+VCuD203w4dgRnh1SmaZA4Yy0Q3xssb5dEZPlABvBvgVRjQajno0YebTAF/VPF7cwrPJiLKNSncMOIvLXsR88IE8o7vn7U58uZbelKOT6JakTgTu35eBs6LyJBPPm6fThfbZrEjAM54v1aGMceEaflmrIex0SJuRHXroSxSHBZTGPjukce+JE3CmvLx8hUlNqsDhE0R3b6yKbceE6b9x2ewM5AkxT6uKyTNuETAGEdvgCn2UkZ/oEfQCNRNsKSjNawv32KFBQY3anXwrDXk1huD4MO2sdFiPVF6rKW1lGeeraCCOm+PUMaX2xk4nMBqrrNOMsikVRy9ACRrB2GHbzC1gHkBbZ7a8tH5/1ZFOiNbGycWCcg0KdBeiKPwSQGwGgIAmiJP9C7Xqn1cw2tRS/PY2Jc6Zngy/FJaIhoamw6y4k7byNJsSpu2fLz+VO0yf+NBGQfTAh+rREyZiFH7LJATfRSmnqMVw5KCq1P35RTv5dgH3HNJD37qkJzGCfQ5QVmz5wd0nkdd5S3YUC+SUpj0x5uFPZ4ZtpCwwA6npo6Nh/D2SkYLzGS2CSqyWtVj2GjNk4wLfd6dgDggUfSwbvxIAO2Ut5NBH3uyyQ=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "AP",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "0e79894d3ebaf048dd626814ba05d346f62829f6bdfb0e1c553cb9e6f45950ec",
+        "createdAt": "2024-10-22T07:51:56.551Z",
+        "updatedAt": "2024-10-22T07:51:56.551Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35169,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.3569135069847107",
+                "yOrigin": "0.2645089626312256",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.469Z"
+            },
+            {
+                "id": 35174,
+                "name": "femur_condyle_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.26859211921691895",
+                "yOrigin": "0.5089285969734192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.470Z"
+            },
+            {
+                "id": 35178,
+                "name": "tibia_prosthesis_plateau_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4094485640525818",
+                "yOrigin": "0.5267323851585388",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.473Z"
+            },
+            {
+                "id": 35170,
+                "name": "tibia_prosthesis_keel",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.42867445945739746",
+                "yOrigin": "0.8571429252624512",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.469Z"
+            },
+            {
+                "id": 35171,
+                "name": "tibia_plateau_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.632917582988739",
+                "yOrigin": "0.551339328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.469Z"
+            },
+            {
+                "id": 35173,
+                "name": "tibia_prosthesis_proximal_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.16923071444034576",
+                "yOrigin": "0.5290178656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.470Z"
+            },
+            {
+                "id": 35172,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.42867451906204224",
+                "yOrigin": "0.6707589626312256",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.470Z"
+            },
+            {
+                "id": 35175,
+                "name": "tibia_plateau_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.16371063888072968",
+                "yOrigin": "0.5535714626312256",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.470Z"
+            },
+            {
+                "id": 35168,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.28239235281944275",
+                "yOrigin": "0.0078125",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.469Z"
+            },
+            {
+                "id": 35176,
+                "name": "femur_condyle_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5556364059448242",
+                "yOrigin": "0.5066964626312256",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.471Z"
+            },
+            {
+                "id": 35177,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4397146701812744",
+                "yOrigin": "0.9899554252624512",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.471Z"
+            },
+            {
+                "id": 35179,
+                "name": "tibia_prosthesis_proximal_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6384376287460327",
+                "yOrigin": "0.5245535969734192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:02.473Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14284,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            },
+            {
+                "id": 14287,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_lateral"
+            },
+            {
+                "id": 14281,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            },
+            {
+                "id": 14283,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoral_angle"
+            },
+            {
+                "id": 14285,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "knee_joint_line_convergence_angle"
+            },
+            {
+                "id": 14286,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_medial"
+            },
+            {
+                "id": 14282,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "prosthetic_overhang"
+            }
+        ]
+    },
+    {
+        "id": 4693,
+        "hashImageId": "WgdX/+2bgKpE7n76t2dlQB3NMpUpaesiRb0DXW6dnUPfYJlxAygFK+71uFleW+DGLID62tTJcLv0LhkpOkzN03HLt0R0q901wY8PENpeyXVqxOczyl8m9fm1Z9ZHI8/2MXgZYKphZndCpyJmnEJM2uaXcsjjSwxJy1L1boccLy+bBRGXF1CquxxYB0ct1Vczixo1C3EHSOJx1g1bNmm3JaGZ/kM/QynGB7dW31AGgCgL3gUDf0xxE4iHNsy+fiQvBTHYnzIhnLo4+gyDJkw0tCb7NeqxaLS3q8sbs3/M9yV3yI/mCt5M/4r9NT9uEG0phkHjfxiPk/TOF1RYKfMCwiXQxB5k8uRqteKLWv++t/fSd2vo27Q7C7+2Vj3MM8jcX7G6TELu7dsHzd7NdmQL+spUqOEuvoiRecLf7uNQVAAytVvsqG6RGlUtHkj0qjYStGDETEXqQb4ZSdxk3MQOwtylmM+AmneKh3k1N95GVn1umowHHfLpPazWzv4cGZEL4O7rJMSBoiaEFeiafbHkRs3tTuPkyi2MJgLoIa+QpLsffclgSLcZz73caNkAxDrVWfFkHfpkN+IqFTmVWpAlDLyljjgYjrlIn7ZpsX61DKDl1JFBYlqhIoE0+sHENWx0i40XSSx6AKqkp5gxnnN0YKJp5WIHXnZZx13Ofju3V8g=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "AP",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "a693b2ebb7c1f474b8fe9c00e9f34dfac5cfae953777f3d4fcf6504f96f07002",
+        "createdAt": "2024-10-22T07:51:56.578Z",
+        "updatedAt": "2024-10-22T07:51:56.578Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [],
+        "biomarkers": []
+    },
+    {
+        "id": 4694,
+        "hashImageId": "X3s08SFzn24IoXtdavuBWuRCw+GpPgp6RQ2HWfPz8vOj2mq9RaNQjn5mLHY9tq1XGgWzNeVwvgGAO9xUSRThUSMu1yfrTLwQNsHdm1BE+N1GxPLpucvVwj1Y6CVuwuUgxi+DMJH7Qn5qEqUnGqfuTHpRYDDXUfOu7XbOf/VDl0xox6iLZwXJx3xKGPn4+M0cSYQFBu4mnTuRAl+EzLVg1r35nTyWS5DuDaJR5moIK0jAk6Cil9P2499FLp6PREbfj73FqTYgpMp6BmSz0VqInSmtZbC5VU9SORD7j1c4t1tEODC+lRhTEI1zvdFGfFtQ5gHB097RlvXIuQ2FSevz6OeFSFg+dSlz2y78KOawQCMkSXMTldH9wCKuciz8k/bp7Jjm8l4S6L/pgWNEfma5MlYspkPUrXaDZhzPOVot7onSofpoMMyxPyjlUhUsm5oJ0NH9U2v9JaDziPd1BWmpbDITEnxpoCOLamLALA2A/6zFce1t0+rnDWuBA14H2L6CFmx2e5ZJUnna+98sjodEqcLMtUxfa5D9qiiPJrZW5oR6cGacVG/0d9EUDvHcyUqhI5BGgmDHFO+3ChRZq2if7831hnrbe6EJpngDMakxad9fr0WohpE1/CJAgWIEXxjICHdqKM63ko+yfByonJ0DW9ZzisVR3vDdY9chXVDAhFo=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Skyline",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "f504208c83c4c8a449e6ebcd476566ba7a85290decaf4f3504bc63aa836a2b9f",
+        "createdAt": "2024-10-22T07:51:56.588Z",
+        "updatedAt": "2024-10-22T07:51:56.588Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35129,
+                "name": "femur_condyle_center_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7321428656578064",
+                "yOrigin": "0.8692082166671753",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.714Z"
+            },
+            {
+                "id": 35130,
+                "name": "patella_transverse_center_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7287946343421936",
+                "yOrigin": "0.8514971137046814",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.716Z"
+            },
+            {
+                "id": 35137,
+                "name": "patella_transverse_center_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2154017835855484",
+                "yOrigin": "0.8991808295249939",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.720Z"
+            },
+            {
+                "id": 35139,
+                "name": "calibration_p2",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2",
+                "yOrigin": "0.1",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.720Z"
+            },
+            {
+                "id": 35132,
+                "name": "femur_condyle_interior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2745535671710968",
+                "yOrigin": "0.9332406520843506",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.716Z"
+            },
+            {
+                "id": 35135,
+                "name": "projected_femur_condyle_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7321428060531616",
+                "yOrigin": "0.8514970541000366",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.718Z"
+            },
+            {
+                "id": 35133,
+                "name": "patella_transverse_interior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6696428656578064",
+                "yOrigin": "0.8514971137046814",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.716Z"
+            },
+            {
+                "id": 35126,
+                "name": "patella_transverse_exterior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1607142835855484",
+                "yOrigin": "0.8950936794281006",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.714Z"
+            },
+            {
+                "id": 35140,
+                "name": "calibration_p1",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1",
+                "yOrigin": "0.1",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.720Z"
+            },
+            {
+                "id": 35131,
+                "name": "femur_condyle_interior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6808035373687744",
+                "yOrigin": "0.8705706000328064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.716Z"
+            },
+            {
+                "id": 35141,
+                "name": "femur_condyle_center_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2220982164144516",
+                "yOrigin": "0.9250662922859192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.720Z"
+            },
+            {
+                "id": 35134,
+                "name": "femur_condyle_exterior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1696428507566452",
+                "yOrigin": "0.9168919324874878",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.717Z"
+            },
+            {
+                "id": 35127,
+                "name": "femur_condyle_exterior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7834821343421936",
+                "yOrigin": "0.8678457736968994",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.714Z"
+            },
+            {
+                "id": 35128,
+                "name": "patella_transverse_exterior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7879464030265808",
+                "yOrigin": "0.8514971137046814",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.714Z"
+            },
+            {
+                "id": 35136,
+                "name": "patella_transverse_interior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2700892686843872",
+                "yOrigin": "0.9032679796218872",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.719Z"
+            },
+            {
+                "id": 35138,
+                "name": "projected_femur_condyle_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2233666479587555",
+                "yOrigin": "0.8997761607170105",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.720Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14264,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_tilt_left"
+            },
+            {
+                "id": 14263,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_shift_left"
+            },
+            {
+                "id": 14266,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_tilt_right"
+            },
+            {
+                "id": 14265,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_shift_right"
+            }
+        ]
+    },
+    {
+        "id": 4695,
+        "hashImageId": "c8mN1Wo0kdBNhljwshIg3d3issfoFkp6pyJlL9vScs5zRpFbC5YMNjwID8PDYr9JbqLtYWXcpzi48SdZwW4iiiXvEHdw4W4kQLx0IrkQZIkpXSBXcB+mbeZN1Qjz1j18Yur3dHLbTX2exFQ0rc1cFFODetcU5EL7or7C/K7km49sP1Wk0uP72iWapOiloKGoDLVisGEax7EJGYC9VgodFwIKA7wtrnMTOU/6S+XaOPoalXC8xvutvP2eCvQ2jCocNb/9yrnlg3rDOr+v1zHwZ7s5WklQUC7EnHrGh07smh/sdCxoHJdWh7DnuWn5ZVdw5tOUAO/hni6q/pYj6AJVYJbSYWgjAJkt7FOQzkcANjZm+D58NPUcoP02PvyOAUKM5p+BMHp9YuE7k+IbryA8mN8PS9uoQBAHPm6jKB6dnIp2MxMdS7AtSBwlSIi7425cETQitj51OOJGvSd2KGI3R5+xvf+LbpzedcqE/Zp6TTZzeBDk8eRBt6S90N0uUNE+YObJukSswf9YeR0aI97WM0CjAwrmU5n/316Jxz8Ui6PZ82lyvZbvdGVm5/BgrJeEh4/+9Xcwin1LcuE5f2aCb7GqHHWQ+ObUYy2Ggc/UhlANft/G/6wlk8jSc/KFlQsB7vSJIRXoyZqzXbxwBI1KwUgCJGW3mKqiqiWlCsbrJUw=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "AP",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "ec24a8f04cb3f5d7463def8f99dff7c75bc8e50922805fa47352dc6b25f8f965",
+        "createdAt": "2024-10-22T07:51:56.588Z",
+        "updatedAt": "2024-10-22T07:51:56.588Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35102,
+                "name": "tibia_prosthesis_proximal_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4380650222301483",
+                "yOrigin": "0.5915178656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.655Z"
+            },
+            {
+                "id": 35106,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5792768001556396",
+                "yOrigin": "0.2120535671710968",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.657Z"
+            },
+            {
+                "id": 35110,
+                "name": "tibia_plateau_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7948105335235596",
+                "yOrigin": "0.6205357313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.660Z"
+            },
+            {
+                "id": 35100,
+                "name": "femur_condyle_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7378303408622742",
+                "yOrigin": "0.5513392686843872",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.654Z"
+            },
+            {
+                "id": 35107,
+                "name": "tibia_prosthesis_keel",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6337795853614807",
+                "yOrigin": "0.7700892686843872",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.657Z"
+            },
+            {
+                "id": 35105,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4888516962528229",
+                "yOrigin": "0.8002232313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.658Z"
+            },
+            {
+                "id": 35101,
+                "name": "tibia_prosthesis_proximal_interior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7972878813743591",
+                "yOrigin": "0.5736607313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.654Z"
+            },
+            {
+                "id": 35111,
+                "name": "tibia_prosthesis_plateau_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6222840547561646",
+                "yOrigin": "0.5823602676391602",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.661Z"
+            },
+            {
+                "id": 35108,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6535987854003906",
+                "yOrigin": "0.9888392686843872",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.658Z"
+            },
+            {
+                "id": 35109,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5445932149887085",
+                "yOrigin": "0.0066964286379516125",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.658Z"
+            },
+            {
+                "id": 35103,
+                "name": "tibia_plateau_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4306328296661377",
+                "yOrigin": "0.6339285969734192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.656Z"
+            },
+            {
+                "id": 35104,
+                "name": "femur_condyle_exterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5049548149108887",
+                "yOrigin": "0.5625",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:59.656Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14250,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "prosthetic_overhang"
+            },
+            {
+                "id": 14251,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoral_angle"
+            },
+            {
+                "id": 14253,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            },
+            {
+                "id": 14255,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_medial"
+            },
+            {
+                "id": 14252,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "knee_joint_line_convergence_angle"
+            },
+            {
+                "id": 14254,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_lateral"
+            },
+            {
+                "id": 14249,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            }
+        ]
+    },
+    {
+        "id": 4696,
+        "hashImageId": "cDoqA4w+CZfUbwYV9uBEEMvGcbdlR433eG17AS2hp6z9OVR5KjkwsU30Lt64jOAUqY4hKDcO+QK/0gwDoTU0R2nzIMYmG5BNtAQXOBCppqx3FbN56roCSXi5gmCm/FV2f8MS5y59fr9/EIPEemyV0Ly54uU6WwWHVwWTajhRIp2FdQb8AWKkYxpwGd/y95u4C9dCpuqEzJ3dypCRB0vcnzE/htBu4TjLl6gEJG+aLipz8sTw+ue2O8PcADwUR86y6puVL/K/j/aKzRlzcAEsx4OIm1w19Q6XkcqwetOSTHoJVXs8/HLgHoD9kTfSFKtPyGCzPWnL62uHH4SoljaTYiQZ5EKMxU0thohhajXsnDb/+YQbMClLGrubA2ARgKcI1yUGHUmMBFwZqRt4JJY8DQXFjjGCXpSaoCKxTVfBiwH5kIJ0StNWkraydoibHaL24uEqjmibPqSvkbO2BfcZ8C3nVwplGieVVu8faWnfPXQ0HNz99D0t9a15k15jnPUlinBF21SIlF3Uw8LQq/vA2NrF2cjOCb/N9+yFkGzgqYNuUE2Tg0qabgCp9FkdyokCGtXcA58g/Ku4elpmCj6Q406LeS0dc7uSZV3NcrZ5dXUTvuQPU3DEOFY9aC2cdOpUsLGmeiHiKn6y1JWinamRmGlceEJifiCgiFAaSo2j5ZU=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Skyline",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "6356a7ec569cc89ee78d2850a46db346ed1b6620edb38503985c842ece4e61ce",
+        "createdAt": "2024-10-22T07:51:56.590Z",
+        "updatedAt": "2024-10-22T07:51:56.590Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35056,
+                "name": "femur_condyle_interior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.147321417927742",
+                "yOrigin": "0.8470950126647949",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.853Z"
+            },
+            {
+                "id": 35066,
+                "name": "femur_condyle_center_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.0926339253783226",
+                "yOrigin": "0.8498167991638184",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.859Z"
+            },
+            {
+                "id": 35059,
+                "name": "femur_condyle_exterior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8549107313156128",
+                "yOrigin": "0.8525386452674866",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.854Z"
+            },
+            {
+                "id": 35067,
+                "name": "patella_transverse_center_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.0703125",
+                "yOrigin": "0.8212377429008484",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.859Z"
+            },
+            {
+                "id": 35061,
+                "name": "patella_transverse_exterior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8571428656578064",
+                "yOrigin": "0.8389295935630798",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.856Z"
+            },
+            {
+                "id": 35060,
+                "name": "femur_condyle_interior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7633928656578064",
+                "yOrigin": "0.85526043176651",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.855Z"
+            },
+            {
+                "id": 35057,
+                "name": "projected_femur_condyle_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8104649782180786",
+                "yOrigin": "0.8342832922935486",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.853Z"
+            },
+            {
+                "id": 35069,
+                "name": "calibration_p2",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2",
+                "yOrigin": "0.1",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.859Z"
+            },
+            {
+                "id": 35058,
+                "name": "patella_transverse_center_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8024553656578064",
+                "yOrigin": "0.833486020565033",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.854Z"
+            },
+            {
+                "id": 35065,
+                "name": "projected_femur_condyle_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.08726818114519119",
+                "yOrigin": "0.8171026110649109",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.859Z"
+            },
+            {
+                "id": 35055,
+                "name": "patella_transverse_interior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7477678656578064",
+                "yOrigin": "0.8280423283576965",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.853Z"
+            },
+            {
+                "id": 35064,
+                "name": "patella_transverse_interior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1205357164144516",
+                "yOrigin": "0.8089895844459534",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.858Z"
+            },
+            {
+                "id": 35063,
+                "name": "patella_transverse_exterior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.02008928544819355",
+                "yOrigin": "0.8334859013557434",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.857Z"
+            },
+            {
+                "id": 35054,
+                "name": "femur_condyle_exterior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.0379464291036129",
+                "yOrigin": "0.8525386452674866",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.853Z"
+            },
+            {
+                "id": 35062,
+                "name": "femur_condyle_center_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8091517686843872",
+                "yOrigin": "0.8538995385169983",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.856Z"
+            },
+            {
+                "id": 35068,
+                "name": "calibration_p1",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1",
+                "yOrigin": "0.1",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:57.859Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14234,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_shift_left"
+            },
+            {
+                "id": 14235,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_tilt_right"
+            },
+            {
+                "id": 14236,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_tilt_left"
+            },
+            {
+                "id": 14237,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_shift_right"
+            }
+        ]
+    },
+    {
+        "id": 4697,
+        "hashImageId": "TR9m0IQe9n9hsAZyM1PqKJJxF0cqOETwQ5LfsETgUBbbvDsZ/ZNsJ7kJAkShleWV5HCPI6T9DM4TzdMLM11g9EpvDsdABnIGdgYD85C7RZP5h6PVop0gx/+4Jx5FNSExMjMnTrQRjVzFEF18aJ5M3zgFwKDYgOImEfPrH+7EwxouU80vkZr+Bxe0/J6qdCrWr2KJNPKBN1F6QFZWEcUSpZUcdFn3GYQvul9blHM3WtfxBHKDfX/nC9wmS4pDasSo9G/jR2nNSYa5C9EKnTCj5bXI5EhKBTC97rV2B0X8FjGQbxYUW3OlpoaKxCjxW+S3pPPDhqGWm1dDwVxewFup6WPAFMkGH3zsr1yYv5oHZ3PNsqsaGzvacGA2+llPDcVsmAQL05x4A80VYvsUoX+nCuSsI2KJpvgDc7Qyd62F3MYWrXeRT7u9HkEg9MeTCC4KCAdhqJHAFutYm4eP//BJj/SLEXTZJ4dKye3goNdYT2KYNN6zdiKfSfYKJI1jwIPRirel30QU+QPbIzJP7Q8xCvJY95/9mM5OaHFlaSwEgQHsyAvcIIbllwQJHGMcFVOw8ERINC2GXdmbZaMU6WHznMu0QmOrufpcSXmIsHWxikPaWGtOaKio1dOOSG/ZGbcvXNWCm7/5VSSN353gLW4KXfZMM1rrk7JK/fLYPkHKBxQ=",
+        "origin": "PACS",
+        "interpretDate": "2024-10-22T11:52:06.000Z",
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Skyline",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "b11163a2dd658042b3b94308cf2f1827e8b9b37b13ee48bec8b9d029469680e8",
+        "createdAt": "2024-10-22T07:51:56.590Z",
+        "updatedAt": "2024-10-22T07:52:06.960Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35073,
+                "name": "patella_transverse_exterior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8883928656578064",
+                "yOrigin": "0.799458384513855",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.412Z"
+            },
+            {
+                "id": 35074,
+                "name": "femur_condyle_exterior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1361607164144516",
+                "yOrigin": "0.8582305908203125",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.411Z"
+            },
+            {
+                "id": 35083,
+                "name": "projected_femur_condyle_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2033061385154724",
+                "yOrigin": "0.8458505272865295",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.416Z"
+            },
+            {
+                "id": 35076,
+                "name": "projected_femur_condyle_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8198556303977966",
+                "yOrigin": "0.811229944229126",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.412Z"
+            },
+            {
+                "id": 35082,
+                "name": "calibration_p1",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1",
+                "yOrigin": "0.1",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.416Z"
+            },
+            {
+                "id": 35070,
+                "name": "patella_transverse_interior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7254464030265808",
+                "yOrigin": "0.8274450898170471",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.411Z"
+            },
+            {
+                "id": 35084,
+                "name": "patella_transverse_center_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.1908482164144516",
+                "yOrigin": "0.8456364870071411",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.416Z"
+            },
+            {
+                "id": 35078,
+                "name": "femur_condyle_center_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8225446343421936",
+                "yOrigin": "0.8358411192893982",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.414Z"
+            },
+            {
+                "id": 35075,
+                "name": "femur_condyle_interior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7544642686843872",
+                "yOrigin": "0.847035825252533",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.412Z"
+            },
+            {
+                "id": 35081,
+                "name": "femur_condyle_center_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.203125",
+                "yOrigin": "0.862428605556488",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.416Z"
+            },
+            {
+                "id": 35077,
+                "name": "femur_condyle_interior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2700892984867096",
+                "yOrigin": "0.8666265606880188",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.413Z"
+            },
+            {
+                "id": 35085,
+                "name": "calibration_p2",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2",
+                "yOrigin": "0.1",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.416Z"
+            },
+            {
+                "id": 35072,
+                "name": "femur_condyle_exterior_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.890625",
+                "yOrigin": "0.8246464729309082",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.411Z"
+            },
+            {
+                "id": 35071,
+                "name": "patella_transverse_center_left",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.8069196343421936",
+                "yOrigin": "0.8134517669677734",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.411Z"
+            },
+            {
+                "id": 35079,
+                "name": "patella_transverse_exterior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.109375",
+                "yOrigin": "0.844237208366394",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.414Z"
+            },
+            {
+                "id": 35080,
+                "name": "patella_transverse_interior_right",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2723214328289032",
+                "yOrigin": "0.847035825252533",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:51:58.415Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14238,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_tilt_left"
+            },
+            {
+                "id": 14239,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_shift_right"
+            },
+            {
+                "id": 14240,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_tilt_right"
+            },
+            {
+                "id": 14241,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "patella_shift_left"
+            }
+        ]
+    },
+    {
+        "id": 4698,
+        "hashImageId": "eEJIPzaHRD4D+qN/62+gefMGBQQ/UCvLUZHmWhnRZDOkDqzjtI0Q04eETs6QKkYxz09tZfvFaW5ByghUyTAv5bpQHE5f5R65aAFFGE6DF3wPgcke77VbNFB7YiNv2Yb0CRuQEd8UnQDcPagBsXJDQVhUjFNUkunC23q1KeOqeadT0E1siIJp6bL09sKr/JZGCRrV677qlAUMxaT1ll9gpPZiomdGJorEoVQP7DlP19BakDa7bn/b7eZWw+qgs1J8I3LYUOxgpOJ3MrOKpudoFAv/eXWEfjWR1sGbIiM+YJl2BwbOtKI9vaH+0I9Xonuq2hZ44NEEiFY4nHuVt7uzz0zmyDr1+AqX8/CjAABu36SByporZOeZBR0/8vK1AGoYYoMA74UrXlg8AmpBotzt+WEIuTyFArC2HLu6sJZWX/9yuONsJiZ27eFuU6l8apsK/RZMn/k4kwyi5BDivfKjoMNdH9F3wEQPWWqUp/ahe9L8ETNxiNvauVYwiU2n54HOVpAFljMxDu1reiDWFM0hHrvUIJwgzXpbyd2eqT+Q8r1VtG6pReAOQom7cBs96ZtPbQtxa6DE475tljLEBRRMdiRbjwQHvkzfUYDEXvDFhgcjKN0cynMCIsHmb0pk6NvCHwHA3NMlBBnqr4U/SsfoyHGPz2jVQk77Q1jVwwCx2nI=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Lateral",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "51ec499c6c11574daf4a5d25acfe43fe1429e6eef8f50f1da0abfbf558eed01f",
+        "createdAt": "2024-10-22T07:51:56.590Z",
+        "updatedAt": "2024-10-22T07:51:56.590Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35113,
+                "name": "tibia_proximal_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.21013092994689941",
+                "yOrigin": "0.5357142686843872",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.186Z"
+            },
+            {
+                "id": 35121,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.3650452196598053",
+                "yOrigin": "0.306919664144516",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.191Z"
+            },
+            {
+                "id": 35122,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.31994354724884033",
+                "yOrigin": "0.6428571343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.194Z"
+            },
+            {
+                "id": 35124,
+                "name": "projected_patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.17862652242183685",
+                "yOrigin": "0.5014525055885315",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.194Z"
+            },
+            {
+                "id": 35112,
+                "name": "tibia_plateau_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2179746776819229",
+                "yOrigin": "0.5111607313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.186Z"
+            },
+            {
+                "id": 35114,
+                "name": "femur_condyle_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.36700621247291565",
+                "yOrigin": "0.4866071045398712",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            },
+            {
+                "id": 35123,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.3944592773914337",
+                "yOrigin": "0.9854910969734192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.194Z"
+            },
+            {
+                "id": 35125,
+                "name": "tibia_prosthesis_plateau_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.2943447530269623",
+                "yOrigin": "0.505142331123352",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.194Z"
+            },
+            {
+                "id": 35116,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6140846610069275",
+                "yOrigin": "0.0089285708963871",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            },
+            {
+                "id": 35120,
+                "name": "patella_proximal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.17875586450099945",
+                "yOrigin": "0.3303571343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            },
+            {
+                "id": 35119,
+                "name": "tibia_plateau_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4728969931602478",
+                "yOrigin": "0.4910714030265808",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            },
+            {
+                "id": 35117,
+                "name": "patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.16306832432746887",
+                "yOrigin": "0.4375",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            },
+            {
+                "id": 35115,
+                "name": "tibia_proximal_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4885844588279724",
+                "yOrigin": "0.5178571343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            },
+            {
+                "id": 35118,
+                "name": "tibia_prosthesis_keel",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.38269367814064026",
+                "yOrigin": "0.8683035373687744",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:00.189Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14256,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            },
+            {
+                "id": 14260,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "prosthetic_overhang"
+            },
+            {
+                "id": 14258,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "tibial_slope"
+            },
+            {
+                "id": 14257,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "blackburne_peel_index"
+            },
+            {
+                "id": 14262,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_posterior"
+            },
+            {
+                "id": 14259,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            },
+            {
+                "id": 14261,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_anterior"
+            }
+        ]
+    },
+    {
+        "id": 4699,
+        "hashImageId": "MRK1K6A+ZHY7ySft4KWtrC/XALYS7Z6FqGQJQRzL8l29bsjd/8H9DFCG2WmbvxuND7QBLqSp7/xF+tpeAAdY+hDCNDIZlpiIZWaB3eTH6qu/wLtf3FSj1q8Oj79P8TT0n7AkPHDSE4HiqrfvWYkEbGsuw/uP6DclamMcMaWNNXm2zfoYY+qKmyl6yKZLnd05FUc7mAGg0AQVAf7rFSb5cFqkJiKQEPNHauHbQIrhyU/aukE9wfQ3tlyQnyIJ0AAO8r0EvMAlWH2OogGICvvh7rBB2Ab88jaavMb6TAtFgr8DLfTsxcmLRpKx0QsLrszlA/tm0ckXnmt8fWzVqkjeGOVhk1SfAcndRXGYY/kd5IW2acvnuzoJnM/b+cAEWjE+9EH+IUOadnhNGtgawuMR8QpkQgLi8s7oNBQcQblGFvs8/kSoIYMtYIegvoWNQke6i9LY13elhG6amACri1yhBHEesMjUPX3hd5xp9obcOje5vi0u0EYXYTkOpercI6DL2vpkmsusxLKyB0Oaz8xqimR3M+FpowISPdsdMBH5vQvOCnXN6FvhV9jIg2MJnM3xGStB6sR4NGZDbp2cRLq77g+P+6QPKm71o3TO+MslPE6kkoep0iRjGpFBII5f4pQz/+FL9LnZAX8kRdb7tSk/mYufMHc/JPrfxZ3n5c1+hwU=",
+        "origin": "PACS",
+        "interpretDate": null,
+        "requestHelpDate": null,
+        "requestUserId": null,
+        "validateDate": null,
+        "deviationDelta": null,
+        "unit": null,
+        "targetLaterality": "Right",
+        "view": "Lateral",
+        "qcVersion": "1.1",
+        "aiVersion": null,
+        "bddOnPremId": "7e71c2153f2fc927ca713c03b888699c80ac8de2c9e5e4d9362693c18c0ceb25",
+        "createdAt": "2024-10-22T07:51:56.593Z",
+        "updatedAt": "2024-10-22T07:51:56.593Z",
+        "patient": {
+            "id": 813,
+            "studyPatientId": null,
+            "hashPatientId": "Ue29yd/oMhUlJTC3c5cuOc3dOjaplvv+j+TJ7BrxuxeouBN7SDpxQFdsrL8zheLxM3wpg+UQAloOEwNprDKZSpRSRTI9NxlCCBw2DlobYapPdqyv9jLCC7G4+dyNkXo0wsEuEcLj3AAsrJ0VvlMCYumkWAr7XRHoj39PcYaQgQ3rIIv22EVbMZgvWoZw23wLe9A8ygBUk7hIotwIqAD39UlxxXaPEaXH58w9kRq89SlbV72Mhn7ZJe/Gjv3LmkxqfOfiDiwvA2YSIeMC/+FavoXgki/Wk9wKzy7i4IlpzFO48o3Wtq+anOlmm1e+qqfyZoLdtn36yN2wnPXYENENXVAJ1TBM2gpGiWHY8gfPM5eePA94xxfLhZU5W4z55HxvKVnjQ5FnsBBH/FdR/mNdog1jGz9ZxS9Rod1fQYNRcwTYJsP/4p2tqyIoAwBsv3aOMCSWAdtSX8h+//oRJ5LEoqQCSs06OXDJMXmGOuduwamwYOSjg7bgNii6/AYa71JzL4dXe1duiodEMQgmFIxjIUFHhQAYrnLuguj4OPIRcAD1q5agt5UzFBmto6wtFj4gVwiXPBgzZxVUu15X5A9gRm057d2yg81cViN7W8vQjuZJcCBYd85DU8KomwJDXgvz4s/yq5WUrL2iNLloOWxRspRt/4/gDs1qeLpyIMmc5Xg=",
+            "ageAtT0": 62,
+            "bddOnPremId": "cc193ebc5d85d71dc62d5b3d02d7aad42f8687c55f8f17ba1643d6e3eecf8ec1",
+            "origin": "PACS",
+            "sex": "Female",
+            "createdAt": "2024-10-22T07:51:53.965Z",
+            "updatedAt": "2024-10-22T07:51:53.965Z"
+        },
+        "visit": null,
+        "points": [
+            {
+                "id": 35160,
+                "name": "patella_proximal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.7165178656578064",
+                "yOrigin": "0.3928571343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.815Z"
+            },
+            {
+                "id": 35161,
+                "name": "tibia_proximal_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.3973214030265808",
+                "yOrigin": "0.598214328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.815Z"
+            },
+            {
+                "id": 35154,
+                "name": "tibia_proximal_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.609375",
+                "yOrigin": "0.6517857313156128",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.813Z"
+            },
+            {
+                "id": 35163,
+                "name": "tibia_proximal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4999999701976776",
+                "yOrigin": "0.7991071343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.815Z"
+            },
+            {
+                "id": 35155,
+                "name": "tibia_prosthesis_keel",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4866071343421936",
+                "yOrigin": "0.7566964626312256",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.812Z"
+            },
+            {
+                "id": 35156,
+                "name": "femur_condyle_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4933035671710968",
+                "yOrigin": "0.5758928656578064",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.812Z"
+            },
+            {
+                "id": 35157,
+                "name": "tibia_plateau_posterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4084821343421936",
+                "yOrigin": "0.566964328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.813Z"
+            },
+            {
+                "id": 35164,
+                "name": "femur_distal_cortical_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5680803656578064",
+                "yOrigin": "0.2801339328289032",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.817Z"
+            },
+            {
+                "id": 35165,
+                "name": "tibial_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.4453124701976776",
+                "yOrigin": "0.9520089030265808",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.818Z"
+            },
+            {
+                "id": 35158,
+                "name": "tibia_plateau_anterior",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6049107313156128",
+                "yOrigin": "0.6183035969734192",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.812Z"
+            },
+            {
+                "id": 35166,
+                "name": "tibia_prosthesis_plateau_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5280297994613647",
+                "yOrigin": "0.5982096791267395",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.818Z"
+            },
+            {
+                "id": 35167,
+                "name": "projected_patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6483475565910339",
+                "yOrigin": "0.6164156198501587",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.818Z"
+            },
+            {
+                "id": 35159,
+                "name": "femur_medullar_canal_center",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.5379464626312256",
+                "yOrigin": "0.0613839291036129",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.815Z"
+            },
+            {
+                "id": 35162,
+                "name": "patella_distal",
+                "x": null,
+                "y": null,
+                "xOrigin": "0.6741071939468384",
+                "yOrigin": "0.5178571343421936",
+                "lastModificationUserId": null,
+                "lastModificationDate": "2024-10-22T07:52:01.815Z"
+            }
+        ],
+        "biomarkers": [
+            {
+                "id": 14274,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_femoro_tibial_angle"
+            },
+            {
+                "id": 14277,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "blackburne_peel_index"
+            },
+            {
+                "id": 14275,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "tibial_slope"
+            },
+            {
+                "id": 14280,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_anterior"
+            },
+            {
+                "id": 14276,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "prosthetic_overhang"
+            },
+            {
+                "id": 14279,
+                "value": "false",
+                "laterality": null,
+                "unit": null,
+                "name": "interface_issues_posterior"
+            },
+            {
+                "id": 14278,
+                "value": null,
+                "laterality": null,
+                "unit": null,
+                "name": "anatomic_tibial_angle"
+            }
+        ]
+    }
+]

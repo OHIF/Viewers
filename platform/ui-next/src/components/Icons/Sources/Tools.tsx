@@ -517,7 +517,7 @@ export const ToolCalibrate = (props: IconProps) => (
       <g
         id="calibrate"
         transform="translate(2.5, 16.5)"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.25"
@@ -540,7 +540,7 @@ export const ToolCalibrate = (props: IconProps) => (
       </g>
       <rect
         id="Rectangle"
-        stroke="currentColor"
+        stroke="white"
         strokeWidth="1.25"
         x="2"
         y="5"
@@ -554,7 +554,7 @@ export const ToolCalibrate = (props: IconProps) => (
         x2="6.5"
         y2="8.5"
         id="Line-5"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
       ></line>
       <line
@@ -563,7 +563,7 @@ export const ToolCalibrate = (props: IconProps) => (
         x2="9.5"
         y2="8.5"
         id="Line-5"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
       ></line>
       <line
@@ -572,7 +572,7 @@ export const ToolCalibrate = (props: IconProps) => (
         x2="12.5"
         y2="8.5"
         id="Line-5"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
       ></line>
       <line
@@ -581,7 +581,7 @@ export const ToolCalibrate = (props: IconProps) => (
         x2="15.5"
         y2="8.5"
         id="Line-5"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
       ></line>
       <line
@@ -590,7 +590,7 @@ export const ToolCalibrate = (props: IconProps) => (
         x2="18.5"
         y2="8.5"
         id="Line-5"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
       ></line>
       <line
@@ -599,7 +599,7 @@ export const ToolCalibrate = (props: IconProps) => (
         x2="21.5"
         y2="8.5"
         id="Line-5"
-        stroke="currentColor"
+        stroke="white"
         strokeLinecap="round"
       ></line>
     </g>

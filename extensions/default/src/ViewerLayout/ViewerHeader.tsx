@@ -42,16 +42,16 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
 
   const menuOptions = [
-    {
-      title: t('Header:About'),
-      icon: 'info',
-      onClick: () =>
-        show({
-          content: AboutModal,
-          title: t('AboutModal:About OHIF Viewer'),
-          containerClassName: 'max-w-md',
-        }),
-    },
+    // {
+    //   title: t('Header:About'),
+    //   icon: 'info',
+    //   onClick: () =>
+    //     show({
+    //       content: AboutModal,
+    //       title: t('AboutModal:About OHIF Viewer'),
+    //       containerClassName: 'max-w-md',
+    //     }),
+    // },
     {
       title: t('Header:Preferences'),
       icon: 'settings',
@@ -86,36 +86,36 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           buttonSection="secondary"
         />
       }
-      PatientInfo={
-        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
-          <HeaderPatientInfo
-            servicesManager={servicesManager}
-            appConfig={appConfig}
-          />
-        )
-      }
-      UndoRedo={
-        <div className="text-primary flex cursor-pointer items-center">
-          <Button
-            variant="ghost"
-            className="hover:bg-primary-dark"
-            onClick={() => {
-              commandsManager.run('undo');
-            }}
-          >
-            <Icons.Undo className="" />
-          </Button>
-          <Button
-            variant="ghost"
-            className="hover:bg-primary-dark"
-            onClick={() => {
-              commandsManager.run('redo');
-            }}
-          >
-            <Icons.Redo className="" />
-          </Button>
-        </div>
-      }
+    // PatientInfo={
+    //   appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
+    //     <HeaderPatientInfo
+    //       servicesManager={servicesManager}
+    //       appConfig={appConfig}
+    //     />
+    //   )
+    // }
+    // UndoRedo={
+    //   <div className="text-primary flex cursor-pointer items-center">
+    //     <Button
+    //       variant="ghost"
+    //       className="hover:bg-primary-dark"
+    //       onClick={() => {
+    //         commandsManager.run('undo');
+    //       }}
+    //     >
+    //       <Icons.Undo className="" />
+    //     </Button>
+    //     <Button
+    //       variant="ghost"
+    //       className="hover:bg-primary-dark"
+    //       onClick={() => {
+    //         commandsManager.run('redo');
+    //       }}
+    //     >
+    //       <Icons.Redo className="" />
+    //     </Button>
+    //   </div>
+    // }
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar servicesManager={servicesManager} />

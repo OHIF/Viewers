@@ -13,11 +13,13 @@ const ContextMenu = ({ items, ...props }) => {
     const contextMenu = contextMenuRef.current;
 
     const boundingClientRect = contextMenu.getBoundingClientRect();
-    if (boundingClientRect.bottom > window.innerHeight) {
-      props.defaultPosition.y = props.defaultPosition.y - boundingClientRect.height;
-    }
-    if (boundingClientRect.right > window.innerWidth) {
-      props.defaultPosition.x = props.defaultPosition.x - boundingClientRect.width;
+    if (props.defaultPosition) {
+      if (boundingClientRect.bottom > window.innerHeight) {
+        props.defaultPosition.y = props.defaultPosition.y - boundingClientRect.height;
+      }
+      if (boundingClientRect.right > window.innerWidth) {
+        props.defaultPosition.x = props.defaultPosition.x - boundingClientRect.width;
+      }
     }
   }, [props.defaultPosition]);
 
@@ -36,9 +38,10 @@ const ContextMenu = ({ items, ...props }) => {
         <div
           key={index}
           data-cy="context-menu-item"
-          onClick={() => item.action(item, props)}
+          onClick={() => !item?.disabled && item.action(item, props)}
           style={{ justifyContent: 'space-between' }}
-          className="hover:bg-primary-dark border-primary-dark flex cursor-pointer items-center border-b px-4 py-3 transition duration-300 last:border-b-0"
+          title={item.tooltip}
+          className={`hover:bg-primary-dark border-primary-dark flex cursor-pointer items-center border-b px-4 py-3 transition duration-300 last:border-b-0 ${item.disabled && 'cursor-not-allowed'}`}
         >
           <Typography>{item.label}</Typography>
           {item.iconRight && (

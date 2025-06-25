@@ -78,6 +78,7 @@ function Header({
                 color="inherit"
                 size="initial"
                 className="text-primary-active hover:bg-primary-dark h-full w-full"
+                onClick={() => menuOptions[0].onClick()}
               >
                 <Icons.ByName name="icon-settings" />
               </IconButton>
