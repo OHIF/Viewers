@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.61...v3.11.0-beta.62) (2025-06-25)
+
+
+### Bug Fixes
+
+* **unit-tests:** Update bun.lock to fix unit tests. ([#5159](https://github.com/OHIF/Viewers/issues/5159)) ([ec0c4f7](https://github.com/OHIF/Viewers/commit/ec0c4f745161006ad2b49c0e3a46114a20c6907c))
+
+
+
+
+
 # [3.11.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.60...v3.11.0-beta.61) (2025-06-25)
 
 
