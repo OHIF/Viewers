@@ -2,6 +2,7 @@ import objectHash from 'object-hash';
 import { hotkeys as mouseTrapAPI } from '../utils';
 import Hotkey from './Hotkey';
 import migrateOldHotkeyDefinitions from '../utils/hotkeys/migrateHotkeys';
+import pubSubServiceInterface from '../services/_shared/pubSubServiceInterface';
 
 /**
  *
@@ -19,12 +20,28 @@ export class HotkeysManager {
   public hotkeyDefinitions: Record<string, any> = {};
   public hotkeyDefaults: any[] = [];
 
+  public static EVENTS: Record<string, string> = {
+    HOTKEY_PRESSED: 'event::hotkeysManager:hotkeyPressed',
+  };
+  public EVENTS: Record<string, string>;
+  public listeners: Record<string, Array<{ id: string; callback: (data: unknown) => void }> | undefined> = {};
+  public subscribe: (eventName: string, callback: (data: unknown) => void) => { unsubscribe: () => void };
+  public _broadcastEvent: (eventName: string, callbackProps: unknown) => void;
+  public _unsubscribe: (eventName: string, listenerId: string) => void;
+  public _isValidEvent: (eventName: string) => boolean;
+
   constructor(
     commandsManager: AppTypes.CommandsManager,
     servicesManager: AppTypes.ServicesManager
   ) {
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
+
+    this.EVENTS = HotkeysManager.EVENTS;
+    this.subscribe = pubSubServiceInterface.subscribe.bind(this);
+    this._broadcastEvent = pubSubServiceInterface._broadcastEvent.bind(this);
+    this._unsubscribe = pubSubServiceInterface._unsubscribe.bind(this);
+    this._isValidEvent = pubSubServiceInterface._isValidEvent.bind(this);
 
     // Check for old hotkey definitions format and migrate if needed
     migrateOldHotkeyDefinitions({
@@ -264,6 +281,13 @@ export class HotkeysManager {
       evt.preventDefault();
       evt.stopPropagation();
       this._commandsManager.runCommand(commandName, { evt, ...commandOptions }, context);
+      this._broadcastEvent(HotkeysManager.EVENTS.HOTKEY_PRESSED, {
+        commandName,
+        commandOptions,
+        keys: combinedKeys,
+        context,
+        evt,
+      });
     });
   }
 
