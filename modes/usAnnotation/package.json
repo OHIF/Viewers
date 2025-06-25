@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-ultrasound-pleura-bline",
-  "version": "3.11.0-beta.60",
+  "version": "3.11.0-beta.61",
   "description": "Allows users to annotate ultrasound images with pleura B-line annotations.",
   "author": "OHIF",
   "license": "MIT",
@@ -32,15 +32,14 @@
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
-  "peerDependencies": {},
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "i18next": "^17.0.3",
-    "@ohif/extension-cornerstone-dicom-sr": "^3.11.0-beta.34",
     "@cornerstonejs/core": "^3.16.0",
     "@cornerstonejs/tools": "^3.16.0",
-    "@ohif/core": "^3.11.0-beta.34",
-    "@ohif/extension-ultrasound-pleura-bline": "^3.11.0-beta.60"
+    "@ohif/core": "3.11.0-beta.61",
+    "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.61",
+    "@ohif/extension-ultrasound-pleura-bline": "3.11.0-beta.61",
+    "i18next": "^17.0.3"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",
@@ -55,9 +54,9 @@
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
+    "@svgr/webpack": "^8.1.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^8.0.0-beta.4",
-    "@svgr/webpack": "^8.1.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.0",
     "cross-env": "^7.0.3",
@@ -65,7 +64,7 @@
     "eslint": "^8.39.0",
     "eslint-loader": "^2.0.0",
     "webpack": "5.89.0",
-    "webpack-merge": "^5.7.3",
-    "webpack-cli": "^5.0.2"
+    "webpack-cli": "^5.0.2",
+    "webpack-merge": "^5.7.3"
   }
 }

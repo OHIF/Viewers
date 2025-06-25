@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.60...v3.11.0-beta.61) (2025-06-25)
+
+
+### Features
+
+* Ultrasound Pleura B-line Annotation Mode & Extension ([#5061](https://github.com/OHIF/Viewers/issues/5061)) ([226f9b0](https://github.com/OHIF/Viewers/commit/226f9b0773900aec29ec22f52f39f33e629dc15b))
+
+
+
+
+
 # [3.11.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.59...v3.11.0-beta.60) (2025-06-24)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
