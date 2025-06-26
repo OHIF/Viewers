@@ -7,7 +7,7 @@ import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 
-const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
+const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4', '1.2.840.10008.5.1.4.1.1.66.7'];
 
 const loadPromises = {};
 
