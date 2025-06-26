@@ -359,6 +359,7 @@ const connectMeasurementServiceToTools = ({
       return;
     }
 
+    commandsManager.run('startGroupRecording');
     for (const measurement of Object.values(measurements)) {
       const { uid, source } = measurement;
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
@@ -372,6 +373,7 @@ const connectMeasurementServiceToTools = ({
         options: { deleting: true },
       });
     }
+    commandsManager.run('endGroupRecording');
 
     // trigger a render
     cornerstoneViewportService.getRenderingEngine().render();

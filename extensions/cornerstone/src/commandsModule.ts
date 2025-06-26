@@ -2010,6 +2010,12 @@ function commandsModule({
         viewport.render();
       }
     },
+    startGroupRecording: () => {
+      cornerstoneTools.AnnotationTool.startGroupRecording();
+    },
+    endGroupRecording: () => {
+      cornerstoneTools.AnnotationTool.endGroupRecording();
+    },
     triggerCreateAnnotationMemo: ({
       annotation,
       FrameOfReferenceUID,
@@ -2331,6 +2337,8 @@ function commandsModule({
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
+    startGroupRecording: actions.startGroupRecording,
+    endGroupRecording: actions.endGroupRecording,
   };
 
   return {

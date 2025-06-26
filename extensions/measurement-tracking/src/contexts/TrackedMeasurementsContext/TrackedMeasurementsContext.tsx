@@ -149,13 +149,7 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      const measurements = measurementService.getMeasurements();
-      const measurementIds = measurements.map(fm => fm.uid);
-
-      for (let i = 0; i < measurementIds.length; i++) {
-        measurementService.remove(measurementIds[i]);
-      }
-      measurementService.setIsMeasurementDeletedIndividually(false);
+      measurementService.clearMeasurements();
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
       const { displaySetInstanceUID } = evt.data ?? evt;
