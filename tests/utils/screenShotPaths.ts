@@ -69,6 +69,28 @@ const screenShotPaths = {
   reset: {
     resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
   },
+  rtDataOverlayForUnreferencedDisplaySetNoHydration: {
+    overlayFirstImage: 'overlayFirstImage.png',
+    overlayMiddleImage: 'overlayMiddleImage.png',
+  },
+  rtDataOverlayNoHydrationThenMPR: {
+    rtDataOverlayNoHydrationPreMPR: 'rtDataOverlayNoHydrationPreMpr.png',
+    rtDataOverlayNoHydrationPostMPR: 'rtDataOverlayNoHydrationPostMpr.png',
+  },
+  rtHydrationFromMPR: {
+    mprBeforeRT: 'mprBeforeRT.png',
+    mprAfterRT: 'mprAfterRT.png',
+    mprAfterRTHydrated: 'mprAfterRTHydrated.png',
+    mprAfterRTHydratedAfterLayoutChange: 'mprAfterRTHydratedAfterLayoutChange.png',
+  },
+  rtHydrationThenMPR: {
+    rtPostHydration: 'rtPostHydration.png',
+    rtPostHydrationMPRAxialPrimary: 'rtPostHydrationMPRAxialPrimary.png',
+  },
+  rtNoHydrationThenMPR: {
+    rtNoHydrationPreMPR: 'rtNoHydrationPreMpr.png',
+    rtNoHydrationPostMPR: 'rtNoHydrationPostMpr.png',
+  },
   srHydration: {
     srPostHydration: 'srPostHydration.png',
     srPreHydration: 'srPreHydration.png',
@@ -93,9 +115,17 @@ const screenShotPaths = {
     segNoHydrationPreMPR: 'segNoHydrationPreMpr.png',
     segNoHydrationPostMPR: 'segNoHydrationPostMpr.png',
   },
+  segDataOverlayForUnreferencedDisplaySetNoHydration: {
+    overlayFirstImage: 'overlayFirstImage.png',
+    overlayMiddleImage: 'overlayMiddleImage.png',
+  },
   segDataOverlayNoHydrationThenMPR: {
     segDataOverlayNoHydrationPreMPR: 'segDataOverlayNoHydrationPreMpr.png',
     segDataOverlayNoHydrationPostMPR: 'segDataOverlayNoHydrationPostMpr.png',
+  },
+  mprThenRTOverlayNoHydration: {
+    mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
+    mprPostRTOverlayNoHydration: 'mprPostRTOverlayNoHydration.png',
   },
   mprThenSEGOverlayNoHydration: {
     mprPreSEGOverlayNoHydration: 'mprPreSEGOverlayNoHydration.png',
