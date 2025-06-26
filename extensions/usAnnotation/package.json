@@ -37,7 +37,7 @@
     "react-i18next": "^12.2.2",
     "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
-    "webpack": "5.89.0",
+    "webpack": "5.94.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
@@ -74,7 +74,7 @@
     "dotenv": "^14.1.0",
     "eslint": "^8.39.0",
     "eslint-loader": "^2.0.0",
-    "webpack": "5.89.0",
+    "webpack": "5.94.0",
     "webpack-cli": "^5.0.2",
     "webpack-merge": "^5.7.3"
   }
