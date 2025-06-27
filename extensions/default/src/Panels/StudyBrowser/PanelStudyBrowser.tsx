@@ -23,6 +23,7 @@ function PanelStudyBrowser({
   customMapDisplaySets,
   onClickUntrack,
   onDoubleClickThumbnailHandlerCallBack,
+  onClickThumbnailHandlerCallBack,
 }) {
   const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
@@ -78,6 +79,10 @@ function PanelStudyBrowser({
         'studyBrowser.thumbnailDoubleClickCallback'
       ) as CallbackCustomization;
 
+      if (!customHandler) {
+        return;
+      }
+
       const setupArgs = {
         activeViewportId,
         commandsManager,
@@ -86,12 +91,46 @@ function PanelStudyBrowser({
         appConfig: extensionManager._appConfig,
       };
 
-      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
+      const handlers = customHandler?.callbacks?.map(callback => callback(setupArgs)) ?? [];
 
       for (const handler of handlers) {
         await handler(displaySetInstanceUID);
       }
       onDoubleClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
+    },
+    [
+      activeViewportId,
+      commandsManager,
+      servicesManager,
+      isHangingProtocolLayout,
+      customizationService,
+    ]
+  );
+
+  const onClickThumbnailHandler = useCallback(
+    async displaySetInstanceUID => {
+      const customHandler = customizationService.getCustomization(
+        'studyBrowser.thumbnailClickCallback'
+      ) as CallbackCustomization;
+
+      if (!customHandler) {
+        return;
+      }
+
+      const setupArgs = {
+        activeViewportId,
+        commandsManager,
+        servicesManager,
+        isHangingProtocolLayout,
+        appConfig: extensionManager._appConfig,
+      };
+
+      const handlers = customHandler?.callbacks?.map(callback => callback(setupArgs)) ?? [];
+
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
+      }
+      onClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
     },
     [
       activeViewportId,
@@ -424,7 +463,7 @@ function PanelStudyBrowser({
           setActiveTabName(clickedTabName);
         }}
         onClickUntrack={onClickUntrack}
-        onClickThumbnail={() => {}}
+        onClickThumbnail={onClickThumbnailHandler}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
