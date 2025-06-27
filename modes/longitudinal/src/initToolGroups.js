@@ -37,9 +37,6 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
-      {
-        toolName: toolNames.SegmentLabel,
-      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -97,6 +94,9 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     disabled: [
       {
         toolName: toolNames.AdvancedMagnify,
+      },
+      {
+        toolName: toolNames.SegmentLabel,
       },
     ],
   };
