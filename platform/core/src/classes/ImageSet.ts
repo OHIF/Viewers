@@ -7,7 +7,7 @@ import {
 } from '../utils/sortStudy';
 
 type Attributes = Record<string, unknown>;
-type Image = {
+export type Image = {
   StudyInstanceUID?: string;
   ImagePositionPatient?: csTypes.Point3;
   ImageOrientationPatient?: csTypes.Point3;
