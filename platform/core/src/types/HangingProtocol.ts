@@ -293,6 +293,8 @@ export type ProtocolNotifications = {
   // and all viewport data includes a designated display set. This command
   // will run on every stage's initial layout.
   onViewportDataInitialized?: Command[];
+  // This set of commands is executed before the stage change is applied
+  onStageChange?: Command[];
 };
 
 /**
