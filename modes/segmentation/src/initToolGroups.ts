@@ -24,6 +24,9 @@ function createTools(utilityModule) {
         toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
+      {
+        toolName: toolNames.SegmentLabel,
+      },
     ],
     passive: [
       {
