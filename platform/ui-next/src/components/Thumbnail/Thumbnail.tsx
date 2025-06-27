@@ -5,6 +5,8 @@ import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+import { useCustomization } from '@ohif/core';
+import { CSSStylesCustomization } from '@ohif/core/src/services/CustomizationService/types';
 
 /**
  * Display a thumbnail for a display set.
@@ -47,6 +49,10 @@ const Thumbnail = ({
 
   const [lastTap, setLastTap] = useState(0);
 
+  const thumbnailStylesCustomization = useCustomization(`ui.thumbnail#${displaySetInstanceUID}`) as
+    | CSSStylesCustomization
+    | undefined;
+
   const handleTouchEnd = e => {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
@@ -65,6 +71,7 @@ const Thumbnail = ({
           'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
           isActive && 'bg-popover rounded'
         )}
+        style={thumbnailStylesCustomization?.styles}
       >
         <div className="h-[114px] w-[128px]">
           <div className="relative bg-black">
