@@ -49,7 +49,7 @@ export type SetProtocolOptions = {
    * This is normally transparent to the user of this, but in order to specify
    * specific instances, they can be added like that.
    */
-  displaySetSelectorMap?: Record<string, string>;
+  displaySetSelectorMap?: Record<string, Array<string>>;
 
   /** Used to define the display sets already in view, in order to allow
    * filling empty viewports with other instances.
