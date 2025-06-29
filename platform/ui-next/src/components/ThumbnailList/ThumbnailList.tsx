@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail as DefaultThumbnail } from '../Thumbnail';
+import { Thumbnail } from '../Thumbnail';
 import { useDynamicMaxHeight } from '../../hooks/useDynamicMaxHeight';
-import { useSystem } from '@ohif/core';
 
 const ThumbnailList = ({
   thumbnails,
@@ -14,14 +13,6 @@ const ThumbnailList = ({
   viewPreset,
   ThumbnailMenuItems,
 }) => {
-  // Get customized thumbnail component if available
-  const { servicesManager } = useSystem();
-  const { customizationService } = servicesManager.services;
-
-  // Use custom thumbnail if available, otherwise fallback to default
-  const customThumbnail = customizationService?.getCustomization('ui.thumbnail');
-  const ThumbnailComponent = (customThumbnail || DefaultThumbnail) as React.ComponentType;
-
   // Use the dynamic height hook on the parent container
   const { ref, maxHeight } = useDynamicMaxHeight(thumbnails);
 
@@ -45,24 +36,25 @@ const ThumbnailList = ({
             id="ohif-thumbnail-list"
             className="bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px]"
           >
-            {thumbnailItems.map((item, index) => {
+            {thumbnailItems.map(item => {
               const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
 
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-              return React.createElement(ThumbnailComponent, {
-                key: displaySetInstanceUID,
-                ...rest,
-                displaySetInstanceUID,
-                numInstances: numInstances || 1,
-                isActive,
-                thumbnailType: componentType,
-                viewPreset: 'thumbnails',
-                index,
-                onClick: onThumbnailClick.bind(null, displaySetInstanceUID),
-                onDoubleClick: onThumbnailDoubleClick.bind(null, displaySetInstanceUID),
-                onClickUntrack: onClickUntrack.bind(null, displaySetInstanceUID),
-                ThumbnailMenuItems,
-              });
+              return (
+                <Thumbnail
+                  key={displaySetInstanceUID}
+                  {...rest}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  numInstances={numInstances || 1}
+                  isActive={isActive}
+                  thumbnailType={componentType}
+                  viewPreset="thumbnails"
+                  onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+                  onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+                  onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+                  ThumbnailMenuItems={ThumbnailMenuItems}
+                />
+              );
             })}
           </div>
         )}
@@ -72,23 +64,24 @@ const ThumbnailList = ({
             id="ohif-thumbnail-list"
             className="bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px]"
           >
-            {listItems.map((item, index) => {
+            {listItems.map(item => {
               const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-              return React.createElement(ThumbnailComponent, {
-                key: displaySetInstanceUID,
-                index,
-                ...rest,
-                displaySetInstanceUID,
-                numInstances: numInstances || 1,
-                isActive,
-                thumbnailType: componentType,
-                viewPreset: 'list',
-                onClick: onThumbnailClick.bind(null, displaySetInstanceUID),
-                onDoubleClick: onThumbnailDoubleClick.bind(null, displaySetInstanceUID),
-                onClickUntrack: onClickUntrack.bind(null, displaySetInstanceUID),
-                ThumbnailMenuItems,
-              });
+              return (
+                <Thumbnail
+                  key={displaySetInstanceUID}
+                  {...rest}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  numInstances={numInstances || 1}
+                  isActive={isActive}
+                  thumbnailType={componentType}
+                  viewPreset="list"
+                  onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+                  onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+                  onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+                  ThumbnailMenuItems={ThumbnailMenuItems}
+                />
+              );
             })}
           </div>
         )}
