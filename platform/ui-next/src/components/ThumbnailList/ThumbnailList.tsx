@@ -76,13 +76,13 @@ const ThumbnailList = ({
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
               return React.createElement(ThumbnailComponent, {
                 key: displaySetInstanceUID,
-                index,
                 ...rest,
                 displaySetInstanceUID,
                 numInstances: numInstances || 1,
                 isActive,
                 thumbnailType: componentType,
                 viewPreset: 'list',
+                index: thumbnailItems.length + index,
                 onClick: onThumbnailClick.bind(null, displaySetInstanceUID),
                 onDoubleClick: onThumbnailDoubleClick.bind(null, displaySetInstanceUID),
                 onClickUntrack: onClickUntrack.bind(null, displaySetInstanceUID),
