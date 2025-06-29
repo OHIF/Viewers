@@ -55,6 +55,7 @@ export const sopClassDictionary = {
   SpatialFiducialsStorage: '1.2.840.10008.5.1.4.1.1.66.2',
   DeformableSpatialRegistrationStorage: '1.2.840.10008.5.1.4.1.1.66.3',
   SegmentationStorage: '1.2.840.10008.5.1.4.1.1.66.4',
+  LabelmapSegmentationStorage: '1.2.840.10008.5.1.4.1.1.66.7',
   SurfaceSegmentationStorage: '1.2.840.10008.5.1.4.1.1.66.5',
   RealWorldValueMappingStorage: '1.2.840.10008.5.1.4.1.1.67',
   SurfaceScanMeshStorage: '1.2.840.10008.5.1.4.1.1.68.1',

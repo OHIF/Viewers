@@ -310,11 +310,13 @@ export default class ToolbarService extends PubSubService {
           typeof props.evaluate === 'function'
             ? props.evaluate({ ...refreshProps, button })
             : undefined;
+        // Check hideWhenDisabled at both evaluateProps level and props level
+        const hideWhenDisabled = evaluateProps?.hideWhenDisabled || props.hideWhenDisabled;
         const updatedProps = {
           ...props,
           ...evaluated,
           disabled: evaluated?.disabled || false,
-          visible: evaluateProps?.hideWhenDisabled && evaluated?.disabled ? false : true,
+          visible: hideWhenDisabled && evaluated?.disabled ? false : true,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
         };
