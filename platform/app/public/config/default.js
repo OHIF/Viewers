@@ -1,22 +1,171 @@
-/** @type {AppTypes.Config} */
+/* filters displayed DICOM instances by their SignalPET study ID */
+const instanceFilter = (query, instance) => {
+  // 31C51020 is a private SiganlPET tag that stores the StudyID
+  const instanceStudyId = instance['31C51020']?.Value?.[0];
+  const queryStudyId = parseInt(query.get('SignalPETStudyID'));
 
+  if (isNaN(queryStudyId)) {
+    return true;
+  }
+
+  return instanceStudyId == queryStudyId;
+};
+
+/** @type {AppTypes.Config} */
 window.config = {
   name: 'config/default.js',
-  routerBasename: null,
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    {
+      'viewportOverlay.topLeft': {
+        $set: [
+          {
+            id: 'patientIdOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Patient ID: ',
+            color: 'rgba(255, 255, 255, 0.5)',
+            title: 'Patient ID: ',
+            condition: ({ instance }) => instance && instance.PatientID,
+            attribute: 'PatientID',
+          },
+          {
+            id: 'patientNameOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Patient Name: ',
+            attribute: 'PatientName',
+            title: 'Patient Name',
+            color: 'rgba(255, 255, 255, 0.5)',
+            condition: ({ instance }) =>
+              instance && instance.PatientName && instance.PatientName.Alphabetic,
+            contentF: ({ instance, formatters: { formatPN } }) =>
+              formatPN(instance.PatientName.Alphabetic),
+          },
+          {
+            id: 'studyDateOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Study Date: ',
+            attribute: 'StudyDate',
+            title: 'Study Date',
+            color: 'rgba(255, 255, 255, 0.5)',
+            condition: ({ instance }) => instance && instance.StudyDate,
+            contentF: ({ instance, formatters: { formatDate } }) => formatDate(instance.StudyDate),
+          },
+          {
+            id: 'studyTimeOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Study Time: ',
+            attribute: 'StudyTime',
+            title: 'Study Time',
+            color: 'rgba(255, 255, 255, 0.5)',
+            condition: ({ instance }) => instance && instance.StudyTime,
+            contentF: ({ instance, formatters: { formatTime } }) => formatTime(instance.StudyTime),
+          },
+          {
+            id: 'speciesOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Species: ',
+            attribute: 'PatientSpeciesDescription',
+            title: 'Species',
+            color: 'rgba(255, 255, 255, 0.5)',
+            condition: ({ instance }) => instance && instance.PatientSpeciesDescription,
+            contentF: ({ instance }) => instance.PatientSpeciesDescription,
+          },
+          {
+            id: 'patientSexOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Patient Sex: ',
+            attribute: 'PatientSex',
+            title: 'Patient Sex',
+            color: 'rgba(255, 255, 255, 0.5)',
+            condition: ({ instance }) => instance && instance.PatientSex,
+            contentF: ({ instance }) => instance.PatientSex,
+          },
+          {
+            id: 'patientBreedOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            label: 'Patient Breed: ',
+            attribute: 'PatientBreed',
+            title: 'Patient Breed',
+            color: 'rgba(255, 255, 255, 0.5)',
+            condition: ({ instance }) => instance && instance.PatientBreed,
+            contentF: ({ instance }) => instance.PatientBreed,
+          },
+        ],
+      },
+      //  The "Demo Study" label is rendered whenever the demoStudy is set in the URL
+      'viewportOverlay.topRight': {
+        $set: [
+          {
+            id: 'demoStudyLabel',
+            inheritsFrom: 'ohif.overlayItem',
+            title: 'DEMO STUDY',
+            condition: ({ isDemoStudy }) =>
+              new URLSearchParams(window.location.search).get('demoStudy') === 'true',
+            contentF: () => 'DEMO STUDY',
+            color: 'yellow',
+          },
+        ],
+      },
+      'studyBrowser.thumbnailClickCallback': {
+        callbacks: [
+          ({ activeViewportId, servicesManager, commandsManager, isHangingProtocolLayout }) =>
+            async displaySetInstanceUID => {
+              const { hangingProtocolService, uiNotificationService } = servicesManager.services;
+              let updatedViewports = [];
+              const viewportId = activeViewportId;
+              try {
+                updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+                  viewportId,
+                  displaySetInstanceUID,
+                  isHangingProtocolLayout
+                );
+              } catch (error) {
+                console.warn(error);
+                uiNotificationService.show({
+                  title: 'Thumbnail Click',
+                  message: 'The selected display sets could not be added to the viewport.',
+                  type: 'error',
+                  duration: 3000,
+                });
+              }
+              commandsManager.run('setDisplaySetsForViewports', {
+                viewportsToUpdate: updatedViewports,
+              });
+            },
+        ],
+      },
+      'studyBrowser.thumbnailDoubleClickCallback': {},
+      'ohif.aboutModal': {
+        hidden: true,
+      },
+      'ui.studyBrowserHeader': () => null,
+      'panel.left.initialWidth': 89,
+      'studyBrowser.thumbnailMenuItems': [
+        {
+          id: 'tagBrowser',
+          label: 'Tag Browser',
+          iconName: 'DicomTagBrowser',
+          onClick: ({ commandsManager, displaySetInstanceUID }) => {
+            commandsManager.runCommand('openDICOMTagViewer', {
+              displaySetInstanceUID,
+            });
+          },
+        },
+      ],
+    },
+  ],
   showStudyList: true,
-  // some windows systems have issues with more than 3 web workers
-  maxNumberOfWebWorkers: 3,
-  // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
-  experimentalStudyBrowserSort: false,
+  investigationalUseDialog: { option: 'never' },
+  showPatientInfo: 'disabled',
   strictZSpacingForVolumeViewport: true,
+  measurementTrackingMode: 'none',
   groupEnabledModesFirst: true,
+  enableStudyLazyLoad: true,
   allowMultiSelectExport: false,
   maxNumRequests: {
     interaction: 100,
@@ -25,7 +174,6 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
-  // filterQueryParam: false,
   // Defines multi-monitor layouts
   multimonitor: [
     {
@@ -87,184 +235,24 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'dicomweb',
-  /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
-  // dangerouslyUseDynamicConfig: {
-  //   enabled: true,
-  //   // regex will ensure valid configuration source and default is /.*/ which matches any character. To use this, setup your own regex to choose a specific source of configuration only.
-  //   // Example 1, to allow numbers and letters in an absolute or sub-path only.
-  //   // regex: /(0-9A-Za-z.]+)(\/[0-9A-Za-z.]+)*/
-  //   // Example 2, to restricts to either hosptial.com or othersite.com.
-  //   // regex: /(https:\/\/hospital.com(\/[0-9A-Za-z.]+)*)|(https:\/\/othersite.com(\/[0-9A-Za-z.]+)*)/
-  //   regex: /.*/,
-  // },
+  defaultDataSourceName: 'signalpet',
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb',
+      sourceName: 'signalpet',
       configuration: {
-        friendlyName: 'AWS S3 Static wado server',
-        name: 'aws',
-        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        friendlyName: 'SignalPET PACS',
+        name: 'signalpet',
+        wadoUriRoot: 'http://localhost:32080/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'http://localhost:32080/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'http://localhost:32080/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
-        supportsWildcard: false,
-        staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-          transform: url => url.replace('/pixeldata.mp4', '/rendered'),
-        },
+        dicomUploadEnabled: false,
         omitQuotationForMultipartRequest: true,
-      },
-    },
-
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif2',
-      configuration: {
-        friendlyName: 'AWS S3 Static wado secondary server',
-        name: 'aws',
-        wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-        omitQuotationForMultipartRequest: true,
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif3',
-      configuration: {
-        friendlyName: 'AWS S3 Static wado secondary server',
-        name: 'aws',
-        wadoUriRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d3t6nz73ql33tx.cloudfront.net/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: false,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'bulkdata,video',
-        // whether the data source should use retrieveBulkData to grab metadata,
-        // and in case of relative path, what would it be relative to, options
-        // are in the series level or study level (some servers like series some study)
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-        omitQuotationForMultipartRequest: true,
-      },
-    },
-
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'local5000',
-      configuration: {
-        friendlyName: 'Static WADO Local Data',
-        name: 'DCM4CHEE',
-        qidoRoot: 'http://localhost:5000/dicomweb',
-        wadoRoot: 'http://localhost:5000/dicomweb',
-        qidoSupportsIncludeField: false,
-        supportsReject: true,
-        supportsStow: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
-        supportsWildcard: true,
-        staticWado: true,
-        singlepart: 'video',
-        bulkDataURI: {
-          enabled: true,
-          relativeResolution: 'studies',
-        },
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'orthanc',
-      configuration: {
-        friendlyName: 'local Orthanc DICOMWeb Server',
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'http://localhost/pacs/dicom-web',
-        qidoRoot: 'http://localhost/pacs/dicom-web',
-        wadoRoot: 'http://localhost/pacs/dicom-web',
-        qidoSupportsIncludeField: true,
-        supportsReject: true,
-        dicomUploadEnabled: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
-        supportsWildcard: true,
-        omitQuotationForMultipartRequest: true,
-        bulkDataURI: {
-          enabled: true,
-          // This is an example config that can be used to fix the retrieve URL
-          // where it has the wrong prefix (eg a canned prefix).  It is better to
-          // just use the correct prefix out of the box, but that is sometimes hard
-          // when URLs go through several systems.
-          // Example URLS are:
-          // "BulkDataURI" : "http://localhost/dicom-web/studies/1.2.276.0.7230010.3.1.2.2344313775.14992.1458058363.6979/series/1.2.276.0.7230010.3.1.3.1901948703.36080.1484835349.617/instances/1.2.276.0.7230010.3.1.4.1901948703.36080.1484835349.618/bulk/00420011",
-          // when running on http://localhost:3003 with no server running on localhost.  This can be corrected to:
-          // /orthanc/dicom-web/studies/1.2.276.0.7230010.3.1.2.2344313775.14992.1458058363.6979/series/1.2.276.0.7230010.3.1.3.1901948703.36080.1484835349.617/instances/1.2.276.0.7230010.3.1.4.1901948703.36080.1484835349.618/bulk/00420011
-          // which is a valid relative URL, and will result in using the http://localhost:3003/orthanc/.... path
-          // startsWith: 'http://localhost/',
-          // prefixWith: '/orthanc/',
-        },
-      },
-    },
-
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
-      sourceName: 'dicomwebproxy',
-      configuration: {
-        friendlyName: 'dicomweb delegating proxy',
-        name: 'dicomwebproxy',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
-      sourceName: 'dicomjson',
-      configuration: {
-        friendlyName: 'dicom json',
-        name: 'json',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
-      sourceName: 'dicomlocal',
-      configuration: {
-        friendlyName: 'dicom local',
+        instanceFilter,
       },
     },
   ],
