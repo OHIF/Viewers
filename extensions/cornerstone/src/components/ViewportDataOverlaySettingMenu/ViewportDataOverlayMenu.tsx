@@ -206,6 +206,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           onClick={() => {
             setPendingSegmentations([...pendingSegmentations, `seg-${Date.now()}`]);
           }}
+          dataCY={`AddSegmentationDataOverlay-${viewportId}`}
         >
           <Icons.Plus className="h-4 w-4" />
           Segmentation
@@ -289,7 +290,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                       value={item.displaySetInstanceUID}
                       className="pr-2"
                     >
-                      <SelectItemWithModality displaySet={item} />
+                      <SelectItemWithModality
+                        displaySet={item}
+                        dataCY={`${item.label}`}
+                      />
                     </SelectItem>
                   ))}
                 </SelectContent>

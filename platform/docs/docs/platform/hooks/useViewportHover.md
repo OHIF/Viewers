@@ -22,7 +22,7 @@ import { useViewportHover } from '@ohif/extension-cornerstone';
 ```jsx
 function ViewportOverlay({ viewportId }) {
   const { isHovered, isActive } = useViewportHover(viewportId);
-  
+
   return (
     <div className={`overlay ${isHovered ? 'hovered' : ''} ${isActive ? 'active' : ''}`}>
       {isHovered && !isActive && (
@@ -49,7 +49,7 @@ An object containing the following properties:
 
 ## Implementation Details
 
-- The hook uses the DOM to find the viewport element by its `data-viewportId` attribute.
+- The hook uses the DOM to find the viewport element by its `data-viewportid` attribute.
 - It calculates and maintains the viewport's bounding rectangle to efficiently determine if the mouse is within the viewport's bounds.
 - The viewport element's rectangle is updated when the window is resized.
 - Global mouse movement is tracked to determine hover state, rather than relying on traditional mouseenter/mouseleave events.
