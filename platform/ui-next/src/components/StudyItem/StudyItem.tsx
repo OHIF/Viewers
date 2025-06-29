@@ -5,7 +5,6 @@ import { ThumbnailList } from '../ThumbnailList';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../Accordion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
-import { useSystem } from '@ohif/core';
 
 const StudyItem = ({
   date,
@@ -25,31 +24,6 @@ const StudyItem = ({
   StudyMenuItems,
   StudyInstanceUID,
 }: withAppTypes) => {
-  const { servicesManager } = useSystem();
-  const { customizationService } = servicesManager.services;
-  const customStudyItem = customizationService?.getCustomization('ui.studyItem');
-
-  if (customStudyItem) {
-    return React.createElement(customStudyItem as React.ComponentType, {
-      date,
-      description,
-      numInstances,
-      modalities,
-      isActive,
-      onClick,
-      isExpanded,
-      displaySets,
-      activeDisplaySetInstanceUIDs,
-      onClickThumbnail,
-      onDoubleClickThumbnail,
-      onClickUntrack,
-      viewPreset,
-      ThumbnailMenuItems,
-      StudyMenuItems,
-      StudyInstanceUID,
-    });
-  }
-
   return (
     <Accordion
       type="single"

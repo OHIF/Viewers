@@ -20,7 +20,7 @@ const ThumbnailList = ({
 
   // Use custom thumbnail if available, otherwise fallback to default
   const customThumbnail = customizationService?.getCustomization('ui.thumbnail');
-  const ThumbnailComponent = (customThumbnail || DefaultThumbnail) as React.ComponentType;
+  const ThumbnailComponent = customThumbnail || DefaultThumbnail;
 
   // Use the dynamic height hook on the parent container
   const { ref, maxHeight } = useDynamicMaxHeight(thumbnails);
@@ -45,7 +45,7 @@ const ThumbnailList = ({
             id="ohif-thumbnail-list"
             className="bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px]"
           >
-            {thumbnailItems.map((item, index) => {
+            {thumbnailItems.map(item => {
               const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
 
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
@@ -57,7 +57,6 @@ const ThumbnailList = ({
                 isActive,
                 thumbnailType: componentType,
                 viewPreset: 'thumbnails',
-                index,
                 onClick: onThumbnailClick.bind(null, displaySetInstanceUID),
                 onDoubleClick: onThumbnailDoubleClick.bind(null, displaySetInstanceUID),
                 onClickUntrack: onClickUntrack.bind(null, displaySetInstanceUID),
@@ -72,7 +71,7 @@ const ThumbnailList = ({
             id="ohif-thumbnail-list"
             className="bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px]"
           >
-            {listItems.map((item, index) => {
+            {listItems.map(item => {
               const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
               return React.createElement(ThumbnailComponent, {
