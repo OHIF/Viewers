@@ -448,7 +448,6 @@ function PanelStudyBrowser({
           updateViewPresetValue={updateViewPresetValue}
           actionIcons={actionIcons}
           updateActionIconValue={updateActionIconValue}
-          displaySets={displaySets}
         />
         <Separator
           orientation="horizontal"
