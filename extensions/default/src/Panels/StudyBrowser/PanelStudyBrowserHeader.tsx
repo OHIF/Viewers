@@ -1,7 +1,6 @@
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
-import { useSystem } from '@ohif/core';
 import { actionIcon, viewPreset } from './types';
 
 function PanelStudyBrowserHeader({
@@ -9,28 +8,12 @@ function PanelStudyBrowserHeader({
   updateViewPresetValue,
   actionIcons,
   updateActionIconValue,
-  ...props
 }: {
   viewPresets: viewPreset[];
   updateViewPresetValue: (viewPreset: viewPreset) => void;
   actionIcons: actionIcon[];
   updateActionIconValue: (actionIcon: actionIcon) => void;
-  [key: string]: any;
 }) {
-  const { servicesManager } = useSystem();
-  const { customizationService } = servicesManager.services;
-  const CustomHeader = customizationService?.getCustomization('ui.studyBrowserHeader');
-
-  if (CustomHeader) {
-    return React.createElement(CustomHeader as React.ComponentType<any>, {
-      viewPresets,
-      updateViewPresetValue,
-      actionIcons,
-      updateActionIconValue,
-      ...props,
-    });
-  }
-
   return (
     <>
       <div className="bg-muted flex h-[40px] select-none rounded-t p-2">
