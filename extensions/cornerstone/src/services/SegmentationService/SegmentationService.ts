@@ -427,7 +427,15 @@ class SegmentationService extends PubSubService {
     // Clone labelMapImages (array of arrays)
     const derivedImages = labelMapImages.map(arr => arr.slice());
     // Create array of arrays for derivedImagesIds
-    const derivedImagesIds = derivedImages.map(arr => arr.map(image => image.imageId));
+    let derivedImagesIds = derivedImages.map(arr => arr.map(image => image.imageId));
+    // Flatten if 2D array
+    let numberOfImages = 0;
+    if (Array.isArray(derivedImagesIds) && Array.isArray(derivedImagesIds[0])) {
+      numberOfImages = derivedImagesIds[0].length;
+      derivedImagesIds = derivedImagesIds.flat();
+    } else {
+      numberOfImages = derivedImagesIds.length;
+    }
 
     // Save in segDisplaySet.images and segDisplaySet.imageIds the first element of this array of arrays
     segDisplaySet.images = derivedImages[0].map(image => ({
@@ -524,6 +532,7 @@ class SegmentationService extends PubSubService {
         data: {
           imageIds: derivedImagesIds,
           // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          numberOfImages,
           referencedImageIds: imageIds as string[],
         },
       },
