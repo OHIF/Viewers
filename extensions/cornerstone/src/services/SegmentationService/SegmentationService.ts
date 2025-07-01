@@ -423,32 +423,44 @@ class SegmentationService extends PubSubService {
     }
 
     const imageIds = images.map(image => image.imageId);
-    const derivedImages = labelMapImages?.flat();
-    const derivedImageIds = derivedImages.map(image => image.imageId);
 
-    segDisplaySet.images = derivedImages.map(image => ({
+    // Clone labelMapImages (array of arrays)
+    const derivedImages = labelMapImages.map(arr => arr.slice());
+    // Create array of arrays for derivedImagesIds
+    let derivedImagesIds = derivedImages.map(arr => arr.map(image => image.imageId));
+    // Flatten if 2D array
+    let numberOfImages = 0;
+    if (Array.isArray(derivedImagesIds) && Array.isArray(derivedImagesIds[0])) {
+      numberOfImages = derivedImagesIds[0].length;
+      derivedImagesIds = derivedImagesIds.flat();
+    } else {
+      numberOfImages = derivedImagesIds.length;
+    }
+
+    // Save in segDisplaySet.images and segDisplaySet.imageIds the first element of this array of arrays
+    segDisplaySet.images = derivedImages[0].map(image => ({
       ...image,
       ...metaData.get('instance', image.referencedImageId),
     }));
+    segDisplaySet.imageIds = derivedImagesIds[0];
+    segDisplaySet.overlappingImages = derivedImages;
+    segDisplaySet.overlappingImagesId = derivedImagesIds;
 
-    segDisplaySet.imageIds = derivedImageIds;
-
-    // We should parse the segmentation as separate slices to support overlapping segments.
-    // This parsing should occur in the CornerstoneJS library adapters.
-    // For now, we use the volume returned from the library and chop it here.
+    // Calculate the firstSegmentedSliceImageId as the one with the lowest
+    // i index across all arrays
     let firstSegmentedSliceImageId = null;
-    for (let i = 0; i < derivedImages.length; i++) {
-      const voxelManager = derivedImages[i].voxelManager as csTypes.IVoxelManager<number>;
-      const scalarData = voxelManager.getScalarData();
-      voxelManager.setScalarData(scalarData);
-
-      // Check if this slice has any non-zero voxels and we haven't found one yet
-      if (!firstSegmentedSliceImageId && scalarData.some(value => value !== 0)) {
-        firstSegmentedSliceImageId = derivedImages[i].referencedImageId;
+    let minIndex = Number.POSITIVE_INFINITY;
+    derivedImages.forEach(imagesArr => {
+      for (let i = 0; i < imagesArr.length; i++) {
+        const voxelManager = imagesArr[i].voxelManager as csTypes.IVoxelManager<number>;
+        const scalarData = voxelManager.getScalarData();
+        voxelManager.setScalarData(scalarData);
+        if (scalarData.some(value => value !== 0) && i < minIndex) {
+          minIndex = i;
+          firstSegmentedSliceImageId = imagesArr[i].referencedImageId;
+        }
       }
-    }
-
-    // assign the first non zero voxel image id to the segDisplaySet
+    });
     segDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
@@ -518,8 +530,9 @@ class SegmentationService extends PubSubService {
       representation: {
         type: LABELMAP,
         data: {
-          imageIds: derivedImageIds,
+          imageIds: derivedImagesIds,
           // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          numberOfImages,
           referencedImageIds: imageIds as string[],
         },
       },
