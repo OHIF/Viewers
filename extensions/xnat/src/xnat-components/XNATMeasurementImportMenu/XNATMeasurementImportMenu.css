@@ -1,0 +1,140 @@
+.xnat-measurement-import-menu {
+    padding: 1rem;
+    background-color: var(--ui-dark-blue);
+}
+
+.xnat-measurement-import-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.xnat-measurement-import-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary-color);
+}
+
+.xnat-close-button {
+    background: none;
+    border: none;
+    color: var(--text-primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.xnat-measurement-import-content .xnat-loading,
+.xnat-measurement-import-content .xnat-error {
+    color: var(--text-secondary-color);
+    text-align: center;
+    padding: 2rem;
+}
+
+.xnat-retry-button {
+    display: block;
+    margin: 1rem auto;
+    padding: 0.5rem 1rem;
+}
+
+.xnat-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.xnat-measurement-import-modal {
+    background: var(--ui-dark-blue);
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.xnat-no-measurements {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary-color);
+}
+
+.xnat-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.xnat-selection-instruction {
+    margin-bottom: 1rem;
+    color: var(--text-secondary-color);
+}
+
+.xnat-measurement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.xnat-measurement-card {
+    display: flex;
+    align-items: center;
+    background: var(--ui-dark-gray);
+    padding: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.xnat-measurement-card:hover {
+    background: var(--hover-color);
+}
+
+.xnat-measurement-card.importing {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.xnat-measurement-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.xnat-measurement-name {
+    font-weight: bold;
+    color: var(--text-primary-color);
+}
+
+.xnat-measurement-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary-color);
+}
+
+.xnat-import-status {
+    margin-left: auto;
+    font-size: 1.5rem;
+}
+
+.xnat-importing-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.xnat-modal-footer {
+    margin-top: 1rem;
+    text-align: right;
+}

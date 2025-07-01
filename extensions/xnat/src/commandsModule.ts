@@ -25,6 +25,10 @@ import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocol
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
+import fetchCSRFToken from './utils/IO/fetchCSRFToken.js';
+import generateDateTimeAndLabel from './utils/IO/helpers/generateDateAndTimeLabel.js';
+import JSONMeasurementExporter from './utils/IO/classes/JSONMeasurementExporter.js';
+import MeasurementImportMenu from './xnat-components/XNATMeasurementImportMenu/XNATMeasurementImportMenu';
 
 const { segmentation: segmentationUtils } = csUtils;
 const { datasetToBlob } = dcmjs.data;
@@ -92,6 +96,7 @@ const commandsModule = ({
     viewportGridService,
     displaySetService,
     multiMonitorService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
@@ -1065,33 +1070,6 @@ XNATStoreSegmentation: async ({ segmentationId }) => {
       }
     }
     
-    // 6. Try to get from DicomMetadataStore study data
-    if (!experimentId) {
-      const study = DicomMetadataStore.getStudy(displaySet.StudyInstanceUID);
-      if (study) {
-        experimentId = study.experimentId || study.AccessionNumber;
-        if (experimentId) {
-          console.log('Got experiment ID from DicomMetadataStore:', experimentId);
-        }
-      }
-    }
-    
-    if (!experimentId) {
-      console.error('Failed to find experiment ID. Debug info:', {
-        seriesInstanceUID,
-        studyInstanceUID: displaySet.StudyInstanceUID,
-        sessionRouterExists: !!sessionRouter,
-        sessionStorageKeys: window.sessionStorage ? Object.keys(window.sessionStorage) : 'N/A',
-        // sessionMapSessions: sessionMap.getSession(),
-        displaySet: displaySet,
-      });
-      throw new Error(
-        'Could not determine experiment ID for XNAT export. Please ensure you are viewing data from XNAT and that the session is properly initialized.'
-      );
-    }
-    
-    console.log('Using experiment ID for export:', experimentId);
-    
     // Use the existing XNAT DICOMSEGExporter with the experiment ID and user-provided label
     const exporter = new DICOMSEGExporter(segBlob, seriesInstanceUID, userLabel, experimentId);
     
@@ -1535,6 +1513,311 @@ XNATStoreReport: ({ label, dataSourceName }) => {
     type: 'success',
   });
 },
+
+/**
+ * Stores the current measurement set to XNAT as a MeasurementCollection JSON.
+ */
+XNATStoreMeasurements: async () => {
+  const measurements: any[] = measurementService.getMeasurements();
+  if (!measurements || !measurements.length) {
+    uiNotificationService.show({
+      title: 'Export Measurements',
+      message: 'No measurements found to export.',
+      type: 'warning',
+    });
+    return;
+  }
+
+  const { activeViewportId } = viewportGridService.getState();
+  const viewport = viewportGridService.getState().viewports.get(activeViewportId);
+  const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+  const seriesInstanceUID = displaySet.SeriesInstanceUID;
+  const studyInstanceUID = displaySet.StudyInstanceUID;
+
+  // Use a more robust way to get the experiment ID, with fallbacks
+  let experimentId = null;
+  const { sessionRouter } = servicesManager.services;
+  if (sessionRouter && sessionRouter.experimentId) {
+    experimentId = sessionRouter.experimentId;
+  } else if (window.sessionStorage) {
+    experimentId = window.sessionStorage.getItem('xnat_experimentId');
+  }
+  if (!experimentId) {
+    experimentId = sessionMap.getExperimentID(seriesInstanceUID);
+  }
+  if (!experimentId) {
+    experimentId = sessionMap.getExperimentID();
+  }
+  if (!experimentId) {
+    const sessionData = sessionMap.get(displaySet.StudyInstanceUID);
+    if (sessionData && sessionData.experimentId) {
+      experimentId = sessionData.experimentId;
+    }
+  }
+
+  if (!experimentId) {
+    const message = 'Could not determine XNAT session ID. Measurements not exported.';
+    console.error(message);
+    uiNotificationService.show({
+      title: 'Export Measurements',
+      message,
+      type: 'error',
+    });
+    throw new Error('Experiment ID not found');
+  }
+
+  const defaultLabel = `Measurements_${new Date().toISOString().replace(/[.:-]/g, '')}`;
+  const sanitizeLabel = (label: string) => label.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  const userLabel = await new Promise<string | null>(resolve => {
+    const promptMessage = `Enter a name for the measurement collection.\n(Allowed characters: A-Z, a-z, 0-9, _, -)`;
+    const userInput = window.prompt(promptMessage, sanitizeLabel(defaultLabel));
+    if (userInput === null) {
+      resolve(null);
+    } else {
+      resolve(sanitizeLabel(userInput.trim() || defaultLabel));
+    }
+  });
+
+  if (!userLabel) {
+    return; // user cancelled
+  }
+
+  // Build a Measurement Collection JSON payload compliant with XNAT schema
+  const DicomMetaDictionary = dcmjs.data.DicomMetaDictionary;
+
+  // Helper to format date as YYYYMMDDHHmmss.SSS
+  const formatDateTime = (date: Date) => {
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    return (
+      date.getFullYear().toString() +
+      pad(date.getMonth() + 1) +
+      pad(date.getDate()) +
+      pad(date.getHours()) +
+      pad(date.getMinutes()) +
+      pad(date.getSeconds()) +
+      '.' + String(date.getMilliseconds()).padStart(3, '0')
+    );
+  };
+
+  // Build a map of SOPInstanceUID -> frame index (0-based); default 0 if missing
+  const sopToFrame: Record<string, number> = {};
+  measurements.forEach(m => {
+    sopToFrame[m.SOPInstanceUID] = m.frameNumber ?? 0;
+  });
+
+  const uniqueSops = Array.from(new Set(measurements.map(m => m.SOPInstanceUID)));
+
+  const imageCollection = uniqueSops.map(uid => ({
+    SOPInstanceUID: uid,
+    frameIndex: Number(sopToFrame[uid] ?? 0),
+  }));
+
+  // Build individual image measurement objects in the required shape
+  const buildMeasurementObject = (m): any => {
+    const points = m.points || [];
+    const createHandle = (pt: number[]) => ({ x: Number(pt[0]), y: Number(pt[1]) });
+
+    // Basic skeleton with all required keys
+    const base: any = {
+      uuid: m.uid || DicomMetaDictionary.uid(),
+      toolType: m.toolName || 'Unknown',
+      name: m.label || m.toolName || '',
+      description: '',
+      codingSequence: [],
+      color: m.color || '#FF0000',
+      lineThickness: 1,
+      dashedLine: false,
+      visible: true,
+      imageReference: {
+        SOPInstanceUID: m.SOPInstanceUID,
+        frameIndex: Number(sopToFrame[m.SOPInstanceUID] ?? 0),
+      },
+      viewport: {},
+      data: {},
+      measurements: [],
+    };
+
+    // Populate tool-specific "data" minimally
+    switch (base.toolType) {
+      case 'Length':
+        if (points.length >= 2) {
+          const lengthVal = m.length || 0;
+          base.data = {
+            length: Number(lengthVal),
+            handles: { start: createHandle(points[0]), end: createHandle(points[1]) },
+          };
+          base.measurements.push({ name: 'length', value: Number(lengthVal), unit: 'mm' });
+        }
+        break;
+      case 'Bidirectional':
+        if (points.length >= 4) {
+          const sd = m.shortestDiameter || 0;
+          const ld = m.longestDiameter || 0;
+          base.data = {
+            shortestDiameter: Number(sd),
+            longestDiameter: Number(ld),
+            handles: {
+              start: createHandle(points[0]),
+              end: createHandle(points[1]),
+              perpendicularStart: createHandle(points[2]),
+              perpendicularEnd: createHandle(points[3]),
+            },
+          };
+          base.measurements.push(
+            { name: 'shortestDiameter', value: Number(sd), unit: 'mm' },
+            { name: 'longestDiameter', value: Number(ld), unit: 'mm' },
+          );
+        }
+        break;
+      case 'Angle':
+        if (typeof m.rAngle === 'number') {
+          base.data = { rAngle: Number(m.rAngle), handles: {} };
+          base.measurements.push({ name: 'angle', value: Number(m.rAngle), unit: 'deg' });
+        }
+        break;
+      case 'RectangleRoi':
+      case 'EllipticalRoi':
+        base.data = {
+          cachedStats: m.cachedStats || {},
+          handles: {},
+        };
+        break;
+      case 'ArrowAnnotate':
+        base.data = {
+          text: m.text || '',
+          handles: {},
+        };
+        base.measurements.push({ name: 'arrow', comment: m.text || '', unit: '' });
+        break;
+      default:
+        base.data = {};
+    }
+
+    return base;
+  };
+
+  const imageMeasurements = measurements.map(buildMeasurementObject);
+
+  const measurementCollection = {
+    uuid: DicomMetaDictionary.uid(),
+    name: userLabel.substring(0, 64),
+    description: '',
+    created: formatDateTime(new Date()),
+    modified: '',
+    revision: 1,
+    user: { name: '', loginName: '' },
+    subject: { name: '', id: '', birthDate: '' },
+    equipment: {
+      manufacturerName: displaySet.Manufacturer || '',
+      manufacturerModelName: 'XNAT-OHIF-Viewer',
+      softwareVersion: '',
+    },
+    imageReference: {
+      PatientID: displaySet.PatientID || '',
+      StudyInstanceUID: studyInstanceUID,
+      SeriesInstanceUID: seriesInstanceUID,
+      Modality: displaySet.Modality || '',
+      imageCollection,
+    },
+    imageMeasurements, // array built above
+  } as any;
+
+  // ----- Old temporary builder removed -----
+  // const measurementCollection = { ... } (deprecated)
+
+  console.log("Complete measurement collection JSON:", JSON.stringify(measurementCollection, null, 2));
+  
+  const jsonBlob = new Blob([JSON.stringify(measurementCollection)], {
+    type: 'application/octet-stream',
+  });
+
+  const exporter = new JSONMeasurementExporter(
+    jsonBlob,
+    seriesInstanceUID,
+    userLabel,
+    experimentId
+  );
+
+  // Export to XNAT with retry logic for overwrite
+  let exportSuccessful = false;
+  let attempts = 0;
+  const maxAttempts = 2;
+
+  while (!exportSuccessful && attempts < maxAttempts) {
+    try {
+      const shouldOverwrite = attempts > 0;
+      await exporter.exportToXNAT(shouldOverwrite);
+      exportSuccessful = true;
+
+      uiNotificationService.show({
+        title: 'Export Successful',
+        message: `Measurement collection "${userLabel}" exported to XNAT successfully`,
+        type: 'success',
+        duration: 3000,
+      });
+    } catch (error) {
+      attempts++;
+
+      if ((error as any).isCollectionExistsError && attempts === 1) {
+        const shouldOverwrite = window.confirm(
+          `A measurement collection named "${userLabel}" already exists in XNAT. Overwrite?`
+        );
+
+        if (!shouldOverwrite) {
+          uiNotificationService.show({
+            title: 'Export Cancelled',
+            message: `Export of "${userLabel}" cancelled by user.`,
+            type: 'info',
+            duration: 3000,
+          });
+          return;
+        }
+      } else {
+        uiNotificationService.show({
+          title: 'Export Failed',
+          message: `Failed to export measurements: ${error.message}`,
+          type: 'error',
+          duration: 5000,
+        });
+        throw error;
+      }
+    }
+  }
+},
+
+XNATImportMeasurements: async () => {
+  const { UIModalService, viewportGridService, displaySetService, uiNotificationService } =
+    servicesManager.services;
+  const { activeViewportId, viewports } = viewportGridService.getState();
+
+  if (!activeViewportId) {
+    uiNotificationService.show({
+      title: 'Import Measurements',
+      message: 'No active viewport found.',
+      type: 'error',
+    });
+    return;
+  }
+
+  const activeViewport = viewports.get(activeViewportId);
+  const displaySetInstanceUID = activeViewport.displaySetInstanceUIDs[0];
+  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesInstanceUID } = displaySet;
+
+  UIModalService.show({
+    content: MeasurementImportMenu,
+    title: 'Import Measurements from XNAT',
+    contentProps: {
+      studyInstanceUID,
+      seriesInstanceUID,
+      servicesManager,
+      onClose: UIModalService.hide,
+    },
+  });
+},
 };
   const definitions = {
     multimonitor: {
@@ -1636,6 +1919,14 @@ XNATStoreReport: ({ label, dataSourceName }) => {
     },
     XNATStoreReport: {
       commandFn: actions.XNATStoreReport,
+      storeContexts: [],
+      options: {},
+    },
+    XNATImportMeasurements: {
+      commandFn: actions.XNATImportMeasurements,
+    },
+    XNATStoreMeasurements: {
+      commandFn: actions.XNATStoreMeasurements,
       storeContexts: [],
       options: {},
     },

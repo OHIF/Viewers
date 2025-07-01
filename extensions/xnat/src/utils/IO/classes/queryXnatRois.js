@@ -77,24 +77,41 @@ export const XnatSessionRoiCollections = async() => {
                     const item = assessorData.items[0];
                     const dataFields = item.data_fields;
 
-                    // Only process SEG collections
-                    if (dataFields.collectionType === 'SEG') {
+                    // Extract the referenced series UID
+                    let seriesInstanceUID;
+                    if (item.children) {
+                        const seriesRef = item.children.find(c => c.field === 'references/seriesUID');
+                        if (seriesRef && seriesRef.items && seriesRef.items.length > 0 && seriesRef.items[0].data_fields) {
+                            seriesInstanceUID = seriesRef.items[0].data_fields.seriesUID;
+                        }
+                    }
+
+                    if (!seriesInstanceUID) {
+                        console.warn(`Could not find referenced series UID for assessor ${assessor.ID}`);
+                        continue;
+                    }
+
+                    // Only process SEG or MEAS collections
+                    if (dataFields.collectionType === 'SEG' || dataFields.collectionType === 'MEAS') {
                         // Get files for this collection
                         const filesRoute = `data/archive/experiments/${dataFields.imageSession_ID}/assessors/${dataFields.ID}/files?format=json`;
                         const filesPromise = fetchJSON(filesRoute);
                         const filesData = await filesPromise.promise;
 
-                        if (filesData) {
+                        if (filesData && filesData.ResultSet && filesData.ResultSet.Result) {
+                            let targetFile = null;
 
-                            // Find the SEG file
-                            let segFile = null;
-                            if (filesData.ResultSet && filesData.ResultSet.Result) {
-                                segFile = filesData.ResultSet.Result.find((file) =>
-                                    file.collection === 'SEG' || (file.Name && file.Name.endsWith('.dcm'))
+                            if (dataFields.collectionType === 'SEG') {
+                                targetFile = filesData.ResultSet.Result.find(
+                                    (file) => file.collection === 'SEG' || (file.Name && file.Name.endsWith('.dcm'))
+                                );
+                            } else if (dataFields.collectionType === 'MEAS') {
+                                targetFile = filesData.ResultSet.Result.find(
+                                    (file) => file.collection === 'MEAS' && file.Name.endsWith('.json')
                                 );
                             }
 
-                            if (segFile) {
+                            if (targetFile) {
                                 collections.push({
                                     id: dataFields.ID,
                                     label: dataFields.label || dataFields.name,
@@ -102,9 +119,8 @@ export const XnatSessionRoiCollections = async() => {
                                     type: dataFields.collectionType,
                                     date: dataFields.date,
                                     time: dataFields.time,
-                                    studyInstanceUID: dataFields.imageSession_ID,
-                                    // Store the relative URI for fetchJSON usage (fetchJSON will handle URL construction)
-                                    relativeUri: segFile.URI,
+                                    seriesInstanceUID,
+                                    relativeUri: targetFile.URI, // URI to the actual file
                                     description: `${dataFields.collectionType} collection created on ${dataFields.date}`,
                                 });
                             }

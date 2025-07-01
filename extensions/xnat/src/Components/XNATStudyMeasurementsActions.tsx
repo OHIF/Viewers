@@ -9,10 +9,6 @@ export function XNATStudyMeasurementsActions({ items, StudyInstanceUID, measurem
   const { measurementService, displaySetService } = servicesManager.services;
   const disabled = !items?.length;
 
-  if (disabled) {
-    return null;
-  }
-
   const createSR = async () => {
     const dataSource = extensionManager.getActiveDataSource();
     const measurements = measurementService.getMeasurements(measurementFilter);
@@ -26,51 +22,61 @@ export function XNATStudyMeasurementsActions({ items, StudyInstanceUID, measurem
     storeSR(dicom, dataSource, StudyInstanceUID);
   };
 
+  const exportToXNAT = () => {
+    const measurements = measurementService.getMeasurements(measurementFilter);
+    commandsManager.runCommand('XNATStoreMeasurements', { measurements });
+  };
+
   return (
     <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
       <div className="flex space-x-1">
-        <Button
-          size="sm"
-          variant="ghost"
-          className="pl-1.5"
-          onClick={() => {
-            commandsManager.runCommand('downloadCSVMeasurementsReport', {
-              StudyInstanceUID,
-              measurementFilter,
-            });
-          }}
-        >
-          <Icons.Download className="h-5 w-5" />
-          <span className="pl-1">CSV</span>
-        </Button>
+        {!disabled && (
+          <>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="pl-1.5"
+              onClick={() => {
+                commandsManager.runCommand('downloadCSVMeasurementsReport', {
+                  StudyInstanceUID,
+                  measurementFilter,
+                });
+              }}
+            >
+              <Icons.Download className="h-5 w-5" />
+              <span className="pl-1">CSV</span>
+            </Button>
 
-        <Button
-          size="sm"
-          variant="ghost"
-          className="pl-0.5"
-          onClick={createSR}
-        >
-          <Icons.Add />
-          Create SR
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="pl-0.5"
-          onClick={e => {
-            e.stopPropagation();
-            if (actions?.onDelete) {
-              actions.onDelete();
-              return;
-            }
-            commandsManager.runCommand('clearMeasurements', {
-              measurementFilter,
-            });
-          }}
-        >
-          <Icons.Delete />
-          Delete
-        </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="pl-0.5"
+              onClick={exportToXNAT}
+              disabled={disabled}
+            >
+              <Icons.Upload />
+              Export
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="pl-0.5"
+              onClick={e => {
+                e.stopPropagation();
+                if (actions?.onDelete) {
+                  actions.onDelete();
+                  return;
+                }
+                commandsManager.runCommand('clearMeasurements', {
+                  measurementFilter,
+                });
+              }}
+            >
+              <Icons.Delete />
+              Delete
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
