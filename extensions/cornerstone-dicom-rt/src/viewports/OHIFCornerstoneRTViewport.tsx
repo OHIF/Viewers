@@ -169,7 +169,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
         {...props}
         displaySets={[referencedDisplaySet, rtDisplaySet]}
         viewportOptions={{
-          viewportType: 'stack',
+          viewportType: viewportOptions.viewportType,
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
