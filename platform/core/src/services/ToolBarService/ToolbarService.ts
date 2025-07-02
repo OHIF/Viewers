@@ -172,6 +172,14 @@ export default class ToolbarService extends PubSubService {
     if (this.state.buttons[buttonId]) {
       delete this.state.buttons[buttonId];
     }
+
+    // Remove button from all sections
+    Object.keys(this.state.buttonSections).forEach(sectionKey => {
+      this.state.buttonSections[sectionKey] = this.state.buttonSections[sectionKey].filter(
+        id => id !== buttonId
+      );
+    });
+
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
       ...this.state,
     });
@@ -302,11 +310,13 @@ export default class ToolbarService extends PubSubService {
           typeof props.evaluate === 'function'
             ? props.evaluate({ ...refreshProps, button })
             : undefined;
+        // Check hideWhenDisabled at both evaluateProps level and props level
+        const hideWhenDisabled = evaluateProps?.hideWhenDisabled || props.hideWhenDisabled;
         const updatedProps = {
           ...props,
           ...evaluated,
           disabled: evaluated?.disabled || false,
-          visible: evaluateProps?.hideWhenDisabled && evaluated?.disabled ? false : true,
+          visible: hideWhenDisabled && evaluated?.disabled ? false : true,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
         };

@@ -30,6 +30,7 @@ import {
 import { vec3, mat4 } from 'gl-matrix';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
+import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
@@ -63,6 +64,14 @@ const getLabelmapTools = ({ toolGroupService }) => {
     });
   });
   return labelmapTools;
+};
+
+const getPreviewTools = ({ toolGroupService }) => {
+  const labelmapTools = getLabelmapTools({ toolGroupService });
+
+  const previewTools = labelmapTools.filter(tool => tool.acceptPreview || tool.rejectPreview);
+
+  return previewTools;
 };
 
 const segmentAI = new ONNXSegmentationController({
@@ -109,6 +118,10 @@ function commandsModule({
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
+  }
+
+  function _getViewportEnabledElement(viewportId: string) {
+    return getViewportEnabledElement(viewportId);
   }
 
   function _getActiveViewportToolGroupId() {
@@ -882,32 +895,28 @@ function commandsModule({
         });
       }
     },
-    rotateViewport: ({ rotation }) => {
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof BaseVolumeViewport) {
-        const camera = viewport.getCamera();
-        const rotAngle = (rotation * Math.PI) / 180;
-        const rotMat = mat4.identity(new Float32Array(16));
-        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
-        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
-        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
-        viewport.render();
-      } else if (viewport.getRotation !== undefined) {
-        const presentation = viewport.getViewPresentation();
-        const { rotation: currentRotation } = presentation;
-        const newRotation = (currentRotation + rotation + 360) % 360;
-        viewport.setViewPresentation({ rotation: newRotation });
-        viewport.render();
-      }
+    /**
+     * Rotates the viewport by `rotation` relative to its current rotation.
+     */
+    rotateViewportBy: ({ rotation, viewportId }: { rotation: number; viewportId?: string }) => {
+      actions._rotateViewport({ rotation, viewportId, rotationMode: 'apply' });
     },
-    flipViewportHorizontal: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
+    /**
+     * Sets the viewport rotation to an absolute value `rotation`.
+     */
+    setViewportRotation: ({ rotation, viewportId }: { rotation: number; viewportId?: string }) => {
+      actions._rotateViewport({ rotation, viewportId, rotationMode: 'set' });
+    },
+    flipViewportHorizontal: ({
+      viewportId,
+      newValue = 'toggle',
+    }: {
+      viewportId?: string;
+      newValue?: 'toggle' | boolean;
+    }) => {
+      const enabledElement = viewportId
+        ? _getViewportEnabledElement(viewportId)
+        : _getActiveViewportEnabledElement();
 
       if (!enabledElement) {
         return;
@@ -915,12 +924,27 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { flipHorizontal } = viewport.getCamera();
-      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      let flipHorizontal: boolean;
+      if (newValue === 'toggle') {
+        const { flipHorizontal: currentHorizontalFlip } = viewport.getCamera();
+        flipHorizontal = !currentHorizontalFlip;
+      } else {
+        flipHorizontal = newValue;
+      }
+
+      viewport.setCamera({ flipHorizontal });
       viewport.render();
     },
-    flipViewportVertical: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
+    flipViewportVertical: ({
+      viewportId,
+      newValue = 'toggle',
+    }: {
+      viewportId?: string;
+      newValue?: 'toggle' | boolean;
+    }) => {
+      const enabledElement = viewportId
+        ? _getViewportEnabledElement(viewportId)
+        : _getActiveViewportEnabledElement();
 
       if (!enabledElement) {
         return;
@@ -928,8 +952,14 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { flipVertical } = viewport.getCamera();
-      viewport.setCamera({ flipVertical: !flipVertical });
+      let flipVertical: boolean;
+      if (newValue === 'toggle') {
+        const { flipVertical: currentVerticalFlip } = viewport.getCamera();
+        flipVertical = !currentVerticalFlip;
+      } else {
+        flipVertical = newValue;
+      }
+      viewport.setCamera({ flipVertical });
       viewport.render();
     },
     invertViewport: ({ element }) => {
@@ -1709,14 +1739,15 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = labelmapTools.filter(
-        tool => tool.mode === 'Active' || tool.mode === 'Enabled'
-      );
+      const previewTools = getPreviewTools({ toolGroupService });
 
-      activeTools.forEach(tool => {
-        tool[`${action}Preview`]();
+      previewTools.forEach(tool => {
+        try {
+          tool[`${action}Preview`]();
+        } catch (error) {
+          console.debug('Error accepting preview for tool', tool.toolName);
+        }
       });
 
       if (segmentAI.enabled) {
@@ -1883,6 +1914,102 @@ function commandsModule({
       const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       viewportInfo.setOrientation(orientation);
     },
+    /**
+     * Toggles the horizontal flip state of the viewport.
+     */
+    toggleViewportHorizontalFlip: ({ viewportId }: { viewportId?: string } = {}) => {
+      actions.flipViewportHorizontal({ viewportId, newValue: 'toggle' });
+    },
+
+    /**
+     * Explicitly sets the horizontal flip state of the viewport.
+     */
+    setViewportHorizontalFlip: ({
+      flipped,
+      viewportId,
+    }: {
+      flipped: boolean;
+      viewportId?: string;
+    }) => {
+      actions.flipViewportHorizontal({ viewportId, newValue: flipped });
+    },
+
+    /**
+     * Toggles the vertical flip state of the viewport.
+     */
+    toggleViewportVerticalFlip: ({ viewportId }: { viewportId?: string } = {}) => {
+      actions.flipViewportVertical({ viewportId, newValue: 'toggle' });
+    },
+
+    /**
+     * Explicitly sets the vertical flip state of the viewport.
+     */
+    setViewportVerticalFlip: ({
+      flipped,
+      viewportId,
+    }: {
+      flipped: boolean;
+      viewportId?: string;
+    }) => {
+      actions.flipViewportVertical({ viewportId, newValue: flipped });
+    },
+    /**
+     * Internal helper to rotate or set absolute rotation for a viewport.
+     */
+    _rotateViewport: ({
+      rotation,
+      viewportId,
+      rotationMode = 'apply',
+    }: {
+      rotation: number;
+      viewportId?: string;
+      rotationMode?: 'apply' | 'set';
+    }) => {
+      const enabledElement = viewportId
+        ? _getViewportEnabledElement(viewportId)
+        : _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof BaseVolumeViewport) {
+        const camera = viewport.getCamera();
+        const rotAngle = (rotation * Math.PI) / 180;
+        const rotMat = mat4.identity(new Float32Array(16));
+        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
+        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
+        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
+        viewport.render();
+        return;
+      }
+
+      if (viewport.getRotation !== undefined) {
+        const { rotation: currentRotation } = viewport.getViewPresentation();
+        const newRotation =
+          rotationMode === 'apply'
+            ? (currentRotation + rotation + 360) % 360
+            : (() => {
+                // In 'set' mode, account for the effect horizontal/vertical flips
+                // have on the perceived rotation direction. A single flip mirrors
+                // the image and inverses rotation direction, while two flips
+                // restore the original parity. We therefore invert the rotation
+                // angle when an odd number of flips are applied so that the
+                // requested absolute rotation matches the user expectation.
+                const { flipHorizontal = false, flipVertical = false } =
+                  viewport.getViewPresentation();
+
+                const flipsParity = (flipHorizontal ? 1 : 0) + (flipVertical ? 1 : 0);
+                const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
+
+                return (effectiveRotation + 360) % 360;
+              })();
+        viewport.setViewPresentation({ rotation: newRotation });
+        viewport.render();
+      }
+    },
     triggerCreateAnnotationMemo: ({
       annotation,
       FrameOfReferenceUID,
@@ -1979,12 +2106,16 @@ function commandsModule({
       commandFn: actions.setToolEnabled,
     },
     rotateViewportCW: {
-      commandFn: actions.rotateViewport,
+      commandFn: actions.rotateViewportBy,
       options: { rotation: 90 },
     },
     rotateViewportCCW: {
-      commandFn: actions.rotateViewport,
+      commandFn: actions.rotateViewportBy,
       options: { rotation: -90 },
+    },
+    rotateViewportCWSet: {
+      commandFn: actions.setViewportRotation,
+      options: { rotation: 90 },
     },
     incrementActiveViewport: {
       commandFn: actions.changeActiveViewport,
@@ -1994,10 +2125,18 @@ function commandsModule({
       options: { direction: -1 },
     },
     flipViewportHorizontal: {
-      commandFn: actions.flipViewportHorizontal,
+      commandFn: actions.toggleViewportHorizontalFlip,
     },
     flipViewportVertical: {
-      commandFn: actions.flipViewportVertical,
+      commandFn: actions.toggleViewportVerticalFlip,
+    },
+    setViewportHorizontalFlip: {
+      commandFn: actions.setViewportHorizontalFlip,
+      options: { flipped: true },
+    },
+    setViewportVerticalFlip: {
+      commandFn: actions.setViewportVerticalFlip,
+      options: { flipped: true },
     },
     invertViewport: {
       commandFn: actions.invertViewport,

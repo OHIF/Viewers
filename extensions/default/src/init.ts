@@ -3,6 +3,7 @@ import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';
+import { HotkeysManager } from '@ohif/core'
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -11,11 +12,15 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, commandsManager }: withAppTypes): void {
+export default function init({ servicesManager, commandsManager, hotkeysManager }: withAppTypes): void {
   const { toolbarService, cineService, viewportGridService } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
+  ]);
+
+  toolbarService.registerEventForToolbarUpdate(hotkeysManager, [
+    HotkeysManager.EVENTS.HOTKEY_PRESSED,
   ]);
 
   // Add

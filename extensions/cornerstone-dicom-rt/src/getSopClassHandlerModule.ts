@@ -31,7 +31,7 @@ function _getDisplaySetsFromSeries(
   const displaySet = {
     Modality: 'RTSTRUCT',
     loading: false,
-    isReconstructable: false, // by default for now since it is a volumetric SEG currently
+    isReconstructable: false,
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
@@ -87,6 +87,7 @@ function _getDisplaySetsFromSeries(
         const addedDisplaySet = displaySetsAdded[0];
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
+          displaySet.isReconstructable = addedDisplaySet.isReconstructable;
           unsubscribe();
         }
       }
@@ -94,6 +95,7 @@ function _getDisplaySetsFromSeries(
   } else {
     const referencedDisplaySet = referencedDisplaySets[0];
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
+    displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
   }
 
   displaySet.load = ({ headers, createSegmentation = true }) =>

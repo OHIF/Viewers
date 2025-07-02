@@ -2,17 +2,14 @@ import { Icons, FooterAction } from '@ohif/ui-next';
 import React, { ReactElement, useState, useCallback } from 'react';
 import { PresetDialog } from '@ohif/ui-next';
 import { ViewportPreset, VolumeRenderingPresetsContentProps } from '../../types/ViewportPresets';
+import { useSystem } from '@ohif/core';
 
 interface Props extends VolumeRenderingPresetsContentProps {
   hide: () => void;
 }
 
-export function VolumeRenderingPresetsContent({
-  presets,
-  viewportId,
-  commandsManager,
-  hide,
-}: Props): ReactElement {
+export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Props): ReactElement {
+  const { commandsManager } = useSystem();
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);
 

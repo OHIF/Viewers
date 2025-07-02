@@ -108,6 +108,15 @@ const Menu = (props: MenuProps) => {
   ]);
   const [itemPanelLabels, setItemPanelLabels] = useState<Array<string>>([]);
 
+  // If the props change for the this top level menu then we have to update the menu path
+  // because the props to be rendered are maintained in the state.
+  useEffect(() => {
+    setMenuPath(menuPath => [
+      { props, activePanelIndex: activePanelIndex || 0 },
+      ...menuPath.slice(1),
+    ]);
+  }, [activePanelIndex, props]);
+
   const hideMenu = useCallback(() => {
     if (preventHideMenu) {
       return;

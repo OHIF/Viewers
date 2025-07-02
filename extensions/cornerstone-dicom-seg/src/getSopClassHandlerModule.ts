@@ -7,7 +7,7 @@ import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 
-const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
+const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4', '1.2.840.10008.5.1.4.1.1.66.7'];
 
 const loadPromises = {};
 
@@ -34,7 +34,7 @@ function _getDisplaySetsFromSeries(
   const displaySet = {
     Modality: 'SEG',
     loading: false,
-    isReconstructable: true, // by default for now since it is a volumetric SEG currently
+    isReconstructable: false,
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
@@ -91,12 +91,14 @@ function _getDisplaySetsFromSeries(
         const addedDisplaySet = displaySetsAdded[0];
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
+          displaySet.isReconstructable = addedDisplaySet.isReconstructable;
           unsubscribe();
         }
       }
     );
   } else {
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
+    displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
   }
 
   displaySet.load = async ({ headers }) =>
