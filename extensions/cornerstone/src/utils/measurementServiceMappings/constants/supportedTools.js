@@ -12,6 +12,7 @@ const supportedTools = [
   'SplineROI',
   'LivewireContour',
   'UltrasoundDirectionalTool',
+  'UltrasoundPleuraBLineTool',
   'SCOORD3DPoint',
   'SegmentBidirectional',
 ];
