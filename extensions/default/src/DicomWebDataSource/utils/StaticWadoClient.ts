@@ -309,7 +309,6 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     const baseHeaders = (this as any).headers ?? {};
     const headers = { ...baseHeaders, ...init.headers };
 
-    // /v2 додайте/заберіть, якщо у вас інша версія API
     const url = `${this._base}${path}`;
 
     const res = await fetch(url, { ...init, method: 'DELETE', headers });

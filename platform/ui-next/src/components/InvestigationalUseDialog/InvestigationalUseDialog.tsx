@@ -28,17 +28,19 @@ const InvestigationalUseDialog = ({
         setIsHidden(true);
         break;
       case showDialogOption.AlwaysShowDialog:
-        setIsHidden(!!dialogSessionState);
+        setIsHidden(true);
+        // setIsHidden(!!dialogSessionState);
         break;
       case showDialogOption.ShowOnceAndConfigure:
-        if (dialogLocalState) {
-          const { expiryDate } = JSON.parse(dialogLocalState);
-          const isExpired = new Date() > new Date(expiryDate);
-          setIsHidden(!isExpired);
-        } else {
-          setIsHidden(false);
-        }
-        break;
+        setIsHidden(true);
+        // if (dialogLocalState) {
+        //   const { expiryDate } = JSON.parse(dialogLocalState);
+        //   const isExpired = new Date() > new Date(expiryDate);
+        //   setIsHidden(!isExpired);
+        // } else {
+        //   setIsHidden(false);
+        // }
+        // break;
       default:
         setIsHidden(true);
     }

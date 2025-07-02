@@ -76,6 +76,9 @@ export const CustomDropdownMenuContent = () => {
     onSendToGlasses: segmentationId => {
       commandsManager.run('sendToGlasses', { segmentationId });
     },
+    onDownloadObj: segmentationId => {
+      commandsManager.run('downloadObj', { segmentationId });
+    },
   };
 
   return (

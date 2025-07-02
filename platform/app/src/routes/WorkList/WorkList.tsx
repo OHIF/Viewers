@@ -11,6 +11,7 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '../../hooks';
 import { utils, Types as coreTypes } from '@ohif/core';
+import { toast } from '@ohif/ui-next';
 
 import {
   StudyListExpandedRow,
@@ -45,6 +46,11 @@ const PatientInfoVisibility = Types.PatientInfoVisibility;
 const { sortBySeriesDate } = utils;
 
 const seriesInStudiesMap = new Map();
+
+function getAuthHeader(dataSource) {
+  const bearer = dataSource?.retrieve?.customClient?.headers?.Authorization;
+  return bearer ? { Authorization: bearer } : {};
+}
 
 /**
  * TODO:
@@ -172,12 +178,31 @@ function WorkList({
     }
     try {
       await dataSource.retrieve.customClient.deleteStudy(studyUID);
-      // одразу забираємо зі списку локально,
-      // або викликаємо onRefresh(), якщо вже є така функція
       onRefresh?.();
     } catch (err) {
       console.error(err);
-      alert('Failed to delete study.');
+      toast.error('Failed to delete study.');
+    }
+  };
+
+  const runSegmentation = async (url, studyId, label) => {
+    try {
+      toast.info('Starting segmentation, please wait...');
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(dataSource),
+        },
+        body: JSON.stringify({ studyId }),
+      });
+      if (!res.ok) {
+        throw new Error(`Status ${res.status}`);
+      }
+      toast.success(`${label} successfully triggered.`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`${label} failed.`);
     }
   };
 
@@ -185,20 +210,21 @@ function WorkList({
     try {
       const res = await fetch(
         `https://dicomobj.azurewebsites.net/api/downloaddicom?studyId=${encodeURIComponent(studyUID)}`,
-        { credentials: 'include' }
+        {
+          credentials: 'include',
+          headers: {
+            ...getAuthHeader(dataSource),
+          },
+        }
       );
       if (!res.ok) {
         throw new Error(`${res.status} ${res.statusText}`);
       }
-
-      // читаємо з тіла просто текст—це ваш SAS‑URL на ZIP у Blob Storage
       const sasUrl = (await res.text()).trim();
-
-      // відкриваємо його в новій вкладці — браузер автоматично почне завантаження
       window.open(sasUrl, '_blank');
     } catch (err) {
       console.error(err);
-      alert('Failed to download study.');
+      toast.error('Failed to download study.');
     }
   };
 
@@ -502,6 +528,32 @@ function WorkList({
                 )
               );
             })}
+            <Button
+              type={ButtonEnums.type.secondary}
+              size={ButtonEnums.size.small}
+              onClick={() =>
+                runSegmentation(
+                  'https://dicomobj.azurewebsites.net/api/segmentdicom',
+                  studyInstanceUid,
+                  'Synthetic Segmentation'
+                )
+              }
+            >
+              Run Synthetic Segmentation
+            </Button>
+            <Button
+              type={ButtonEnums.type.secondary}
+              size={ButtonEnums.size.small}
+              onClick={() =>
+                runSegmentation(
+                  'https://dicomobj.azurewebsites.net/api/segmenttumor',
+                  studyInstanceUid,
+                  'Tumor Segmentation'
+                )
+              }
+            >
+              Run Tumor Segmentation
+            </Button>
           </div>
         </StudyListExpandedRow>
       ),

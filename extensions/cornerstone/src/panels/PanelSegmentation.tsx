@@ -201,7 +201,7 @@ export default function PanelSegmentation({
     },
     onDownloadObj: segmentationId => {
       commandsManager.run('downloadObj', { segmentationId });
-    }
+    },
   };
 
   // Generate export options
