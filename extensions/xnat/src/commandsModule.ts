@@ -1644,7 +1644,23 @@ XNATStoreMeasurements: async () => {
     switch (base.toolType) {
       case 'Length':
         if (points.length >= 2) {
-          const lengthVal = m.length || 0;
+          // Extract length from OHIF measurement structure
+          let lengthVal = 0;
+          if (m.data?.cachedStats) {
+            // Get length from cachedStats (the standard OHIF structure)
+            const stats = Object.values(m.data.cachedStats)[0] as any;
+            lengthVal = stats?.length || 0;
+          } else if (m.displayText?.primary?.length > 0) {
+            // Fallback: parse from displayText
+            const primaryText = m.displayText.primary[0];
+            const match = primaryText.match(/([0-9.]+)\s*mm/);
+            if (match) {
+              lengthVal = parseFloat(match[1]);
+            }
+          }
+          
+          console.log('Export: extracted length value:', lengthVal, 'from measurement:', m);
+          
           base.data = {
             length: Number(lengthVal),
             handles: { start: createHandle(points[0]), end: createHandle(points[1]) },
