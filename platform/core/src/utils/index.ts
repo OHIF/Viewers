@@ -41,7 +41,9 @@ import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
 import * as MeasurementFilters from './measurementFilters';
-import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
+import getClosestOrientationFromIOP, {
+  getClosestOrientation,
+} from './getClosestOrientationFromIOP';
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -89,6 +91,7 @@ const utils = {
   createStudyBrowserTabs,
   MeasurementFilters,
   getClosestOrientationFromIOP,
+  getClosestOrientation,
 };
 
 export {
@@ -124,6 +127,7 @@ export {
   createStudyBrowserTabs,
   MeasurementFilters,
   getClosestOrientationFromIOP,
+  getClosestOrientation,
 };
 
 export default utils;
