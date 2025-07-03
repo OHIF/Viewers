@@ -94,4 +94,5 @@ export default {
         },
     ],
   },
+  'studyBrowser.thumbnailClickCallback': {},
 };
