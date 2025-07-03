@@ -14,6 +14,10 @@ const screenShotPaths = {
   cobbangle: {
     cobbangleDisplayedCorrectly: 'cobbangleDisplayedCorrectly.png',
   },
+  contextMenu: {
+    preContextMenuNearBottomEdge: 'preContextMenuNearBottomEdge.png',
+    contextMenuNearBottomEdgeNotClipped: 'contextMenuNearBottomEdgeNotClipped.png',
+  },
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },

@@ -19,7 +19,6 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
   // Hide the overlay menu.
   await page.getByTestId('dataOverlayMenu-default-btn').click();
 
-  await page.waitForTimeout(5000);
   await checkForScreenshot(
     page,
     page,
@@ -29,7 +28,6 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
   // Navigate to the middle image of the default viewport.
   await press({ page, key: 'ArrowDown', nTimes: 23 });
 
-  await page.waitForTimeout(5000);
   await checkForScreenshot(
     page,
     page,
