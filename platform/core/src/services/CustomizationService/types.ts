@@ -9,6 +9,8 @@ export interface BaseCustomization extends Obj {
   description?: string;
   label?: string;
   commands?: Command[];
+  classnames?: string;
+  styles?: React.CSSProperties;
 }
 
 export interface LabelCustomization extends BaseCustomization {
@@ -27,6 +29,14 @@ export interface ComponentCustomization extends BaseCustomization {
   content: (...props: any) => React.JSX.Element;
 }
 
+export interface CSSClassnamesCustomization extends BaseCustomization {
+  classnames: string;
+}
+
+export interface CSSStylesCustomization extends BaseCustomization {
+  styles: React.CSSProperties;
+}
+
 export interface CallbackCustomization extends BaseCustomization {
   callbacks: Array<(...props: any) => any>;
 }
@@ -35,6 +45,7 @@ export type MenuComponentCustomization = React.ComponentType & {
   menuTitle?: string;
   title?: string;
   containerClassName?: string;
+  hidden?: boolean;
 };
 
 export type Customization =
@@ -45,6 +56,7 @@ export type Customization =
   | CommandCustomization
   | CodeCustomization
   | ComponentCustomization
+  | CSSClassnamesCustomization
   | CallbackCustomization;
 
 export default Customization;
