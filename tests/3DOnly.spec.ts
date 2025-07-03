@@ -22,11 +22,6 @@ test.describe('3D only Test', async () => {
       .first()
       .click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await checkForScreenshot(
-      page,
-      page,
-      screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
-      200
-    );
+    await checkForScreenshot(page, page, screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly);
   });
 });
