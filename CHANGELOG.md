@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.69...v3.11.0-beta.70) (2025-07-03)
+
+
+### Features
+
+* Add possibility to add additional props for PanelSection ([#5172](https://github.com/OHIF/Viewers/issues/5172)) ([c112db1](https://github.com/OHIF/Viewers/commit/c112db13a8b81f923698f6e899df36a1486f3a60))
+
+
+
+
+
 # [3.11.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.68...v3.11.0-beta.69) (2025-07-02)
 
 
