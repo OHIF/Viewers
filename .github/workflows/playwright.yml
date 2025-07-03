@@ -29,6 +29,16 @@ jobs:
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
           bun run test:e2e:coverage
+      - name: Create ZIP of test results
+        run: |
+          mkdir -p ./tests/packaged-results
+          cp -r ./tests/test-results ./tests/playwright-report ./tests/packaged-results/
+          zip -r ./tests/test-artifacts.zip ./tests/packaged-results
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: ./tests/test-artifacts.zip
       - name: create the coverage report
         run: |
           bun nyc report --reporter=lcov --reporter=text
