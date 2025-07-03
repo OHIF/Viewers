@@ -1728,6 +1728,17 @@ function commandsModule({
         }
       });
     },
+    toggleSegmentLabel: ({ toggle }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        if (toggle) {
+          toolGroup.setToolActive(cornerstoneTools.SegmentLabelTool.toolName);
+        } else {
+          toolGroup.setToolDisabled(cornerstoneTools.SegmentLabelTool.toolName);
+        }
+      });
+    },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
       labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
@@ -2331,6 +2342,7 @@ function commandsModule({
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
+    toggleSegmentLabel: actions.toggleSegmentLabel,
   };
 
   return {

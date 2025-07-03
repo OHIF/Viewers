@@ -95,6 +95,9 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       {
         toolName: toolNames.AdvancedMagnify,
       },
+      {
+        toolName: toolNames.SegmentLabel,
+      },
     ],
   };
 
