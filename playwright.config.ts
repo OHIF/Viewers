@@ -10,9 +10,9 @@ export default defineConfig({
   outputDir: './tests/test-results',
   reporter: [
     [
-      process.env.CI ? 'blob' : 'html',
+      process.env.CI ? 'json' : 'html',
       process.env.CI
-        ? { outputDir: './tests/playwright-report' }
+        ? { outputFile: './tests/playwright-report.json' }
         : { outputFolder: './tests/playwright-report' },
     ],
   ],
