@@ -105,8 +105,6 @@ test.describe('Crosshairs Test', async () => {
 
     await page.getByTestId('study-browser-thumbnail').nth(1).dblclick();
 
-    await page.waitForTimeout(5000);
-
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsNewDisplayset);
   });
 });

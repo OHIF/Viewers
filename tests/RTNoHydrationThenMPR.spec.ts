@@ -11,12 +11,10 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
 
-  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR);
 
   await page.getByTestId('Layout').click();
   await page.getByTestId('MPR').click();
 
-  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPostMPR);
 });

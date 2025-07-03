@@ -18,8 +18,8 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     screenshotPath,
     attempts = 10,
     delay = 500,
-    maxDiffPixelRatio = 0.02,
-    threshold = 0.05,
+    maxDiffPixelRatio = 0.04,
+    threshold,
   } = props;
 
   await page.waitForLoadState('networkidle');

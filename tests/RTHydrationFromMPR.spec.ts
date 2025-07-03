@@ -13,26 +13,18 @@ test('should hydrate an RTSTRUCT from MPR', async ({ page }) => {
   await page.getByTestId('Layout').click();
   await page.getByTestId('MPR').click();
 
-  await page.waitForTimeout(5000);
-
   await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprBeforeRT);
 
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
-
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprAfterRT);
 
   await page.getByTestId('yes-hydrate-btn').click();
 
-  await page.waitForTimeout(5000);
-
   await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprAfterRTHydrated);
 
   await page.getByTestId('Layout').click();
   await page.getByTestId('Axial Primary').click();
-
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(
     page,

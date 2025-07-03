@@ -34,7 +34,7 @@ test('should the context menu completely on screen and is not clipped for a poin
   });
 
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
-  await page.waitForTimeout(5000);
+
   await checkForScreenshot(page, page, screenShotPaths.contextMenu.preContextMenuNearBottomEdge);
 
   await simulateNormalizedClickOnElement({
@@ -45,10 +45,12 @@ test('should the context menu completely on screen and is not clipped for a poin
     },
     button: 'right',
   });
-  await page.waitForTimeout(5000);
+
   await checkForScreenshot({
     page,
     locator: page,
     screenshotPath: screenShotPaths.contextMenu.contextMenuNearBottomEdgeNotClipped,
+    maxDiffPixelRatio: 0.02,
+    threshold: 0.05,
   });
 });
