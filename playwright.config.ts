@@ -8,7 +8,14 @@ export default defineConfig({
   workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
-  reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
+  reporter: [
+    [
+      process.env.CI ? 'blob' : 'html',
+      process.env.CI
+        ? { outputDir: './tests/playwright-report' }
+        : { outputFolder: './tests/playwright-report' },
+    ],
+  ],
   globalTimeout: 800_000,
   timeout: 800_000,
   use: {
