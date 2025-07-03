@@ -45,7 +45,11 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
 };
 
 /**
- * @param page - The page to interact with
+ * Checks if a screenshot of a specific element matches the expected screenshot.
+ * It retries the check for a specified number of attempts with a delay between each attempt.
+ * By default, the number of attempts is 10 and the delay is 500 milliseconds which results in a maximum wait time of 5 seconds.
+ * Instead of sleeping idle prior to calling this function, simply adjust the attempts and delay parameters to achieve the desired wait time.
+ * @param pageOrProps - The page to interact with or an object containing page and other properties
  * @param locator - The element to check for screenshot
  * @param screenshotPath - The path to save the screenshot
  * @param attempts - The number of attempts to check for screenshot
