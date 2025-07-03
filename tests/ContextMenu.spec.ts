@@ -50,7 +50,5 @@ test('should the context menu completely on screen and is not clipped for a poin
     page,
     locator: page,
     screenshotPath: screenShotPaths.contextMenu.contextMenuNearBottomEdgeNotClipped,
-    maxDiffPixelRatio: 0.02,
-    threshold: 0.05,
   });
 });
