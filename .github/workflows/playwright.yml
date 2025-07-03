@@ -29,16 +29,16 @@ jobs:
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
           bun run test:e2e:coverage
-      - name: Create ZIP of test results
+      - name: Create directory of test results
         run: |
           mkdir -p packaged-test-results
-          cp -r ./tests/test-results ./tests/playwright-report packaged-test-results/
-          zip -r test-artifacts.zip packaged-test-results
-      - name: Upload ZIP artifact
+          cp -r ./tests/test-results packaged-test-results/ || true
+          cp -r ./tests/playwright-report packaged-test-results/ || true
+      - name: Upload directory of test results artifact
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
-          path: test-artifacts.zip
+          path: packaged-test-results/
           retention-days: 3
       - name: create the coverage report
         run: |
