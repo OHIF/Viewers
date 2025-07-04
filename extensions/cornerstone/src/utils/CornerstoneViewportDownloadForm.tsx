@@ -10,20 +10,11 @@ const MAX_TEXTURE_SIZE = 10000;
 const VIEWPORT_ID = 'cornerstone-viewport-download-form';
 
 const FILE_TYPE_OPTIONS = [
-  {
-    value: 'jpg',
-    label: 'JPG',
-  },
-  {
-    value: 'png',
-    label: 'PNG',
-  },
+  { value: 'jpg', label: 'JPG' },
+  { value: 'png', label: 'PNG' },
 ];
 
-type ViewportDownloadFormProps = {
-  hide: () => void;
-  activeViewportId: string;
-};
+type ViewportDownloadFormProps = { hide: () => void; activeViewportId: string };
 
 const CornerstoneViewportDownloadForm = ({
   hide,
@@ -47,7 +38,7 @@ const CornerstoneViewportDownloadForm = ({
   const { viewportId: activeViewportId, renderingEngineId } =
     getEnabledElement(activeViewportElement);
 
-  const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+  const renderingEngine = cornerstoneViewportService.getRenderingEngine(activeViewportId);
   const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
   useEffect(() => {
@@ -55,10 +46,7 @@ const CornerstoneViewportDownloadForm = ({
       const tool = toolGroup.toolOptions[toolName];
       const { mode, bindings } = tool;
 
-      return {
-        ...acc,
-        [toolName]: { mode, bindings },
-      };
+      return { ...acc, [toolName]: { mode, bindings } };
     }, {});
 
     return () => {
@@ -130,9 +118,7 @@ const CornerstoneViewportDownloadForm = ({
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Labelmap,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
@@ -144,9 +130,7 @@ const CornerstoneViewportDownloadForm = ({
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Contour,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });

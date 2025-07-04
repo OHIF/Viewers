@@ -1,6 +1,10 @@
 import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
-import { getRenderingEngine } from '@cornerstonejs/core';
+import {
+  getRenderingEngine,
+  getEnabledElementByViewportId,
+  getEnabledElement,
+} from '@cornerstonejs/core';
 import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
 
 export default class ColorbarService extends PubSubService {
@@ -71,7 +75,7 @@ export default class ColorbarService extends PubSubService {
     options = {} as ColorbarOptions
   ) {
     const { displaySetService } = this.servicesManager.services;
-    const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
+    const { renderingEngine } = getEnabledElementByViewportId(viewportId);
     const viewport = renderingEngine.getViewport(viewportId);
 
     if (!viewport) {
@@ -238,7 +242,7 @@ export default class ColorbarService extends PubSubService {
    * @param immediate A boolean indicating whether the viewport should be re-rendered immediately after setting the colormap.
    */
   private setViewportColormap(viewportId, displaySetInstanceUID, colormap, immediate = false) {
-    const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
+    const { renderingEngine } = getEnabledElementByViewportId(viewportId);
     const viewport = renderingEngine.getViewport(viewportId);
     const actorEntries = viewport?.getActors();
     if (!viewport || !actorEntries || actorEntries.length === 0) {

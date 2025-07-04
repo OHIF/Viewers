@@ -356,12 +356,12 @@ function commandsModule({
       // Create presentation data with referencedImageId and options if provided
       const presentationData = referencedImageId
         ? {
-            ...presentations.positionPresentation,
-            viewReference: {
-              referencedImageId,
-              ...options,
-            },
-          }
+          ...presentations.positionPresentation,
+          viewReference: {
+            referencedImageId,
+            ...options,
+          },
+        }
         : presentations.positionPresentation;
 
       if (previousReferencedDisplaySetStoreKey) {
@@ -669,7 +669,7 @@ function commandsModule({
       const windowCenterNum = Number(windowCenter);
 
       // get actor from the viewport
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine(viewportId);
       const viewport = renderingEngine.getViewport(viewportId);
 
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
@@ -779,8 +779,10 @@ function commandsModule({
         toolGroup.setToolEnabled(toolName);
       }
 
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-      renderingEngine.render();
+      const renderingEngines = cornerstoneViewportService.getAllRenderingEngines();
+      renderingEngines.forEach(renderingEngine => {
+        renderingEngine.render();
+      });
     },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
@@ -1176,7 +1178,7 @@ function commandsModule({
         true // overwrite
       );
 
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine(viewportId);
       renderingEngine.render();
     },
     storePresentation: ({ viewportId }) => {
@@ -1363,11 +1365,11 @@ function commandsModule({
           segmentationId,
           segments: options.createInitialSegment
             ? {
-                1: {
-                  label: `${i18n.t('Segment')} 1`,
-                  active: true,
-                },
-              }
+              1: {
+                label: `${i18n.t('Segment')} 1`,
+                active: true,
+              },
+            }
             : {},
         }
       );
@@ -1992,20 +1994,20 @@ function commandsModule({
           rotationMode === 'apply'
             ? (currentRotation + rotation + 360) % 360
             : (() => {
-                // In 'set' mode, account for the effect horizontal/vertical flips
-                // have on the perceived rotation direction. A single flip mirrors
-                // the image and inverses rotation direction, while two flips
-                // restore the original parity. We therefore invert the rotation
-                // angle when an odd number of flips are applied so that the
-                // requested absolute rotation matches the user expectation.
-                const { flipHorizontal = false, flipVertical = false } =
-                  viewport.getViewPresentation();
+              // In 'set' mode, account for the effect horizontal/vertical flips
+              // have on the perceived rotation direction. A single flip mirrors
+              // the image and inverses rotation direction, while two flips
+              // restore the original parity. We therefore invert the rotation
+              // angle when an odd number of flips are applied so that the
+              // requested absolute rotation matches the user expectation.
+              const { flipHorizontal = false, flipVertical = false } =
+                viewport.getViewPresentation();
 
-                const flipsParity = (flipHorizontal ? 1 : 0) + (flipVertical ? 1 : 0);
-                const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
+              const flipsParity = (flipHorizontal ? 1 : 0) + (flipVertical ? 1 : 0);
+              const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
 
-                return (effectiveRotation + 360) % 360;
-              })();
+              return (effectiveRotation + 360) % 360;
+            })();
         viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }

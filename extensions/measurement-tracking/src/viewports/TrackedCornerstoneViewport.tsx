@@ -95,26 +95,18 @@ function TrackedCornerstoneViewport(
   useEffect(() => {
     if (isTracked) {
       annotation.config.style.setViewportToolStyles(viewportId, {
-        ReferenceLines: {
-          lineDash: '4,4',
-        },
-        global: {
-          lineDash: '',
-        },
+        ReferenceLines: { lineDash: '4,4' },
+        global: { lineDash: '' },
       });
 
-      cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
+      cornerstoneViewportService.getRenderingEngine(viewportId)?.renderViewport(viewportId);
 
       return;
     }
 
-    annotation.config.style.setViewportToolStyles(viewportId, {
-      global: {
-        lineDash: '4,4',
-      },
-    });
+    annotation.config.style.setViewportToolStyles(viewportId, { global: { lineDash: '4,4' } });
 
-    cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
+    cornerstoneViewportService.getRenderingEngine(viewportId)?.renderViewport(viewportId);
 
     return () => {
       annotation.config.style.setViewportToolStyles(viewportId, {});
