@@ -110,9 +110,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   ]);
 
   function renderGeneratedImage(displaySet) {
-    commandsManager.runCommand('swapDynamicWithComputedDisplaySet', {
-      displaySet,
-    });
+    commandsManager.runCommand('swapDynamicWithComputedDisplaySet', { displaySet });
 
     setDisplayingComputed(true);
   }
@@ -168,10 +166,11 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       setComputedDisplaySet(displaySet);
       renderGeneratedImage(displaySet);
     } else {
-      commandsManager.runCommand('updateVolumeData', {
-        volume: computedVolume,
+      commandsManager.runCommand('updateVolumeData', { volume: computedVolume });
+      const renderingEngines = cornerstoneViewportService.getAllRenderingEngines();
+      renderingEngines.forEach(renderingEngine => {
+        renderingEngine.render();
       });
-      cornerstoneViewportService.getRenderingEngine().render();
       renderGeneratedImage(computedDisplaySet);
     }
   }

@@ -374,7 +374,10 @@ const connectMeasurementServiceToTools = ({
     }
 
     // trigger a render
-    cornerstoneViewportService.getRenderingEngine().render();
+    const renderingEngines = cornerstoneViewportService.getAllRenderingEngines();
+    renderingEngines.forEach(renderingEngine => {
+      renderingEngine.render();
+    });
   });
 
   measurementService.subscribe(
@@ -422,11 +425,11 @@ const connectMeasurementServiceToTools = ({
       // });
 
       // I don't like this but will fix later
-      const renderingEngine =
-        cornerstoneViewportService.getRenderingEngine() as Types.IRenderingEngine;
-      // Note: We could do a better job by triggering the render on the
-      // viewport itself, but the removeAnnotation does not include that info...
-      const viewportIds = renderingEngine.getViewports().map(viewport => viewport.id);
+      const renderingEngines = cornerstoneViewportService.getAllRenderingEngines();
+
+      const viewportIds = renderingEngines.map(renderingEngine =>
+        renderingEngine.getViewports().map(viewport => viewport.id)
+      );
       triggerAnnotationRenderForViewportIds(viewportIds);
     }
   );
@@ -506,10 +509,10 @@ const connectMeasurementServiceToTools = ({
         FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
         options: { deleting: true },
       });
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-      // Note: We could do a better job by triggering the render on the
-      // viewport itself, but the removeAnnotation does not include that info...
-      renderingEngine.render();
+      const renderingEngines = cornerstoneViewportService.getAllRenderingEngines();
+      renderingEngines.forEach(renderingEngine => {
+        renderingEngine.render();
+      });
     }
   );
 };

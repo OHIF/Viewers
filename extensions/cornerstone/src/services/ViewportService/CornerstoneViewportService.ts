@@ -11,6 +11,7 @@ import {
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
+  getRenderingEngines,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -63,7 +64,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     },
   };
 
-  renderingEngine: Types.IRenderingEngine | null;
+  stackRenderingEngines: Types.IRenderingEngine[] = [];
+  // Map viewport IDs to their assigned rendering engine index
+  viewportToEngineMap: Map<string, number> = new Map();
+  // Counter to track assigned viewports per engine
+  viewportsPerEngine: number[] = [];
+  // Maximum viewports per rendering engine
+  maxViewportsPerEngine: number = 3;
+  isDestroyed: boolean = false;
+
+  sharedVolumeRenderingEngine: Types.IRenderingEngine = null;
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
@@ -79,9 +89,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   constructor(servicesManager: AppTypes.ServicesManager) {
     super(EVENTS);
-    this.renderingEngine = null;
+    this.stackRenderingEngines = [];
+    this.viewportToEngineMap = new Map();
+    this.viewportsPerEngine = [];
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
+    this.isDestroyed = false;
   }
   hangingProtocolService: unknown;
   viewportsInfo: unknown;
@@ -91,6 +104,24 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   volumeUIDs: unknown;
   displaySetsNeedRerendering: unknown;
   viewportDisplaySets: unknown;
+
+  /**
+   * Initialize the shared volume rendering engine that will be used for all volume viewports
+   */
+  private initSharedVolumeRenderingEngine(): Types.IRenderingEngine {
+    const sharedRenderingEngineId = `${RENDERING_ENGINE_ID}-SHARED`;
+
+    // Check if the shared rendering engine already exists in cornerstone
+    const existingEngine = getRenderingEngine(sharedRenderingEngineId);
+
+    if (existingEngine && !existingEngine.hasBeenDestroyed) {
+      this.sharedVolumeRenderingEngine = existingEngine;
+    } else {
+      // Create a new shared rendering engine
+      this.sharedVolumeRenderingEngine = new RenderingEngine(sharedRenderingEngineId);
+      return this.sharedVolumeRenderingEngine;
+    }
+  }
 
   /**
    * Adds the HTML element to the viewportService
@@ -108,23 +139,266 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * It retrieves the renderingEngine if it does exist, or creates one otherwise
-   * @returns {RenderingEngine} rendering engine
+   * Resolves the viewport type from multiple sources in priority order
+   * @param viewportId - The ID of the viewport
+   * @param providedType - Explicitly provided viewport type (optional)
+   * @returns The resolved viewport type
    */
-  public getRenderingEngine() {
-    // get renderingEngine from cache if it exists
-    const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
-
-    if (renderingEngine) {
-      this.renderingEngine = renderingEngine;
-      return this.renderingEngine;
+  private resolveViewportType(viewportId: string, providedType?: string): csEnums.ViewportType {
+    // Priority 1: Use explicitly provided type
+    if (providedType) {
+      return providedType as csEnums.ViewportType;
     }
 
-    if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
-      this.renderingEngine = new RenderingEngine(RENDERING_ENGINE_ID);
+    // Priority 2: Get from actual cornerstone viewport instance
+    try {
+      const renderingEngines = getRenderingEngines();
+      for (const engine of renderingEngines) {
+        const viewport = engine.getViewport(viewportId);
+        if (viewport?.type) {
+          return viewport.type;
+        }
+      }
+    } catch (error) {
+      // Continue to next priority if viewport not found
     }
 
-    return this.renderingEngine;
+    // Priority 3: Get from ViewportInfo
+    const viewportInfo = this.viewportsById.get(viewportId);
+    if (viewportInfo) {
+      const viewportType = viewportInfo.getViewportType();
+      if (viewportType) {
+        return viewportType;
+      }
+    }
+
+    // Priority 4: Get from viewport grid state
+    const gridState =
+      this.servicesManager.services.viewportGridService.getViewportState(viewportId);
+    if (gridState?.viewportOptions?.viewportType) {
+      return gridState.viewportOptions.viewportType as csEnums.ViewportType;
+    }
+
+    // Default fallback with warning
+    console.debug(
+      `Unable to determine viewport type for ${viewportId}, defaulting to STACK. This may cause rendering issues.`
+    );
+    return csEnums.ViewportType.STACK;
+  }
+
+  /**
+   * Returns the appropriate rendering engine for the given viewport
+   * If no viewportId is provided, returns the shared volume rendering engine
+   * @param viewportId - The ID of the viewport (optional)
+   * @param viewportType - The type of the viewport (optional, but recommended)
+   * @returns The rendering engine for the viewport
+   */
+  public getRenderingEngine(
+    viewportId?: string,
+    viewportType?: string
+  ): Types.IRenderingEngine | null {
+    if (this.isDestroyed) {
+      return null;
+    }
+
+    if (!viewportId) {
+      return this.sharedVolumeRenderingEngine || this.initSharedVolumeRenderingEngine();
+    }
+
+    // Resolve the viewport type using the new robust method
+    const resolvedType = this.resolveViewportType(viewportId, viewportType);
+
+    if (resolvedType === csEnums.ViewportType.STACK) {
+      return this.getStackRenderingEngine(viewportId);
+    }
+
+    if (this.sharedVolumeRenderingEngine) {
+      return this.sharedVolumeRenderingEngine;
+    } else {
+      return this.initSharedVolumeRenderingEngine();
+    }
+  }
+
+  /**
+   * Gets or creates a STACK rendering engine for a specific viewport,
+   * sharing engines to limit to x viewports per engine
+   * @param viewportId - The ID of the viewport
+   * @returns The rendering engine for the viewport
+   */
+  private getStackRenderingEngine(viewportId: string): Types.IRenderingEngine {
+    // Check if this viewport is already assigned to an engine
+    if (this.viewportToEngineMap.has(viewportId)) {
+      const engineIndex = this.viewportToEngineMap.get(viewportId);
+      const engine = this.stackRenderingEngines[engineIndex];
+
+      // If the engine exists and is not destroyed, return it
+      if (engine && !engine.hasBeenDestroyed) {
+        return engine;
+      }
+    }
+
+    // Find an engine with available capacity or create a new one
+    let engineIndex = this.findEngineWithCapacity();
+
+    if (engineIndex === -1) {
+      // No engine with capacity, create a new one
+      engineIndex = this.createNewStackRenderingEngine();
+    }
+
+    // Assign this viewport to the engine
+    this.viewportToEngineMap.set(viewportId, engineIndex);
+    this.viewportsPerEngine[engineIndex]++;
+
+    return this.stackRenderingEngines[engineIndex];
+  }
+
+  /**
+   * Finds a rendering engine that has fewer than maxViewportsPerEngine viewports
+   * @returns The index of the engine with capacity, or -1 if none found
+   */
+  private findEngineWithCapacity(): number {
+    for (let i = 0; i < this.stackRenderingEngines.length; i++) {
+      if (
+        this.viewportsPerEngine[i] < this.maxViewportsPerEngine &&
+        !this.stackRenderingEngines[i].hasBeenDestroyed
+      ) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Creates a new stack rendering engine
+   * @returns The index of the newly created engine
+   */
+  private createNewStackRenderingEngine(): number {
+    const engineIndex = this.stackRenderingEngines.length;
+    const renderingEngineId = `${RENDERING_ENGINE_ID}-STACK-${engineIndex}`;
+
+    // Create a new rendering engine
+    const newRenderingEngine = new RenderingEngine(renderingEngineId);
+    this.stackRenderingEngines.push(newRenderingEngine);
+    this.viewportsPerEngine.push(0);
+
+    return engineIndex;
+  }
+
+  /**
+   * Cleans up the viewport from its current rendering engine when viewport type changes
+   * @param viewportId - The ID of the viewport to clean up
+   * @param currentViewportType - The current viewport type before the change
+   */
+  private _cleanupViewportRenderingEngine(viewportId: string, currentViewportType: string): void {
+    try {
+      if (currentViewportType === csEnums.ViewportType.STACK) {
+        this._cleanupStackViewportRenderingEngine(viewportId);
+      } else if (
+        currentViewportType === csEnums.ViewportType.ORTHOGRAPHIC ||
+        currentViewportType === csEnums.ViewportType.PERSPECTIVE
+      ) {
+        this._cleanupVolumeViewportRenderingEngine(viewportId);
+      }
+    } catch (error) {
+      console.warn(`Failed to cleanup viewport ${viewportId} from rendering engine:`, error);
+    }
+  }
+
+  /**
+   * Cleans up a stack viewport from its rendering engine
+   * @param viewportId - The ID of the viewport to clean up
+   */
+  private _cleanupStackViewportRenderingEngine(viewportId: string): void {
+    if (!this.viewportToEngineMap.has(viewportId)) {
+      console.debug(`Stack viewport ${viewportId} not found in engine mapping, nothing to cleanup`);
+      return;
+    }
+
+    const engineIndex = this.viewportToEngineMap.get(viewportId);
+    const stackRenderingEngine = this.stackRenderingEngines[engineIndex];
+
+    if (stackRenderingEngine && !stackRenderingEngine.hasBeenDestroyed) {
+      console.debug(
+        `Disabling stack viewport ${viewportId} from engine ${stackRenderingEngine.id}`
+      );
+      stackRenderingEngine.disableElement(viewportId);
+    }
+
+    // Clean up the tracking maps
+    if (this.viewportsPerEngine[engineIndex] > 0) {
+      this.viewportsPerEngine[engineIndex]--;
+    }
+    this.viewportToEngineMap.delete(viewportId);
+    console.debug(
+      `Cleaned up stack viewport ${viewportId}, engine ${engineIndex} now has ${this.viewportsPerEngine[engineIndex]} viewports`
+    );
+  }
+
+  /**
+   * Cleans up a volume viewport from the shared volume rendering engine
+   * @param viewportId - The ID of the viewport to clean up
+   */
+  private _cleanupVolumeViewportRenderingEngine(viewportId: string): void {
+    if (this.sharedVolumeRenderingEngine && !this.sharedVolumeRenderingEngine.hasBeenDestroyed) {
+      console.debug(
+        `Disabling volume viewport ${viewportId} from shared volume engine ${this.sharedVolumeRenderingEngine.id}`
+      );
+      this.sharedVolumeRenderingEngine.disableElement(viewportId);
+    } else {
+      console.debug(
+        `No shared volume rendering engine found or already destroyed for viewport ${viewportId}`
+      );
+    }
+  }
+
+  public getAllRenderingEngines() {
+    const allEngines = [...this.stackRenderingEngines];
+
+    if (this.sharedVolumeRenderingEngine) {
+      allEngines.push(this.sharedVolumeRenderingEngine);
+    }
+
+    return allEngines;
+  }
+
+  /**
+   * Debug utility to log the current state of rendering engines and viewport assignments
+   */
+  public debugRenderingEngineState(): void {
+    console.group('Rendering Engine State');
+
+    console.debug('Stack Rendering Engines:', this.stackRenderingEngines.length);
+    this.stackRenderingEngines.forEach((engine, index) => {
+      const viewportCount = this.viewportsPerEngine[index] || 0;
+      const viewportIds = Array.from(this.viewportToEngineMap.entries())
+        .filter(([, engineIndex]) => engineIndex === index)
+        .map(([viewportId]) => viewportId);
+
+      console.debug(`  Engine ${index} (${engine.id}):`, {
+        destroyed: engine.hasBeenDestroyed,
+        viewportCount,
+        viewportIds,
+      });
+    });
+
+    if (this.sharedVolumeRenderingEngine) {
+      const volumeViewportIds = Array.from(this.viewportsById.entries())
+        .filter(
+          ([, viewportInfo]) =>
+            viewportInfo.getViewportType() === csEnums.ViewportType.ORTHOGRAPHIC ||
+            viewportInfo.getViewportType() === csEnums.ViewportType.PERSPECTIVE
+        )
+        .map(([viewportId]) => viewportId);
+
+      console.debug(`Shared Volume Engine (${this.sharedVolumeRenderingEngine.id}):`, {
+        destroyed: this.sharedVolumeRenderingEngine.hasBeenDestroyed,
+        volumeViewportIds,
+      });
+    } else {
+      console.debug('No shared volume rendering engine');
+    }
+
+    console.groupEnd();
   }
 
   /**
@@ -180,30 +454,43 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   public destroy() {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
-    try {
-      this.renderingEngine?.destroy?.();
-    } catch (e) {
-      console.warn('Rendering engine not destroyed', e);
-    }
+    const renderingEngines = getRenderingEngines();
+
+    renderingEngines.forEach(renderingEngine => {
+      renderingEngine.destroy?.();
+    });
+
+    this.stackRenderingEngines = [];
+    this.viewportToEngineMap.clear();
+    this.viewportsPerEngine = [];
+    this.sharedVolumeRenderingEngine = null;
     this.viewportsDisplaySets.clear();
-    this.renderingEngine = null;
     cache.purgeCache();
+    this.isDestroyed = true;
+  }
+
+  public onModeExit(): void {
+    this.destroy();
+  }
+
+  public onModeEnter(): void {
+    this.isDestroyed = false;
   }
 
   /**
-   * Disables the viewport inside the renderingEngine, if no viewport is left
-   * it destroys the renderingEngine.
-   *
-   * This is called when the element goes away entirely - with new viewportId's
-   * created for every new viewport, this will be called whenever the set of
-   * viewports is changed, but NOT when the viewport position changes only.
+   * Disables the viewport element without destroying the rendering engine.
+   * Rendering engines are only destroyed in the destroy method.
    *
    * @param viewportId - The viewportId to disable
    */
   public disableElement(viewportId: string): void {
-    this.renderingEngine?.disableElement(viewportId);
+    const viewportInfo = this.viewportsById.get(viewportId);
 
-    // clean up
+    if (viewportInfo) {
+      const currentViewportType = viewportInfo.getViewportType();
+      this._cleanupViewportRenderingEngine(viewportId, currentViewportType);
+    }
+
     this.viewportsById.delete(viewportId);
     this.viewportsDisplaySets.delete(viewportId);
   }
@@ -214,7 +501,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    *
    * @param viewportId - The ID of the viewport.
    * @param presentations - The presentations to apply to the viewport.
-   * @param viewportInfo - Contains a view reference for immediate application
    */
   public setPresentations(viewportId: string, presentations: Presentations): void {
     const viewport = this.getCornerstoneViewport(viewportId) as
@@ -391,7 +677,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     publicDisplaySetOptions: DisplaySetOptions[],
     presentations?: Presentations
   ): void {
-    const renderingEngine = this.getRenderingEngine();
+    const renderingEngine = this.getRenderingEngine(
+      viewportId,
+      viewportData.viewportType || publicViewportOptions.viewportType
+    );
 
     // if not valid viewportData then return early
     if (viewportData.viewportType === csEnums.ViewportType.STACK) {
@@ -414,6 +703,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     if (!viewportInfo) {
       throw new Error('element is not enabled for the given viewportId');
+    }
+
+    // Check if viewport type is changing and clean up old rendering engine assignment
+    const currentViewportType = viewportInfo.getViewportType();
+    const newViewportType = viewportData.viewportType;
+
+    if (currentViewportType !== newViewportType) {
+      console.debug(
+        `Viewport ${viewportId} changing type from ${currentViewportType} to ${newViewportType}`
+      );
+      this._cleanupViewportRenderingEngine(viewportId, currentViewportType);
+
+      // Debug: Log rendering engine state after cleanup
+      if (process.env.NODE_ENV === 'development') {
+        this.debugRenderingEngineState();
+      }
     }
 
     // override the viewportOptions and displaySetOptions with the public ones
@@ -444,11 +749,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       },
     };
 
-    // Rendering Engine Id set should happen before enabling the element
-    // since there are callbacks that depend on the renderingEngine id
-    // Todo: however, this is a limitation which means that we can't change
-    // the rendering engine id for a given viewport which might be a super edge
-    // case
+    // Set rendering engine ID for the viewport
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
     // Todo: this is not optimal at all, we are re-enabling the already enabled
@@ -494,14 +795,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @returns The Cornerstone viewport object if found, otherwise null.
    */
   public getCornerstoneViewport(viewportId: string): Types.IViewport | null {
+    if (!viewportId) {
+      return null;
+    }
     const viewportInfo = this.getViewportInfo(viewportId);
 
-    if (!viewportInfo || !this.renderingEngine || this.renderingEngine.hasBeenDestroyed) {
+    if (!viewportInfo) {
       return null;
     }
 
-    const viewport = this.renderingEngine.getViewport(viewportId);
+    const renderingEngine = this.getRenderingEngine(viewportId);
+    if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
+      return null;
+    }
 
+    const viewport = renderingEngine.getViewport(viewportId);
     return viewport;
   }
 
@@ -640,7 +948,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       properties.colormap = colormap ?? properties.colormap;
     }
 
-    viewport.element.addEventListener(csEnums.Events.VIEWPORT_NEW_IMAGE_SET, evt => {
+    viewport.element.addEventListener(csEnums.Events.VIEWPORT_NEW_IMAGE_SET, (evt: CustomEvent) => {
       const { element } = evt.detail;
 
       if (element !== viewport.element) {
@@ -778,7 +1086,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       displaySetInstanceUIDs.push(displaySetInstanceUID);
 
       if (!volume) {
-        console.log('Volume display set not found');
+        console.debug('Volume display set not found');
         continue;
       }
 
@@ -835,19 +1143,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetModality = displaySet?.Modality;
 
     // filter overlay display sets (e.g. segmentation) since they will get handled below via the segmentation service
-    const filteredVolumeInputArray = volumeInputArray
-      .map((volumeInput, index) => {
-        return { volumeInput, displaySetOptions: displaySetOptions[index] };
-      })
-      .filter(({ volumeInput }) => {
-        const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
-        return !displaySet?.isOverlayDisplaySet;
-      });
+    const filteredVolumeInputArray = volumeInputArray.filter(volumeInput => {
+      const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
+      return !displaySet?.isOverlayDisplaySet;
+    });
 
     // Todo: use presentations states
-    const volumesProperties = filteredVolumeInputArray.map(({ volumeInput, displaySetOptions }) => {
+    const volumesProperties = filteredVolumeInputArray.map((volumeInput, index) => {
       const { volumeId } = volumeInput;
-      const { voi, voiInverted, colormap, displayPreset } = displaySetOptions;
+      const displaySetOption = displaySetOptions[index];
+      const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
       const properties = {} as ViewportProperties;
 
       if (voi && (voi.windowWidth || voi.windowCenter)) {
@@ -890,9 +1195,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (backgroundDisplaySet.length !== 1) {
         throw new Error('Background display set not found');
       }
-    }
 
-    await viewport.setVolumes(volumeInputArray);
+      await viewport.setVolumes([
+        { volumeId: `${VOLUME_LOADER_SCHEME}:${backgroundDisplaySet[0].displaySetInstanceUID}` },
+      ]);
+    } else {
+      await viewport.setVolumes(filteredVolumeInputArray);
+    }
 
     if (addOverlayFn) {
       addOverlayFn();
@@ -1070,8 +1379,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-          Math.pow(dimensions[1] * spacing[1], 2) +
-          Math.pow(dimensions[2] * spacing[2], 2)
+        Math.pow(dimensions[1] * spacing[1], 2) +
+        Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
@@ -1129,7 +1438,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const isImmediate = false;
 
     try {
-      const viewports = this.getRenderingEngine().getViewports();
+      const viewports = getRenderingEngines()
+        .map(engine => engine.getViewports())
+        .flat();
 
       // Store the current position presentations for each viewport.
       viewports.forEach(({ id: viewportId }) => {
@@ -1143,9 +1454,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
 
       // Resize the rendering engine and render.
-      const renderingEngine = this.renderingEngine;
-      renderingEngine.resize(isImmediate);
-      renderingEngine.render();
+      getRenderingEngines().forEach(engine => {
+        engine.resize(isImmediate);
+        engine.render();
+      });
 
       // Reset the camera for all viewports using position presentation to maintain relative size/position
       // which means only those viewports that have a zoom level of 1.
@@ -1156,8 +1468,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
 
       // Resize and render the rendering engine again.
-      renderingEngine.resize(isImmediate);
-      renderingEngine.render();
+      getRenderingEngines().forEach(engine => {
+        engine.resize(isImmediate);
+        engine.render();
+      });
     } catch (e) {
       // This can happen if the resize is too close to navigation or shutdown
       console.warn('Caught resize exception', e);

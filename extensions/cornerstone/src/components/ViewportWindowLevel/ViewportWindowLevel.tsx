@@ -16,9 +16,7 @@ const { Events } = Enums;
 const ViewportWindowLevel = ({
   servicesManager,
   viewportId,
-}: withAppTypes<{
-  viewportId: string;
-}>): ReactElement => {
+}: withAppTypes<{ viewportId: string }>): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +24,7 @@ const ViewportWindowLevel = ({
 
   const getViewportsWithVolumeIds = useCallback(
     (volumeIds: string[]) => {
-      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine(viewportId);
       const viewports = renderingEngine.getVolumeViewports();
 
       return viewports.filter(vp => {
@@ -79,13 +77,7 @@ const ViewportWindowLevel = ({
         return;
       }
 
-      const newWindowLevel = {
-        ...oldWindowLevel,
-        voi: {
-          windowWidth,
-          windowCenter,
-        },
-      };
+      const newWindowLevel = { ...oldWindowLevel, voi: { windowWidth, windowCenter } };
 
       setWindowLevels(
         windowLevels.map(windowLevel =>
