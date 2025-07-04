@@ -106,7 +106,10 @@ export default class ToolGroupService {
   }
 
   public getToolGroupForViewport(viewportId: string): Types.IToolGroup | void {
-    const renderingEngine = this.cornerstoneViewportService.getRenderingEngine();
+    const renderingEngine = this.cornerstoneViewportService.getRenderingEngine(viewportId);
+    if (!renderingEngine) {
+      return null;
+    }
     return ToolGroupManager.getToolGroupForViewport(viewportId, renderingEngine.id);
   }
 
