@@ -209,6 +209,7 @@ export default function hydrateStructuredReport(
           FrameOfReferenceUID,
         },
       };
+      utilities.updateReferencedPlane(annotation.data.handles.points, annotation.metadata);
 
       const source = measurementService.getSource(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -258,7 +259,7 @@ export default function hydrateStructuredReport(
 
 function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   const { FrameOfReferenceUID } = toolData.annotation.metadata;
-  const { points } = toolData.annotation.handles;
+  const { points } = toolData.annotation.data.handles;
   const { displaySetService } = servicesManager.services;
   const displaySetsFOR = displaySetService.getDisplaySetsBy(
     ds => ds.FrameOfReferenceUID === FrameOfReferenceUID
@@ -296,7 +297,7 @@ function centerOf(points) {
   const scale = 1 / points.length;
   const center = vec3.create();
   for (const point of points) {
-    vec3.scaleAndAdd(center, point, scale);
+    vec3.scaleAndAdd(center, center, point, scale);
   }
   return center;
 }

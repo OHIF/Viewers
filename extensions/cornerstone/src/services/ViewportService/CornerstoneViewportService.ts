@@ -741,60 +741,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return 0;
   }
 
-  /**
-   * Creates a volume based on the displaySet's imageIds
-   */
-  _createVolumeFromDisplaySet({ displaySet }) {
-    const volume = csToolsUtils.getOrCreateImageVolume(
-      displaySet.images.map(image => image.imageId)
-    );
-
-    return volume;
-  }
-
-  /**
-   * This function will iterate over the data entries of the viewport and look for one
-   * displaySet that is referencing another one. If it finds one, then it'll return the
-   * information necessary to construct an entry of the volumeInputArray with the
-   * referencedDisplaySet information. This is needed when the viewport only contains
-   * derived datasets and can't provide a volume by itself.
-   *
-   * @param params.viewportData the viewportData to provide the display set entries
-   * @param params.displaySetService ohif's displaySetService
-   * @returns all information needed to populate on entry of the volumeInputArray
-   */
-  getVolumeDataForSomeReferencedDisplaySet({ viewportData, displaySetService }) {
-    for (const [index, data] of viewportData.data.entries()) {
-      const { imageIds, displaySetInstanceUID } = data;
-
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-      const referencedDisplaySetInstanceUID = displaySet.measurements?.[0]?.displaySetInstanceUID;
-
-      if (!referencedDisplaySetInstanceUID) {
-        continue;
-      }
-
-      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-        referencedDisplaySetInstanceUID
-      );
-
-      if (!referencedDisplaySet) {
-        continue;
-      }
-
-      const volume = this._createVolumeFromDisplaySet({ displaySet: referencedDisplaySet });
-
-      if (!volume) {
-        console.log('Volume display set not found');
-        continue;
-      }
-
-      return { volume, imageIds, index, modality: displaySet.modality, displaySetInstanceUID };
-    }
-
-    return {};
-  }
-
   async _setVolumeViewport(
     viewport: Types.IVolumeViewport,
     viewportData: VolumeViewportData,
@@ -826,7 +772,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       if (!volume && displaySet.images) {
-        volume = this._createVolumeFromDisplaySet({ displaySet });
+        volume = csToolsUtils.getOrCreateImageVolume(displaySet.images.map(image => image.imageId));
       }
 
       displaySetInstanceUIDs.push(displaySetInstanceUID);
@@ -869,28 +815,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    // When you load SRs that only have measurements that were made in reconstructed views
-    // it's possible that you don't get any volumes. In this case we must grab the volumes
-    // from one of the referenced DS, so that we can activate MPR view without any errors
-    if (volumeInputArray.length === 0) {
-      const { volume, imageIds, index, modality, displaySetInstanceUID } =
-        this.getVolumeDataForSomeReferencedDisplaySet({ viewportData, displaySetService });
-
-      if (volume) {
-        volumeToLoad.push(volume);
-
-        const displaySetOptions = displaySetOptionsArray[index];
-        const { volumeId } = volume;
-        volumeInputArray.push({
-          imageIds,
-          volumeId,
-          modality,
-          displaySetInstanceUID,
-          blendMode: displaySetOptions.blendMode,
-          slabThickness: this._getSlabThickness(displaySetOptions, volumeId),
-        });
-      }
-    }
     // It's crucial not to return here because the volume may be loaded,
     // but the viewport also needs to set the volume.
     // if (!volumesNotLoaded.length) {
