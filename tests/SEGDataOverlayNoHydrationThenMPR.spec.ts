@@ -19,7 +19,6 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   // Hide the overlay menu.
   await page.getByTestId('dataOverlayMenu-default-btn').click();
 
-  await page.waitForTimeout(5000);
   await checkForScreenshot(
     page,
     page,
@@ -29,7 +28,6 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   await page.getByTestId('Layout').click();
   await page.getByTestId('MPR').click();
 
-  await page.waitForTimeout(5000);
   await checkForScreenshot(
     page,
     page,
