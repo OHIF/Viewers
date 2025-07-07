@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.11.0-beta.72",
+  "version": "3.11.0-beta.73",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
