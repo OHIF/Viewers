@@ -15,10 +15,12 @@ test('should display added, selected and removed segmentation promptly', async (
 
   await checkForScreenshot({
     page,
-    locator: page.getByTestId('viewport-data-overlay-menu-default'),
     screenshotPath:
       screenShotPaths.dataOverlayMenu.overlayMenuWith2d_tta_nnU_Net_SegmentationSelected,
   });
+
+  // Hide the overlay menu.
+  await page.getByTestId('dataOverlayMenu-default-btn').click();
 
   // navigate to the 51st image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
@@ -28,15 +30,20 @@ test('should display added, selected and removed segmentation promptly', async (
     screenshotPath: screenShotPaths.dataOverlayMenu.overlay2d_tta_nnU_Net_Segmentation,
   });
 
+  // Show the overlay menu.
+  await page.getByTestId('dataOverlayMenu-default-btn').click();
+
   // Change the segmentation overlay to a different one and ensure the overlay menu reflects this change.
   await page.getByTestId('overlay-ds-select-value-2D-TTA_NNU-NET_SEGMENTATION').click();
   await page.getByTestId('Segmentation-SEG').click();
 
   await checkForScreenshot({
     page,
-    locator: page.getByTestId('viewport-data-overlay-menu-default'),
     screenshotPath: screenShotPaths.dataOverlayMenu.overlayMenuWithSegmentationSelected,
   });
+
+  // Hide the overlay menu.
+  await page.getByTestId('dataOverlayMenu-default-btn').click();
 
   // navigate to the 51st image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
@@ -46,15 +53,20 @@ test('should display added, selected and removed segmentation promptly', async (
     screenshotPath: screenShotPaths.dataOverlayMenu.overlaySegmentation,
   });
 
+  // Show the overlay menu.
+  await page.getByTestId('dataOverlayMenu-default-btn').click();
+
   // Remove the segmentation overlay and ensure the overlay menu reflects this change.
   await page.getByTestId('overlay-ds-more-button-SEGMENTATION').click();
   await page.getByTestId('overlay-ds-remove-button-SEGMENTATION').click();
 
   await checkForScreenshot({
     page,
-    locator: page.getByTestId('viewport-data-overlay-menu-default'),
     screenshotPath: screenShotPaths.dataOverlayMenu.overlayMenuWithSegmentationOverlaysRemoved,
   });
+
+  // Hide the overlay menu.
+  await page.getByTestId('dataOverlayMenu-default-btn').click();
 
   // navigate to the 51st image and ensure no overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
