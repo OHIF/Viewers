@@ -3,7 +3,7 @@ import { Locator, Page } from 'playwright';
 
 type CheckForScreenshotProps = {
   page: Page;
-  locator: Locator | Page;
+  locator?: Locator | Page;
   screenshotPath: string;
   attempts?: number;
   delay?: number;
@@ -14,7 +14,7 @@ type CheckForScreenshotProps = {
 const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
   const {
     page,
-    locator,
+    locator = page,
     screenshotPath,
     attempts = 10,
     delay = 500,

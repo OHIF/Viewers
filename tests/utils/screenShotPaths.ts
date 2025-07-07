@@ -164,6 +164,15 @@ const screenShotPaths = {
     jumpToMeasurementAfterSeriesChange:
       'jumpToMeasurementMPR-jumpToMeasurementAfterSeriesChange.png',
   },
+  dataOverlayMenu: {
+    overlayMenuWithSegmentationSelected: 'overlayMenuWithSegmentationSelected.png',
+    overlayMenuWith2d_tta_nnU_Net_SegmentationSelected:
+      'overlayMenuWith2d_tta_nnU_Net_SegmentationSelected.png',
+    overlayMenuWithSegmentationOverlaysRemoved: 'overlayMenuWithSegmentationOverlaysRemoved.png',
+    overlay2d_tta_nnU_Net_Segmentation: 'overlay2d_tta_nnU_Net_Segmentation.png',
+    overlaySegmentation: 'overlaySegmentation.png',
+    noOverlay: 'noOverlay.png',
+  },
 };
 
 export { screenShotPaths };
