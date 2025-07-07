@@ -43,7 +43,8 @@ const createFrameViewSynchronizer = (synchronizerName: string): Synchronizer => 
   const synchronizer = SynchronizerManager.createSynchronizer(
     synchronizerName,
     EVENTS.STACK_VIEWPORT_SCROLL,
-    frameViewSyncCallback
+    frameViewSyncCallback,
+    { auxiliaryEvents: [{ name: EVENTS.CAMERA_MODIFIED, source: 'element' }] }
   );
   return synchronizer;
 };
