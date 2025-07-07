@@ -1064,6 +1064,11 @@ export default class HangingProtocolService extends PubSubService {
         throw new Error(`Can't find applicable stage ${protocol.id} ${options?.stageIndex}`);
       }
       this.stageIndex = stage as number;
+
+      if (this.protocol?.callbacks?.onStageChange) {
+        this._commandsManager.run(this.protocol.callbacks.onStageChange);
+      }
+
       this._updateViewports(options);
     } catch (error) {
       console.log(error);

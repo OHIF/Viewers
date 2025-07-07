@@ -80,6 +80,7 @@ export default class ContextMenuController {
     this.services.uiDialogService.hide('context-menu');
     this.services.uiDialogService.show({
       id: 'context-menu',
+      showOverlay: false,
       defaultPosition: ContextMenuController._getDefaultPosition(
         defaultPointsPosition,
         event?.detail || event,
