@@ -1,9 +1,10 @@
 import React, { useEffect, useCallback, useRef } from 'react';
-import { Types, MeasurementService } from '@ohif/core';
+import { Types, MeasurementService, ViewportGridService } from '@ohif/core';
 import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import { useAppConfig } from '@state';
+import { isReferenceViewable } from 'extensions/cornerstone/src/utils/isReferenceViewable';
 
 function ViewerViewportGrid(props: withAppTypes) {
   const { servicesManager, viewportComponents = [], dataSource, commandsManager } = props;
@@ -184,7 +185,7 @@ function ViewerViewportGrid(props: withAppTypes) {
 
           // Check if viewport can display the reference
           if (
-            viewport.isReferenceViewable?.({
+            viewportGridService.isReferenceViewable({
               viewportId: id,
               reference,
             })
@@ -212,13 +213,12 @@ function ViewerViewportGrid(props: withAppTypes) {
         // Find the viewport that can display the measurement
         const viewport = updatedViewports.find(viewport => {
           const gridViewport = viewportGridService.getViewportState(viewport.viewportId);
-          return gridViewport.isReferenceViewable?.({
-            viewportId: viewport.viewportId,
-            reference: {
+          return viewportGridService.isReferenceViewable(
+            viewport.viewportId,
+            {
               ...measurement.metadata,
               displaySetInstanceUID: referencedDisplaySetInstanceUID,
             },
-            viewportOptions: gridViewport.viewportOptions || {},
           });
         });
 
@@ -267,22 +267,7 @@ function ViewerViewportGrid(props: withAppTypes) {
     viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
-  // Store previous isReferenceViewable values to avoid infinite loops
-  const prevReferenceViewableMap = useRef(new Map());
-  // Track viewports that need isReferenceViewable updates
-  const viewportsToUpdate = useRef(new Map());
-
-  // Apply isReferenceViewable updates in an effect, not during render
-  useEffect(() => {
-    const updates = viewportsToUpdate.current;
-    if (updates.size > 0) {
-      updates.forEach((isReferenceViewable, viewportId) => {
-        viewportGridService.setIsReferenceViewable(viewportId, isReferenceViewable);
-        prevReferenceViewableMap.current.set(viewportId, isReferenceViewable);
-      });
-      viewportsToUpdate.current.clear();
-    }
-  });
+  ViewportGridService.setServiceImplementation({ isReferenceViewable });
 
   const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
@@ -320,21 +305,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         viewportComponents,
         uiNotificationService
       );
-
-      // Only queue isReferenceViewable updates if it's changed to avoid render loops
-      // We need to handle both function and non-function values
-      if (viewportId) {
-        const prevValue = prevReferenceViewableMap.current.get(viewportId);
-        const isFunction = typeof isReferenceViewable === 'function';
-        const isSameFunction = isFunction && typeof prevValue === 'function';
-
-        // For non-functions, compare directly. For functions, we treat them as always different
-        // (this is conservative but safe)
-        if (!isSameFunction && prevValue !== isReferenceViewable) {
-          // Queue the update instead of doing it during render
-          viewportsToUpdate.current.set(viewportId, isReferenceViewable);
-        }
-      }
+      ViewportGridService.setRe;
 
       // look inside displaySets to see if they need reRendering
       const displaySetsNeedsRerendering = displaySets.some(displaySet => {
