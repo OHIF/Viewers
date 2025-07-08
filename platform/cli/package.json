@@ -1,6 +1,6 @@
 {
   "name": "@ohif/cli",
-  "version": "3.11.0-beta.73",
+  "version": "3.11.0-beta.74",
   "description": "A CLI to bootstrap new OHIF extension or mode",
   "type": "module",
   "main": "src/index.js",

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.73...v3.11.0-beta.74) (2025-07-08)
+
+
+### Bug Fixes
+
+* **labeling:** measurement labeling dialog was overwriting the entire measurement and breaking it ([#5095](https://github.com/OHIF/Viewers/issues/5095)) ([64a634c](https://github.com/OHIF/Viewers/commit/64a634cab93a12021f3217a45fb635dfa9cd8bbd))
+* **measurement-group:** use measurment study uid instead of active study uid ([#5091](https://github.com/OHIF/Viewers/issues/5091)) ([7b2e37a](https://github.com/OHIF/Viewers/commit/7b2e37a44fa60c5b069ba7f30d4b0f9eec693de0))
+
+
+
+
+
 # [3.11.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.72...v3.11.0-beta.73) (2025-07-07)
 
 

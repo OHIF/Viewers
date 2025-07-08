@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "3.11.0-beta.73",
+  "version": "3.11.0-beta.74",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -39,8 +39,8 @@
     "@cornerstonejs/codec-openjpeg": "^1.2.4",
     "@cornerstonejs/codec-openjph": "^2.4.5",
     "@cornerstonejs/dicom-image-loader": "^3.24.0",
-    "@ohif/core": "3.11.0-beta.73",
-    "@ohif/ui": "3.11.0-beta.73",
+    "@ohif/core": "3.11.0-beta.74",
+    "@ohif/ui": "3.11.0-beta.74",
     "dcmjs": "^0.42.0",
     "dicom-parser": "^1.8.21",
     "hammerjs": "^2.0.8",

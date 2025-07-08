@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-microscopy",
-  "version": "3.11.0-beta.73",
+  "version": "3.11.0-beta.74",
   "description": "OHIF mode for DICOM microscopy",
   "author": "OHIF",
   "license": "MIT",
@@ -35,8 +35,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.11.0-beta.73",
-    "@ohif/extension-dicom-microscopy": "3.11.0-beta.73"
+    "@ohif/core": "3.11.0-beta.74",
+    "@ohif/extension-dicom-microscopy": "3.11.0-beta.74"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",

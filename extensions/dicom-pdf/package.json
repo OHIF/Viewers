@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-pdf",
-  "version": "3.11.0-beta.73",
+  "version": "3.11.0-beta.74",
   "description": "OHIF extension for PDF display",
   "author": "OHIF",
   "license": "MIT",
@@ -30,8 +30,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.11.0-beta.73",
-    "@ohif/ui": "3.11.0-beta.73",
+    "@ohif/core": "3.11.0-beta.74",
+    "@ohif/ui": "3.11.0-beta.74",
     "dcmjs": "^0.42.0",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "3.11.0-beta.73",
+  "version": "3.11.0-beta.74",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "@cornerstonejs/codec-openjph": "^2.4.5",
     "@cornerstonejs/core": "^3.24.0",
     "@cornerstonejs/dicom-image-loader": "^3.24.0",
-    "@ohif/ui": "3.11.0-beta.73",
+    "@ohif/ui": "3.11.0-beta.74",
     "cornerstone-math": "0.1.9",
     "dicom-parser": "^1.8.21"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-ultrasound-pleura-bline",
-  "version": "3.11.0-beta.73",
+  "version": "3.11.0-beta.74",
   "description": "Allows users to annotate ultrasound images with pleura B-line annotations.",
   "author": "OHIF",
   "license": "MIT",
@@ -36,9 +36,9 @@
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/core": "^3.16.0",
     "@cornerstonejs/tools": "^3.16.0",
-    "@ohif/core": "3.11.0-beta.73",
-    "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.73",
-    "@ohif/extension-ultrasound-pleura-bline": "3.11.0-beta.73",
+    "@ohif/core": "3.11.0-beta.74",
+    "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.74",
+    "@ohif/extension-ultrasound-pleura-bline": "3.11.0-beta.74",
     "i18next": "^17.0.3"
   },
   "devDependencies": {
