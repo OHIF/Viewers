@@ -12,7 +12,6 @@ function ViewportOrientationMenu({
   onOpen,
   onClose,
   disabled,
-  viewportOrientation = 'axial',
   ...props
 }: withAppTypes<{
   location?: string;
@@ -22,33 +21,18 @@ function ViewportOrientationMenu({
   onOpen?: () => void;
   onClose?: () => void;
   disabled?: boolean;
-  viewportOrientation: string;
 }>) {
+  const { servicesManager, commandsManager } = useSystem();
+  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
+  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const viewportOrientation = viewportInfo.getOrientation();
+
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
   const [currentOrientation, setCurrentOrientation] = React.useState<string>(
     typeof viewportOrientation === 'string' ? viewportOrientation : 'axial'
   );
-  const { servicesManager, commandsManager } = useSystem();
-  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
-
-  const getIcon = (orientationName: string) => {
-    switch (orientationName.toLowerCase()) {
-      case 'axial':
-        return Icons.OrientationSwitchA;
-      case 'sagittal':
-        return Icons.OrientationSwitchS;
-      case 'coronal':
-        return Icons.OrientationSwitchC;
-      case 'reformat':
-        return Icons.OrientationSwitchR;
-      case 'acquisition':
-        return Icons.OrientationSwitch;
-      default:
-        return Icons.OrientationSwitch;
-    }
-  };
 
   const handleOrientationChange = (orientation: string) => {
     setCurrentOrientation(orientation);
@@ -236,5 +220,22 @@ function ViewportOrientationMenu({
     </Popover>
   );
 }
+
+const getIcon = (orientationName: string) => {
+  switch (orientationName.toLowerCase()) {
+    case 'axial':
+      return Icons.OrientationSwitchA;
+    case 'sagittal':
+      return Icons.OrientationSwitchS;
+    case 'coronal':
+      return Icons.OrientationSwitchC;
+    case 'reformat':
+      return Icons.OrientationSwitchR;
+    case 'acquisition':
+      return Icons.OrientationSwitch;
+    default:
+      return Icons.OrientationSwitch;
+  }
+};
 
 export default ViewportOrientationMenu;
