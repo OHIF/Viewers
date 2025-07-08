@@ -80,7 +80,6 @@
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.48.0"
-
   },
   "devDependencies": {
     "@babel/core": "7.24.7",
@@ -106,7 +105,7 @@
     "patch-package": "^8.0.0",
     "prettier-plugin-tailwindcss": "0.6.9",
     "playwright-test-coverage": "^1.2.12",
-     "cypress": "14.1.0",
+    "cypress": "14.1.0",
     "cypress-file-upload": "^5.0.8"
   },
   "husky": {
@@ -131,5 +130,6 @@
     "sharp": "^0.32.6",
     "rollup": "2.79.2",
     "body-parser": "1.20.3"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
