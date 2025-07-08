@@ -12,7 +12,7 @@ function ViewportOrientationMenu({
   onOpen,
   onClose,
   disabled,
-  viewportOrientation = 'sagittal',
+  viewportOrientation = 'axial',
   ...props
 }: withAppTypes<{
   location?: string;
@@ -43,6 +43,8 @@ function ViewportOrientationMenu({
         return Icons.OrientationSwitchC;
       case 'reformat':
         return Icons.OrientationSwitchR;
+      case 'acquisition':
+        return Icons.OrientationSwitch;
       default:
         return Icons.OrientationSwitch;
     }
@@ -163,74 +165,73 @@ function ViewportOrientationMenu({
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[140px] p-2"
+        className="h-[170px] w-[130px] flex-shrink-0 flex-col items-start rounded p-1"
         align={align}
         side={side}
+        style={{ left: 0 }}
       >
-        <div className="flex flex-col">
-          <Button
-            variant="ghost"
-            className="flex items-center justify-start"
-            onClick={() => handleOrientationChange('axial')}
-          >
-            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
-              {currentOrientation === 'axial' ? (
-                <Icons.Checked className="text-primary h-4 w-4" />
-              ) : null}
-            </span>
-            <span className="flex-1 text-left">Axial</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex items-center justify-start"
-            onClick={() => handleOrientationChange('sagittal')}
-          >
-            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
-              {currentOrientation === 'sagittal' ? (
-                <Icons.Checked className="text-primary h-4 w-4" />
-              ) : null}
-            </span>
-            <span className="flex-1 text-left">Sagittal</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex items-center justify-start"
-            onClick={() => handleOrientationChange('coronal')}
-          >
-            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
-              {currentOrientation === 'coronal' ? (
-                <Icons.Checked className="text-primary h-4 w-4" />
-              ) : null}
-            </span>
-            <span className="flex-1 text-left">Coronal</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex items-center justify-start"
-            onClick={() => handleOrientationChange('acquisition')}
-          >
-            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
-              {currentOrientation === 'acquisition' ? (
-                <Icons.Checked className="text-primary h-4 w-4" />
-              ) : null}
-            </span>
-            <span className="flex-1 text-left">Acquisition</span>
-          </Button>
-          {/* Divider */}
-          <div className="my-2 border-t border-white/20" />
-          <Button
-            variant="ghost"
-            className="flex items-center justify-start"
-            onClick={() => handleOrientationChange('reformat')}
-          >
-            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
-              {currentOrientation === 'reformat' ? (
-                <Icons.Checked className="text-primary h-4 w-4" />
-              ) : null}
-            </span>
-            <span className="flex-1 text-left">Reformat</span>
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          onClick={() => handleOrientationChange('axial')}
+        >
+          <span className="mr-0 flex w-4 items-center justify-center">
+            {currentOrientation === 'axial' ? (
+              <Icons.Checked className="text-primary h-5 w-5" />
+            ) : null}
+          </span>
+          <span className="flex-1 text-left">Axial</span>
+        </Button>
+        <Button
+          variant="ghost"
+          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          onClick={() => handleOrientationChange('sagittal')}
+        >
+          <span className="mr-0 flex w-4 items-center justify-center">
+            {currentOrientation === 'sagittal' ? (
+              <Icons.Checked className="text-primary h-5 w-5" />
+            ) : null}
+          </span>
+          <span className="flex-1 text-left">Sagittal</span>
+        </Button>
+        <Button
+          variant="ghost"
+          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          onClick={() => handleOrientationChange('coronal')}
+        >
+          <span className="mr-0 flex w-4 items-center justify-center">
+            {currentOrientation === 'coronal' ? (
+              <Icons.Checked className="text-primary h-5 w-5" />
+            ) : null}
+          </span>
+          <span className="flex-1 text-left">Coronal</span>
+        </Button>
+        <Button
+          variant="ghost"
+          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          onClick={() => handleOrientationChange('acquisition')}
+        >
+          <span className="mr-0 flex w-4 items-center justify-center">
+            {currentOrientation === 'acquisition' ? (
+              <Icons.Checked className="text-primary h-5 w-5" />
+            ) : null}
+          </span>
+          <span className="flex-1 text-left">Acquisition</span>
+        </Button>
+        {/* Divider */}
+        <div className="my-2 border-t border-white/20" />
+        <Button
+          variant="ghost"
+          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          onClick={() => handleOrientationChange('reformat')}
+        >
+          <span className="mr-0 flex w-4 items-center justify-center">
+            {currentOrientation === 'reformat' ? (
+              <Icons.Checked className="text-primary h-5 w-5" />
+            ) : null}
+          </span>
+          <span className="flex-1 text-left">Reformat</span>
+        </Button>
       </PopoverContent>
     </Popover>
   );

@@ -1,8 +1,9 @@
 import React from 'react';
 import type { IconProps } from '../types';
 
-export const OrientationSwitchChecked = (props: IconProps) => (
+export const Checked = (props: IconProps) => (
   <svg
+    {...props}
     width="24"
     height="24"
     viewBox="0 0 24 24"
@@ -19,4 +20,4 @@ export const OrientationSwitchChecked = (props: IconProps) => (
   </svg>
 );
 
-export default OrientationSwitchChecked;
+export default Checked;

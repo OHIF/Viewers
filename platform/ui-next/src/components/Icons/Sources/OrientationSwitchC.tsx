@@ -3,6 +3,7 @@ import type { IconProps } from '../types';
 
 export const OrientationSwitchC = (props: IconProps) => (
   <svg
+    {...props}
     width="24"
     height="24"
     viewBox="0 0 24 24"
