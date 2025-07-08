@@ -53,7 +53,7 @@
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/adapters": "^3.24.0",
     "@cornerstonejs/ai": "^3.24.0",
-    "@cornerstonejs/core": "file:../../tarballs/cornerstonejs-core-3.26.0.tgz",
+    "@cornerstonejs/core": "file:../../tarballs/cornerstonejs-core-3.26.2.tgz",
     "@cornerstonejs/labelmap-interpolation": "^3.24.0",
     "@cornerstonejs/polymorphic-segmentation": "^3.24.0",
     "@cornerstonejs/tools": "^3.24.0",

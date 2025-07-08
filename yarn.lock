@@ -1473,10 +1473,10 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.7.tgz#784394d05d8cf735640e9c3baa206535ee8e0376"
   integrity sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w==
 
-"@cornerstonejs/core@file:tarballs/cornerstonejs-core-3.26.0.tgz":
+"@cornerstonejs/core@file:tarballs/cornerstonejs-core-3.26.2.tgz":
   version "3.26.2"
-  uid ef900fc34491652ab4309b62e7766426a5b52cb0
-  resolved "file:tarballs/cornerstonejs-core-3.26.0.tgz#ef900fc34491652ab4309b62e7766426a5b52cb0"
+  uid "91a9595aed96b524f87562015748dbba9179ccfa"
+  resolved "file:tarballs/cornerstonejs-core-3.26.2.tgz#91a9595aed96b524f87562015748dbba9179ccfa"
   dependencies:
     "@kitware/vtk.js" "32.12.1"
     comlink "^4.4.1"

@@ -47,7 +47,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/adapters": "^3.24.0",
-    "@cornerstonejs/core": "file:../../tarballs/cornerstonejs-core-3.26.0.tgz",
+    "@cornerstonejs/core": "file:../../tarballs/cornerstonejs-core-3.26.2.tgz",
     "@cornerstonejs/tools": "^3.24.0",
     "classnames": "^2.3.2"
   }
