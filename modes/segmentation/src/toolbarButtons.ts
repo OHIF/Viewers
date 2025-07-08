@@ -81,7 +81,7 @@ const toolbarButtons: Button[] = [
       icon: 'OrientationSwitch',
       label: 'Orientation',
       tooltip:
-        'Change viewport orientation between axial, sagittal, coronal and acquisition planes',
+        'Change viewport orientation between axial, sagittal, coronal, acquisition and reformat planes',
       evaluate: {
         name: 'evaluate.orientationMenu',
         // hideWhenDisabled: true,

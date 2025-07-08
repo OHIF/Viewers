@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn, Icons, ToolButton, useIconPresentation } from '@ohif/ui-next';
+import { cn, Icons, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
@@ -12,6 +12,7 @@ function ViewportOrientationMenu({
   onOpen,
   onClose,
   disabled,
+  viewportOrientation = 'sagittal',
   ...props
 }: withAppTypes<{
   location?: string;
@@ -21,14 +22,34 @@ function ViewportOrientationMenu({
   onOpen?: () => void;
   onClose?: () => void;
   disabled?: boolean;
+  viewportOrientation: string;
 }>) {
   const [gridState] = useViewportGrid();
   const viewportIdToUse = viewportId || gridState.activeViewportId;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
+  const [currentOrientation, setCurrentOrientation] = React.useState<string>(
+    typeof viewportOrientation === 'string' ? viewportOrientation : 'axial'
+  );
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, toolbarService } = servicesManager.services;
 
+  const getIcon = (orientationName: string) => {
+    switch (orientationName.toLowerCase()) {
+      case 'axial':
+        return Icons.OrientationSwitchA;
+      case 'sagittal':
+        return Icons.OrientationSwitchS;
+      case 'coronal':
+        return Icons.OrientationSwitchC;
+      case 'reformat':
+        return Icons.OrientationSwitchR;
+      default:
+        return Icons.OrientationSwitch;
+    }
+  };
+
   const handleOrientationChange = (orientation: string) => {
+    setCurrentOrientation(orientation);
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportIdToUse);
     const currentViewportType = viewportInfo?.getViewportType();
 
@@ -55,6 +76,9 @@ function ViewportOrientationMenu({
         break;
       case 'coronal':
         orientationEnum = Enums.OrientationAxis.CORONAL;
+        break;
+      case 'reformat':
+        orientationEnum = Enums.OrientationAxis.REFORMAT;
         break;
       default:
         orientationEnum = Enums.OrientationAxis.ACQUISITION;
@@ -106,7 +130,7 @@ function ViewportOrientationMenu({
   // Get proper alignment and side based on the location using toolbar service
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
-  const Icon = <Icons.OrientationSwitch className={iconClassName} />;
+  const Icon = React.createElement(getIcon(currentOrientation), { className: iconClassName });
   return (
     <Popover
       open={isOpen}
@@ -139,38 +163,72 @@ function ViewportOrientationMenu({
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[100px] p-1"
+        className="w-[140px] p-2"
         align={align}
         side={side}
       >
         <div className="flex flex-col">
           <Button
             variant="ghost"
-            className="justify-start"
+            className="flex items-center justify-start"
             onClick={() => handleOrientationChange('axial')}
           >
-            Axial
+            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
+              {currentOrientation === 'axial' ? (
+                <Icons.Checked className="text-primary h-4 w-4" />
+              ) : null}
+            </span>
+            <span className="flex-1 text-left">Axial</span>
           </Button>
           <Button
             variant="ghost"
-            className="justify-start"
+            className="flex items-center justify-start"
             onClick={() => handleOrientationChange('sagittal')}
           >
-            Sagittal
+            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
+              {currentOrientation === 'sagittal' ? (
+                <Icons.Checked className="text-primary h-4 w-4" />
+              ) : null}
+            </span>
+            <span className="flex-1 text-left">Sagittal</span>
           </Button>
           <Button
             variant="ghost"
-            className="justify-start"
+            className="flex items-center justify-start"
             onClick={() => handleOrientationChange('coronal')}
           >
-            Coronal
+            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
+              {currentOrientation === 'coronal' ? (
+                <Icons.Checked className="text-primary h-4 w-4" />
+              ) : null}
+            </span>
+            <span className="flex-1 text-left">Coronal</span>
           </Button>
           <Button
             variant="ghost"
-            className="justify-start"
+            className="flex items-center justify-start"
             onClick={() => handleOrientationChange('acquisition')}
           >
-            Acquisition
+            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
+              {currentOrientation === 'acquisition' ? (
+                <Icons.Checked className="text-primary h-4 w-4" />
+              ) : null}
+            </span>
+            <span className="flex-1 text-left">Acquisition</span>
+          </Button>
+          {/* Divider */}
+          <div className="my-2 border-t border-white/20" />
+          <Button
+            variant="ghost"
+            className="flex items-center justify-start"
+            onClick={() => handleOrientationChange('reformat')}
+          >
+            <span className="mr-2 inline-block w-5 min-w-[20px] text-left">
+              {currentOrientation === 'reformat' ? (
+                <Icons.Checked className="text-primary h-4 w-4" />
+              ) : null}
+            </span>
+            <span className="flex-1 text-left">Reformat</span>
           </Button>
         </div>
       </PopoverContent>
