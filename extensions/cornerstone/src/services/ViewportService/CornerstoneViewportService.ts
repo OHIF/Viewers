@@ -954,7 +954,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // displaySet imageIds and set them as the imageIds for the viewport,
     // here we can do some logic if the reference is missing
     // then find the most similar match of displaySet instead
-    // if (!overlayDisplaySet) {
     if (!overlayDisplaySets?.length) {
       return;
     }
