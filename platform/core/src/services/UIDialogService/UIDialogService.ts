@@ -14,6 +14,8 @@ const serviceImplementation = {
     console.warn('isEmpty() NOT IMPLEMENTED');
     return true;
   },
+  _updatePosition: (id: string, position: { x: number; y: number }) =>
+    console.warn('updatePosition() NOT IMPLEMENTED'),
   _customComponent: null,
 };
 
@@ -64,6 +66,16 @@ class UIDialogService {
   }
 
   /**
+   * Update the position of a specific dialog by id
+   *
+   * @param {string} id - The dialog id to update
+   * @param {{ x: number; y: number }} position - The new position
+   */
+  updatePosition(id: string, position: { x: number; y: number }): void {
+    return serviceImplementation._updatePosition(id, position);
+  }
+
+  /**
    * This provides flexibility in customizing the Modal's default component
    *
    * @returns {React.Component}
@@ -75,7 +87,14 @@ class UIDialogService {
   /**
    * Set the service implementation
    */
-  setServiceImplementation({ show, hide, hideAll, isEmpty, customComponent }: any): void {
+  setServiceImplementation({
+    show,
+    hide,
+    hideAll,
+    isEmpty,
+    updatePosition,
+    customComponent,
+  }: any): void {
     if (show) {
       serviceImplementation._show = show;
     }
@@ -87,6 +106,9 @@ class UIDialogService {
     }
     if (isEmpty) {
       serviceImplementation._isEmpty = isEmpty;
+    }
+    if (updatePosition) {
+      serviceImplementation._updatePosition = updatePosition;
     }
     if (customComponent) {
       serviceImplementation._customComponent = customComponent;
