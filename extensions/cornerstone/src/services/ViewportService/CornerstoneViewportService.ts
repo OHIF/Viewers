@@ -650,21 +650,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       csToolsUtils.stackContextPrefetch.enable(element);
     });
 
-    let imageIdsToSet = imageIds;
     const overlayProcessingResults = this._processExtraDisplaySetsForViewport(viewport);
-    // Since we have a stack viewport, all of the imageIds should be the same for each overlay, no?
-    imageIdsToSet = overlayProcessingResults?.[0].imageIds ?? imageIdsToSet;
 
     const referencedImageId = presentations?.positionPresentation?.viewReference?.referencedImageId;
     if (referencedImageId) {
-      initialImageIndexToUse = imageIdsToSet.indexOf(referencedImageId);
+      initialImageIndexToUse = imageIds.indexOf(referencedImageId);
     }
 
     if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
+    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations, viewportInfo);
 
