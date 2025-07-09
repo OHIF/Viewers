@@ -40,7 +40,7 @@ function createTools(utilityModule, commandsManager) {
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.CalibrationLine },
-      
+
       // Segmentation tools
       {
         toolName: 'CircularBrush',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { DicomMetadataStore, utils } from '@ohif/core';
+import { Enums } from '@cornerstonejs/tools';
 import defaultContextMenuCustomization from './customizations/defaultContextMenuCustomization';
 import helloPageCustomization from './customizations/helloPageCustomization';
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
@@ -25,27 +26,27 @@ function mapXNATMetadataForDisplay(studies) {
     const patientName = study.PatientName || 'No Name';
     const patientId = study.PatientID || '';
     const accessionNumber = study.AccessionNumber || '';
-    
+
     // Set a default date if missing
     if (!study.StudyDate) {
       console.log('XNAT: Setting default study date as none was provided');
       study.StudyDate = today;
     }
-    
-    const studyDate = study.StudyDate 
-      ? utils.formatDate(study.StudyDate) 
+
+    const studyDate = study.StudyDate
+      ? utils.formatDate(study.StudyDate)
       : utils.formatDate(today);
-      
+
     // Set a default time if missing
     if (!study.StudyTime) {
       console.log('XNAT: Setting default study time as none was provided');
       study.StudyTime = currentTime;
     }
-    
-    const studyTime = study.StudyTime 
-      ? utils.formatTime(study.StudyTime) 
+
+    const studyTime = study.StudyTime
+      ? utils.formatTime(study.StudyTime)
       : utils.formatTime(currentTime);
-      
+
     const modalities = study.Modalities || study.ModalitiesInStudy || '';
     const studyDescription = study.StudyDescription || 'No Description';
 
@@ -94,18 +95,18 @@ export default function getCustomizationModule({ servicesManager, extensionManag
   // Add hooks to enhance study metadata when retrieved from DicomMetadataStore
   // Override the getStudy method to map metadata properly
   const originalGetStudy = DicomMetadataStore.getStudy;
-  DicomMetadataStore.getStudy = function(studyInstanceUID) {
+  DicomMetadataStore.getStudy = function (studyInstanceUID) {
     const study = originalGetStudy.call(DicomMetadataStore, studyInstanceUID);
     if (!study) return null;
-    
+
     // Apply our metadata mapping to this study
     const mappedStudies = mapXNATMetadataForDisplay([study]);
     return mappedStudies[0];
   };
-  
+
   // Also hook into getStudyInstanceUIDs to ensure all studies are processed
   const originalGetStudyInstanceUIDs = DicomMetadataStore.getStudyInstanceUIDs;
-  DicomMetadataStore.getStudyInstanceUIDs = function() {
+  DicomMetadataStore.getStudyInstanceUIDs = function () {
     const studyUIDs = originalGetStudyInstanceUIDs.call(DicomMetadataStore);
     return studyUIDs;
   };
@@ -132,6 +133,27 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       name: 'default',
       value: {
         ...layoutSelectorCustomization,
+        // Ensure measurement tools are enabled by default for passive rendering
+        tools: {
+          Length: {
+            mode: 'Enabled',
+          },
+          Bidirectional: {
+            mode: 'Enabled',
+          },
+          EllipticalROI: {
+            mode: 'Enabled',
+          },
+          CircleROI: {
+            mode: 'Enabled',
+          },
+          RectangleROI: {
+            mode: 'Enabled',
+          },
+          ArrowAnnotate: {
+            mode: 'Enabled',
+          },
+        },
         autoCineModalities: ['OT', 'US'],
         'viewportOverlay.topLeft': [],
         'viewportOverlay.topRight': [],

@@ -304,12 +304,109 @@ function getSortedTags(metadata) {
   return tagList;
 }
 
+// Add robust tag lookup function before getRows
+function getTagInfoFromKeyword(keyword) {
+  // First try direct lookup in nameMap
+  let tagInfo = nameMap[keyword];
+  if (tagInfo) {
+    return tagInfo;
+  }
+
+  // Handle hex tag format (e.g., "00280030")
+  if (/^[0-9A-Fa-f]{8}$/.test(keyword)) {
+    try {
+      const tagString = `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
+      
+      // Create a simple lookup map for common tags since dcmjs API is unreliable
+      const commonTags = {
+        '00280002': { tag: '(0028,0002)', vr: 'US', keyword: 'SamplesPerPixel' },
+        '00280004': { tag: '(0028,0004)', vr: 'CS', keyword: 'PhotometricInterpretation' },
+        '00280008': { tag: '(0028,0008)', vr: 'IS', keyword: 'NumberOfFrames' },
+        '00280010': { tag: '(0028,0010)', vr: 'US', keyword: 'Rows' },
+        '00280011': { tag: '(0028,0011)', vr: 'US', keyword: 'Columns' },
+        '00280030': { tag: '(0028,0030)', vr: 'DS', keyword: 'PixelSpacing' },
+        '00280100': { tag: '(0028,0100)', vr: 'US', keyword: 'BitsAllocated' },
+        '00280101': { tag: '(0028,0101)', vr: 'US', keyword: 'BitsStored' },
+        '00280102': { tag: '(0028,0102)', vr: 'US', keyword: 'HighBit' },
+        '00280103': { tag: '(0028,0103)', vr: 'US', keyword: 'PixelRepresentation' },
+        '00281050': { tag: '(0028,1050)', vr: 'DS', keyword: 'WindowCenter' },
+        '00281051': { tag: '(0028,1051)', vr: 'DS', keyword: 'WindowWidth' },
+        '00281052': { tag: '(0028,1052)', vr: 'DS', keyword: 'RescaleIntercept' },
+        '00281053': { tag: '(0028,1053)', vr: 'DS', keyword: 'RescaleSlope' },
+        '00281054': { tag: '(0028,1054)', vr: 'LO', keyword: 'RescaleType' },
+        '00200052': { tag: '(0020,0052)', vr: 'UI', keyword: 'FrameOfReferenceUID' },
+        '00080018': { tag: '(0008,0018)', vr: 'UI', keyword: 'SOPInstanceUID' },
+        '00080016': { tag: '(0008,0016)', vr: 'UI', keyword: 'SOPClassUID' },
+        '0020000D': { tag: '(0020,000D)', vr: 'UI', keyword: 'StudyInstanceUID' },
+        '0020000E': { tag: '(0020,000E)', vr: 'UI', keyword: 'SeriesInstanceUID' },
+        '00200013': { tag: '(0020,0013)', vr: 'IS', keyword: 'InstanceNumber' },
+        '00080008': { tag: '(0008,0008)', vr: 'CS', keyword: 'ImageType' },
+        '00080060': { tag: '(0008,0060)', vr: 'CS', keyword: 'Modality' },
+        '00100010': { tag: '(0010,0010)', vr: 'PN', keyword: 'PatientName' },
+        '00100020': { tag: '(0010,0020)', vr: 'LO', keyword: 'PatientID' },
+      };
+      
+      // Try direct lookup in our common tags map
+      if (commonTags[keyword]) {
+        return commonTags[keyword];
+      }
+      
+      // Try multiple dcmjs API approaches as fallback
+      let tagKeyword = null;
+      try {
+        const tag = dcmjs.data.Tag.fromString(tagString);
+        // Try different API patterns
+        if (dcmjs.data.DicomMetaDictionary.keyword && dcmjs.data.DicomMetaDictionary.keyword.fromTag) {
+          tagKeyword = dcmjs.data.DicomMetaDictionary.keyword.fromTag(tag);
+        } else if (dcmjs.data.DicomMetaDictionary.keywordOf) {
+          tagKeyword = dcmjs.data.DicomMetaDictionary.keywordOf(tag);
+        } else {
+          // Fallback: search through nameMap for matching tag
+          for (const [key, info] of Object.entries(nameMap)) {
+            if ((info as any)?.tag === tagString) {
+              tagKeyword = key;
+              break;
+            }
+          }
+        }
+      } catch (tagError) {
+        // Fallback: search through nameMap for matching tag
+        for (const [key, info] of Object.entries(nameMap)) {
+          if ((info as any)?.tag === tagString) {
+            tagKeyword = key;
+            break;
+          }
+        }
+      }
+      
+      if (tagKeyword && nameMap[tagKeyword]) {
+        return nameMap[tagKeyword];
+      }
+    } catch (error) {
+      console.warn(`Failed to parse hex tag ${keyword}:`, error);
+    }
+  }
+
+  // Handle "x" prefixed hex format (e.g., "x00280030")
+  if (/^x[0-9A-Fa-f]{8}$/.test(keyword)) {
+    // Remove the 'x' prefix and try again
+    const hexKeyword = keyword.substring(1);
+    return getTagInfoFromKeyword(hexKeyword);
+  }
+
+  return null;
+}
+
 function getRows(metadata, depth = 0) {
   // Tag, Type, Value, Keyword
 
   const keywords = Object.keys(metadata);
 
+  // Convert XNAT metadata format to standard DICOM tag format for proper display
+
   const rows = [];
+  const processedTags = new Set(); // Track processed tags to avoid duplicates
+  
   for (let i = 0; i < keywords.length; i++) {
     let keyword = keywords[i];
 
@@ -317,9 +414,29 @@ function getRows(metadata, depth = 0) {
       continue;
     }
 
-    const tagInfo = nameMap[keyword];
+    // Use robust tag lookup instead of direct nameMap access
+    const tagInfo = getTagInfoFromKeyword(keyword);
 
     let value = metadata[keyword];
+
+    // Handle XNAT's DICOM object format: {vr: 'UI', Value: ['value']}
+    if (value && typeof value === 'object' && value.Value && Array.isArray(value.Value)) {
+      // Extract the actual value from the DICOM object
+      if (value.Value.length === 1) {
+        value = value.Value[0];
+      } else if (value.Value.length > 1) {
+        value = value.Value.join('\\'); // Multi-value separator
+      } else {
+        value = '';
+      }
+    }
+
+    // Skip if we've already processed this tag (avoid duplicates)
+    const tagKey = tagInfo?.tag || `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
+    if (processedTags.has(tagKey)) {
+      continue;
+    }
+    processedTags.add(tagKey);
 
     if (tagInfo && tagInfo.vr === 'SQ') {
       const sequenceAsArray = toArray(value);
@@ -329,7 +446,7 @@ function getRows(metadata, depth = 0) {
       const sequence = {
         tag: tagInfo.tag,
         vr: tagInfo.vr,
-        keyword,
+        keyword: tagInfo.keyword,
         values: [],
       };
 
@@ -388,13 +505,13 @@ function getRows(metadata, depth = 0) {
 
     // tag / vr/ keyword/ value
 
-    // Remove retired tags
-    keyword = keyword.replace('RETIRED_', '');
     if (tagInfo) {
+      // Remove retired tags prefix and use the proper keyword
+      const cleanKeyword = (tagInfo.keyword || keyword).replace('RETIRED_', '');
       rows.push({
         tag: tagInfo.tag,
         vr: tagInfo.vr,
-        keyword,
+        keyword: cleanKeyword,
         value,
       });
     } else {
@@ -402,6 +519,7 @@ function getRows(metadata, depth = 0) {
       const regex = /[0-9A-Fa-f]{6}/g;
       if (keyword.match(regex)) {
         const tag = `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
+        
         rows.push({
           tag,
           vr: '',

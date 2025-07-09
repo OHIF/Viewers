@@ -5,13 +5,26 @@ import { useSystem } from '@ohif/core';
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
 
-  const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+  console.log(`🔍 DEBUG: useMeasurements mapMeasurementToDisplay called for measurement ${measurement.uid}`);
+  console.log(`🔍 DEBUG: referenceSeriesUID: ${referenceSeriesUID}`);
+  console.log(`🔍 DEBUG: measurement.displayText:`, measurement.displayText);
+  console.log(`🔍 DEBUG: measurement.label:`, measurement.label);
 
-  if (!displaySets[0]?.instances) {
+  const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+  console.log(`🔍 DEBUG: displaySets found:`, displaySets);
+
+  if (!displaySets[0]?.instances && !displaySets[0]?.images) {
+    console.error(`🔍 DEBUG: No instances or images found in displaySets[0]:`, displaySets[0]);
     throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
   }
 
+  console.log(`🔍 DEBUG: displaySets[0] has instances:`, !!displaySets[0]?.instances);
+  console.log(`🔍 DEBUG: displaySets[0] has images:`, !!displaySets[0]?.images);
+
   const { findingSites, finding, label: baseLabel, displayText: baseDisplayText } = measurement;
+
+  console.log(`🔍 DEBUG: baseDisplayText extracted:`, baseDisplayText);
+  console.log(`🔍 DEBUG: baseLabel extracted:`, baseLabel);
 
   const firstSite = findingSites?.[0];
   const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
@@ -22,9 +35,14 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     secondary: baseDisplayText?.secondary || [],
   };
 
+  console.log(`🔍 DEBUG: initial displayText:`, displayText);
+
   // Add baseDisplayText to primary if it exists
-  if (baseDisplayText) {
+  if (baseDisplayText && baseDisplayText.primary) {
+    console.log(`🔍 DEBUG: adding baseDisplayText.primary to displayText:`, baseDisplayText.primary);
     displayText.primary.push(...baseDisplayText.primary);
+  } else {
+    console.log(`🔍 DEBUG: baseDisplayText.primary not found or empty:`, baseDisplayText);
   }
 
   // Add finding sites to primary
@@ -41,11 +59,14 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     displayText.primary.push(finding.text);
   }
 
-  return {
+  const result = {
     ...measurement,
     displayText,
     label,
   };
+
+  console.log(`🔍 DEBUG: mapMeasurementToDisplay returning for ${measurement.uid}:`, result);
+  return result;
 }
 
 /**

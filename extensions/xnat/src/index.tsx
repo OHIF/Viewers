@@ -62,9 +62,37 @@ const xnatExtension: Types.Extensions.Extension = {
    */
   id: '@ohif/extension-xnat',
   preRegistration,
-  onModeEnter: ({ servicesManager }) => {
+  onModeEnter: ({ servicesManager, extensionManager }) => {
+    const { toolGroupService } = servicesManager.services;
     // Patch the segmentation service when entering a mode
     setTimeout(() => patchSegmentationService(servicesManager), 100);
+
+    const toolGroup = toolGroupService.getToolGroup('default');
+
+    if (toolGroup) {
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.utilityModule.tools'
+      );
+      const { Enums } = utilityModule.exports;
+
+      console.log(
+        `🔧 XNAT Customization: Setting tool modes to 'Enabled' for ToolGroup: ${toolGroup.id}`
+      );
+      const measurementTools = [
+        'Length',
+        'Bidirectional',
+        'EllipticalROI',
+        'CircleROI',
+        'RectangleROI',
+        'ArrowAnnotate',
+      ];
+
+      measurementTools.forEach(toolName => {
+        if (toolGroup.hasTool(toolName)) {
+          toolGroup.setToolMode(toolName, Enums.ToolModes.Enabled);
+        }
+      });
+    }
   },
   onModeExit() {
     useViewportGridStore.getState().clearViewportGridState();
@@ -82,16 +110,6 @@ const xnatExtension: Types.Extensions.Extension = {
   getToolbarModule,
   getCommandsModule,
   getLayoutTemplateModule,
-  getUtilityModule({ servicesManager }) {
-    return [
-      {
-        name: 'common',
-        exports: {
-          getStudiesForPatientByMRN,
-        },
-      },
-    ];
-  },
   getCustomizationModule,
 };
 

@@ -1618,7 +1618,7 @@ XNATStoreMeasurements: async () => {
   // Build individual image measurement objects in the required shape
   const buildMeasurementObject = (m): any => {
     const points = m.points || [];
-    const createHandle = (pt: number[]) => ({ x: Number(pt[0]), y: Number(pt[1]) });
+    const createHandle = (pt: number[]) => ({ x: Number(pt[0]), y: Number(pt[1]), z: Number(pt[2] || 0) });
 
     // Basic skeleton with all required keys
     const base: any = {
