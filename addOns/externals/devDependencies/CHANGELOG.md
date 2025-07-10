@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.76...v3.11.0-beta.77) (2025-07-10)
+
+**Note:** Version bump only for package @externals/devDependencies
+
+
+
+
+
 # [3.11.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.75...v3.11.0-beta.76) (2025-07-10)
 
 **Note:** Version bump only for package @externals/devDependencies
