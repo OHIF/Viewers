@@ -33,7 +33,8 @@ const toolbarButtons: Button[] = [
           value: 25,
           commands: {
             commandName: 'setBrushSize',
-            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            // commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            commandOptions: { toolNames: ['CircularBrush'] },
           },
         },
         {
@@ -43,7 +44,7 @@ const toolbarButtons: Button[] = [
           value: 'CircularBrush',
           values: [
             { value: 'CircularBrush', label: 'Circle' },
-            { value: 'SphereBrush', label: 'Sphere' },
+            // { value: 'SphereBrush', label: 'Sphere' },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -58,7 +59,8 @@ const toolbarButtons: Button[] = [
       label: 'Eraser',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularEraser', 'SphereEraser'],
+        // toolNames: ['CircularEraser', 'SphereEraser'],
+        toolNames: ['CircularEraser'],
       },
       options: [
         {
@@ -71,7 +73,8 @@ const toolbarButtons: Button[] = [
           value: 25,
           commands: {
             commandName: 'setBrushSize',
-            commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+            // commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+            commandOptions: { toolNames: ['CircularEraser'] },
           },
         },
         {
@@ -81,7 +84,7 @@ const toolbarButtons: Button[] = [
           value: 'CircularEraser',
           values: [
             { value: 'CircularEraser', label: 'Circle' },
-            { value: 'SphereEraser', label: 'Sphere' },
+            // { value: 'SphereEraser', label: 'Sphere' },
           ],
           commands: 'setToolActiveToolbar',
         },
