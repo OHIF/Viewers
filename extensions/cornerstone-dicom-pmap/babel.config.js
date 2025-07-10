@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['@babel/plugin-template-class-properties'],
+  plugins: ['@babel/plugin-transform-class-properties'],
   env: {
     test: {
       presets: [
