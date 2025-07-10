@@ -65,15 +65,35 @@ export function configureViewportForLayerAddition(params: {
     viewport.viewportOptions.orientation = cornerstoneViewportService.getOrientation(viewportId);
   }
 
-  // Do not force volume for SEG and RTSTRUCT if there is only one display set
-  if (requestedLayerDisplaySet.isOverlayDisplaySet && currentDisplaySetUIDs.length === 1) {
-    viewport.viewportOptions.viewportType = 'stack';
-  } else {
-    viewport.viewportOptions.viewportType = 'volume';
+  // If a viewport type was already set do not reset it.
+  if (!viewport.viewportOptions.viewportType) {
+    // Special handling for overlay display sets
+    if (requestedLayerDisplaySet.isOverlayDisplaySet) {
+      // Do not force volume for SEG and RTSTRUCT if it and all the current display sets are for the same display set
+      const isSameDisplaySet = currentDisplaySetUIDs.every(uid => {
+        const currentDisplaySet = displaySetService.getDisplaySetByUID(uid);
+        return currentDisplaySet.isOverlayDisplaySet
+          ? currentDisplaySet.referencedDisplaySetInstanceUID ===
+              requestedLayerDisplaySet.referencedDisplaySetInstanceUID
+          : uid === requestedLayerDisplaySet.referencedDisplaySetInstanceUID;
+      });
+      if (isSameDisplaySet) {
+        viewport.viewportOptions.viewportType = 'stack';
+      } else {
+        viewport.viewportOptions.viewportType = 'volume';
+      }
+    } else {
+      viewport.viewportOptions.viewportType = 'volume';
+    }
   }
 
   // create same amount of display set options as the number of display set UIDs
   const displaySetOptions = allDisplaySetInstanceUIDs.map((uid, index) => {
+    // There is already a display set option for this display set, so return it.
+    if (viewport.displaySetOptions?.[index]) {
+      return viewport.displaySetOptions[index];
+    }
+
     if (index === 0) {
       // no colormap for background
       return {};

@@ -18,6 +18,7 @@ type DataOverlayMenuProps = {
   onOpen?: () => void;
   onClose?: () => void;
   disabled?: boolean;
+  id?: string;
 };
 
 export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): ReactNode {
@@ -40,6 +41,7 @@ export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): Rea
 
   const Icon = <Icons.ViewportViews className={iconClassName} />;
 
+  const idProp = rest.id ? { id: `${rest.id}-${viewportId}` } : {};
   return (
     <Popover
       open={isOpen}
@@ -56,6 +58,7 @@ export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): Rea
               icon="ViewportViews"
               {...rest}
               {...containerProps}
+              {...idProp}
             >
               {Icon}
             </IconContainer>
