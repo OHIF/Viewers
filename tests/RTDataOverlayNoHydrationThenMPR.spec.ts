@@ -19,6 +19,8 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Hide the overlay menu.
   await page.getByTestId('dataOverlayMenu-default-btn').click();
 
+  await page.waitForTimeout(5000);
+
   await checkForScreenshot(
     page,
     page,
@@ -27,6 +29,8 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   await page.getByTestId('Layout').click();
   await page.getByTestId('MPR').click();
+
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot(
     page,

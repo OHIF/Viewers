@@ -173,6 +173,11 @@ const screenShotPaths = {
     overlaySegmentation: 'overlaySegmentation.png',
     noOverlay: 'noOverlay.png',
   },
+  multipleSegmentationDataOverlays: {
+    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
+    overlaysDisplayed: 'overlaysDisplayed.png',
+    overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
+  },
 };
 
 export { screenShotPaths };
