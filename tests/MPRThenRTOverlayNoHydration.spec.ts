@@ -35,9 +35,9 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Wait 5 seconds for RT to load. This is necessary in particular when screen shots are added or replaced.
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(
+  await checkForScreenshot({
     page,
-    page,
-    screenShotPaths.mprThenRTOverlayNoHydration.mprPostRTOverlayNoHydration
-  );
+    screenshotPath: screenShotPaths.mprThenRTOverlayNoHydration.mprPostRTOverlayNoHydration,
+    normalizedClip: { x: 0, y: 0, width: 1.0, height: 0.75 }, // clip to avoid any popups concerning surface creation and clipping
+  });
 });

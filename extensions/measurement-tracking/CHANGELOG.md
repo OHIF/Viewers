@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.76...v3.11.0-beta.77) (2025-07-10)
+
+
+### Bug Fixes
+
+* **rendering:** Introduce SequentialRenderingEngine to resolve canvas size limitation, performance degradation on high res monitors and enhance multi-monitor support ([#5195](https://github.com/OHIF/Viewers/issues/5195)) ([4c5e34d](https://github.com/OHIF/Viewers/commit/4c5e34d1837695241430b8dd1739ab39f2fb3060))
+
+
+
+
+
+# [3.11.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.75...v3.11.0-beta.76) (2025-07-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
 # [3.11.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.74...v3.11.0-beta.75) (2025-07-09)
 
 
