@@ -114,7 +114,16 @@ function createTools(utilityModule) {
 
       { toolName: toolNames.UltrasoundDirectional },
     ],
-    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
+    disabled: [
+      { toolName: toolNames.ReferenceLines },
+      { toolName: toolNames.AdvancedMagnify },
+      {
+        toolName: toolNames.SegmentLabel,
+        configuration: {
+          hoverTimeout: 1,
+        },
+      },
+    ],
   };
 }
 

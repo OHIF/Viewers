@@ -10,10 +10,11 @@ test.beforeEach(async ({ page }) => {
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
 }) => {
-  await page.getByTestId('side-panel-header-right').click();
-
   await page.getByTestId('Layout').click();
   await page.getByTestId('MPR').click();
+
+  // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot(
     page,
@@ -30,6 +31,9 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   // Hide the overlay menu.
   await page.getByTestId('dataOverlayMenu-mpr-sagittal-btn').click();
+
+  // Wait 5 seconds for RT to load. This is necessary in particular when screen shots are added or replaced.
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot(
     page,
