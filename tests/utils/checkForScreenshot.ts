@@ -9,6 +9,12 @@ type CheckForScreenshotProps = {
   delay?: number;
   maxDiffPixelRatio?: number;
   threshold?: number;
+  normalizedClip?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 };
 
 const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
@@ -20,15 +26,34 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     delay = 500,
     maxDiffPixelRatio = 0.02,
     threshold = 0.05,
+    normalizedClip,
   } = props;
 
   await page.waitForLoadState('networkidle');
 
   for (let i = 0; i < attempts; i++) {
     try {
+      let clip;
+      if (normalizedClip) {
+        let boundingBox;
+        if (locator === page) {
+          boundingBox = { x: 0, y: 0, ...(await page.viewportSize()) };
+        } else {
+          boundingBox = await (locator as Locator).boundingBox();
+        }
+
+        clip = {
+          x: normalizedClip.x * boundingBox.width,
+          y: normalizedClip.y * boundingBox.height,
+          width: normalizedClip.width * boundingBox.width,
+          height: normalizedClip.height * boundingBox.height,
+        };
+      }
+
       await expect(locator).toHaveScreenshot(screenshotPath, {
         maxDiffPixelRatio,
         threshold,
+        clip,
       });
       return true;
     } catch (error) {
