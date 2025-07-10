@@ -150,6 +150,7 @@ function TrackedMeasurementsContextProvider(
     },
     clearAllMeasurements: (ctx, evt) => {
       measurementService.clearMeasurements();
+      measurementService.setIsMeasurementDeletedIndividually(false);
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
       const { displaySetInstanceUID } = evt.data ?? evt;

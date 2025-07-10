@@ -2021,10 +2021,10 @@ function commandsModule({
         viewport.render();
       }
     },
-    startGroupRecording: () => {
+    startRecordingForAnnotationGroup: () => {
       cornerstoneTools.AnnotationTool.startGroupRecording();
     },
-    endGroupRecording: () => {
+    endRecordingForAnnotationGroup: () => {
       cornerstoneTools.AnnotationTool.endGroupRecording();
     },
     triggerCreateAnnotationMemo: ({
@@ -2348,8 +2348,8 @@ function commandsModule({
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
-    startGroupRecording: actions.startGroupRecording,
-    endGroupRecording: actions.endGroupRecording,
+    startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
+    endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
   };
 
