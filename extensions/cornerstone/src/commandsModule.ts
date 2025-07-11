@@ -2099,6 +2099,12 @@ function commandsModule({
         viewport.render();
       }
     },
+    startRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.startGroupRecording();
+    },
+    endRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.endGroupRecording();
+    },
     triggerCreateAnnotationMemo: ({
       annotation,
       FrameOfReferenceUID,
@@ -2418,6 +2424,8 @@ function commandsModule({
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
+    startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
+    endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
     jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
   };
