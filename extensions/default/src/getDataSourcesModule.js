@@ -14,6 +14,11 @@ import { createMergeDataSourceApi } from './MergeDataSource/index';
 function getDataSourcesModule() {
   return [
     {
+      name: 'taodingweb',
+      type: 'webApi',
+      createDataSource: createDicomWebApi,
+    },
+    {
       name: 'dicomweb',
       type: 'webApi',
       createDataSource: createDicomWebApi,

@@ -87,7 +87,8 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'dicomweb',
+  // defaultDataSourceName: 'dicomweb',
+  defaultDataSourceName: 'taodingweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -99,6 +100,34 @@ window.config = {
   //   regex: /.*/,
   // },
   dataSources: [
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.taodingweb',
+      sourceName: 'taodingweb',
+      configuration: {
+        friendlyName: 'TAO DING wado server',
+        name: 'taoding',
+        wadoUriRoot: 'http://47.108.219.128/dicom-web',
+        qidoRoot: 'http://47.108.219.128/dicom-web',
+        wadoRoot: 'http://47.108.219.128/dicom-web',
+        qidoSupportsIncludeField: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
+        staticWado: true,
+        singlepart: 'bulkdata,video',
+        // whether the data source should use retrieveBulkData to grab metadata,
+        // and in case of relative path, what would it be relative to, options
+        // are in the series level or study level (some servers like series some study)
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+          transform: url => url.replace('/pixeldata.mp4', '/rendered'),
+        },
+        omitQuotationForMultipartRequest: true,
+      },
+    },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
