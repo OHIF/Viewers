@@ -176,9 +176,13 @@ function commandsModule({
         return;
       }
 
+      if (!measurement.referencedImageId) {
+        console.warn('Unable to navigate yet with a missing referenced image id', measurement);
+        return;
+      }
       // Update stored position presentation
       commandsManager.run('updateStoredPositionPresentation', {
-        activeViewportId,
+        viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
         referencedImageId: measurement.referencedImageId,
         options: {
@@ -394,7 +398,7 @@ function commandsModule({
           ([key, value]) => {
             return (
               displaySetInstanceUIDs.every(uid => key.includes(uid)) &&
-              value.viewportId === viewportId
+              value?.viewportId === viewportId
             );
           }
         )?.[0];

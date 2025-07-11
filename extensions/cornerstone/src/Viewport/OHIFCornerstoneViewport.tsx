@@ -361,55 +361,6 @@ const OHIFCornerstoneViewport = React.memo(
   areEqual
 );
 
-// Helper function to handle jumping to measurements
-function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService) {
-  const { measurement, isConsumed } = event;
-  debugger;
-  if (!measurement || isConsumed) {
-    return;
-  }
-
-  const enabledElement = getEnabledElement(elementRef.current);
-
-  if (!enabledElement) {
-    return;
-  }
-
-  const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
-
-  const { metadata, displaySetInstanceUID } = measurement;
-
-  const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
-
-  const showingDisplaySet = viewportDisplaySets.find(
-    ds => ds.displaySetInstanceUID === displaySetInstanceUID
-  );
-
-  let metadataToUse = metadata;
-  // if it is not showing the displaySet we need to remove the FOR from the metadata
-  if (!showingDisplaySet) {
-    metadataToUse = {
-      ...metadata,
-      FrameOfReferenceUID: undefined,
-    };
-  }
-
-  // Todo: make it work with cases where we want to define FOR based measurements too
-  if (!viewport.isReferenceViewable(metadataToUse, WITH_NAVIGATION)) {
-    return;
-  }
-
-  try {
-    viewport.setViewReference(metadata);
-    viewport.render();
-  } catch (e) {
-    console.warn('Unable to apply', metadata, e);
-  }
-
-  cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-  event?.consume?.();
-}
-
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
   const { synchronizersStore } = useSynchronizersStore.getState();
   const synchronizers = synchronizersStore[viewportId];
