@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.76...v3.11.0-beta.77) (2025-07-10)
+
+
+### Bug Fixes
+
+* **rendering:** Introduce SequentialRenderingEngine to resolve canvas size limitation, performance degradation on high res monitors and enhance multi-monitor support ([#5195](https://github.com/OHIF/Viewers/issues/5195)) ([4c5e34d](https://github.com/OHIF/Viewers/commit/4c5e34d1837695241430b8dd1739ab39f2fb3060))
+
+
+
+
+
+# [3.11.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.75...v3.11.0-beta.76) (2025-07-10)
+
+
+### Bug Fixes
+
+* **segmentation overlays:** Allow for the addition of multiple segmentation overlays. ([#5189](https://github.com/OHIF/Viewers/issues/5189)) ([4847362](https://github.com/OHIF/Viewers/commit/48473625f678c7bd3fe9327bd043a3cf4b1b4c0c))
+
+
+
+
+
+# [3.11.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.74...v3.11.0-beta.75) (2025-07-09)
+
+
+### Features
+
+* add segment label tool ([#5164](https://github.com/OHIF/Viewers/issues/5164)) ([ac85248](https://github.com/OHIF/Viewers/commit/ac852485cd5063122bcb9c0fbcca9f9cfb47d3f2))
+
+
+
+
+
+# [3.11.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.73...v3.11.0-beta.74) (2025-07-08)
+
+
+### Bug Fixes
+
+* **labeling:** measurement labeling dialog was overwriting the entire measurement and breaking it ([#5095](https://github.com/OHIF/Viewers/issues/5095)) ([64a634c](https://github.com/OHIF/Viewers/commit/64a634cab93a12021f3217a45fb635dfa9cd8bbd))
+* **measurement-group:** use measurment study uid instead of active study uid ([#5091](https://github.com/OHIF/Viewers/issues/5091)) ([7b2e37a](https://github.com/OHIF/Viewers/commit/7b2e37a44fa60c5b069ba7f30d4b0f9eec693de0))
+
+
+
+
+
+# [3.11.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.72...v3.11.0-beta.73) (2025-07-07)
+
+
+### Bug Fixes
+
+* **overlay-menu:** Adding, changing and removing segmentation overlays should update the overlay menu instantly ([#5181](https://github.com/OHIF/Viewers/issues/5181)) ([f08cc30](https://github.com/OHIF/Viewers/commit/f08cc303e69501898b40a7ddbe36f2b311a1c1e2))
+
+
+
+
+
+# [3.11.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.71...v3.11.0-beta.72) (2025-07-03)
+
+
+### Bug Fixes
+
+* add force to remove image from cache ([#5176](https://github.com/OHIF/Viewers/issues/5176)) ([e277303](https://github.com/OHIF/Viewers/commit/e2773033959dc029cc6c698dfd65e2ed03b51a26))
+
+
+
+
+
+# [3.11.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.70...v3.11.0-beta.71) (2025-07-03)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.69...v3.11.0-beta.70) (2025-07-03)
+
+
+### Features
+
+* Add possibility to add additional props for PanelSection ([#5172](https://github.com/OHIF/Viewers/issues/5172)) ([c112db1](https://github.com/OHIF/Viewers/commit/c112db13a8b81f923698f6e899df36a1486f3a60))
+
+
+
+
+
+# [3.11.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.68...v3.11.0-beta.69) (2025-07-02)
+
+
+### Bug Fixes
+
+* **segmentation:** Added support for unhydrated RTSTRUCT in MPR. Added support for overlaying segmentations over display sets the segmentations do not reference. ([#5168](https://github.com/OHIF/Viewers/issues/5168)) ([4f6f525](https://github.com/OHIF/Viewers/commit/4f6f5254fb290203ba6e1777ced552a22864ef04))
+
+
+
+
+
 # [3.11.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.67...v3.11.0-beta.68) (2025-06-27)
 
 

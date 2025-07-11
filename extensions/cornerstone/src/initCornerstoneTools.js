@@ -40,6 +40,7 @@ import {
   WindowLevelRegionTool,
   SegmentSelectTool,
   RegionSegmentPlusTool,
+  SegmentLabelTool,
 } from '@cornerstonejs/tools';
 import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
@@ -104,6 +105,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
+  addTool(SegmentLabelTool);
   addTool(LabelmapSlicePropagationTool);
   addTool(MarkerLabelmapTool);
   addTool(RegionSegmentPlusTool);
@@ -162,6 +164,7 @@ const toolNames = {
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
   SegmentSelect: SegmentSelectTool.toolName,
+  SegmentLabel: SegmentLabelTool.toolName,
   LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
   MarkerLabelmap: MarkerLabelmapTool.toolName,
   RegionSegmentPlus: RegionSegmentPlusTool.toolName,
