@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.79...v3.11.0-beta.80) (2025-07-11)
+
+
+### Features
+
+* **rendering:** Introduce WebGLContextPool for parallel rendering in ContextPoolRenderingEngine ([#5196](https://github.com/OHIF/Viewers/issues/5196)) ([10d9316](https://github.com/OHIF/Viewers/commit/10d93161b4a1bea18ec1b9de9ae3e094e6bb47d0))
+
+
+
+
+
 # [3.11.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.78...v3.11.0-beta.79) (2025-07-11)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
