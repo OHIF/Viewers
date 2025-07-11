@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.11.0-beta.77",
+  "version": "3.11.0-beta.78",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -20,6 +20,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "7.28.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
     "@rsbuild/core": "^1.3.16",
     "@rsbuild/plugin-node-polyfill": "^1.3.0",
@@ -30,7 +31,6 @@
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.4",
-    "@babel/eslint-parser": "7.28.0",
     "babel-loader": "^8.2.4",
     "babel-plugin-module-resolver": "^5.0.0",
     "clean-webpack-plugin": "^3.0.0",
