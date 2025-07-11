@@ -166,6 +166,12 @@ import {
   LayoutAdvanced3DFourUp,
   LayoutAdvanced3DMain,
 } from './Sources/Layout';
+import {
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsSetting,
+} from './Sources/SegActions';
 import Link from './Sources/Link';
 import IconColorLUT from './Sources/IconColorLUT';
 import CTAAA from '../../../assets/images/CT-AAA.png';
@@ -589,6 +595,10 @@ export const Icons = {
   WindowLevelAdvanced,
   Opacity,
   Threshold,
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsSetting,
   //
   //
   //
@@ -739,6 +749,10 @@ export const Icons = {
   Undo,
   Redo,
   JumpToSlice,
+  'actions-smooth': (props: IconProps) => ActionsSmooth(props),
+  'actions-simplify': (props: IconProps) => ActionsSimplify(props),
+  'actions-combine': (props: IconProps) => ActionsCombine(props),
+  'actions-setting': (props: IconProps) => ActionsSetting(props),
 
   /** Adds an icon to the set of icons */
   addIcon: (name: string, icon) => {
