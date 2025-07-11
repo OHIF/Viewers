@@ -1,9 +1,9 @@
 module.exports = {
   plugins: [
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
+    ['@babel/plugin-transform-class-properties', { loose: true }],
     '@babel/plugin-transform-typescript',
-    ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-    ['@babel/plugin-proposal-private-methods', { loose: true }],
+    ['@babel/plugin-transform-private-property-in-object', { loose: true }],
+    ['@babel/plugin-transform-private-methods', { loose: true }],
   ],
   env: {
     test: {
@@ -20,7 +20,7 @@ module.exports = {
         '@babel/preset-typescript',
       ],
       plugins: [
-        '@babel/plugin-proposal-object-rest-spread',
+        '@babel/plugin-transform-object-rest-spread',
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',
         '@babel/plugin-transform-runtime',
