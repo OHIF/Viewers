@@ -45,9 +45,8 @@ class ViewportGridService extends PubSubService {
     return this.presentationIdProviders.get(id);
   }
 
-  public isReferenceViewable(viewport, reference, options?) {
-    viewport = viewport.viewportId || viewport;
-    return this.serviceImplementation._isReferenceViewable?.(reference, options);
+  public isReferenceViewable(viewportId, reference, options) {
+    return this.serviceImplementation._isReferenceViewable?.(viewportId, reference, options);
   }
 
   public getPresentationId(id: string, viewportId: string): string | null {

@@ -3,12 +3,7 @@ import { Enums } from '@cornerstonejs/core';
 
 import OrientationAxis = Enums.OrientationAxis;
 
-export const isReferenceViewable = ({
-  viewportId,
-  reference,
-  viewportOptions,
-  servicesManager,
-}) => {
+export const isReferenceViewable = (servicesManager, viewportId, reference, viewportOptions?) => {
   const { cornerstoneViewportService, displaySetService } = servicesManager.services;
 
   if (!viewportOptions) {

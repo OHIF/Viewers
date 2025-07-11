@@ -125,6 +125,7 @@ interface ViewportGridApi {
   setViewportGridSizeChanged: (props: any) => void;
   publishViewportsReady: () => void;
   getDisplaySetsUIDsForViewport: (viewportId: string) => string[];
+  isReferenceViewable: (viewportId: string, viewRef, options?) => boolean;
 }
 
 // Update the context type
@@ -475,7 +476,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
         getState,
         setActiveViewportId,
         setDisplaySetsForViewports,
-        isReferenceViewable,
+        isReferenceViewable: () => false,
         setLayout,
         reset,
         onModeExit: reset,
@@ -491,7 +492,6 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
     service,
     setActiveViewportId,
     setDisplaySetsForViewports,
-    isReferenceViewable,
     setLayout,
     reset,
     set,
@@ -507,8 +507,8 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
     setActiveViewportId: index => service.setActiveViewportId(index),
     setDisplaySetsForViewport: props => service.setDisplaySetsForViewports([props]),
     setDisplaySetsForViewports: props => service.setDisplaySetsForViewports(props),
-    isReferenceViewable: (viewportId, isReferenceViewable) =>
-      service.isReferenceViewable(viewportId, isReferenceViewable),
+    isReferenceViewable: (viewportId, isReferenceViewable, options) =>
+      service.isReferenceViewable(viewportId, isReferenceViewable, options),
     setLayout: layout => service.setLayout(layout),
     getViewportState: viewportId => service.getViewportState(viewportId),
     reset: () => service.reset(),

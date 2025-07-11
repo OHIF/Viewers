@@ -548,6 +548,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    */
   public getViewportIdToJump(activeViewportId: string, metadata): string {
     // First check if the active viewport can just be navigated to show the given item
+    debugger;
     const activeViewport = this.getCornerstoneViewport(activeViewportId);
     if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
       return activeViewportId;

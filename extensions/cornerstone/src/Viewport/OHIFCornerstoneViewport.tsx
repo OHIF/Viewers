@@ -13,7 +13,6 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
-import ViewportColorbarsContainer from '../components/ViewportColorbar';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
@@ -305,31 +304,6 @@ const OHIFCornerstoneViewport = React.memo(
       loadViewportData();
     }, [viewportOptions, displaySets, dataSource]);
 
-    /**
-     * There are two scenarios for jump to click
-     * 1. Current viewports contain the displaySet that the annotation was drawn on
-     * 2. Current viewports don't contain the displaySet that the annotation was drawn on
-     * and we need to change the viewports displaySet for jumping.
-     * Since measurement_jump happens via events and listeners, the former case is handled
-     * by the measurement_jump direct callback, but the latter case is handled first by
-     * the viewportGrid to set the correct displaySet on the viewport, AND THEN we check
-     * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
-     */
-    useEffect(() => {
-      if (isJumpToMeasurementDisabled) {
-        return;
-      }
-
-      const { unsubscribe } = measurementService.subscribe(
-        MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-        event => handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService)
-      );
-
-      return () => {
-        unsubscribe();
-      };
-    }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
-
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -390,6 +364,7 @@ const OHIFCornerstoneViewport = React.memo(
 // Helper function to handle jumping to measurements
 function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService) {
   const { measurement, isConsumed } = event;
+  debugger;
   if (!measurement || isConsumed) {
     return;
   }
@@ -556,18 +531,6 @@ function areEqual(prevProps, nextProps) {
   }
 
   return true;
-}
-
-// Helper function to check if display sets have changed
-function haveDisplaySetsChanged(prevDisplaySets, currentDisplaySets) {
-  if (prevDisplaySets.length !== currentDisplaySets.length) {
-    return true;
-  }
-
-  return currentDisplaySets.some((currentDS, index) => {
-    const prevDS = prevDisplaySets[index];
-    return currentDS.displaySetInstanceUID !== prevDS.displaySetInstanceUID;
-  });
 }
 
 export default OHIFCornerstoneViewport;

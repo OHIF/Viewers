@@ -40,6 +40,7 @@ import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { act } from 'react';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -142,6 +143,52 @@ function commandsModule({
   }
 
   const actions = {
+    jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
+      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      const viewportId = cornerstoneViewportService.getViewportIdToJump(
+        activeViewportId,
+        measurement.metadata
+      );
+      if (viewportId) {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        viewport.setViewReference(measurement.metadata);
+        return;
+      }
+
+      const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
+      if (!referencedDisplaySetInstanceUID) {
+        console.warn('ViewportGrid::No display set found in', measurement);
+        return;
+      }
+
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        activeViewportId,
+        referencedDisplaySetInstanceUID
+      );
+
+      if (!updatedViewports?.[0]) {
+        console.warn(
+          'ViewportGrid::Unable to navigate to viewport containing',
+          referencedDisplaySetInstanceUID
+        );
+        return;
+      }
+
+      // Update stored position presentation
+      commandsManager.run('updateStoredPositionPresentation', {
+        activeViewportId,
+        displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+        referencedImageId: measurement.referencedImageId,
+        options: {
+          ...measurement.metadata,
+        },
+      });
+
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
+    },
+
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
       if (!displaySet) {
         return;
@@ -2083,9 +2130,7 @@ function commandsModule({
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
-    jumpToMeasurement: {
-      commandFn: actions.jumpToMeasurement,
-    },
+    jumpToMeasurement: actions.jumpToMeasurement,
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
@@ -2343,6 +2388,7 @@ function commandsModule({
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
     toggleSegmentLabel: actions.toggleSegmentLabel,
+    jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
   };
 
   return {
