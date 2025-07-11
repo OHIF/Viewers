@@ -584,6 +584,9 @@ function commandsModule({
     downloadCSVMeasurementsReport: ({ measurementFilter }) => {
       utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
+    uploadDATAMeasurementsReport: ({ measurementFilter }) => {
+      utils.uploadDATAReport(measurementService.getMeasurements(measurementFilter));
+    },
 
     downloadCSVSegmentationReport: ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
@@ -2097,6 +2100,9 @@ function commandsModule({
     },
     downloadCSVMeasurementsReport: {
       commandFn: actions.downloadCSVMeasurementsReport,
+    },
+    uploadDATAMeasurementsReport: {
+      commandFn: actions.uploadDATAMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,

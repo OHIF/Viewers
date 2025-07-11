@@ -27,6 +27,7 @@ import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
+import uploadDATAReport from './uploadDATAReport';
 import isEqualWithin from './isEqualWithin';
 import addAccessors from './addAccessors';
 import {
@@ -83,6 +84,7 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
+  uploadDATAReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
@@ -118,6 +120,7 @@ export {
   debounce,
   roundNumber,
   downloadCSVReport,
+  uploadDATAReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,

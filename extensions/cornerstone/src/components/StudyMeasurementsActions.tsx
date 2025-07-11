@@ -13,7 +13,7 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
   return (
     <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
       <div className="flex space-x-1">
-        <Button
+        {/* <Button
           size="sm"
           variant="ghost"
           className="pl-1.5"
@@ -26,6 +26,21 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
         >
           <Icons.Download className="h-5 w-5" />
           <span className="pl-1">CSV</span>
+        </Button> */}
+
+        <Button
+          size="sm"
+          variant="ghost"
+          className="pl-1.5"
+          onClick={() => {
+            commandsManager.runCommand('uploadDATAMeasurementsReport', {
+              StudyInstanceUID,
+              measurementFilter,
+            });
+          }}
+        >
+          <Icons.Upload className="h-5 w-5" />
+          <span className="pl-1">Upload</span>
         </Button>
 
         <Button
