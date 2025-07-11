@@ -1,6 +1,8 @@
 import { useState, useCallback, useLayoutEffect, useRef } from 'react';
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels';
 import { panelGroupDefinition } from './constants/panels';
+import { useAppConfig } from '@state';
+import { useSystem } from '@ohif/core';
 
 /**
  * Set the minimum and maximum css style width attributes for the given element.
@@ -32,9 +34,18 @@ const useResizablePanels = (
   hasLeftPanels,
   hasRightPanels
 ) => {
-  const [leftPanelExpandedWidth, setLeftPanelExpandedWidth] = useState(
-    panelGroupDefinition.left.initialExpandedWidth
-  );
+  const { servicesManager } = useSystem();
+  const customizationService = servicesManager?.services?.customizationService;
+
+  let leftPanelWidth = panelGroupDefinition.left.initialExpandedWidth;
+
+  const width = customizationService?.getCustomization('panel.left.initialWidth');
+
+  if (typeof width === 'number') {
+    leftPanelWidth = width;
+  }
+
+  const [leftPanelExpandedWidth, setLeftPanelExpandedWidth] = useState(leftPanelWidth);
   const [rightPanelExpandedWidth, setRightPanelExpandedWidth] = useState(
     panelGroupDefinition.right.initialExpandedWidth
   );
@@ -80,10 +91,13 @@ const useResizablePanels = (
 
     if (!leftPanelClosed) {
       const leftResizablePanelExpandedSize = getPercentageSize(
-        panelGroupDefinition.left.initialExpandedOffsetWidth
+        leftPanelWidth + panelGroupDefinition.shared.expandedInsideBorderSize
       );
       resizableLeftPanelAPIRef?.current?.expand(leftResizablePanelExpandedSize);
-      setMinMaxWidth(leftPanelElem, panelGroupDefinition.left.initialExpandedOffsetWidth);
+      setMinMaxWidth(
+        leftPanelElem,
+        leftPanelWidth + panelGroupDefinition.shared.expandedInsideBorderSize
+      );
     }
 
     if (!rightPanelClosed) {
@@ -201,10 +215,10 @@ const useResizablePanels = (
 
   const onLeftPanelOpen = useCallback(() => {
     resizableLeftPanelAPIRef?.current?.expand(
-      getPercentageSize(panelGroupDefinition.left.initialExpandedOffsetWidth)
+      getPercentageSize(leftPanelWidth + panelGroupDefinition.shared.expandedInsideBorderSize)
     );
     setLeftPanelClosed(false);
-  }, [setLeftPanelClosed]);
+  }, [setLeftPanelClosed, leftPanelWidth]);
 
   const onLeftPanelResize = useCallback(size => {
     if (!resizablePanelGroupElemRef?.current || resizableLeftPanelAPIRef.current?.isCollapsed()) {
