@@ -166,6 +166,22 @@ import {
   LayoutAdvanced3DFourUp,
   LayoutAdvanced3DMain,
 } from './Sources/Layout';
+import {
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsCombineMerge,
+  ActionsCombineSubtract,
+  ActionsCombineIntersect,
+  ActionsSetting,
+  ActionsBidirectional,
+  ActionsInterpolate,
+} from './Sources/SegActions';
+import {
+  HelperCombineSubtract,
+  HelperCombineIntersect,
+  HelperCombineMerge,
+} from './Sources/Helpers';
 import Link from './Sources/Link';
 import IconColorLUT from './Sources/IconColorLUT';
 import CTAAA from '../../../assets/images/CT-AAA.png';
@@ -589,6 +605,18 @@ export const Icons = {
   WindowLevelAdvanced,
   Opacity,
   Threshold,
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsCombineMerge,
+  ActionsCombineSubtract,
+  ActionsCombineIntersect,
+  ActionsSetting,
+  ActionsBidirectional,
+  ActionsInterpolate,
+  HelperCombineSubtract,
+  HelperCombineIntersect,
+  HelperCombineMerge,
   //
   //
   //
@@ -735,6 +763,18 @@ export const Icons = {
   'old-trash': (props: IconProps) => Trash(props),
   'tool-point': (props: IconProps) => ToolCircle(props),
   'tool-freehand-line': (props: IconProps) => ToolFreehand(props),
+  'actions-smooth': (props: IconProps) => ActionsSmooth(props),
+  'actions-simplify': (props: IconProps) => ActionsSimplify(props),
+  'actions-combine': (props: IconProps) => ActionsCombine(props),
+  'actions-combine-merge': (props: IconProps) => ActionsCombineMerge(props),
+  'actions-combine-subtract': (props: IconProps) => ActionsCombineSubtract(props),
+  'actions-combine-intersect': (props: IconProps) => ActionsCombineIntersect(props),
+  'actions-bidirectional': (props: IconProps) => ActionsBidirectional(props),
+  'actions-interpolate': (props: IconProps) => ActionsInterpolate(props),
+  'actions-setting': (props: IconProps) => ActionsSetting(props),
+  'helper-combine-subtract': (props: IconProps) => HelperCombineSubtract(props),
+  'helper-combine-intersect': (props: IconProps) => HelperCombineIntersect(props),
+  'helper-combine-merge': (props: IconProps) => HelperCombineMerge(props),
   clipboard: (props: IconProps) => Clipboard(props),
   Undo,
   Redo,
