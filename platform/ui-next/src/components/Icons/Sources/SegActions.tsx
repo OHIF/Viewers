@@ -87,6 +87,375 @@ export const ActionsCombine = (props: IconProps) => (
   </svg>
 );
 
+export const ActionsCombineMerge = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M2.99448 15.9397C2.7656 15.9397 2.54609 15.8488 2.38424 15.687C2.22239 15.5251 2.13147 15.3056 2.13147 15.0767V2.99454C2.13147 2.76566 2.22239 2.54615 2.38424 2.3843C2.54609 2.22246 2.7656 2.13153 2.99448 2.13153H15.0767C15.3056 2.13153 15.5251 2.22246 15.6869 2.3843C15.8488 2.54615 15.9397 2.76566 15.9397 2.99454V8.17262H21.1178C21.3467 8.17262 21.5662 8.26355 21.728 8.4254C21.8899 8.58724 21.9808 8.80675 21.9808 9.03564V21.1178C21.9808 21.3467 21.8899 21.5662 21.728 21.7281C21.5662 21.8899 21.3467 21.9808 21.1178 21.9808H9.03558C8.8067 21.9808 8.58719 21.8899 8.42534 21.7281C8.26349 21.5662 8.17257 21.3467 8.17257 21.1178V15.9397H2.99448Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.03562 8.17261C8.80674 8.17261 8.58723 8.26353 8.42538 8.42538C8.26353 8.58722 8.17261 8.80674 8.17261 9.03562"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.17261 10.7617V11.6247"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.6246 8.17261H10.7616"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.2136 8.17261H13.3506"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10.7616 15.9398H9.89856"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.3507 15.9398H12.4877"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.17261 14.2137V13.3507"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.9397 9.89862V10.7616"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.0767 15.9397C15.3055 15.9397 15.5251 15.8488 15.6869 15.687C15.8488 15.5251 15.9397 15.3056 15.9397 15.0767"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.9397 13.3507V12.4877"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const ActionsCombineIntersect = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M15.0767 2.13153C15.3055 2.13153 15.5251 2.22246 15.6869 2.3843C15.8488 2.54615 15.9397 2.76566 15.9397 2.99454"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.99448 2.13153C2.7656 2.13153 2.54609 2.22246 2.38424 2.3843C2.22239 2.54615 2.13147 2.76566 2.13147 2.99454"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.9397 4.72058V5.58359"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12.4877 2.13153H13.3507"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.89856 2.13153H10.7616"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.30957 2.13153H8.17258"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.72046 2.13153H5.58347"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.30957 15.9398H8.17258"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.72046 15.9398H5.58347"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.99448 15.9397C2.7656 15.9397 2.54609 15.8488 2.38424 15.687C2.22239 15.5251 2.13147 15.3056 2.13147 15.0767"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.13147 13.3507V12.4877"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.13147 10.7616V9.89862"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.13147 8.17258V7.30957"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15.9397 8.17258V7.30957"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M2.13147 5.58359V4.72058"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.03562 21.9808C8.80674 21.9808 8.58723 21.8899 8.42538 21.728C8.26353 21.5662 8.17261 21.3467 8.17261 21.1178"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.1178 21.9808C21.3467 21.9808 21.5662 21.8899 21.728 21.728C21.8899 21.5662 21.9808 21.3467 21.9808 21.1178"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.17261 19.3918V18.5287"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.6246 21.9808H10.7616"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.2136 21.9808H13.3506"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.8027 21.9808H15.9397"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19.3917 21.9808H18.5287"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.8027 8.17261H15.9397"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19.3917 8.17261H18.5287"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.1178 8.17261C21.3467 8.17261 21.5662 8.26353 21.728 8.42538C21.8899 8.58722 21.9808 8.80674 21.9808 9.03562"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 10.7617V11.6247"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 13.3507V14.2137"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 15.9398V16.8028"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.17261 15.9398V16.8028"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 18.5287V19.3918"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.17261 9.03562C8.17261 8.80674 8.26353 8.58722 8.42538 8.42538C8.58723 8.26353 8.80674 8.17261 9.03562 8.17261H15.9397V15.0767C15.9397 15.3056 15.8488 15.5251 15.687 15.687C15.5251 15.8488 15.3056 15.9397 15.0767 15.9397H8.17261V9.03562Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const ActionsCombineSubtract = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M9.03564 21.9808C8.80676 21.9808 8.58725 21.8899 8.4254 21.7281C8.26355 21.5662 8.17263 21.3467 8.17263 21.1178"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.1178 21.9808C21.3467 21.9808 21.5662 21.8899 21.7281 21.7281C21.8899 21.5662 21.9808 21.3467 21.9808 21.1178"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.17261 19.3918V18.5288"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.6246 21.9808H10.7616"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.2137 21.9808H13.3507"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.8027 21.9808H15.9397"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19.3918 21.9808H18.5288"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M19.3918 8.17261H18.5288"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.1178 8.17263C21.3467 8.17263 21.5662 8.26355 21.7281 8.4254C21.8899 8.58725 21.9808 8.80676 21.9808 9.03564"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 10.7617V11.6247"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 13.3507V14.2137"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 15.9398V16.8028"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21.9808 18.5288V19.3918"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16.8027 7.30965C16.8027 7.53853 16.7118 7.75804 16.55 7.91989C16.3881 8.08174 16.1686 8.17266 15.9397 8.17266L9.03561 8.17266C8.80672 8.17266 8.58721 8.26358 8.42536 8.42543C8.26352 8.58728 8.17259 8.80679 8.17259 9.03567L8.17259 15.9398C8.17259 16.1687 8.08167 16.3882 7.91982 16.55C7.75798 16.7119 7.53846 16.8028 7.30958 16.8028H2.99451C2.76562 16.8028 2.54611 16.7119 2.38426 16.55C2.22242 16.3882 2.13149 16.1687 2.13149 15.9398L2.13149 2.99458C2.13149 2.76569 2.22242 2.54618 2.38426 2.38434C2.54611 2.22249 2.76562 2.13157 2.99451 2.13157L15.9397 2.13157C16.1686 2.13157 16.3881 2.22249 16.55 2.38434C16.7118 2.54618 16.8027 2.76569 16.8027 2.99458V7.30965Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const ActionsSetting = (props: IconProps) => (
   <svg
     width="28"
@@ -154,6 +523,72 @@ export const ActionsSetting = (props: IconProps) => (
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const ActionsInterpolate = (props: IconProps) => (
+  <svg
+    width="28"
+    height="28"
+    viewBox="0 0 28 28"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M7 14.75H21"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M10.5 6H17.5"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M10.5 22.625H17.5"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M12.25 10.375H15.75"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M12.25 18.25H15.75"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+export const ActionsBidirectional = (props: IconProps) => (
+  <svg
+    width="28"
+    height="28"
+    viewBox="0 0 28 28"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M9.08936 18.1306L20.5415 11.6855"
+      stroke="currentColor"
+      strokeLinecap="round"
+    />
+    <path
+      d="M11.5084 10.8735L16.2583 19.0161"
+      stroke="currentColor"
+      strokeLinecap="round"
+    />
+    <path
+      d="M7.17338 19.6824C5.88735 17.7757 5.7986 15.3546 6.70193 13.094C7.41762 11.3029 8.75605 9.61255 10.6152 8.35855C12.3677 7.17645 14.875 7.89754 16.7071 7.83789C19.2718 7.7544 21.3773 7.1777 22.7218 9.17092C23.9578 11.0034 22.7419 14.1203 21.9481 16.3041C21.2617 18.1926 20.9123 19.4176 18.9619 20.7331C17.2094 21.9152 15.2707 22.5231 13.4385 22.5827C10.8738 22.6662 8.51782 21.6756 7.17338 19.6824Z"
+      stroke="currentColor"
     />
   </svg>
 );
