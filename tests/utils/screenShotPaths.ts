@@ -60,6 +60,7 @@ const screenShotPaths = {
   },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
+    scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
   rotateRight: {
     rotateRightDisplayedCorrectly: 'rotateRightDisplayedCorrectly.png',
@@ -177,6 +178,9 @@ const screenShotPaths = {
     threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
     overlaysDisplayed: 'overlaysDisplayed.png',
     overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
+  },
+  workList: {
+    scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
 };
 
