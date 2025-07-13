@@ -1,0 +1,641 @@
+[
+    {
+        "uid": "b3d08005-95a0-4328-bb8a-9c653d0ce98d",
+        "SOPInstanceUID": "1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269",
+        "FrameOfReferenceUID": "1.3.12.2.1107.5.1.4.54693.30000006100506302075000001028",
+        "points": [
+            [
+                -60.208569093528375,
+                -64.1712970966312,
+                -41.5
+            ],
+            [
+                -28.77108349955673,
+                -64.1712970966312,
+                -41.5
+            ],
+            [
+                -60.208569093528375,
+                -94.00482934397162,
+                -41.5
+            ],
+            [
+                -28.77108349955673,
+                -94.00482934397162,
+                -41.5
+            ]
+        ],
+        "textBox": {
+            "hasMoved": false,
+            "worldPosition": [
+                -28.77108349955673,
+                -64.17129709663118,
+                -41.50000000000003
+            ],
+            "worldBoundingBox": {
+                "topLeft": [
+                    -16.426246060965013,
+                    -51.82645965803949,
+                    -41.50000000000003
+                ],
+                "topRight": [
+                    51.995015442429505,
+                    -51.82645965803949,
+                    -41.50000000000003
+                ],
+                "bottomLeft": [
+                    -16.426246060965013,
+                    4.465999061938689,
+                    -41.50000000000003
+                ],
+                "bottomRight": [
+                    51.995015442429505,
+                    4.465999061938689,
+                    -41.50000000000003
+                ]
+            }
+        },
+        "metadata": {
+            "toolName": "RectangleROI",
+            "FrameOfReferenceUID": "1.3.12.2.1107.5.1.4.54693.30000006100506302075000001028",
+            "cameraFocalPoint": [
+                -23.798828125,
+                -107.798828125,
+                -41.5
+            ],
+            "viewPlaneNormal": [
+                0,
+                0,
+                -1
+            ],
+            "viewUp": [
+                0,
+                -1,
+                0
+            ],
+            "sliceIndex": 0,
+            "referencedImageId": "wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1"
+        },
+        "referenceSeriesUID": "1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268",
+        "referenceStudyUID": "2.16.840.1.113669.632.20.1211.10000315526",
+        "referencedImageId": "wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1",
+        "frameNumber": 1,
+        "toolName": "RectangleROI",
+        "displaySetInstanceUID": "bce86967-8900-c1be-6a4d-03096883ad75",
+        "label": "",
+        "displayText": {
+            "primary": [
+                "938 mm²",
+                "Max: 1022 HU"
+            ],
+            "secondary": [
+                "S: 5 I: 1"
+            ]
+        },
+        "data": {
+            "imageId:wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1": {
+                "Modality": "CT",
+                "area": 937.8912774691124,
+                "mean": -193.7807594936709,
+                "stdDev": 635.9488489112092,
+                "max": 1022,
+                "min": -3072,
+                "statsArray": [
+                    {
+                        "name": "min",
+                        "label": "Min Pixel",
+                        "value": -3072,
+                        "pointIJK": [
+                            202,
+                            327,
+                            0
+                        ],
+                        "pointLPS": [
+                            -45.525390625,
+                            -79.232421875,
+                            -41.5
+                        ]
+                    },
+                    {
+                        "name": "max",
+                        "label": "Max Pixel",
+                        "value": 1022,
+                        "pointIJK": [
+                            183,
+                            342,
+                            0
+                        ],
+                        "pointLPS": [
+                            -53.169921875,
+                            -73.197265625,
+                            -41.5
+                        ]
+                    },
+                    {
+                        "name": "mean",
+                        "label": "Mean Pixel",
+                        "value": -193.7807594936709
+                    },
+                    {
+                        "name": "stdDev",
+                        "label": "Standard Deviation",
+                        "value": 635.9488489112092
+                    },
+                    {
+                        "name": "median",
+                        "label": "Median",
+                        "value": -9
+                    },
+                    {
+                        "name": "skewness",
+                        "label": "Skewness",
+                        "value": -1.6375838707519026,
+                        "unit": null
+                    },
+                    {
+                        "name": "kurtosis",
+                        "label": "Kurtosis",
+                        "value": 4.8646815785295505,
+                        "unit": null
+                    },
+                    {
+                        "name": "count",
+                        "label": "Voxel Count",
+                        "value": 5925,
+                        "unit": null
+                    },
+                    {
+                        "name": "maxLPS",
+                        "label": "Max LPS",
+                        "value": [
+                            -53.169921875,
+                            -73.197265625,
+                            -41.5
+                        ],
+                        "unit": null
+                    },
+                    {
+                        "name": "minLPS",
+                        "label": "Min LPS",
+                        "value": [
+                            -45.525390625,
+                            -79.232421875,
+                            -41.5
+                        ],
+                        "unit": null
+                    },
+                    {
+                        "name": "center",
+                        "label": "Center",
+                        "value": [
+                            -44.318359375,
+                            -79.232421875,
+                            -41.5
+                        ],
+                        "unit": null
+                    }
+                ],
+                "pointsInShape": [],
+                "areaUnit": "mm²",
+                "modalityUnit": "HU"
+            }
+        },
+        "type": "value_type::rectangle",
+        "isLocked": false,
+        "isVisible": true,
+        "source": {
+            "uid": "56c45bd4-0bd2-b253-cf81-3dd29089bf7d",
+            "name": "Cornerstone3DTools",
+            "version": "0.1"
+        },
+        "modifiedTimestamp": 1752379850,
+        "isDirty": true,
+        "isSelected": false
+    },
+    {
+        "uid": "ee8463e0-58bc-4e8a-8432-ca1d3b3bd23c",
+        "SOPInstanceUID": "1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269",
+        "FrameOfReferenceUID": "1.3.12.2.1107.5.1.4.54693.30000006100506302075000001028",
+        "points": [
+            [
+                4.591146110372346,
+                -79.89003989361703,
+                -41.5
+            ],
+            [
+                29.292027648492898,
+                -79.89003989361703,
+                -41.5
+            ],
+            [
+                4.591146110372346,
+                -102.98696808510637,
+                -41.5
+            ],
+            [
+                29.292027648492898,
+                -102.98696808510637,
+                -41.5
+            ]
+        ],
+        "textBox": {
+            "hasMoved": false,
+            "worldPosition": [
+                29.292027648492905,
+                -79.89003989361703,
+                -41.50000000000003
+            ],
+            "worldBoundingBox": {
+                "topLeft": [
+                    41.6368650870846,
+                    -67.54520245502528,
+                    -41.50000000000003
+                ],
+                "topRight": [
+                    110.05812659047913,
+                    -67.54520245502528,
+                    -41.50000000000003
+                ],
+                "bottomLeft": [
+                    41.6368650870846,
+                    -11.25274373504709,
+                    -41.50000000000003
+                ],
+                "bottomRight": [
+                    110.05812659047913,
+                    -11.25274373504709,
+                    -41.50000000000003
+                ]
+            }
+        },
+        "metadata": {
+            "toolName": "RectangleROI",
+            "FrameOfReferenceUID": "1.3.12.2.1107.5.1.4.54693.30000006100506302075000001028",
+            "cameraFocalPoint": [
+                -23.798828125,
+                -107.798828125,
+                -41.5
+            ],
+            "viewPlaneNormal": [
+                0,
+                0,
+                -1
+            ],
+            "viewUp": [
+                0,
+                -1,
+                0
+            ],
+            "sliceIndex": 0,
+            "referencedImageId": "wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1"
+        },
+        "referenceSeriesUID": "1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268",
+        "referenceStudyUID": "2.16.840.1.113669.632.20.1211.10000315526",
+        "referencedImageId": "wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1",
+        "frameNumber": 1,
+        "toolName": "RectangleROI",
+        "displaySetInstanceUID": "bce86967-8900-c1be-6a4d-03096883ad75",
+        "label": "",
+        "displayText": {
+            "primary": [
+                "571 mm²",
+                "Max: 65.0 HU"
+            ],
+            "secondary": [
+                "S: 5 I: 1"
+            ]
+        },
+        "data": {
+            "imageId:wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1": {
+                "Modality": "CT",
+                "area": 570.514577524387,
+                "mean": -918.5575639599555,
+                "stdDev": 285.48748927170556,
+                "max": 65,
+                "min": -1024,
+                "statsArray": [
+                    {
+                        "name": "min",
+                        "label": "Min Pixel",
+                        "value": -1024,
+                        "pointIJK": [
+                            376,
+                            280,
+                            0
+                        ],
+                        "pointLPS": [
+                            24.482421875,
+                            -98.142578125,
+                            -41.5
+                        ]
+                    },
+                    {
+                        "name": "max",
+                        "label": "Max Pixel",
+                        "value": 65,
+                        "pointIJK": [
+                            364,
+                            320,
+                            0
+                        ],
+                        "pointLPS": [
+                            19.654296875,
+                            -82.048828125,
+                            -41.5
+                        ]
+                    },
+                    {
+                        "name": "mean",
+                        "label": "Mean Pixel",
+                        "value": -918.5575639599555
+                    },
+                    {
+                        "name": "stdDev",
+                        "label": "Standard Deviation",
+                        "value": 285.48748927170556
+                    },
+                    {
+                        "name": "median",
+                        "label": "Median",
+                        "value": -1018
+                    },
+                    {
+                        "name": "skewness",
+                        "label": "Skewness",
+                        "value": 2.7314800500931975,
+                        "unit": null
+                    },
+                    {
+                        "name": "kurtosis",
+                        "label": "Kurtosis",
+                        "value": 5.7440111664864,
+                        "unit": null
+                    },
+                    {
+                        "name": "count",
+                        "label": "Voxel Count",
+                        "value": 3596,
+                        "unit": null
+                    },
+                    {
+                        "name": "maxLPS",
+                        "label": "Max LPS",
+                        "value": [
+                            19.654296875,
+                            -82.048828125,
+                            -41.5
+                        ],
+                        "unit": null
+                    },
+                    {
+                        "name": "minLPS",
+                        "label": "Min LPS",
+                        "value": [
+                            24.482421875,
+                            -98.142578125,
+                            -41.5
+                        ],
+                        "unit": null
+                    },
+                    {
+                        "name": "center",
+                        "label": "Center",
+                        "value": [
+                            17.0390625,
+                            -91.50390625,
+                            -41.5
+                        ],
+                        "unit": null
+                    }
+                ],
+                "pointsInShape": [],
+                "areaUnit": "mm²",
+                "modalityUnit": "HU"
+            }
+        },
+        "type": "value_type::rectangle",
+        "isLocked": false,
+        "isVisible": true,
+        "source": {
+            "uid": "56c45bd4-0bd2-b253-cf81-3dd29089bf7d",
+            "name": "Cornerstone3DTools",
+            "version": "0.1"
+        },
+        "modifiedTimestamp": 1752379851,
+        "isDirty": true,
+        "isSelected": false
+    },
+    {
+        "uid": "91d8f9c0-958d-4aac-a932-b183fcde6d51",
+        "SOPInstanceUID": "1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269",
+        "FrameOfReferenceUID": "1.3.12.2.1107.5.1.4.54693.30000006100506302075000001028",
+        "points": [
+            [
+                3.6287741023936206,
+                -68.0207851285461,
+                -41.5
+            ],
+            [
+                28.00886497118796,
+                -68.0207851285461,
+                -41.5
+            ],
+            [
+                3.6287741023936206,
+                -102.3453867464539,
+                -41.5
+            ],
+            [
+                28.00886497118796,
+                -102.3453867464539,
+                -41.5
+            ]
+        ],
+        "textBox": {
+            "hasMoved": false,
+            "worldPosition": [
+                28.00886497118796,
+                -68.02078512854608,
+                -41.50000000000003
+            ],
+            "worldBoundingBox": {
+                "topLeft": [
+                    40.353702409779686,
+                    -55.67594768995434,
+                    -41.50000000000003
+                ],
+                "topRight": [
+                    108.77496391317422,
+                    -55.67594768995434,
+                    -41.50000000000003
+                ],
+                "bottomLeft": [
+                    40.353702409779686,
+                    0.6165110300238013,
+                    -41.50000000000003
+                ],
+                "bottomRight": [
+                    108.77496391317422,
+                    0.6165110300238013,
+                    -41.50000000000003
+                ]
+            }
+        },
+        "metadata": {
+            "toolName": "RectangleROI",
+            "FrameOfReferenceUID": "1.3.12.2.1107.5.1.4.54693.30000006100506302075000001028",
+            "cameraFocalPoint": [
+                -23.798828125,
+                -107.798828125,
+                -41.5
+            ],
+            "viewPlaneNormal": [
+                0,
+                0,
+                -1
+            ],
+            "viewUp": [
+                0,
+                -1,
+                0
+            ],
+            "sliceIndex": 0,
+            "referencedImageId": "wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1"
+        },
+        "referenceSeriesUID": "1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268",
+        "referenceStudyUID": "2.16.840.1.113669.632.20.1211.10000315526",
+        "referencedImageId": "wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1",
+        "frameNumber": 1,
+        "toolName": "RectangleROI",
+        "displaySetInstanceUID": "bce86967-8900-c1be-6a4d-03096883ad75",
+        "label": "",
+        "displayText": {
+            "primary": [
+                "837 mm²",
+                "Max: 1012 HU"
+            ],
+            "secondary": [
+                "S: 5 I: 1"
+            ]
+        },
+        "data": {
+            "imageId:wadors:http://47.108.219.128/dicom-web/studies/2.16.840.1.113669.632.20.1211.10000315526/series/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005268/instances/1.3.12.2.1107.5.1.4.54693.30000006100507010800000005269/frames/1": {
+                "Modality": "CT",
+                "area": 836.8370530669199,
+                "mean": -717.473743435859,
+                "stdDev": 635.1699182734764,
+                "max": 1012,
+                "min": -3065,
+                "statsArray": [
+                    {
+                        "name": "min",
+                        "label": "Min Pixel",
+                        "value": -3065,
+                        "pointIJK": [
+                            358,
+                            344,
+                            0
+                        ],
+                        "pointLPS": [
+                            17.240234375,
+                            -72.392578125,
+                            -41.5
+                        ]
+                    },
+                    {
+                        "name": "max",
+                        "label": "Max Pixel",
+                        "value": 1012,
+                        "pointIJK": [
+                            383,
+                            347,
+                            0
+                        ],
+                        "pointLPS": [
+                            27.298828125,
+                            -71.185546875,
+                            -41.5
+                        ]
+                    },
+                    {
+                        "name": "mean",
+                        "label": "Mean Pixel",
+                        "value": -717.473743435859
+                    },
+                    {
+                        "name": "stdDev",
+                        "label": "Standard Deviation",
+                        "value": 635.1699182734764
+                    },
+                    {
+                        "name": "median",
+                        "label": "Median",
+                        "value": -1012
+                    },
+                    {
+                        "name": "skewness",
+                        "label": "Skewness",
+                        "value": -0.4084160601915708,
+                        "unit": null
+                    },
+                    {
+                        "name": "kurtosis",
+                        "label": "Kurtosis",
+                        "value": 2.1849740700091074,
+                        "unit": null
+                    },
+                    {
+                        "name": "count",
+                        "label": "Voxel Count",
+                        "value": 5332,
+                        "unit": null
+                    },
+                    {
+                        "name": "maxLPS",
+                        "label": "Max LPS",
+                        "value": [
+                            27.298828125,
+                            -71.185546875,
+                            -41.5
+                        ],
+                        "unit": null
+                    },
+                    {
+                        "name": "minLPS",
+                        "label": "Min LPS",
+                        "value": [
+                            17.240234375,
+                            -72.392578125,
+                            -41.5
+                        ],
+                        "unit": null
+                    },
+                    {
+                        "name": "center",
+                        "label": "Center",
+                        "value": [
+                            15.83203125,
+                            -85.06640625,
+                            -41.5
+                        ],
+                        "unit": null
+                    }
+                ],
+                "pointsInShape": [],
+                "areaUnit": "mm²",
+                "modalityUnit": "HU"
+            }
+        },
+        "type": "value_type::rectangle",
+        "isLocked": false,
+        "isVisible": true,
+        "source": {
+            "uid": "56c45bd4-0bd2-b253-cf81-3dd29089bf7d",
+            "name": "Cornerstone3DTools",
+            "version": "0.1"
+        },
+        "modifiedTimestamp": 1752379852,
+        "isDirty": true,
+        "isSelected": true
+    }
+]

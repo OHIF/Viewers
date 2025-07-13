@@ -1,8 +1,11 @@
+import { uploadDATA_Api } from '../api';
 import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
 import formatPN from './formatPN';
 
-export default function uploadDATAReport(measurementData) {
+export default async function uploadDATAReport(measurementData) {
   console.log('uploadDATAReport------------', measurementData);
+  await uploadDATA_Api(JSON.parse(JSON.stringify(measurementData)) )
+  return
   if (measurementData.length === 0) {
     // Prevent download of report with no measurements.
     return;
