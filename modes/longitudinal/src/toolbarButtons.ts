@@ -464,7 +464,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-length',
-      label: 'Length',
+      label: '长度',
       tooltip: 'Length Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -475,7 +475,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-bidirectional',
-      label: 'Bidirectional',
+      label: '双向测量',
       tooltip: 'Bidirectional Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -486,7 +486,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-annotate',
-      label: 'Annotation',
+      label: '标记',
       tooltip: 'Arrow Annotate',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -497,7 +497,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-ellipse',
-      label: 'Ellipse',
+      label: '椭圆',
       tooltip: 'Ellipse ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -508,7 +508,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-rectangle',
-      label: 'Rectangle',
+      label: '矩形',
       tooltip: 'Rectangle ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -519,7 +519,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-circle',
-      label: 'Circle',
+      label: '圆形',
       tooltip: 'Circle Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -530,7 +530,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-freehand-roi',
-      label: 'Freehand ROI',
+      label: '手绘',
       tooltip: 'Freehand ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -541,7 +541,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-spline-roi',
-      label: 'Spline ROI',
+      label: '曲线',
       tooltip: 'Spline ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -552,7 +552,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-livewire',
-      label: 'Livewire tool',
+      label: '动态轮廓',
       tooltip: 'Livewire tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
