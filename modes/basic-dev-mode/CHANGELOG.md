@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.83...v3.11.0-beta.84) (2025-07-14)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
 # [3.11.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.82...v3.11.0-beta.83) (2025-07-11)
 
 **Note:** Version bump only for package @ohif/mode-basic-dev-mode
