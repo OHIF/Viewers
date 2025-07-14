@@ -15,19 +15,22 @@ type CheckForScreenshotProps = {
     width: number;
     height: number;
   };
+  fullPage?: boolean;
 };
 
 const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
   const {
     page,
-    locator = page,
     screenshotPath,
     attempts = 10,
     delay = 500,
     maxDiffPixelRatio = 0.02,
     threshold = 0.05,
     normalizedClip,
+    fullPage = false,
   } = props;
+
+  let { locator = page } = props;
 
   await page.waitForLoadState('networkidle');
 
@@ -40,11 +43,16 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
           boundingBox = { x: 0, y: 0, ...(await page.viewportSize()) };
         } else {
           boundingBox = await (locator as Locator).boundingBox();
+
+          // clip does not work for locator screen shots, so lets do some trickery
+          // set page as the locator here and below add the locator bounding box origin to the
+          // clip area
+          locator = page;
         }
 
         clip = {
-          x: normalizedClip.x * boundingBox.width,
-          y: normalizedClip.y * boundingBox.height,
+          x: boundingBox.x + normalizedClip.x * boundingBox.width,
+          y: boundingBox.y + normalizedClip.y * boundingBox.height,
           width: normalizedClip.width * boundingBox.width,
           height: normalizedClip.height * boundingBox.height,
         };
@@ -54,6 +62,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
         maxDiffPixelRatio,
         threshold,
         clip,
+        fullPage,
       });
       return true;
     } catch (error) {
