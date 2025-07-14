@@ -1,0 +1,3 @@
+div.StudyBrowserScrollArea > div[data-radix-scroll-area-viewport] > div {
+  display: block !important; /* Scroll area is using a display:table which really messes things up */
+}

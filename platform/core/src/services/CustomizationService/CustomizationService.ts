@@ -109,7 +109,7 @@ export default class CustomizationService extends PubSubService {
     this.commandsManager = commandsManager;
   }
 
-  public init(extensionManager: ExtensionManager): void {
+  public init(extensionManager: ExtensionManager, addReferences = true): void {
     this.extensionManager = extensionManager;
     // Clear defaults as those are defined by the customization modules
     this.defaultCustomizations.clear();
@@ -131,13 +131,16 @@ export default class CustomizationService extends PubSubService {
       }
     });
 
-    this.addReferences(this.configuration);
+    if (addReferences) {
+      this.addReferences(this.configuration);
+    }
   }
 
   public onModeEnter(): void {
     this.clearTransformedCustomizations();
 
-    this.init(this.extensionManager);
+    // Only add references once on startup.
+    this.init(this.extensionManager, false);
   }
 
   public onModeExit(): void {
