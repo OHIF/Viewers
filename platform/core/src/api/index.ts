@@ -1,4 +1,3 @@
-import data from './test.json';
 interface FetchOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers?: { [key: string]: string };
@@ -89,39 +88,12 @@ fetchTool.addResponseInterceptor(response => {
 });
 
 export async function uploadDATA_Api(marks) {
+  
   const res = await fetchTool.request<{ name: string; age: number }>({
-    // url: 'http://47.115.206.154:8080/v2/tasks/mark-data',
-    url: 'http://192.168.6.242:8080/v2/tasks/mark-data',
+    url: 'http://47.115.206.154:8080/v2/dicom/tmp-data-dump',
     body: JSON.stringify({
-      action: 'save',
-      time: 1752228099433,
-      task_id: 20253,
-      mark_status: 0,
-      work_type: '1',
-      access: '3',
-      use_time: 922,
-      status: '1',
-      markData: {
-        imgUrl:
-          'http://47.115.206.154:18188/default/ds_3p7tms8e4wpwmgbqu2jv/2506230647/img/img/e81ef39b-233152af.jpg?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20250706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250706T160000Z&X-Amz-SignedHeaders=host&X-Amz-Expires=604800&X-Amz-Signature=f9d9e3341cacc8cfd7d2bd234870ca316392a6d4355a3cb696b4540e542f724e',
-        width: 1280,
-        height: 720,
-        totalNums: {
-          line: 0,
-          polygon: 20,
-          rect: 0,
-          point: 0,
-          cuboid: 0,
-          curve: 0,
-          parallel: 0,
-          ellipse: 0,
-          '3drect': 0,
-          magic: 0,
-        },
-        printscreen: '',
-        rotateDeg: 0,
-        marks: marks,
-      },
+      uid: marks[0].referenceStudyUID ,
+      data: marks
     }),
   });
   console.log('Response:', res);
