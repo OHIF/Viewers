@@ -87,14 +87,10 @@ fetchTool.addResponseInterceptor(response => {
   }
 });
 
-export async function uploadDATA_Api(marks) {
-  
+export async function uploadDATA_Api(body) {
   const res = await fetchTool.request<{ name: string; age: number }>({
-    url: 'http://47.115.206.154:8080/v2/dicom/tmp-data-dump',
-    body: JSON.stringify({
-      uid: marks[0].referenceStudyUID ,
-      data: marks
-    }),
+    url: 'http://47.115.206.154:8080/v2/tmp-data/dump',
+    body: JSON.stringify(body) ,
   });
   console.log('Response:', res);
   return res;
