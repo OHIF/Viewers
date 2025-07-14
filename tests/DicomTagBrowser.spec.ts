@@ -24,8 +24,7 @@ test('should render the scroll bar with the correct look-and-feel', async ({ pag
   await page.getByTestId('TagBrowser').click();
   await checkForScreenshot({
     page,
-    locator: page.getByRole('dialog'),
-    normalizedClip: { x: 0.96, y: 0.2, width: 0.04, height: 0.8 },
+    normalizedClip: { x: 0.77, y: 0.25, width: 0.03, height: 0.75 },
     screenshotPath: screenShotPaths.dicomTagBrowser.scrollBarRenderedProperly,
   });
 });
