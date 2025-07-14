@@ -28,13 +28,13 @@ const toolbarButtons: Button[] = [
       buttonSection: true,
     },
   },
-  {
-    id: 'MoreTools',
-    uiType: 'ohif.toolButtonList',
-    props: {
-      buttonSection: true,
-    },
-  },
+  // {
+  //   id: 'MoreTools',
+  //   uiType: 'ohif.toolButtonList',
+  //   props: {
+  //     buttonSection: true,
+  //   },
+  // },
   {
     id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
