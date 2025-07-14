@@ -73,6 +73,8 @@ export type DicomWebConfig = {
   staticWado?: boolean;
   /** User authentication service */
   userAuthenticationService: Record<string, unknown>;
+  /** Filter individual DICOM instances: return false to drop an instance */
+  instanceFilter?: (query: object, instance: object) => boolean;
 };
 
 export type BulkDataURIConfig = {
@@ -111,13 +113,15 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     qidoDicomWebClient,
     wadoDicomWebClient,
     getAuthorizationHeader,
-    generateWadoHeader;
+    generateWadoHeader,
+    initialQuery;
   // Default to enabling bulk data retrieves, with no other customization as
   // this is part of hte base standard.
   dicomWebConfig.bulkDataURI ||= { enabled: true };
 
   const implementation = {
     initialize: ({ params, query }) => {
+      initialQuery = query;
       if (dicomWebConfig.onConfiguration && typeof dicomWebConfig.onConfiguration === 'function') {
         dicomWebConfig = dicomWebConfig.onConfiguration(dicomWebConfig, {
           params,
@@ -429,6 +433,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       const instancesPerSeries = {};
 
       naturalizedInstancesMetadata.forEach(instance => {
+        if (dicomWebConfig.instanceFilter != null && !dicomWebConfig.instanceFilter(initialQuery, instance)) {
+          return;
+        }
+
         if (!seriesSummaryMetadata[instance.SeriesInstanceUID]) {
           seriesSummaryMetadata[instance.SeriesInstanceUID] = {
             StudyInstanceUID: instance.StudyInstanceUID,
@@ -546,6 +554,13 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       // Async load series, store as retrieved
       function storeInstances(instances) {
+        if (dicomWebConfig.instanceFilter != null) {
+          instances = instances.filter(instance => dicomWebConfig.instanceFilter(initialQuery, instance));
+        }
+        if (instances.length == 0) {
+          return;
+        }
+
         const naturalizedInstances = instances.map(addRetrieveBulkData);
 
         // Adding instanceMetadata to OHIF MetadataProvider

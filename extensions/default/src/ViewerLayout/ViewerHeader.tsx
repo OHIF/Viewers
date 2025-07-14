@@ -47,8 +47,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
     'ohif.userPreferencesModal'
   ) as Types.MenuComponentCustomization;
 
-  const menuOptions = [
-    {
+  const menuOptions = [];
+
+  if (!AboutModal.hidden) {
+    menuOptions.push({
       title: AboutModal?.menuTitle ?? t('Header:About'),
       icon: 'info',
       onClick: () =>
@@ -57,8 +59,11 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
           containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
         }),
-    },
-    {
+    });
+  }
+
+  if (!UserPreferencesModal.hidden) {
+    menuOptions.push({
       title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
       onClick: () =>
@@ -68,8 +73,8 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
           containerClassName:
             UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
-    },
-  ];
+    });
+  }
 
   if (appConfig.oidc) {
     menuOptions.push({

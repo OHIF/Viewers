@@ -135,6 +135,7 @@ export default function PanelStudyBrowserTracking({
       customMapDisplaySets={mapDisplaySetsWithTracking}
       onClickUntrack={onClickUntrack}
       onDoubleClickThumbnailHandlerCallBack={checkDirtyMeasurements}
+      onClickThumbnailHandlerCallBack={checkDirtyMeasurements}
     />
   );
 }
