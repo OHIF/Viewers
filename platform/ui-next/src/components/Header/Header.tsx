@@ -87,7 +87,7 @@ function Header({
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             <div className="flex-shrink-0">
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                {/* <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -95,7 +95,7 @@ function Header({
                   >
                     <Icons.GearSettings />
                   </Button>
-                </DropdownMenuTrigger>
+                </DropdownMenuTrigger> */}
                 <DropdownMenuContent align="end">
                   {menuOptions.map((option, index) => {
                     const IconComponent = option.icon
