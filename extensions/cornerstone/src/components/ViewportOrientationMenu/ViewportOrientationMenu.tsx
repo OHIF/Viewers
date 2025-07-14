@@ -156,65 +156,65 @@ function ViewportOrientationMenu({
       >
         <Button
           variant="ghost"
-          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          className="flex h-7 w-full flex-shrink-0 items-center justify-start self-stretch px-1 py-0"
           onClick={() => handleOrientationChange('axial')}
         >
-          <span className="mr-0 flex w-4 items-center justify-center">
+          <div className="mr-1 flex w-6 items-center justify-start">
             {currentOrientation === 'axial' ? (
-              <Icons.Checked className="text-primary h-5 w-5" />
+              <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
-          </span>
-          <span className="flex-1 text-left">Axial</span>
+          </div>
+          <div className="flex-1 text-left">Axial</div>
         </Button>
         <Button
           variant="ghost"
-          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          className="flex h-7 w-full flex-shrink-0 items-center justify-start self-stretch px-1 py-0"
           onClick={() => handleOrientationChange('sagittal')}
         >
-          <span className="mr-0 flex w-4 items-center justify-center">
+          <div className="mr-1 flex w-6 items-center justify-start">
             {currentOrientation === 'sagittal' ? (
-              <Icons.Checked className="text-primary h-5 w-5" />
+              <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
-          </span>
-          <span className="flex-1 text-left">Sagittal</span>
+          </div>
+          <div className="flex-1 text-left">Sagittal</div>
         </Button>
         <Button
           variant="ghost"
-          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          className="flex h-7 w-full flex-shrink-0 items-center justify-start self-stretch px-1 py-0"
           onClick={() => handleOrientationChange('coronal')}
         >
-          <span className="mr-0 flex w-4 items-center justify-center">
+          <div className="mr-1 flex w-6 items-center justify-start">
             {currentOrientation === 'coronal' ? (
-              <Icons.Checked className="text-primary h-5 w-5" />
+              <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
-          </span>
-          <span className="flex-1 text-left">Coronal</span>
+          </div>
+          <div className="flex-1 text-left">Coronal</div>
         </Button>
         <Button
           variant="ghost"
-          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          className="flex h-7 w-full flex-shrink-0 items-center justify-start self-stretch px-1 py-0"
           onClick={() => handleOrientationChange('acquisition')}
         >
-          <span className="mr-0 flex w-4 items-center justify-center">
+          <div className="mr-1 flex w-6 items-center justify-start">
             {currentOrientation === 'acquisition' ? (
-              <Icons.Checked className="text-primary h-5 w-5" />
+              <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
-          </span>
-          <span className="flex-1 text-left">Acquisition</span>
+          </div>
+          <div className="flex-1 text-left">Acquisition</div>
         </Button>
         {/* Divider */}
-        <div className="my-2 border-t border-white/20" />
+        <div className="mx-1 my-2 border-t border-white/20" />
         <Button
           variant="ghost"
-          className="flex h-[28px] flex-shrink-0 items-center justify-start self-stretch"
+          className="flex h-7 w-full flex-shrink-0 items-center justify-start self-stretch px-1 py-0"
           onClick={() => handleOrientationChange('reformat')}
         >
-          <span className="mr-0 flex w-4 items-center justify-center">
+          <div className="mr-1 flex w-6 items-center justify-start">
             {currentOrientation === 'reformat' ? (
-              <Icons.Checked className="text-primary h-5 w-5" />
+              <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
-          </span>
-          <span className="flex-1 text-left">Reformat</span>
+          </div>
+          <div className="flex-1 text-left">Reformat</div>
         </Button>
       </PopoverContent>
     </Popover>
