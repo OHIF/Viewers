@@ -149,28 +149,28 @@ function ViewportOrientationMenu({
             className="justify-start"
             onClick={() => handleOrientationChange('axial')}
           >
-            Axial
+            轴位
           </Button>
           <Button
             variant="ghost"
             className="justify-start"
             onClick={() => handleOrientationChange('sagittal')}
           >
-            Sagittal
+            矢状位
           </Button>
           <Button
             variant="ghost"
             className="justify-start"
             onClick={() => handleOrientationChange('coronal')}
           >
-            Coronal
+            冠状位
           </Button>
           <Button
             variant="ghost"
             className="justify-start"
             onClick={() => handleOrientationChange('acquisition')}
           >
-            Acquisition
+            采集
           </Button>
         </div>
       </PopoverContent>

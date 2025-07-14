@@ -40,10 +40,10 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           }}
         >
           <Icons.Upload className="h-5 w-5" />
-          <span className="pl-1">Upload</span>
+          <span className="pl-1">提交</span>
         </Button>
 
-        <Button
+        {/* <Button
           size="sm"
           variant="ghost"
           className="pl-0.5"
@@ -61,7 +61,7 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
         >
           <Icons.Add />
           Create SR
-        </Button>
+        </Button> */}
         <Button
           size="sm"
           variant="ghost"
@@ -78,7 +78,7 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           }}
         >
           <Icons.Delete />
-          Delete
+          删除全部
         </Button>
       </div>
     </div>
