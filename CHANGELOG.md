@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.83...v3.11.0-beta.84) (2025-07-14)
+
+
+### Bug Fixes
+
+* **UI:** Restored the scroll bar OHIF L&F ([#5202](https://github.com/OHIF/Viewers/issues/5202)) ([94bdcf4](https://github.com/OHIF/Viewers/commit/94bdcf414d5d70767c2cf24fdfd3446c45d9c8dd))
+
+
+
+
+
+# [3.11.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.82...v3.11.0-beta.83) (2025-07-11)
+
+
+### Bug Fixes
+
+* enhance preview accept method ([#5199](https://github.com/OHIF/Viewers/issues/5199)) ([540923a](https://github.com/OHIF/Viewers/commit/540923ad8b2f768bd0f766c4f106cf6785a06afc))
+
+
+
+
+
+# [3.11.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.81...v3.11.0-beta.82) (2025-07-11)
+
+
+### Bug Fixes
+
+* **UnitTests:** Fixing "Cannot find module @cornerstonejs/core" error while running unit tests ([#5148](https://github.com/OHIF/Viewers/issues/5148)) ([4a59126](https://github.com/OHIF/Viewers/commit/4a59126dd9aad6b10538e46e17415654b219e2ad))
+
+
+
+
+
+# [3.11.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.80...v3.11.0-beta.81) (2025-07-11)
+
+
+### Bug Fixes
+
+* exception in newly added segmentations ([#5198](https://github.com/OHIF/Viewers/issues/5198)) ([fd5bcee](https://github.com/OHIF/Viewers/commit/fd5bcee909223f92c0833bf63f9aee08eb533be2))
+
+
+
+
+
+# [3.11.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.79...v3.11.0-beta.80) (2025-07-11)
+
+
+### Features
+
+* **rendering:** Introduce WebGLContextPool for parallel rendering in ContextPoolRenderingEngine ([#5196](https://github.com/OHIF/Viewers/issues/5196)) ([10d9316](https://github.com/OHIF/Viewers/commit/10d93161b4a1bea18ec1b9de9ae3e094e6bb47d0))
+
+
+
+
+
+# [3.11.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.78...v3.11.0-beta.79) (2025-07-11)
+
+
+### Features
+
+* group clear measurements history ([#5194](https://github.com/OHIF/Viewers/issues/5194)) ([4d3ff5a](https://github.com/OHIF/Viewers/commit/4d3ff5a6cc720431f774a179e24205bfaec1d539))
+
+
+
+
+
+# [3.11.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.77...v3.11.0-beta.78) (2025-07-11)
+
+
+### Bug Fixes
+
+* **security:** Patch for Babel vulnerability ([#5193](https://github.com/OHIF/Viewers/issues/5193)) ([eeaf49c](https://github.com/OHIF/Viewers/commit/eeaf49c61a5ceb2414c2d6e4529dab64cc33f9de))
+
+
+
+
+
+# [3.11.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.76...v3.11.0-beta.77) (2025-07-10)
+
+
+### Bug Fixes
+
+* **rendering:** Introduce SequentialRenderingEngine to resolve canvas size limitation, performance degradation on high res monitors and enhance multi-monitor support ([#5195](https://github.com/OHIF/Viewers/issues/5195)) ([4c5e34d](https://github.com/OHIF/Viewers/commit/4c5e34d1837695241430b8dd1739ab39f2fb3060))
+
+
+
+
+
+# [3.11.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.75...v3.11.0-beta.76) (2025-07-10)
+
+
+### Bug Fixes
+
+* **segmentation overlays:** Allow for the addition of multiple segmentation overlays. ([#5189](https://github.com/OHIF/Viewers/issues/5189)) ([4847362](https://github.com/OHIF/Viewers/commit/48473625f678c7bd3fe9327bd043a3cf4b1b4c0c))
+
+
+
+
+
+# [3.11.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.74...v3.11.0-beta.75) (2025-07-09)
+
+
+### Features
+
+* add segment label tool ([#5164](https://github.com/OHIF/Viewers/issues/5164)) ([ac85248](https://github.com/OHIF/Viewers/commit/ac852485cd5063122bcb9c0fbcca9f9cfb47d3f2))
+
+
+
+
+
 # [3.11.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.73...v3.11.0-beta.74) (2025-07-08)
 
 
