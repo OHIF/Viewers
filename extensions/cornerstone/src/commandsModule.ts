@@ -176,18 +176,26 @@ function commandsModule({
       }
 
       if (!measurement.referencedImageId) {
-        console.warn('Unable to navigate yet with a missing referenced image id', measurement);
-        return;
+        // Update stored position presentation
+        commandsManager.run('updateStoredPositionPresentation', {
+          viewportId: activeViewportId,
+          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+          // referencedImageId: measurement.referencedImageId,
+          options: {
+            ...measurement.metadata,
+          },
+        });
+      } else {
+        // Update stored position presentation
+        commandsManager.run('updateStoredPositionPresentation', {
+          viewportId: activeViewportId,
+          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+          referencedImageId: measurement.referencedImageId,
+          options: {
+            ...measurement.metadata,
+          },
+        });
       }
-      // Update stored position presentation
-      commandsManager.run('updateStoredPositionPresentation', {
-        viewportId: activeViewportId,
-        displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
-        referencedImageId: measurement.referencedImageId,
-        options: {
-          ...measurement.metadata,
-        },
-      });
 
       commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
     },
@@ -374,12 +382,21 @@ function commandsModule({
         type,
       });
     },
+
+    /** Stores the changed position presentation */
     updateStoredPositionPresentation: ({
       viewportId,
       displaySetInstanceUIDs,
       referencedImageId,
       options,
     }) => {
+      console.warn(
+        'updateStoredPositionPresentation',
+        viewportId,
+        displaySetInstanceUIDs,
+        referencedImageId,
+        options
+      );
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();

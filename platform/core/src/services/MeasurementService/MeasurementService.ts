@@ -432,11 +432,7 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    let internalUID = data.id;
-    if (!internalUID) {
-      internalUID = guid();
-      log.warn(`Measurement ID not found. Generating UID: ${internalUID}`);
-    }
+    const internalUID = data.uid || guid();
 
     const annotationData = data.annotation.data;
 

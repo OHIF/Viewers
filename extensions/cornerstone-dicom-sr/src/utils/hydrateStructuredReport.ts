@@ -4,7 +4,7 @@ import { vec3 } from 'gl-matrix';
 
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
-import { annotation as CsAnnotation } from '@cornerstonejs/tools';
+import { annotation as CsAnnotation, type Types as ToolTypes } from '@cornerstonejs/tools';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 
 const { locking } = CsAnnotation;
@@ -100,6 +100,7 @@ export default function hydrateStructuredReport(
     utilities.imageToWorldCoords,
     metaData
   );
+  debugger;
 
   const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
 
@@ -164,7 +165,7 @@ export default function hydrateStructuredReport(
     }
   }
 
-  function getReferenceData(toolData) {
+  function getReferenceData(toolData): ToolTypes.AnnotationMetadata {
     // Add the measurement to toolState
     // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
     // files, and looking up the imageId from sopInstanceUIDToImageId results
@@ -188,7 +189,7 @@ export default function hydrateStructuredReport(
     } = instance;
 
     return {
-      imageId,
+      referencedImageId: imageId,
       FrameOfReferenceUID,
     };
   }
@@ -198,15 +199,15 @@ export default function hydrateStructuredReport(
 
     toolDataForAnnotationType.forEach(toolData => {
       toolData.uid = guid();
-      const { imageId, FrameOfReferenceUID } = getReferenceData(toolData);
+      const referenceData = getReferenceData(toolData);
+      const { volumeId, imageId } = referenceData;
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
+          ...referenceData,
           toolName: annotationType,
-          referencedImageId: imageId,
-          FrameOfReferenceUID,
         },
       };
       utilities.updateReferencedPlane(annotation.data.handles.points, annotation.metadata);
@@ -243,8 +244,11 @@ export default function hydrateStructuredReport(
         locking.setAnnotationLocked(newAnnotationUID, true);
       }
 
-      if (!imageIds.includes(imageId)) {
+      if (imageId && !imageIds.includes(imageId)) {
         imageIds.push(imageId);
+      }
+      if (volumeId) {
+        console.warn('********* TODO - add image id reference', toolData);
       }
     });
   });
@@ -255,6 +259,20 @@ export default function hydrateStructuredReport(
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
   };
+}
+
+function getDisplaySet(displaySets, _annotation) {
+  if (!displaySets?.length) {
+    return null;
+  }
+  if (displaySets.length === 1) {
+    return displaySets[0];
+  }
+  return (
+    displaySets.find(ds => ds.isReconstructable) ||
+    displaySets.find(ds => ds.numImageFrames > 1) ||
+    displaySets[0]
+  );
 }
 
 function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
@@ -270,7 +288,7 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
     };
   }
   // TODO - choose which display set to apply this too
-  const [ds] = displaySetsFOR;
+  const ds = getDisplaySet(displaySetsFOR, toolData.annotation);
   const cameraView = chooseCameraView(ds, points);
 
   return {
