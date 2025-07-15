@@ -13,6 +13,8 @@ test('should display added, selected and removed segmentation promptly', async (
   await page.getByText('SELECT A SEGMENTATION').click();
   await page.getByTestId('2d-tta_nnU-Net_Segmentation').click();
 
+  await page.waitForTimeout(5000);
+
   await checkForScreenshot({
     page,
     screenshotPath:
@@ -24,6 +26,8 @@ test('should display added, selected and removed segmentation promptly', async (
 
   // navigate to the 51st image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
+
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot({
     page,
@@ -37,6 +41,8 @@ test('should display added, selected and removed segmentation promptly', async (
   await page.getByTestId('overlay-ds-select-value-2D-TTA_NNU-NET_SEGMENTATION').click();
   await page.getByTestId('Segmentation-SEG').click();
 
+  await page.waitForTimeout(5000);
+
   await checkForScreenshot({
     page,
     screenshotPath: screenShotPaths.dataOverlayMenu.overlayMenuWithSegmentationSelected,
@@ -47,6 +53,8 @@ test('should display added, selected and removed segmentation promptly', async (
 
   // navigate to the 51st image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
+
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot({
     page,
@@ -60,6 +68,8 @@ test('should display added, selected and removed segmentation promptly', async (
   await page.getByTestId('overlay-ds-more-button-SEGMENTATION').click();
   await page.getByTestId('overlay-ds-remove-button-SEGMENTATION').click();
 
+  await page.waitForTimeout(5000);
+
   await checkForScreenshot({
     page,
     screenshotPath: screenShotPaths.dataOverlayMenu.overlayMenuWithSegmentationOverlaysRemoved,
@@ -70,6 +80,8 @@ test('should display added, selected and removed segmentation promptly', async (
 
   // navigate to the 51st image and ensure no overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
+
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot({
     page,
