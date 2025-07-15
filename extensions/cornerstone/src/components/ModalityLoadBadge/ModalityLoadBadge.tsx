@@ -17,13 +17,13 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
 
   const { isTracked, isLocked } = useMeasurementTracking({ viewportId });
 
-  const { backgroundDisplaySet, overlayDisplaySets } = useViewportDisplaySets(viewportId);
+  const { backgroundDisplaySet } = useViewportDisplaySets(viewportId);
 
   const [specialDisplaySet, setSpecialDisplaySet] = useState(null);
 
   const allDisplaySets = useMemo(() => {
-    return [backgroundDisplaySet, ...overlayDisplaySets].filter(Boolean);
-  }, [backgroundDisplaySet, overlayDisplaySets]);
+    return [backgroundDisplaySet].filter(Boolean);
+  }, [backgroundDisplaySet]);
 
   useEffect(() => {
     const displaySet = allDisplaySets.find(ds => ds.isOverlayDisplaySet || ds?.Modality === 'SR');
@@ -120,7 +120,10 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
   const StatusArea = () => {
     if (!statusInfo.isHydrated) {
       return (
-        <div className="flex h-6 cursor-default text-sm leading-6 text-white">
+        <div
+          data-cy={`ModalityLoadBadge-${viewportId}`}
+          className="flex h-6 cursor-default text-sm leading-6 text-white"
+        >
           <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
             <StatusIcon />
             <span className="ml-1">{statusInfo.type}</span>

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.86...v3.11.0-beta.87) (2025-07-15)
+
+
+### Bug Fixes
+
+* **segmentation:** Removed LOAD/hydrate button for segmentation overlays ([#5214](https://github.com/OHIF/Viewers/issues/5214)) ([e0289dc](https://github.com/OHIF/Viewers/commit/e0289dc49f52e7ee6f0642f01de3ae31cddf71e0))
+
+
+
+
+
 # [3.11.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.85...v3.11.0-beta.86) (2025-07-14)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-rt
