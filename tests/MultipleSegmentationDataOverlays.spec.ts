@@ -1,6 +1,7 @@
 import { test } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
 import { press } from './utils/keyboardUtils';
+import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.32722.99.99.239341353911714368772597187099978969331';
@@ -18,13 +19,22 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   await page.getByText('SELECT A SEGMENTATION').click();
   await page.getByTestId('2d-tta_nnU-Net_Segmentation').click();
 
+  // Adding an overlay should not show the LOAD button.
+  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
   await page.getByText('SELECT A SEGMENTATION').click();
   await page.getByTestId('Segmentation').click();
 
+  // Adding an overlay should not show the LOAD button.
+  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
   await page.getByText('SELECT A SEGMENTATION').click();
   await page.getByTestId('3d_lowres-tta_nnU-Net_Segmentation').click();
+
+  // Adding an overlay should not show the LOAD button.
+  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await checkForScreenshot({
     page,
@@ -58,6 +68,9 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
   await page.getByText('SELECT A SEGMENTATION').click();
   await page.getByTestId('Series 3 - RTSTRUCT').click();
+
+  // Adding an overlay should not show the LOAD button.
+  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await page.waitForTimeout(5000);
 
