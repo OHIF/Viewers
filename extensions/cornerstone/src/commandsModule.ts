@@ -144,15 +144,13 @@ function commandsModule({
   const actions = {
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
+      const { metadata } = measurement;
 
       const activeViewportId = viewportGridService.getActiveViewportId();
-      const viewportId = cornerstoneViewportService.getViewportIdToJump(
-        activeViewportId,
-        measurement.metadata
-      );
+      const viewportId = cornerstoneViewportService.getViewportIdToJump(activeViewportId, metadata);
       if (viewportId) {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        viewport.setViewReference(measurement.metadata);
+        viewport.setViewReference(metadata);
         return;
       }
 
@@ -162,8 +160,17 @@ function commandsModule({
         return;
       }
 
-      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+      const viewportToUpdate = cornerstoneViewportService.getViewportIdToUpdate(
         activeViewportId,
+        measurement
+      );
+
+      if (!viewportToUpdate) {
+        console.warn('Unable to find a viewport to show this in');
+        return;
+      }
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportToUpdate.viewportId,
         referencedDisplaySetInstanceUID
       );
 
@@ -174,6 +181,9 @@ function commandsModule({
         );
         return;
       }
+
+      console.warn('updatedViewports[0]=', updatedViewports[0]);
+      updatedViewports[0].viewportOptions = viewportToUpdate.viewportOptions;
 
       if (!measurement.referencedImageId) {
         // Update stored position presentation
@@ -197,6 +207,7 @@ function commandsModule({
         });
       }
 
+      console.warn('Changing to viewport', updatedViewports);
       commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
     },
 

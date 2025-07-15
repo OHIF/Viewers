@@ -100,7 +100,6 @@ export default function hydrateStructuredReport(
     utilities.imageToWorldCoords,
     metaData
   );
-  debugger;
 
   const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
 
