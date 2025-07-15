@@ -109,7 +109,7 @@ export default class CustomizationService extends PubSubService {
     this.commandsManager = commandsManager;
   }
 
-  public init(extensionManager: ExtensionManager, addReferences = true): void {
+  public init(extensionManager: ExtensionManager, addConfigReferences = true): void {
     this.extensionManager = extensionManager;
     // Clear defaults as those are defined by the customization modules
     this.defaultCustomizations.clear();
@@ -131,7 +131,9 @@ export default class CustomizationService extends PubSubService {
       }
     });
 
-    if (addReferences) {
+    // This allows us to control when configuration references are added.
+    // In general configuration references should be added at startup.
+    if (addConfigReferences) {
       this.addReferences(this.configuration);
     }
   }
