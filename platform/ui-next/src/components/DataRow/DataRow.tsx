@@ -308,21 +308,21 @@ export const DataRow: React.FC<DataRowProps> = ({
                 <>
                   <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
                     <Icons.Rename className="text-foreground" />
-                    <span className="pl-2">Rename</span>
+                    <span className="pl-2">重命名</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
                     <Icons.Delete className="text-foreground" />
-                    <span className="pl-2">Delete</span>
+                    <span className="pl-2">删除</span>
                   </DropdownMenuItem>
                   {onColor && (
                     <DropdownMenuItem onClick={e => handleAction('Color', e)}>
                       <Icons.ColorChange className="text-foreground" />
-                      <span className="pl-2">Change Color</span>
+                      <span className="pl-2">修改颜色</span>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
+                  <DropdownMenuItem onClick={e => handleAction('Lock7', e)}>
                     <Icons.Lock className="text-foreground" />
-                    <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                    <span className="pl-2">{isLocked ? '解锁' : '锁定'}</span>
                   </DropdownMenuItem>
                 </>
               </DropdownMenuContent>

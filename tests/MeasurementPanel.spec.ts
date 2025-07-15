@@ -64,7 +64,7 @@ test('checks if measurement item can be relabeled under Measurements panel', asy
   // Open measurement panel confirm default empty
   await measurementsBtn.click();
   const measurementRow = page.getByTestId('data-row').first();
-  await expect(measurementRow).toContainText('(empty)');
+  await expect(measurementRow).toContainText('(空)');
 
   // Expand and click rename
   const actionsButton = measurementRow.getByRole('button', { name: 'Actions' });
@@ -107,7 +107,7 @@ test('checks if measurement item can be relabeled through the context menu on th
   // Open measurement panel confirm default empty
   await measurementsBtn.click();
   const measurementRow = page.getByTestId('data-row').first();
-  await expect(measurementRow).toContainText('(empty)');
+  await expect(measurementRow).toContainText('(空)');
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu

@@ -6,7 +6,7 @@ export default {
   'studyBrowser.thumbnailMenuItems': [
     {
       id: 'tagBrowser',
-      label: 'Tag Browser',
+      label: '标签浏览',
       iconName: 'DicomTagBrowser',
       onClick: ({ commandsManager, displaySetInstanceUID }: withAppTypes) => {
         commandsManager.runCommand('openDICOMTagViewer', {
@@ -16,7 +16,7 @@ export default {
     },
     {
       id: 'addAsLayer',
-      label: 'Add as Layer',
+      label: '添加为图层',
       iconName: 'ViewportViews',
       onClick: ({ commandsManager, displaySetInstanceUID, servicesManager }: withAppTypes) => {
         const { viewportGridService } = servicesManager.services;
@@ -37,13 +37,13 @@ export default {
   ],
   'studyBrowser.sortFunctions': [
     {
-      label: 'Series Number',
+      label: '序列号',
       sortFunction: (a, b) => {
         return a?.SeriesNumber - b?.SeriesNumber;
       },
     },
     {
-      label: 'Series Date',
+      label: '序列日期',
       sortFunction: (a, b) => {
         const dateA = new Date(formatDate(a?.SeriesDate));
         const dateB = new Date(formatDate(b?.SeriesDate));

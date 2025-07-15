@@ -168,7 +168,7 @@ class RoiAnnotation extends PubSubService {
    * @returns {String} Text with geometry type and label
    */
   getDetailedLabel() {
-    const label = this.label ? `${this.label}` : '(empty)';
+    const label = this.label ? `${this.label}` : '(空)';
     return label;
   }
 

@@ -653,7 +653,7 @@ const commandsModule = ({
           displaySets,
           displaySetInstanceUID: defaultDisplaySetInstanceUID,
         },
-        title: 'DICOM Tag Browser',
+        title: 'DICOM 标签浏览',
         containerClassName: 'max-w-3xl',
       });
     },

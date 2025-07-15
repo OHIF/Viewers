@@ -129,7 +129,7 @@ const DicomTagBrowser = ({
         <div className="flex w-full flex-row items-start gap-4">
           <div className="flex w-1/3 flex-col">
             <span className="text-muted-foreground flex h-6 items-center pb-2 text-base">
-              Series
+              序列
             </span>
             <Select
               value={selectedDisplaySetInstanceUID}
@@ -173,7 +173,7 @@ const DicomTagBrowser = ({
           )}
           <div className="ml-auto mr-1 flex w-1/3 flex-col">
             <span className="text-muted-foreground flex h-6 items-center pb-2 text-base">
-              Search metadata
+              搜索元数据
             </span>
             <InputFilter
               className="text-muted-foreground"
@@ -181,7 +181,7 @@ const DicomTagBrowser = ({
             >
               <InputFilter.SearchIcon />
               <InputFilter.Input
-                placeholder="Search metadata"
+                placeholder="搜索元数据"
                 className="pl-9 pr-9"
               />
               <InputFilter.ClearButton className="text-primary mr-0.5 p-0.5" />

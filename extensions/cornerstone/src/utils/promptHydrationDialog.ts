@@ -151,13 +151,13 @@ function _askHydrate(
       {
         id: 'no-hydrate',
         type: 'secondary',
-        text: 'No',
+        text: '否',
         value: RESPONSE.CANCEL,
       },
       {
         id: 'yes-hydrate',
         type: 'primary',
-        text: 'Yes',
+        text: '是',
         value: RESPONSE.HYDRATE,
       },
     ];

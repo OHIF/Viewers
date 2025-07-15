@@ -10,7 +10,7 @@ const trackNewStudyMessage = i18n.t('MeasurementTable:Track measurements for thi
 const discardStudyMessage = i18n.t(
   'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?'
 );
-const hydrateSRMessage = i18n.t('Do you want to continue tracking measurements for this study?');
+const hydrateSRMessage = i18n.t('你想继续跟踪这个研究的测量数据吗？');
 const hydrateRTMessage = i18n.t('Do you want to open this Segmentation?');
 const hydrateSEGMessage = i18n.t('Do you want to open this Segmentation?');
 const discardDirtyMessage = i18n.t('There are unsaved measurements. Do you want to save it?');

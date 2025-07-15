@@ -41,7 +41,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
       {
         value: null,
         description: null,
-        label: 'Create new series',
+        label: '创建新序列',
       },
       ...options,
     ];
@@ -124,7 +124,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
         <div className="flex items-end gap-4">
           {!showDataSourceSelect && (
             <div className="w-1/3">
-              <div className="mb-1 pl-1 text-base">Series</div>
+              <div className="mb-1 pl-1 text-base">序列</div>
               <Select
                 value={selectedSeries}
                 onValueChange={setSelectedSeries}
@@ -153,7 +153,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
           >
             <InputDialog.Field className="mb-0">
               <InputDialog.Input
-                placeholder="Report name"
+                placeholder="请填写报告名称"
                 disabled={!!selectedSeries}
               />
             </InputDialog.Field>

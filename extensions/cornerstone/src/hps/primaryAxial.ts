@@ -3,7 +3,7 @@ import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
 export const primaryAxial = {
   id: 'primaryAxial',
   locked: true,
-  name: 'Axial Primary',
+  name: '轴位主视图',
   icon: 'layout-advanced-axial-primary',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',

@@ -3,7 +3,7 @@ import { Types } from '@ohif/core';
 const frameView: Types.HangingProtocol.Protocol = {
   id: '@ohif/frameView',
   description: 'Frame view for the active series',
-  name: 'Frame View',
+  name: '框架视图',
   icon: 'tool-stack-scroll',
   isPreset: true,
   toolGroupIds: ['default'],

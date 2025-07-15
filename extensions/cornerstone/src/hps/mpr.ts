@@ -22,7 +22,7 @@ export const HYDRATE_SEG_SYNC_GROUP = {
 
 export const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
-  name: 'MPR',
+  name: '多平面重建',
   locked: true,
   icon: 'layout-advanced-mpr',
   isPreset: true,
