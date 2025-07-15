@@ -164,7 +164,7 @@ function ViewportOrientationMenu({
               <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
           </div>
-          <div className="flex-1 text-left">Axial</div>
+          <div className="flex-1 text-left">轴位</div>
         </Button>
         <Button
           variant="ghost"
@@ -176,7 +176,7 @@ function ViewportOrientationMenu({
               <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
           </div>
-          <div className="flex-1 text-left">Sagittal</div>
+          <div className="flex-1 text-left">矢状位</div>
         </Button>
         <Button
           variant="ghost"
@@ -188,7 +188,7 @@ function ViewportOrientationMenu({
               <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
           </div>
-          <div className="flex-1 text-left">Coronal</div>
+          <div className="flex-1 text-left">冠状位</div>
         </Button>
         <Button
           variant="ghost"
@@ -200,7 +200,7 @@ function ViewportOrientationMenu({
               <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
           </div>
-          <div className="flex-1 text-left">Acquisition</div>
+          <div className="flex-1 text-left">采集</div>
         </Button>
         {/* Divider */}
         <div className="mx-1 my-2 border-t border-white/20" />
@@ -214,7 +214,7 @@ function ViewportOrientationMenu({
               <Icons.Checked className="text-primary h-6 w-6" />
             ) : null}
           </div>
-          <div className="flex-1 text-left">Reformat</div>
+          <div className="flex-1 text-left">重新格式化</div>
         </Button>
       </PopoverContent>
     </Popover>
