@@ -58,7 +58,10 @@ const getLabelmapTools = ({ toolGroupService }) => {
     // tools is an object with toolName as the key and tool as the value
     Object.keys(tools).forEach(toolName => {
       const tool = tools[toolName];
-      if (tool instanceof cornerstoneTools.LabelmapBaseTool) {
+      if (
+        tool instanceof cornerstoneTools.LabelmapBaseTool &&
+        tool.shouldResolvePreviewRequests()
+      ) {
         labelmapTools.push(tool);
       }
     });
@@ -2024,6 +2027,12 @@ function commandsModule({
         viewport.render();
       }
     },
+    startRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.startGroupRecording();
+    },
+    endRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.endGroupRecording();
+    },
     triggerCreateAnnotationMemo: ({
       annotation,
       FrameOfReferenceUID,
@@ -2348,6 +2357,8 @@ function commandsModule({
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
+    startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
+    endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
   };
 

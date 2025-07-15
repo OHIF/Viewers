@@ -200,7 +200,7 @@ describe('getDirectURL', () => {
 
     const result = getDirectURL(config, params);
 
-    expect(mockedGetBulkdataValue).toHaveBeenCalledWith(config, params);
+    expect(mockedGetBulkdataValue).not.toHaveBeenCalled();
     expect(mockedCreateRenderedRetrieve).toHaveBeenCalledWith(config, params);
     expect(result).toBe(renderedRetrieveURL);
   });

@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['@babel/plugin-proposal-class-properties'],
+  plugins: ['@babel/plugin-transform-class-properties'],
   env: {
     test: {
       presets: [
@@ -15,7 +15,7 @@ module.exports = {
         '@babel/preset-react',
       ],
       plugins: [
-        '@babel/plugin-proposal-object-rest-spread',
+        '@babel/plugin-transform-object-rest-spread',
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',
         '@babel/plugin-transform-runtime',
