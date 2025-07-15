@@ -542,6 +542,88 @@ function commandsModule({
       }
     },
 
+    /**
+     * Jumps to a CustomProbe measurement in all relevant viewports (similar to segmentations)
+     */
+    jumpToCustomProbe: ({ uid, displayMeasurements = [] }) => {
+      const measurement = measurementService.getMeasurement(uid);
+
+      if (!measurement) {
+        console.warn(`No measurement found for uid: ${uid}`);
+        return;
+      }
+
+      if (measurement.toolName !== 'CustomProbe') {
+        // Fall back to regular jump for non-CustomProbe measurements
+        measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+        return;
+      }
+
+      if (!measurement.worldPosition || !measurement.FrameOfReferenceUID) {
+        console.warn('CustomProbe measurement missing world position or FrameOfReferenceUID');
+        return;
+      }
+
+      // Find all viewports that have the same FrameOfReferenceUID
+      const relevantViewports = [];
+
+      // Get all viewport IDs
+      const allViewportIds = Array.from(cornerstoneViewportService.viewportsById.keys());
+
+      allViewportIds.forEach(viewportId => {
+        const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
+
+        // Check if this viewport shows the same FrameOfReferenceUID or displaySetInstanceUID
+        const hasMatchingFrame = viewportDisplaySets?.some(ds =>
+          ds.FrameOfReferenceUID === measurement.FrameOfReferenceUID ||
+          ds.displaySetInstanceUID === measurement.displaySetInstanceUID
+        );
+
+        if (hasMatchingFrame) {
+          relevantViewports.push(viewportId);
+        }
+      });
+
+      // Jump all relevant viewports to the world position
+      relevantViewports.forEach(viewportId => {
+        try {
+          const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (cornerstoneViewport) {
+            // Use jumpToWorld if available (for volume viewports)
+            if (cornerstoneViewport && 'jumpToWorld' in cornerstoneViewport && typeof cornerstoneViewport.jumpToWorld === 'function') {
+              cornerstoneViewport.jumpToWorld(measurement.worldPosition);
+            } else {
+              // For stack viewports, try to navigate to the measurement slice
+              if (measurement.referencedImageId && cornerstoneViewport.setViewReference) {
+                cornerstoneViewport.setViewReference({
+                  referencedImageId: measurement.referencedImageId,
+                });
+              }
+            }
+
+            // Render the viewport
+            cornerstoneViewport.render();
+          }
+        } catch (e) {
+          console.warn(`Unable to jump viewport ${viewportId} to CustomProbe measurement:`, e);
+        }
+      });
+
+      // Select the annotation
+      if (measurement.uid) {
+        try {
+          cornerstoneTools.annotation.selection.setAnnotationSelected(measurement.uid);
+        } catch (e) {
+          console.warn('Unable to select CustomProbe annotation:', e);
+        }
+      }
+
+      // Mark display measurements as active
+      for (const displayMeasurement of displayMeasurements) {
+        displayMeasurement.isActive = displayMeasurement.uid === uid;
+      }
+    },
+
     removeMeasurement: ({ uid }) => {
       if (Array.isArray(uid)) {
         measurementService.removeMany(uid);
@@ -1947,6 +2029,9 @@ function commandsModule({
     },
     jumpToMeasurement: {
       commandFn: actions.jumpToMeasurement,
+    },
+    jumpToCustomProbe: {
+      commandFn: actions.jumpToCustomProbe,
     },
     removeMeasurement: {
       commandFn: actions.removeMeasurement,

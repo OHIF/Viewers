@@ -4,7 +4,6 @@ import { useSystem } from '@ohif/core';
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
 
-  console.log('measurement', measurement);
   const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
   if (!displaySets[0]?.instances) {

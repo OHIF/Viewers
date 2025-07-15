@@ -106,8 +106,8 @@ const Probe = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
-      // Add volume-specific properties
-      // isVolumeBasedMeasurement: isVolumeBasedAnnotation,
+      // Add world position for multi-viewport jumping (like segmentations)
+      worldPosition: points && points[0] ? points[0] : undefined,
     };
   },
 };
@@ -174,7 +174,7 @@ function getMappedAnnotations(annotation, displaySetService) {
       frameNumber,
       unit,
       value,
-      isVolumeBasedAnnotation: !metadata.referencedImageId,
+      isVolumeBasedAnnotation: true,
     });
   });
 

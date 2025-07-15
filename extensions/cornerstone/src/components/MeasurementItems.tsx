@@ -27,8 +27,12 @@ export default function MeasurementAccordion(props) {
     const { items } = group;
     // Just jump to the first measurement in the set, and mark that one as active
     // with the set of items.
-    system.commandsManager.run('jumpToMeasurement', {
-      uid: items[0].uid,
+
+    const measurement = items[0];
+    const command = measurement.toolName === 'CustomProbe' ? 'jumpToCustomProbe' : 'jumpToMeasurement';
+
+    system.commandsManager.run(command, {
+      uid: measurement.uid,
       displayMeasurements: items,
       group,
     });

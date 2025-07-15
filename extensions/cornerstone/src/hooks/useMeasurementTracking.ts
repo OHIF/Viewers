@@ -23,9 +23,6 @@ export function useMeasurementTracking({ viewportId }: { viewportId: string }) {
   const [trackedMeasurementUIDs, setTrackedMeasurementUIDs] = useState<string[]>([]);
 
   const updateTrackedMeasurements = useCallback(() => {
-    console.log('measurementService', measurementService);
-    console.log('backgroundDisplaySet', backgroundDisplaySet);
-    console.log('isTracked', isTracked);
 
     if (!measurementService || !backgroundDisplaySet?.SeriesInstanceUID || !isTracked) {
       setTrackedMeasurementUIDs([]);
@@ -37,7 +34,6 @@ export function useMeasurementTracking({ viewportId }: { viewportId: string }) {
     const seriesMeasurements = measurementService.getMeasurements(
       measurement => measurement.referenceSeriesUID === seriesInstanceUID
     );
-    console.log('meausrements in useMeasurementTracking', seriesMeasurements);
     const uids = seriesMeasurements.map(measurement => measurement.uid);
     setTrackedMeasurementUIDs(uids);
   }, [measurementService, backgroundDisplaySet, isTracked]);

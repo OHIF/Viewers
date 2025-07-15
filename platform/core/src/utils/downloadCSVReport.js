@@ -16,6 +16,7 @@ export default function downloadCSVReport(measurementData) {
     'Label',
   ];
 
+  console.log('measurementData', measurementData);
   const reportMap = {};
   measurementData.forEach(measurement => {
     const { referenceStudyUID, referenceSeriesUID, getReport, uid } = measurement;

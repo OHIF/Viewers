@@ -65,6 +65,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'textBox',
   'referencedImageId',
   'isDirty',
+  'worldPosition',
 ];
 
 const EVENTS = {
@@ -181,9 +182,6 @@ class MeasurementService extends PubSubService {
    */
   public getMeasurements(filter?: MeasurementFilter) {
     const measurements = [...this.measurements.values()];
-    console.log('measurements first', measurements);
-    console.log('filter', filter);
-    console.log('measurements filtered', measurements.filter(measurement => filter.call(this, measurement)));
     return filter
       ? measurements.filter(measurement => filter.call(this, measurement))
       : measurements;
@@ -681,6 +679,18 @@ class MeasurementService extends PubSubService {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
+
+    // For CustomProbe measurements, use a special event to signal multi-viewport jump
+    if (measurement.toolName === 'CustomProbe' && measurement.worldPosition && measurement.FrameOfReferenceUID) {
+      const probeJumpEvent = this.createConsumableEvent({
+        viewportId,
+        measurement,
+        isCustomProbeJump: true,
+      });
+      this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, probeJumpEvent);
+      return;
+    }
+
     const consumableEvent = this.createConsumableEvent({
       viewportId,
       measurement,
@@ -692,6 +702,8 @@ class MeasurementService extends PubSubService {
     this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
     this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
   }
+
+
 
   _getSourceUID(name, version) {
     const { sources } = this;
