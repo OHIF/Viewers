@@ -3,3 +3,4 @@
 * text=auto
 # Declares that files will always have CRLF line ends
 *.sh text eol=lf
+*.zip filter=lfs diff=lfs merge=lfs -text
