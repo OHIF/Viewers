@@ -260,18 +260,22 @@ export default function hydrateStructuredReport(
   };
 }
 
-function getDisplaySet(displaySets, _annotation) {
+function chooseDisplaySet(displaySets, annotation) {
   if (!displaySets?.length) {
-    return null;
+    console.warn('No display set found for', annotation);
+    return;
   }
   if (displaySets.length === 1) {
     return displaySets[0];
   }
-  return (
-    displaySets.find(ds => ds.isReconstructable) ||
-    displaySets.find(ds => ds.numImageFrames > 1) ||
-    displaySets[0]
-  );
+  console.warn('annotation=', annotation);
+  const volumeDs = displaySets.find(ds => ds.isReconstructable);
+  if (volumeDs) {
+    console.warn('Found volumeDs', volumeDs);
+    return volumeDs;
+  }
+  console.warn('Just finding first', displaySets);
+  return displaySets[0];
 }
 
 function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
@@ -286,8 +290,7 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
       FrameOfReferenceUID,
     };
   }
-  // TODO - choose which display set to apply this too
-  const ds = getDisplaySet(displaySetsFOR, toolData.annotation);
+  const ds = chooseDisplaySet(displaySetsFOR, toolData.annotation);
   const cameraView = chooseCameraView(ds, points);
 
   return {
