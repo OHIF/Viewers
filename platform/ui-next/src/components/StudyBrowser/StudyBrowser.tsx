@@ -5,7 +5,6 @@ import { StudyItem } from '../StudyItem';
 import { StudyBrowserSort } from '../StudyBrowserSort';
 import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
 import { ScrollArea } from '../ScrollArea';
-import './studyBrowserScrollArea.css';
 
 const noop = () => {};
 
@@ -61,7 +60,7 @@ const StudyBrowser = ({
   };
 
   return (
-    <ScrollArea className="StudyBrowserScrollArea">
+    <ScrollArea>
       <div
         className="bg-bkg-low flex flex-1 flex-col gap-[4px]"
         data-cy={'studyBrowser-panel'}
