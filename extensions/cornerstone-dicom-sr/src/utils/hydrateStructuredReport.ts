@@ -209,7 +209,7 @@ export default function hydrateStructuredReport(
           toolName: annotationType,
         },
       };
-      utilities.updateReferencedPlane(annotation.data.handles.points, annotation.metadata);
+      utilities.updatePlaneRestriction(annotation.data.handles.points, annotation.metadata);
 
       const source = measurementService.getSource(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
