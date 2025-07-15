@@ -78,6 +78,7 @@ export default function PanelRoiThresholdSegmentation() {
           </div>
           <div className="flex items-center">
             <Button
+              dataCY="exportTmtvCsvReport"
               size="sm"
               variant="ghost"
               className="text-blue-500"
