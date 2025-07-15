@@ -611,22 +611,22 @@ const toolbarButtons: Button[] = [
       },
     },
   },
-  {
-    id: 'Capture',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: 'showDownloadViewportModal',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'wholeSlide'],
-        },
-      ],
-    },
-  },
+  // {
+  //   id: 'Capture',
+  //   uiType: 'ohif.toolButton',
+  //   props: {
+  //     icon: 'tool-capture',
+  //     label: 'Capture',
+  //     commands: 'showDownloadViewportModal',
+  //     evaluate: [
+  //       'evaluate.action',
+  //       {
+  //         name: 'evaluate.viewport.supported',
+  //         unsupportedViewportTypes: ['video', 'wholeSlide'],
+  //       },
+  //     ],
+  //   },
+  // },
   {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',
