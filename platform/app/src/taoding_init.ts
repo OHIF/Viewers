@@ -1,4 +1,5 @@
 export function taoding_init() {
+  console.log('process.env.NODE_ENV:::', process.env.NODE_ENV);
   // Initialize the application
   // 获取url中的token参数
   const urlParams = new URLSearchParams(window.location.search);
@@ -10,6 +11,7 @@ export function taoding_init() {
   } else {
     // 如果没有token，提示非法访问
     alert('非法访问');
+
     if (process.env.NODE_ENV === 'development') {
       window.location.href = 'http://127.0.0.1:8080/v/login';
     } else {
