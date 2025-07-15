@@ -47,6 +47,7 @@ const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
 
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
+export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -602,7 +603,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportType = 'volume';
       }
     }
-    console.warn('Trying to view a display set of type', viewportType, displaySet);
 
     return {
       viewportId: activeViewportId,
@@ -1238,10 +1238,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewport: Types.IStackViewport | Types.IVolumeViewport,
     positionPresentation: PositionPresentation
   ): void {
-    console.warn('setPositionPresentation', positionPresentation);
     const viewRef = positionPresentation?.viewReference;
     if (viewRef) {
-      if (viewport.isReferenceViewable(viewRef, WITH_NAVIGATION)) {
+      // The orientation can be updated here to navigate to the specified
+      // measurement or previous item, but this will not switch to volume
+      // or to stack from the other type
+      if (viewport.isReferenceViewable(viewRef, WITH_ORIENTATION)) {
         viewport.setViewReference(viewRef);
       } else {
         console.warn('Unable to apply reference viewable', viewRef);

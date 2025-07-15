@@ -185,7 +185,6 @@ function commandsModule({
         return;
       }
 
-      console.warn('updatedViewports[0]=', updatedViewports[0]);
       updatedViewports[0].viewportOptions = viewportToUpdate.viewportOptions;
 
       if (!measurement.referencedImageId) {
@@ -210,7 +209,6 @@ function commandsModule({
         });
       }
 
-      console.warn('Changing to viewport', updatedViewports);
       commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
     },
 
@@ -404,13 +402,6 @@ function commandsModule({
       referencedImageId,
       options,
     }) => {
-      console.warn(
-        'updateStoredPositionPresentation',
-        viewportId,
-        displaySetInstanceUIDs,
-        referencedImageId,
-        options
-      );
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
@@ -435,16 +426,13 @@ function commandsModule({
       }
 
       // Create presentation data with referencedImageId and options if provided
-      const presentationData = referencedImageId
-        ? {
-            ...presentations.positionPresentation,
-            viewReference: {
-              referencedImageId,
-              ...options,
-            },
-          }
-        : presentations.positionPresentation;
-
+      const presentationData = {
+        ...presentations.positionPresentation,
+        viewReference: {
+          referencedImageId,
+          ...options,
+        },
+      };
       if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
