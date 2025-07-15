@@ -41,6 +41,10 @@ class UINotificationService {
    * @returns undefined
    */
   public hide(id: string) {
+    if (process.env.TEST_ENV === 'true') {
+      return;
+    }
+
     return serviceImplementation._hide(id);
   }
 
@@ -105,6 +109,10 @@ class UINotificationService {
       onClick: () => void;
     };
   }): string {
+    if (process.env.TEST_ENV === 'true') {
+      return;
+    }
+
     if (promise && promiseMessages) {
       const loadingId = serviceImplementation._show({
         title,

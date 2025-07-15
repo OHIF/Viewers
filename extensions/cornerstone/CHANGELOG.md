@@ -3,6 +3,115 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.85...v3.11.0-beta.86) (2025-07-14)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.84...v3.11.0-beta.85) (2025-07-14)
+
+
+### Features
+
+* **viewport:** Enhance Orientation Menu with Reformat Option and UI Improvements ([#5184](https://github.com/OHIF/Viewers/issues/5184)) ([c175837](https://github.com/OHIF/Viewers/commit/c175837273e664318fe51c426d98e4989f55b050))
+
+
+
+
+
+# [3.11.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.83...v3.11.0-beta.84) (2025-07-14)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.82...v3.11.0-beta.83) (2025-07-11)
+
+
+### Bug Fixes
+
+* enhance preview accept method ([#5199](https://github.com/OHIF/Viewers/issues/5199)) ([540923a](https://github.com/OHIF/Viewers/commit/540923ad8b2f768bd0f766c4f106cf6785a06afc))
+
+
+
+
+
+# [3.11.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.81...v3.11.0-beta.82) (2025-07-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.80...v3.11.0-beta.81) (2025-07-11)
+
+
+### Bug Fixes
+
+* exception in newly added segmentations ([#5198](https://github.com/OHIF/Viewers/issues/5198)) ([fd5bcee](https://github.com/OHIF/Viewers/commit/fd5bcee909223f92c0833bf63f9aee08eb533be2))
+
+
+
+
+
+# [3.11.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.79...v3.11.0-beta.80) (2025-07-11)
+
+
+### Features
+
+* **rendering:** Introduce WebGLContextPool for parallel rendering in ContextPoolRenderingEngine ([#5196](https://github.com/OHIF/Viewers/issues/5196)) ([10d9316](https://github.com/OHIF/Viewers/commit/10d93161b4a1bea18ec1b9de9ae3e094e6bb47d0))
+
+
+
+
+
+# [3.11.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.78...v3.11.0-beta.79) (2025-07-11)
+
+
+### Features
+
+* group clear measurements history ([#5194](https://github.com/OHIF/Viewers/issues/5194)) ([4d3ff5a](https://github.com/OHIF/Viewers/commit/4d3ff5a6cc720431f774a179e24205bfaec1d539))
+
+
+
+
+
+# [3.11.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.77...v3.11.0-beta.78) (2025-07-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.76...v3.11.0-beta.77) (2025-07-10)
+
+
+### Bug Fixes
+
+* **rendering:** Introduce SequentialRenderingEngine to resolve canvas size limitation, performance degradation on high res monitors and enhance multi-monitor support ([#5195](https://github.com/OHIF/Viewers/issues/5195)) ([4c5e34d](https://github.com/OHIF/Viewers/commit/4c5e34d1837695241430b8dd1739ab39f2fb3060))
+
+
+
+
+
+# [3.11.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.75...v3.11.0-beta.76) (2025-07-10)
+
+
+### Bug Fixes
+
+* **segmentation overlays:** Allow for the addition of multiple segmentation overlays. ([#5189](https://github.com/OHIF/Viewers/issues/5189)) ([4847362](https://github.com/OHIF/Viewers/commit/48473625f678c7bd3fe9327bd043a3cf4b1b4c0c))
+
+
+
+
+
 # [3.11.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.74...v3.11.0-beta.75) (2025-07-09)
 
 

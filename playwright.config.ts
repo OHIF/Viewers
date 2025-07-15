@@ -21,9 +21,13 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3335',
     trace: 'on-first-retry',
-    video: 'on',
+    video: 'on-first-retry',
     testIdAttribute: 'data-cy',
     actionTimeout: 10_000,
+    launchOptions: {
+      // do not hide the scrollbars so that we can assert their look-and-feel
+      ignoreDefaultArgs: ['--hide-scrollbars'],
+    },
   },
 
   projects: [
