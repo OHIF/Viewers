@@ -585,7 +585,7 @@ function commandsModule({
       utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
     uploadDATAMeasurementsReport: ({ measurementFilter }) => {
-      utils.uploadDATAReport(measurementService.getMeasurements(measurementFilter));
+      utils.uploadDATAReport(uiNotificationService, measurementService.getMeasurements(measurementFilter));
     },
 
     downloadCSVSegmentationReport: ({ segmentationId }) => {
