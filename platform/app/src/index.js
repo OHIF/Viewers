@@ -18,10 +18,12 @@ import React from 'react';
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
 import { publicUrl } from './utils/publicUrl';
+import { taoding_init } from './taoding_init';
 export { history } from './utils/history';
 export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
 
 loadDynamicConfig(window.config).then(config_json => {
+  taoding_init()
   // Reset Dynamic config if defined
   if (config_json !== null) {
     window.config = config_json;
