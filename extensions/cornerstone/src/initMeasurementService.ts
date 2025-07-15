@@ -37,6 +37,7 @@ const initMeasurementService = (
     SplineROI,
     LivewireContour,
     Probe,
+    CustomProbe,
     UltrasoundDirectional,
     SegmentBidirectional,
   } = measurementServiceMappingsFactory(
@@ -167,6 +168,14 @@ const initMeasurementService = (
     Probe.matchingCriteria,
     Probe.toAnnotation,
     Probe.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CustomProbe',
+    CustomProbe.matchingCriteria,
+    CustomProbe.toAnnotation,
+    CustomProbe.toMeasurement
   );
 
   measurementService.addMapping(
@@ -452,6 +461,7 @@ const connectMeasurementServiceToTools = ({
        * This is not the read-only annotation rendered by the SR viewport.
        */
       const annotationManager = annotation.state.getAnnotationManager();
+
       const newAnnotation = {
         annotationUID: measurement.uid,
         highlighted: false,

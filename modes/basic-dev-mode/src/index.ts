@@ -86,6 +86,7 @@ function modeFactory({ modeConfiguration }) {
           { toolName: toolNames.RectangleROI },
           { toolName: toolNames.StackScroll },
           { toolName: toolNames.CalibrationLine },
+          { toolName: toolNames.CustomProbe },
         ],
         // enabled
         enabled: [{ toolName: toolNames.ImageOverlayViewer }],

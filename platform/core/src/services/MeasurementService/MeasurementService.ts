@@ -181,6 +181,9 @@ class MeasurementService extends PubSubService {
    */
   public getMeasurements(filter?: MeasurementFilter) {
     const measurements = [...this.measurements.values()];
+    console.log('measurements first', measurements);
+    console.log('filter', filter);
+    console.log('measurements filtered', measurements.filter(measurement => filter.call(this, measurement)));
     return filter
       ? measurements.filter(measurement => filter.call(this, measurement))
       : measurements;

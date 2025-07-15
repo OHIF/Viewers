@@ -7,6 +7,7 @@ const supportedTools = [
   'Angle',
   'CobbAngle',
   'Probe',
+  'CustomProbe',
   'RectangleROI',
   'PlanarFreehandROI',
   'SplineROI',

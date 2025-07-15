@@ -4,6 +4,7 @@ import MeasurementService from '../services/MeasurementService';
  * the study and series.
  */
 export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
+  console.log('selectedSeries', selectedSeries);
   if (!selectedSeries) {
     return;
   }

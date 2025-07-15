@@ -132,6 +132,10 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.updateSection('MeasurementTools', [
         'Length',
+        'Probe',
+        'CustomProbe',
+        'Angle',
+        'CobbAngle',
         'Bidirectional',
         'ArrowAnnotate',
         'EllipticalROI',
@@ -151,16 +155,14 @@ function modeFactory({ modeConfiguration }) {
         'ImageOverlayViewer',
         'StackScroll',
         'invert',
-        'Probe',
         'Cine',
-        'Angle',
-        'CobbAngle',
         'Magnify',
         'CalibrationLine',
         'TagBrowser',
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
+        'CustomProbe',
       ]);
 
       customizationService.setCustomizations({

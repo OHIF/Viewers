@@ -3,16 +3,16 @@ import AccordionGroup from './AccordionGroup';
 import { utils } from '@ohif/core';
 import MeasurementTableNested from './MeasurementTableNested';
 
-const { filterNot, filterAdditionalFindings } = utils.MeasurementFilters;
+const { filterNot, filterAdditionalFindings, filterMeasurementsBySeriesUID, filterAny } = utils.MeasurementFilters;
 
 export const MeasurementOrAdditionalFindingSets = [
   {
     title: 'Measurements',
-    filter: filterNot(filterAdditionalFindings),
+    filter: filterAny,
   },
   {
     title: 'Additional Findings',
-    filter: filterAdditionalFindings,
+    filter: filterAny,
   },
 ];
 
