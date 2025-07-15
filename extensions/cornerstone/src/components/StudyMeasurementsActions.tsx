@@ -27,23 +27,7 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           <Icons.Download className="h-5 w-5" />
           <span className="pl-1">CSV</span>
         </Button> */}
-
         <Button
-          size="sm"
-          variant="ghost"
-          className="pl-1.5"
-          onClick={() => {
-            commandsManager.runCommand('uploadDATAMeasurementsReport', {
-              StudyInstanceUID,
-              measurementFilter,
-            });
-          }}
-        >
-          <Icons.Upload className="h-5 w-5" />
-          <span className="pl-1">提交</span>
-        </Button>
-
-        {/* <Button
           size="sm"
           variant="ghost"
           className="pl-0.5"
@@ -60,8 +44,22 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           }}
         >
           <Icons.Add />
-          Create SR
-        </Button> */}
+          创建结构化报告
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="pl-1.5"
+          onClick={() => {
+            commandsManager.runCommand('uploadDATAMeasurementsReport', {
+              StudyInstanceUID,
+              measurementFilter,
+            });
+          }}
+        >
+          <Icons.Upload className="h-5 w-5" />
+          <span className="pl-1">提交</span>
+        </Button>
         <Button
           size="sm"
           variant="ghost"
