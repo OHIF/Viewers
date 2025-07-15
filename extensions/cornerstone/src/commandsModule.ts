@@ -187,27 +187,15 @@ function commandsModule({
 
       updatedViewports[0].viewportOptions = viewportToUpdate.viewportOptions;
 
-      if (!measurement.referencedImageId) {
-        // Update stored position presentation
-        commandsManager.run('updateStoredPositionPresentation', {
-          viewportId: activeViewportId,
-          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
-          // referencedImageId: measurement.referencedImageId,
-          options: {
-            ...measurement.metadata,
-          },
-        });
-      } else {
-        // Update stored position presentation
-        commandsManager.run('updateStoredPositionPresentation', {
-          viewportId: activeViewportId,
-          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
-          referencedImageId: measurement.referencedImageId,
-          options: {
-            ...measurement.metadata,
-          },
-        });
-      }
+      // Update stored position presentation
+      commandsManager.run('updateStoredPositionPresentation', {
+        viewportId: activeViewportId,
+        displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+        referencedImageId: measurement.referencedImageId,
+        options: {
+          ...measurement.metadata,
+        },
+      });
 
       commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
     },

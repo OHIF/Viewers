@@ -175,7 +175,6 @@ export default function hydrateStructuredReport(
       sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
     if (!imageId) {
-      console.warn('No image id, assuming only FOR', toolData.annotation);
       return getReferenceData3D(toolData, servicesManager);
     }
 
@@ -246,9 +245,6 @@ export default function hydrateStructuredReport(
       if (imageId && !imageIds.includes(imageId)) {
         imageIds.push(imageId);
       }
-      if (volumeId) {
-        console.warn('********* TODO - add image id reference', toolData);
-      }
     });
   });
 
@@ -268,13 +264,10 @@ function chooseDisplaySet(displaySets, annotation) {
   if (displaySets.length === 1) {
     return displaySets[0];
   }
-  console.warn('annotation=', annotation);
   const volumeDs = displaySets.find(ds => ds.isReconstructable);
   if (volumeDs) {
-    console.warn('Found volumeDs', volumeDs);
     return volumeDs;
   }
-  console.warn('Just finding first', displaySets);
   return displaySets[0];
 }
 
@@ -300,6 +293,10 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   };
 }
 
+/**
+ * Chooses a possible camera view - right now this is fairly basic,
+ * just setting the unknowns to null.
+ */
 function chooseCameraView(ds, points) {
   const selectedPoints = choosePoints(points);
   const cameraFocalPoint = centerOf(selectedPoints);
