@@ -29,7 +29,6 @@ function mapXNATMetadataForDisplay(studies) {
 
     // Set a default date if missing
     if (!study.StudyDate) {
-      console.log('XNAT: Setting default study date as none was provided');
       study.StudyDate = today;
     }
 
@@ -39,7 +38,6 @@ function mapXNATMetadataForDisplay(studies) {
 
     // Set a default time if missing
     if (!study.StudyTime) {
-      console.log('XNAT: Setting default study time as none was provided');
       study.StudyTime = currentTime;
     }
 

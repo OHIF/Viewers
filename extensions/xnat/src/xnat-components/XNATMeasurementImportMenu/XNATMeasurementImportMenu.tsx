@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import XnatSessionRoiCollections from '../../utils/IO/classes/queryXnatRois';
+import { retrieveMeasurementCollections } from '../../utils/IO/retrieveMeasurementCollections';
 import { importMeasurementCollection } from '../../utils/IO/classes/JSONMeasurementImporter';
 import fetchJSON from '../../utils/IO/fetchJSON';
 import './XNATMeasurementImportMenu.css';
@@ -9,6 +9,7 @@ interface XNATMeasurementImportMenuProps {
   seriesInstanceUID: string;
   onClose: () => void;
   servicesManager: any;
+  commandsManager?: any;
 }
 
 interface MeasurementCollectionItem {
@@ -18,6 +19,7 @@ interface MeasurementCollectionItem {
   relativeUri: string;
   seriesInstanceUID: string;
   type: string;
+  isForCurrentSeries?: boolean;
 }
 
 const XNATMeasurementImportMenu: React.FC<XNATMeasurementImportMenuProps> = ({
@@ -25,6 +27,7 @@ const XNATMeasurementImportMenu: React.FC<XNATMeasurementImportMenuProps> = ({
   seriesInstanceUID,
   onClose,
   servicesManager,
+  commandsManager,
 }) => {
   const [collections, setCollections] = useState<MeasurementCollectionItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,13 +38,16 @@ const XNATMeasurementImportMenu: React.FC<XNATMeasurementImportMenuProps> = ({
     setLoading(true);
     setError(null);
     try {
-      // XnatSessionRoiCollections is an async function that returns all collections
-      const allCollections = await XnatSessionRoiCollections();
+      // Use the new modernized retrieveMeasurementCollections utility
+      const allCollections = await retrieveMeasurementCollections(servicesManager);
 
-      // Filter for measurement collections relevant to the current series
-      const measCollections = allCollections.filter(
-        (c) => c.type === 'MEAS' && c.seriesInstanceUID === seriesInstanceUID
-      );
+      // Filter for measurement collections, and add a flag for whether it's for the current series
+      const measCollections = allCollections
+        .filter(c => c.type === 'MEAS')
+        .map(c => ({
+          ...c,
+          isForCurrentSeries: c.seriesInstanceUID === seriesInstanceUID,
+        }));
 
       setCollections(measCollections);
     } catch (err) {
@@ -67,10 +73,39 @@ const XNATMeasurementImportMenu: React.FC<XNATMeasurementImportMenuProps> = ({
       // The actual data is in the promise property of the response
       const measurementData = await collectionJSON.promise;
 
-      await importMeasurementCollection({
-        collectionJSON: measurementData,
-        servicesManager,
-      });
+      // Try to use the modern XNATMeasurementApi first, fallback to direct import
+      try {
+        // Check if commandsManager is available
+        if (commandsManager) {
+          console.log('ImportMenu: Attempting to use modern XNATMeasurementApi');
+          await commandsManager.runCommand('XNATMeasurementApi', {
+            action: 'importCollection',
+            collectionData: {
+              SeriesInstanceUID: collection.seriesInstanceUID,
+              collectionLabel: collection.label,
+              collectionObject: measurementData,
+            },
+          });
+          console.log('ImportMenu: Modern API import completed successfully');
+        } else {
+          // Fallback to direct import if commandsManager is not available
+          console.warn('CommandsManager not available, using direct import');
+          await importMeasurementCollection({
+            collectionJSON: measurementData,
+            servicesManager,
+          });
+        }
+      } catch (apiError) {
+        console.warn('Modern API failed, falling back to direct import:', apiError);
+        
+        // Fallback to direct import
+        console.log('ImportMenu: Using fallback direct import');
+        const fallbackResult = await importMeasurementCollection({
+          collectionJSON: measurementData,
+          servicesManager,
+        });
+        console.log('ImportMenu: Fallback import result:', fallbackResult);
+      }
 
       uiNotificationService.show({
         title: 'Import Successful',
@@ -120,15 +155,25 @@ const XNATMeasurementImportMenu: React.FC<XNATMeasurementImportMenuProps> = ({
                 Choose a measurement collection to import:
               </p>
               <div className="xnat-measurement-grid">
-                {collections.map((collection) => (
+                {collections.map(collection => (
                   <div
                     key={collection.id}
-                    className={`xnat-measurement-card ${importing === collection.id ? 'importing' : ''}`}
+                    className={`xnat-measurement-card ${
+                      importing === collection.id ? 'importing' : ''
+                    } ${!collection.isForCurrentSeries ? 'other-series' : ''}`}
+                    title={
+                      !collection.isForCurrentSeries
+                        ? 'This collection belongs to another series in this study. It will be imported but will not be visible until you switch to the correct series.'
+                        : `Import ${collection.label}`
+                    }
                     onClick={() => !importing && handleImportCollection(collection)}
                   >
                     <div className="xnat-measurement-icon">🎯</div>
                     <div className="xnat-measurement-details">
                       <div className="xnat-measurement-name">{collection.label}</div>
+                      {!collection.isForCurrentSeries && (
+                        <div className="xnat-other-series-label">Other Series</div>
+                      )}
                     </div>
                     <div className="xnat-import-status">
                       {importing === collection.id ? (

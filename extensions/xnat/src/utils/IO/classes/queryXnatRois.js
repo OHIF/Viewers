@@ -32,7 +32,6 @@ export const XnatSessionRoiCollections = async() => {
             }
         }
 
-        console.log('Session info for ROI query:', { projectId, subjectId, experimentId });
 
         if (!projectId || !experimentId) {
             throw new Error('No XNAT session information available. Please ensure you are viewing data from XNAT and that the session is properly initialized.');
@@ -41,7 +40,6 @@ export const XnatSessionRoiCollections = async() => {
         // Fetch assessors from XNAT using the existing fetchJSON utility
         // Remove leading slash to avoid double slash in URL construction
         const assessorsRoute = `data/archive/projects/${projectId}/subjects/${subjectId}/experiments/${experimentId}/assessors?format=json`;
-        console.log('Fetching assessors from route:', assessorsRoute);
 
         const assessorsPromise = fetchJSON(assessorsRoute);
         const assessorsData = await assessorsPromise.promise;

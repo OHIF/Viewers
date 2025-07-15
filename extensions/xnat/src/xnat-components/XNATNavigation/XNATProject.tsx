@@ -41,10 +41,8 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
 
   constructor(props: XNATProjectProps) {
     super(props);
-    console.log('XNATProject: Constructor called with props:', props);
 
     const active = this.props.ID === sessionMap.getProject();
-    console.log('XNATProject: Active state:', active, 'Project ID:', this.props.ID, 'Session Project ID:', sessionMap.getProject());
 
     this.state = {
       subjects: [],
@@ -56,12 +54,6 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
     // Bind helper methods
     this.getExpandIcon = getExpandIcon.bind(this);
     this.onExpandIconClick = onExpandIconClick.bind(this);
-    
-    // Debug the bound methods
-    console.log('XNATProject: Bound methods:', {
-      getExpandIcon: typeof this.getExpandIcon,
-      onExpandIconClick: typeof this.onExpandIconClick
-    });
   }
 
   componentWillUnmount(): void {
@@ -76,7 +68,6 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
    * @returns {null}
    */
   fetchData(): void {
-    console.log('XNATProject: Fetching subjects for project:', this.props.ID);
     
     this._cancelablePromise = fetchJSON(
       `data/archive/projects/${this.props.ID}/subjects?format=json`
@@ -84,7 +75,6 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
 
     this._cancelablePromise.promise
       .then((result: any) => {
-        console.log('XNATProject: Subject data received:', result);
         
         if (!result) {
           console.error('XNATProject: No subject data returned from API');
@@ -92,7 +82,6 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
         }
 
         const subjects: Subject[] = result.ResultSet.Result;
-        console.log('XNATProject: Retrieved subjects:', subjects);
 
         subjects.sort((a, b) => compareOnProperty(a, b, 'label'));
 
@@ -107,7 +96,6 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
   }
 
   render(): React.ReactNode {
-    console.log('XNATProject: Rendering with state:', this.state);
     
     const { ID, name } = this.props;
     const { subjects, active, fetched, expanded } = this.state;
@@ -118,13 +106,11 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
           <a
             className="btn btn-sm btn-secondary xnat-nav-button"
             onClick={() => {
-              console.log('XNATProject: Expand icon clicked');
               this.onExpandIconClick();
             }}
             style={{ flexShrink: 0 }}
           >
             {(() => {
-              console.log('XNATProject: Rendering expand icon');
               try {
                 return this.getExpandIcon();
               } catch (err) {

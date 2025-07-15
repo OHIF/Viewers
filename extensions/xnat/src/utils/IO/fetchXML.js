@@ -2,40 +2,37 @@ import makeCancelable from '../makeCancelable';
 import sessionMap from '../sessionMap';
 
 export default function fetchXML(route, updateProgress) {
-  const { xnatRootUrl } = sessionMap;
+    const { xnatRootUrl } = sessionMap;
 
-  return makeCancelable(
-    new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
+    return makeCancelable(
+        new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
 
-      const url = `${xnatRootUrl}${route}`;
+            const url = `${xnatRootUrl}${route}`;
+            xhr.onload = () => {
+                console.log(`Request returned, status: ${xhr.status}`);
+                if (xhr.status === 200) {
+                    resolve(xhr.response);
+                } else {
+                    resolve(null);
+                }
+            };
 
-      console.log(`fetching: ${url}`);
+            xhr.onerror = () => {
+                console.log(`Request returned, status: ${xhr.status}`);
+                reject(xhr.responseText);
+            };
 
-      xhr.onload = () => {
-        console.log(`Request returned, status: ${xhr.status}`);
-        if (xhr.status === 200) {
-          resolve(xhr.response);
-        } else {
-          resolve(null);
-        }
-      };
+            if (updateProgress) {
+                xhr.onprogress = evt => {
+                    const percentComplete = Math.floor((evt.loaded / evt.total) * 100);
+                    updateProgress(`Downloading File: ${percentComplete}%`);
+                };
+            }
 
-      xhr.onerror = () => {
-        console.log(`Request returned, status: ${xhr.status}`);
-        reject(xhr.responseText);
-      };
-
-      if (updateProgress) {
-        xhr.onprogress = evt => {
-          const percentComplete = Math.floor((evt.loaded / evt.total) * 100);
-          updateProgress(`Downloading File: ${percentComplete}%`);
-        };
-      }
-
-      xhr.open('GET', url);
-      xhr.responseType = 'document';
-      xhr.send();
-    })
-  );
+            xhr.open('GET', url);
+            xhr.responseType = 'document';
+            xhr.send();
+        })
+    );
 }

@@ -434,9 +434,19 @@ const connectMeasurementServiceToTools = ({
   measurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
     ({ source, measurement, data, dataSource }) => {
+      console.log('🔍 DEBUG: RAW_MEASUREMENT_ADDED event received in cornerstone extension');
+      console.log('🔍 DEBUG: Source:', source);
+      console.log('🔍 DEBUG: Source name:', source?.name);
+      console.log('🔍 DEBUG: Expected source name: Cornerstone3DTools');
+      console.log('🔍 DEBUG: Source name matches:', source?.name === CORNERSTONE_3D_TOOLS_SOURCE_NAME);
+      console.log('🔍 DEBUG: Measurement:', measurement);
+      
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
+        console.log('🔍 DEBUG: Source name does not match, skipping annotation creation');
         return;
       }
+
+      console.log('🔍 DEBUG: Source name matches, proceeding with annotation creation');
 
       const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } = measurement;
 

@@ -19,6 +19,7 @@ export default function XNATPanelMeasurement(props): React.ReactNode {
           variant="ghost"
           className="pl-0.5"
           onClick={() => commandsManager.runCommand('XNATImportMeasurements')}
+          title="Import measurements from XNAT using modern API with fallback"
         >
           <Icons.Download />
           Import Measurements from XNAT

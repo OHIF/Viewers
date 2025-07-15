@@ -35,11 +35,10 @@ export default function init({
   configuration?: any;
 }): void {
   const { toolbarService, cineService, viewportGridService, cornerstoneViewportService } = servicesManager.services;
-  console.log("XNAT Extension - DEFAULT init() function: STARTING", { servicesManager, configuration, commandsManager });
+
   
   // Initialize XNAT DICOM loader with the configuration, returning a standard promise
   const initializeXNATLoader = async () => {
-    console.log('XNAT Extension: Initializing XNAT DICOM loader');
     try {
       // Pass the configuration to the XNAT DICOM loader
       // Make sure we properly handle the promise returned by initXNATDicomLoader
@@ -68,9 +67,6 @@ export default function init({
   
   // Subscribe to DicomMetadataStore events to know when instances are added
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, (event) => {
-    console.log('XNAT: New DICOM instances added to store', event);
-    // You can uncomment this line to automatically print instances when they're added
-    // printSimpleInstanceList();
   });
   
   toolbarService.registerEventForToolbarUpdate(cineService, [
@@ -142,6 +138,4 @@ export function preRegistration({
   configuration = {},
 }) {
   // Implementation details
-  console.log("XNAT Extension - NAMED preRegistration() function: STARTING", { servicesManager, configuration, commandsManager });
-  // ... rest of the implementation
 }

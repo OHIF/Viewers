@@ -31,7 +31,6 @@ interface XNATNavigationPanelProps {
  * @returns component
  */
 const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManager }) => {
-  console.log('XNATNavigationPanel: Component rendering', { servicesManager });
   
   const [activeProjects, setActiveProjects] = useState<Project[]>([]);
   const [otherProjects, setOtherProjects] = useState<Project[]>([]);
@@ -40,17 +39,14 @@ const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManag
 
   // Use uiNotificationService from servicesManager if needed
   const { uiNotificationService } = servicesManager.services;
-  console.log('XNATNavigationPanel: Available services:', Object.keys(servicesManager.services));
 
   /**
    * Fetch available projects from XNAT on component mount
    */
   useEffect(() => {
-    console.log('XNATNavigationPanel: Fetching projects from XNAT');
     setLoading(true);
     fetchJSON('data/archive/projects/?format=json')
       .promise.then(result => {
-        console.log('XNATNavigationPanel: XNAT projects API result:', result);
         
         if (!result) {
           console.error('XNATNavigationPanel: No projects data returned from API');
@@ -60,15 +56,12 @@ const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManag
         }
 
         const allProjects = result.ResultSet.Result;
-        console.log('XNATNavigationPanel: Retrieved projects:', allProjects);
         
         const activeProjectId = sessionMap.getProject();
-        console.log('XNATNavigationPanel: Active project ID from sessionMap:', activeProjectId);
 
         const thisProjectIndex = allProjects.findIndex(
           element => element.ID === activeProjectId
         );
-        console.log('XNATNavigationPanel: Active project index:', thisProjectIndex);
 
         let active: Project[] = [];
         let others: Project[] = [...allProjects];
@@ -76,12 +69,10 @@ const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManag
         // If we found the active project, move it to active array
         if (thisProjectIndex !== -1) {
           active = allProjects.splice(thisProjectIndex, 1);
-          console.log('XNATNavigationPanel: Active project found:', active);
         }
 
         // Sort the other projects by name
         others.sort((a, b) => compareOnProperty(a, b, 'name'));
-        console.log('XNATNavigationPanel: Other projects:', others);
 
         setActiveProjects(active);
         setOtherProjects(others);
@@ -104,13 +95,7 @@ const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManag
       });
   }, [uiNotificationService]);
 
-  // Log rendering state
-  console.log('XNATNavigationPanel: Current state', {
-    loading,
-    error,
-    activeProjects,
-    otherProjects
-  });
+
 
   // Display loading state
   if (loading) {

@@ -110,7 +110,6 @@ export const importSegmentation = async ({
       throw new Error('No image IDs found in referenced display set');
     }
 
-    console.log('Starting SEG import with imageIds:', imageIds.length);
 
     // Parse the DICOM SEG file using cornerstone adapters
     const tolerance = 0.001;
@@ -124,23 +123,16 @@ export const importSegmentation = async ({
       throw new Error('Failed to parse DICOM SEG file');
     }
 
-    console.log('SEG parsing results:', results);
-    console.log('Results keys:', Object.keys(results));
-    console.log('Centroids data:', results.centroids);
-
     // Ensure centroids are properly structured
     results.centroids = ensureCentroidsStructure(results.centroids, results.segMetadata);
 
     // Debug centroids structure
-    console.log('Centroids map size after processing:', results.centroids.size);
     results.centroids.forEach((centroid, index) => {
-      console.log(`Centroid ${index}:`, centroid);
     });
 
     // Process colors for segments (similar to cornerstone-dicom-seg extension)
     let usedRecommendedDisplayCIELabValue = true;
     if (results.segMetadata && results.segMetadata.data) {
-      console.log('Processing segment colors, metadata data length:', results.segMetadata.data.length);
       results.segMetadata.data.forEach((data, i) => {
         if (i > 0) {
           data.rgba = data.RecommendedDisplayCIELabValue;
@@ -183,9 +175,6 @@ export const importSegmentation = async ({
       ...results, // Include all the parsed SEG data
     };
 
-    console.log('Created segDisplaySet:', segDisplaySet);
-    console.log('segDisplaySet centroids:', segDisplaySet.centroids);
-
     // Create segmentation using the segmentation service with correct API
     const createdSegmentationId = await segmentationService.createSegmentationForSEGDisplaySet(
       segDisplaySet,
@@ -194,8 +183,6 @@ export const importSegmentation = async ({
         type: ToolsEnums.SegmentationRepresentations.Labelmap,
       }
     );
-
-    console.log('Created segmentation with ID:', createdSegmentationId);
 
     // Get the active viewport ID
     const activeViewportId = viewportGridService.getActiveViewportId();
@@ -209,18 +196,12 @@ export const importSegmentation = async ({
     // Set the imported segmentation as active
     segmentationService.setActiveSegmentation(activeViewportId, createdSegmentationId);
 
-    // Debug the created segmentation structure
     const createdSegmentation = segmentationService.getSegmentation(createdSegmentationId);
-    console.log('Final segmentation structure:', createdSegmentation);
     if (createdSegmentation && createdSegmentation.config && createdSegmentation.config.segments) {
-      console.log('Segments structure:', createdSegmentation.config.segments);
       Object.keys(createdSegmentation.config.segments).forEach(segmentIndex => {
         const segment = createdSegmentation.config.segments[segmentIndex];
-        console.log(`Segment ${segmentIndex}:`, segment);
         if (segment && segment.cachedStats) {
-          console.log(`Segment ${segmentIndex} cachedStats:`, segment.cachedStats);
           if (segment.cachedStats.center) {
-            console.log(`Segment ${segmentIndex} center:`, segment.cachedStats.center);
           }
         }
       });

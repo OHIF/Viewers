@@ -401,8 +401,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
     }
 
-    // This is the old viewportInfo, which may have old options but we might be
-    // using its viewport (same viewportId as the new viewportInfo)
+    // This is the old viewportInfo, which may have old options but we might be using its viewport (same viewportId as the new viewportInfo)
     const viewportInfo = this.viewportsById.get(viewportId);
 
     // We should store the presentation for the current viewport since we can't only

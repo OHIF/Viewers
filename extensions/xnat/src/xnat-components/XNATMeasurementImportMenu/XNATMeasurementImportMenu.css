@@ -138,3 +138,21 @@
     margin-top: 1rem;
     text-align: right;
 }
+
+.xnat-measurement-card.other-series {
+    opacity: 0.7;
+    background-color: #3a3a3a;
+    border-color: #555;
+}
+
+.xnat-measurement-card.other-series:hover {
+    background-color: #4a4a4a;
+    border-color: #777;
+}
+
+.xnat-other-series-label {
+    font-size: 0.75rem;
+    color: #ccc;
+    font-style: italic;
+    margin-top: 4px;
+}

@@ -197,18 +197,12 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     generateWadoHeader;
   // Default to enabling bulk data retrieves, with no other customization as
   // this is part of hte base standard.
-  log.info('XNATDataSource: createDataSource'); // Updated log
   xnatConfig.bulkDataURI ||= { enabled: true };
   xnatConfigCopy = { ...xnatConfig }; // Initialize early
 
   const implementation = {
     initialize: ({ params, query }) => {
-      log.info('XNATDataSource: initialize started. Initial xnatConfig:', JSON.parse(JSON.stringify(xnatConfig)));
-      log.info('XNATDataSource: initialize params:', params);
-      log.info('XNATDataSource: initialize query:', query);
-
       setupDisplaySetLogging();
-      log.info('XNAT: Display set logging initialized');
 
       xnatConfig.xnat = xnatConfig.xnat || {};
 
@@ -222,9 +216,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       if (querySessionId) xnatConfig.xnat.sessionId = querySessionId;
       if (querySubjectId) xnatConfig.xnat.subjectId = querySubjectId;
 
-      log.info('XNAT IDs extracted and stored in xnatConfig.xnat:', xnatConfig.xnat);
-
-
       if (xnatConfig.onConfiguration && typeof xnatConfig.onConfiguration === 'function') {
         xnatConfig = xnatConfig.onConfiguration(xnatConfig, {
           params,
@@ -233,11 +224,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       }
 
       xnatConfigCopy = JSON.parse(JSON.stringify(xnatConfig));
-      log.info('XNATDataSource: xnatConfigCopy created:', JSON.parse(JSON.stringify(xnatConfigCopy)));
-
 
       getAuthorizationHeader = () => {
-        log.info('XNATDataSource: getAuthorizationHeader'); // Updated log
         const xhrRequestHeaders: Record<string, string> = {};
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
         if (authHeaders && typeof authHeaders === 'object' && 'Authorization' in authHeaders && authHeaders.Authorization) {
@@ -247,7 +235,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       };
 
       generateWadoHeader = () => {
-        log.info('XNATDataSource: generateWadoHeader'); // Updated log
         const authorizationHeader = getAuthorizationHeader();
         //Generate accept header depending on config params
         const formattedAcceptHeader = utils.generateAcceptHeader(
@@ -261,7 +248,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           Accept: formattedAcceptHeader,
         };
       };
-      log.info('XNATDataSource: qidoConfig setup'); // Updated log
       qidoConfig = {
         url: xnatConfig.qidoRoot,
         staticWado: xnatConfig.staticWado,
@@ -270,7 +256,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: xnatConfig.supportsFuzzyMatching,
       };
-      log.info('XNATDataSource: wadoConfig setup'); // Updated log
       wadoConfig = {
         url: xnatConfig.wadoRoot,
         staticWado: xnatConfig.staticWado,
@@ -279,7 +264,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: xnatConfig.supportsFuzzyMatching,
       };
-      log.info('XNATDataSource: qidoDicomWebClient setup'); // Updated log
       qidoDicomWebClient = xnatConfig.staticWado
         ? new StaticWadoClient(qidoConfig)
         : new api.DICOMwebClient(qidoConfig);
@@ -287,7 +271,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       wadoDicomWebClient = xnatConfig.staticWado
         ? new StaticWadoClient(wadoConfig)
         : new api.DICOMwebClient(wadoConfig);
-      log.info('XNATDataSource: initialize completed.');
     },
     query: {
       studies: {
@@ -301,8 +284,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           }
 
           const { projectId, experimentId } = getXNATStatusFromStudyInstanceUID(studyInstanceUid, xnatConfigCopy);
-
-          log.info('XNAT study search using:', { projectId, experimentId, studyInstanceUid });
 
           if (!projectId || !experimentId) {
             log.error('XNAT: Missing projectId or experimentId for metadata fetch in search');
@@ -386,12 +367,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
             log.error('XNAT series search: Unable to determine studyInstanceUID from', studyInstanceUID);
             return [];
           }
-
-          log.info('XNAT series search: using studyInstanceUID', currentStudyInstanceUID);
-
           try {
             const results = await seriesInStudy(qidoDicomWebClient, currentStudyInstanceUID);
-            log.info('XNAT series search: results', results);
             return processSeriesResults(results);
           } catch (error) {
             log.error('XNAT series search error:', error);
@@ -401,7 +378,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       },
       instances: {
         search: (studyInstanceUid, seriesInstanceUid, queryParameters) => { // Added seriesInstanceUid
-          log.info('XNATDataSource: instances.search'); // Updated log
           qidoDicomWebClient.headers = getAuthorizationHeader();
           return qidoSearch.call(
             undefined,
@@ -528,12 +504,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
             return Promise.reject(new Error('Missing StudyInstanceUID'));
           }
 
-          log.info(
-            `XNAT: retrieve.series.metadata for StudyInstanceUID: ${StudyInstanceUID}, returnPromises: ${returnPromises}, madeInClient: ${madeInClient}`
-          );
-
           const retrieveSeriesMetadataAsync = async () => {
-            log.info(`XNAT: retrieveSeriesMetadataAsync called for StudyUID: ${StudyInstanceUID}`);
             let seriesAndInstances;
             try {
               if (!xnatConfigCopy) {
@@ -558,7 +529,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               } else {
                 seriesAndInstances = await implementation.xnat.getExperimentMetadata(projectId, experimentId);
               }
-              log.info(`XNAT: Fetched experiment metadata for ${StudyInstanceUID}`, seriesAndInstances);
             } catch (e) {
               log.error(
                 `XNAT: Error fetching experiment metadata for StudyInstanceUID ${StudyInstanceUID}: `,
@@ -578,12 +548,10 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               return [];
             }
 
-            log.info(`XNAT: retrieve.series.metadata - Found ${study.series.length} series in XNAT experiment for StudyUID ${StudyInstanceUID}`);
 
             const allNaturalizedInstancesForStudy = [];
 
             for (const series of study.series) {
-              log.info(`XNAT: retrieveSeriesMetadataAsync - Iterating series: ${series.SeriesInstanceUID}`);
               const xnatInstances = series.instances || [];
               if (xnatInstances.length === 0) {
                 log.warn(`XNAT: No instances for series ${series.SeriesInstanceUID}`);
@@ -694,14 +662,12 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               });
 
               if (instancesToStoreForThisSeries.length > 0) {
-                 log.info(`XNAT:retrieveSeriesMetadataAsync - Storing ${instancesToStoreForThisSeries.length} processed instances in DicomMetadataStore for series ${series.SeriesInstanceUID} (Study ${StudyInstanceUID})`);
                  DicomMetadataStore.addInstances(instancesToStoreForThisSeries, madeInClient);
               }
             }
 
             // Add Series level metadata (summary) to DicomMetadataStore
             const seriesSummaryMetadata = study.series.map(s => {
-                log.info(`XNAT: Mapping series ${s.SeriesInstanceUID}, SeriesDescription from XNAT: '${s.SeriesDescription}'`);
                 return {
                     StudyInstanceUID,
                     SeriesInstanceUID: s.SeriesInstanceUID,
@@ -714,7 +680,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
             DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
 
-            log.info(`XNAT: retrieveSeriesMetadataAsync - Returning ${allNaturalizedInstancesForStudy.length} total naturalized instances for study ${StudyInstanceUID}`);
             return allNaturalizedInstancesForStudy; // This return value is often expected to be series summaries
           };
 
@@ -759,7 +724,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           if (typeof studyInstanceUIDParam === 'object' && studyInstanceUIDParam !== null) {
             studyUid = studyInstanceUIDParam.StudyInstanceUID;
           }
-          log.info('XNAT retrieve study metadata', { studyUid });
 
           let projectId = xnatConfigCopy.xnat?.projectId;
           let experimentId = xnatConfigCopy.xnat?.experimentId || xnatConfigCopy.xnat?.sessionId;
@@ -781,7 +745,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               log.error('XNAT: No metadata returned from XNAT API or no studies in response.');
               return null;
             }
-            log.info('XNAT: Successfully retrieved study metadata from XNAT API');
 
             const studyFromXnat = xnatMetadata.studies.find(s => s.StudyInstanceUID === studyUid);
             if (!studyFromXnat) {
@@ -808,7 +771,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               xnatTransactionId: xnatMetadata.transactionId,
             };
             DicomMetadataStore.addStudy(studyMetadataForStore);
-            log.info(`XNAT: Added/Updated study ${studyUid} in DicomMetadataStore.`);
 
             // The retrieve.series.metadata will handle instance and series population.
             // This function now primarily ensures the study-level summary is in the store.
@@ -884,7 +846,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     ) => {
         // This function body is effectively replaced by retrieve.series.metadata's XNAT logic
         // We call the main retrieve.series.metadata here.
-        log.info(`XNAT: _retrieveSeriesMetadataAsync (new wrapper) for ${StudyInstanceUID}`);
         return implementation.retrieve.series.metadata({
             StudyInstanceUID,
             filters,
@@ -958,7 +919,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     xnat: {
       getExperimentMetadata: async (projectId, experimentId) => {
         const currentConfig = xnatConfigCopy || xnatConfig;
-        log.info(`XNATDataSource: xnat.getExperimentMetadata attempting for ${projectId}/${experimentId} with URL ${currentConfig.wadoRoot}`);
         const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
         
         // Dynamic server URL detection for robust deployment
@@ -974,14 +934,11 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         const baseUrl = currentConfig.wadoRoot || getServerUrl();
         const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
         const headers = getAuthorizationHeader();
-        log.info(`XNATDataSource: Fetching from apiUrl: ${apiUrl}`);
         try {
           const response = await fetch(apiUrl, {
             method: 'GET',
             headers: { 'Accept': 'application/json', ...headers },
           });
-
-          log.info(`XNATDataSource: Received response from ${apiUrl} - Status: ${response.status}, StatusText: ${response.statusText}, OK: ${response.ok}`);
 
           if (!response.ok) {
             const errorText = await response.text();
@@ -991,7 +948,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           let data;
           try {
             data = await response.json();
-            log.info(`XNATDataSource: xnat.getExperimentMetadata successfully parsed JSON for ${experimentId}:`, data);
           } catch (jsonError) {
             log.error(`XNATDataSource: Failed to parse JSON response for ${experimentId}. URL: ${apiUrl}, Status: ${response.status}. Error:`, jsonError);
             const responseText = await response.text();
@@ -1062,7 +1018,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           const baseUrl = currentConfig.wadoRoot || getServerUrl();
           const apiPath = `/xapi/viewer/projects/${projectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
-          log.info('XNAT: Constructed API URL for Project Metadata:', apiUrl);
           const headers = getAuthorizationHeader();
           const response = await fetch(apiUrl, {
             method: 'GET',

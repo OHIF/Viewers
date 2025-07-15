@@ -30,11 +30,10 @@ function _createGetImageSrcFromImageIdFn(extensionManager) {
       throw new Error('Missing cornerstone library');
     }
     
-    console.log('XNAT PANEL: Successfully retrieved cornerstone libraries');
     
     // Return the function that will get image src from imageId
     return (imageId, options = {}) => {
-      console.log('XNAT PANEL: Getting image src for imageId:', imageId);
+      
       return getImageSrcFromImageId(cornerstone, imageId);
     };
   } catch (ex) {
@@ -55,24 +54,16 @@ function _createGetImageSrcFromImageIdFn(extensionManager) {
  * @param {object} extensionManager
  */
 function WrappedPanelStudyBrowser({ extensionManager, servicesManager, commandsManager }) {
-  console.log('XNAT PANEL: WrappedPanelStudyBrowser rendering');
   
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
   const [dataSource] = extensionManager.getActiveDataSource();
   
-  console.log('XNAT PANEL: Active dataSource:', dataSource);
   
-  // Log rendering to check if this component is even being used
-  console.log('XNAT PANEL: Component structure', {
-    extensionManager, 
-    servicesManager, 
-    commandsManager
-  });
 
   const _getStudiesForPatientByMRN = useCallback(
     (...args) => {
-      console.log('XNAT PANEL: Called _getStudiesForPatientByMRN with args:', args);
+      
       return getStudiesForPatientByMRN(dataSource, ...args);
     },
     [dataSource]
@@ -80,7 +71,7 @@ function WrappedPanelStudyBrowser({ extensionManager, servicesManager, commandsM
   
   const _getImageSrcFromImageId = useCallback(
     (imageId, options) => {
-      console.log('XNAT PANEL: Called _getImageSrcFromImageId with args:', { imageId, options });
+
       return _createGetImageSrcFromImageIdFn(extensionManager)(imageId, options);
     },
     [extensionManager]
@@ -89,17 +80,11 @@ function WrappedPanelStudyBrowser({ extensionManager, servicesManager, commandsM
   // Properly bind requestDisplaySetCreationForStudy function
   const _requestDisplaySetCreationForStudy = useCallback(
     (displaySetService, StudyInstanceUID, madeInClient) => {
-      console.log('XNAT: Wrapper _requestDisplaySetCreationForStudy called:', {
-        displaySetService: displaySetService ? 'present' : 'missing',
-        StudyInstanceUID,
-        madeInClient
-      });
       
       // Check if we have a StudyInstanceUID - try getting from sessionStorage if not provided
       if (!StudyInstanceUID) {
         const storedUID = sessionStorage.getItem('xnat_studyInstanceUID');
         if (storedUID) {
-          console.log(`XNAT: Using StudyInstanceUID from sessionStorage: ${storedUID}`);
           StudyInstanceUID = storedUID;
         } else {
           console.warn('XNAT: No StudyInstanceUID provided for display set creation and none found in sessionStorage');
@@ -109,17 +94,13 @@ function WrappedPanelStudyBrowser({ extensionManager, servicesManager, commandsM
       
       // Check if displaySetService is present
       if (!displaySetService) {
-        console.error('XNAT: displaySetService is missing in _requestDisplaySetCreationForStudy call');
         return;
       }
       
       // Check if dataSource is present
       if (!dataSource) {
-        console.error('XNAT: dataSource is missing in _requestDisplaySetCreationForStudy call');
         return;
       }
-      
-      console.log('XNAT: All parameters validated, calling requestDisplaySetCreationForStudy');
       
       return requestDisplaySetCreationForStudy(
         dataSource,

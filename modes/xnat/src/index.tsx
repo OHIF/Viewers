@@ -111,10 +111,9 @@ function modeFactory({ modeConfiguration }) {
             experimentId,
             experimentLabel
           );
-          
+
           // Store the router instance in the services manager
           servicesManager.services.sessionRouter = sessionRouter;
-          console.log('XNAT Mode Init - Session router created successfully');
           
           // Set up the layout right away since we know we'll need it
           const layoutService = servicesManager.services.layoutService;
@@ -338,7 +337,6 @@ function modeFactory({ modeConfiguration }) {
       if (_displaySetAddedSubscription) {
         _displaySetAddedSubscription.unsubscribe();
         _displaySetAddedSubscription = null;
-        console.log('XNAT Mode - Exiting - Unsubscribed from DISPLAY_SETS_ADDED event.');
       }
 
       uiDialogService.hideAll();
@@ -357,7 +355,6 @@ function modeFactory({ modeConfiguration }) {
      * modalities of the selected studies. For instance a PET/CT mode should be
      */
     isValidMode: ({ modalities }) => {
-      console.log('XNAT isValidMode check:', { modalities });
       return { valid: true };
     },
     /**
@@ -429,7 +426,7 @@ function modeFactory({ modeConfiguration }) {
           };
         },
         init: async ({ servicesManager, extensionManager, studyInstanceUIDs }) => {
-          console.log('XNAT Mode - Route Init - START', { studyInstanceUIDs, servicesManager, extensionManager });
+            
           // Re-enable init logic
           // console.log('XNAT Route Init - Temporarily Disabled');
           // return []; // Return empty array to prevent further processing
@@ -438,23 +435,19 @@ function modeFactory({ modeConfiguration }) {
           
           // Get the study UIDs from the session router if available
           if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
-            console.log('Route init - No study UIDs provided, checking session router');
             const sessionRouter = servicesManager.services.sessionRouter;
             
             if (sessionRouter) {
               try {
                 // Make sure to await the result
                 const studyUID = await sessionRouter.go();
-                console.log('XNAT Mode - Route Init - After sessionRouter.go()', { studyUID, studyInstanceUIDs });
                 
                 if (studyUID) {
-                  console.log('Route init - Got study UID from session router:', studyUID);
                   studyInstanceUIDs = [studyUID];
                   
                   // Explicitly update the data source
                   const dataSource = extensionManager.getActiveDataSource();
                   if (dataSource) {
-                    console.log('Route init - Setting up data source with study:', studyUID);
                     
                     // Make sure viewports are ready for the study
                     if (layoutService) {
@@ -464,7 +457,6 @@ function modeFactory({ modeConfiguration }) {
                     // Tell OHIF to show the default hanging protocol for this study
                     const hangingProtocolService = servicesManager.services.hangingProtocolService;
                     if (hangingProtocolService) {
-                      console.log('Route init - Applying hanging protocol for study');
                       hangingProtocolService.run({ studyInstanceUIDs });
                     }
                   }
@@ -479,13 +471,9 @@ function modeFactory({ modeConfiguration }) {
           try {
             const [dataSource] = extensionManager.getActiveDataSource();
             if (dataSource && typeof dataSource.initialize === 'function') {
-              console.log('XNAT Mode - Route Init - Before dataSource.initialize()', { dataSource });
-              console.log('XNAT Mode Route Init: Calling dataSource.initialize()');
               // Pass the query parameters needed for initialization
               const query = new URLSearchParams(window.location.search); 
               await dataSource.initialize({ params: {}, query }); // Assuming params might not be needed here, pass query
-              console.log('XNAT Mode - Route Init - After dataSource.initialize()');
-              console.log('XNAT Mode Route Init: dataSource.initialize() completed.');
             } else {
               console.error('XNAT Mode Route Init: Could not find active data source or initialize function.');
             }
@@ -502,29 +490,15 @@ function modeFactory({ modeConfiguration }) {
             _displaySetAddedSubscription = displaySetService.subscribe(
               displaySetService.EVENTS.DISPLAY_SETS_ADDED,
               (eventData) => { 
-                console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED FIRING! Raw event data:', eventData);
                 const displaySetsAdded = eventData?.displaySetsAdded;
                 const options = eventData?.options;
-                console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED triggered.', { numDisplaySetsAdded: displaySetsAdded ? displaySetsAdded.length : 0, options });
                 if (displaySetsAdded && displaySetsAdded.length > 0) {
-                  console.log('XNAT Mode - EVENT: Display sets were added:', displaySetsAdded);
-                  for (const ds of displaySetsAdded) {
-                    console.log(`XNAT Mode - EVENT: Added DisplaySet UID: ${ds.displaySetInstanceUID}`);
-                    console.log(`  - Modality: ${ds.Modality}`);
-                    console.log(`  - SeriesInstanceUID: ${ds.SeriesInstanceUID}`);
-                    console.log(`  - SeriesDescription: ${ds.SeriesDescription}`);
-                    console.log(`  - SOPClassUIDs:`, ds.SOPClassUIDs);
-                    console.log(`  - Instance count: ${ds.instances ? ds.instances.length : 'N/A'}`);
-                    console.log(`  - isLoaded: ${ds.isLoaded}, isDerived: ${ds.isDerived}, isReconstructable: ${ds.isReconstructable}`);
-                    console.log(`  - Made in client: ${ds.madeInClient}`);
-                    console.log(`  - Complete Added DisplaySet object UID ${ds.displaySetInstanceUID}:`, ds);
-                  }
+
                 } else {
                   console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED fired, but displaySetsAdded array is empty or missing in eventData.');
                 }
               }
             );
-            console.log('XNAT Mode - Route Init - Subscribed to DISPLAY_SETS_ADDED event.');
           } else {
             console.warn('XNAT Mode - Route Init - DisplaySetService or its event system not available for subscription.');
           }
@@ -533,7 +507,7 @@ function modeFactory({ modeConfiguration }) {
           // based on runtime error and function definition.
           // Ignore the incorrect linter error about argument count.
           const [dataSourceForDefaultRoute] = extensionManager.getActiveDataSource(); // Get dataSource again, use different name to avoid shadowing
-          console.log('XNAT Mode - Route Init - Before defaultRouteInit()', { studyInstanceUIDs, dataSourceForDefaultRoute });
+          
           // @ts-ignore - Linter incorrectly expects 3 arguments, but function needs object.
           await defaultRouteInit({
             servicesManager,
@@ -542,7 +516,7 @@ function modeFactory({ modeConfiguration }) {
             dataSource: dataSourceForDefaultRoute, // Include dataSource
             // filters and appConfig might be needed later if errors occur
           });
-          console.log('XNAT Mode - Route Init - After defaultRouteInit()');
+          
 
           // Return the study UIDs - this ensures they propagate to the rest of the app
           return studyInstanceUIDs;

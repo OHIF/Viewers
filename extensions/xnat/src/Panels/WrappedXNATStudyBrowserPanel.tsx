@@ -105,25 +105,18 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
   
   // --- Define processDataHandler outside useEffect ---
   const processDataHandler = useCallback(async () => {
-    console.log('XNAT: processDataHandler CALLED.');
     // Check ref instead of variable
     if (!isMountedRef.current) {
-      console.log('XNAT: processDataHandler skipped (unmounted).');
       return;
     }
 
     const currentDisplaySets = displaySetService.activeDisplaySets;
-    console.log(
-      `XNAT: processDataHandler - Found ${currentDisplaySets.length} activeDisplaySets:`,
-      currentDisplaySets.map(ds => ds.displaySetInstanceUID)
-    );
 
     const currentStudyInstanceUIDs = Array.from(
       new Set(currentDisplaySets.map(ds => ds.StudyInstanceUID))
     );
 
     if (!currentDisplaySets || currentDisplaySets.length === 0) {
-      console.log('XNAT: No active DisplaySets found in processDataHandler.');
       // Check ref
       if (studyBrowserData.length > 0 && isMountedRef.current) {
         setStudyBrowserData([]);
@@ -135,7 +128,6 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
 
     // Check ref
     if (isMountedRef.current) setIsLoading(true);
-    console.log('XNAT: Processing study data for DisplaySets:', currentDisplaySets.length);
 
     try {
       const studyDisplaySetsMap: Record<string, StudyData> = {};
@@ -147,7 +139,6 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
 
           
           currentDisplaySets.forEach(displaySet => {
-        console.log('XNAT: WrappedPanel - Processing displaySet:', JSON.parse(JSON.stringify(displaySet)));
         const {
           StudyInstanceUID,
           displaySetInstanceUID,
@@ -180,37 +171,27 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
       const getImageSrcFunction = _getImageSrcFromImageId();
 
       const studiesWithImageSrcPromises = studiesArray.map(async study => {
-         console.log(`XNAT: Processing thumbnails for Study ${study.StudyInstanceUID}`);
           const updatedThumbnails = await Promise.all(
              study.thumbnails.map(async (thumb) => {
-                console.log(`XNAT: Checking thumbnail for Series ${thumb.SeriesDescription} (DS UID: ${thumb.displaySetInstanceUID})`);
-                 console.log('XNAT: Value of thumb:', thumb);
                   const currentDisplaySet = displaySetService.getDisplaySetByUID(thumb.displaySetInstanceUID);
-                 console.log(`XNAT: Re-fetched displaySet for ${thumb.displaySetInstanceUID}:`, currentDisplaySet ? 'found' : 'not found');
-                 console.log('XNAT: Value of currentDisplaySet:', currentDisplaySet);
 
                  const instances = currentDisplaySet?.instances;
-                 console.log('XNAT: Value of instances:', instances);
                   // Recalculate middle index based on potentially updated instances
                   const middleIndex = instances && instances.length > 0 ? Math.floor(instances.length / 2) : 0;
                   const representativeImageId = instances && instances.length > 0
                     ? instances[middleIndex]?.imageId // Use optional chaining for safety
                     : undefined;
 
-                 console.log(`XNAT: Representative imageId for ${thumb.displaySetInstanceUID} in second loop:`, representativeImageId);
 
                 if (representativeImageId) {
-                  console.log(`XNAT: Attempting to get imageSrc for imageId: ${representativeImageId}`);
                   try {
                     const imageSrc = await getImageSrcFunction(representativeImageId);
-                     console.log(`XNAT: Successfully got imageSrc for ${representativeImageId}:`, imageSrc ? 'obtained' : 'null/undefined');
                     return { ...thumb, imageId: representativeImageId, imageSrc: imageSrc };
                   } catch (error) {
                     console.error(`XNAT: Failed to get thumbnail src for ${representativeImageId}`, error);
                     return { ...thumb, imageId: representativeImageId, imageSrc: null };
                   }
                 } else {
-                   console.log(`XNAT: No representative imageId found for thumbnail Series ${thumb.SeriesDescription} in second loop.`);
                   return { ...thumb, imageId: undefined, imageSrc: null };
                 }
              })
@@ -231,7 +212,6 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
     } finally {
       // Check ref
       if (isMountedRef.current) {
-        console.log('XNAT: Setting loading state to false after processing.');
         setIsLoading(false);
       }
     }
@@ -273,7 +253,6 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
         displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
         debouncedProcessDataHandler // Use debounced handler
       );
-      console.log('XNAT: Subscriptions potentially successful.');
         } else {
       console.warn('XNAT: DisplaySetService EVENTS (ADDED/CHANGED) not ready yet, skipping subscription.');
     }
@@ -292,13 +271,11 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
   
   // Handle thumbnail click
   const onThumbnailClick = (displaySetInstanceUID, event) => {
-    console.log('XNAT: Thumbnail clicked:', displaySetInstanceUID);
     // No action for single click currently
   };
   
   // Handle double-click (load into viewport)
   const onThumbnailDoubleClick = (displaySetInstanceUID) => {
-    console.log('XNAT: Thumbnail double-clicked:', displaySetInstanceUID);
     
     try {
       const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
@@ -306,8 +283,6 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
         displaySetInstanceUID,
         isHangingProtocolLayout
       );
-      
-      console.log('XNAT: Updating viewports with:', updatedViewports);
       viewportGridService.setDisplaySetsForViewports(updatedViewports);
     } catch (error) {
       console.error('XNAT: Error setting viewport display sets:', error);

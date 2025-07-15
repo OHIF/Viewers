@@ -105,8 +105,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     qidoDicomWebClient,
     wadoDicomWebClient;
   
-  console.log('XNAT createDicomWebApi - Immediate initialization');
-  
   // Create basic configs and initialize clients immediately
   qidoConfig = {
     url: dicomWebConfig.qidoRoot,
@@ -124,7 +122,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   
   // Initialize clients right away
   try {
-    console.log('Creating DICOMweb clients on module load');
     qidoDicomWebClient = dicomWebConfig.staticWado
       ? new StaticWadoClient(qidoConfig)
       : new api.DICOMwebClient(qidoConfig);
@@ -137,7 +134,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   }
   
   const generateWadoHeader = () => {
-    console.log('XNAT generateWadoHeader');
     const authorizationHeader = getAuthorizationHeader();
     //Generate accept header depending on config params
     const formattedAcceptHeader = utils.generateAcceptHeader(
@@ -153,7 +149,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   };
   
   const getAuthorizationHeader = () => {
-    console.log('XNAT getAuthorizationHeader');
     try {
       const xhrRequestHeaders = {};
       if (userAuthenticationService?.getAuthorizationHeader) {
@@ -171,10 +166,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   
   // Default to enabling bulk data retrieves
   dicomWebConfig.bulkDataURI ||= { enabled: true };
-  console.log('dicomWebConfig', dicomWebConfig);
   const implementation = {
     initialize: ({ params, query }) => {
-      console.log('XNAT DicomWebDataSource initialize called - refreshing clients');
       if (dicomWebConfig.onConfiguration && typeof dicomWebConfig.onConfiguration === 'function') {
         dicomWebConfig = dicomWebConfig.onConfiguration(dicomWebConfig, {
           params,
@@ -183,7 +176,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       }
 
       dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
-      console.log('dicomWebConfigCopy', dicomWebConfigCopy);
 
       qidoConfig = {
         url: dicomWebConfig.qidoRoot,
@@ -195,7 +187,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
-      console.log('qidoConfig', qidoConfig);
       wadoConfig = {
         url: dicomWebConfig.wadoRoot,
         staticWado: dicomWebConfig.staticWado,
@@ -206,10 +197,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
-      console.log('wadoConfig', wadoConfig);
       // TODO -> Two clients sucks, but its better than 1000.
       // TODO -> We'll need to merge auth later.
-      console.log('Initializing DICOMweb clients');
       try {
         qidoDicomWebClient = dicomWebConfig.staticWado
           ? new StaticWadoClient(qidoConfig)
@@ -230,7 +219,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
-          console.log('qidosearch');
           
           // Check client exists
           if (!qidoDicomWebClient) {
@@ -255,7 +243,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
-          console.log('XNAT series search');
           try {
             qidoDicomWebClient.headers = getAuthorizationHeader();
 
@@ -271,7 +258,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          console.log('XNAT instances search');
           qidoDicomWebClient.headers = getAuthorizationHeader();
 
           return qidoSearch.call(
@@ -315,7 +301,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       getWadoDicomWebClient: () => wadoDicomWebClient,
 
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
-        console.log('qido bulkDataURI');
         qidoDicomWebClient.headers = getAuthorizationHeader();
         const options = {
           multipart: false,
@@ -364,7 +349,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
     store: {
       dicom: async (dataset, request, dicomDict) => {
-        console.log('wado store');
         wadoDicomWebClient.headers = getAuthorizationHeader();
         if (dataset instanceof ArrayBuffer) {
           const options = {
@@ -673,9 +657,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       return StudyInstanceUIDsAsArray;
     },
   };
-  console.log('implementation', implementation);
   if (dicomWebConfig.supportsReject) {
-    console.log('reject');
+
     implementation.reject = dcm4cheeReject(dicomWebConfig.wadoRoot, getAuthorizationHeader);
   }
 

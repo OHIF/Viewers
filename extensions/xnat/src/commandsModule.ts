@@ -29,6 +29,7 @@ import fetchCSRFToken from './utils/IO/fetchCSRFToken.js';
 import generateDateTimeAndLabel from './utils/IO/helpers/generateDateAndTimeLabel.js';
 import JSONMeasurementExporter from './utils/IO/classes/JSONMeasurementExporter.js';
 import MeasurementImportMenu from './xnat-components/XNATMeasurementImportMenu/XNATMeasurementImportMenu';
+import XNATMeasurementApi from './utils/XNATMeasurementApi';
 
 const { segmentation: segmentationUtils } = csUtils;
 const { datasetToBlob } = dcmjs.data;
@@ -395,7 +396,6 @@ const commandsModule = ({
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log('setViewportGridLayout running', onLayoutChange, numRows, numCols);
         // Don't apply the layout if the run command returns false
         return;
       }
@@ -603,7 +603,6 @@ const commandsModule = ({
             }
           }
           
-          console.log('XNAT: Tag Browser session info:', sessionInfo);
         } catch (error) {
           console.warn('XNAT: Error getting session info for Tag Browser:', error);
         }
@@ -680,7 +679,6 @@ const commandsModule = ({
         viewportGridService.getState();
 
       const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
-      console.log('XNAT SOP DEBUG: displaySetInstanceUIDs:', displaySetInstanceUIDs);
       const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
         displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
       );
@@ -1034,31 +1032,21 @@ XNATStoreSegmentation: async ({ segmentationId }) => {
     const { sessionRouter } = servicesManager.services;
     if (sessionRouter && sessionRouter.experimentId) {
       experimentId = sessionRouter.experimentId;
-      console.log('Got experiment ID from sessionRouter:', experimentId);
     }
     
     // 2. Try to get from sessionStorage
     if (!experimentId && window.sessionStorage) {
       experimentId = window.sessionStorage.getItem('xnat_experimentId');
-      if (experimentId) {
-        console.log('Got experiment ID from sessionStorage:', experimentId);
-      }
     }
     
     // 3. Try to get from sessionMap using series UID
     if (!experimentId) {
       experimentId = sessionMap.getExperimentID(seriesInstanceUID);
-      if (experimentId) {
-        console.log('Got experiment ID from sessionMap with series UID:', experimentId);
-      }
     }
     
     // 4. Try to get from sessionMap without series UID (single session case)
     if (!experimentId) {
       experimentId = sessionMap.getExperimentID();
-      if (experimentId) {
-        console.log('Got experiment ID from sessionMap (single session):', experimentId);
-      }
     }
     
     // 5. Try to get from study session data
@@ -1066,7 +1054,6 @@ XNATStoreSegmentation: async ({ segmentationId }) => {
       const sessionData = sessionMap.get(displaySet.StudyInstanceUID);
       if (sessionData && sessionData.experimentId) {
         experimentId = sessionData.experimentId;
-        console.log('Got experiment ID from study session data:', experimentId);
       }
     }
     
@@ -1830,10 +1817,65 @@ XNATImportMeasurements: async () => {
       studyInstanceUID,
       seriesInstanceUID,
       servicesManager,
+      commandsManager,
       onClose: UIModalService.hide,
     },
   });
 },
+
+  /**
+   * Initialize and use the modern XNATMeasurementApi for measurement operations
+   */
+  XNATMeasurementApi: async (options: {
+    action?: 'importCollection' | 'removeCollection';
+    collectionData?: { SeriesInstanceUID: string; collectionLabel: string; collectionObject: any };
+    collectionUuid?: string;
+    displaySetInstanceUID?: string;
+  } = {}) => {
+    try {
+      // Create a new instance of the modern XNATMeasurementApi
+      const measurementApi = new XNATMeasurementApi(servicesManager);
+      
+      // The API is initialized in the constructor, no need for separate initialize call
+      
+      // If specific options are provided, handle them
+      if (options.action) {
+        switch (options.action) {
+          case 'importCollection':
+            if (options.collectionData) {
+              const { SeriesInstanceUID, collectionLabel, collectionObject } = options.collectionData;
+              await measurementApi.addImportedCollection(SeriesInstanceUID, collectionLabel, collectionObject);
+            }
+            break;
+          case 'removeCollection':
+            if (options.collectionUuid && options.displaySetInstanceUID) {
+              measurementApi.removeImportedCollection(options.collectionUuid, options.displaySetInstanceUID);
+            }
+            break;
+          default:
+            console.log('XNATMeasurementApi: No specific action provided, API initialized successfully');
+        }
+      }
+      
+      uiNotificationService.show({
+        title: 'XNAT Measurement API',
+        message: 'Modern XNAT Measurement API initialized successfully',
+        type: 'success',
+        duration: 3000,
+      });
+      
+      return measurementApi;
+    } catch (error) {
+      console.error('Error initializing XNATMeasurementApi:', error);
+      uiNotificationService.show({
+        title: 'XNAT Measurement API Error',
+        message: `Failed to initialize XNAT Measurement API: ${error.message}`,
+        type: 'error',
+        duration: 5000,
+      });
+      throw error;
+    }
+  },
 };
   const definitions = {
     multimonitor: {
@@ -1945,6 +1987,9 @@ XNATImportMeasurements: async () => {
       commandFn: actions.XNATStoreMeasurements,
       storeContexts: [],
       options: {},
+    },
+    XNATMeasurementApi: {
+      commandFn: actions.XNATMeasurementApi,
     },
   };
 

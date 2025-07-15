@@ -111,7 +111,6 @@ export default class SubjectRouter {
 
     const { xnatRootUrl } = sessionMap;
 
-    console.log(`${xnatRootUrl}VIEWER${params}`);
 
     window.location.href = `${xnatRootUrl}VIEWER${params}`;
   }

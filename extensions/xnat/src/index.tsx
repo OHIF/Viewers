@@ -29,11 +29,11 @@ import XNATThumbnail from './xnat-components/XNATStudyBrowser/XNATThumbnail';
 // Patch segmentation service to handle missing segment centers gracefully
 const patchSegmentationService = (servicesManager) => {
   const { segmentationService } = servicesManager.services;
-  
+
   if (segmentationService && segmentationService.jumpToSegmentCenter) {
     const originalJumpToSegmentCenter = segmentationService.jumpToSegmentCenter.bind(segmentationService);
-    
-    segmentationService.jumpToSegmentCenter = function(segmentationId, segmentIndex, ...args) {
+
+    segmentationService.jumpToSegmentCenter = function (segmentationId, segmentIndex, ...args) {
       try {
         // Check if segment center data exists before attempting jump
         const segmentation = this.getSegmentation(segmentationId);
@@ -42,7 +42,6 @@ const patchSegmentationService = (servicesManager) => {
           if (segment.cachedStats && (segment.cachedStats.center || segment.cachedStats.namedStats?.center?.value)) {
             return originalJumpToSegmentCenter(segmentationId, segmentIndex, ...args);
           } else {
-            console.log('XNAT: Segment center not available, skipping jump to center');
             return;
           }
         }
@@ -51,8 +50,6 @@ const patchSegmentationService = (servicesManager) => {
         return;
       }
     };
-    
-    console.log('XNAT: Patched segmentationService.jumpToSegmentCenter with safe version');
   }
 };
 
@@ -74,10 +71,6 @@ const xnatExtension: Types.Extensions.Extension = {
         '@ohif/extension-cornerstone.utilityModule.tools'
       );
       const { Enums } = utilityModule.exports;
-
-      console.log(
-        `🔧 XNAT Customization: Setting tool modes to 'Enabled' for ToolGroup: ${toolGroup.id}`
-      );
       const measurementTools = [
         'Length',
         'Bidirectional',
