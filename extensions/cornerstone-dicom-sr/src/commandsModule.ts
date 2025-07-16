@@ -32,12 +32,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     additionalFindingTypes
   );
 
-  const report = MeasurementReport.generateReport(
-    filteredToolState,
-    metaData,
-    utilities.worldToImageCoords,
-    options
-  );
+  const report = MeasurementReport.generateReport(filteredToolState, metaData, options);
 
   const { dataset } = report;
 

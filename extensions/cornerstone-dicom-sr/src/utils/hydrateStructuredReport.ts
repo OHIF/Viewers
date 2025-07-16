@@ -97,7 +97,6 @@ export default function hydrateStructuredReport(
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
     sopInstanceUIDToImageId,
-    utilities.imageToWorldCoords,
     metaData
   );
 
