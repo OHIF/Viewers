@@ -58,7 +58,10 @@ const getLabelmapTools = ({ toolGroupService }) => {
     // tools is an object with toolName as the key and tool as the value
     Object.keys(tools).forEach(toolName => {
       const tool = tools[toolName];
-      if (tool instanceof cornerstoneTools.LabelmapBaseTool) {
+      if (
+        tool instanceof cornerstoneTools.LabelmapBaseTool &&
+        tool.shouldResolvePreviewRequests()
+      ) {
         labelmapTools.push(tool);
       }
     });
@@ -445,7 +448,7 @@ function commandsModule({
       });
 
       if (val !== undefined && val !== null) {
-        measurementService.update(uid, { ...val }, true);
+        measurementService.update(uid, { ...measurement, label: val }, true);
       }
     },
     /**
@@ -1728,6 +1731,17 @@ function commandsModule({
         }
       });
     },
+    toggleSegmentLabel: ({ toggle }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        if (toggle) {
+          toolGroup.setToolActive(cornerstoneTools.SegmentLabelTool.toolName);
+        } else {
+          toolGroup.setToolDisabled(cornerstoneTools.SegmentLabelTool.toolName);
+        }
+      });
+    },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
       labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
@@ -2009,6 +2023,12 @@ function commandsModule({
         viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
+    },
+    startRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.startGroupRecording();
+    },
+    endRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.endGroupRecording();
     },
     triggerCreateAnnotationMemo: ({
       annotation,
@@ -2331,6 +2351,9 @@ function commandsModule({
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
+    startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
+    endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
+    toggleSegmentLabel: actions.toggleSegmentLabel,
   };
 
   return {

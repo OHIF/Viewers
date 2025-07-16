@@ -41,7 +41,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const [{ viewports, activeViewportId }, viewportGridService] = useViewportGrid();
 
   // States
-  const selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
   const [rtIsLoading, setRtIsLoading] = useState(!rtDisplaySet.isLoaded);
   const [processingProgress, setProcessingProgress] = useState({
@@ -169,7 +168,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
         {...props}
         displaySets={[referencedDisplaySet, rtDisplaySet]}
         viewportOptions={{
-          viewportType: 'stack',
+          viewportType: viewportOptions.viewportType,
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,

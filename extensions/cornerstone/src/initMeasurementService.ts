@@ -38,6 +38,7 @@ const initMeasurementService = (
     LivewireContour,
     Probe,
     UltrasoundDirectional,
+    UltrasoundPleuraBLine,
     SegmentBidirectional,
   } = measurementServiceMappingsFactory(
     measurementService,
@@ -175,6 +176,14 @@ const initMeasurementService = (
     UltrasoundDirectional.matchingCriteria,
     UltrasoundDirectional.toAnnotation,
     UltrasoundDirectional.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'UltrasoundPleuraBLineTool',
+    UltrasoundPleuraBLine.matchingCriteria,
+    UltrasoundPleuraBLine.toAnnotation,
+    UltrasoundPleuraBLine.toMeasurement
   );
 
   measurementService.addMapping(
@@ -350,6 +359,7 @@ const connectMeasurementServiceToTools = ({
       return;
     }
 
+    commandsManager.run('startRecordingForAnnotationGroup');
     for (const measurement of Object.values(measurements)) {
       const { uid, source } = measurement;
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
@@ -363,6 +373,7 @@ const connectMeasurementServiceToTools = ({
         options: { deleting: true },
       });
     }
+    commandsManager.run('endRecordingForAnnotationGroup');
 
     // trigger a render
     cornerstoneViewportService.getRenderingEngine().render();
