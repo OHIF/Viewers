@@ -131,18 +131,17 @@ export default class CustomizationService extends PubSubService {
       }
     });
 
-    // This allows us to control when configuration references are added.
-    // In general configuration references should be added at startup.
-    if (addConfigReferences) {
+    // Only add references for the configuration once.
+    if (!this.configuration?._hasBeenAdded) {
       this.addReferences(this.configuration);
+      Object.defineProperty(this.configuration, '_hasBeenAdded', { value: true, writable: false });
     }
   }
 
   public onModeEnter(): void {
     this.clearTransformedCustomizations();
 
-    // Only add references once on startup.
-    this.init(this.extensionManager, false);
+    this.init(this.extensionManager);
   }
 
   public onModeExit(): void {
