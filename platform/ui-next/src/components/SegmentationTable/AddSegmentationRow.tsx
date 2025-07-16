@@ -23,6 +23,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
 
   return (
     <div
+      data-cy="addSegmentation"
       className={`group ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
       onClick={() => !disabled && onSegmentationAdd('')}
     >
