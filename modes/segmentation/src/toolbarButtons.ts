@@ -520,7 +520,7 @@ const toolbarButtons: Button[] = [
           toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
         },
       ],
-      commands: 'setToolActiveToolbar',
+      commands: ['setToolActiveToolbar', 'showAiModelDownloadNotification'],
       listeners: {
         [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),

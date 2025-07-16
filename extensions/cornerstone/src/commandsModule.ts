@@ -7,6 +7,7 @@ import {
   Types as CoreTypes,
   BaseVolumeViewport,
   getRenderingEngines,
+  eventTarget,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -17,7 +18,7 @@ import {
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
-import { ONNXSegmentationController } from '@cornerstonejs/ai';
+import { ONNXSegmentationController, Events as aiEvents } from '@cornerstonejs/ai';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
@@ -40,6 +41,7 @@ import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { areModelsCached } from './utils/aiUtils';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -2058,6 +2060,32 @@ function commandsModule({
         deleting,
       });
     },
+    showAiModelDownloadNotification: async () => {
+      const { uiNotificationService } = servicesManager.services;
+      const cached = await areModelsCached();
+
+      if (cached) {
+        return;
+      }
+
+      const aiModelLoadingNotificationId = uiNotificationService.show({
+        title: i18n.t('AI Model Download'),
+        message: i18n.t('AI model is being downloaded.'),
+        type: 'loading',
+      });
+
+      eventTarget.addEventListener(aiEvents.MODEL_LOADING_COMPLETED, () => {
+        if (aiModelLoadingNotificationId) {
+          uiNotificationService.hide(aiModelLoadingNotificationId);
+        }
+        uiNotificationService.show({
+          title: i18n.t('AI Model Download'),
+          message: i18n.t('AI model download completed and ready to use.'),
+          type: 'success',
+          duration: 5000,
+        });
+      });
+    },
   };
 
   const definitions = {
@@ -2329,6 +2357,9 @@ function commandsModule({
     },
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
+    },
+    showAiModelDownloadNotification: {
+      commandFn: actions.showAiModelDownloadNotification,
     },
     setDisplaySetsForViewports: actions.setDisplaySetsForViewports,
     undo: actions.undo,
