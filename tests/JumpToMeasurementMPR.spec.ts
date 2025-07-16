@@ -59,7 +59,7 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   // wait 2 seconds
   await page.waitForTimeout(2000);
 
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await page.getByTestId('prompt-begin-tracking-cancel-btn').click();
 
   // scroll away
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
