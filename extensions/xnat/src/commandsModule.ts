@@ -1618,6 +1618,7 @@ XNATStoreMeasurements: async () => {
       lineThickness: 1,
       dashedLine: false,
       visible: true,
+      frameOfReferenceUID: m.FrameOfReferenceUID || m.metadata?.FrameOfReferenceUID || undefined,
       imageReference: {
         SOPInstanceUID: m.SOPInstanceUID,
         frameIndex: Number(sopToFrame[m.SOPInstanceUID] ?? 0),
@@ -1626,6 +1627,11 @@ XNATStoreMeasurements: async () => {
       data: {},
       measurements: [],
     };
+
+    console.log(`🔍 DEBUG: Exporting measurement ${m.uid}:`);
+    console.log(`🔍 DEBUG: - FrameOfReferenceUID from measurement: ${m.FrameOfReferenceUID || 'undefined'}`);
+    console.log(`🔍 DEBUG: - FrameOfReferenceUID from metadata: ${m.metadata?.FrameOfReferenceUID || 'undefined'}`);
+    console.log(`🔍 DEBUG: - Final frameOfReferenceUID: ${base.frameOfReferenceUID || 'undefined (optional)'}`);
 
     // Populate tool-specific "data" minimally
     switch (base.toolType) {

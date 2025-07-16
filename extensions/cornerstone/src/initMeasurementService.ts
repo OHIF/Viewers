@@ -349,7 +349,7 @@ const connectMeasurementServiceToTools = ({
   commandsManager,
   extensionManager,
 }) => {
-  const { measurementService, cornerstoneViewportService, viewportGridService } =
+  const { measurementService, cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
@@ -359,7 +359,7 @@ const connectMeasurementServiceToTools = ({
       return;
     }
 
-    for (const measurement of Object.values(measurements)) {
+    for (const measurement of Object.values(measurements) as any[]) {
       const { uid, source } = measurement;
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
@@ -461,7 +461,7 @@ const connectMeasurementServiceToTools = ({
 
       if (measurement?.metadata?.referencedImageId) {
         imageId = measurement.metadata.referencedImageId;
-        frameNumber = getSOPInstanceAttributes(measurement.metadata.referencedImageId).frameNumber;
+        frameNumber = getSOPInstanceAttributes(measurement.metadata.referencedImageId, displaySetService, { metadata: measurement.metadata }).frameNumber;
       } else {
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
@@ -487,21 +487,174 @@ const connectMeasurementServiceToTools = ({
            * This is used to pass annotation specific data forward e.g. contour
            */
           ...(data.annotation.data || {}),
-          text: data.annotation.data.text,
-          handles: { ...data.annotation.data.handles },
-          cachedStats: { ...data.annotation.data.cachedStats },
-          label: data.annotation.data.label,
+          text: data.annotation.data?.text,
+          handles: data.annotation.data?.handles || measurement.data?.handles || {},
+          cachedStats: data.annotation.data?.cachedStats || measurement.data?.cachedStats || {},
+          label: data.annotation.data?.label || measurement.label,
           frameNumber,
         },
       };
-      annotationManager.addAnnotation(newAnnotation);
-      commandsManager.run('triggerCreateAnnotationMemo', {
-        annotation: newAnnotation,
-        FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
-        options: { newAnnotation: true },
+      
+      console.log('🔍 DEBUG: Creating annotation with UID:', newAnnotation.annotationUID);
+      console.log('🔍 DEBUG: Annotation data:', newAnnotation.data);
+      console.log('🔍 DEBUG: Annotation metadata:', newAnnotation.metadata);
+      
+      // Check what annotations exist before adding
+      const allAnnotationsBefore = annotationManager.getAllAnnotations();
+      console.log('🔍 DEBUG: Annotations before adding:', Object.keys(allAnnotationsBefore));
+      
+      // Get the enabled element for the viewport that should display this annotation
+      const { cornerstoneViewportService } = servicesManager.services;
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      const viewports = renderingEngine.getViewports();
+      
+      // Find the viewport that should display this annotation
+      let targetViewport = null;
+      let targetElement = null;
+      
+      // First, try to find a viewport that matches the annotation's frame of reference
+      if (newAnnotation.metadata.FrameOfReferenceUID) {
+        for (const viewport of viewports) {
+          const viewportFrameOfRef = viewport.getFrameOfReferenceUID();
+          if (viewportFrameOfRef === newAnnotation.metadata.FrameOfReferenceUID) {
+            targetViewport = viewport;
+            targetElement = viewport.element;
+            console.log('🔍 DEBUG: Found matching viewport for annotation by frame of reference:', viewport.id);
+            break;
+          }
+        }
+      }
+      
+      // If no frame of reference match, try to find a viewport that displays the referenced image
+      if (!targetViewport && newAnnotation.metadata.referencedImageId) {
+        for (const viewport of viewports) {
+          try {
+            const currentImageId = viewport.getCurrentImageId?.();
+            if (currentImageId === newAnnotation.metadata.referencedImageId) {
+              targetViewport = viewport;
+              targetElement = viewport.element;
+              console.log('🔍 DEBUG: Found matching viewport for annotation by image ID:', viewport.id);
+              break;
+            }
+          } catch (err) {
+            // Skip viewports that don't support getCurrentImageId
+          }
+        }
+      }
+      
+      // If still no match, use the first available viewport (fallback)
+      if (!targetViewport && viewports.length > 0) {
+        targetViewport = viewports[0];
+        targetElement = viewports[0].element;
+        console.log('🔍 DEBUG: Using fallback viewport for annotation:', targetViewport.id);
+      }
+      
+      if (targetElement) {
+        console.log('🔍 DEBUG: Adding annotation to enabled element:', targetElement);
+        // Add the annotation to the specific viewport's enabled element
+        annotationManager.addAnnotation(newAnnotation, targetElement);
+        
+        // Also ensure the annotation is properly registered with the tool for this viewport
+        try {
+          const { toolGroupService } = servicesManager.services;
+          const toolGroup = toolGroupService.getToolGroupForViewport(targetViewport.id);
+          if (toolGroup) {
+            console.log('🔍 DEBUG: Ensuring annotation is registered with tool group for viewport:', targetViewport.id);
+            
+            // Force the tool to recognize the annotation by ensuring it's in passive mode
+            const toolName = newAnnotation.metadata.toolName;
+            const toolConfig = toolGroup.getToolConfiguration(toolName);
+            if (toolConfig) {
+              console.log('🔍 DEBUG: Tool configuration found, annotation should be visible');
+              
+              // Ensure the tool is at least in passive mode so it can render annotations
+              const currentMode = toolGroup.getToolOptions(toolName)?.mode;
+              if (currentMode !== 'Active' && currentMode !== 'Passive') {
+                toolGroup.setToolPassive(toolName);
+                console.log(`🔍 DEBUG: Set ${toolName} to passive mode for viewport ${targetViewport.id}`);
+              }
+            }
+            
+            // Force the annotation to be visible in this viewport
+            try {
+              const isVisible = annotation.visibility.isAnnotationVisible(newAnnotation.annotationUID);
+              if (!isVisible) {
+                annotation.visibility.setAnnotationVisibility(newAnnotation.annotationUID, true);
+                console.log(`🔍 DEBUG: Set annotation visibility to true for viewport ${targetViewport.id}`);
+              }
+            } catch (visErr) {
+              console.warn('🔍 DEBUG: Could not set annotation visibility:', visErr);
+            }
+          }
+        } catch (toolErr) {
+          console.warn('🔍 DEBUG: Could not register annotation with tool group:', toolErr);
+        }
+      } else {
+        console.warn('🔍 DEBUG: No enabled element found, adding to global annotation manager');
+        annotationManager.addAnnotation(newAnnotation);
+      }
+      
+      // Check what annotations exist after adding
+      const allAnnotationsAfter = annotationManager.getAllAnnotations();
+      console.log('🔍 DEBUG: Annotations after adding:', Object.keys(allAnnotationsAfter));
+      
+      // Verify the annotation was added with the correct UID
+      const addedAnnotation = annotationManager.getAnnotation(measurement.uid);
+      console.log('🔍 DEBUG: Annotation added successfully:', !!addedAnnotation);
+      console.log('🔍 DEBUG: Added annotation UID:', addedAnnotation?.annotationUID);
+      console.log('🔍 DEBUG: Added annotation data:', addedAnnotation?.data);
+      
+      // Try to find the annotation by searching through all annotations
+      let foundAnnotation = null;
+      Object.keys(allAnnotationsAfter).forEach(key => {
+        const annotation = allAnnotationsAfter[key];
+        if (annotation.annotationUID === measurement.uid) {
+          foundAnnotation = annotation;
+          console.log('🔍 DEBUG: Found annotation with correct UID in key:', key);
+        }
       });
-    }
-  );
+      
+      if (!foundAnnotation) {
+        console.warn('🔍 DEBUG: Could not find annotation with correct UID in annotation manager');
+      }
+      // Trigger the annotation memo creation with the correct element
+      if (targetElement) {
+        commandsManager.run('triggerCreateAnnotationMemo', {
+          annotation: newAnnotation,
+          FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
+          options: { newAnnotation: true },
+        });
+        
+        // Force a render of the target viewport
+        if (targetViewport && targetViewport.render) {
+          console.log('🔍 DEBUG: Forcing render of target viewport after annotation creation');
+          targetViewport.render();
+        }
+        
+        // Additional: Force the tool to render its annotations
+        try {
+          const { toolGroupService } = servicesManager.services;
+          const toolGroup = toolGroupService.getToolGroupForViewport(targetViewport.id);
+          if (toolGroup) {
+            const toolName = newAnnotation.metadata.toolName;
+            console.log(`🔍 DEBUG: Forcing ${toolName} tool to render annotations for viewport ${targetViewport.id}`);
+            
+            // Trigger annotation rendering for this specific viewport
+            const viewportIds = [targetViewport.id];
+            triggerAnnotationRenderForViewportIds(viewportIds);
+          }
+        } catch (toolRenderErr) {
+          console.warn('🔍 DEBUG: Could not force tool render:', toolRenderErr);
+        }
+      } else {
+        commandsManager.run('triggerCreateAnnotationMemo', {
+          annotation: newAnnotation,
+          FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
+          options: { newAnnotation: true },
+        });
+      }
+     }
+   );
 
   measurementService.subscribe(
     MEASUREMENT_REMOVED,

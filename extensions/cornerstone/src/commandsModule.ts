@@ -2022,14 +2022,39 @@ function commandsModule({
       const { newAnnotation, deleting } = options;
       const renderingEngines = getRenderingEngines();
       const viewports = renderingEngines.flatMap(re => re.getViewports());
-      const validViewport = viewports.find(
-        vp => vp.getFrameOfReferenceUID() === FrameOfReferenceUID
-      );
+      
+      let validViewport = null;
+      
+      // First, try to find a viewport that matches the frame of reference UID
+      if (FrameOfReferenceUID) {
+        validViewport = viewports.find(
+          vp => vp.getFrameOfReferenceUID() === FrameOfReferenceUID
+        );
+      }
+      
+      // If no frame of reference match, try to find a viewport that displays the referenced image
+      if (!validViewport && annotation.metadata?.referencedImageId) {
+        validViewport = viewports.find(vp => {
+          try {
+            const currentImageId = vp.getCurrentImageId?.();
+            return currentImageId === annotation.metadata.referencedImageId;
+          } catch (err) {
+            return false;
+          }
+        });
+      }
+      
+      // If still no match, use the first available viewport (fallback)
+      if (!validViewport && viewports.length > 0) {
+        validViewport = viewports[0];
+      }
 
       if (!validViewport) {
+        console.warn('🔍 DEBUG: No valid viewport found for annotation memo creation');
         return;
       }
 
+      console.log(`🔍 DEBUG: Creating annotation memo for viewport ${validViewport.id}`);
       cornerstoneTools.AnnotationTool.createAnnotationMemo(validViewport.element, annotation, {
         newAnnotation,
         deleting,
