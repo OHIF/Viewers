@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.88...v3.11.0-beta.89) (2025-07-16)
+
+
+### Bug Fixes
+
+* **segmentation:** Fix segmentationid undefined 5106 ([#5107](https://github.com/OHIF/Viewers/issues/5107)) ([f38805e](https://github.com/OHIF/Viewers/commit/f38805e6f1c98138db1617c2fa56f9007207d456))
+
+
+
+
+
 # [3.11.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.87...v3.11.0-beta.88) (2025-07-16)
 
 
