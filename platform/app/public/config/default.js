@@ -278,8 +278,9 @@ window.config = {
   // segmentation: {
   //   segmentLabel: {
   //     enabledByDefault: true,
-  //     labelColor: [255, 255, 0, 1],
+  //     labelColor: [255, 255, 0, 1], // must be an array
   //     hoverTimeout: 1,
+  //     background: 'rgba(100, 100, 100, 0.5)', // can be any valid css color
   //   },
   // },
   // whiteLabeling: {

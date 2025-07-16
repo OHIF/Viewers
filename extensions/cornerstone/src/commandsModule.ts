@@ -1753,12 +1753,14 @@ function commandsModule({
     initializeSegmentLabelTool: ({ tools }) => {
       const appConfig = extensionManager.appConfig;
       const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
+
       if (segmentLabelConfig?.enabledByDefault) {
         tools.active.push({
           toolName: toolNames.SegmentLabel,
           configuration: {
             hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
             color: segmentLabelConfig?.labelColor,
+            background: segmentLabelConfig?.background,
           },
         });
         return tools;
