@@ -275,6 +275,13 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
+  // segmentation: {
+  //   segmentLabel: {
+  //     enabledByDefault: true,
+  //     labelColor: [255, 255, 0, 1],
+  //     hoverTimeout: 1,
+  //   },
+  // },
   // whiteLabeling: {
   //   createLogoComponentFn: function (React) {
   //     return React.createElement(

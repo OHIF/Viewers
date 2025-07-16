@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs, TabsList, TabsTrigger } from '../Tabs';
 import { Slider } from '../Slider';
@@ -7,8 +7,13 @@ import { Switch } from '../Switch';
 import { Label } from '../Label';
 import { Input } from '../Input';
 import { useSegmentationTableContext } from './contexts';
+import { useSystem } from '@ohif/core';
 
 export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  const { commandsManager, extensionManager } = useSystem();
+  const [shouldShowLabelOnHover, setShouldShowLabelOnHover] = useState(
+    !!extensionManager.appConfig.segmentation?.segmentLabel?.enabledByDefault
+  );
   const { t } = useTranslation('SegmentationTable.AppearanceSettings');
   const {
     renderFill,
@@ -27,12 +32,26 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
     data,
   } = useSegmentationTableContext('SegmentationTableConfig');
 
+  const handleToggleShowLabelOnHover = checked => {
+    setShouldShowLabelOnHover(checked);
+    commandsManager.run('toggleSegmentLabel', { toggle: checked });
+  };
+
   if (!data?.length) {
     return null;
   }
 
   return (
     <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
+      <div className="bg-muted flex flex-col gap-4 border-b border-b-[2px] border-black px-0 py-3">
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={shouldShowLabelOnHover}
+            onCheckedChange={handleToggleShowLabelOnHover}
+          />
+          <span className="text-base text-white">Show segment label on mouse hover</span>
+        </div>
+      </div>
       <div className="my-1 flex items-center justify-between">
         <span className="text-aqua-pale text-xs">
           {t('Show')}:{' '}

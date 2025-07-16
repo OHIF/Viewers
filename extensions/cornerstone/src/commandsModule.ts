@@ -102,6 +102,7 @@ let segmentAIEnabled = false;
 function commandsModule({
   servicesManager,
   commandsManager,
+  extensionManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
@@ -1742,6 +1743,36 @@ function commandsModule({
         }
       });
     },
+    /**
+     * Used to sync the apps initial state with the config file settings.
+     *
+     * Will mutate the tools object of the given tool group and add the segmentLabelTool to the proper place.
+     *
+     * Use it before initializing the toolGroup with the tools.
+     */
+    initializeSegmentLabelTool: ({ tools }) => {
+      const appConfig = extensionManager.appConfig;
+      const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
+      if (segmentLabelConfig?.enabledByDefault) {
+        tools.active.push({
+          toolName: toolNames.SegmentLabel,
+          configuration: {
+            hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
+            color: segmentLabelConfig?.labelColor,
+          },
+        });
+        return tools;
+      }
+
+      tools.disabled.push({
+        toolName: toolNames.SegmentLabel,
+        configuration: {
+          hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
+          color: segmentLabelConfig?.labelColor,
+        },
+      });
+      return tools;
+    },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
       labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
@@ -2354,6 +2385,7 @@ function commandsModule({
     startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
     endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
+    initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
   };
 
   return {
