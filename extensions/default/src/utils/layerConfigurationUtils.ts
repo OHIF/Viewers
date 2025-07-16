@@ -67,9 +67,21 @@ export function configureViewportForLayerAddition(params: {
 
   // If a viewport type was already set do not reset it.
   if (!viewport.viewportOptions.viewportType) {
-    // Do not force volume for SEG and RTSTRUCT if there is only one display set
-    if (requestedLayerDisplaySet.isOverlayDisplaySet && currentDisplaySetUIDs.length === 1) {
-      viewport.viewportOptions.viewportType = 'stack';
+    // Special handling for overlay display sets
+    if (requestedLayerDisplaySet.isOverlayDisplaySet) {
+      // Do not force volume for SEG and RTSTRUCT if it and all the current display sets are for the same display set
+      const isSameDisplaySet = currentDisplaySetUIDs.every(uid => {
+        const currentDisplaySet = displaySetService.getDisplaySetByUID(uid);
+        return currentDisplaySet.isOverlayDisplaySet
+          ? currentDisplaySet.referencedDisplaySetInstanceUID ===
+              requestedLayerDisplaySet.referencedDisplaySetInstanceUID
+          : uid === requestedLayerDisplaySet.referencedDisplaySetInstanceUID;
+      });
+      if (isSameDisplaySet) {
+        viewport.viewportOptions.viewportType = 'stack';
+      } else {
+        viewport.viewportOptions.viewportType = 'volume';
+      }
     } else {
       viewport.viewportOptions.viewportType = 'volume';
     }

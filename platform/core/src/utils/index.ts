@@ -26,6 +26,7 @@ import sortInstancesByPosition from './sortInstancesByPosition';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
+import toNumber from './toNumber';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
 import addAccessors from './addAccessors';
@@ -84,6 +85,7 @@ const utils = {
   isDisplaySetReconstructable,
   debounce,
   roundNumber,
+  toNumber,
   downloadCSVReport,
   splitComma,
   getSplitParam,
@@ -120,6 +122,7 @@ export {
   imageIdToURI,
   debounce,
   roundNumber,
+  toNumber,
   downloadCSVReport,
   splitComma,
   getSplitParam,

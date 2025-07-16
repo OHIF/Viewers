@@ -36,6 +36,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     foregroundDisplaySets,
   } = useViewportDisplaySets(viewportId);
 
+  const [optimisticOverlayDisplaySets, setOptimisticOverlayDisplaySets] =
+    useState(overlayDisplaySets);
+
   const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
   /**
@@ -77,6 +80,18 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
    * Remove a display set layer
    */
   const handleRemoveDisplaySetLayer = (displaySetInstanceUID: string) => {
+    const optimisticOverlayDisplaySetsIndex = optimisticOverlayDisplaySets.findIndex(
+      displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
+    );
+
+    if (optimisticOverlayDisplaySetsIndex !== -1) {
+      setOptimisticOverlayDisplaySets(prevOptimisticOverlayDisplaySets => {
+        return prevOptimisticOverlayDisplaySets.filter(
+          displaySet => displaySet.displaySetInstanceUID !== displaySetInstanceUID
+        );
+      });
+    }
+
     commandsManager.runCommand('removeDisplaySetLayer', {
       viewportId,
       displaySetInstanceUID,
@@ -110,6 +125,17 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     );
 
     if (selectedDisplaySet) {
+      setOptimisticOverlayDisplaySets(prevOptimisticOverlayDisplaySets => {
+        const currentDisplaySetIndex = prevOptimisticOverlayDisplaySets.findIndex(
+          displaySet => displaySet.displaySetInstanceUID === currentDisplaySet.displaySetInstanceUID
+        );
+        return [
+          ...prevOptimisticOverlayDisplaySets.slice(0, currentDisplaySetIndex),
+          selectedDisplaySet,
+          ...prevOptimisticOverlayDisplaySets.slice(currentDisplaySetIndex + 1),
+        ];
+      });
+
       handleReplaceDisplaySetLayer(
         currentDisplaySet.displaySetInstanceUID,
         selectedDisplaySet.displaySetInstanceUID
@@ -150,6 +176,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     );
 
     if (selectedDisplaySet) {
+      setOptimisticOverlayDisplaySets(prevOptimisticOverlayDisplaySets => [
+        ...prevOptimisticOverlayDisplaySets,
+        selectedDisplaySet,
+      ]);
       handleAddDisplaySetAsLayer(selectedDisplaySet.displaySetInstanceUID);
       // Remove this pending segmentation from the list
       setPendingSegmentations(pendingSegmentations.filter(id => id !== pendingId));
@@ -184,7 +214,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   };
 
   return (
-    <div className="bg-popover flex h-full w-[275px] flex-col rounded rounded-md p-1.5">
+    <div
+      className="bg-popover flex h-full w-[275px] flex-col rounded rounded-md p-1.5"
+      data-cy={`viewport-data-overlay-menu-${viewportId}`}
+    >
       {/* Top buttons row */}
       <div className={`flex`}>
         <Button
@@ -216,7 +249,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       <div className="">
         {/* Overlays Segmentation section */}
         <div className="my-2 ml-1">
-          {overlayDisplaySets.map((displaySet, index) => (
+          {optimisticOverlayDisplaySets.map(displaySet => (
             <div
               key={displaySet.displaySetInstanceUID}
               className="mb-1 flex items-center"
@@ -227,7 +260,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 onValueChange={value => handleOverlaySelectionChange(displaySet, value)}
               >
                 <SelectTrigger className="flex-1">
-                  <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
+                  <SelectValue
+                    data-cy={`overlay-ds-select-value-${displaySet.label?.toUpperCase()}`}
+                  >
+                    {displaySet.label?.toUpperCase()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {/* Include both potential overlays and the current overlay */}
@@ -255,12 +292,14 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     variant="ghost"
                     size="icon"
                     className="ml-2 flex-shrink-0"
+                    dataCY={`overlay-ds-more-button-${displaySet.label?.toUpperCase()}`}
                   >
                     <Icons.More className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem
+                    data-cy={`overlay-ds-remove-button-${displaySet.label?.toUpperCase()}`}
                     onClick={() => handleRemoveDisplaySetLayer(displaySet.displaySetInstanceUID)}
                   >
                     Remove

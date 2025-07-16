@@ -27,8 +27,7 @@ test.describe('3D four up Test', async () => {
     await checkForScreenshot(
       page,
       page,
-      screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly,
-      200
+      screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly
     );
   });
 });

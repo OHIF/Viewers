@@ -95,6 +95,12 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       {
         toolName: toolNames.AdvancedMagnify,
       },
+      {
+        toolName: toolNames.SegmentLabel,
+        configuration: {
+          hoverTimeout: 1,
+        },
+      },
     ],
   };
 

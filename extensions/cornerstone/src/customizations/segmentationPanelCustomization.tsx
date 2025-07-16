@@ -38,6 +38,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       const [previewEdits, setPreviewEdits] = useState(false);
       const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
       const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
+      const [shouldShowLabelOnHover, setShouldShowLabelOnHover] = useState(false);
       const handlePreviewEditsChange = checked => {
         setPreviewEdits(checked);
         commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });
@@ -51,6 +52,11 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       const handleUseCenterAsSegmentIndexChange = checked => {
         setUseCenterAsSegmentIndex(checked);
         commandsManager.run('toggleUseCenterSegmentIndex', { toggle: checked });
+      };
+
+      const handleToggleShowLabelOnHover = checked => {
+        setShouldShowLabelOnHover(checked);
+        commandsManager.run('toggleSegmentLabel', { toggle: checked });
       };
 
       return (
@@ -77,6 +83,14 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
               onCheckedChange={handleToggleSegmentEnabledChange}
             />
             <span className="text-base text-white">Hover on segment border to activate</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={shouldShowLabelOnHover}
+              onCheckedChange={handleToggleShowLabelOnHover}
+            />
+            <span className="text-base text-white">Show segment label on mouse hover</span>
           </div>
         </div>
       );

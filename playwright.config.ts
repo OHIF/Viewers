@@ -8,15 +8,26 @@ export default defineConfig({
   workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
-  reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
+  reporter: [
+    [
+      process.env.CI ? 'json' : 'html',
+      process.env.CI
+        ? { outputFile: './tests/playwright-report.json' }
+        : { outputFolder: './tests/playwright-report' },
+    ],
+  ],
   globalTimeout: 800_000,
   timeout: 800_000,
   use: {
     baseURL: 'http://localhost:3335',
     trace: 'on-first-retry',
-    video: 'on',
+    video: 'on-first-retry',
     testIdAttribute: 'data-cy',
     actionTimeout: 10_000,
+    launchOptions: {
+      // do not hide the scrollbars so that we can assert their look-and-feel
+      ignoreDefaultArgs: ['--hide-scrollbars'],
+    },
   },
 
   projects: [
