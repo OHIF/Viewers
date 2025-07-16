@@ -168,7 +168,7 @@ export async function importMeasurementCollection({
     throw new Error('importMeasurementCollection: missing parameters');
   }
 
-  const { measurementService, displaySetService } = servicesManager.services;
+  const { measurementService, displaySetService, trackedMeasurementsService } = servicesManager.services;
   const source = _getMeasurementSource(measurementService);
 
   // Try to get extensionManager for data source access
@@ -204,6 +204,16 @@ export async function importMeasurementCollection({
     }
   } catch (e) {
     // Ignore – we will fall back to undefined which is acceptable for most tools
+  }
+
+  // CRITICAL: Add the series to tracking to ensure measurements appear in the panel
+  if (trackedMeasurementsService && seriesUID) {
+    console.log(`🔍 DEBUG: Adding series ${seriesUID} to measurement tracking`);
+    trackedMeasurementsService.addTrackedSeries(seriesUID);
+    
+    // The TrackedMeasurementsService will automatically broadcast events
+    // that will be picked up by the measurement tracking context
+    console.log(`🔍 DEBUG: Series ${seriesUID} added to tracking service`);
   }
 
   const findDisplaySetInstanceUID = (sopInstanceUID) => {
@@ -425,6 +435,7 @@ export async function importMeasurementCollection({
         },
         // Ensure referencedImageId is also at the top level for viewport matching
         displaySetInstanceUID: displaySetInstanceUID,
+        // Note: isTracked is handled by the tracking service, not as a measurement property
       });
     } catch (e) {
       console.error('Failed to create measurement object:', e);
@@ -935,6 +946,27 @@ export async function importMeasurementCollection({
 
       measurementService.addRawMeasurement(source, measurement.toolName, rawDataForService, identityMapping, dataSource);
 
+      // Check if the measurement was actually added successfully
+      const storedMeasurements = measurementService.getMeasurements();
+      const ourMeasurement = storedMeasurements.find(m => m.uid === measurement.uid);
+      
+      if (!ourMeasurement) {
+        console.warn(`❌ Measurement ${measurement.uid} was not successfully added to the service`);
+        return; // Skip the rest of the processing for this measurement
+      }
+
+      console.log(`✅ Successfully added measurement ${measurement.uid} to measurement service`);
+      
+      // Verify the measurement is properly associated with the tracked series
+      if (trackedMeasurementsService && seriesUID) {
+        const isSeriesTracked = trackedMeasurementsService.isSeriesTracked(seriesUID);
+        console.log(`🔍 DEBUG: Series ${seriesUID} tracked status: ${isSeriesTracked}`);
+        
+        if (!isSeriesTracked) {
+          console.warn(`⚠️ Series ${seriesUID} is not tracked, measurement may not appear in panel`);
+        }
+      }
+
       // Immediately check what the measurement service stored and try to fix displayText
       setTimeout(() => {
         const storedMeasurements = measurementService.getMeasurements();
@@ -1069,6 +1101,47 @@ export async function importMeasurementCollection({
                           const isVisibleInViewport = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
                           console.log(`🔍 DEBUG: Annotation ${measurement.uid} visible in viewport ${viewport.id}: ${isVisibleInViewport}`);
                           
+                          // Check if the annotation is in the tool's annotation list for this viewport
+                          const toolAnnotations = cornerstoneTools.annotation.state.getAnnotations(measurement.uid, viewportElement);
+                          console.log(`🔍 DEBUG: Tool annotations for ${measurement.uid} in viewport ${viewport.id}:`, toolAnnotations);
+                          
+                          // If the annotation is not in the tool's list, try to add it directly
+                          if (!toolAnnotations || toolAnnotations.length === 0) {
+                            console.log(`🔍 DEBUG: Annotation not in tool list, attempting to add it directly`);
+                            
+                            try {
+                              // Try to add the annotation directly to the tool's annotation list
+                              const { toolGroupService } = servicesManager.services;
+                              const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
+                              if (toolGroup) {
+                                const toolName = measurement.toolName;
+                                console.log(`🔍 DEBUG: Adding annotation directly to ${toolName} tool for viewport ${viewport.id}`);
+                                
+                                // Force the annotation to be associated with this viewport
+                                cornerstoneTools.annotation.state.addAnnotation(annotation, viewportElement);
+                                
+                                // Also try to create the annotation memo manually
+                                try {
+                                  cornerstoneTools.AnnotationTool.createAnnotationMemo(viewportElement, annotation, {
+                                    newAnnotation: true,
+                                    deleting: false,
+                                  });
+                                  console.log(`🔍 DEBUG: Manually created annotation memo for viewport ${viewport.id}`);
+                                } catch (memoErr) {
+                                  console.warn(`🔍 DEBUG: Failed to create annotation memo manually:`, memoErr);
+                                }
+                                
+                                // Force the tool to render
+                                if (viewport.render && typeof viewport.render === 'function') {
+                                  viewport.render();
+                                  console.log(`🔍 DEBUG: Forced viewport render after direct annotation addition`);
+                                }
+                              }
+                            } catch (directAddErr) {
+                              console.warn(`🔍 DEBUG: Failed to add annotation directly:`, directAddErr);
+                            }
+                          }
+                          
                           // If not visible, try to force visibility
                           if (!isVisibleInViewport) {
                             console.log(`🔍 DEBUG: Forcing annotation visibility in viewport ${viewport.id}`);
@@ -1127,127 +1200,167 @@ export async function importMeasurementCollection({
                     const lengthToolMode = toolGroup.getToolOptions('Length')?.mode;
                     console.log(`🔍 DEBUG: Length tool mode for viewport ${viewportId}:`, lengthToolMode);
                     
-                                         // Ensure Length tool is at least passive so it can render annotations
-                     if (lengthToolMode !== 'Active' && lengthToolMode !== 'Passive') {
-                       console.log(`🔍 DEBUG: Setting Length tool to passive mode for viewport ${viewportId}`);
-                       toolGroup.setToolPassive('Length');
-                     }
-                     
-                     // Force the Length tool to render annotations
-                     console.log(`🔍 DEBUG: Forcing Length tool to render annotations for viewport ${viewportId}`);
-                     try {
-                       // Try to trigger annotation rendering specifically for this tool
-                       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-                       if (viewport && viewport.render) {
-                         viewport.render();
-                         console.log(`🔍 DEBUG: Forced viewport render for ${viewportId}`);
-                       }
-                     } catch (renderErr) {
-                       console.warn(`🔍 DEBUG: Failed to force render for viewport ${viewportId}:`, renderErr);
-                     }
-                     
-                     // Check if the annotation is visible in the tool's perspective
-                     try {
-                       const isVisibleInTool = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
-                       console.log(`🔍 DEBUG: Annotation visibility in tool for viewport ${viewportId}:`, isVisibleInTool);
-                       
-                       // Check if the annotation is in the tool's annotation list for this specific viewport
-                       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-                       if (viewport && viewport.element) {
-                         try {
-                           const toolAnnotations = cornerstoneTools.annotation.state.getAnnotations(measurement.uid, viewport.element);
-                           console.log(`🔍 DEBUG: Tool annotations for ${measurement.uid} in viewport ${viewportId}:`, toolAnnotations);
-                           
-                           // Check if the annotation is in the tool's annotation list for the specific frame of reference
-                           let viewportFrameOfRef = viewport.getFrameOfReferenceUID();
-                           console.log(`🔍 DEBUG: Viewport frame of reference: ${viewportFrameOfRef}`);
-                           console.log(`🔍 DEBUG: Annotation frame of reference: ${measurement.FrameOfReferenceUID}`);
-                           
-                           // If viewport has no frame of reference but annotation does, try to set it
-                           if (!viewportFrameOfRef && measurement.FrameOfReferenceUID) {
-                             console.log(`🔍 DEBUG: Viewport has no frame of reference, attempting to set it to match annotation`);
-                             try {
-                               // Try to set the viewport's frame of reference UID
-                               if (viewport.setFrameOfReferenceUID && typeof viewport.setFrameOfReferenceUID === 'function') {
-                                 viewport.setFrameOfReferenceUID(measurement.FrameOfReferenceUID);
-                                 viewportFrameOfRef = viewport.getFrameOfReferenceUID();
-                                 console.log(`🔍 DEBUG: Successfully set viewport frame of reference to: ${viewportFrameOfRef}`);
-                               } else {
-                                 console.warn(`🔍 DEBUG: Viewport does not have setFrameOfReferenceUID method`);
-                               }
-                             } catch (setFrameErr) {
-                               console.warn(`🔍 DEBUG: Failed to set viewport frame of reference:`, setFrameErr);
-                             }
-                           }
-                           
-                           if (viewportFrameOfRef === measurement.FrameOfReferenceUID) {
-                             console.log(`🔍 DEBUG: Frame of reference matches, annotation should be visible`);
-                           } else {
-                             console.warn(`🔍 DEBUG: Frame of reference mismatch, annotation may not be visible`);
-                             
-                                                        // As a fallback, try to make the annotation work without frame of reference matching
-                           if (annotation && !viewportFrameOfRef) {
-                             console.log(`🔍 DEBUG: Attempting to make annotation visible without frame of reference matching`);
-                             try {
-                               // Remove frame of reference requirement for this annotation
-                               annotation.metadata.FrameOfReferenceUID = undefined;
-                               annotation.invalidated = true;
-                               
-                               // Force the annotation to be visible
-                               annotation.isVisible = true;
-                               
-                               // Try to directly add the annotation to the tool's annotation list for this viewport
-                               try {
-                                 const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-                                 if (toolGroup) {
-                                   // Get the tool's annotation state
-                                   const toolAnnotationState = cornerstoneTools.annotation.state.getAnnotationManager();
-                                   
-                                   // Force the annotation to be associated with this viewport's frame of reference
-                                   // Since the viewport has no frame of reference, we'll use a special approach
-                                   const viewportElement = viewport.element;
-                                   if (viewportElement) {
-                                     // Try to add the annotation directly to the enabled element
-                                     const enabledElement = getEnabledElement(viewportElement);
-                                     if (enabledElement) {
-                                       // Force the annotation to be visible in this viewport
-                                       cornerstoneTools.annotation.visibility.setAnnotationVisibility(measurement.uid, true);
-                                       
-                                       // Try to trigger a tool-specific render
-                                       const lengthTool = cornerstoneTools.getTool('Length');
-                                       if (lengthTool && lengthTool.renderAnnotation) {
-                                         lengthTool.renderAnnotation(enabledElement);
-                                         console.log(`🔍 DEBUG: Triggered Length tool render for annotation`);
-                                       }
-                                     }
-                                   }
-                                 }
-                               } catch (toolErr) {
-                                 console.warn(`🔍 DEBUG: Failed to force tool annotation:`, toolErr);
-                               }
-                               
-                               // Trigger a re-render
-                               if (viewport.render && typeof viewport.render === 'function') {
-                                 viewport.render();
-                                 console.log(`🔍 DEBUG: Forced re-render after removing frame of reference requirement`);
-                               }
-                             } catch (fallbackErr) {
-                               console.warn(`🔍 DEBUG: Failed to apply frame of reference fallback:`, fallbackErr);
-                             }
-                           }
-                           }
-                           
-                           // Try to get all annotations for this viewport
-                           const allViewportAnnotations = cornerstoneTools.annotation.state.getAnnotations(undefined, viewport.element);
-                           console.log(`🔍 DEBUG: All annotations in viewport ${viewportId}:`, Object.keys(allViewportAnnotations || {}));
-                           
-                         } catch (elementErr) {
-                           console.log(`🔍 DEBUG: Could not get annotations for element in viewport ${viewportId}:`, elementErr);
-                         }
-                       }
-                     } catch (toolCheckErr) {
-                       console.warn(`🔍 DEBUG: Could not check tool annotation state for viewport ${viewportId}:`, toolCheckErr);
-                     }
+                    // Ensure Length tool is at least passive so it can render annotations
+                    if (lengthToolMode !== 'Active' && lengthToolMode !== 'Passive') {
+                      console.log(`🔍 DEBUG: Setting Length tool to passive mode for viewport ${viewportId}`);
+                      toolGroup.setToolPassive('Length');
+                    }
+                    
+                    // Force the Length tool to render annotations
+                    console.log(`🔍 DEBUG: Forcing Length tool to render annotations for viewport ${viewportId}`);
+                    try {
+                      // Try to trigger annotation rendering specifically for this tool
+                      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+                      if (viewport && viewport.render) {
+                        viewport.render();
+                        console.log(`🔍 DEBUG: Forced viewport render for ${viewportId}`);
+                      }
+                    } catch (renderErr) {
+                      console.warn(`🔍 DEBUG: Failed to force render for viewport ${viewportId}:`, renderErr);
+                    }
+                    
+                    // Check if the annotation is visible in the tool's perspective
+                    try {
+                      const isVisibleInTool = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
+                      console.log(`🔍 DEBUG: Annotation visibility in tool for viewport ${viewportId}:`, isVisibleInTool);
+                      
+                      // Check if the annotation is in the tool's annotation list for this specific viewport
+                      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+                      if (viewport && viewport.element) {
+                        try {
+                          const toolAnnotations = cornerstoneTools.annotation.state.getAnnotations(measurement.uid, viewport.element);
+                          console.log(`🔍 DEBUG: Tool annotations for ${measurement.uid} in viewport ${viewportId}:`, toolAnnotations);
+                          
+                          // If the annotation is not in the tool's list, try to use the tool's hydration method
+                          if (!toolAnnotations || toolAnnotations.length === 0) {
+                            console.log(`🔍 DEBUG: Annotation not in tool list, attempting tool hydration for viewport ${viewportId}`);
+                            
+                            try {
+                              // Try to use the tool's hydration method
+                              const lengthTool = cornerstoneTools.getTool('Length');
+                              if (lengthTool && lengthTool.hydrate && typeof lengthTool.hydrate === 'function') {
+                                console.log(`🔍 DEBUG: Using Length tool hydration method for viewport ${viewportId}`);
+                                
+                                // Get the annotation data for hydration
+                                const annotationData = annotation?.data;
+                                if (annotationData?.handles?.points) {
+                                  const points = annotationData.handles.points;
+                                  console.log(`🔍 DEBUG: Hydrating with points:`, points);
+                                  
+                                  // Use the tool's hydration method
+                                  lengthTool.hydrate(viewportId, points, {
+                                    annotationUID: measurement.uid,
+                                    ...annotationData
+                                  });
+                                  
+                                  console.log(`🔍 DEBUG: Tool hydration completed for viewport ${viewportId}`);
+                                  
+                                  // Force render after hydration
+                                  if (viewport.render && typeof viewport.render === 'function') {
+                                    viewport.render();
+                                    console.log(`🔍 DEBUG: Forced render after tool hydration for ${viewportId}`);
+                                  }
+                                } else {
+                                  console.warn(`🔍 DEBUG: No valid points found for tool hydration`);
+                                }
+                              } else {
+                                console.warn(`🔍 DEBUG: Length tool does not have hydration method`);
+                              }
+                            } catch (hydrationErr) {
+                              console.warn(`🔍 DEBUG: Failed to hydrate annotation with tool:`, hydrationErr);
+                            }
+                          }
+                          
+                          // Check if the annotation is in the tool's annotation list for the specific frame of reference
+                          let viewportFrameOfRef = viewport.getFrameOfReferenceUID();
+                          console.log(`🔍 DEBUG: Viewport frame of reference: ${viewportFrameOfRef}`);
+                          console.log(`🔍 DEBUG: Annotation frame of reference: ${measurement.FrameOfReferenceUID}`);
+                          
+                          // If viewport has no frame of reference but annotation does, try to set it
+                          if (!viewportFrameOfRef && measurement.FrameOfReferenceUID) {
+                            console.log(`🔍 DEBUG: Viewport has no frame of reference, attempting to set it to match annotation`);
+                            try {
+                              // Try to set the viewport's frame of reference UID
+                              if (viewport.setFrameOfReferenceUID && typeof viewport.setFrameOfReferenceUID === 'function') {
+                                viewport.setFrameOfReferenceUID(measurement.FrameOfReferenceUID);
+                                viewportFrameOfRef = viewport.getFrameOfReferenceUID();
+                                console.log(`🔍 DEBUG: Successfully set viewport frame of reference to: ${viewportFrameOfRef}`);
+                              } else {
+                                console.warn(`🔍 DEBUG: Viewport does not have setFrameOfReferenceUID method`);
+                              }
+                            } catch (setFrameErr) {
+                              console.warn(`🔍 DEBUG: Failed to set viewport frame of reference:`, setFrameErr);
+                            }
+                          }
+                          
+                          if (viewportFrameOfRef === measurement.FrameOfReferenceUID) {
+                            console.log(`🔍 DEBUG: Frame of reference matches, annotation should be visible`);
+                          } else {
+                            console.warn(`🔍 DEBUG: Frame of reference mismatch, annotation may not be visible`);
+                            
+                            // As a fallback, try to make the annotation work without frame of reference matching
+                            if (annotation && !viewportFrameOfRef) {
+                              console.log(`🔍 DEBUG: Attempting to make annotation visible without frame of reference matching`);
+                              try {
+                                // Remove frame of reference requirement for this annotation
+                                annotation.metadata.FrameOfReferenceUID = undefined;
+                                annotation.invalidated = true;
+                                
+                                // Force the annotation to be visible
+                                annotation.isVisible = true;
+                                
+                                // Try to directly add the annotation to the tool's annotation list for this viewport
+                                try {
+                                  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+                                  if (toolGroup) {
+                                    // Get the tool's annotation state
+                                    const toolAnnotationState = cornerstoneTools.annotation.state.getAnnotationManager();
+                                    
+                                    // Force the annotation to be associated with this viewport's frame of reference
+                                    // Since the viewport has no frame of reference, we'll use a special approach
+                                    const viewportElement = viewport.element;
+                                    if (viewportElement) {
+                                      // Try to add the annotation directly to the enabled element
+                                      const enabledElement = getEnabledElement(viewportElement);
+                                      if (enabledElement) {
+                                        // Force the annotation to be visible in this viewport
+                                        cornerstoneTools.annotation.visibility.setAnnotationVisibility(measurement.uid, true);
+                                        
+                                        // Try to trigger a tool-specific render
+                                        const lengthTool = cornerstoneTools.getTool('Length');
+                                        if (lengthTool && lengthTool.renderAnnotation) {
+                                          lengthTool.renderAnnotation(enabledElement);
+                                          console.log(`🔍 DEBUG: Triggered Length tool render for annotation`);
+                                        }
+                                      }
+                                    }
+                                  }
+                                } catch (toolErr) {
+                                  console.warn(`🔍 DEBUG: Failed to force tool annotation:`, toolErr);
+                                }
+                                
+                                // Trigger a re-render
+                                if (viewport.render && typeof viewport.render === 'function') {
+                                  viewport.render();
+                                  console.log(`🔍 DEBUG: Forced re-render after removing frame of reference requirement`);
+                                }
+                              } catch (fallbackErr) {
+                                console.warn(`🔍 DEBUG: Failed to apply frame of reference fallback:`, fallbackErr);
+                              }
+                            }
+                          }
+                          
+                          // Try to get all annotations for this viewport
+                          const allViewportAnnotations = cornerstoneTools.annotation.state.getAnnotations(undefined, viewport.element);
+                          console.log(`🔍 DEBUG: All annotations in viewport ${viewportId}:`, Object.keys(allViewportAnnotations || {}));
+                          
+                        } catch (elementErr) {
+                          console.log(`🔍 DEBUG: Could not get annotations for element in viewport ${viewportId}:`, elementErr);
+                        }
+                      }
+                    } catch (toolCheckErr) {
+                      console.warn(`🔍 DEBUG: Could not check tool annotation state for viewport ${viewportId}:`, toolCheckErr);
+                    }
                   }
                 } catch (toolErr) {
                   console.warn(`🔍 DEBUG: Could not check Length tool for viewport ${viewportId}:`, toolErr);
@@ -1423,6 +1536,37 @@ export async function importMeasurementCollection({
       }
     });
 
+    // CRITICAL: Force refresh the measurement panel to show the new measurements
+    try {
+      const { panelService } = servicesManager.services;
+      if (panelService) {
+        // Try to refresh the measurement panel
+        console.log(`🔍 DEBUG: Attempting to refresh measurement panel`);
+        
+        // Trigger a measurement service event to refresh the panel
+        // Use the correct method to trigger events
+        if (measurementService._broadcastEvent) {
+          measurementService._broadcastEvent(measurementService.EVENTS.MEASUREMENTS_LOADED, {
+            measurements: allMeasurements,
+            source: source,
+          });
+          console.log(`🔍 DEBUG: Triggered MEASUREMENTS_LOADED event via _broadcastEvent`);
+        } else if (measurementService.broadcastEvent) {
+          measurementService.broadcastEvent(measurementService.EVENTS.MEASUREMENTS_LOADED, {
+            measurements: allMeasurements,
+            source: source,
+          });
+          console.log(`🔍 DEBUG: Triggered MEASUREMENTS_LOADED event via broadcastEvent`);
+        } else {
+          // Fallback: try to trigger a custom event
+          console.log(`🔍 DEBUG: Using fallback method to refresh measurement panel`);
+          // The measurement service should automatically notify subscribers when measurements are added
+        }
+      }
+    } catch (panelErr) {
+      console.warn('Could not refresh measurement panel:', panelErr);
+    }
+
     // Add debug logging to check annotation state
     try {
       // Check if annotations exist in Cornerstone3D state
@@ -1588,6 +1732,33 @@ export async function importMeasurementCollection({
 
   } catch (err) {
     console.warn('Failed to get measurements count:', err);
+  }
+
+  // FINAL STEP: Ensure the measurement panel shows the tracked measurements
+  console.log(`🔍 DEBUG: Import completed. Total measurements imported: ${imageMeasurements.length}`);
+  console.log(`🔍 DEBUG: Series ${seriesUID} has been added to tracking`);
+  console.log(`🔍 DEBUG: Measurements should now appear in the measurement panel`);
+
+  // Final verification: check that measurements are properly tracked
+  if (trackedMeasurementsService && seriesUID) {
+    const isSeriesTracked = trackedMeasurementsService.isSeriesTracked(seriesUID);
+    const trackedSeries = trackedMeasurementsService.getTrackedSeries();
+    console.log(`🔍 DEBUG: Final verification - Series ${seriesUID} tracked: ${isSeriesTracked}`);
+    console.log(`🔍 DEBUG: All tracked series:`, trackedSeries);
+    
+    // Check measurements for this series
+    const seriesMeasurements = measurementService.getMeasurements(
+      measurement => measurement.referenceSeriesUID === seriesUID
+    );
+    console.log(`🔍 DEBUG: Measurements for series ${seriesUID}:`, seriesMeasurements.length);
+    seriesMeasurements.forEach((m, index) => {
+      console.log(`🔍 DEBUG: Series measurement ${index}:`, {
+        uid: m.uid,
+        toolName: m.toolName,
+        label: m.label,
+        displayText: m.displayText
+      });
+    });
   }
 
   return imageMeasurements.length;
