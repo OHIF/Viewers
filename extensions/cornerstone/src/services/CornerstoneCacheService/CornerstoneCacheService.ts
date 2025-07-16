@@ -107,7 +107,7 @@ class CornerstoneCacheService {
 
         volume.imageIds.forEach(imageId => {
           if (cs3DCache.getImageLoadObject(imageId)) {
-            cs3DCache.removeImageLoadObject(imageId);
+            cs3DCache.removeImageLoadObject(imageId, { force: true });
           }
         });
       }

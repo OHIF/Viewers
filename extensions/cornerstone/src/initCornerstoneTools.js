@@ -31,6 +31,7 @@ import {
   TrackballRotateTool,
   AdvancedMagnifyTool,
   UltrasoundDirectionalTool,
+  UltrasoundPleuraBLineTool,
   PlanarFreehandROITool,
   PlanarFreehandContourSegmentationTool,
   SplineROITool,
@@ -39,6 +40,7 @@ import {
   WindowLevelRegionTool,
   SegmentSelectTool,
   RegionSegmentPlusTool,
+  SegmentLabelTool,
 } from '@cornerstonejs/tools';
 import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
@@ -95,6 +97,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(ImageOverlayViewerTool);
   addTool(AdvancedMagnifyTool);
   addTool(UltrasoundDirectionalTool);
+  addTool(UltrasoundPleuraBLineTool);
   addTool(PlanarFreehandROITool);
   addTool(SplineROITool);
   addTool(LivewireContourTool);
@@ -102,6 +105,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
+  addTool(SegmentLabelTool);
   addTool(LabelmapSlicePropagationTool);
   addTool(MarkerLabelmapTool);
   addTool(RegionSegmentPlusTool);
@@ -151,6 +155,7 @@ const toolNames = {
   ImageOverlayViewer: ImageOverlayViewerTool.toolName,
   AdvancedMagnify: AdvancedMagnifyTool.toolName,
   UltrasoundDirectional: UltrasoundDirectionalTool.toolName,
+  UltrasoundAnnotation: UltrasoundPleuraBLineTool.toolName,
   SplineROI: SplineROITool.toolName,
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
@@ -159,6 +164,7 @@ const toolNames = {
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
   SegmentSelect: SegmentSelectTool.toolName,
+  SegmentLabel: SegmentLabelTool.toolName,
   LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
   MarkerLabelmap: MarkerLabelmapTool.toolName,
   RegionSegmentPlus: RegionSegmentPlusTool.toolName,
