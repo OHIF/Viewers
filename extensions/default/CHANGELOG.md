@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.89...v3.11.0-beta.90) (2025-07-16)
+
+
+### Bug Fixes
+
+* **viewportgrid:** don't subscribe to duplicate event listeners ([#5218](https://github.com/OHIF/Viewers/issues/5218)) ([faef74a](https://github.com/OHIF/Viewers/commit/faef74ab21801841ad6b6a2104bc88a52c5c0b9e))
+
+
+
+
+
 # [3.11.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.88...v3.11.0-beta.89) (2025-07-16)
 
 **Note:** Version bump only for package @ohif/extension-default
