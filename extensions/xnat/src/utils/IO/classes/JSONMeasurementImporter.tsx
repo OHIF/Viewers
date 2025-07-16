@@ -724,45 +724,166 @@ export async function importMeasurementCollection({
         };
       }
     } else if (measurement.toolName === 'EllipticalROI' || measurement.toolName === 'CircleROI') {
-      // Handle other ROI tools
+      // Handle CircleROI and EllipticalROI tools
+      console.log(`🔍 DEBUG: Processing ${measurement.toolName} with im.data:`, im.data);
+      
+      // Initialize handles structure
+      measurement.data.handles = {};
+      
+      // Try to get handles from multiple sources
+      let hasValidHandles = false;
+      
       if (im.data?.handles) {
-        measurement.data.handles = im.data.handles;
-
-        // Extract points from handles for other ROI tools
+        // If we have existing handles, try to use them
         if (im.data.handles.center && im.data.handles.end) {
           // CircleROI/EllipticalROI typically have center and end
+          measurement.data.handles = {
+            center: {
+              x: im.data.handles.center.x,
+              y: im.data.handles.center.y,
+              z: im.data.handles.center.z || 0
+            },
+            end: {
+              x: im.data.handles.end.x,
+              y: im.data.handles.end.y,
+              z: im.data.handles.end.z || 0
+            }
+          };
+          
           measurement.points = [
             [im.data.handles.center.x, im.data.handles.center.y, im.data.handles.center.z || 0],
             [im.data.handles.end.x, im.data.handles.end.y, im.data.handles.end.z || 0],
           ];
-
-          // For circle/ellipse, textBox should be at the center point
-          if (measurement.data.handles.textBox) {
-            measurement.data.handles.textBox.worldPosition = [
-              im.data.handles.center.x,
-              im.data.handles.center.y,
-              im.data.handles.center.z || 0
-            ];
-          }
+          hasValidHandles = true;
         } else {
           // Try to extract from any available handle points
           const handleValues = Object.values(im.data.handles).filter(
             (h: any) => h && typeof h.x === 'number' && typeof h.y === 'number'
           );
-          measurement.points = handleValues.map((h: any) => [h.x, h.y, h.z || 0]);
-
-          // Calculate average position for textBox if we have multiple points
-          if (measurement.points.length > 0) {
-            const avgX = measurement.points.reduce((sum, point) => sum + point[0], 0) / measurement.points.length;
-            const avgY = measurement.points.reduce((sum, point) => sum + point[1], 0) / measurement.points.length;
-            const avgZ = measurement.points.reduce((sum, point) => sum + (point[2] || 0), 0) / measurement.points.length;
-
-            if (measurement.data.handles.textBox) {
-              measurement.data.handles.textBox.worldPosition = [avgX, avgY, avgZ];
-            }
+          
+          if (handleValues.length >= 2) {
+            // Use first two points as center and end
+            const firstHandle = handleValues[0] as any;
+            const secondHandle = handleValues[1] as any;
+            
+            measurement.data.handles = {
+              center: {
+                x: firstHandle.x,
+                y: firstHandle.y,
+                z: firstHandle.z || 0
+              },
+              end: {
+                x: secondHandle.x,
+                y: secondHandle.y,
+                z: secondHandle.z || 0
+              }
+            };
+            
+            measurement.points = handleValues.map((h: any) => [h.x, h.y, h.z || 0]);
+            hasValidHandles = true;
           }
         }
       }
+      
+      // If we still don't have valid handles, try to create them from points
+      if (!hasValidHandles && measurement.points && measurement.points.length >= 2) {
+        console.log(`🔍 DEBUG: Creating ${measurement.toolName} handles from points:`, measurement.points);
+        measurement.data.handles = {
+          center: {
+            x: measurement.points[0][0],
+            y: measurement.points[0][1],
+            z: measurement.points[0][2] || 0
+          },
+          end: {
+            x: measurement.points[1][0],
+            y: measurement.points[1][1],
+            z: measurement.points[1][2] || 0
+          }
+        };
+        hasValidHandles = true;
+      }
+      
+      // Last resort: create default handles if we have no data at all
+      if (!hasValidHandles) {
+        console.warn(`🔍 DEBUG: ${measurement.toolName} has no valid data, creating default handles`);
+        
+        // Create default handles at a reasonable position
+        const defaultCenter = { x: 100, y: 100, z: 0 };
+        const defaultEnd = { x: 150, y: 100, z: 0 };
+        
+        measurement.data.handles = {
+          center: defaultCenter,
+          end: defaultEnd
+        };
+        
+        measurement.points = [
+          [defaultCenter.x, defaultCenter.y, defaultCenter.z],
+          [defaultEnd.x, defaultEnd.y, defaultEnd.z]
+        ];
+        
+        hasValidHandles = true;
+      }
+      
+      // Ensure textBox is properly set for ROI tools
+      if (!measurement.data.handles.textBox) {
+        measurement.data.handles.textBox = {
+          hasMoved: false,
+          worldPosition: [0, 0, 0],
+          worldBoundingBox: {
+            topLeft: [0, 0, 0],
+            topRight: [0, 0, 0],
+            bottomLeft: [0, 0, 0],
+            bottomRight: [0, 0, 0]
+          }
+        };
+      }
+      
+      // Set textBox position to center if we have center handle
+      if (measurement.data.handles.center && measurement.data.handles.textBox) {
+        measurement.data.handles.textBox.worldPosition = [
+          measurement.data.handles.center.x,
+          measurement.data.handles.center.y,
+          measurement.data.handles.center.z || 0
+        ];
+        
+        // Calculate proper worldBoundingBox for the text box
+        const textBoxSize = 50; // Approximate text box size in world coordinates
+        const halfSize = textBoxSize / 2;
+        const centerX = measurement.data.handles.center.x;
+        const centerY = measurement.data.handles.center.y;
+        const centerZ = measurement.data.handles.center.z || 0;
+        
+        measurement.data.handles.textBox.worldBoundingBox = {
+          topLeft: [centerX - halfSize, centerY + halfSize, centerZ],
+          topRight: [centerX + halfSize, centerY + halfSize, centerZ],
+          bottomLeft: [centerX - halfSize, centerY - halfSize, centerZ],
+          bottomRight: [centerX + halfSize, centerY - halfSize, centerZ],
+        };
+      }
+      
+      // For Bidirectional tool, set textBox position to center of the measurement
+      if (measurement.toolName === 'Bidirectional' && measurement.data.handles.start && measurement.data.handles.end && measurement.data.handles.textBox) {
+        const centerX = (measurement.data.handles.start.x + measurement.data.handles.end.x) / 2;
+        const centerY = (measurement.data.handles.start.y + measurement.data.handles.end.y) / 2;
+        const centerZ = (measurement.data.handles.start.z + measurement.data.handles.end.z) / 2;
+        
+        measurement.data.handles.textBox.worldPosition = [centerX, centerY, centerZ];
+        
+        // Calculate proper worldBoundingBox for the text box
+        const textBoxSize = 50;
+        const halfSize = textBoxSize / 2;
+        
+        measurement.data.handles.textBox.worldBoundingBox = {
+          topLeft: [centerX - halfSize, centerY + halfSize, centerZ],
+          topRight: [centerX + halfSize, centerY + halfSize, centerZ],
+          bottomLeft: [centerX - halfSize, centerY - halfSize, centerZ],
+          bottomRight: [centerX + halfSize, centerY - halfSize, centerZ],
+        };
+      }
+      
+      console.log(`🔍 DEBUG: Final ${measurement.toolName} handles:`, measurement.data.handles);
+      console.log(`🔍 DEBUG: ${measurement.toolName} points:`, measurement.points);
+      console.log(`🔍 DEBUG: ${measurement.toolName} hasValidHandles:`, hasValidHandles);
 
       // Set displayText for other ROI tools
       if (im.measurements && im.measurements.length > 0) {
@@ -816,16 +937,193 @@ export async function importMeasurementCollection({
       if (im.data?.cachedStats) {
         measurement.data.cachedStats = im.data.cachedStats;
       }
-    } else if (measurement.toolName === 'Bidirectional') {
-      if (!measurement.data.handles || !measurement.data.handles.start || !measurement.data.handles.end || !measurement.data.handles.perpendicularStart || !measurement.data.handles.perpendicularEnd) {
-        if (measurement.points.length >= 4) {
-          measurement.data.handles = {
-            start: { x: measurement.points[0][0], y: measurement.points[0][1] },
-            end: { x: measurement.points[1][0], y: measurement.points[1][1] },
-            perpendicularStart: { x: measurement.points[2][0], y: measurement.points[2][1] },
-            perpendicularEnd: { x: measurement.points[3][0], y: measurement.points[3][1] },
+      
+      // Ensure ROI tools have all required properties
+      if (!measurement.data.handles.center || !measurement.data.handles.end) {
+        console.warn(`🔍 DEBUG: ${measurement.toolName} missing required handles, creating fallback`);
+        
+        // Create fallback handles if missing
+        if (!measurement.data.handles.center && measurement.points && measurement.points.length > 0) {
+          measurement.data.handles.center = {
+            x: measurement.points[0][0],
+            y: measurement.points[0][1],
+            z: measurement.points[0][2] || 0
           };
         }
+        
+        if (!measurement.data.handles.end && measurement.points && measurement.points.length > 1) {
+          measurement.data.handles.end = {
+            x: measurement.points[1][0],
+            y: measurement.points[1][1],
+            z: measurement.points[1][2] || 0
+          };
+        }
+      }
+      
+      // Ensure ROI tools have the required activeHandleIndex property
+      if (measurement.data.handles.activeHandleIndex === undefined) {
+        measurement.data.handles.activeHandleIndex = null;
+      }
+      
+      // Ensure ROI tools have all the properties that Cornerstone3D expects
+      // These are additional properties that might be needed for rendering
+      if (!measurement.data.handles.points) {
+        measurement.data.handles.points = [
+          [measurement.data.handles.center.x, measurement.data.handles.center.y, measurement.data.handles.center.z || 0],
+          [measurement.data.handles.end.x, measurement.data.handles.end.y, measurement.data.handles.end.z || 0]
+        ];
+      }
+      
+      // Ensure we have the required properties for ROI tool rendering
+      if (!measurement.data.handles.invalidated) {
+        measurement.data.handles.invalidated = false;
+      }
+      
+      if (!measurement.data.handles.highlighted) {
+        measurement.data.handles.highlighted = false;
+      }
+      
+      // Add any missing properties that might be expected by the ROI tools
+      if (!measurement.data.handles.locked) {
+        measurement.data.handles.locked = false;
+      }
+      
+      if (!measurement.data.handles.visible) {
+        measurement.data.handles.visible = true;
+      }
+      
+      // EllipticalROI specific handling - simplified to match successful tools
+      if (measurement.toolName === 'EllipticalROI') {
+        console.log(`🔍 DEBUG: Processing EllipticalROI with points:`, measurement.points);
+        
+        // Simplified approach: create handles directly from points like other successful tools
+        if (measurement.points && measurement.points.length >= 4) {
+          // Use the 4 points directly as handles
+          const [point1, point2, point3, point4] = measurement.points;
+          
+          // Calculate center as average of all points
+          const centerX = (point1[0] + point2[0] + point3[0] + point4[0]) / 4;
+          const centerY = (point1[1] + point2[1] + point3[1] + point4[1]) / 4;
+          const centerZ = (point1[2] + point2[2] + point3[2] + point4[2]) / 4;
+          
+          // Create simple handles structure like other successful tools
+          measurement.data.handles = {
+            center: { x: centerX, y: centerY, z: centerZ },
+            end: { x: point1[0], y: point1[1], z: point1[2] },
+            start: { x: point2[0], y: point2[1], z: point2[2] },
+            perpendicularStart: { x: point3[0], y: point3[1], z: point3[2] },
+            perpendicularEnd: { x: point4[0], y: point4[1], z: point4[2] },
+            points: measurement.points,
+            activeHandleIndex: null,
+            invalidated: false,
+            highlighted: false,
+            locked: false,
+            visible: true
+          };
+          
+          console.log(`🔍 DEBUG: Created EllipticalROI handles from 4 points:`, measurement.data.handles);
+        } else if (measurement.points && measurement.points.length >= 2) {
+          // Fallback: create ellipse from 2 points (center and end)
+          const [point1, point2] = measurement.points;
+          
+          measurement.data.handles = {
+            center: { x: point1[0], y: point1[1], z: point1[2] },
+            end: { x: point2[0], y: point2[1], z: point2[2] },
+            start: { x: point1[0], y: point1[1], z: point1[2] },
+            perpendicularStart: { x: point1[0], y: point1[1], z: point1[2] },
+            perpendicularEnd: { x: point2[0], y: point2[1], z: point2[2] },
+            points: [
+              [point1[0], point1[1], point1[2]],
+              [point2[0], point2[1], point2[2]],
+              [point1[0], point1[1], point1[2]],
+              [point2[0], point2[1], point2[2]]
+            ],
+            activeHandleIndex: null,
+            invalidated: false,
+            highlighted: false,
+            locked: false,
+            visible: true
+          };
+          
+          console.log(`🔍 DEBUG: Created EllipticalROI handles from 2 points:`, measurement.data.handles);
+        } else {
+          // Last resort: create default handles
+          console.warn(`🔍 DEBUG: EllipticalROI has insufficient points, creating default handles`);
+          
+          const defaultCenter = { x: 100, y: 100, z: 0 };
+          const defaultEnd = { x: 150, y: 100, z: 0 };
+          
+          measurement.data.handles = {
+            center: defaultCenter,
+            end: defaultEnd,
+            start: defaultCenter,
+            perpendicularStart: defaultCenter,
+            perpendicularEnd: defaultEnd,
+            points: [
+              [defaultCenter.x, defaultCenter.y, defaultCenter.z],
+              [defaultEnd.x, defaultEnd.y, defaultEnd.z],
+              [defaultCenter.x, defaultCenter.y, defaultCenter.z],
+              [defaultEnd.x, defaultEnd.y, defaultEnd.z]
+            ],
+            activeHandleIndex: null,
+            invalidated: false,
+            highlighted: false,
+            locked: false,
+            visible: true
+          };
+        }
+        
+        console.log(`🔍 DEBUG: EllipticalROI final data structure:`, {
+          center: measurement.data.handles.center,
+          end: measurement.data.handles.end,
+          start: measurement.data.handles.start,
+          perpendicularStart: measurement.data.handles.perpendicularStart,
+          perpendicularEnd: measurement.data.handles.perpendicularEnd,
+          points: measurement.data.handles.points
+        });
+      }
+    } else if (measurement.toolName === 'Bidirectional') {
+      console.log(`🔍 DEBUG: Processing Bidirectional with points:`, measurement.points);
+      
+      if (measurement.points && measurement.points.length >= 4) {
+        // Create proper handles structure for Bidirectional tool
+        measurement.data.handles = {
+          start: { x: measurement.points[0][0], y: measurement.points[0][1], z: measurement.points[0][2] || 0 },
+          end: { x: measurement.points[1][0], y: measurement.points[1][1], z: measurement.points[1][2] || 0 },
+          perpendicularStart: { x: measurement.points[2][0], y: measurement.points[2][1], z: measurement.points[2][2] || 0 },
+          perpendicularEnd: { x: measurement.points[3][0], y: measurement.points[3][1], z: measurement.points[3][2] || 0 },
+          points: measurement.points,
+          activeHandleIndex: null,
+          invalidated: false,
+          highlighted: false,
+          locked: false,
+          visible: true
+        };
+        
+        console.log(`🔍 DEBUG: Created Bidirectional handles:`, measurement.data.handles);
+      } else {
+        console.warn(`🔍 DEBUG: Bidirectional has insufficient points (${measurement.points?.length || 0}), creating default handles`);
+        
+        const defaultCenter = { x: 100, y: 100, z: 0 };
+        const defaultEnd = { x: 150, y: 100, z: 0 };
+        
+        measurement.data.handles = {
+          start: defaultCenter,
+          end: defaultEnd,
+          perpendicularStart: defaultCenter,
+          perpendicularEnd: defaultEnd,
+          points: [
+            [defaultCenter.x, defaultCenter.y, defaultCenter.z],
+            [defaultEnd.x, defaultEnd.y, defaultEnd.z],
+            [defaultCenter.x, defaultCenter.y, defaultCenter.z],
+            [defaultEnd.x, defaultEnd.y, defaultEnd.z]
+          ],
+          activeHandleIndex: null,
+          invalidated: false,
+          highlighted: false,
+          locked: false,
+          visible: true
+        };
       }
     } // Add more tool types as needed
 
@@ -918,6 +1216,32 @@ export async function importMeasurementCollection({
     console.log('- toolName:', measurement.toolName);
     console.log('- FrameOfReferenceUID:', rawDataForService.annotation.metadata.FrameOfReferenceUID);
     console.log('- annotation data being passed to Cornerstone3D:', rawDataForService.annotation.data);
+    
+    // Additional debug for ROI tools
+    if (measurement.toolName === 'CircleROI' || measurement.toolName === 'EllipticalROI') {
+      console.log(`🔍 DEBUG: ${measurement.toolName} final data structure:`, {
+        handles: measurement.data.handles,
+        center: measurement.data.handles?.center,
+        end: measurement.data.handles?.end,
+        textBox: measurement.data.handles?.textBox,
+        activeHandleIndex: measurement.data.handles?.activeHandleIndex,
+        points: measurement.data.handles?.points
+      });
+      
+      // Additional safety check for EllipticalROI
+      if (measurement.toolName === 'EllipticalROI') {
+        console.log(`🔍 DEBUG: EllipticalROI annotation data being passed to Cornerstone3D:`, rawDataForService.annotation.data);
+        
+        // Ensure the annotation data has all required properties
+        if (!rawDataForService.annotation.data.handles.points || !Array.isArray(rawDataForService.annotation.data.handles.points)) {
+          console.warn(`🔍 DEBUG: EllipticalROI annotation data missing points array, adding it`);
+          rawDataForService.annotation.data.handles.points = [
+            [measurement.data.handles.center.x, measurement.data.handles.center.y, measurement.data.handles.center.z || 0],
+            [measurement.data.handles.end.x, measurement.data.handles.end.y, measurement.data.handles.end.z || 0]
+          ];
+        }
+      }
+    }
 
     try {
       // Add measurement to the measurement service
