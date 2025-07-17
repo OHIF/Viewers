@@ -1755,7 +1755,8 @@ function commandsModule({
       const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
 
       if (segmentLabelConfig?.enabledByDefault) {
-        tools.active.push({
+        const activeTools = tools?.active ?? [];
+        activeTools.push({
           toolName: toolNames.SegmentLabel,
           configuration: {
             hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
@@ -1763,16 +1764,20 @@ function commandsModule({
             background: segmentLabelConfig?.background,
           },
         });
+
+        tools.active = activeTools;
         return tools;
       }
 
-      tools.disabled.push({
+      const disabledTools = tools?.disabled ?? [];
+      disabledTools.push({
         toolName: toolNames.SegmentLabel,
         configuration: {
           hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
           color: segmentLabelConfig?.labelColor,
         },
       });
+      tools.disabled = disabledTools;
       return tools;
     },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
