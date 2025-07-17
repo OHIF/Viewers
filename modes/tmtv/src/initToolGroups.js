@@ -19,11 +19,11 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [

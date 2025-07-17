@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 title: Customization Service
+summary: Migration guide for OHIF's Customization Service from 3.9 to 3.10, covering unified customization getters, simplified registration, new commands, renamed customizations, and updated patterns for modifying UI components.
 ---
 
 # CustomizationService

@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 title: Custom URL Access/Build
+summary: "Instructions for hosting the OHIF Viewer on custom URL paths, with two deployment approaches: simple setup for serving the viewer from a subpath with assets at the root, and advanced setup for custom asset paths with detailed configuration steps."
 ---
 
 

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Environment Variables
+title: Environment Variables
+summary: Documentation of the environment variables used in OHIF during build time to configure application behavior, including application settings, internationalization options, and methods for setting these variables.
 ---
 # Environment Variables
 

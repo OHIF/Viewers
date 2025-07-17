@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Measurement Service
+title: Measurement Service
+summary: Documentation for OHIF's MeasurementService, which handles annotation representation with extensible sources and mappers, supporting various measurement tools and allowing custom implementations beyond the built-in CornerstoneTools integration.
 ---
 
 # Measurement Service

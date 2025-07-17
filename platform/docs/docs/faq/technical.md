@@ -1,5 +1,12 @@
+---
+id: technical
+title: Technical FAQ
+summary: Technical explanations and solutions for OHIF Viewer implementation challenges, including required metadata fields, handling large volumes for MPR/rendering, dynamically loading measurements, customizing series sorting, and addressing common rendering issues.
+---
+
 # Technical FAQ
 
+* [How to add a custom icon to the viewport corners](./add-viewport-icon.md)
 
 
 ## Viewer opens but does not show any thumbnails

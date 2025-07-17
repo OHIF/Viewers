@@ -1,6 +1,8 @@
 ---
 sidebar_position: 14
 sidebar_label: Test Coverage
+title: OHIF Viewer Test Coverage
+summary: Information about the automated testing infrastructure for the OHIF Viewer, with a focus on Playwright tests and access to the latest test coverage reports, which help ensure reliability and quality of the codebase.
 ---
 
 # Test Coverage

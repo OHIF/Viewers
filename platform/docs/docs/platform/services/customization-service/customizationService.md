@@ -1,6 +1,8 @@
 ---
 sidebar_label: Introduction
 sidebar_position: 1
+title: Customization Service
+summary: Documentation for OHIF's Customization Service, which provides a flexible framework for configuring and overriding viewer components across different scopes (default, mode, global), supporting dynamic customization of UI elements and behaviors.
 ---
 
 import { customizations, TableGenerator } from './sampleCustomizations';

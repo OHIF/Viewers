@@ -1,6 +1,8 @@
 ---
 sidebar_position: 8
 sidebar_label: Panel Service
+title: Panel Service
+summary: Documentation for OHIF's PanelService, which manages the activation and display of side panels registered via extension modules, with support for explicit activation or event-triggered display of panels.
 ---
 
 # Panel Service

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: UI Notification Service
+title: UI Notification Service
+summary: Documentation for OHIF's UI Notification Service, which provides a standardized way to display non-intrusive, contextual notifications for timely and relevant information to users throughout the application.
 ---
 # UI Notification Service
 

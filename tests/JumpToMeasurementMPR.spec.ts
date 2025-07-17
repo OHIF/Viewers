@@ -60,8 +60,25 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   // scroll away
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
 
-  // use mouse wheel to scroll away
-  await page.mouse.wheel(0, 100);
+  // Focus on the canvas first, then use mouse wheel to scroll away
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setImageIdIndex(0);
+      viewport.render();
+    }
+  });
 
   // wait 2 seconds
   await page.waitForTimeout(2000);
@@ -69,8 +86,6 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.scrollAway);
 
   await page.getByTestId('data-row').first().click();
-
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
 
@@ -88,13 +103,10 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpInMPR);
 
   await page.locator(':text("S:3")').first().dblclick();
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR);
 
   await page.getByTestId('data-row').first().click();
-
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(
     page,

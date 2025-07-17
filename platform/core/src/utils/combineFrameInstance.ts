@@ -19,11 +19,14 @@ const combineFrameInstance = (frame, instance) => {
     ImageType,
   } = instance;
 
+  if (NumberOfFrames < 2) {
+    return instance;
+  }
+
   instance.ImageType = dicomSplit(ImageType);
+  const frameNumber = Number.parseInt(frame || 1);
 
-  if (PerFrameFunctionalGroupsSequence || NumberOfFrames > 1) {
-    const frameNumber = Number.parseInt(frame || 1);
-
+  if (PerFrameFunctionalGroupsSequence && SharedFunctionalGroupsSequence) {
     // this is to fix NM multiframe datasets with position and orientation
     // information inside DetectorInformationSequence
     if (!instance.ImageOrientationPatient && instance.DetectorInformationSequence) {
@@ -96,9 +99,52 @@ const combineFrameInstance = (frame, instance) => {
       configurable: true,
     });
     return newInstance;
-  } else {
-    return instance;
   }
+
+  // For RTDOSE datasets
+  if (instance.GridFrameOffsetVector) {
+    if (!instance._parentInstance) {
+      Object.defineProperty(instance, '_parentInstance', {
+        value: { ...instance },
+      });
+    }
+
+    const sharedInstance = createCombinedValue(
+      instance._parentInstance,
+      SharedFunctionalGroupsSequence?.[0],
+      '_shared'
+    );
+
+    const newInstance = createCombinedValue(
+      sharedInstance,
+      PerFrameFunctionalGroupsSequence?.[frameNumber - 1],
+      frameNumber
+    );
+
+    const origin = newInstance.ImagePositionPatient?.map(Number);
+    const orientation = newInstance.ImageOrientationPatient?.map(Number);
+    const offset = Number(instance.GridFrameOffsetVector[frameNumber - 1]);
+
+    if (origin && orientation && !Number.isNaN(offset)) {
+      const row = vec3.fromValues(orientation[0], orientation[1], orientation[2]);
+      const col = vec3.fromValues(orientation[3], orientation[4], orientation[5]);
+      const normal = vec3.cross(vec3.create(), row, col);
+
+      const position = vec3.scaleAndAdd(vec3.create(), vec3.fromValues(...origin), normal, offset);
+      newInstance.ImagePositionPatient = [position[0], position[1], position[2]];
+    }
+
+    Object.defineProperty(newInstance, 'frameNumber', {
+      value: frameNumber,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+
+    return newInstance;
+  }
+
+  return instance;
 };
 
 /**
