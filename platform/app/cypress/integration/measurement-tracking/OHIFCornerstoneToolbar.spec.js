@@ -85,7 +85,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The exact text is slightly dependent on the viewport resolution, so leave a range
     cy.get('@viewportInfoBottomLeft').should($txt => {
       const text = $txt.text();
-      expect(text).to.include('L:479');
+      expect(text).to.include('L:288');
     });
   });
 
@@ -143,7 +143,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Click on reset button
     cy.resetViewport();
 
-    const expectedText = 'W:958L:479';
+    const expectedText = 'W:576L:288';
     cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });
 
@@ -412,8 +412,8 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 */
   it('check if Flip tool will flip the image in the viewport', () => {
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'A');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
 
     //Click on More button
     cy.get('@moreBtnSecondary').click();
@@ -421,8 +421,8 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Click on Flip button
     cy.get('[data-cy="flipHorizontal"]').click();
     cy.waitDicomImage();
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'P');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
   });
 
   // it('checks if stack sync is preserved on new display set and uses FOR', () => {
