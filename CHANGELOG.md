@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.90...v3.11.0-beta.91) (2025-07-17)
+
+
+### Bug Fixes
+
+* image slices are displayed in reverse order, if we switch from common layout to 2D MPR ([#5022](https://github.com/OHIF/Viewers/issues/5022)) ([6a4ca70](https://github.com/OHIF/Viewers/commit/6a4ca7083623f21ae4c810507da0c4634bc10de9))
+
+
+
+
+
+# [3.11.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.89...v3.11.0-beta.90) (2025-07-16)
+
+
+### Bug Fixes
+
+* **black-viewports:** MPR viewports were turning black if their parent stack had it's properties reset ([#5219](https://github.com/OHIF/Viewers/issues/5219)) ([3ff9a65](https://github.com/OHIF/Viewers/commit/3ff9a65ef3c3f1735d8730868a8b7dc984fc76fc))
+* **DicomUpload:** Fix upload form and some scrollbars styles ([#5125](https://github.com/OHIF/Viewers/issues/5125)) ([26d77fb](https://github.com/OHIF/Viewers/commit/26d77fb149bd126cdd0571fa0e202e136c6d0d83))
+* **viewportgrid:** don't subscribe to duplicate event listeners ([#5218](https://github.com/OHIF/Viewers/issues/5218)) ([faef74a](https://github.com/OHIF/Viewers/commit/faef74ab21801841ad6b6a2104bc88a52c5c0b9e))
+
+
+
+
+
+# [3.11.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.88...v3.11.0-beta.89) (2025-07-16)
+
+
+### Bug Fixes
+
+* **segmentation:** Fix segmentationid undefined 5106 ([#5107](https://github.com/OHIF/Viewers/issues/5107)) ([f38805e](https://github.com/OHIF/Viewers/commit/f38805e6f1c98138db1617c2fa56f9007207d456))
+
+
+
+
+
+# [3.11.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.87...v3.11.0-beta.88) (2025-07-16)
+
+
+### Bug Fixes
+
+* **TMTV:** The TMTV CSV file now has the correct name and contents ([#5215](https://github.com/OHIF/Viewers/issues/5215)) ([522d2aa](https://github.com/OHIF/Viewers/commit/522d2aa764c2dbdb6ed22e7877201b0fb108f07d))
+
+
+
+
+
 # [3.11.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.86...v3.11.0-beta.87) (2025-07-15)
 
 
