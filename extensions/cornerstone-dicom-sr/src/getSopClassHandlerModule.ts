@@ -516,12 +516,25 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
+  const { ConceptNameCodeSequence: conceptNameItem } = graphicItem;
+  const { CodeValue: graphicValue, CodingSchemeDesignator: graphicDesignator } = conceptNameItem;
+  const graphicCode = `${graphicDesignator}:${graphicValue}`;
+
+  const pointDataItem = _getCoordsFromSCOORDOrSCOORD3D(graphicItem);
+  const is3DMeasurement = pointDataItem.ValueType === 'SCOORD3D';
+  const pointLength = is3DMeasurement ? 3 : 2;
+  const pointsLength = pointDataItem.GraphicData.length / pointLength;
+
   const measurement = {
     loaded: false,
     labels: [],
-    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+    coords: [pointDataItem],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
+    graphicCode,
+    is3DMeasurement,
+    pointsLength,
+    graphicType: pointDataItem.GraphicType,
   };
 
   NUMContentItems.forEach(item => {

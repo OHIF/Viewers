@@ -89,7 +89,7 @@ export default function hydrateStructuredReport(
   // Mapping of legacy datasets is now directly handled by adapters module
   const datasetToUse = instance;
 
-  // Use dcmjs to generate toolState.
+  // Use CS3D adapters to generate toolState.
   let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
     datasetToUse,
     // NOTE: we need to pass in the imageIds to dcmjs since the we use them
