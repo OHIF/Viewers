@@ -127,7 +127,10 @@ const makeDisplaySet = instances => {
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
-  imageSet.sortBy(instancesSortCriteria.default);
+  const { servicesManager } = appContext;
+  const { customizationService } = servicesManager.services;
+
+  imageSet.sort(customizationService);
 
   // Include the first image instance number (after sorted)
   /*imageSet.setAttribute(
