@@ -3,7 +3,11 @@ import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
 import React, { useState } from 'react';
 import { Switch } from '@ohif/ui-next';
 
-export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
+export default function getSegmentationPanelCustomization({
+  commandsManager,
+  servicesManager,
+  extensionManager,
+}) {
   return {
     'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
@@ -38,7 +42,9 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       const [previewEdits, setPreviewEdits] = useState(false);
       const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
       const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
-      const [shouldShowLabelOnHover, setShouldShowLabelOnHover] = useState(false);
+      const [shouldShowLabelOnHover, setShouldShowLabelOnHover] = useState(
+        !!extensionManager.appConfig.segmentation?.segmentLabel?.enabledByDefault
+      );
       const handlePreviewEditsChange = checked => {
         setPreviewEdits(checked);
         commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });

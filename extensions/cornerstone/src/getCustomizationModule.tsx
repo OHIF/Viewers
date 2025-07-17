@@ -12,13 +12,17 @@ import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
 
-function getCustomizationModule({ commandsManager, servicesManager }) {
+function getCustomizationModule({ commandsManager, servicesManager, extensionManager }) {
   return [
     {
       name: 'default',
       value: {
         ...viewportOverlayCustomization,
-        ...getSegmentationPanelCustomization({ commandsManager, servicesManager }),
+        ...getSegmentationPanelCustomization({
+          commandsManager,
+          servicesManager,
+          extensionManager,
+        }),
         ...layoutSelectorCustomization,
         ...viewportToolsCustomization,
         ...viewportClickCommandsCustomization,
