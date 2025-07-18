@@ -577,8 +577,8 @@ const WADO_IMAGE_LOADER = {
       sliceThickness: toNumber(instance.SliceThickness),
       sliceLocation: toNumber(instance.SliceLocation),
       pixelSpacing: toNumber(PixelSpacing || 1),
-      rowPixelSpacing,
-      columnPixelSpacing,
+      rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
+      columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
       usingDefaultValues,
     };
   },
