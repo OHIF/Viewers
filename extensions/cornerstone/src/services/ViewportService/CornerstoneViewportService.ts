@@ -47,6 +47,7 @@ const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
 
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
+export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -590,6 +591,32 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
+   * Figures out which viewport to update when the viewport type needs to change.
+   *
+   */
+  public getViewportIdToUpdate(activeViewportId: string, measurement) {
+    const { metadata, displaySetInstanceUID } = measurement;
+    const { volumeId, referencedImageId } = metadata;
+    const { displaySetService } = this.servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+    let { viewportType } = displaySet;
+    if (!viewportType) {
+      if (referencedImageId && !displaySet.isReconstructable) {
+        viewportType = csEnums.ViewportType.STACK;
+      } else if (volumeId) {
+        viewportType = 'volume';
+      }
+    }
+
+    return {
+      viewportId: activeViewportId,
+      displaySetInstanceUID,
+      viewportOptions: { viewportType },
+    };
+  }
+
+  /**
    * Sets the image data for the given viewport.
    */
   private async _setOtherViewport(
@@ -626,7 +653,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // is being used to navigate to the initial view position for measurement
     // navigation and other navigation forcing specific views.
     let initialImageIndexToUse =
-      presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ?? <number>initialImageIndex;
 
     const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
@@ -662,7 +689,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = imageIds.indexOf(referencedImageId);
     }
 
-    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
+    if (
+      initialImageIndexToUse === undefined ||
+      initialImageIndexToUse === null ||
+      initialImageIndexToUse < 0
+    ) {
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
@@ -1214,7 +1245,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   ): void {
     const viewRef = positionPresentation?.viewReference;
     if (viewRef) {
-      if (viewport.isReferenceViewable(viewRef, WITH_NAVIGATION)) {
+      // The orientation can be updated here to navigate to the specified
+      // measurement or previous item, but this will not switch to volume
+      // or to stack from the other type
+      if (viewport.isReferenceViewable(viewRef, WITH_ORIENTATION)) {
         viewport.setViewReference(viewRef);
       } else {
         console.warn('Unable to apply reference viewable', viewRef);

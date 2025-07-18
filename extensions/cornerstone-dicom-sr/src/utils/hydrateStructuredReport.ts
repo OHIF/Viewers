@@ -1,15 +1,16 @@
-import { utilities, metaData } from '@cornerstonejs/core';
+import { utilities, metaData, type Types } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
+import { vec3 } from 'gl-matrix';
+
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
-import { annotation as CsAnnotation } from '@cornerstonejs/tools';
+import { annotation as CsAnnotation, type Types as ToolTypes } from '@cornerstonejs/tools';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 
 const { locking } = CsAnnotation;
 const { guid } = OHIF.utils;
-const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
+const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {
   if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') {
@@ -88,7 +89,7 @@ export default function hydrateStructuredReport(
   // Mapping of legacy datasets is now directly handled by adapters module
   const datasetToUse = instance;
 
-  // Use dcmjs to generate toolState.
+  // Use CS3D adapters to generate toolState.
   let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
     datasetToUse,
     // NOTE: we need to pass in the imageIds to dcmjs since the we use them
@@ -96,7 +97,6 @@ export default function hydrateStructuredReport(
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
     sopInstanceUIDToImageId,
-    utilities.imageToWorldCoords,
     metaData
   );
 
@@ -147,6 +147,9 @@ export default function hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
+    if (!imageId) {
+      continue;
+    }
     const { SeriesInstanceUID, StudyInstanceUID } = metaData.get('instance', imageId);
 
     if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
@@ -160,38 +163,51 @@ export default function hydrateStructuredReport(
     }
   }
 
+  function getReferenceData(toolData): ToolTypes.AnnotationMetadata {
+    // Add the measurement to toolState
+    // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
+    // files, and looking up the imageId from sopInstanceUIDToImageId results
+    // in the wrong value.
+    const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+    const imageId =
+      imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+      sopInstanceUIDToImageId[toolData.sopInstanceUid];
+
+    if (!imageId) {
+      return getReferenceData3D(toolData, servicesManager);
+    }
+
+    const instance = metaData.get('instance', imageId);
+    const {
+      FrameOfReferenceUID,
+      // SOPInstanceUID,
+      // SeriesInstanceUID,
+      // StudyInstanceUID,
+    } = instance;
+
+    return {
+      referencedImageId: imageId,
+      FrameOfReferenceUID,
+    };
+  }
+
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
     const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
 
     toolDataForAnnotationType.forEach(toolData => {
-      // Add the measurement to toolState
-      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
-      // files, and looking up the imageId from sopInstanceUIDToImageId results
-      // in the wrong value.
-      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
-
       toolData.uid = guid();
-
-      const instance = metaData.get('instance', imageId);
-      const {
-        FrameOfReferenceUID,
-        // SOPInstanceUID,
-        // SeriesInstanceUID,
-        // StudyInstanceUID,
-      } = instance;
+      const referenceData = getReferenceData(toolData);
+      const { volumeId, imageId } = referenceData;
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
+          ...referenceData,
           toolName: annotationType,
-          referencedImageId: imageId,
-          FrameOfReferenceUID,
         },
       };
+      utilities.updatePlaneRestriction(annotation.data.handles.points, annotation.metadata);
 
       const source = measurementService.getSource(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -225,7 +241,7 @@ export default function hydrateStructuredReport(
         locking.setAnnotationLocked(newAnnotationUID, true);
       }
 
-      if (!imageIds.includes(imageId)) {
+      if (imageId && !imageIds.includes(imageId)) {
         imageIds.push(imageId);
       }
     });
@@ -237,4 +253,80 @@ export default function hydrateStructuredReport(
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
   };
+}
+
+function chooseDisplaySet(displaySets, annotation) {
+  if (!displaySets?.length) {
+    console.warn('No display set found for', annotation);
+    return;
+  }
+  if (displaySets.length === 1) {
+    return displaySets[0];
+  }
+  const volumeDs = displaySets.find(ds => ds.isReconstructable);
+  if (volumeDs) {
+    return volumeDs;
+  }
+  return displaySets[0];
+}
+
+function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
+  const { FrameOfReferenceUID } = toolData.annotation.metadata;
+  const { points } = toolData.annotation.data.handles;
+  const { displaySetService } = servicesManager.services;
+  const displaySetsFOR = displaySetService.getDisplaySetsBy(
+    ds => ds.FrameOfReferenceUID === FrameOfReferenceUID
+  );
+  if (!displaySetsFOR.length || !points?.length) {
+    return {
+      FrameOfReferenceUID,
+    };
+  }
+  const ds = chooseDisplaySet(displaySetsFOR, toolData.annotation);
+  const cameraView = chooseCameraView(ds, points);
+
+  return {
+    ...cameraView,
+    volumeId: ds.displaySetInstanceUID,
+    FrameOfReferenceUID,
+  };
+}
+
+/**
+ * Chooses a possible camera view - right now this is fairly basic,
+ * just setting the unknowns to null.
+ */
+function chooseCameraView(ds, points) {
+  const selectedPoints = choosePoints(points);
+  const cameraFocalPoint = centerOf(selectedPoints);
+  let viewPlaneNormal: Types.Point3 = null;
+  let viewUp: Types.Point3 = null;
+
+  return {
+    cameraFocalPoint,
+    viewPlaneNormal,
+    viewUp,
+  };
+}
+
+function centerOf(points) {
+  const scale = 1 / points.length;
+  const center = vec3.create();
+  for (const point of points) {
+    vec3.scaleAndAdd(center, center, point, scale);
+  }
+  return center;
+}
+
+function choosePoints(points) {
+  if (points.length === 1 || points.length === 2) {
+    return points;
+  }
+  const firstIndex = 0;
+  const secondIndex = Math.ceil(points.length / 4);
+  const thirdIndex = Math.ceil(points.length / 2);
+  // TODO - check if colinear, if so try to find another 3 points.
+
+  const newPoints = [points[firstIndex], points[secondIndex], points[thirdIndex]];
+  return newPoints;
 }

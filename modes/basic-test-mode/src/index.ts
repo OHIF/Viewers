@@ -27,6 +27,7 @@ const tracked = {
 
 const dicomsr = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
   viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
@@ -251,7 +252,7 @@ function modeFactory() {
                 },
                 {
                   namespace: dicomsr.viewport,
-                  displaySetsToDisplay: [dicomsr.sopClassHandler],
+                  displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
                 },
                 {
                   namespace: dicomvideo.viewport,
@@ -284,6 +285,7 @@ function modeFactory() {
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
+      dicomsr.sopClassHandler3D,
     ],
     hotkeys: {
       name: 'basic-test-hotkeys',

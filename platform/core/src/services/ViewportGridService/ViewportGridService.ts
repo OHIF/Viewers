@@ -45,8 +45,8 @@ class ViewportGridService extends PubSubService {
     return this.presentationIdProviders.get(id);
   }
 
-  public setIsReferenceViewable(viewportId: string, isReferenceViewable: boolean): void {
-    this.serviceImplementation._setIsReferenceViewable(viewportId, isReferenceViewable);
+  public isReferenceViewable(viewportId, reference, options) {
+    return this.serviceImplementation._isReferenceViewable?.(viewportId, reference, options);
   }
 
   public getPresentationId(id: string, viewportId: string): string | null {
@@ -104,7 +104,7 @@ class ViewportGridService extends PubSubService {
     set: setImplementation,
     getNumViewportPanes: getNumViewportPanesImplementation,
     setViewportIsReady: setViewportIsReadyImplementation,
-    setIsReferenceViewable: setIsReferenceViewableImplementation,
+    isReferenceViewable: isReferenceViewableImplementation,
     getViewportState: getViewportStateImplementation,
   }): void {
     if (getViewportStateImplementation) {
@@ -139,8 +139,8 @@ class ViewportGridService extends PubSubService {
     if (setViewportIsReadyImplementation) {
       this.serviceImplementation._setViewportIsReady = setViewportIsReadyImplementation;
     }
-    if (setIsReferenceViewableImplementation) {
-      this.serviceImplementation._setIsReferenceViewable = setIsReferenceViewableImplementation;
+    if (isReferenceViewableImplementation) {
+      this.serviceImplementation._isReferenceViewable = isReferenceViewableImplementation;
     }
   }
 

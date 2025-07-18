@@ -15,7 +15,7 @@ import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 
 const { sopClassDictionary } = utils;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-const { ImageSet, MetadataProvider: metadataProvider } = classes;
+const { MetadataProvider: metadataProvider } = classes;
 const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 type InstanceMetadata = Types.InstanceMetadata;
@@ -216,6 +216,12 @@ async function _load(
   });
 }
 
+function _measurementBelongsToDisplaySet({ measurement, displaySet }) {
+  return (
+    measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.FrameOfReferenceUID
+  );
+}
+
 /**
  * Checks if measurements can be added to a display set.
  *
@@ -236,17 +242,9 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (
-    unloadedMeasurements.length === 0 ||
-    !(newDisplaySet instanceof ImageSet) ||
-    newDisplaySet.unsupported
-  ) {
+  if (!unloadedMeasurements.length || newDisplaySet.unsupported) {
     return;
   }
-
-  // const { sopClassUids } = newDisplaySet;
-  // Create a Set for faster lookups
-  // const sopClassUidSet = new Set(sopClassUids);
 
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
@@ -266,6 +264,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
+    const is3DMeasurement = measurement.coords?.[0]?.ValueType === 'SCOORD3D';
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
@@ -280,9 +279,15 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     // if it is 3d SR we can just add the SR annotation
-    if (is3DSR) {
+    if (
+      is3DSR &&
+      is3DMeasurement &&
+      _measurementBelongsToDisplaySet({ measurement, displaySet: newDisplaySet })
+    ) {
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+      unloadedMeasurements.splice(j, 1);
       continue;
     }
 
@@ -511,12 +516,25 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
+  const { ConceptNameCodeSequence: conceptNameItem } = graphicItem;
+  const { CodeValue: graphicValue, CodingSchemeDesignator: graphicDesignator } = conceptNameItem;
+  const graphicCode = `${graphicDesignator}:${graphicValue}`;
+
+  const pointDataItem = _getCoordsFromSCOORDOrSCOORD3D(graphicItem);
+  const is3DMeasurement = pointDataItem.ValueType === 'SCOORD3D';
+  const pointLength = is3DMeasurement ? 3 : 2;
+  const pointsLength = pointDataItem.GraphicData.length / pointLength;
+
   const measurement = {
     loaded: false,
     labels: [],
-    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+    coords: [pointDataItem],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
+    graphicCode,
+    is3DMeasurement,
+    pointsLength,
+    graphicType: pointDataItem.GraphicType,
   };
 
   NUMContentItems.forEach(item => {
