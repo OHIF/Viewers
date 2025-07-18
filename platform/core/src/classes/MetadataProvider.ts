@@ -563,6 +563,27 @@ const WADO_IMAGE_LOADER = {
       usingDefaultValues = true;
     }
 
+    console.debug(
+      {
+            frameOfReferenceUID: instance.FrameOfReferenceUID,
+      rows: toNumber(instance.Rows),
+      columns: toNumber(instance.Columns),
+      spacingBetweenSlices: toNumber(instance.SpacingBetweenSlices),
+      imageOrientationPatient,
+      rowCosines,
+      isDefaultValueSetForRowCosine,
+      columnCosines,
+      isDefaultValueSetForColumnCosine,
+      imagePositionPatient,
+      sliceThickness: toNumber(instance.SliceThickness),
+      sliceLocation: toNumber(instance.SliceLocation),
+      pixelSpacing: toNumber(PixelSpacing || 1),
+      rowPixelSpacing,
+      columnPixelSpacing,
+      usingDefaultValues
+    }
+    )
+
     return {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
       rows: toNumber(instance.Rows),
