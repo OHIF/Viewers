@@ -28,6 +28,150 @@ function _getMeasurementSource(measurementService) {
   return source;
 }
 
+// Track recently imported measurements to prevent immediate removal
+const recentlyImportedMeasurements = new Set();
+
+// Intercept measurement removal events to prevent premature removal
+function setupRemovalProtection(measurementService) {
+  // Store measurements that are being protected
+  const protectedMeasurements = new Map();
+  
+  // Subscribe to measurement removal events
+  const unsubscribe = measurementService.subscribe(
+    measurementService.EVENTS.MEASUREMENT_REMOVED,
+    (eventData) => {
+      const { measurement: measurementId } = eventData;
+      
+      if (recentlyImportedMeasurements.has(measurementId)) {
+        console.log(`🔍 DEBUG: Intercepted removal of recently imported measurement ${measurementId}`);
+        console.log(`🔍 DEBUG: Total measurements protected from removal: ${recentlyImportedMeasurements.size}`);
+        
+        // Get the stored measurement data for re-adding
+        const storedMeasurement = protectedMeasurements.get(measurementId);
+        if (storedMeasurement) {
+          console.log(`🔍 DEBUG: Re-adding measurement ${measurementId} to prevent premature removal`);
+          
+          // Re-add the measurement to the service
+          try {
+            // Get the source for re-adding
+            const source = _getMeasurementSource(measurementService);
+            
+            // Re-add the measurement using the stored data
+            measurementService.addRawMeasurement(
+              source, 
+              storedMeasurement.toolName, 
+              storedMeasurement.rawData, 
+              identityMapping
+            );
+            console.log(`🔍 DEBUG: Successfully re-added measurement ${measurementId}`);
+          } catch (error) {
+            console.error(`❌ Failed to re-add measurement ${measurementId}:`, error);
+          }
+        } else {
+          console.warn(`⚠️ No stored data found for measurement ${measurementId}`);
+        }
+      }
+    }
+  );
+  
+  // Subscribe to measurement update events to preserve display text
+  const unsubscribeUpdate = measurementService.subscribe(
+    measurementService.EVENTS.MEASUREMENT_UPDATED,
+    (eventData) => {
+      const { measurement } = eventData;
+      const measurementId = measurement.uid;
+      
+      if (recentlyImportedMeasurements.has(measurementId)) {
+        const storedMeasurement = protectedMeasurements.get(measurementId);
+        if (storedMeasurement && storedMeasurement.displayText) {
+          // Check if display text was reset or changed
+          const currentDisplayText = measurement.displayText;
+          const storedDisplayText = storedMeasurement.displayText;
+          
+          // If display text was reset or is empty, restore it
+          if (!currentDisplayText || 
+              !currentDisplayText.primary || 
+              currentDisplayText.primary.length === 0 ||
+              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '') ||
+              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === measurement.label)) {
+            
+            console.log(`🔍 DEBUG: Restoring display text for measurement ${measurementId}`);
+            console.log(`🔍 DEBUG: Current display text:`, currentDisplayText);
+            console.log(`🔍 DEBUG: Stored display text:`, storedDisplayText);
+            
+            // Update the measurement with the correct display text
+            measurementService.update(measurementId, {
+              ...measurement,
+              displayText: storedDisplayText
+            }, true); // Force update
+            
+            console.log(`🔍 DEBUG: Display text restored for measurement ${measurementId}`);
+          }
+        }
+      }
+    }
+  );
+  
+  // Also subscribe to RAW_MEASUREMENT_ADDED events to catch when measurements are re-added
+  const unsubscribeRawAdded = measurementService.subscribe(
+    measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+    (eventData) => {
+      const { measurement } = eventData;
+      const measurementId = measurement.uid;
+      
+      if (recentlyImportedMeasurements.has(measurementId)) {
+        const storedMeasurement = protectedMeasurements.get(measurementId);
+        if (storedMeasurement && storedMeasurement.displayText) {
+          // Check if display text needs restoration
+          const currentDisplayText = measurement.displayText;
+          const storedDisplayText = storedMeasurement.displayText;
+          
+          if (!currentDisplayText || 
+              !currentDisplayText.primary || 
+              currentDisplayText.primary.length === 0 ||
+              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '') ||
+              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === measurement.label)) {
+            
+            console.log(`🔍 DEBUG: Restoring display text after RAW_MEASUREMENT_ADDED for ${measurementId}`);
+            
+            // Update the measurement with the correct display text
+            measurementService.update(measurementId, {
+              ...measurement,
+              displayText: storedDisplayText
+            }, true); // Force update
+            
+            console.log(`🔍 DEBUG: Display text restored after RAW_MEASUREMENT_ADDED for ${measurementId}`);
+          }
+        }
+      }
+    }
+  );
+  
+  // Create a combined unsubscribe function
+  const combinedUnsubscribe = () => {
+    try {
+      if (unsubscribe && typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+      if (unsubscribeUpdate && typeof unsubscribeUpdate === 'function') {
+        unsubscribeUpdate();
+      }
+      if (unsubscribeRawAdded && typeof unsubscribeRawAdded === 'function') {
+        unsubscribeRawAdded();
+      }
+      console.log(`🔍 DEBUG: Successfully unsubscribed from all measurement events`);
+    } catch (error) {
+      console.error(`🔍 DEBUG: Error during unsubscribe:`, error);
+    }
+  };
+  
+  // Return both unsubscribe functions and the protectedMeasurements map
+  return { 
+    unsubscribe: combinedUnsubscribe, 
+    protectedMeasurements 
+  };
+}
+
 // Helper to find imageId and display set info using the older OHIF-XNAT approach
 function _getImageIdAndDisplaySetInfo(sopInstanceUID, frameNumber, seriesUID, displaySetService, extensionManager) {
   try {
@@ -169,6 +313,35 @@ export async function importMeasurementCollection({
   }
 
   const { measurementService, displaySetService, trackedMeasurementsService } = servicesManager.services;
+  
+  // Setup removal protection for recently imported measurements
+  let protection;
+  let unsubscribeProtection;
+  let protectedMeasurements;
+  
+  try {
+    protection = setupRemovalProtection(measurementService);
+    if (protection && typeof protection === 'object') {
+      unsubscribeProtection = protection.unsubscribe;
+      protectedMeasurements = protection.protectedMeasurements;
+    }
+    
+    // Ensure we have a valid unsubscribe function
+    if (!unsubscribeProtection || typeof unsubscribeProtection !== 'function') {
+      console.warn('🔍 DEBUG: Invalid unsubscribe function returned from setupRemovalProtection');
+      // Create a dummy unsubscribe function to prevent errors
+      unsubscribeProtection = () => {
+        console.log('🔍 DEBUG: Dummy unsubscribe function called');
+      };
+    }
+  } catch (error) {
+    console.error('🔍 DEBUG: Error setting up removal protection:', error);
+    // Create fallback objects to prevent errors
+    unsubscribeProtection = () => {
+      console.log('🔍 DEBUG: Fallback unsubscribe function called');
+    };
+    protectedMeasurements = new Map();
+  }
   const source = _getMeasurementSource(measurementService);
 
   // Try to get extensionManager for data source access
@@ -395,7 +568,13 @@ export async function importMeasurementCollection({
     let measurement;
     try {
       // Ensure we have a valid toolName - try multiple sources
-      const toolName = im.type || im.toolType || im.toolName || 'Length';
+      let toolName = im.type || im.toolType || im.toolName || 'Length';
+      
+      // Map OHIFv2 tool names to Cornerstone3D tool names
+      if (toolName === 'EllipticalRoi') {
+        toolName = 'EllipticalROI';
+      }
+      
       console.log(`🔍 DEBUG: Resolved toolName: ${toolName} from im.type=${im.type}, im.toolType=${im.toolType}, im.toolName=${im.toolName}`);
 
       // Create a clean copy of im without fields that are not in MEASUREMENT_SCHEMA_KEYS to avoid conflicts
@@ -993,7 +1172,7 @@ export async function importMeasurementCollection({
       }
       
       // EllipticalROI specific handling - simplified to match successful tools
-      if (measurement.toolName === 'EllipticalROI') {
+      if (measurement.toolName === 'EllipticalROI' || measurement.toolName === 'EllipticalRoi') {
         console.log(`🔍 DEBUG: Processing EllipticalROI with points:`, measurement.points);
         
         // Simplified approach: create handles directly from points like other successful tools
@@ -1268,6 +1447,25 @@ export async function importMeasurementCollection({
       console.log(`🔍 DEBUG: Adding measurement to service with displayText:`, measurement.displayText);
       console.log(`🔍 DEBUG: Full measurement object before service:`, measurement);
 
+      // Add to recently imported set to prevent immediate removal
+      recentlyImportedMeasurements.add(measurement.uid);
+      console.log(`🔍 DEBUG: Added ${measurement.uid} to recently imported set. Total protected: ${recentlyImportedMeasurements.size}`);
+      
+      // Store the measurement data for potential re-adding
+      try {
+        if (protectedMeasurements && typeof protectedMeasurements.set === 'function') {
+          protectedMeasurements.set(measurement.uid, {
+            toolName: measurement.toolName,
+            rawData: rawDataForService,
+            displayText: measurement.displayText // Store the display text separately
+          });
+        } else {
+          console.warn(`🔍 DEBUG: protectedMeasurements is not available for ${measurement.uid}`);
+        }
+      } catch (error) {
+        console.error(`🔍 DEBUG: Error storing measurement data for ${measurement.uid}:`, error);
+      }
+      
       measurementService.addRawMeasurement(source, measurement.toolName, rawDataForService, identityMapping, dataSource);
 
       // Check if the measurement was actually added successfully
@@ -1276,10 +1474,108 @@ export async function importMeasurementCollection({
       
       if (!ourMeasurement) {
         console.warn(`❌ Measurement ${measurement.uid} was not successfully added to the service`);
+        recentlyImportedMeasurements.delete(measurement.uid);
         return; // Skip the rest of the processing for this measurement
       }
 
       console.log(`✅ Successfully added measurement ${measurement.uid} to measurement service`);
+      
+      // Proactively restore display text multiple times to ensure it persists
+      const restoreDisplayText = () => {
+        try {
+          if (!protectedMeasurements || typeof protectedMeasurements.get !== 'function') {
+            return; // Skip if protectedMeasurements is not available
+          }
+          
+          const storedMeasurement = protectedMeasurements.get(measurement.uid);
+          if (storedMeasurement && storedMeasurement.displayText) {
+            const currentMeasurement = measurementService.getMeasurement(measurement.uid);
+            if (currentMeasurement) {
+              const currentDisplayText = currentMeasurement.displayText;
+              const storedDisplayText = storedMeasurement.displayText;
+              
+              // Check if display text needs restoration
+              if (!currentDisplayText || 
+                  !currentDisplayText.primary || 
+                  currentDisplayText.primary.length === 0 ||
+                  (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '') ||
+                  (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === currentMeasurement.label)) {
+                
+                console.log(`🔍 DEBUG: Proactively restoring display text for measurement ${measurement.uid}`);
+                console.log(`🔍 DEBUG: Current display text:`, currentDisplayText);
+                console.log(`🔍 DEBUG: Stored display text:`, storedDisplayText);
+                
+                // Update the measurement with the correct display text
+                measurementService.update(measurement.uid, {
+                  ...currentMeasurement,
+                  displayText: storedDisplayText
+                }, true); // Force update
+                
+                // Also directly modify the measurement object to ensure it persists
+                if (currentMeasurement.displayText) {
+                  currentMeasurement.displayText.primary = [...storedDisplayText.primary];
+                  currentMeasurement.displayText.secondary = [...storedDisplayText.secondary];
+                  console.log(`🔍 DEBUG: Directly modified measurement object display text for ${measurement.uid}`);
+                }
+                
+                console.log(`🔍 DEBUG: Display text proactively restored for measurement ${measurement.uid}`);
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`🔍 DEBUG: Error in restoreDisplayText for ${measurement.uid}:`, error);
+        }
+      };
+      
+      // Run display text restoration multiple times with different delays
+      setTimeout(restoreDisplayText, 500); // 500ms delay to allow annotation creation to complete
+      setTimeout(restoreDisplayText, 1000); // 1 second delay
+      setTimeout(restoreDisplayText, 2000); // 2 second delay
+      
+      // Remove from recently imported set after a delay to allow annotation to stabilize
+      setTimeout(() => {
+        recentlyImportedMeasurements.delete(measurement.uid);
+        protectedMeasurements.delete(measurement.uid);
+        console.log(`🔍 DEBUG: Removed ${measurement.uid} from recently imported set. Total protected: ${recentlyImportedMeasurements.size}`);
+        
+        // Verify the measurement is still in the service after protection period
+        const finalCheck = measurementService.getMeasurements().find(m => m.uid === measurement.uid);
+        if (finalCheck) {
+          console.log(`✅ Measurement ${measurement.uid} successfully stabilized and remains in service`);
+          
+          // Also verify the annotation exists in Cornerstone Tools
+          try {
+            const cornerstoneTools = (window as any).cornerstoneTools;
+            if (cornerstoneTools?.annotation?.state) {
+              const annotation = cornerstoneTools.annotation.state.getAnnotation(measurement.uid);
+              if (annotation) {
+                console.log(`✅ Annotation ${measurement.uid} also exists in Cornerstone Tools`);
+              } else {
+                console.warn(`⚠️ Annotation ${measurement.uid} missing from Cornerstone Tools but measurement exists in service`);
+              }
+            }
+          } catch (e) {
+            console.warn('Could not verify annotation in Cornerstone Tools:', e);
+          }
+        } else {
+          console.warn(`⚠️ Measurement ${measurement.uid} was removed after protection period`);
+          
+          // Try to re-add the measurement if it was removed prematurely
+          console.log(`🔍 DEBUG: Attempting to re-add measurement ${measurement.uid} to service`);
+          try {
+            recentlyImportedMeasurements.add(measurement.uid);
+            protectedMeasurements.set(measurement.uid, {
+              toolName: measurement.toolName,
+              rawData: rawDataForService,
+              displayText: measurement.displayText
+            });
+            measurementService.addRawMeasurement(source, measurement.toolName, rawDataForService, identityMapping, dataSource);
+            console.log(`🔍 DEBUG: Re-added measurement ${measurement.uid} to service`);
+          } catch (e) {
+            console.error(`❌ Failed to re-add measurement ${measurement.uid}:`, e);
+          }
+        }
+      }, 3000); // 3 second delay to be more conservative
       
       // Verify the measurement is properly associated with the tracked series
       if (trackedMeasurementsService && seriesUID) {
@@ -2084,6 +2380,27 @@ export async function importMeasurementCollection({
       });
     });
   }
+
+  // Cleanup: remove protection subscription after a delay
+  setTimeout(() => {
+    try {
+      if (unsubscribeProtection && typeof unsubscribeProtection === 'function') {
+        unsubscribeProtection();
+        console.log(`🔍 DEBUG: Removed measurement removal protection subscription`);
+      } else {
+        console.warn(`🔍 DEBUG: No valid unsubscribe function available for cleanup`);
+      }
+      
+      // Clear any remaining protected measurements
+      recentlyImportedMeasurements.clear();
+      if (protectedMeasurements && typeof protectedMeasurements.clear === 'function') {
+        protectedMeasurements.clear();
+      }
+      console.log(`🔍 DEBUG: Cleared all protection data`);
+    } catch (error) {
+      console.error(`🔍 DEBUG: Error during cleanup:`, error);
+    }
+  }, 5000); // 5 second delay to ensure all measurements are stable
 
   return imageMeasurements.length;
 }
