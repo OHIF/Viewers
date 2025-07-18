@@ -2,19 +2,31 @@ import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 
+const compare = (a, b) => {
+  if (a === b) return 0;
+  if (!a && b) return -1;
+  if (!b && a) return 1;
+  if (a < b) return -1;
+  return 1;
+};
+
+const compareSameSeries = (a, b) => {
+  return compare(a.displaySetInstanceUID, b.displaySetInstanceUID);
+};
+
+const compareSeriesUID = (a, b) =>
+  compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeries(a, b);
+
 const compareSeriesDateTime = (a, b) => {
   const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
   const seriesDateB = Date.parse(`${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`);
-  return seriesDateA - seriesDateB;
+  return compare(seriesDateA, seriesDateB) || compareSeriesUID(a, b);
 };
 
 const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
   const seriesNumberB = b.SeriesNumber ?? b.seriesNumber;
-  if (seriesNumberA === seriesNumberB) {
-    return compareSeriesDateTime(a, b);
-  }
-  return seriesNumberA - seriesNumberB;
+  return compare(seriesNumberA, seriesNumberB) || compareSeriesDateTime(a, b);
 };
 
 /**
@@ -41,6 +53,9 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
 const seriesSortCriteria = {
   default: seriesInfoSortingCriteria,
   seriesInfoSortingCriteria,
+  compareSameSeries,
+  compareSeriesDateTime,
+  compareSeriesUID,
 };
 
 const sortByInstanceNumber = (a, b) => {
