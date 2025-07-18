@@ -109,7 +109,7 @@ export default class CustomizationService extends PubSubService {
     this.commandsManager = commandsManager;
   }
 
-  public init(extensionManager: ExtensionManager, addConfigReferences = true): void {
+  public init(extensionManager: ExtensionManager): void {
     this.extensionManager = extensionManager;
     // Clear defaults as those are defined by the customization modules
     this.defaultCustomizations.clear();
