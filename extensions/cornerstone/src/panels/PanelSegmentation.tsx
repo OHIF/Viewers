@@ -1,7 +1,7 @@
 import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
-import { metaData } from '@cornerstonejs/core';
+import { metaData, cache } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
 
 export default function PanelSegmentation({ children }: withAppTypes) {
@@ -102,6 +102,26 @@ export default function PanelSegmentation({ children }: withAppTypes) {
 
     if (!Labelmap) {
       return { segmentationId, isExportable: true };
+    }
+
+    // Check if any segments have anything drawn in any of the viewports
+    const hasAnySegmentData = (() => {
+      const imageIds = Labelmap.imageIds;
+      if (!imageIds?.length) return false;
+
+      for (const imageId of imageIds) {
+        const pixelData = cache.getImage(imageId)?.getPixelData();
+        if (!pixelData) continue;
+
+        for (let i = 0; i < pixelData.length; i++) {
+          if (pixelData[i] !== 0) return true;
+        }
+      }
+      return false;
+    })();
+
+    if (!hasAnySegmentData) {
+      return { segmentationId, isExportable: false };
     }
 
     const referencedImageIds = Labelmap.referencedImageIds;
