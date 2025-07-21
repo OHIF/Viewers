@@ -46,6 +46,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
       <div className="bg-muted flex flex-col gap-4 border-b border-b-[2px] border-black px-0 py-3">
         <div className="flex items-center gap-2">
           <Switch
+            data-cy="show-segment-label-btn"
             checked={shouldShowLabelOnHover}
             onCheckedChange={handleToggleShowLabelOnHover}
           />

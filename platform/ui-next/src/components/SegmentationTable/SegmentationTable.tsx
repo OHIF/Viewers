@@ -110,7 +110,10 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         <PanelSection.Header className="flex items-center justify-between">
           <span>{t(title)}</span>
           {hasConfigComponent && (
-            <div className="ml-auto mr-2">
+            <div
+              data-cy={'segmentation-settings-btn'}
+              className="ml-auto mr-2"
+            >
               <Icons.Settings
                 className="text-primary h-4 w-4"
                 onClick={e => {
