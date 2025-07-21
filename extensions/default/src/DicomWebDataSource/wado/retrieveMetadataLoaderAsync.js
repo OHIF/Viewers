@@ -10,8 +10,8 @@ export class DeferredPromise {
   metadata = undefined;
   processFunction = undefined;
   internalPromise = undefined;
-  thenFunction = undefined;
-  rejectFunction = undefined;
+  thenQueue = [];
+  catchQueue = [];
 
   setMetadata(metadata) {
     this.metadata = metadata;
@@ -23,34 +23,41 @@ export class DeferredPromise {
     return this.start();
   }
   start() {
-    if (this.internalPromise) {
-      return this.internalPromise;
-    }
-    this.internalPromise = this.processFunction();
-    // in case then and reject functions called before start
-    if (this.thenFunction) {
-      this.then(this.thenFunction);
-      this.thenFunction = undefined;
-    }
-    if (this.rejectFunction) {
-      this.reject(this.rejectFunction);
-      this.rejectFunction = undefined;
+    if (!this.internalPromise) {
+      if (!this.processFunction) {
+        throw new Error('processFunction is not set');
+      }
+
+      this.internalPromise = this.processFunction();
+
+      // Apply queued .then() and .catch() callbacks
+      for (const func of this.thenQueue) {
+        this.internalPromise = this.internalPromise.then(func);
+      }
+      for (const func of this.catchQueue) {
+        this.internalPromise = this.internalPromise.catch(func);
+      }
+
+      this.thenQueue = [];
+      this.catchQueue = [];
     }
     return this.internalPromise;
   }
   then(func) {
     if (this.internalPromise) {
-      return this.internalPromise.then(func);
+      this.internalPromise = this.internalPromise.then(func);
     } else {
-      this.thenFunction = func;
+      this.thenQueue.push(func);
     }
+    return this; // allow chaining
   }
-  reject(func) {
+  catch(func) {
     if (this.internalPromise) {
-      return this.internalPromise.reject(func);
+      this.internalPromise = this.internalPromise.catch(func);
     } else {
-      this.rejectFunction = func;
+      this.catchQueue.push(func);
     }
+    return this; // allow chaining
   }
 }
 /**
