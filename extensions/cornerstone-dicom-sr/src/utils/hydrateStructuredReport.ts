@@ -1,4 +1,4 @@
-import { metaData } from '@cornerstonejs/core';
+import { utilities, metaData } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
@@ -96,6 +96,7 @@ export default function hydrateStructuredReport(
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
     sopInstanceUIDToImageId,
+    utilities.imageToWorldCoords,
     metaData
   );
 
