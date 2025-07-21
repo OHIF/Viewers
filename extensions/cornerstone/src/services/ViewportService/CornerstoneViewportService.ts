@@ -555,7 +555,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   public getViewportIdToJump(activeViewportId: string, metadata): string {
     // First check if the active viewport can just be navigated to show the given item
     const activeViewport = this.getCornerstoneViewport(activeViewportId);
-    if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
+    if (!activeViewport) {
+      console.warn('No active viewport found for', activeViewportId);
+    }
+    if (activeViewport?.isReferenceViewable(metadata, { withNavigation: true })) {
       return activeViewportId;
     }
 
@@ -571,7 +574,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // No viewport is in the right display set/orientation to show this, so see if
     // the active viewport could change orientations to show this
     if (
-      activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
+      activeViewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
     ) {
       return activeViewportId;
     }
@@ -1116,8 +1119,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-        Math.pow(dimensions[1] * spacing[1], 2) +
-        Math.pow(dimensions[2] * spacing[2], 2)
+          Math.pow(dimensions[1] * spacing[1], 2) +
+          Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
