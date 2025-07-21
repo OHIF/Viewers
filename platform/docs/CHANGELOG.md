@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.94...v3.11.0-beta.95) (2025-07-21)
+
+
+### Bug Fixes
+
+* **docs:** Added entry for the showStudyList configuration setting. ([#5235](https://github.com/OHIF/Viewers/issues/5235)) ([bde0eb1](https://github.com/OHIF/Viewers/commit/bde0eb1f07698b7375f7c4a58753d0368703e5bf))
+
+
+
+
+
+# [3.11.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.93...v3.11.0-beta.94) (2025-07-21)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.11.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.92...v3.11.0-beta.93) (2025-07-21)
 
 **Note:** Version bump only for package ohif-docs
