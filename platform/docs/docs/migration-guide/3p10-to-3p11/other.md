@@ -26,3 +26,17 @@ summary: Migration guide for OHIF 3.11 additional changes
     +   extensionsManager
     + });
     ```
+
+**Images sort by position patient**
+
+The ImageSet sort has been modified: images are now sorted by ImagePositionPatient by default. If ImagePositionPatient is not available, the sort will fall back to InstanceNumber.
+
+**To revert to the previous sorting method, you can add the customization instanceSortingCriteria as shown below:**
+
+```
+    customizationService.setCustomizations({
+        'instanceSortingCriteria': {
+          $set: {defaultSortFunctionName: 'default'},
+        },
+      });
+```

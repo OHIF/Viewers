@@ -18,32 +18,32 @@ describe('OHIF Cornerstone Hotkeys', () => {
 
   it('checks if hotkeys "R" and "L" can rotate the image', () => {
     cy.get('body').type('R');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'P');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'R');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'F');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
     // Hotkey L
     cy.get('body').type('L');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'A');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
   });
 
   it('checks if hotkeys "ArrowUp" and "ArrowDown" can navigate in the stack', () => {
     // Hotkey ArrowDown
     cy.get('body').type('{downarrow}');
-    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:2 (2/26)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:11 (2/26)');
     // Hotkey ArrowUp
     cy.get('body').type('{uparrow}');
-    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:1 (1/26)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:10 (1/26)');
   });
 
   it('checks if hotkeys "V" and "H" can flip the image', () => {
     // Hotkey H
     cy.get('body').type('h');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'P');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
     // Hotkey V
     cy.get('body').type('v');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'P');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'P');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'F');
   });
 
   // it('checks if hotkeys "+", "-" and "=" can zoom in, out and fit to viewport', () => {
@@ -68,13 +68,13 @@ describe('OHIF Cornerstone Hotkeys', () => {
   it('checks if hotkey "SPACEBAR" can reset the image', () => {
     // Press multiples hotkeys
     cy.get('body').type('v+++i');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'P');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'A');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'F');
 
     // Hotkey SPACEBAR
     cy.get('body').type(' ');
-    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
-    cy.get('@viewportInfoMidTop').should('contains.text', 'A');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'A');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
   });
 
   /*
