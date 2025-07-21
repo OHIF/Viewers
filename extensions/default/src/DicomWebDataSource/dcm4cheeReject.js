@@ -34,6 +34,7 @@ export default function (wadoRoot, getAuthrorizationHeader) {
                 reject('Your dataSource does not support reject functionality');
               default:
                 reject(`Unexpected status code: ${xhr.status}`);
+                break;
             }
           }
         };
