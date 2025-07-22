@@ -17,6 +17,12 @@ You can take a look at the Cornerstonejs tutorial for linking https://www.corner
 The [instructions](#introduction) above describe how to use `yarn` for local linking. Some use `bun` for day-to-day
 code linking and execution. The method to link locally using `bun` differs slightly.
 
+:::tip
+
+Linking locally with `bun` provides for running the [playwright tests](./playwright-testing.md) locally so as to include (and test) local changes from Cornerstone3D!
+
+:::
+
 In the local Cornerstone3D, simply replace `yarn` with `bun` for each of the commands. For example, in `cornerstone/packages/core` the following would be done.
 
 ```
