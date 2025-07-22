@@ -3,11 +3,7 @@ import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
 import React, { useState } from 'react';
 import { Switch } from '@ohif/ui-next';
 
-export default function getSegmentationPanelCustomization({
-  commandsManager,
-  servicesManager,
-  extensionManager,
-}) {
+export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
     'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
@@ -42,9 +38,6 @@ export default function getSegmentationPanelCustomization({
       const [previewEdits, setPreviewEdits] = useState(false);
       const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
       const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
-      const [shouldShowLabelOnHover, setShouldShowLabelOnHover] = useState(
-        !!extensionManager.appConfig.segmentation?.segmentLabel?.enabledByDefault
-      );
       const handlePreviewEditsChange = checked => {
         setPreviewEdits(checked);
         commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });
@@ -58,11 +51,6 @@ export default function getSegmentationPanelCustomization({
       const handleUseCenterAsSegmentIndexChange = checked => {
         setUseCenterAsSegmentIndex(checked);
         commandsManager.run('toggleUseCenterSegmentIndex', { toggle: checked });
-      };
-
-      const handleToggleShowLabelOnHover = checked => {
-        setShouldShowLabelOnHover(checked);
-        commandsManager.run('toggleSegmentLabel', { toggle: checked });
       };
 
       return (
@@ -89,14 +77,6 @@ export default function getSegmentationPanelCustomization({
               onCheckedChange={handleToggleSegmentEnabledChange}
             />
             <span className="text-base text-white">Hover on segment border to activate</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={shouldShowLabelOnHover}
-              onCheckedChange={handleToggleShowLabelOnHover}
-            />
-            <span className="text-base text-white">Show segment label on mouse hover</span>
           </div>
         </div>
       );
