@@ -33,7 +33,7 @@
     },
     "addOns/externals/devDependencies": {
       "name": "@externals/devDependencies",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@kitware/vtk.js": "32.12.0",
@@ -61,14 +61,14 @@
         "css-loader": "^6.8.1",
         "dotenv": "^8.1.0",
         "eslint": "^8.39.0",
-        "eslint-config-prettier": "^7.2.0",
+        "eslint-config-prettier": "7.2.0",
         "eslint-config-react-app": "^6.0.0",
         "eslint-plugin-cypress": "^2.12.1",
         "eslint-plugin-flowtype": "^7.0.0",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-jsx-a11y": "^6.5.1",
         "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^5.0.0",
+        "eslint-plugin-prettier": "5.5.1",
         "eslint-plugin-promise": "^5.2.0",
         "eslint-plugin-react": "^7.29.4",
         "eslint-plugin-react-hooks": "^4.4.0",
@@ -90,8 +90,8 @@
         "postcss-import": "^14.0.2",
         "postcss-loader": "^6.1.1",
         "postcss-preset-env": "^7.4.3",
-        "prettier": "^3.0.3",
-        "prettier-plugin-tailwindcss": "^0.5.4",
+        "prettier": "3.6.2",
+        "prettier-plugin-tailwindcss": "0.6.9",
         "react-refresh": "^0.14.2",
         "semver": "^7.5.1",
         "serve": "^14.2.4",
@@ -120,14 +120,14 @@
     },
     "addOns/externals/dicom-microscopy-viewer": {
       "name": "@externals/dicom-microscopy-viewer",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "dicom-microscopy-viewer": "^0.46.1",
       },
     },
     "extensions/cornerstone": {
       "name": "@ohif/extension-cornerstone",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^3.11.6",
@@ -166,7 +166,7 @@
     },
     "extensions/cornerstone-dicom-pmap": {
       "name": "@ohif/extension-cornerstone-dicom-pmap",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^3.11.6",
@@ -189,7 +189,7 @@
     },
     "extensions/cornerstone-dicom-rt": {
       "name": "@ohif/extension-cornerstone-dicom-rt",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "react-color": "^2.19.3",
@@ -209,7 +209,7 @@
     },
     "extensions/cornerstone-dicom-seg": {
       "name": "@ohif/extension-cornerstone-dicom-seg",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^3.11.6",
@@ -232,7 +232,7 @@
     },
     "extensions/cornerstone-dicom-sr": {
       "name": "@ohif/extension-cornerstone-dicom-sr",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^3.11.6",
@@ -254,7 +254,7 @@
     },
     "extensions/cornerstone-dynamic-volume": {
       "name": "@ohif/extension-cornerstone-dynamic-volume",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/core": "^3.11.6",
@@ -276,7 +276,7 @@
     },
     "extensions/default": {
       "name": "@ohif/extension-default",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/calculate-suv": "^1.1.0",
@@ -299,7 +299,7 @@
     },
     "extensions/dicom-microscopy": {
       "name": "@ohif/extension-dicom-microscopy",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/codec-charls": "^1.2.3",
@@ -324,7 +324,7 @@
     },
     "extensions/dicom-pdf": {
       "name": "@ohif/extension-dicom-pdf",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
@@ -341,7 +341,7 @@
     },
     "extensions/dicom-video": {
       "name": "@ohif/extension-dicom-video",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
@@ -358,7 +358,7 @@
     },
     "extensions/measurement-tracking": {
       "name": "@ohif/extension-measurement-tracking",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@ohif/ui": "3.10.1",
@@ -384,7 +384,7 @@
     },
     "extensions/test-extension": {
       "name": "@ohif/extension-test",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
@@ -401,7 +401,7 @@
     },
     "extensions/tmtv": {
       "name": "@ohif/extension-tmtv",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
@@ -418,7 +418,7 @@
     },
     "modes/basic-dev-mode": {
       "name": "@ohif/mode-basic-dev-mode",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -438,7 +438,7 @@
     },
     "modes/basic-test-mode": {
       "name": "@ohif/mode-test",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -460,7 +460,7 @@
     },
     "modes/longitudinal": {
       "name": "@ohif/mode-longitudinal",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -483,7 +483,7 @@
     },
     "modes/microscopy": {
       "name": "@ohif/mode-microscopy",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -495,7 +495,7 @@
     },
     "modes/preclinical-4d": {
       "name": "@ohif/mode-preclinical-4d",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
       },
@@ -514,7 +514,7 @@
     },
     "modes/segmentation": {
       "name": "@ohif/mode-segmentation",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -558,7 +558,7 @@
     },
     "modes/tmtv": {
       "name": "@ohif/mode-tmtv",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -579,7 +579,7 @@
     },
     "platform/app": {
       "name": "@ohif/app",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/codec-charls": "^1.2.3",
@@ -645,7 +645,7 @@
     },
     "platform/cli": {
       "name": "@ohif/cli",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "bin": {
         "ohif-cli": "src/index.js",
       },
@@ -669,7 +669,7 @@
     },
     "platform/core": {
       "name": "@ohif/core",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "dcmjs": "*",
@@ -703,7 +703,7 @@
     },
     "platform/i18n": {
       "name": "@ohif/i18n",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next-locize-backend": "^2.0.0",
@@ -728,7 +728,7 @@
     },
     "platform/ui": {
       "name": "@ohif/ui",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@testing-library/react": "^13.1.0",
         "browser-detect": "^0.2.28",
@@ -788,7 +788,7 @@
     },
     "platform/ui-next": {
       "name": "@ohif/ui-next",
-      "version": "3.10.1",
+      "version": "3.10.2",
       "dependencies": {
         "@radix-ui/react-accordion": "^1.2.0",
         "@radix-ui/react-checkbox": "^1.1.1",
@@ -1513,7 +1513,7 @@
 
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 
-    "@pkgr/core": ["@pkgr/core@0.2.2", "", {}, "sha512-25L86MyPvnlQoX2MTIV2OiUcb6vJ6aRbFa9pbwByn95INKD5mFH2smgjDhq+fwJoqAgvgbdJLj6Tz7V9X5CFAQ=="],
+    "@pkgr/core": ["@pkgr/core@0.2.9", "", {}, "sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA=="],
 
     "@playwright/test": ["@playwright/test@1.51.1", "", { "dependencies": { "playwright": "1.51.1" }, "bin": { "playwright": "cli.js" } }, "sha512-nM+kEaTSAoVlXmMPH10017vn3FSiFqr/bh4fKg9vmAdMfd9SDqRZNvPSiAHADc/itWak+qPvMPZQOPwCBW7k7Q=="],
 
@@ -2977,7 +2977,7 @@
 
     "eslint-plugin-node": ["eslint-plugin-node@11.1.0", "", { "dependencies": { "eslint-plugin-es": "^3.0.0", "eslint-utils": "^2.0.0", "ignore": "^5.1.1", "minimatch": "^3.0.4", "resolve": "^1.10.1", "semver": "^6.1.0" }, "peerDependencies": { "eslint": ">=5.16.0" } }, "sha512-oUwtPJ1W0SKD0Tr+wqu92c5xuCeQqB3hSCHasn/ZgjFdA9iDGNkNf2Zi9ztY7X+hNuMib23LNGRm6+uN+KLE3g=="],
 
-    "eslint-plugin-prettier": ["eslint-plugin-prettier@5.2.6", "", { "dependencies": { "prettier-linter-helpers": "^1.0.0", "synckit": "^0.11.0" }, "peerDependencies": { "@types/eslint": ">=8.0.0", "eslint": ">=8.0.0", "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0", "prettier": ">=3.0.0" }, "optionalPeers": ["@types/eslint", "eslint-config-prettier"] }, "sha512-mUcf7QG2Tjk7H055Jk0lGBjbgDnfrvqjhXh9t2xLMSCjZVcw9Rb1V6sVNXO0th3jgeO7zllWPTNRil3JW94TnQ=="],
+    "eslint-plugin-prettier": ["eslint-plugin-prettier@5.5.1", "", { "dependencies": { "prettier-linter-helpers": "^1.0.0", "synckit": "^0.11.7" }, "peerDependencies": { "@types/eslint": ">=8.0.0", "eslint": ">=8.0.0", "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0", "prettier": ">=3.0.0" }, "optionalPeers": ["@types/eslint", "eslint-config-prettier"] }, "sha512-dobTkHT6XaEVOo8IO90Q4DOSxnm3Y151QxPJlM/vKC0bVy+d6cVWQZLlFiuZPP0wS6vZwSKeJgKkcS+KfMBlRw=="],
 
     "eslint-plugin-promise": ["eslint-plugin-promise@5.2.0", "", { "peerDependencies": { "eslint": "^7.0.0" } }, "sha512-SftLb1pUG01QYq2A/hGAWfDRXqYD82zE7j7TopDOyNdU+7SvvoXREls/+PRTY17vUXzXnZA/zfnyKgRH6x4JJw=="],
 
@@ -4951,7 +4951,7 @@
 
     "synchronous-promise": ["synchronous-promise@2.0.17", "", {}, "sha512-AsS729u2RHUfEra9xJrE39peJcc2stq2+poBXX8bcM08Y6g9j/i/PUzwNQqkaJde7Ntg1TO7bSREbR5sdosQ+g=="],
 
-    "synckit": ["synckit@0.11.3", "", { "dependencies": { "@pkgr/core": "^0.2.1", "tslib": "^2.8.1" } }, "sha512-szhWDqNNI9etJUvbZ1/cx1StnZx8yMmFxme48SwR4dty4ioSY50KEZlpv0qAfgc1fpRzuh9hBXEzoCpJ779dLg=="],
+    "synckit": ["synckit@0.11.11", "", { "dependencies": { "@pkgr/core": "^0.2.9" } }, "sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw=="],
 
     "tailwind-merge": ["tailwind-merge@2.6.0", "", {}, "sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA=="],
 
@@ -5403,7 +5403,7 @@
 
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 
-    "@externals/devDependencies/prettier-plugin-tailwindcss": ["prettier-plugin-tailwindcss@0.5.14", "", { "peerDependencies": { "@ianvs/prettier-plugin-sort-imports": "*", "@prettier/plugin-pug": "*", "@shopify/prettier-plugin-liquid": "*", "@trivago/prettier-plugin-sort-imports": "*", "@zackad/prettier-plugin-twig-melody": "*", "prettier": "^3.0", "prettier-plugin-astro": "*", "prettier-plugin-css-order": "*", "prettier-plugin-import-sort": "*", "prettier-plugin-jsdoc": "*", "prettier-plugin-marko": "*", "prettier-plugin-organize-attributes": "*", "prettier-plugin-organize-imports": "*", "prettier-plugin-sort-imports": "*", "prettier-plugin-style-order": "*", "prettier-plugin-svelte": "*" }, "optionalPeers": ["@ianvs/prettier-plugin-sort-imports", "@prettier/plugin-pug", "@shopify/prettier-plugin-liquid", "@trivago/prettier-plugin-sort-imports", "@zackad/prettier-plugin-twig-melody", "prettier-plugin-astro", "prettier-plugin-css-order", "prettier-plugin-import-sort", "prettier-plugin-jsdoc", "prettier-plugin-marko", "prettier-plugin-organize-attributes", "prettier-plugin-organize-imports", "prettier-plugin-sort-imports", "prettier-plugin-style-order", "prettier-plugin-svelte"] }, "sha512-Puaz+wPUAhFp8Lo9HuciYKM2Y2XExESjeT+9NQoVFXZsPPnc9VYss2SpxdQ6vbatmt8/4+SN0oe0I1cPDABg9Q=="],
+    "@externals/devDependencies/prettier": ["prettier@3.6.2", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ=="],
 
     "@isaacs/cliui/string-width": ["string-width@5.1.2", "", { "dependencies": { "eastasianwidth": "^0.2.0", "emoji-regex": "^9.2.2", "strip-ansi": "^7.0.1" } }, "sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA=="],
 
