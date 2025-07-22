@@ -84,6 +84,7 @@ be `null` because there is no specific physical screen for it.
 
 Below is a snippet from a configuration file for multimonitor.
 ```
+  ...
   multimonitor: [
     {
       id: 'split',
@@ -143,7 +144,7 @@ Below is a snippet from a configuration file for multimonitor.
       ],
     },
   ],
-
+  ...
 ```
 
 ## Behavior
