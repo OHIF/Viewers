@@ -101,9 +101,6 @@ const screenShotPaths = {
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
   },
-  segmentLabelTool: {
-    segmentLabel: 'segmentLabel.png',
-  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',
