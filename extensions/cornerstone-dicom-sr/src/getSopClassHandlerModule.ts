@@ -16,7 +16,11 @@ import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 const { sopClassDictionary } = utils;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { MetadataProvider: metadataProvider } = classes;
-const { TEXT_ANNOTATION_POSITION, CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
+const {
+  TEXT_ANNOTATION_POSITION,
+  COMMENT_CODE,
+  CodeScheme: Cornerstone3DCodeScheme,
+} = adaptersSR.Cornerstone3D;
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -581,6 +585,12 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSite
   );
 
+  const commentSites = mergedContentSequence.filter(
+    item =>
+      item.ConceptNameCodeSequence.CodingSchemeDesignator === COMMENT_CODE.schemeDesignator &&
+      item.ConceptNameCodeSequence.CodeValue === COMMENT_CODE.value
+  );
+
   const measurement = {
     loaded: false,
     labels: [],
@@ -588,6 +598,14 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
+
+  if (commentSites) {
+    for (const group of commentSites) {
+      if (group.TextValue) {
+        measurement.labels.push({ label: group.TextValue, value: '' });
+      }
+    }
+  }
 
   if (
     finding &&
