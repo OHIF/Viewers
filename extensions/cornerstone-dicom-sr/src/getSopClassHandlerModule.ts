@@ -16,7 +16,7 @@ import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 const { sopClassDictionary } = utils;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { MetadataProvider: metadataProvider } = classes;
-const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
+const { TEXT_ANNOTATION_POSITION, CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -474,11 +474,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups
  * @returns {any} - The processed measurement result.
  */
 function _processMeasurement(mergedContentSequence) {
-  if (
-    mergedContentSequence.some(
-      group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
-    )
-  ) {
+  if (mergedContentSequence.some(group => isScoordOr3d(group) && !isTextPosition(group))) {
     return _processTID1410Measurement(mergedContentSequence);
   }
 
@@ -742,6 +738,19 @@ function _getSequenceAsArray(sequence) {
     return [];
   }
   return Array.isArray(sequence) ? sequence : [sequence];
+}
+
+function isScoordOr3d(group) {
+  return group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D';
+}
+
+function isTextPosition(group) {
+  const concept = group.ConceptNameCodeSequence[0];
+  return (
+    concept &&
+    concept.CodeValue === TEXT_ANNOTATION_POSITION.value &&
+    concept.CodingSchemeDesignator === TEXT_ANNOTATION_POSITION.schemeDesignator
+  );
 }
 
 export default getSopClassHandlerModule;

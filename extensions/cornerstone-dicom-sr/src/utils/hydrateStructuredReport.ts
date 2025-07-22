@@ -197,7 +197,7 @@ export default function hydrateStructuredReport(
     toolDataForAnnotationType.forEach(toolData => {
       toolData.uid = guid();
       const referenceData = getReferenceData(toolData);
-      const { volumeId, imageId } = referenceData;
+      const { imageId } = referenceData;
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
