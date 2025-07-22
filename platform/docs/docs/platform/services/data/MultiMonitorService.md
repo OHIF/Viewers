@@ -72,7 +72,7 @@ Each entry in the array is an object with the following properties.
 if this array entry should be applied to the [configuration](#configurations).
 - `screens`: An array of objects that define each of the OHIF screens to be opened
 
-Each `screen` aray entry above has the following properties.
+Each `screen` array entry above has the following properties.
 
 - `id`: The unique screen identifier (e.g. `ohif0` or `radScreen0`)
 - `screen`: The index of the physical screen. For the `split` configuration this can
