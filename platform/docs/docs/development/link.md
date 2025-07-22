@@ -49,4 +49,4 @@ cornerstone packages to link locally in the `resolutions`.
   ...
 ```
 
-Finally, run OHIF using either `bun dev` or `bun dev:fast`.
+In OHIF, run `bun install -f` and then run OHIF using either `bun dev` or `bun dev:fast`.
