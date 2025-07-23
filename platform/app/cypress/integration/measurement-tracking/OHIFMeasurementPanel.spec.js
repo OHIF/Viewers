@@ -48,7 +48,7 @@ describe('OHIF Measurement Panel', function () {
   });
 
   it('checks if image would jump when clicked on a measurement item', function () {
-    cy.get('[data-cy="study-browser-thumbnail-3-PLANE LOC"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="1"]').dblclick();
     cy.wait(250);
     cy.scrollToIndex(0);
 

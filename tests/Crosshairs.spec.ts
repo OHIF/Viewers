@@ -103,7 +103,7 @@ test.describe('Crosshairs Test', async () => {
     await rotateCrosshairs(page, '#svg-layer-mpr-sagittal', 0);
     await rotateCrosshairs(page, '#svg-layer-mpr-coronal', 3);
 
-    await page.getByTestId('study-browser-thumbnail-Recon 3: LIVER 3 PHASE (AP)').dblclick();
+    await page.getByTestId('study-browser-thumbnail').nth(1).dblclick();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsNewDisplayset);
   });

@@ -261,7 +261,7 @@ const Thumbnail = ({
       data-cy={
         thumbnailType === 'thumbnailNoImage'
           ? 'study-browser-thumbnail-no-image'
-          : `study-browser-thumbnail${description ? `-${description}` : ''}`
+          : 'study-browser-thumbnail'
       }
       data-series={seriesNumber}
       onClick={onClick}
