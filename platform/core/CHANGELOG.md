@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.100...v3.11.0-beta.101) (2025-07-23)
+
+
+### Bug Fixes
+
+* **calibration:** do not override user set calibration ([#5231](https://github.com/OHIF/Viewers/issues/5231)) ([75cc6ef](https://github.com/OHIF/Viewers/commit/75cc6eff32bc890c240c7b6830b7ef729b6df379))
+
+
+
+
+
+# [3.11.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.99...v3.11.0-beta.100) (2025-07-23)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.98...v3.11.0-beta.99) (2025-07-23)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.11.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.97...v3.11.0-beta.98) (2025-07-23)
 
 **Note:** Version bump only for package @ohif/core
