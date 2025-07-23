@@ -654,6 +654,25 @@ const toolbarButtons: Button[] = [
       },
     },
   },
+  // Section containers for the nested toolbox
+  {
+    id: 'SegmentationUtilities',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'SegmentLabelTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'tool-segment-label',
+      label: 'Segment Label Display',
+      tooltip: 'Click to show or hide segment labels when hovering with your mouse.',
+      commands: { commandName: 'toggleSegmentLabel' },
+      evaluate: 'evaluate.cornerstoneTool.toggle',
+    },
+  },
   // {
   //   id: 'Undo',
   //   uiType: 'ohif.toolButton',

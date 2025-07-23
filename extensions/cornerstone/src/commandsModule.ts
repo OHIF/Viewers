@@ -1732,14 +1732,22 @@ function commandsModule({
         }
       });
     },
-    toggleSegmentLabel: ({ toggle }) => {
+    toggleSegmentLabel: () => {
+      const toolName = cornerstoneTools.SegmentLabelTool.toolName;
       const toolGroupIds = toolGroupService.getToolGroupIds();
+
+      const isOn = toolGroupIds.some(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        const mode = toolGroup.getToolInstance(toolName)?.mode;
+        return mode === 'Active';
+      });
+
       toolGroupIds.forEach(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        if (toggle) {
-          toolGroup.setToolActive(cornerstoneTools.SegmentLabelTool.toolName);
+        if (isOn) {
+          toolGroup.setToolDisabled(toolName);
         } else {
-          toolGroup.setToolDisabled(cornerstoneTools.SegmentLabelTool.toolName);
+          toolGroup.setToolActive(toolName);
         }
       });
     },
