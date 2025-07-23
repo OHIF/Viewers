@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 test('should overlay an unhydrated SEG over a display set that the SEG does NOT reference', async ({
   page,
 }) => {
-  await page.getByTestId('study-browser-thumbnail').nth(3).dblclick();
+  await page.getByTestId('study-browser-thumbnail').nth(2).dblclick();
 
   await page.getByTestId('dataOverlayMenu-default-btn').click();
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
