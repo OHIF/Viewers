@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.11.0-beta.68",
+  "version": "3.11.0-beta.97",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
@@ -63,7 +63,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.16.7"
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1"
   },
   "keywords": [],
   "author": "OHIF",

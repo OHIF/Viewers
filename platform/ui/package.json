@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "3.11.0-beta.68",
+  "version": "3.11.0-beta.97",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -65,7 +65,7 @@
     "webpack": "5.95.0"
   },
   "devDependencies": {
-    "@babel/core": "7.24.7",
+    "@babel/core": "7.28.0",
     "@storybook/addon-actions": "^7.6.10",
     "@storybook/addon-docs": "^7.6.10",
     "@storybook/addon-essentials": "^7.6.10",
