@@ -58,8 +58,8 @@
     "test:e2e:ci": "TEST_ENV=true npx playwright test",
     "test:e2e:ui": "TEST_ENV=true npx playwright test --ui",
     "test:e2e:reporter": "TEST_ENV=true npx playwright test --reporter=html",
-    "test:e2e:update": "TEST_ENV=true npx playwright test --reporter=html --update-snapshots",
-    "test:e2e:update:debug": "TEST_ENV=true npx playwright test -g @debug --reporter=html --update-snapshots ",
+    "test:e2e:update": "TEST_ENV=true npx playwright test --reporter=html --update-snapshots -g shouldUpdateThis",
+    "test:e2e:update:debug": "TEST_ENV=true npx playwright test -g @debug --reporter=html --update-snapshots -g shouldUpdateThis",
     "test:e2e:headed": "TEST_ENV=true npx playwright test --headed",
     "test:e2e:debug": "TEST_ENV=true npx playwright test --debug",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
@@ -80,34 +80,34 @@
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.48.0"
-
   },
   "devDependencies": {
-    "@babel/core": "7.24.7",
-    "@babel/plugin-proposal-class-properties": "^7.16.7",
-    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
-    "@babel/plugin-proposal-private-methods": "^7.18.6",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/core": "7.28.0",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-object-rest-spread": "^7.28.0",
+    "@babel/plugin-transform-private-methods": "^7.27.1",
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-arrow-functions": "^7.16.7",
+    "@babel/plugin-transform-for-of": "^7.27.1",
     "@babel/plugin-transform-regenerator": "^7.16.7",
-    "@babel/plugin-transform-runtime": "7.24.7",
-    "@babel/plugin-transform-typescript": "^7.13.0",
-    "@babel/preset-env": "7.24.7",
-    "@babel/preset-react": "^7.16.7",
-    "@babel/preset-typescript": "^7.13.0",
+    "@babel/plugin-transform-runtime": "7.28.0",
+    "@babel/plugin-transform-typescript": "^7.28.0",
+    "@babel/preset-env": "7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "babel-plugin-istanbul": "^7.0.0",
-    "source-map-support": "^0.5.21",
-    "prettier": "^3.3.3",
-    "ts-node": "^10.9.2",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "cypress": "14.5.2",
+    "cypress-file-upload": "^5.0.8",
     "istanbul": "0.4.5",
     "nyc": "^17.1.0",
     "patch-package": "^8.0.0",
-    "prettier-plugin-tailwindcss": "0.6.9",
     "playwright-test-coverage": "^1.2.12",
-     "cypress": "14.1.0",
-    "cypress-file-upload": "^5.0.8"
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "0.6.9",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.2"
   },
   "husky": {
     "hooks": {
@@ -130,6 +130,8 @@
     "package-json": "^8.1.0",
     "sharp": "^0.32.6",
     "rollup": "2.79.2",
-    "body-parser": "1.20.3"
-  }
+    "body-parser": "1.20.3",
+    "form-data": ">=4.0.4"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

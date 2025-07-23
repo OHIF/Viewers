@@ -60,6 +60,7 @@ const screenShotPaths = {
   },
   dicomTagBrowser: {
     dicomTagBrowserDisplayedCorrectly: 'dicomTagBrowserDisplayedCorrectly.png',
+    scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
   rotateRight: {
     rotateRightDisplayedCorrectly: 'rotateRightDisplayedCorrectly.png',
@@ -172,6 +173,14 @@ const screenShotPaths = {
     overlay2d_tta_nnU_Net_Segmentation: 'overlay2d_tta_nnU_Net_Segmentation.png',
     overlaySegmentation: 'overlaySegmentation.png',
     noOverlay: 'noOverlay.png',
+  },
+  multipleSegmentationDataOverlays: {
+    threeSegOverlaysInOverlayMenu: 'threeSegOverlaysInOverlayMenu.png',
+    overlaysDisplayed: 'overlaysDisplayed.png',
+    overlaySEGsAndRTDisplayed: 'overlaySEGsAndRTDisplayed.png',
+  },
+  workList: {
+    scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
 };
 
