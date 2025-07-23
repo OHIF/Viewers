@@ -455,9 +455,6 @@ function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewp
     } catch (e) {
       console.warn('Unable to adjust pan/zoom for the measurement', measurement.points, e);
     }
-
-    cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-    event?.consume?.();
   }
 
   cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
