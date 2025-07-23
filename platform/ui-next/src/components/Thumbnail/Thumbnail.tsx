@@ -260,7 +260,7 @@ const Thumbnail = ({
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={
         thumbnailType === 'thumbnailNoImage'
-          ? `study-browser-thumbnail-no-image${description ? `-${description}` : ''}`
+          ? 'study-browser-thumbnail-no-image'
           : `study-browser-thumbnail${description ? `-${description}` : ''}`
       }
       data-series={seriesNumber}
