@@ -9,7 +9,7 @@
  * @param {Array<Array<number>>} params.measurement.points - Array of 3D points [x, y, z]
  * @returns {boolean} True if all measurement points are within the viewport extent, false otherwise
  */
-export const isMeasurementWithinViewport = ({ viewport, measurement }) => {
+export const isMeasurementWithinViewport = (viewport, measurement) => {
   const camera = viewport.getCamera();
   const { focalPoint, parallelScale } = camera;
   // Check if the measurement points are inside the extent
