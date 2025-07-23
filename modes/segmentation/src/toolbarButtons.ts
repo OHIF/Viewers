@@ -739,6 +739,17 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
+  {
+    id: 'SegmentLabelTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'tool-segment-label',
+      label: 'Segment Label Display',
+      tooltip: 'Click to show or hide segment labels when hovering with your mouse.',
+      commands: { commandName: 'toggleSegmentLabel' },
+      evaluate: 'evaluate.cornerstoneTool.toggle',
+    },
+  },
 ];
 
 export default toolbarButtons;
