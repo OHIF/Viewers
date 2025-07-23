@@ -198,8 +198,8 @@ function _getOrientationMarkers(rowCosines, columnCosines, rotation, flipVertica
   const oppositeRowString = invertOrientationStringLPS(rowString);
   const oppositeColumnString = invertOrientationStringLPS(columnString);
 
-  // After rotate right 3 times and flip horizontally -> rotation is 90.00000000000001
-  rotation = Math.round(rotation);
+  // Round to 4 decimal places (after rotate right 3 times and flip horizontally -> rotation is 90.00000000000001)
+  rotation = Math.round(rotation * 10000) / 10000;
 
   const markers = {
     top: oppositeColumnString,
