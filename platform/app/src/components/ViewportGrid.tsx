@@ -415,7 +415,7 @@ function ViewerViewportGrid(props: withAppTypes) {
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
               isHangingProtocolLayout={isHangingProtocolLayout}
-              onElementEnabled={() => {
+              onElementEnabled={evt => {
                 viewportGridService.setViewportIsReady(viewportId, true);
               }}
             />

@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
-import { useSearchParams } from '@hooks';
+import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
@@ -52,9 +51,6 @@ export default function ModeRoute({
   const locationRef = useRef(null);
   const isMounted = useRef(false);
 
-  // Expose the react router dom navigation.
-  history.navigate = useNavigate();
-
   if (location !== locationRef.current) {
     layoutTemplateData.current = null;
     locationRef.current = location;
@@ -83,10 +79,10 @@ export default function ModeRoute({
     extensionManager.setActiveDataSource(dataSourceName);
   }
 
-  const dataSource = extensionManager.getActiveDataSource()[0];
+  const dataSource = extensionManager.getActiveDataSourceOrNull();
 
   // Only handling one route per mode for now
-  const route = mode.routes[0];
+  const route = mode.routes?.[0] ?? null;
 
   useEffect(() => {
     const loadExtensions = async () => {

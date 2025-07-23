@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
-import { useDebounce, useSearchParams } from '@hooks';
+import { useDebounce, useSearchParams } from '../../hooks';
 import { utils, Types as coreTypes } from '@ohif/core';
 
 import {

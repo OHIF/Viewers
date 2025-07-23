@@ -34,8 +34,6 @@ import PlanarFreehandROI from './utils/measurementServiceMappings/PlanarFreehand
 import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
-import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
-import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
@@ -57,6 +55,8 @@ import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
+import { useMeasurementTracking } from './hooks/useMeasurementTracking';
+import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -92,9 +92,16 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({ servicesManager }: withAppTypes): void => {
+  onModeEnter: ({ servicesManager, commandsManager }: withAppTypes): void => {
     const { cornerstoneViewportService, toolbarService, segmentationService } =
       servicesManager.services;
+
+    const { unsubscriptions: segmentationUnsubscriptions } = setUpSegmentationEventHandlers({
+      servicesManager,
+      commandsManager,
+    });
+    unsubscriptions.push(...segmentationUnsubscriptions);
+
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
     ]);
@@ -125,6 +132,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
   getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
+    unsubscriptions.forEach(unsubscribe => unsubscribe());
+    // Clear the unsubscriptions
+    unsubscriptions.length = 0;
+
     const { cineService, segmentationService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
@@ -143,8 +154,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
     useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
     segmentationService.removeAllSegmentations();
-
-    unsubscriptions.forEach(unsubscribe => unsubscribe());
   },
 
   /**
@@ -153,30 +162,18 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
   preRegistration: async function (props: Types.Extensions.ExtensionParams): Promise<void> {
-    const { servicesManager, serviceProvidersManager } = props;
+    const { servicesManager } = props;
     servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
     servicesManager.registerService(ToolGroupService.REGISTRATION);
     servicesManager.registerService(SyncGroupService.REGISTRATION);
     servicesManager.registerService(SegmentationService.REGISTRATION);
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
-    servicesManager.registerService(ViewportActionCornersService.REGISTRATION);
     servicesManager.registerService(ColorbarService.REGISTRATION);
-
-    serviceProvidersManager.registerProvider(
-      ViewportActionCornersService.REGISTRATION.name,
-      ViewportActionCornersProvider
-    );
 
     const { syncGroupService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
 
-    const initResult = await init.call(this, props);
-
-    unsubscriptions.push(...initResult.unsubscriptions);
-
-    return {
-      ...initResult,
-    };
+    await init.call(this, props);
   },
   getToolbarModule,
   getHangingProtocolModule,
@@ -268,6 +265,8 @@ export {
   StudySummaryFromMetadata,
   CornerstoneViewportDownloadForm,
   utils,
+  OHIFCornerstoneViewport,
+  useMeasurementTracking,
 };
 
 // Export constants

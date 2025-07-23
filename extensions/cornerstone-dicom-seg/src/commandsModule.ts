@@ -220,7 +220,7 @@ const commandsModule = ({
       }
 
       const { label } = segmentation;
-      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource();
+      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource()[0];
 
       const {
         value: reportName,
@@ -250,6 +250,11 @@ const commandsModule = ({
           }
 
           const { dataset: naturalizedReport } = generatedData;
+
+          // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
+          if (naturalizedReport.StudyID === 'No Study ID') {
+            naturalizedReport.StudyID = '';
+          }
 
           await selectedDataSourceConfig.store.dicom(naturalizedReport);
 

@@ -16,15 +16,38 @@ export type DisplaySet = {
   label?: string;
   /** Flag indicating if this is an overlay display set (e.g., SEG, RTSTRUCT) */
   isOverlayDisplaySet?: boolean;
+  /** flag indicating if it supports window level */
+  supportsWindowLevel?: boolean;
 
   // Details about how to display:
-  /** A URL that can be used to display the thumbnail.  Typically a data url */
+  /**
+   *  A URL that can be used to display the thumbnail.  Typically a data url
+   * This can be set to null to avoid trying to display a thumbnail, eg for
+   * display sets without a thumbnail.
+   */
   thumbnailSrc?: string;
   /** A fetch method to get the thumbnail */
   getThumbnailSrc?(imageId?: string): Promise<string>;
+
+  /**
+   * A fetch URL to display the content.  This is used for content such as
+   * pdf display.
+   */
+  renderedUrl?: string;
+
+  /**
+   * The instance UID of the display set that this display set references.
+   * This is used to determine if the display set is a referenced display set.
+   * It usually is for SEG, RTSTRUCT, etc.
+   */
+  referencedDisplaySetInstanceUID?: string;
+
   SeriesDate?: string;
   SeriesTime?: string;
   instance?: InstanceMetadata;
+
+  isHydrated?: boolean;
+  isRehydratable?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

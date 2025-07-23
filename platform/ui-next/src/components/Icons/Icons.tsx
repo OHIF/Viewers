@@ -75,10 +75,18 @@ import IconTransferring from './Sources/IconTransferring';
 import Alert from './Sources/Alert';
 import AlertOutline from './Sources/AlertOutline';
 import Clipboard from './Sources/Clipboard';
+import Checked from './Sources/Checked';
 import OrientationSwitch from './Sources/OrientationSwitch';
+import OrientationSwitchA from './Sources/OrientationSwitchA';
+import OrientationSwitchS from './Sources/OrientationSwitchS';
+import OrientationSwitchC from './Sources/OrientationSwitchC';
+import OrientationSwitchR from './Sources/OrientationSwitchR';
 import LayerBackground from './Sources/LayerBackground';
 import LayerForeground from './Sources/LayerForeground';
 import LayerSegmentation from './Sources/LayerSegmentation';
+import WindowLevelAdvanced from './Sources/WindowLevelAdvanced';
+import Opacity from './Sources/Opacity';
+import Threshold from './Sources/Threshold';
 import {
   Tool3DRotate,
   ToolAngle,
@@ -163,6 +171,22 @@ import {
   LayoutAdvanced3DFourUp,
   LayoutAdvanced3DMain,
 } from './Sources/Layout';
+import {
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsCombineMerge,
+  ActionsCombineSubtract,
+  ActionsCombineIntersect,
+  ActionsSetting,
+  ActionsBidirectional,
+  ActionsInterpolate,
+} from './Sources/SegActions';
+import {
+  HelperCombineSubtract,
+  HelperCombineIntersect,
+  HelperCombineMerge,
+} from './Sources/Helpers';
 import Link from './Sources/Link';
 import IconColorLUT from './Sources/IconColorLUT';
 import CTAAA from '../../../assets/images/CT-AAA.png';
@@ -386,6 +410,11 @@ export const Icons = {
   LayerForeground,
   LayerSegmentation,
   OrientationSwitch,
+  OrientationSwitchA,
+  OrientationSwitchS,
+  OrientationSwitchC,
+  OrientationSwitchR,
+  Checked,
   Clipboard,
   ActionNewDialog,
   GroupLayers,
@@ -583,6 +612,21 @@ export const Icons = {
   OHIFLogoColorDarkBackground,
   Magnifier,
   Pencil,
+  WindowLevelAdvanced,
+  Opacity,
+  Threshold,
+  ActionsSmooth,
+  ActionsSimplify,
+  ActionsCombine,
+  ActionsCombineMerge,
+  ActionsCombineSubtract,
+  ActionsCombineIntersect,
+  ActionsSetting,
+  ActionsBidirectional,
+  ActionsInterpolate,
+  HelperCombineSubtract,
+  HelperCombineIntersect,
+  HelperCombineMerge,
   //
   //
   //
@@ -729,6 +773,18 @@ export const Icons = {
   'old-trash': (props: IconProps) => Trash(props),
   'tool-point': (props: IconProps) => ToolCircle(props),
   'tool-freehand-line': (props: IconProps) => ToolFreehand(props),
+  'actions-smooth': (props: IconProps) => ActionsSmooth(props),
+  'actions-simplify': (props: IconProps) => ActionsSimplify(props),
+  'actions-combine': (props: IconProps) => ActionsCombine(props),
+  'actions-combine-merge': (props: IconProps) => ActionsCombineMerge(props),
+  'actions-combine-subtract': (props: IconProps) => ActionsCombineSubtract(props),
+  'actions-combine-intersect': (props: IconProps) => ActionsCombineIntersect(props),
+  'actions-bidirectional': (props: IconProps) => ActionsBidirectional(props),
+  'actions-interpolate': (props: IconProps) => ActionsInterpolate(props),
+  'actions-setting': (props: IconProps) => ActionsSetting(props),
+  'helper-combine-subtract': (props: IconProps) => HelperCombineSubtract(props),
+  'helper-combine-intersect': (props: IconProps) => HelperCombineIntersect(props),
+  'helper-combine-merge': (props: IconProps) => HelperCombineMerge(props),
   clipboard: (props: IconProps) => Clipboard(props),
   Undo,
   Redo,

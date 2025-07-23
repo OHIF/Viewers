@@ -1,48 +1,77 @@
 import React, { ReactNode } from 'react';
+import { useSystem } from '@ohif/core';
 import {
   Button,
-  cn,
   Icons,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  useViewportGrid,
+  useIconPresentation,
 } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
-import classNames from 'classnames';
-import { useSystem } from '@ohif/core';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
-export function ViewportDataOverlayMenuWrapper({
-  viewportId,
-  displaySets,
-  location,
-}: withAppTypes<{
+type DataOverlayMenuProps = {
   viewportId: string;
-  element: HTMLElement;
-}>): ReactNode {
+  location: string;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+  disabled?: boolean;
+  id?: string;
+};
+
+export function ViewportDataOverlayMenuWrapper(props: DataOverlayMenuProps): ReactNode {
+  const { viewportId, location, isOpen = false, onOpen, onClose, disabled, ...rest } = props;
+  const { viewportDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
+  const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
+
+  const handleOpenChange = (openState: boolean) => {
+    if (openState) {
+      onOpen?.();
+    } else {
+      onClose?.();
+    }
+  };
+
   const { servicesManager } = useSystem();
-  const { viewportActionCornersService } = servicesManager.services;
-  const [viewportGrid] = useViewportGrid();
+  const { toolbarService } = servicesManager.services;
 
-  const { align, side } = viewportActionCornersService.getAlignAndSide(location);
+  const { align, side } = toolbarService.getAlignAndSide(location);
 
+  const Icon = <Icons.ViewportViews className={iconClassName} />;
+
+  const idProp = rest.id ? { id: `${rest.id}-${viewportId}` } : {};
   return (
-    <Popover>
+    <Popover
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+    >
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            viewportGrid.activeViewportId === viewportId
-              ? 'visible'
-              : 'invisible group-hover/pane:visible'
+        <div>
+          {IconContainer ? (
+            <IconContainer
+              disabled={disabled}
+              icon="ViewportViews"
+              {...rest}
+              {...containerProps}
+              {...idProp}
+            >
+              {Icon}
+            </IconContainer>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={disabled}
+            >
+              {Icon}
+            </Button>
           )}
-        >
-          <Icons.ViewportViews className={classNames('text-highlight')} />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"

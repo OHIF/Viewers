@@ -3,6 +3,7 @@ import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';
+import { HotkeysManager } from '@ohif/core';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -13,14 +14,19 @@ const metadataProvider = classes.MetadataProvider;
  */
 export default function init({
   servicesManager,
-  configuration = {},
   commandsManager,
+  hotkeysManager,
 }: withAppTypes): void {
   const { toolbarService, cineService, viewportGridService } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
   ]);
+
+  toolbarService.registerEventForToolbarUpdate(hotkeysManager, [
+    HotkeysManager.EVENTS.HOTKEY_PRESSED,
+  ]);
+
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handleScalingModules);
 
@@ -32,6 +38,7 @@ export default function init({
   registerHangingProtocolAttributes({ servicesManager });
 
   // Function to process and subscribe to events for a given set of commands and listeners
+  const eventSubscriptions = [];
   const subscribeToEvents = listeners => {
     Object.entries(listeners).forEach(([event, commands]) => {
       const supportedEvents = [
@@ -40,11 +47,19 @@ export default function init({
       ];
 
       if (supportedEvents.includes(event)) {
+        const subscriptionKey = `${event}_${JSON.stringify(commands)}`;
+
+        if (eventSubscriptions.includes(subscriptionKey)) {
+          return;
+        }
+
         viewportGridService.subscribe(event, eventData => {
           const viewportId = eventData?.viewportId ?? viewportGridService.getActiveViewportId();
 
           commandsManager.run(commands, { viewportId });
         });
+
+        eventSubscriptions.push(subscriptionKey);
       }
     });
   };
@@ -52,10 +67,10 @@ export default function init({
   toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, state => {
     const { buttons } = state;
     for (const [id, button] of Object.entries(buttons)) {
-      const { groupId, items, listeners } = button.props || {};
+      const { buttonSection, items, listeners } = button.props || {};
 
       // Handle group items' listeners
-      if (groupId && items) {
+      if (buttonSection && items) {
         items.forEach(item => {
           if (item.listeners) {
             subscribeToEvents(item.listeners);

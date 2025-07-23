@@ -16,7 +16,11 @@ import {
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
-import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
+import ViewportInfo, {
+  DisplaySetOptions,
+  PublicViewportOptions,
+  ViewportOptions,
+} from './Viewport';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import {
   LutPresentation,
@@ -341,6 +345,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         delete properties?.voiRange;
         delete properties?.VOILUTFunction;
       }
+      if (properties?.colormap) {
+        if (properties.colormap?.opacity?.length === 0) {
+          delete properties.colormap.opacity;
+        }
+      }
       return properties;
     };
 
@@ -477,6 +486,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportId,
       });
     });
+  }
+
+  public getViewportOptions(viewportId: string): ViewportOptions {
+    return this.viewportsById.get(viewportId).getViewportOptions();
   }
 
   /**
@@ -642,25 +655,27 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       csToolsUtils.stackContextPrefetch.enable(element);
     });
 
-    let imageIdsToSet = imageIds;
-    const overlayProcessingResult = this._processExtraDisplaySetsForViewport(viewport);
-    imageIdsToSet = overlayProcessingResult?.imageIds ?? imageIdsToSet;
+    const overlayProcessingResults = this._processExtraDisplaySetsForViewport(viewport);
 
     const referencedImageId = presentations?.positionPresentation?.viewReference?.referencedImageId;
     if (referencedImageId) {
-      initialImageIndexToUse = imageIdsToSet.indexOf(referencedImageId);
+      initialImageIndexToUse = imageIds.indexOf(referencedImageId);
     }
 
     if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
+    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations, viewportInfo);
 
-      if (overlayProcessingResult?.addOverlayFn) {
-        overlayProcessingResult.addOverlayFn();
+      if (overlayProcessingResults?.length) {
+        overlayProcessingResults.forEach(overlayProcessingResult => {
+          if (overlayProcessingResult?.addOverlayFn) {
+            overlayProcessingResult.addOverlayFn();
+          }
+        });
       }
 
       if (displayArea) {
@@ -827,16 +842,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetModality = displaySet?.Modality;
 
     // filter overlay display sets (e.g. segmentation) since they will get handled below via the segmentation service
-    const filteredVolumeInputArray = volumeInputArray.filter(volumeInput => {
-      const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
-      return !displaySet?.isOverlayDisplaySet;
-    });
+    const filteredVolumeInputArray = volumeInputArray
+      .map((volumeInput, index) => {
+        return { volumeInput, displaySetOptions: displaySetOptions[index] };
+      })
+      .filter(({ volumeInput }) => {
+        const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
+        return !displaySet?.isOverlayDisplaySet;
+      });
 
     // Todo: use presentations states
-    const volumesProperties = filteredVolumeInputArray.map((volumeInput, index) => {
+    const volumesProperties = filteredVolumeInputArray.map(({ volumeInput, displaySetOptions }) => {
       const { volumeId } = volumeInput;
-      const displaySetOption = displaySetOptions[index];
-      const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
+      const { voi, voiInverted, colormap, displayPreset } = displaySetOptions;
       const properties = {} as ViewportProperties;
 
       if (voi && (voi.windowWidth || voi.windowCenter)) {
@@ -863,32 +881,35 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // For SEG and RT viewports
-    const { addOverlayFn, imageIds } = this._processExtraDisplaySetsForViewport(viewport) || {};
+    const overlayProcessingResults = this._processExtraDisplaySetsForViewport(viewport) || [];
+    if (!filteredVolumeInputArray.length && overlayProcessingResults?.length) {
+      overlayProcessingResults.forEach(({ imageIds, addOverlayFn }) => {
+        if (addOverlayFn) {
+          // if there is no volume input array, and there is an addOverlayFn, means we need to take
+          // care of the background overlay display set first then the addOverlayFn will add the
+          // SEG displaySet
+          const sampleImageId = imageIds[0];
+          const backgroundDisplaySet = displaySetService.getDisplaySetsBy(
+            displaySet =>
+              !displaySet.isOverlayDisplaySet &&
+              displaySet.images.some(image => image.imageId === sampleImageId)
+          );
 
-    if (!filteredVolumeInputArray.length && addOverlayFn) {
-      // if there is no volume input array, and there is an addOverlayFn, means we need to take
-      // care of the background overlay display set first then the addOverlayFn will add the
-      // SEG displaySet
-      const sampleImageId = imageIds[0];
-      const backgroundDisplaySet = displaySetService.getDisplaySetsBy(
-        displaySet =>
-          !displaySet.isOverlayDisplaySet &&
-          displaySet.images.some(image => image.imageId === sampleImageId)
-      );
-
-      if (backgroundDisplaySet.length !== 1) {
-        throw new Error('Background display set not found');
-      }
-
-      await viewport.setVolumes([
-        { volumeId: `${VOLUME_LOADER_SCHEME}:${backgroundDisplaySet[0].displaySetInstanceUID}` },
-      ]);
-    } else {
-      await viewport.setVolumes(filteredVolumeInputArray);
+          if (backgroundDisplaySet.length !== 1) {
+            throw new Error('Background display set not found');
+          }
+        }
+      });
     }
 
-    if (addOverlayFn) {
-      addOverlayFn();
+    await viewport.setVolumes(volumeInputArray);
+
+    if (overlayProcessingResults?.length) {
+      overlayProcessingResults.forEach(({ addOverlayFn }) => {
+        if (addOverlayFn) {
+          addOverlayFn();
+        }
+      });
     }
     viewport.render();
 
@@ -927,30 +948,31 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
 
     // Find overlay display sets (e.g. SEG, RTSTRUCT)
-    const overlayDisplaySet = displaySetInstanceUIDs
+    const overlayDisplaySets = displaySetInstanceUIDs
       .map(displaySetService.getDisplaySetByUID)
-      .find(displaySet => displaySet?.isOverlayDisplaySet);
+      .filter(displaySet => displaySet?.isOverlayDisplaySet);
 
     // if it is only the overlay displaySet, then we need to get the reference
     // displaySet imageIds and set them as the imageIds for the viewport,
     // here we can do some logic if the reference is missing
     // then find the most similar match of displaySet instead
-    if (!overlayDisplaySet) {
+    if (!overlayDisplaySets?.length) {
       return;
     }
 
-    let imageIds;
-    if (overlayDisplaySet.referencedDisplaySetInstanceUID) {
-      const referenceDisplaySet = displaySetService.getDisplaySetByUID(
-        overlayDisplaySet.referencedDisplaySetInstanceUID
-      );
-      imageIds = referenceDisplaySet.images.map(image => image.imageId);
-    }
-
-    return {
-      imageIds,
-      addOverlayFn: () => this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport),
-    };
+    return overlayDisplaySets.map(overlayDisplaySet => {
+      let imageIds;
+      if (overlayDisplaySet.referencedDisplaySetInstanceUID) {
+        const referenceDisplaySet = displaySetService.getDisplaySetByUID(
+          overlayDisplaySet.referencedDisplaySetInstanceUID
+        );
+        imageIds = referenceDisplaySet.images.map(image => image.imageId);
+      }
+      return {
+        imageIds,
+        addOverlayFn: () => this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport),
+      };
+    });
   }
 
   private addOverlayRepresentationForDisplaySet(
@@ -1063,8 +1085,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-          Math.pow(dimensions[1] * spacing[1], 2) +
-          Math.pow(dimensions[2] * spacing[2], 2)
+        Math.pow(dimensions[1] * spacing[1], 2) +
+        Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;

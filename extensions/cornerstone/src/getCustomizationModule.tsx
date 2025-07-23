@@ -11,7 +11,6 @@ import windowLevelPresetsCustomization from './customizations/windowLevelPresets
 import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
-import viewportActionMenuCustomizations from './customizations/viewportActionMenuCustomizations';
 
 function getCustomizationModule({ commandsManager, servicesManager }) {
   return [
@@ -31,7 +30,6 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...miscCustomization,
         ...captureViewportModalCustomization,
         ...viewportDownloadWarningCustomization,
-        ...viewportActionMenuCustomizations,
       },
     },
   ];

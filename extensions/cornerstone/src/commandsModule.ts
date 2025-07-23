@@ -6,6 +6,7 @@ import {
   Enums as CoreEnums,
   Types as CoreTypes,
   BaseVolumeViewport,
+  getRenderingEngines,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -29,6 +30,7 @@ import {
 import { vec3, mat4 } from 'gl-matrix';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
+import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
@@ -37,6 +39,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -55,12 +58,23 @@ const getLabelmapTools = ({ toolGroupService }) => {
     // tools is an object with toolName as the key and tool as the value
     Object.keys(tools).forEach(toolName => {
       const tool = tools[toolName];
-      if (tool instanceof cornerstoneTools.LabelmapBaseTool) {
+      if (
+        tool instanceof cornerstoneTools.LabelmapBaseTool &&
+        tool.shouldResolvePreviewRequests()
+      ) {
         labelmapTools.push(tool);
       }
     });
   });
   return labelmapTools;
+};
+
+const getPreviewTools = ({ toolGroupService }) => {
+  const labelmapTools = getLabelmapTools({ toolGroupService });
+
+  const previewTools = labelmapTools.filter(tool => tool.acceptPreview || tool.rejectPreview);
+
+  return previewTools;
 };
 
 const segmentAI = new ONNXSegmentationController({
@@ -109,6 +123,10 @@ function commandsModule({
     return getActiveViewportEnabledElement(viewportGridService);
   }
 
+  function _getViewportEnabledElement(viewportId: string) {
+    return getViewportEnabledElement(viewportId);
+  }
+
   function _getActiveViewportToolGroupId() {
     const viewport = _getActiveViewportEnabledElement();
     return toolGroupService.getToolGroupForViewport(viewport.id);
@@ -127,6 +145,68 @@ function commandsModule({
   }
 
   const actions = {
+    hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
+      if (!displaySet) {
+        return;
+      }
+
+      if (displaySet.isOverlayDisplaySet) {
+        // update the previously stored segmentationPresentation with the new viewportId
+        // presentation so that when we put the referencedDisplaySet back in the viewport
+        // it will have the correct segmentation representation hydrated
+        commandsManager.runCommand('updateStoredSegmentationPresentation', {
+          displaySet,
+          type:
+            displaySet.Modality === 'SEG'
+              ? SegmentationRepresentations.Labelmap
+              : SegmentationRepresentations.Contour,
+        });
+      }
+
+      const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
+
+      const storePositionPresentation = refDisplaySet => {
+        // update the previously stored positionPresentation with the new viewportId
+        // presentation so that when we put the referencedDisplaySet back in the viewport
+        // it will be in the correct position zoom and pan
+        commandsManager.runCommand('updateStoredPositionPresentation', {
+          viewportId,
+          displaySetInstanceUIDs: [refDisplaySet.displaySetInstanceUID],
+        });
+      };
+
+      if (displaySet.Modality === 'SEG' || displaySet.Modality === 'RTSTRUCT') {
+        const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+          referencedDisplaySetInstanceUID
+        );
+        storePositionPresentation(referencedDisplaySet);
+        return commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+          viewportId,
+          displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+        });
+      } else if (displaySet.Modality === 'SR') {
+        const results = commandsManager.runCommand('hydrateStructuredReport', {
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+        });
+        const { SeriesInstanceUIDs } = results;
+        const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
+          SeriesInstanceUIDs[0]
+        );
+        referencedDisplaySets.forEach(storePositionPresentation);
+
+        if (referencedDisplaySets.length) {
+          actions.setDisplaySetsForViewports({
+            viewportsToUpdate: [
+              {
+                viewportId: viewportGridService.getActiveViewportId(),
+                displaySetInstanceUIDs: [referencedDisplaySets[0].displaySetInstanceUID],
+              },
+            ],
+          });
+        }
+        return results;
+      }
+    },
     runSegmentBidirectional: async ({ segmentationId, segmentIndex } = {}) => {
       // Get active segmentation if not specified
       const targetSegmentation =
@@ -368,7 +448,7 @@ function commandsModule({
       });
 
       if (val !== undefined && val !== null) {
-        measurementService.update(uid, { ...val }, true);
+        measurementService.update(uid, { ...measurement, label: val }, true);
       }
     },
     /**
@@ -576,10 +656,20 @@ function commandsModule({
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
 
-    setViewportWindowLevel({ viewportId, window, level }) {
+    setViewportWindowLevel({
+      viewportId,
+      windowWidth,
+      windowCenter,
+      displaySetInstanceUID,
+    }: {
+      viewportId: string;
+      windowWidth: number;
+      windowCenter: number;
+      displaySetInstanceUID?: string;
+    }) {
       // convert to numbers
-      const windowWidthNum = Number(window);
-      const windowCenterNum = Number(level);
+      const windowWidthNum = Number(windowWidth);
+      const windowCenterNum = Number(windowCenter);
 
       // get actor from the viewport
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
@@ -587,12 +677,28 @@ function commandsModule({
 
       const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
 
-      viewport.setProperties({
-        voiRange: {
-          upper,
-          lower,
-        },
-      });
+      if (viewport instanceof BaseVolumeViewport) {
+        const volumeId = actions.getVolumeIdForDisplaySet({
+          viewportId,
+          displaySetInstanceUID,
+        });
+        viewport.setProperties(
+          {
+            voiRange: {
+              upper,
+              lower,
+            },
+          },
+          volumeId
+        );
+      } else {
+        viewport.setProperties({
+          voiRange: {
+            upper,
+            lower,
+          },
+        });
+      }
       viewport.render();
     },
     toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
@@ -641,9 +747,18 @@ function commandsModule({
 
       actions.setViewportWindowLevel({
         viewportId: activeViewport,
-        window: windowLevelPreset.window,
-        level: windowLevelPreset.level,
+        windowWidth: windowLevelPreset.window,
+        windowCenter: windowLevelPreset.level,
       });
+    },
+    getVolumeIdForDisplaySet: ({ viewportId, displaySetInstanceUID }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (viewport instanceof BaseVolumeViewport) {
+        const volumeIds = viewport.getAllVolumeIds();
+        const volumeId = volumeIds.find(id => id.includes(displaySetInstanceUID));
+        return volumeId;
+      }
+      return null;
     },
     setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
@@ -783,32 +898,28 @@ function commandsModule({
         });
       }
     },
-    rotateViewport: ({ rotation }) => {
-      const enabledElement = _getActiveViewportEnabledElement();
-      if (!enabledElement) {
-        return;
-      }
-
-      const { viewport } = enabledElement;
-
-      if (viewport instanceof BaseVolumeViewport) {
-        const camera = viewport.getCamera();
-        const rotAngle = (rotation * Math.PI) / 180;
-        const rotMat = mat4.identity(new Float32Array(16));
-        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
-        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
-        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
-        viewport.render();
-      } else if (viewport.getRotation !== undefined) {
-        const presentation = viewport.getViewPresentation();
-        const { rotation: currentRotation } = presentation;
-        const newRotation = (currentRotation + rotation + 360) % 360;
-        viewport.setViewPresentation({ rotation: newRotation });
-        viewport.render();
-      }
+    /**
+     * Rotates the viewport by `rotation` relative to its current rotation.
+     */
+    rotateViewportBy: ({ rotation, viewportId }: { rotation: number; viewportId?: string }) => {
+      actions._rotateViewport({ rotation, viewportId, rotationMode: 'apply' });
     },
-    flipViewportHorizontal: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
+    /**
+     * Sets the viewport rotation to an absolute value `rotation`.
+     */
+    setViewportRotation: ({ rotation, viewportId }: { rotation: number; viewportId?: string }) => {
+      actions._rotateViewport({ rotation, viewportId, rotationMode: 'set' });
+    },
+    flipViewportHorizontal: ({
+      viewportId,
+      newValue = 'toggle',
+    }: {
+      viewportId?: string;
+      newValue?: 'toggle' | boolean;
+    }) => {
+      const enabledElement = viewportId
+        ? _getViewportEnabledElement(viewportId)
+        : _getActiveViewportEnabledElement();
 
       if (!enabledElement) {
         return;
@@ -816,12 +927,27 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { flipHorizontal } = viewport.getCamera();
-      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      let flipHorizontal: boolean;
+      if (newValue === 'toggle') {
+        const { flipHorizontal: currentHorizontalFlip } = viewport.getCamera();
+        flipHorizontal = !currentHorizontalFlip;
+      } else {
+        flipHorizontal = newValue;
+      }
+
+      viewport.setCamera({ flipHorizontal });
       viewport.render();
     },
-    flipViewportVertical: () => {
-      const enabledElement = _getActiveViewportEnabledElement();
+    flipViewportVertical: ({
+      viewportId,
+      newValue = 'toggle',
+    }: {
+      viewportId?: string;
+      newValue?: 'toggle' | boolean;
+    }) => {
+      const enabledElement = viewportId
+        ? _getViewportEnabledElement(viewportId)
+        : _getActiveViewportEnabledElement();
 
       if (!enabledElement) {
         return;
@@ -829,8 +955,14 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      const { flipVertical } = viewport.getCamera();
-      viewport.setCamera({ flipVertical: !flipVertical });
+      let flipVertical: boolean;
+      if (newValue === 'toggle') {
+        const { flipVertical: currentVerticalFlip } = viewport.getCamera();
+        flipVertical = !currentVerticalFlip;
+      } else {
+        flipVertical = newValue;
+      }
+      viewport.setCamera({ flipVertical });
       viewport.render();
     },
     invertViewport: ({ element }) => {
@@ -1599,6 +1731,17 @@ function commandsModule({
         }
       });
     },
+    toggleSegmentLabel: ({ toggle }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        if (toggle) {
+          toolGroup.setToolActive(cornerstoneTools.SegmentLabelTool.toolName);
+        } else {
+          toolGroup.setToolDisabled(cornerstoneTools.SegmentLabelTool.toolName);
+        }
+      });
+    },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
       labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
@@ -1610,14 +1753,15 @@ function commandsModule({
       });
     },
     _handlePreviewAction: action => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = labelmapTools.filter(
-        tool => tool.mode === 'Active' || tool.mode === 'Enabled'
-      );
+      const previewTools = getPreviewTools({ toolGroupService });
 
-      activeTools.forEach(tool => {
-        tool[`${action}Preview`]();
+      previewTools.forEach(tool => {
+        try {
+          tool[`${action}Preview`]();
+        } catch (error) {
+          console.debug('Error accepting preview for tool', tool.toolName);
+        }
       });
 
       if (segmentAI.enabled) {
@@ -1744,6 +1888,9 @@ function commandsModule({
       const { segmentationService } = servicesManager.services;
       const { activeViewportId } = viewportGridService.getState();
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
+      if (!activeSegmentation) {
+        return;
+      }
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
     loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
@@ -1753,11 +1900,11 @@ function commandsModule({
         displaySetInstanceUIDs,
       });
 
-      updatedViewports.forEach(viewport => {
-        viewportGridService.setDisplaySetsForViewport({
+      actions.setDisplaySetsForViewports({
+        viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
           displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
-        });
+        })),
       });
     },
     setViewportOrientation: ({ viewportId, orientation }) => {
@@ -1783,6 +1930,133 @@ function commandsModule({
       // update the orientation in the viewport info
       const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       viewportInfo.setOrientation(orientation);
+    },
+    /**
+     * Toggles the horizontal flip state of the viewport.
+     */
+    toggleViewportHorizontalFlip: ({ viewportId }: { viewportId?: string } = {}) => {
+      actions.flipViewportHorizontal({ viewportId, newValue: 'toggle' });
+    },
+
+    /**
+     * Explicitly sets the horizontal flip state of the viewport.
+     */
+    setViewportHorizontalFlip: ({
+      flipped,
+      viewportId,
+    }: {
+      flipped: boolean;
+      viewportId?: string;
+    }) => {
+      actions.flipViewportHorizontal({ viewportId, newValue: flipped });
+    },
+
+    /**
+     * Toggles the vertical flip state of the viewport.
+     */
+    toggleViewportVerticalFlip: ({ viewportId }: { viewportId?: string } = {}) => {
+      actions.flipViewportVertical({ viewportId, newValue: 'toggle' });
+    },
+
+    /**
+     * Explicitly sets the vertical flip state of the viewport.
+     */
+    setViewportVerticalFlip: ({
+      flipped,
+      viewportId,
+    }: {
+      flipped: boolean;
+      viewportId?: string;
+    }) => {
+      actions.flipViewportVertical({ viewportId, newValue: flipped });
+    },
+    /**
+     * Internal helper to rotate or set absolute rotation for a viewport.
+     */
+    _rotateViewport: ({
+      rotation,
+      viewportId,
+      rotationMode = 'apply',
+    }: {
+      rotation: number;
+      viewportId?: string;
+      rotationMode?: 'apply' | 'set';
+    }) => {
+      const enabledElement = viewportId
+        ? _getViewportEnabledElement(viewportId)
+        : _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      if (viewport instanceof BaseVolumeViewport) {
+        const camera = viewport.getCamera();
+        const rotAngle = (rotation * Math.PI) / 180;
+        const rotMat = mat4.identity(new Float32Array(16));
+        mat4.rotate(rotMat, rotMat, rotAngle, camera.viewPlaneNormal);
+        const rotatedViewUp = vec3.transformMat4(vec3.create(), camera.viewUp, rotMat);
+        viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
+        viewport.render();
+        return;
+      }
+
+      if (viewport.getRotation !== undefined) {
+        const { rotation: currentRotation } = viewport.getViewPresentation();
+        const newRotation =
+          rotationMode === 'apply'
+            ? (currentRotation + rotation + 360) % 360
+            : (() => {
+                // In 'set' mode, account for the effect horizontal/vertical flips
+                // have on the perceived rotation direction. A single flip mirrors
+                // the image and inverses rotation direction, while two flips
+                // restore the original parity. We therefore invert the rotation
+                // angle when an odd number of flips are applied so that the
+                // requested absolute rotation matches the user expectation.
+                const { flipHorizontal = false, flipVertical = false } =
+                  viewport.getViewPresentation();
+
+                const flipsParity = (flipHorizontal ? 1 : 0) + (flipVertical ? 1 : 0);
+                const effectiveRotation = flipsParity % 2 === 1 ? -rotation : rotation;
+
+                return (effectiveRotation + 360) % 360;
+              })();
+        viewport.setViewPresentation({ rotation: newRotation });
+        viewport.render();
+      }
+    },
+    startRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.startGroupRecording();
+    },
+    endRecordingForAnnotationGroup: () => {
+      cornerstoneTools.AnnotationTool.endGroupRecording();
+    },
+    triggerCreateAnnotationMemo: ({
+      annotation,
+      FrameOfReferenceUID,
+      options,
+    }: {
+      annotation: ToolTypes.Annotation;
+      FrameOfReferenceUID: string;
+      options: { newAnnotation?: boolean; deleting?: boolean };
+    }): void => {
+      const { newAnnotation, deleting } = options;
+      const renderingEngines = getRenderingEngines();
+      const viewports = renderingEngines.flatMap(re => re.getViewports());
+      const validViewport = viewports.find(
+        vp => vp.getFrameOfReferenceUID() === FrameOfReferenceUID
+      );
+
+      if (!validViewport) {
+        return;
+      }
+
+      cornerstoneTools.AnnotationTool.createAnnotationMemo(validViewport.element, annotation, {
+        newAnnotation,
+        deleting,
+      });
     },
   };
 
@@ -1855,12 +2129,16 @@ function commandsModule({
       commandFn: actions.setToolEnabled,
     },
     rotateViewportCW: {
-      commandFn: actions.rotateViewport,
+      commandFn: actions.rotateViewportBy,
       options: { rotation: 90 },
     },
     rotateViewportCCW: {
-      commandFn: actions.rotateViewport,
+      commandFn: actions.rotateViewportBy,
       options: { rotation: -90 },
+    },
+    rotateViewportCWSet: {
+      commandFn: actions.setViewportRotation,
+      options: { rotation: 90 },
     },
     incrementActiveViewport: {
       commandFn: actions.changeActiveViewport,
@@ -1870,10 +2148,18 @@ function commandsModule({
       options: { direction: -1 },
     },
     flipViewportHorizontal: {
-      commandFn: actions.flipViewportHorizontal,
+      commandFn: actions.toggleViewportHorizontalFlip,
     },
     flipViewportVertical: {
-      commandFn: actions.flipViewportVertical,
+      commandFn: actions.toggleViewportVerticalFlip,
+    },
+    setViewportHorizontalFlip: {
+      commandFn: actions.setViewportHorizontalFlip,
+      options: { flipped: true },
+    },
+    setViewportVerticalFlip: {
+      commandFn: actions.setViewportVerticalFlip,
+      options: { flipped: true },
     },
     invertViewport: {
       commandFn: actions.invertViewport,
@@ -2065,6 +2351,12 @@ function commandsModule({
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
+    hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
+    getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
+    triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,
+    startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
+    endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
+    toggleSegmentLabel: actions.toggleSegmentLabel,
   };
 
   return {

@@ -35,7 +35,12 @@ function TrackedMeasurementsContextProvider(
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const { measurementService, displaySetService, customizationService } = servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    customizationService,
+    trackedMeasurementsService,
+  } = servicesManager.services as AppTypes.Services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
@@ -144,12 +149,7 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      const measurements = measurementService.getMeasurements();
-      const measurementIds = measurements.map(fm => fm.uid);
-
-      for (let i = 0; i < measurementIds.length; i++) {
-        measurementService.remove(measurementIds[i]);
-      }
+      measurementService.clearMeasurements();
       measurementService.setIsMeasurementDeletedIndividually(false);
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
@@ -271,6 +271,13 @@ function TrackedMeasurementsContextProvider(
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
     measurementTrackingMachine
   );
+
+  // Update TrackedMeasurementsService when trackedSeries changes in context
+  useEffect(() => {
+    if (trackedMeasurements?.context?.trackedSeries && trackedMeasurementsService) {
+      trackedMeasurementsService.updateTrackedSeries(trackedMeasurements.context.trackedSeries);
+    }
+  }, [trackedMeasurements?.context?.trackedSeries, trackedMeasurementsService]);
 
   useEffect(() => {
     // Update the state machine with the active viewport ID

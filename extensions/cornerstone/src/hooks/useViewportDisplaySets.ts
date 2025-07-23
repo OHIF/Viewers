@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSystem, utils } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui-next';
 import {
@@ -49,29 +49,37 @@ export type UseViewportDisplaySetsOptions = {
  */
 export type ViewportDisplaySets = {
   /**
+   * All display sets for the viewport
+   */
+  allDisplaySets: AppTypes.DisplaySet[];
+  /**
+   * The viewport display sets for the viewport
+   */
+  viewportDisplaySets: AppTypes.DisplaySet[];
+  /**
    * The primary display set for the viewport (base image)
    */
-  backgroundDisplaySet?: any;
+  backgroundDisplaySet?: AppTypes.DisplaySet;
   /**
    * Display sets currently shown with background (non-overlay layers)
    */
-  foregroundDisplaySets?: any[];
+  foregroundDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Segmentation display sets currently applied as overlays
    */
-  overlayDisplaySets?: any[];
+  overlayDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Display sets that could be toggled on as overlays (derived modalities)
    */
-  potentialOverlayDisplaySets?: any[];
+  potentialOverlayDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Display sets that could be added as foreground layers
    */
-  potentialForegroundDisplaySets?: any[];
+  potentialForegroundDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Display sets that could replace the current background
    */
-  potentialBackgroundDisplaySets?: any[];
+  potentialBackgroundDisplaySets?: AppTypes.DisplaySet[];
 };
 
 /**
@@ -82,7 +90,7 @@ export type ViewportDisplaySets = {
  * @returns Object containing requested display set collections based on options
  */
 export function useViewportDisplaySets(
-  viewportId: string,
+  viewportId?: string,
   options?: UseViewportDisplaySetsOptions
 ): ViewportDisplaySets {
   const { servicesManager } = useSystem();
@@ -91,7 +99,9 @@ export function useViewportDisplaySets(
   // Note: this is very important we should use the useViewportGrid hook here,
   // since if the viewport displaySet is changed we should re-run this hook
   // to get the latest displaySets
-  const [_, viewportGridService] = useViewportGrid();
+  const [viewportGridState, viewportGridService] = useViewportGrid();
+
+  const viewportIdToUse = viewportId || viewportGridState.activeViewportId;
 
   // Apply defaults - include everything if no options specified
   const {
@@ -112,11 +122,33 @@ export function useViewportDisplaySets(
 
   // Get all available segmentations (only if needed)
   const needsSegmentations = includeOverlay;
-  const segmentationRepresentations = useMemo(
-    () =>
-      needsSegmentations ? segmentationService.getSegmentationRepresentations(viewportId) : [],
-    [segmentationService, viewportId, needsSegmentations]
+
+  const [segmentationRepresentations, setSegmentationRepresentations] = useState(
+    needsSegmentations ? segmentationService.getSegmentationRepresentations(viewportIdToUse) : []
   );
+
+  useEffect(() => {
+    setSegmentationRepresentations(
+      needsSegmentations ? segmentationService.getSegmentationRepresentations(viewportIdToUse) : []
+    );
+
+    const unsubscribeArr = needsSegmentations
+      ? [
+          segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+          segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED,
+        ].map(event =>
+          segmentationService.subscribe(event, () => {
+            setSegmentationRepresentations(
+              segmentationService.getSegmentationRepresentations(viewportIdToUse)
+            );
+          })
+        )
+      : [];
+
+    return () => {
+      unsubscribeArr.forEach(item => item.unsubscribe());
+    };
+  }, [segmentationService, viewportIdToUse, needsSegmentations]);
 
   const overlayDisplaySets = useMemo(() => {
     if (!includeOverlay) {
@@ -128,27 +160,29 @@ export function useViewportDisplaySets(
     });
   }, [includeOverlay, segmentationRepresentations, displaySetService]);
 
-  const overlayDisplaySetUIDs = useMemo(
-    () => overlayDisplaySets.map(ds => ds.displaySetInstanceUID),
-    [overlayDisplaySets]
-  );
+  const overlayDisplaySetUIDs = useMemo(() => {
+    return overlayDisplaySets.map(ds => ds.displaySetInstanceUID);
+  }, [overlayDisplaySets]);
 
   // Get enhanced display sets (only if needed)
   const needsEnhancedDisplaySets =
     includeBackground || includeForeground || includePotentialOverlay || includePotentialForeground;
 
-  const { viewportDisplaySets, enhancedDisplaySets } = useMemo(() => {
+  const { viewportDisplaySets = [], enhancedDisplaySets = [] } = useMemo(() => {
     if (!needsEnhancedDisplaySets) {
       return { viewportDisplaySets: [], enhancedDisplaySets: [] };
     }
-    return getEnhancedDisplaySets({
-      viewportId,
-      services: { displaySetService, viewportGridService },
-    });
-  }, [viewportId, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
+    return (
+      getEnhancedDisplaySets({
+        viewportId: viewportIdToUse,
+        services: { displaySetService, viewportGridService },
+      }) || { viewportDisplaySets: [], enhancedDisplaySets: [] }
+    );
+  }, [viewportIdToUse, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
 
   const backgroundDisplaySet = useMemo(
-    () => (includeBackground ? viewportDisplaySets[0] : undefined),
+    () =>
+      includeBackground && viewportDisplaySets.length > 0 ? viewportDisplaySets[0] : undefined,
     [includeBackground, viewportDisplaySets]
   );
 
@@ -217,7 +251,10 @@ export function useViewportDisplaySets(
     foregroundDisplaySetUIDs,
   ]);
 
-  const result: ViewportDisplaySets = {};
+  const result: ViewportDisplaySets = {
+    allDisplaySets: allDisplaySets || [],
+    viewportDisplaySets: viewportDisplaySets || [],
+  };
 
   if (includeBackground) {
     result.backgroundDisplaySet = backgroundDisplaySet;

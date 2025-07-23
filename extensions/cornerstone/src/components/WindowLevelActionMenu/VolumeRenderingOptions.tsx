@@ -1,15 +1,13 @@
 import React, { ReactElement, useState } from 'react';
 import { AllInOneMenu } from '@ohif/ui-next';
-import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingQuality } from './VolumeRenderingQuality';
 import { VolumeShift } from './VolumeShift';
 import { VolumeLighting } from './VolumeLighting';
 import { VolumeShade } from './VolumeShade';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
 
-export function VolumeRenderingOptions({
-  viewportId,
-  volumeRenderingQualityRange,
-}: VolumeRenderingOptionsProps): ReactElement {
+export function VolumeRenderingOptions({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { volumeRenderingQualityRange } = useViewportRendering(viewportId);
   const [hasShade, setShade] = useState(false);
   return (
     <AllInOneMenu.ItemPanel>

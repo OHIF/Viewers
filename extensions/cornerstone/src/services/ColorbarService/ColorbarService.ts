@@ -1,39 +1,11 @@
-import { PubSubService } from '@ohif/core';
+import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
-import { StackViewport, VolumeViewport, getRenderingEngine } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/tools';
+import { getRenderingEngine } from '@cornerstonejs/core';
 import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
-const { ViewportColorbar } = utilities.voi.colorbar;
 
 export default class ColorbarService extends PubSubService {
   static EVENTS = {
     STATE_CHANGED: 'event::ColorbarService:stateChanged',
-  };
-
-  static defaultStyles = {
-    position: 'absolute',
-    boxSizing: 'border-box',
-    border: 'solid 1px #555',
-    cursor: 'initial',
-  };
-
-  static positionStyles = {
-    left: { left: '5%' },
-    right: { right: '5%' },
-    top: { top: '5%' },
-    bottom: { bottom: '5%' },
-  };
-
-  static defaultTickStyles = {
-    position: 'left',
-    style: {
-      font: '12px Arial',
-      color: '#fff',
-      maxNumTicks: 8,
-      tickSize: 5,
-      tickWidth: 1,
-      labelMargin: 3,
-    },
   };
 
   public static REGISTRATION = {
@@ -42,6 +14,22 @@ export default class ColorbarService extends PubSubService {
       return new ColorbarService(servicesManager);
     },
   };
+
+  /**
+   * Structure of colorbars state:
+   * {
+   *   [viewportId]: [
+   *     {
+   *       displaySetInstanceUID: string,
+   *       colorbar: {
+   *         activeColormapName: string,
+   *         colormaps: array,
+   *         volumeId: string (optional),
+   *       }
+   *     }
+   *   ]
+   * }
+   */
   colorbars = {};
   servicesManager: AppTypes.ServicesManager;
 
@@ -51,25 +39,37 @@ export default class ColorbarService extends PubSubService {
   }
 
   /**
-   * Gets the volume ID for a given identifier by searching through the viewport's volume IDs.
-   * @param viewport - The viewport instance to search volumes in
-   * @param searchId - The identifier to search for within volume IDs
-   * @returns The matching volume ID if found, null otherwise
+   * Gets the appropriate data ID for a viewport and display set
+   * @param viewport - The viewport instance
+   * @param displaySetInstanceUID - The display set instance UID to identify data
+   * @returns The appropriate data ID for the viewport type (volumeId for volume viewports, undefined for stack)
    */
-  private getVolumeIdForIdentifier(viewport, searchId: string): string | null {
-    const volumeIds = viewport.getAllVolumeIds?.() || [];
-    return volumeIds.length > 0 ? volumeIds.find(id => id.includes(searchId)) || null : null;
+  private getDataIdForViewport(viewport, displaySetInstanceUID: string): string | undefined {
+    // For volume viewports, find the matching volumeId
+    if (viewport.getAllVolumeIds) {
+      const volumeIds = viewport.getAllVolumeIds() || [];
+      return volumeIds.length > 0
+        ? volumeIds.find(id => id.includes(displaySetInstanceUID)) || undefined
+        : undefined;
+    }
+
+    // For other viewports, no specific dataId is needed for now
+    return undefined;
   }
 
   /**
    * Adds a colorbar to a specific viewport identified by `viewportId`, using the provided `displaySetInstanceUIDs` and `options`.
-   * This method sets up the colorbar, associates it with the viewport, and applies initial configurations based on the provided options.
+   * This method prepares the colorbar state that will be used by the ViewportColorbarsContainer component.
    *
    * @param viewportId The identifier for the viewport where the colorbar will be added.
    * @param displaySetInstanceUIDs An array of display set instance UIDs to associate with the colorbar.
    * @param options Configuration options for the colorbar, including position, colormaps, active colormap name, ticks, and width.
    */
-  public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
+  public addColorbar(
+    viewportId: string,
+    displaySetInstanceUIDs: string[],
+    options = {} as ColorbarOptions
+  ) {
     const { displaySetService } = this.servicesManager.services;
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
@@ -78,35 +78,24 @@ export default class ColorbarService extends PubSubService {
       return;
     }
 
-    const { element } = viewport;
     const actorEntries = viewport.getActors();
-
     if (!actorEntries || actorEntries.length === 0) {
       return;
     }
 
-    const { position, width: thickness, activeColormapName, colormaps } = options;
+    const { activeColormapName, colormaps } = options;
 
-    const numContainers = displaySetInstanceUIDs.length;
-
-    const containers = this.createContainers(
-      numContainers,
-      element,
-      position,
-      thickness,
-      viewportId
-    );
-
-    displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
+    displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
       // don't show colorbar for overlay display sets (e.g. segmentation)
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       if (displaySet.isOverlayDisplaySet) {
         return;
       }
 
-      const volumeId = this.getVolumeIdForIdentifier(viewport, displaySetInstanceUID);
-      const properties = viewport?.getProperties(volumeId);
+      const dataId = this.getDataIdForViewport(viewport, displaySetInstanceUID);
+      const properties = dataId ? viewport.getProperties(dataId) : viewport.getProperties();
       const colormap = properties?.colormap;
+
       if (activeColormapName && !colormap) {
         this.setViewportColormap(
           viewportId,
@@ -116,38 +105,43 @@ export default class ColorbarService extends PubSubService {
         );
       }
 
-      const colorbarContainer = containers[index];
-
-      const colorbar = new ViewportColorbar({
-        id: `ctColorbar-${viewportId}-${index}`,
-        element,
-        colormaps: options.colormaps || {},
-        // if there's an existing colormap set, we use it, otherwise we use the activeColormapName, otherwise, grayscale
+      // Prepare colorbar data for the React component
+      const colorbarData = {
         activeColormapName: colormap?.name || options?.activeColormapName || 'Grayscale',
-        container: colorbarContainer,
-        ticks: {
-          ...ColorbarService.defaultTickStyles,
-          ...options.ticks,
-        },
-        volumeId: viewport instanceof VolumeViewport ? volumeId : undefined,
-      });
+        colormaps: options.colormaps ? Object.values(options.colormaps) : [],
+        volumeId: dataId,
+        dataId,
+      };
+
+      // Store the colorbar data in the service state
       if (this.colorbars[viewportId]) {
-        this.colorbars[viewportId].push({
-          colorbar,
-          container: colorbarContainer,
-          displaySetInstanceUID,
-        });
+        // Check if there's already an entry for this displaySetInstanceUID
+        const existingIndex = this.colorbars[viewportId].findIndex(
+          item => item.displaySetInstanceUID === displaySetInstanceUID
+        );
+
+        if (existingIndex !== -1) {
+          // Update existing colorbar
+          this.colorbars[viewportId][existingIndex].colorbar = colorbarData;
+        } else {
+          // Add new colorbar
+          this.colorbars[viewportId].push({
+            colorbar: colorbarData,
+            displaySetInstanceUID,
+          });
+        }
       } else {
+        // Create new colorbar array for this viewport
         this.colorbars[viewportId] = [
           {
-            colorbar,
-            container: colorbarContainer,
+            colorbar: colorbarData,
             displaySetInstanceUID,
           },
         ];
       }
     });
 
+    // Notify listeners about the state change
     this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
       viewportId,
       changeType: ChangeTypes.Added,
@@ -175,10 +169,6 @@ export default class ColorbarService extends PubSubService {
       );
 
       if (index !== -1) {
-        // Remove only the specific colorbar container
-        const { container } = colorbarInfo[index];
-        container.parentNode.removeChild(container);
-
         // Remove the colorbar from the array
         colorbarInfo.splice(index, 1);
 
@@ -188,11 +178,6 @@ export default class ColorbarService extends PubSubService {
         }
       }
     } else {
-      // Remove all colorbars for the viewport (original behavior)
-      colorbarInfo.forEach(({ container }) => {
-        container.parentNode.removeChild(container);
-      });
-
       delete this.colorbars[viewportId];
     }
 
@@ -259,71 +244,15 @@ export default class ColorbarService extends PubSubService {
     if (!viewport || !actorEntries || actorEntries.length === 0) {
       return;
     }
-    const setViewportProperties = (viewport, uid) => {
-      const volumeId = this.getVolumeIdForIdentifier(viewport, uid);
-      viewport.setProperties({ colormap }, volumeId);
-    };
 
-    if (viewport instanceof StackViewport) {
-      setViewportProperties(viewport, viewportId);
-    }
+    // Get the appropriate dataId for this viewport/displaySet combination
+    const dataId = this.getDataIdForViewport(viewport, displaySetInstanceUID);
 
-    if (viewport instanceof VolumeViewport) {
-      setViewportProperties(viewport, displaySetInstanceUID);
-    }
+    // Set properties with or without dataId based on what the viewport supports
+    viewport.setProperties({ colormap }, dataId);
 
     if (immediate) {
       viewport.render();
     }
-  }
-
-  /**
-   * Creates the container elements for colorbars based on the specified parameters. This function dynamically
-   * generates and styles DOM elements to host the colorbars, positioning them according to the specified options.
-   *
-   * @param numContainers The number of containers to create, typically corresponding to the number of colorbars.
-   * @param element The DOM element within which the colorbar containers will be placed.
-   * @param position The position of the colorbar containers (e.g., 'top', 'bottom', 'left', 'right').
-   * @param thickness The thickness of the colorbar containers, affecting their width or height depending on their position.
-   * @param viewportId The identifier of the viewport for which the containers are being created.
-   * @returns An array of the created container DOM elements.
-   */
-  private createContainers(numContainers, element, position, thickness, viewportId) {
-    const containers = [];
-    const dimensions = {
-      1: 50,
-      2: 33,
-    };
-    const dimension = dimensions[numContainers] || 50 / numContainers;
-
-    Array.from({ length: numContainers }).forEach((_, i) => {
-      const colorbarContainer = document.createElement('div');
-      colorbarContainer.id = `ctColorbarContainer-${viewportId}-${i + 1}`;
-
-      Object.assign(colorbarContainer.style, ColorbarService.defaultStyles);
-
-      if (['top', 'bottom'].includes(position)) {
-        Object.assign(colorbarContainer.style, {
-          width: `${dimension}%`,
-          height: thickness || '2.5%',
-          left: `${(i + 1) * dimension}%`,
-          transform: 'translateX(-50%)',
-          ...ColorbarService.positionStyles[position],
-        });
-      } else if (['left', 'right'].includes(position)) {
-        Object.assign(colorbarContainer.style, {
-          height: `${dimension}%`,
-          width: thickness || '2.5%',
-          top: `${(i + 1) * dimension}%`,
-          transform: 'translateY(-50%)',
-          ...ColorbarService.positionStyles[position],
-        });
-      }
-
-      element.appendChild(colorbarContainer);
-      containers.push(colorbarContainer);
-    });
-
-    return containers;
   }
 }
