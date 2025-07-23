@@ -54,7 +54,10 @@ function _unsubscribe(eventName, listenerId) {
 
   const listeners = this.listeners[eventName];
   if (Array.isArray(listeners)) {
-    this.listeners[eventName] = listeners.filter(({ id }) => id !== listenerId);
+    this.listeners[eventName] = listeners.filter(({ id, callback }) => {
+      callback?.clearDebounceTimeout?.();
+      return id !== listenerId;
+    });
   } else {
     this.listeners[eventName] = undefined;
   }
@@ -134,6 +137,13 @@ export class PubSubService {
   reset() {
     this.unsubscriptions.forEach(unsub => unsub());
     this.unsubscriptions = [];
+
+    Object.keys(this.listeners).forEach(eventName =>
+      this.listeners[eventName].forEach(({ callback }) => {
+        callback?.clearDebounceTimeout?.();
+      })
+    );
+    this.listeners = {};
   }
 
   /**

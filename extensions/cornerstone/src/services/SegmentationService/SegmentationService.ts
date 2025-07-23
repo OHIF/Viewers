@@ -255,7 +255,7 @@ class SegmentationService extends PubSubService {
       this._onSegmentationAddedFromSource
     );
 
-    this.listeners = {};
+    this.reset();
   };
 
   public async addSegmentationRepresentation(
@@ -1765,7 +1765,7 @@ class SegmentationService extends PubSubService {
 
     const { cachedStats } = segments[segmentIndex];
 
-    if (!cachedStats) {
+    if (!cachedStats || !cachedStats?.center || !cachedStats?.namedStats?.center) {
       return;
     }
 
