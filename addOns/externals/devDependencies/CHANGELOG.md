@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.97...v3.11.0-beta.98) (2025-07-23)
+
+
+### Bug Fixes
+
+* **security:** Removed stylus package due to potential security vulnerability and we don't use it. ([#5250](https://github.com/OHIF/Viewers/issues/5250)) ([83d4bc4](https://github.com/OHIF/Viewers/commit/83d4bc4a5a470bc09ede78c92ef89611dbce1d00))
+
+
+
+
+
 # [3.11.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.96...v3.11.0-beta.97) (2025-07-22)
 
 **Note:** Version bump only for package @externals/devDependencies
