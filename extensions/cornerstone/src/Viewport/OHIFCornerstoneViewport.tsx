@@ -458,7 +458,6 @@ function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewp
   }
 
   cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-  event?.consume?.();
 }
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
