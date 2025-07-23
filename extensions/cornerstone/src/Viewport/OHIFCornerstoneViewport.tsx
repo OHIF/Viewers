@@ -18,6 +18,7 @@ import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
+import { isMeasurementWithinViewport } from '../utils/isMeasurementWithinViewport';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 import { useViewportActionCorners } from '../hooks';
 
@@ -381,28 +382,6 @@ const OHIFCornerstoneViewport = React.memo(
   },
   areEqual
 );
-
-function isMeasurementWithinViewport(viewport, measurement) {
-  const camera = viewport.getCamera();
-  const { focalPoint, parallelScale } = camera;
-  // Check if the measurement points are inside the extent
-  for (const point of measurement.points) {
-    const [x, y, z] = point;
-    // Calculate the distance from the focal point
-    const dx = x - focalPoint[0];
-    const dy = y - focalPoint[1];
-    const dz = z - focalPoint[2];
-    // Check if the point is within the extent
-    if (
-      Math.abs(dx) > parallelScale ||
-      Math.abs(dy) > parallelScale ||
-      Math.abs(dz) > parallelScale
-    ) {
-      return false; // Point is outside the extent
-    }
-  }
-  return true; // All points are inside the extent
-}
 
 // Helper function to handle jumping to measurements
 function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService) {
