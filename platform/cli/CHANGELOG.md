@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.4](https://github.com/OHIF/Viewers/compare/v3.10.2...v3.10.4) (2025-07-23)
+
+**Note:** Version bump only for package @ohif/cli
+
+
+
+
+
 ## [3.10.2](https://github.com/OHIF/Viewers/compare/v3.10.1...v3.10.2) (2025-06-09)
 
 **Note:** Version bump only for package @ohif/cli

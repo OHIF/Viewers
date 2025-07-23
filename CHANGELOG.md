@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.4](https://github.com/OHIF/Viewers/compare/v3.10.2...v3.10.4) (2025-07-23)
+
+
+### Bug Fixes
+
+* **security:** Pin eslint-config-prettier and eslint-plugin-prettier versions. ([#5246](https://github.com/OHIF/Viewers/issues/5246)) ([d206cf9](https://github.com/OHIF/Viewers/commit/d206cf9ba5e97fe047ca72fceedf8bb8bb869afe))
+* **security:** Removed stylus package due to potential security vulnerability and we don't use it. ([#5251](https://github.com/OHIF/Viewers/issues/5251)) ([d383be7](https://github.com/OHIF/Viewers/commit/d383be7c720ec61f5bb1262ebe70893873718951))
+
+
+
+
+
 ## [3.10.2](https://github.com/OHIF/Viewers/compare/v3.10.1...v3.10.2) (2025-06-09)
 
 **Note:** Version bump only for package ohif-monorepo-root
