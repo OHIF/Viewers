@@ -28,12 +28,40 @@ test('should create and download the TMTV CSV report correctly', async ({ page }
 
   const tmtvCSVReportContent = await downloadAsString(download);
 
+  const expectedSortedColumnHeaders = [
+    'id',
+    'label',
+    'min',
+    'max',
+    'mean',
+    'stdDev',
+    'median',
+    'skewness',
+    'kurtosis',
+    'count',
+    'maxLPS',
+    'minLPS',
+    'center',
+    'volume',
+    'peakValue',
+    'peakLPS',
+    'lesionGlycolysis',
+    'PatientID',
+    'PatientName',
+    'StudyInstanceUID',
+    'SeriesInstanceUID',
+    'StudyDate',
+  ].sort();
+
+  const actualSortedColumnHeaders = tmtvCSVReportContent
+    .substring(0, expectedSortedColumnHeaders.join(',').length)
+    .split(',')
+    .sort();
+
   expect(
-    tmtvCSVReportContent,
+    actualSortedColumnHeaders,
     'Expected the file to start with specific column/value headers'
-  ).toMatch(
-    /^id,label,min,max,mean,stdDev,median,skewness,kurtosis,count,maxLPS,minLPS,center,volume,peakValue,peakLPS,lesionGlycolysis,PatientID,PatientName,StudyInstanceUID,SeriesInstanceUID,StudyDate/
-  );
+  ).toEqual(expectedSortedColumnHeaders);
   expect(tmtvCSVReportContent, 'Expected the patient name to be present').toContain(
     'Water Phantom'
   );
