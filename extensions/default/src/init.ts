@@ -3,7 +3,7 @@ import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';
-import { HotkeysManager } from '@ohif/core'
+import { HotkeysManager } from '@ohif/core';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -12,7 +12,11 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, commandsManager, hotkeysManager }: withAppTypes): void {
+export default function init({
+  servicesManager,
+  commandsManager,
+  hotkeysManager,
+}: withAppTypes): void {
   const { toolbarService, cineService, viewportGridService } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(cineService, [
@@ -34,6 +38,7 @@ export default function init({ servicesManager, commandsManager, hotkeysManager 
   registerHangingProtocolAttributes({ servicesManager });
 
   // Function to process and subscribe to events for a given set of commands and listeners
+  const eventSubscriptions = [];
   const subscribeToEvents = listeners => {
     Object.entries(listeners).forEach(([event, commands]) => {
       const supportedEvents = [
@@ -42,11 +47,19 @@ export default function init({ servicesManager, commandsManager, hotkeysManager 
       ];
 
       if (supportedEvents.includes(event)) {
+        const subscriptionKey = `${event}_${JSON.stringify(commands)}`;
+
+        if (eventSubscriptions.includes(subscriptionKey)) {
+          return;
+        }
+
         viewportGridService.subscribe(event, eventData => {
           const viewportId = eventData?.viewportId ?? viewportGridService.getActiveViewportId();
 
           commandsManager.run(commands, { viewportId });
         });
+
+        eventSubscriptions.push(subscriptionKey);
       }
     });
   };

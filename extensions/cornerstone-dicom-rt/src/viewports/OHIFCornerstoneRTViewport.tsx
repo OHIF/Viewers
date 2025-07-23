@@ -51,6 +51,21 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const referencedDisplaySetRef = useRef(null);
 
   const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
+  // If the referencedDisplaySetInstanceUID is not found, it means the RTStruct series is being
+  // launched without its corresponding referenced display set (e.g., the RTStruct series is launched using
+  // series launch /mode?StudyInstanceUIDs=&SeriesInstanceUID).
+  // In such cases, we attempt to handle this scenario gracefully by
+  // invoking a custom handler. Ideally, if a user tries to launch a series that isn't viewable,
+  // (eg.: we can prompt them with an explanation and provide a link to the full study).
+  if (!referencedDisplaySetInstanceUID) {
+    const missingReferenceDisplaySetHandler = customizationService.getCustomization(
+      'missingReferenceDisplaySetHandler'
+    );
+    const { handled } = missingReferenceDisplaySetHandler();
+    if (handled) {
+      return;
+    }
+  }
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     referencedDisplaySetInstanceUID
   );

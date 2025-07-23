@@ -345,6 +345,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         delete properties?.voiRange;
         delete properties?.VOILUTFunction;
       }
+      if (properties?.colormap) {
+        if (properties.colormap?.opacity?.length === 0) {
+          delete properties.colormap.opacity;
+        }
+      }
       return properties;
     };
 
@@ -1080,8 +1085,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-          Math.pow(dimensions[1] * spacing[1], 2) +
-          Math.pow(dimensions[2] * spacing[2], 2)
+        Math.pow(dimensions[1] * spacing[1], 2) +
+        Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
