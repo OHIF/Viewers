@@ -93,6 +93,7 @@ function getMappedAnnotations(annotation, displaySetService) {
   }
 
   const annotations = [];
+  const addedModalities = new Set();
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
@@ -105,7 +106,14 @@ function getMappedAnnotations(annotation, displaySetService) {
     const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit } = targetStats;
+    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit, perimeter, radiusUnit } =
+      targetStats;
+
+    if (Modality && addedModalities.has(Modality)) {
+      return;
+    }
+
+    addedModalities.add(Modality);
 
     annotations.push({
       SeriesInstanceUID,
@@ -119,6 +127,8 @@ function getMappedAnnotations(annotation, displaySetService) {
       max,
       area,
       areaUnit,
+      perimeter,
+      radiusUnit,
     });
   });
 
@@ -192,16 +202,22 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
-  const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  if (!isNaN(area)) {
+    const roundedArea = utils.roundNumber(area || 0, 2);
+    displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  }
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
-    const { unit, max, SeriesNumber } = mappedAnnotation;
+    const { unit, perimeter, radiusUnit, max, SeriesNumber } = mappedAnnotation;
 
-    const maxStr = getStatisticDisplayString(max, unit, 'max');
-
-    displayText.primary.push(maxStr);
+    if (!isNaN(max)) {
+      const maxStr = getStatisticDisplayString(max, unit, 'max');
+      displayText.primary.push(maxStr);
+    } else if (perimeter && !isNaN(perimeter)) {
+      const perimeterStr = getStatisticDisplayString(perimeter, radiusUnit, 'perimeter');
+      displayText.primary.push(perimeterStr);
+    }
     displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   });
 

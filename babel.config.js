@@ -1,6 +1,4 @@
 // https://babeljs.io/docs/en/options#babelrcroots
-const { extendDefaultPlugins } = require('svgo');
-
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
   presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
@@ -51,7 +49,6 @@ module.exports = {
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      plugins: ['react-refresh/babel'],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
   },

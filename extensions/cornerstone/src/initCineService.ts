@@ -40,7 +40,7 @@ function _getSyncedViewports(servicesManager: AppTypes.ServicesManager, srcViewp
     .filter(({ viewportId }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      return viewportId !== srcViewportId && viewport?.hasVolumeId(srcVolumeId);
+      return viewportId !== srcViewportId && viewport?.hasVolumeId?.(srcVolumeId);
     })
     .map(({ viewportId }) => ({ viewportId }));
 }

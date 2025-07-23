@@ -36,8 +36,8 @@ Default extension provides two main data sources that are commonly used:
 `dicomweb` and `dicomjson`
 
 ```js
-import { createDicomWebApi } from './DicomWebDataSource/index.js';
-import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
+import { createDicomWebApi } from './DicomWebDataSource/index';
+import { createDicomJSONApi } from './DicomJSONDataSource/index';
 
 function getDataSourcesModule() {
   return [

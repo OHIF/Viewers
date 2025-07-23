@@ -1,5 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
 import { VolumeShiftProps } from '../../types/ViewportPresets';
+import { Numeric } from '@ohif/ui-next';
 
 export function VolumeShift({
   viewportId,
@@ -46,48 +47,32 @@ export function VolumeShift({
         viewportId,
         shift: shiftDifference,
       });
+      setShift(newShift);
     },
     [commandsManager, viewportId, viewport]
   );
 
-  const calculateBackground = value => {
-    const percentage = ((value - 0) / (1 - 0)) * 100;
-    return `linear-gradient(to right, #5acce6 0%, #5acce6 ${percentage}%, #3a3f99 ${percentage}%, #3a3f99 100%)`;
-  };
-
   return (
-    <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
-        <label
-          className="block  text-white"
-          htmlFor="shift"
-        >
-          Shift
-        </label>
-        {step !== null && (
-          <input
-            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
+    <div className="my-1 mt-2 flex flex-col space-y-2">
+      {step !== null && minShift !== null && maxShift !== null && (
+        <div className="w-full pl-2 pr-1">
+          <Numeric.Container
+            mode="singleRange"
+            min={minShift}
+            max={maxShift}
+            step={step}
             value={shift}
-            onChange={e => {
-              const shiftValue = parseInt(e.target.value, 10);
-              setShift(shiftValue);
-              onChangeRange(shiftValue);
-            }}
-            id="shift"
+            onChange={onChangeRange}
             onMouseDown={() => setIsBlocking(true)}
             onMouseUp={() => setIsBlocking(false)}
-            max={maxShift}
-            min={minShift}
-            type="range"
-            step={step}
-            style={{
-              background: calculateBackground((shift - minShift) / (maxShift - minShift)),
-              '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
-            }}
-          />
-        )}
-      </div>
-    </>
+          >
+            <div className="flex flex-row items-center">
+              <Numeric.Label className="w-16">Shift</Numeric.Label>
+              <Numeric.SingleRange sliderClassName="mx-2 flex-grow" />
+            </div>
+          </Numeric.Container>
+        </div>
+      )}
+    </div>
   );
 }

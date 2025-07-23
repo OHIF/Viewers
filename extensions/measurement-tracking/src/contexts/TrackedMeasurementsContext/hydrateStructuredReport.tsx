@@ -1,7 +1,7 @@
 import { hydrateStructuredReport as baseHydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 
 function hydrateStructuredReport(
-  { servicesManager, extensionManager, appConfig }: withAppTypes,
+  { servicesManager, extensionManager, commandsManager, appConfig }: withAppTypes,
   ctx,
   evt
 ) {
@@ -11,7 +11,7 @@ function hydrateStructuredReport(
 
   return new Promise((resolve, reject) => {
     const hydrationResult = baseHydrateStructuredReport(
-      { servicesManager, extensionManager, appConfig },
+      { servicesManager, extensionManager, commandsManager, appConfig },
       displaySetInstanceUID
     );
 

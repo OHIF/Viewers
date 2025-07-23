@@ -55,7 +55,7 @@ function ToolboxUI(props: withAppTypes) {
       <>
         <div className="flex flex-col bg-black">
           <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
-            {toolbarButtons.map((toolDef, index) => {
+            {toolbarButtons?.map((toolDef, index) => {
               if (!toolDef) {
                 return null;
               }

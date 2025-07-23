@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState, ReactElement, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import { PanelSection, WindowLevel } from '@ohif/ui';
+import { PanelSection, WindowLevel } from '@ohif/ui-next';
 import { Enums, eventTarget } from '@cornerstonejs/core';
 import { useActiveViewportDisplaySets } from '@ohif/core';
 import {
@@ -20,7 +20,7 @@ const ViewportWindowLevel = ({
   viewportId: string;
 }>): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
-  const [windowLevels, setWindowLevels] = useState([]);
+  const [windowLevels, setWindowLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const displaySets = useActiveViewportDisplaySets({ servicesManager });
 
@@ -200,29 +200,36 @@ const ViewportWindowLevel = ({
   }, [viewportId, cornerstoneViewportService, updateViewportHistograms, displaySetIds, isLoading]);
 
   return (
-    <PanelSection title="Window Level">
-      {windowLevels.map((windowLevel, i) => {
-        if (!windowLevel.histogram) {
-          return null;
-        }
+    <PanelSection defaultOpen={true}>
+      <PanelSection.Header>Window Level</PanelSection.Header>
+      <PanelSection.Content className="bg-muted py-1">
+        {windowLevels.map((windowLevel, i) => {
+          if (!windowLevel.histogram) {
+            return null;
+          }
 
-        return (
-          <WindowLevel
-            key={windowLevel.volumeId}
-            title={`${windowLevel.modality}`}
-            histogram={windowLevel.histogram}
-            voi={windowLevel.voi}
-            step={windowLevel.step}
-            showOpacitySlider={windowLevel.showOpacitySlider}
-            colormap={windowLevel.colormap}
-            onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
-            opacity={windowLevel.opacity}
-            onOpacityChange={opacity =>
-              handleOpacityChange(windowLevel.viewportId, i, windowLevel.volumeId, opacity)
-            }
-          />
-        );
-      })}
+          return (
+            <WindowLevel
+              key={windowLevel.volumeId}
+              histogram={windowLevel.histogram}
+              voi={windowLevel.voi}
+              step={windowLevel.step}
+              showOpacitySlider={windowLevel.showOpacitySlider}
+              colormap={windowLevel.colormap}
+              onVOIChange={voi => handleVOIChange(windowLevel.volumeId, voi)}
+              opacity={windowLevel.opacity}
+              onOpacityChange={opacity =>
+                handleOpacityChange(windowLevel.viewportId, i, windowLevel.volumeId, opacity)
+              }
+            />
+          );
+        })}
+        {windowLevels.length === 0 && !isLoading && (
+          <div className="text-muted-foreground py-2 text-center text-sm">
+            No window level data available
+          </div>
+        )}
+      </PanelSection.Content>
     </PanelSection>
   );
 };

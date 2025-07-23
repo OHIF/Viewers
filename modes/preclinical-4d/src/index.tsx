@@ -1,9 +1,7 @@
 import { id } from './id';
-import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -19,7 +17,6 @@ const ohif = {
   chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
   chartViewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
@@ -57,41 +54,25 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
+      toolbarService.addButtons(toolbarButtons);
+
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
 
       // the primary button section is created in the workflow steps
       // specific to the step
-      customizationService.addModeCustomizations([
-        {
-          id: 'PanelSegmentation.tableMode',
-          mode: 'expanded',
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
         },
-        {
-          id: 'PanelSegmentation.onSegmentationAdd',
-          onSegmentationAdd: () => {
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
             commandsManager.run('createNewLabelMapForDynamicVolume');
           },
         },
-        {
-          id: 'PanelSegmentation.showAddSegment',
-          showAddSegment: false,
+        'panelSegmentation.showAddSegment': {
+          $set: false,
         },
-        {
-          id: 'PanelSegmentation.readableText',
-          // remove following if you are not interested in that stats
-          readableText: {
-            lesionStats: 'Lesion Statistics',
-            minValue: 'Minimum Value',
-            maxValue: 'Maximum Value',
-            meanValue: 'Mean Value (ml)',
-            volume: 'Volume',
-            suvPeak: 'SUV Peak',
-            suvMax: 'Maximum SUV',
-            suvMaxIJK: 'SUV Max IJK',
-          },
-        },
-      ]);
+      });
 
       // Auto play the clip initially when the volumes are loaded
       const { unsubscribe } = cornerstoneViewportService.subscribe(
@@ -158,7 +139,9 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]],
+              leftPanelResizable: true,
               rightPanels: [],
+              rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [
                 {
@@ -183,7 +166,6 @@ function modeFactory({ modeConfiguration }) {
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [ohif.chartSopClassHandler, ohif.defaultSopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

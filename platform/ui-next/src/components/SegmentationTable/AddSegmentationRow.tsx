@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icons } from '../Icons';
 import { useTranslation } from 'react-i18next';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useSegmentationTableContext } from './contexts';
 
 export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
@@ -9,7 +9,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
   const { t } = useTranslation('SegmentationTable');
 
   const { onSegmentationAdd, data, disableEditing, mode, disabled } =
-    useSegmentationTableContext('SegmentationTable');
+    useSegmentationTableContext('AddSegmentationRow');
 
   const isEmpty = data.length === 0;
 
@@ -27,7 +27,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
       onClick={() => !disabled && onSegmentationAdd('')}
     >
       {children}
-      <div className="text-primary-active group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
+      <div className="text-primary group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
         <div className="grid h-[28px] w-[28px] place-items-center">
           {disabled ? <Icons.Info /> : <Icons.Add />}
         </div>

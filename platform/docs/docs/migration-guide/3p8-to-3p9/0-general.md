@@ -6,7 +6,7 @@ title: General
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Not SharedArrayBuffer anymore!
+# No SharedArrayBuffer anymore!
 
 We have streamlined the process of loading volumes without sacrificing speed by eliminating the need for shared array buffers. This change resolves issues across various frameworks, where previously, specific security headers were required. Now, you can remove any previously set headers, which lowers the barrier for adopting Cornerstone 3D in frameworks that didn't support those headers. Shared array buffers are no longer necessary, and all related headers can be removed.
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { DicomMetadataStore } from '@ohif/core';
 
 /**
@@ -11,17 +10,13 @@ async function createReportAsync({
   reportType = 'measurement',
 }: withAppTypes) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
-  const loadingDialogId = uiDialogService.create({
-    showOverlay: true,
-    isDraggable: false,
-    centralize: true,
-    content: Loading,
-  });
 
   try {
     const naturalizedReport = await getReport();
 
-    if (!naturalizedReport) return;
+    if (!naturalizedReport) {
+      return;
+    }
 
     // The "Mode" route listens for DicomMetadataStore changes
     // When a new instance is added, it listens and
@@ -47,12 +42,8 @@ async function createReportAsync({
     });
     throw new Error(`Failed to store ${reportType}. Error: ${error.message || 'Unknown error'}`);
   } finally {
-    uiDialogService.dismiss({ id: loadingDialogId });
+    uiDialogService.hide('loading-dialog');
   }
-}
-
-function Loading() {
-  return <div className="text-primary-active">Loading...</div>;
 }
 
 export default createReportAsync;

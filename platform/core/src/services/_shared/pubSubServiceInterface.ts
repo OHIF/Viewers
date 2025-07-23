@@ -1,4 +1,5 @@
 import guid from '../../utils/guid';
+import debounce from '../../utils/debounce';
 
 /**
  * Consumer must implement:
@@ -92,14 +93,14 @@ function _broadcastEvent(eventName, callbackProps) {
 
 /** Export a PubSubService class to be used instead of the individual items */
 export class PubSubService {
-  EVENTS: any;
-  subscribe: (eventName: string, callback: Function) => { unsubscribe: () => any };
-  _broadcastEvent: (eventName: string, callbackProps: any) => void;
+  EVENTS: Record<string, string>;
+  subscribe: (eventName: string, callback: (data: unknown) => void) => { unsubscribe: () => void };
+  _broadcastEvent: (eventName: string, callbackProps: unknown) => void;
   _unsubscribe: (eventName: string, listenerId: string) => void;
   _isValidEvent: (eventName: string) => boolean;
-  listeners: {};
-  unsubscriptions: any[];
-  constructor(EVENTS) {
+  listeners: Record<string, Array<{ id: string; callback: (data: unknown) => void }> | undefined>;
+  unsubscriptions: Array<() => void>;
+  constructor(EVENTS: Record<string, string>) {
     this.EVENTS = EVENTS;
     this.subscribe = subscribe;
     this._broadcastEvent = _broadcastEvent;
@@ -107,6 +108,27 @@ export class PubSubService {
     this._isValidEvent = _isValidEvent;
     this.listeners = {};
     this.unsubscriptions = [];
+  }
+
+  /**
+   * Subscribe to updates with debouncing to limit callback execution frequency
+   * @param eventName - The name of the event
+   * @param callback - Events callback
+   * @param wait - Debounce wait time in milliseconds
+   * @param immediate - If true, trigger on the leading edge instead of trailing
+   */
+  subscribeDebounced(
+    eventName: string,
+    callback: (data: unknown) => void,
+    wait = 300,
+    immediate = false
+  ) {
+    if (this._isValidEvent(eventName)) {
+      const debouncedCallback = debounce(callback, wait, immediate);
+      return this.subscribe(eventName, debouncedCallback);
+    } else {
+      throw new Error(`Event ${eventName} not supported.`);
+    }
   }
 
   reset() {
@@ -120,7 +142,9 @@ export class PubSubService {
    * Check eventData.isConsumed to see if it is consumed or not.
    * @param props - to include in the event
    */
-  protected createConsumableEvent(props) {
+  protected createConsumableEvent<T extends Record<string, unknown>>(
+    props: T
+  ): T & { isConsumed: boolean; consume: () => void } {
     return {
       ...props,
       isConsumed: false,

@@ -9,6 +9,7 @@
 @layer base {
   :root {
     --highlight: 191 74% 63%;
+    --neutral: 213 22% 59%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
     --card: 236 62% 5%;
@@ -26,7 +27,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
+    --input: 236 52% 30%;
     --ring: 214 98% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -34,6 +35,9 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
   }
 
   .dark {
@@ -54,13 +58,16 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
+    --input: 236 52% 30%;
     --ring: 214 98% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
   }
 }
 
@@ -225,11 +232,6 @@ input[type='number']::-webkit-outer-spin-button {
 
 input[type='number'] {
   -moz-appearance: textfield; /* For Firefox */
-}
-
-.navbar__item {
-  display: flex;
-  align-items: center;
 }
 
 .navbar__item svg {
@@ -572,6 +574,16 @@ ul li {
   margin-bottom: 0.5rem;
 }
 
+ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+ol li {
+  margin-bottom: 0.5rem;
+}
+
 /* Nested bullet points */
 ul ul {
   list-style-type: circle;
@@ -626,6 +638,7 @@ html[data-theme='dark'] .markdown hr {
 /* Markdown code block styling */
 .markdown pre {
   font-size: 0.9rem;
+  margin-top: 1em;
 }
 
 .theme-code-block {
@@ -665,4 +678,51 @@ html[data-theme='dark'] .markdown hr {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+.theme-doc-version-banner {
+  display: none;
+}
+
+/* New badge styling */
+/* New Badge Styling */
+a.navbar__item.navbar__link.navbar__link--active[href='/migration-guide/3p8-to-3p9/'][aria-current='page']::after {
+  content: ' NEW';
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: var(--badge-new-color);
+  background: var(--badge-new-background);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  /* Shiny Effect */
+  background-size: 200% 200%;
+  animation: shine 2s linear infinite;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Shiny Animation */
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* "(latest stable)" Text Styling */
+a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
+  content: ' (latest stable)';
+  color: var(--badge-latest-stable-color);
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+li:first-child {
+  margin-top: 0.5em; /* Adjust '1em' to your desired spacing */
 }

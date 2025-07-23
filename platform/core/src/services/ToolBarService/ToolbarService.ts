@@ -128,12 +128,13 @@ export default class ToolbarService extends PubSubService {
   /**
    * Adds buttons to the toolbar.
    * @param buttons - The buttons to be added.
+   * @param replace - Flag indicating if any existing button with the same id as one being added should be replaced
    */
-  public addButtons(buttons: Button[]): void {
+  public addButtons(buttons: Button[], replace: boolean = false): void {
     buttons.forEach(button => {
-      if (!this.state.buttons[button.id]) {
+      if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
-          button.props = {};
+          button.props = {} as ButtonProps;
         }
 
         this.state.buttons[button.id] = button;
@@ -172,12 +173,16 @@ export default class ToolbarService extends PubSubService {
       ? interaction.commands
       : [interaction.commands];
 
+    commands = commands.filter(Boolean);
+
     if (!commands?.length) {
       this.refreshToolbarState({
         ...options?.refreshProps,
         itemId,
         interaction,
       });
+
+      return;
     }
 
     const commandOptions = { ...options, ...interaction };
@@ -227,16 +232,12 @@ export default class ToolbarService extends PubSubService {
    */
   public refreshToolbarState(refreshProps) {
     const buttons = this.state.buttons;
-
-    // Tracks evaluated buttons to avoid re-evaluating them (this will
-    // cause issue for toggles where if the button is in primary
-    // and secondary it will be evaluated twice)
     const evaluationResults = new Map();
 
     const evaluateButtonProps = (button, props, refreshProps) => {
       if (evaluationResults.has(button.id)) {
-        const { disabled, className, isActive } = evaluationResults.get(button.id);
-        return { ...props, disabled, className, isActive };
+        const { disabled, disabledText, className, isActive } = evaluationResults.get(button.id);
+        return { ...props, disabled, disabledText, className, isActive };
       } else {
         const evaluated = props.evaluate?.({ ...refreshProps, button });
         const updatedProps = {
@@ -251,57 +252,50 @@ export default class ToolbarService extends PubSubService {
       }
     };
 
-    const refreshedButtons = Object.values(buttons).reduce((acc, button: Button) => {
-      const isNested = (button.props as NestedButtonProps)?.groupId;
+    Object.values(buttons).forEach(button => {
+      const hasSection = (button.props as NestedButtonProps)?.buttonSection;
 
-      if (!isNested) {
+      if (!hasSection) {
         this.handleEvaluate(button.props);
         const buttonProps = button.props as ButtonProps;
 
         const updatedProps = evaluateButtonProps(button, buttonProps, refreshProps);
-        acc[button.id] = {
+        buttons[button.id] = {
           ...button,
           props: updatedProps,
         };
       } else {
         let buttonProps = button.props as NestedButtonProps;
-        // if it is nested we should perform evaluate on each item in the group
-        this.handleEvaluateNested(buttonProps);
-
         const { evaluate: groupEvaluate } = buttonProps;
+        const groupEvaluated =
+          typeof groupEvaluate === 'function'
+            ? groupEvaluate({ ...refreshProps, button })
+            : undefined;
 
-        const groupEvaluated = groupEvaluate?.({ ...refreshProps, button });
-        // handle group evaluate function which might switch the primary
-        // item in the group
         buttonProps = {
           ...buttonProps,
-          primary: groupEvaluated?.primary || buttonProps.primary,
+          disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
+          disabledText: groupEvaluated?.disabledText ?? buttonProps.disabledText,
         };
 
-        const { primary, items } = buttonProps;
+        const toolButtonIds = this.state.buttonSections[buttonProps.buttonSection];
 
-        // primary and items evaluate functions
-        let updatedPrimary;
-        if (primary) {
-          updatedPrimary = evaluateButtonProps(primary, primary, refreshProps);
+        if (!toolButtonIds) {
+          return;
         }
-        const updatedItems = items.map(item => evaluateButtonProps(item, item, refreshProps));
-        buttonProps = {
-          ...buttonProps,
-          primary: updatedPrimary,
-          items: updatedItems,
-        };
 
-        acc[button.id] = {
-          ...button,
-          props: buttonProps,
-        };
+        toolButtonIds.forEach(buttonId => {
+          const button = buttons[buttonId];
+          const updatedProps = evaluateButtonProps(button, button.props, refreshProps);
+          buttons[buttonId] = {
+            ...button,
+            props: updatedProps,
+          };
+        });
       }
+    });
 
-      return acc;
-    }, {});
-
-    this.setButtons(refreshedButtons);
+    this.setButtons(buttons);
     return this.state;
   }
 
@@ -346,17 +340,6 @@ export default class ToolbarService extends PubSubService {
    * @returns The button properties.
    */
   public getButtonProps(id: string): ButtonProps {
-    for (const buttonId of Object.keys(this.state.buttons)) {
-      const { primary, items } = (this.state.buttons[buttonId].props as NestedButtonProps) || {};
-      if (primary?.id === id) {
-        return primary;
-      }
-      const found = items?.find(childButton => childButton.id === id);
-      if (found) {
-        return found;
-      }
-    }
-
     // This should be checked after we checked the nested buttons, since
     // we are checking based on the ids, the nested objects are higher priority
     // and more specific
@@ -383,12 +366,17 @@ export default class ToolbarService extends PubSubService {
 
   /**
    * Creates a button section with the specified key and buttons.
+   * Buttons already in the section (i.e. with the same ids) will NOT be added twice.
    * @param {string} key - The key of the button section.
    * @param {Array} buttons - The buttons to be added to the section.
    */
   createButtonSection(key, buttons) {
     if (this.state.buttonSections[key]) {
-      this.state.buttonSections[key].push(...buttons);
+      this.state.buttonSections[key].push(
+        ...buttons.filter(
+          button => !this.state.buttonSections[key].find(sectionButton => sectionButton === button)
+        )
+      );
     } else {
       this.state.buttonSections[key] = buttons;
     }
@@ -411,6 +399,12 @@ export default class ToolbarService extends PubSubService {
         return this._mapButtonToDisplay(btn, props);
       }) || []
     );
+  }
+
+  getButtonPropsInButtonSection(sectionId: string) {
+    const buttonSectionIds = this.state.buttonSections[sectionId];
+
+    return buttonSectionIds?.map(btnId => this.getButtonProps(btnId)) || [];
   }
 
   /**
@@ -440,17 +434,21 @@ export default class ToolbarService extends PubSubService {
    * @param {*} metadata
    * @param {*} props - Props set by the Viewer layer
    */
-  _mapButtonToDisplay(btn, props) {
+  _mapButtonToDisplay(btn: Button, props: Record<string, unknown>) {
     if (!btn) {
       return;
     }
 
-    const { id, uiType, component } = btn;
-    const { groupId } = btn.props;
+    const { id, uiType } = btn;
+    const { groupId } = btn.props as NestedButtonProps;
 
     const buttonTypes = this._getButtonUITypes();
 
     const buttonType = buttonTypes[uiType];
+
+    if (!btn.component) {
+      btn.component = buttonType.defaultComponent;
+    }
 
     if (!buttonType) {
       return;
@@ -458,23 +456,97 @@ export default class ToolbarService extends PubSubService {
 
     !groupId ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
+    const { id: buttonId, props: componentProps } = btn;
+
+    const createEnhancedOptions = (options, itemId) => {
+      const optionsToUse = Array.isArray(options) ? options : [options];
+      const toolProps = this.getButtonProps(itemId);
+
+      return optionsToUse.map(option => {
+        if (typeof option.optionComponent === 'function') {
+          return option;
+        }
+
+        return {
+          ...option,
+          onChange: value => {
+            // Update the option's value for UI
+            option.value = value;
+
+            const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
+
+            // Find the parent button and update its options
+            if (toolProps && toolProps.options) {
+              // Find the option in the button's options array and update its value
+              const optionIndex = toolProps.options.findIndex(opt => opt.id === option.id);
+              if (optionIndex !== -1) {
+                toolProps.options[optionIndex].value = value;
+              }
+            }
+
+            cmds.forEach(command => {
+              const commandOptions = {
+                ...option,
+                value,
+                options: toolProps.options,
+                servicesManager: this._servicesManager,
+                commandsManager: this._commandsManager,
+              };
+
+              this._commandsManager.run(command, commandOptions);
+            });
+
+            // Notify that toolbar state has been modified
+            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
+              buttons: this.state.buttons,
+              buttonSections: this.state.buttonSections,
+            });
+          },
+        };
+      });
+    };
+
+    if ((componentProps as NestedButtonProps)?.items?.length) {
+      const { items = [] } = componentProps as NestedButtonProps;
+
+      items.forEach(item => {
+        if (!item.options) {
+          return;
+        }
+        item.options = createEnhancedOptions(item.options, item.id);
+      });
+    } else if ((componentProps as ButtonProps).options?.length) {
+      (componentProps as ButtonProps).options = createEnhancedOptions(
+        (componentProps as ButtonProps).options,
+        buttonId
+      );
+    } else if ((componentProps as ButtonProps).optionComponent) {
+      (componentProps as ButtonProps).optionComponent = options.optionComponent;
+    }
+
     return {
       id,
-      Component: component || buttonType.defaultComponent,
-      componentProps: Object.assign({}, btn.props, props),
+      Component: btn.component,
+      componentProps: Object.assign({ id }, btn.props, props),
     };
   }
 
   handleEvaluateNested = props => {
-    const { primary, items } = props;
-    // handle group evaluate function
-    this.handleEvaluate(props);
+    const { buttonSection } = props;
 
-    // primary and items evaluate functions
-    if (primary) {
-      this.handleEvaluate(primary);
+    if (!buttonSection) {
+      return;
     }
-    items.forEach(item => this.handleEvaluate(item));
+
+    const toolbarButtons = this.getButtonSection(buttonSection);
+
+    if (!toolbarButtons?.length) {
+      return;
+    }
+
+    toolbarButtons.forEach(button => {
+      this.handleEvaluate(button.componentProps);
+    });
   };
 
   handleEvaluate = props => {
@@ -484,9 +556,7 @@ export default class ToolbarService extends PubSubService {
       // get the custom option component from the extension manager and set it as the optionComponent
       const buttonTypes = this._getButtonUITypes();
       const optionComponent = buttonTypes[options]?.defaultComponent;
-      props.options = {
-        optionComponent,
-      };
+      props.options = optionComponent;
     }
 
     if (typeof evaluate === 'function') {
@@ -515,13 +585,21 @@ export default class ToolbarService extends PubSubService {
       });
 
       props.evaluate = args => {
-        const results = evaluators.map(evaluator => evaluator(args));
+        const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
+
+        // had at least one disabled button, so we need to disable the button
+        const hasDisabledButton = results?.some(result => result.disabled);
+
         const mergedResult = results.reduce((acc, result) => {
           return {
             ...acc,
             ...result,
           };
         }, {});
+
+        if (hasDisabledButton) {
+          mergedResult.disabled = true;
+        }
 
         return mergedResult;
       };

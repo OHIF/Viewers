@@ -90,6 +90,7 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
   } = instance;
@@ -106,6 +107,7 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -263,9 +265,9 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
 
-    const onBeforeSRAddMeasurement = customizationService.getModeCustomization(
+    const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
-    )?.value;
+    );
 
     if (typeof onBeforeSRAddMeasurement === 'function') {
       measurement = onBeforeSRAddMeasurement({

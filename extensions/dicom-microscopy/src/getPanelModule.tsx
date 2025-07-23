@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Types } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import MicroscopyPanel from './components/MicroscopyPanel/MicroscopyPanel';
 
 // TODO:

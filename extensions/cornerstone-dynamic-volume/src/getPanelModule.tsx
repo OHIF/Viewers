@@ -1,6 +1,6 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import { PanelSegmentation } from '@ohif/extension-cornerstone';
 import DynamicExport from './panels/DynamicExport';
 
@@ -19,9 +19,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="dynamic-toolbox"
           title="Threshold Tools"
         />

@@ -49,6 +49,7 @@ const defineValues = {
   'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
   'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
   'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+  'process.env.TEST_ENV': JSON.stringify(process.env.TEST_ENV || ''),
 };
 
 // Only redefine updated values.  This avoids warning messages in the logs
@@ -167,6 +168,10 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
               },
             },
           ],
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource',
         },
       ], //.concat(vtkRules),
     },

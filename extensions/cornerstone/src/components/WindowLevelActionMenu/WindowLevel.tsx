@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback } from 'react';
-import { AllInOneMenu } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 import { CommandsManager } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +45,7 @@ export function WindowLevel({
                   key={`${modality}-${index}`}
                   label={preset.description}
                   secondaryLabel={`${preset.window} / ${preset.level}`}
+                  useIconSpace={false}
                   onClick={() => onSetWindowLevel(preset)}
                 />
               ))}

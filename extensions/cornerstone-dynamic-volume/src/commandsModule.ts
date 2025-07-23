@@ -263,7 +263,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         }
       }
 
-      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate });
     },
     swapComputedWithDynamicDisplaySet: () => {
       // Todo: this assumes there is only one dynamic display set in the viewer
@@ -313,7 +313,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         }
       }
 
-      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate });
     },
     createNewLabelMapForDynamicVolume: async ({ label }) => {
       const { viewports, activeViewportId } = viewportGridService.getState();

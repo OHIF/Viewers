@@ -5,13 +5,9 @@ import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
   data?: any[];
-  onClick?: (uid: string) => void;
-  onDelete?: (uid: string) => void;
-  onToggleVisibility?: (uid: string) => void;
-  onToggleLocked?: (uid: string) => void;
-  onRename?: (uid: string) => void;
-  onColor?: (uid: string) => void;
+  onAction?: (e, command: string | string[], uid: string) => void;
   disableEditing?: boolean;
+  isExpanded: boolean;
 }
 
 const [MeasurementTableProvider, useMeasurementTableContext] =
@@ -24,12 +20,8 @@ interface MeasurementDataProps extends MeasurementTableContext {
 
 const MeasurementTable = ({
   data = [],
-  onClick,
-  onDelete,
-  onToggleVisibility,
-  onToggleLocked,
-  onRename,
-  onColor,
+  onAction,
+  isExpanded = true,
   title,
   children,
   disableEditing = false,
@@ -40,19 +32,18 @@ const MeasurementTable = ({
   return (
     <MeasurementTableProvider
       data={data}
-      onClick={onClick}
-      onDelete={onDelete}
-      onToggleVisibility={onToggleVisibility}
-      onToggleLocked={onToggleLocked}
-      onRename={onRename}
-      onColor={onColor}
+      onAction={onAction}
+      isExpanded={isExpanded}
       disableEditing={disableEditing}
     >
       <PanelSection defaultOpen={true}>
-        <PanelSection.Header className="bg-secondary-dark">
+        <PanelSection.Header
+          key="measurementTableHeader"
+          className="bg-secondary-dark"
+        >
           <span>{`${t(title)} (${amount})`}</span>
         </PanelSection.Header>
-        <PanelSection.Content>{children}</PanelSection.Content>
+        <PanelSection.Content key="measurementTableContent">{children}</PanelSection.Content>
       </PanelSection>
     </MeasurementTableProvider>
   );
@@ -99,6 +90,7 @@ interface MeasurementItem {
   isVisible: boolean;
   isLocked: boolean;
   toolName: string;
+  isExpanded: boolean;
 }
 
 interface RowProps {
@@ -107,16 +99,10 @@ interface RowProps {
 }
 
 const Row = ({ item, index }: RowProps) => {
-  const {
-    onClick,
-    onDelete,
-    onToggleVisibility,
-    onToggleLocked,
-    onRename,
-    onColor,
-    disableEditing,
-  } = useMeasurementTableContext('MeasurementTable.Row');
+  const { onAction, isExpanded, disableEditing } =
+    useMeasurementTableContext('MeasurementTable.Row');
 
+  const { uid } = item;
   return (
     <DataRow
       key={item.uid}
@@ -126,15 +112,15 @@ const Row = ({ item, index }: RowProps) => {
       colorHex={item.colorHex}
       isSelected={item.isSelected}
       details={item.displayText}
-      onSelect={() => onClick(item.uid)}
-      onDelete={() => onDelete(item.uid)}
+      onDelete={e => onAction(e, 'removeMeasurement', uid)}
+      onSelect={e => onAction(e, 'jumpToMeasurement', uid)}
+      onRename={e => onAction(e, 'renameMeasurement', uid)}
+      onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
+      onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
       disableEditing={disableEditing}
+      isExpanded={isExpanded}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
-      onToggleVisibility={() => onToggleVisibility(item.uid)}
-      onToggleLocked={() => onToggleLocked(item.uid)}
-      onRename={() => onRename(item.uid)}
-      // onColor={() => onColor(item.uid)}
     />
   );
 };

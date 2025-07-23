@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import i18n from 'i18next';
 
 import { id } from './id';
@@ -9,7 +8,7 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  rightPanel: '@ohif/extension-dicom-microscopy.panelModule.measure',
 };
 
 export const cornerstone = {
@@ -38,8 +37,6 @@ const extensionDependencies = {
 
 function modeFactory({ modeConfiguration }) {
   return {
-    // TODO: We're using this as a route segment
-    // We should not be.
     id,
     routeName: 'microscopy',
     displayName: i18n.t('Modes:Microscopy'),
@@ -47,17 +44,27 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+    onModeEnter: ({ servicesManager }: withAppTypes) => {
       const { toolbarService } = servicesManager.services;
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
+
+      toolbarService.createButtonSection('measurementSection', [
+        'line',
+        'point',
+        'polygon',
+        'circle',
+        'box',
+        'freehandpolygon',
+        'freehandline',
+      ]);
     },
 
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const { toolbarService, uiDialogService, uiModalService } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolbarService.reset();
     },
@@ -79,17 +86,16 @@ function modeFactory({ modeConfiguration }) {
     routes: [
       {
         path: 'microscopy',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
+              leftPanelResizable: true,
               leftPanelClosed: true, // we have problem with rendering thumbnails for microscopy images
-              rightPanelClosed: true, // we do not have the save microscopy measurements yet
-              rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
+              // rightPanelClosed: true, // we do not have the save microscopy measurements yet
+              rightPanels: [ohif.rightPanel],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
@@ -121,7 +127,6 @@ function modeFactory({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }

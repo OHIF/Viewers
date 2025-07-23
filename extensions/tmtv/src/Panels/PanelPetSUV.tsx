@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { PanelSection, Input, Button } from '@ohif/ui';
 import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
-import { Separator } from '@ohif/ui-next';
+import { Button, Input, Label, PanelSection } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core/src';
 
 const DEFAULT_MEATADATA = {
   PatientWeight: null,
@@ -23,7 +23,43 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
+
+// InputRow compound component
+const InputRow = ({ children, className, ...props }) => {
+  return (
+    <div
+      className={`flex flex-row items-center space-x-4 ${className || ''}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+// InputRow sub-components
+InputRow.Label = ({ children, unit, className, ...props }) => (
+  <Label
+    className={`min-w-32 flex-shrink-0 ${className || ''}`}
+    {...props}
+  >
+    {children}
+    {unit && <span className="text-muted-foreground"> {unit}</span>}
+  </Label>
+);
+
+InputRow.Input = ({ className, ...props }) => (
+  <Input
+    className={`h-7 flex-1 ${className || ''}`}
+    {...props}
+  />
+);
+
+// Set display names for better debugging
+InputRow.Label.displayName = 'InputRow.Label';
+InputRow.Input.displayName = 'InputRow.Input';
+
+export default function PanelPetSUV({ servicesManager }: withAppTypes) {
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('PanelSUV');
   const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
     servicesManager.services;
@@ -128,103 +164,103 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
   return (
     <>
       <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
-        <div className="flex min-h-0 flex-1 flex-col bg-black text-[13px] font-[300]">
-          <PanelSection title={t('Patient Information')}>
-            <div className="flex flex-col">
-              <div className="bg-primary-dark flex flex-col gap-4 p-2">
-                <Input
-                  containerClassName={'!flex-row !justify-between items-center'}
-                  label={t('Patient Sex')}
-                  labelClassName="text-[13px] font-inter text-white"
-                  className="!m-0 !h-[26px] !w-[117px]"
-                  value={metadata.PatientSex || ''}
-                  onChange={e => {
-                    handleMetadataChange({
-                      PatientSex: e.target.value,
-                    });
-                  }}
-                />
-                <Input
-                  containerClassName={'!flex-row !justify-between items-center'}
-                  label={t('Weight')}
-                  labelChildren={<span className="text-aqua-pale"> kg</span>}
-                  labelClassName="text-[13px] font-inter text-white"
-                  className="!m-0 !h-[26px] !w-[117px]"
-                  value={metadata.PatientWeight || ''}
-                  onChange={e => {
-                    handleMetadataChange({
-                      PatientWeight: e.target.value,
-                    });
-                  }}
-                  id="weight-input"
-                />
-                <Input
-                  containerClassName={'!flex-row !justify-between items-center'}
-                  label={t('Total Dose')}
-                  labelChildren={<span className="text-aqua-pale"> bq</span>}
-                  labelClassName="text-[13px] font-inter text-white"
-                  className="!m-0 !h-[26px] !w-[117px]"
-                  value={
-                    metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''
-                  }
-                  onChange={e => {
-                    handleMetadataChange({
-                      RadiopharmaceuticalInformationSequence: {
-                        RadionuclideTotalDose: e.target.value,
-                      },
-                    });
-                  }}
-                />
-                <Input
-                  containerClassName={'!flex-row !justify-between items-center'}
-                  label={t('Half Life')}
-                  labelChildren={<span className="text-aqua-pale"> s</span>}
-                  labelClassName="text-[13px] font-inter text-white"
-                  className="!m-0 !h-[26px] !w-[117px]"
-                  value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
-                  onChange={e => {
-                    handleMetadataChange({
-                      RadiopharmaceuticalInformationSequence: {
-                        RadionuclideHalfLife: e.target.value,
-                      },
-                    });
-                  }}
-                />
-                <Input
-                  containerClassName={'!flex-row !justify-between items-center'}
-                  label={t('Injection Time')}
-                  labelChildren={<span className="text-aqua-pale"> s</span>}
-                  labelClassName="text-[13px] font-inter text-white"
-                  className="!m-0 !h-[26px] !w-[117px]"
-                  value={
-                    metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime ||
-                    ''
-                  }
-                  onChange={e => {
-                    handleMetadataChange({
-                      RadiopharmaceuticalInformationSequence: {
-                        RadiopharmaceuticalStartTime: e.target.value,
-                      },
-                    });
-                  }}
-                />
-                <Input
-                  containerClassName={'!flex-row !justify-between items-center'}
-                  label={t('Acquisition Time')}
-                  labelChildren={<span className="text-aqua-pale"> s</span>}
-                  labelClassName="text-[13px] font-inter text-white"
-                  className="!m-0 !h-[26px] !w-[117px]"
-                  value={metadata.SeriesTime || ''}
-                  onChange={() => {}}
-                />
+        <div className="flex min-h-0 flex-1 flex-col bg-black text-base">
+          <PanelSection defaultOpen={true}>
+            <PanelSection.Header>{t('Patient Information')}</PanelSection.Header>
+            <PanelSection.Content>
+              <div className="bg-primary-dark flex flex-col gap-3 p-2">
+                <InputRow>
+                  <InputRow.Label>{t('Patient Sex')}</InputRow.Label>
+                  <InputRow.Input
+                    value={metadata.PatientSex || ''}
+                    onChange={e => {
+                      handleMetadataChange({
+                        PatientSex: e.target.value,
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="kg">{t('Weight')}</InputRow.Label>
+                  <InputRow.Input
+                    value={metadata.PatientWeight || ''}
+                    onChange={e => {
+                      handleMetadataChange({
+                        PatientWeight: e.target.value,
+                      });
+                    }}
+                    id="weight-input"
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="bq">{t('Total Dose')}</InputRow.Label>
+                  <InputRow.Input
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''
+                    }
+                    onChange={e => {
+                      handleMetadataChange({
+                        RadiopharmaceuticalInformationSequence: {
+                          RadionuclideTotalDose: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="s">{t('Half Life')}</InputRow.Label>
+                  <InputRow.Input
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''
+                    }
+                    onChange={e => {
+                      handleMetadataChange({
+                        RadiopharmaceuticalInformationSequence: {
+                          RadionuclideHalfLife: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="s">{t('Injection Time')}</InputRow.Label>
+                  <InputRow.Input
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence
+                        .RadiopharmaceuticalStartTime || ''
+                    }
+                    onChange={e => {
+                      handleMetadataChange({
+                        RadiopharmaceuticalInformationSequence: {
+                          RadiopharmaceuticalStartTime: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="s">{t('Acquisition Time')}</InputRow.Label>
+                  <InputRow.Input
+                    value={metadata.SeriesTime || ''}
+                    onChange={() => {}}
+                  />
+                </InputRow>
+
                 <Button
-                  className="!h-[26px] !w-[115px] self-end !p-0"
+                  variant="default"
+                  size="sm"
+                  className="w-28 self-end"
                   onClick={updateMetadata}
                 >
                   Reload Data
                 </Button>
               </div>
-            </div>
+            </PanelSection.Content>
           </PanelSection>
         </div>
       </div>

@@ -66,7 +66,7 @@ are configuration objects that will be used by the viewer to load the modules. T
 - cornerstone-core and cornerstone-tools are removed and OHIF v3 is using the new Cornerstone3D rendering library and tools. Moving to Cornerstone3D has enabled us to provide a more robust and stable foundation
   for 3D rendering and 3D annotations and measurements. In addition, Cornerstone3D provides APIs to load
   and stream data into a volume which has huge performance benefits.
-- A new CLI tool to help you create extensions and modes (more [here]((./development/ohif-cli.md)))
+- A new CLI tool to help you create extensions and modes (more [here](../development/ohif-cli.md))
 - redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:
@@ -104,7 +104,7 @@ far more capable than servers. Read more about dataSources [here](../platform/ex
 
 - `StudyPrefetcher` is only available in OHIF v3.9 beta and will be available in the next stable 3.9 release.
 - The `servers` object has been replaced with a `dataSources` array containing objects representing different data sources.
-- The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead (you can read more [here](../platform/services/ui/customization-service.md))
+- The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead (you can read more [here](../platform/services/customization-service/customizationService.md))
 - The maxConcurrentMetadataRequests property has been removed in favor of `maxNumRequests`
 - The hotkeys array has been updated with different command names and options, and some keys have been removed.
 - New properties have been added, including `maxNumberOfWebWorkers`, `omitQuotationForMultipartRequest`, `showWarningMessageForCrossOrigin`, `showCPUFallbackMessage`, `showLoadingIndicator`, `strictZSpacingForVolumeViewport`.
@@ -222,7 +222,7 @@ Can I register a custom route to OHIF v3?
 </summary>
 
 Yes, you can take advantage of the customizationService and register your own routes.
-see [custom routes](../platform/services/ui/customization-service.md#customroutes)
+see [custom routes](../platform/services/customization-service/customRoutes.md)
 
 
 </details>

@@ -30,6 +30,7 @@ const dicomSRExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+
   onModeEnter,
 
   preRegistration,

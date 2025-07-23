@@ -1,5 +1,5 @@
-import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 import React, { useCallback } from 'react';
+import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 
 function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
   const getSplitButtonItems = useCallback(
@@ -19,6 +19,7 @@ function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size })
               groupId,
               itemId: item.id,
               commands: item.commands,
+              item,
             });
           }}
           // Note: this is necessary since tooltip will add

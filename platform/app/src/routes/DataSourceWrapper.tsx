@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Enums, ExtensionManager, MODULE_TYPES, log } from '@ohif/core';
 //
-import { extensionManager } from '../App.tsx';
+import { extensionManager } from '../App';
 import { useParams, useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import useSearchParams from '../hooks/useSearchParams.ts';
+import useSearchParams from '../hooks/useSearchParams';
 
 /**
  * Determines if two React Router location objects are the same.
@@ -199,10 +199,9 @@ function DataSourceWrapper(props: withAppTypes) {
 
           servicesManager.services.uiModalService.show({
             title: 'Data Source Connection Error',
-            containerDimensions: 'w-1/2',
             content: () => {
               return (
-                <div>
+                <div className="text-foreground">
                   <p className="text-red-600">Error: {e.message}</p>
                   <p>
                     Please ensure the following data source is configured correctly or is running:

@@ -1,130 +1,83 @@
 import React, { ReactElement, useState, useEffect, useCallback } from 'react';
 import { VolumeLightingProps } from '../../types/ViewportPresets';
+import { Numeric } from '@ohif/ui-next';
 
 export function VolumeLighting({
   servicesManager,
   commandsManager,
   viewportId,
+  hasShade,
 }: VolumeLightingProps): ReactElement {
   const { cornerstoneViewportService } = servicesManager.services;
-  const [ambient, setAmbient] = useState(null);
-  const [diffuse, setDiffuse] = useState(null);
-  const [specular, setSpecular] = useState(null);
+  const [lightingValues, setLightingValues] = useState({
+    ambient: null,
+    diffuse: null,
+    specular: null,
+  });
 
-  const onAmbientChange = useCallback(() => {
-    commandsManager.runCommand('setVolumeLighting', { viewportId, options: { ambient } });
-  }, [ambient, commandsManager, viewportId]);
-
-  const onDiffuseChange = useCallback(() => {
-    commandsManager.runCommand('setVolumeLighting', { viewportId, options: { diffuse } });
-  }, [diffuse, commandsManager, viewportId]);
-
-  const onSpecularChange = useCallback(() => {
-    commandsManager.runCommand('setVolumeLighting', { viewportId, options: { specular } });
-  }, [specular, commandsManager, viewportId]);
-
-  const calculateBackground = value => {
-    const percentage = ((value - 0) / (1 - 0)) * 100;
-    return `linear-gradient(to right, #5acce6 0%, #5acce6 ${percentage}%, #3a3f99 ${percentage}%, #3a3f99 100%)`;
-  };
+  // Single callback to handle all lighting property changes
+  const onLightingChange = useCallback(
+    (property, value) => {
+      commandsManager.runCommand('setVolumeLighting', {
+        viewportId,
+        options: { [property]: value },
+      });
+      setLightingValues(prev => ({
+        ...prev,
+        [property]: value,
+      }));
+    },
+    [commandsManager, viewportId]
+  );
 
   useEffect(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     const { actor } = viewport.getActors()[0];
-    const ambient = actor.getProperty().getAmbient();
-    const diffuse = actor.getProperty().getDiffuse();
-    const specular = actor.getProperty().getSpecular();
-    setAmbient(ambient);
-    setDiffuse(diffuse);
-    setSpecular(specular);
-  }, [viewportId, cornerstoneViewportService]);
-  return (
-    <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
-        <label
-          className="block  text-white"
-          htmlFor="ambient"
-        >
-          Ambient
-        </label>
-        {ambient !== null && (
-          <input
-            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
-            value={ambient}
-            onChange={e => {
-              setAmbient(e.target.value);
-              onAmbientChange();
-            }}
-            id="ambient"
-            max={1}
-            min={0}
-            type="range"
-            step={0.1}
-            style={{
-              background: calculateBackground(ambient),
-              '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
-            }}
-          />
-        )}
-      </div>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
-        <label
-          className="block  text-white"
-          htmlFor="diffuse"
-        >
-          Diffuse
-        </label>
-        {diffuse !== null && (
-          <input
-            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
-            value={diffuse}
-            onChange={e => {
-              setDiffuse(e.target.value);
-              onDiffuseChange();
-            }}
-            id="diffuse"
-            max={1}
-            min={0}
-            type="range"
-            step={0.1}
-            style={{
-              background: calculateBackground(diffuse),
-              '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
-            }}
-          />
-        )}
-      </div>
+    const property = actor.getProperty();
 
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
-        <label
-          className="block  text-white"
-          htmlFor="specular"
-        >
-          Specular
-        </label>
-        {specular !== null && (
-          <input
-            className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
-            value={specular}
-            onChange={e => {
-              setSpecular(e.target.value);
-              onSpecularChange();
-            }}
-            id="specular"
-            max={1}
-            min={0}
-            type="range"
-            step={0.1}
-            style={{
-              background: calculateBackground(specular),
-              '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
-            }}
-          />
-        )}
-      </div>
-    </>
+    const values = {
+      ambient: property.getAmbient(),
+      diffuse: property.getDiffuse(),
+      specular: property.getSpecular(),
+    };
+
+    setLightingValues(values);
+  }, [viewportId, cornerstoneViewportService]);
+
+  const disableOption = hasShade ? '' : 'ohif-disabled !opacity-40';
+
+  // Configuration for our lighting properties
+  const lightingProperties = [
+    { key: 'ambient', label: 'Ambient' },
+    { key: 'diffuse', label: 'Diffuse' },
+    { key: 'specular', label: 'Specular' },
+  ];
+
+  return (
+    <div className="my-1 mt-2 flex flex-col space-y-2">
+      {lightingProperties.map(
+        ({ key, label }) =>
+          lightingValues[key] !== null && (
+            <div
+              key={key}
+              className={`w-full pl-2 pr-1 ${disableOption}`}
+            >
+              <Numeric.Container
+                mode="singleRange"
+                min={0}
+                max={1}
+                step={0.1}
+                value={lightingValues[key]}
+                onChange={value => onLightingChange(key, value)}
+              >
+                <div className="flex flex-row items-center">
+                  <Numeric.Label className="w-16">{label}</Numeric.Label>
+                  <Numeric.SingleRange sliderClassName="mx-2 flex-grow" />
+                </div>
+              </Numeric.Container>
+            </div>
+          )
+      )}
+    </div>
   );
 }

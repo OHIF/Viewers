@@ -29,6 +29,7 @@ interface HeaderProps {
   };
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
+  UndoRedo?: ReactNode;
 }
 
 function Header({
@@ -39,11 +40,10 @@ function Header({
   isSticky = false,
   WhiteLabeling,
   PatientInfo,
+  UndoRedo,
   Secondary,
   ...props
 }: HeaderProps): ReactNode {
-  const { t } = useTranslation('Header');
-
   const onClickReturn = () => {
     if (isReturnEnabled && onClickReturnButton) {
       onClickReturnButton();
@@ -65,7 +65,7 @@ function Header({
             onClick={onClickReturn}
             data-cy="return-to-work-list"
           >
-            {isReturnEnabled && <Icons.ChevronPatient className="text-primary-active w-8" />}
+            {isReturnEnabled && <Icons.ArrowLeft className="text-primary ml-1 h-7 w-7" />}
             <div className="ml-1">
               {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
             </div>
@@ -76,6 +76,8 @@ function Header({
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>
         <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
+          {UndoRedo}
+          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
           {PatientInfo}
           <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
           <div className="flex-shrink-0">
@@ -84,7 +86,7 @@ function Header({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-primary-active hover:bg-primary-dark mt-2 h-full w-full"
+                  className="text-primary hover:bg-primary-dark mt-2 h-full w-full"
                 >
                   <Icons.GearSettings />
                 </Button>
@@ -102,7 +104,7 @@ function Header({
                     >
                       {IconComponent && (
                         <span className="flex h-4 w-4 items-center justify-center">
-                          <IconComponent className="h-full w-full" />
+                          <Icons.ByName name={IconComponent.name} />
                         </span>
                       )}
                       <span className="flex-1">{option.title}</span>

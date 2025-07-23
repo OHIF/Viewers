@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { callInputDialog } from '@ohif/extension-default';
 import { ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
-import { MeasurementTable } from '@ohif/ui';
+import { DataRow } from '@ohif/ui-next';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
-import { callInputDialog } from '@ohif/extension-default';
 import constructSR from '../../utils/constructSR';
 import { saveByteArray } from '../../utils/saveByteArray';
-import { Separator } from '@ohif/ui-next';
 
 let saving = false;
 const { datasetToBuffer } = dcmjs.data;
@@ -140,12 +139,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       uiDialogService,
       title: 'Enter description of the Series',
       defaultValue: '',
-      callback: (value: string, action: string) => {
-        switch (action) {
-          case 'save': {
-            saveFunction(value);
-          }
-        }
+      onSave: (value: string) => {
+        saveFunction(value);
       },
     });
   };
@@ -333,14 +328,34 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
       >
-        <MeasurementTable
-          title="Measurements"
-          servicesManager={props.servicesManager}
-          data={data}
-          onClick={onMeasurementItemClickHandler}
-          onEdit={onMeasurementItemEditHandler}
-          onDelete={onMeasurementDeleteHandler}
-        />
+        <div className="flex flex-col">
+          {data.map(item => (
+            <DataRow
+              key={item.uid}
+              number={item.index + 1}
+              title={item.label}
+              isSelected={item.isActive}
+              onSelect={() => onMeasurementItemClickHandler({ uid: item.uid })}
+              details={{
+                primary: item.displayText,
+                secondary: [],
+              }}
+              isVisible={true}
+              onToggleVisibility={() => {}}
+              isLocked={false}
+              onToggleLocked={() => {}}
+              onRename={() =>
+                onMeasurementItemEditHandler({ uid: item.uid, isActive: item.isActive })
+              }
+              onDelete={() =>
+                onMeasurementDeleteHandler({ uid: item.uid, isActive: item.isActive })
+              }
+              onColor={() => {}}
+              disableEditing={false}
+              description={item.displayText.join(', ')}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
