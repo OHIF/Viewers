@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.98...v3.11.0-beta.99) (2025-07-23)
+
+
+### Bug Fixes
+
+* **ViewportOrientationMarkers:** round rotation to fix floating point issue ([#5135](https://github.com/OHIF/Viewers/issues/5135)) ([bd3ff5f](https://github.com/OHIF/Viewers/commit/bd3ff5f57c2fee35e92be4571048cc057eeaf29d))
+
+
+
+
+
 # [3.11.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.97...v3.11.0-beta.98) (2025-07-23)
 
 
