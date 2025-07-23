@@ -38,8 +38,10 @@ const convertSites = (codingValues, sites) => {
 };
 
 /**
- * Hydrates a structured report, for default viewports.
- *
+ * Hydrates a structured report
+ * Handles 2d and 3d hydration from SCOORD and SCOORD3D points
+ * For 3D hydration, chooses a volume display set to display with
+ * FOr 2D hydration, chooses the (first) display set containing the referenced image.
  */
 export default function hydrateStructuredReport(
   { servicesManager, extensionManager, commandsManager }: withAppTypes,
@@ -163,6 +165,10 @@ export default function hydrateStructuredReport(
     }
   }
 
+  /**
+   * Gets reference data for what frame of reference and the referenced
+   * image id, or for 3d measurements, the volumeId to apply this annotation to.
+   */
   function getReferenceData(toolData): ToolTypes.AnnotationMetadata {
     // Add the measurement to toolState
     // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
@@ -255,6 +261,12 @@ export default function hydrateStructuredReport(
   };
 }
 
+/**
+ * For 3d annotations, there are often several display sets which could
+ * be used to display the annotation.  Choose the first annotation with the
+ * same frame of reference that is reconstructable, or the first display set
+ * otherwise.
+ */
 function chooseDisplaySet(displaySets, annotation) {
   if (!displaySets?.length) {
     console.warn('No display set found for', annotation);
@@ -270,6 +282,10 @@ function chooseDisplaySet(displaySets, annotation) {
   return displaySets[0];
 }
 
+/**
+ * Gets the additional reference data appropriate for a 3d reference.
+ * This will choose a volume id, frame of reference and a plane restriction.
+ */
 function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   const { FrameOfReferenceUID } = toolData.annotation.metadata;
   const { points } = toolData.annotation.data.handles;
@@ -285,20 +301,23 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   const ds = chooseDisplaySet(displaySetsFOR, toolData.annotation);
   const cameraView = chooseCameraView(ds, points);
 
-  return {
+  const viewReference = {
     ...cameraView,
     volumeId: ds.displaySetInstanceUID,
     FrameOfReferenceUID,
   };
+  utilities.updatePlaneRestriction(points, viewReference);
+  return viewReference;
 }
 
 /**
  * Chooses a possible camera view - right now this is fairly basic,
  * just setting the unknowns to null.
  */
-function chooseCameraView(ds, points) {
+function chooseCameraView(_ds, points) {
   const selectedPoints = choosePoints(points);
-  const cameraFocalPoint = centerOf(selectedPoints);
+  const cameraFocalPoint = <Point3>centerOf(selectedPoints);
+  // These are sufficient to be null for now and can be set on first view
   let viewPlaneNormal: Types.Point3 = null;
   let viewUp: Types.Point3 = null;
 
