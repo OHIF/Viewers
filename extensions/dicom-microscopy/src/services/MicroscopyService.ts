@@ -367,6 +367,10 @@ export default class MicroscopyService extends PubSubService {
       }
     });
 
+    if (recentDisplaySet.isLoading) {
+      return;
+    }
+
     recentDisplaySet.isLoading = true;
 
     recentDisplaySet.load(smDisplaySet);

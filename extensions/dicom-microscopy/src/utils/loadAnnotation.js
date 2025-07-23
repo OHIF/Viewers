@@ -23,8 +23,10 @@ export default function loadAnnotation({
   extensionManager,
   servicesManager,
 }) {
+  const { uiNotificationService } = servicesManager.services;
   return new Promise(async (resolve, reject) => {
     try {
+      displaySet.isLoading = true;
       const { metadata } = displaySet;
 
       const dicomMicroscopyModule = await microscopyService.importDicomMicroscopyViewer();
@@ -49,6 +51,12 @@ export default function loadAnnotation({
               new dicomMicroscopyModule.metadata.MicroscopyBulkSimpleAnnotations({ metadata })
           );
 
+          uiNotificationService.show({
+            title: 'Loading Annotations',
+            message: 'Loading annotations...',
+            type: 'info',
+          });
+
           await Promise.all(
             annotations.map(async ann => {
               try {
@@ -67,11 +75,17 @@ export default function loadAnnotation({
                 });
               } catch (error) {
                 console.error('failed to add annotation groups:', error);
+                uiNotificationService.show({
+                  title: 'Error loading annotations',
+                  message: error.message,
+                  type: 'error',
+                });
               }
             })
           );
 
           displaySet.isLoaded = true;
+          displaySet.isLoading = false;
           resolve(displaySet);
         });
     } catch (error) {

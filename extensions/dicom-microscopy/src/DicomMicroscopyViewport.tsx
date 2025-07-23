@@ -180,7 +180,7 @@ function DicomMicroscopyViewport({
 
       await loadViewer(smDisplaySet.others);
 
-      if (displaySet.isOverlayDisplaySet) {
+      if (displaySet.isOverlayDisplaySet && !displaySet.isLoaded && !displaySet.isLoading) {
         displaySet.load(smDisplaySet);
       }
     },
@@ -205,8 +205,8 @@ function DicomMicroscopyViewport({
 
     microscopyService.clearAnnotations();
 
-    // loading SR
-    if (displaySet.isOverlayDisplaySet) {
+    // loading SR - only if not already loaded and not currently loading
+    if (displaySet.isOverlayDisplaySet && !displaySet.isLoaded && !displaySet.isLoading) {
       const referencedDisplaySet = displaySet.getSourceDisplaySet();
       displaySet.load(referencedDisplaySet);
     }
