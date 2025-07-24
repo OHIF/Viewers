@@ -295,6 +295,7 @@ export const DataRow: React.FC<DataRowProps> = ({
                       : 'opacity-0 group-hover:opacity-100'
                   }`}
                   aria-label="Actions"
+                  dataCY="actionsMenuTrigger"
                   onClick={e => e.stopPropagation()} // Prevent row selection on button click
                 >
                   <Icons.More className="h-6 w-6" />
@@ -308,21 +309,41 @@ export const DataRow: React.FC<DataRowProps> = ({
                 <>
                   <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
                     <Icons.Rename className="text-foreground" />
-                    <span className="pl-2">Rename</span>
+                    <span
+                      className="pl-2"
+                      data-cy="Rename"
+                    >
+                      Rename
+                    </span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
                     <Icons.Delete className="text-foreground" />
-                    <span className="pl-2">Delete</span>
+                    <span
+                      className="pl-2"
+                      data-cy="Delete"
+                    >
+                      Delete
+                    </span>
                   </DropdownMenuItem>
                   {onColor && (
                     <DropdownMenuItem onClick={e => handleAction('Color', e)}>
                       <Icons.ColorChange className="text-foreground" />
-                      <span className="pl-2">Change Color</span>
+                      <span
+                        className="pl-2"
+                        data-cy="Change Color"
+                      >
+                        Change Color
+                      </span>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
                     <Icons.Lock className="text-foreground" />
-                    <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                    <span
+                      className="pl-2"
+                      data-cy="LockToggle"
+                    >
+                      {isLocked ? 'Unlock' : 'Lock'}
+                    </span>
                   </DropdownMenuItem>
                 </>
               </DropdownMenuContent>
