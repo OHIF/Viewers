@@ -1556,7 +1556,12 @@ XNATStoreMeasurements: async () => {
   }
 
   const defaultLabel = `Measurements_${new Date().toISOString().replace(/[.:-]/g, '')}`;
-  const sanitizeLabel = (label: string) => label.replace(/[^a-zA-Z0-9_-]/g, '_');
+  const sanitizeLabel = (label: string) => {
+    // Remove any special characters and ensure it starts with a letter
+    const sanitized = label.replace(/[^a-zA-Z0-9_-]/g, '_');
+    // Ensure it doesn't start with a number or underscore
+    return sanitized.replace(/^[0-9_]/, 'M_');
+  };
 
   const userLabel = await new Promise<string | null>(resolve => {
     const promptMessage = `Enter a name for the measurement collection.\n(Allowed characters: A-Z, a-z, 0-9, _, -)`;
@@ -1632,8 +1637,13 @@ XNATStoreMeasurements: async () => {
     console.log(`🔍 DEBUG: - FrameOfReferenceUID from measurement: ${m.FrameOfReferenceUID || 'undefined'}`);
     console.log(`🔍 DEBUG: - FrameOfReferenceUID from metadata: ${m.metadata?.FrameOfReferenceUID || 'undefined'}`);
     console.log(`🔍 DEBUG: - Final frameOfReferenceUID: ${base.frameOfReferenceUID || 'undefined (optional)'}`);
+    console.log(`🔍 DEBUG: - Tool type: ${m.toolName}`);
+    console.log(`🔍 DEBUG: - Measurement type: ${m.type}`);
+    console.log(`🔍 DEBUG: - Cached stats:`, m.data?.cachedStats);
+    console.log(`🔍 DEBUG: - Display text:`, m.displayText);
 
     // Populate tool-specific "data" minimally
+    console.log(`🔍 DEBUG: Switch statement using base.toolType: ${base.toolType}`);
     switch (base.toolType) {
       case 'Length':
         if (points.length >= 2) {
@@ -1687,12 +1697,77 @@ XNATStoreMeasurements: async () => {
           base.measurements.push({ name: 'angle', value: Number(m.rAngle), unit: 'deg' });
         }
         break;
-      case 'RectangleRoi':
-      case 'EllipticalRoi':
+      case 'RectangleROI':
+      case 'EllipticalROI':
+        // Extract area and other stats from cachedStats or displayText
+        let areaVal = 0;
+        let meanVal = 0;
+        let stdDevVal = 0;
+        let minVal = 0;
+        let maxVal = 0;
+        
+        if (m.data?.cachedStats) {
+          // Get stats from cachedStats (the standard OHIF structure)
+          const stats = Object.values(m.data.cachedStats)[0] as any;
+          areaVal = stats?.area || 0;
+          meanVal = stats?.mean || 0;
+          stdDevVal = stats?.stdDev || 0;
+          minVal = stats?.min || 0;
+          maxVal = stats?.max || 0;
+        } else if (m.displayText?.primary?.length > 0) {
+          // Fallback: parse from displayText
+          const primaryText = m.displayText.primary[0];
+          const areaMatch = primaryText.match(/([0-9.]+)\s*mm²/);
+          if (areaMatch) {
+            areaVal = parseFloat(areaMatch[1]);
+          }
+        }
+        
+        console.log('Export: extracted ROI values:', {
+          area: areaVal,
+          mean: meanVal,
+          stdDev: stdDevVal,
+          min: minVal,
+          max: maxVal
+        }, 'from measurement:', m);
+        console.log('Export: Full measurement object for ROI:', JSON.stringify(m, null, 2));
+        
+        // Extract handles from points
+        const handles: any = {};
+        if (points.length >= 4) {
+          // For EllipticalROI, we typically have 4 points defining the ellipse
+          handles.points = points.map(pt => createHandle(pt));
+        } else if (points.length >= 2) {
+          // Fallback: use first two points as center and end
+          handles.center = createHandle(points[0]);
+          handles.end = createHandle(points[1]);
+        }
+        
+        // Extract the actual cachedStats from the measurement data
+        const actualCachedStats = m.data?.cachedStats || {};
+        console.log('Export: Actual cachedStats being exported:', actualCachedStats);
+        
         base.data = {
-          cachedStats: m.cachedStats || {},
-          handles: {},
+          cachedStats: actualCachedStats,
+          handles: handles,
         };
+        
+        // Add all available measurements
+        if (areaVal > 0) {
+          base.measurements.push({ name: 'area', value: Number(areaVal), unit: 'mm²' });
+        }
+        if (meanVal !== 0) {
+          base.measurements.push({ name: 'mean', value: Number(meanVal), unit: '' });
+        }
+        if (stdDevVal !== 0) {
+          base.measurements.push({ name: 'stdDev', value: Number(stdDevVal), unit: '' });
+        }
+        if (minVal !== 0) {
+          base.measurements.push({ name: 'min', value: Number(minVal), unit: '' });
+        }
+        if (maxVal !== 0) {
+          base.measurements.push({ name: 'max', value: Number(maxVal), unit: '' });
+        }
         break;
       case 'ArrowAnnotate':
         base.data = {
@@ -1702,6 +1777,7 @@ XNATStoreMeasurements: async () => {
         base.measurements.push({ name: 'arrow', comment: m.text || '', unit: '' });
         break;
       default:
+        console.log(`🔍 DEBUG: No specific case for tool type: ${base.toolType}, using default`);
         base.data = {};
     }
 
@@ -1734,10 +1810,9 @@ XNATStoreMeasurements: async () => {
     imageMeasurements, // array built above
   } as any;
 
-  // ----- Old temporary builder removed -----
-  // const measurementCollection = { ... } (deprecated)
-
   console.log("Complete measurement collection JSON:", JSON.stringify(measurementCollection, null, 2));
+  console.log("Export: Collection name:", userLabel);
+  console.log("Export: Experiment ID:", experimentId);
   
   const jsonBlob = new Blob([JSON.stringify(measurementCollection)], {
     type: 'application/octet-stream',

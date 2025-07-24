@@ -571,7 +571,7 @@ export async function importMeasurementCollection({
       let toolName = im.type || im.toolType || im.toolName || 'Length';
       
       // Map OHIFv2 tool names to Cornerstone3D tool names
-      if (toolName === 'EllipticalRoi') {
+      if (toolName === 'EllipticalRoi' || toolName === 'EllipticalROI') {
         toolName = 'EllipticalROI';
       }
       
@@ -906,37 +906,83 @@ export async function importMeasurementCollection({
       // Handle CircleROI and EllipticalROI tools
       console.log(`🔍 DEBUG: Processing ${measurement.toolName} with im.data:`, im.data);
       
-      // Initialize handles structure
+      // Initialize handles structure and preserve cachedStats
       measurement.data.handles = {};
+      
+      // Preserve cachedStats if they exist
+      if (im.data?.cachedStats) {
+        measurement.data.cachedStats = im.data.cachedStats;
+        console.log(`🔍 DEBUG: Preserved cachedStats for ${measurement.toolName}:`, im.data.cachedStats);
+      }
       
       // Try to get handles from multiple sources
       let hasValidHandles = false;
       
-      if (im.data?.handles) {
+      // Check for handles in the exported data structure
+      const exportedHandles = im.data?.handles;
+      console.log(`🔍 DEBUG: Exported handles for ${measurement.toolName}:`, exportedHandles);
+      
+      if (exportedHandles) {
         // If we have existing handles, try to use them
-        if (im.data.handles.center && im.data.handles.end) {
+        if (exportedHandles.center && exportedHandles.end) {
           // CircleROI/EllipticalROI typically have center and end
           measurement.data.handles = {
             center: {
-              x: im.data.handles.center.x,
-              y: im.data.handles.center.y,
-              z: im.data.handles.center.z || 0
+              x: exportedHandles.center.x,
+              y: exportedHandles.center.y,
+              z: exportedHandles.center.z || 0
             },
             end: {
-              x: im.data.handles.end.x,
-              y: im.data.handles.end.y,
-              z: im.data.handles.end.z || 0
+              x: exportedHandles.end.x,
+              y: exportedHandles.end.y,
+              z: exportedHandles.end.z || 0
             }
           };
           
           measurement.points = [
-            [im.data.handles.center.x, im.data.handles.center.y, im.data.handles.center.z || 0],
-            [im.data.handles.end.x, im.data.handles.end.y, im.data.handles.end.z || 0],
+            [exportedHandles.center.x, exportedHandles.center.y, exportedHandles.center.z || 0],
+            [exportedHandles.end.x, exportedHandles.end.y, exportedHandles.end.z || 0],
           ];
           hasValidHandles = true;
+        } else if (exportedHandles.points && Array.isArray(exportedHandles.points)) {
+          // Handle the case where we have points array
+          console.log(`🔍 DEBUG: Found points array in exported handles:`, exportedHandles.points);
+          
+          if (exportedHandles.points.length >= 4) {
+            // For EllipticalROI, we typically have 4 points defining the ellipse
+            measurement.data.handles = {
+              points: exportedHandles.points.map((pt: any) => ({
+                x: pt.x,
+                y: pt.y,
+                z: pt.z || 0
+              }))
+            };
+            measurement.points = exportedHandles.points.map((pt: any) => [pt.x, pt.y, pt.z || 0]);
+            hasValidHandles = true;
+          } else if (exportedHandles.points.length >= 2) {
+            // Use first two points as center and end
+            const firstPoint = exportedHandles.points[0];
+            const secondPoint = exportedHandles.points[1];
+            
+            measurement.data.handles = {
+              center: {
+                x: firstPoint.x,
+                y: firstPoint.y,
+                z: firstPoint.z || 0
+              },
+              end: {
+                x: secondPoint.x,
+                y: secondPoint.y,
+                z: secondPoint.z || 0
+              }
+            };
+            
+            measurement.points = exportedHandles.points.map((pt: any) => [pt.x, pt.y, pt.z || 0]);
+            hasValidHandles = true;
+          }
         } else {
           // Try to extract from any available handle points
-          const handleValues = Object.values(im.data.handles).filter(
+          const handleValues = Object.values(exportedHandles).filter(
             (h: any) => h && typeof h.x === 'number' && typeof h.y === 'number'
           );
           
