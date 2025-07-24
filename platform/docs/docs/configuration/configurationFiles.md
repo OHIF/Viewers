@@ -186,6 +186,7 @@ if auth headers are used, a preflight request is required.
   }
   ```
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+- `showStudyList`: (default to false), if set to false, the OHIF search (or work list) page will not be shown nor will there be a back button (chevron) in the viewer to navigate to it
 - `useNorm16Texture`: (default to false), if set to true, it will use 16 bit data type for the image data wherever possible which has
   significant impact on reducing the memory usage. However, the 16Bit textures require EXT_texture_norm16 extension in webGL 2.0 (you can check if you have it here https://webglreport.com/?v=2). In addition to the extension, there are reported problems for Intel Macs that might cause the viewer to crash. In summary, it is great a configuration if you have support for it.
 - `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to

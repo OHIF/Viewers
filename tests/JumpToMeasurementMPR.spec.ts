@@ -4,7 +4,7 @@ import { visitStudy, checkForScreenshot, screenShotPaths, simulateClicksOnElemen
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, mode, 5000);
 });
 
 test('should hydrate in MPR correctly', async ({ page }) => {
@@ -14,6 +14,8 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   // get the div that has Body 4.0 Lung I and double click it
 
   await page.locator(':text("S:7")').first().dblclick();
+
+  await page.waitForTimeout(5000);
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -33,6 +35,8 @@ test('should hydrate in MPR correctly', async ({ page }) => {
       viewport.render();
     }
   });
+
+  await page.waitForTimeout(5000);
 
   await page.getByTestId('MeasurementTools-split-button-secondary').click();
   await page.getByTestId('Bidirectional').click();
@@ -80,22 +84,20 @@ test('should hydrate in MPR correctly', async ({ page }) => {
     }
   });
 
-  // wait 2 seconds
-  await page.waitForTimeout(2000);
+  // wait 5 seconds
+  await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.scrollAway);
 
   await page.getByTestId('data-row').first().click();
-
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
 
   await page.getByTestId('Layout').click();
   await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
 
-  // wait 2 seconds
-  await page.waitForTimeout(2000);
+  // wait 5 seconds
+  await page.waitForTimeout(5000);
 
   // jump in viewport again
   await page.getByTestId('data-row').first().click();
@@ -105,13 +107,12 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpInMPR);
 
   await page.locator(':text("S:3")').first().dblclick();
+
   await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR);
 
   await page.getByTestId('data-row').first().click();
-
-  await page.waitForTimeout(5000);
 
   await checkForScreenshot(
     page,

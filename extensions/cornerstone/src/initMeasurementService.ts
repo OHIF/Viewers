@@ -359,7 +359,8 @@ const connectMeasurementServiceToTools = ({
       return;
     }
 
-    for (const measurement of Object.values(measurements) as any[]) {
+    commandsManager.run('startRecordingForAnnotationGroup');
+    for (const measurement of Object.values(measurements)) {
       const { uid, source } = measurement;
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
@@ -372,6 +373,7 @@ const connectMeasurementServiceToTools = ({
         options: { deleting: true },
       });
     }
+    commandsManager.run('endRecordingForAnnotationGroup');
 
     // trigger a render
     cornerstoneViewportService.getRenderingEngine().render();
