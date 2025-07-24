@@ -23,6 +23,7 @@ test.describe('3D primary Test', async () => {
       .click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
+    await page.waitForTimeout(5000);
     await checkForScreenshot(
       page,
       page,
