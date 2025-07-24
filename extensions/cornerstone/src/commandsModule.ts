@@ -150,7 +150,12 @@ function commandsModule({
       const { metadata } = measurement;
 
       const activeViewportId = viewportGridService.getActiveViewportId();
-      const viewportId = cornerstoneViewportService.getViewportIdToJump(activeViewportId, metadata);
+      // Finds the best viewport to jump to for showing the annotation view reference
+      // This may be different from active if there is a viewport already showing the display set.
+      const viewportId = cornerstoneViewportService.findNavigationCompatibleViewportId(
+        activeViewportId,
+        metadata
+      );
       if (viewportId) {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
         viewport.setViewReference(metadata);
@@ -163,7 +168,10 @@ function commandsModule({
         return;
       }
 
-      const viewportToUpdate = cornerstoneViewportService.getViewportIdToUpdate(
+      // Finds the viewport to update to show the given displayset/orientation.
+      // This will choose a view already containing the measurement display set
+      // if possible, otherwise will fallback to the active.
+      const viewportToUpdate = cornerstoneViewportService.findUpdateableViewportConfiguration(
         activeViewportId,
         measurement
       );
@@ -189,7 +197,7 @@ function commandsModule({
 
       // Update stored position presentation
       commandsManager.run('updateStoredPositionPresentation', {
-        viewportId: activeViewportId,
+        viewportId: viewportToUpdate.viewportId,
         displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
         referencedImageId: measurement.referencedImageId,
         options: {
