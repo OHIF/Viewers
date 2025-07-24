@@ -194,7 +194,6 @@ const xnatConfig = {
             // Try to continue instead of crashing
             return true;
         }
-
         console.trace('Error stack trace:');
     },
     // whiteLabeling: {
@@ -390,7 +389,6 @@ const xnatConfig = {
                                 xhr.setRequestHeader('Accept', 'application/octet-stream,*/*');
                             }
                         });
-
                     } catch (error) {
                         console.error('Error configuring WadoImageLoader:', error);
                     }
@@ -449,7 +447,6 @@ const xnatConfig = {
             }
             return originalFetch.apply(this, args);
         };
-
     }
 };
 
@@ -476,7 +473,6 @@ const xnatConfig = {
         enumerable: true,
         configurable: false
     });
-
 })();
 
 // Add immediate patches outside the beforeInit function to ensure they're applied

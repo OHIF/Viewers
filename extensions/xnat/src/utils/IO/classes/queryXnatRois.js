@@ -32,7 +32,6 @@ export const XnatSessionRoiCollections = async() => {
             }
         }
 
-
         if (!projectId || !experimentId) {
             throw new Error('No XNAT session information available. Please ensure you are viewing data from XNAT and that the session is properly initialized.');
         }
@@ -40,7 +39,6 @@ export const XnatSessionRoiCollections = async() => {
         // Fetch assessors from XNAT using the existing fetchJSON utility
         // Remove leading slash to avoid double slash in URL construction
         const assessorsRoute = `data/archive/projects/${projectId}/subjects/${subjectId}/experiments/${experimentId}/assessors?format=json`;
-
         const assessorsPromise = fetchJSON(assessorsRoute);
         const assessorsData = await assessorsPromise.promise;
         const collections = [];
@@ -74,7 +72,6 @@ export const XnatSessionRoiCollections = async() => {
                     }
                     const item = assessorData.items[0];
                     const dataFields = item.data_fields;
-
                     // Extract the referenced series UID
                     let seriesInstanceUID;
                     if (item.children) {
@@ -91,11 +88,11 @@ export const XnatSessionRoiCollections = async() => {
 
                     // Only process SEG or MEAS collections
                     if (dataFields.collectionType === 'SEG' || dataFields.collectionType === 'MEAS') {
+
                         // Get files for this collection
                         const filesRoute = `data/archive/experiments/${dataFields.imageSession_ID}/assessors/${dataFields.ID}/files?format=json`;
                         const filesPromise = fetchJSON(filesRoute);
                         const filesData = await filesPromise.promise;
-
                         if (filesData && filesData.ResultSet && filesData.ResultSet.Result) {
                             let targetFile = null;
 
@@ -108,8 +105,8 @@ export const XnatSessionRoiCollections = async() => {
                                     (file) => file.collection === 'MEAS' && file.Name.endsWith('.json')
                                 );
                             }
-
                             if (targetFile) {
+
                                 collections.push({
                                     id: dataFields.ID,
                                     label: dataFields.label || dataFields.name,
@@ -119,6 +116,7 @@ export const XnatSessionRoiCollections = async() => {
                                     time: dataFields.time,
                                     seriesInstanceUID,
                                     relativeUri: targetFile.URI, // URI to the actual file
+
                                     description: `${dataFields.collectionType} collection created on ${dataFields.date}`,
                                 });
                             }

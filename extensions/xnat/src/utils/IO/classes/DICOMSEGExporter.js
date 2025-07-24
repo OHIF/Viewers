@@ -23,7 +23,6 @@ export default class DICOMSEGExporter {
     get experimentID() {
         return this._experimentID;
     }
-
     /**
      * exportToXNAT - Exports the DICOMSEG to XNAT.
      *

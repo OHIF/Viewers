@@ -41,13 +41,11 @@ const {
 } = adaptersSEG;
 
 const { downloadDICOMData } = helpers;
-
 interface PromptResult {
   action: number;
   value: string;
   dataSourceName: string;
 }
-
 // Helper function to get target viewport
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
@@ -890,7 +888,6 @@ generateSegmentation: ({ segmentationId, options = {} }) => {
       if (!segment) {
         return;
       }
-
       const segmentLabel = (segment as any).label || `Segment ${segmentIndex}`;
       
       // Get color information
@@ -1017,7 +1014,6 @@ XNATStoreSegmentation: async ({ segmentationId }) => {
     const generatedData = actions.generateSegmentation({
       segmentationId,
     });
-
     if (!generatedData || !generatedData.dataset) {
       throw new Error('Error during segmentation generation');
     }
@@ -1155,6 +1151,7 @@ downloadCSVSegmentationReport: ({ segmentationId }) => {
     .getActiveDisplaySets()
     .find(ds => ds.imageIds?.some(i => i === firstImageId));
 
+
   const {
     SeriesNumber,
     SeriesInstanceUID,
@@ -1212,7 +1209,6 @@ generateSegmentationCSVReport: (segmentationData, info) => {
   csvRows.push([]);
 
   csvRows.push(['Segments Statistics']);
-
   // Add segment information in columns
   if (segmentationData.segments) {
     // First row: Segment headers
@@ -1263,6 +1259,7 @@ generateSegmentationCSVReport: (segmentationData, info) => {
             const stat = segment.cachedStats.namedStats[statKey];
             const currentStatName = `${stat.label || stat.name}${stat.unit ? ` (${stat.unit})` : ''}`;
 
+
             if (currentStatName === statName) {
               statValue = stat.value !== undefined ? stat.value : '';
               break;
@@ -1291,7 +1288,6 @@ generateSegmentationCSVReport: (segmentationData, info) => {
     });
     csvString += formattedRow.join(',') + '\n';
   }
-
   // Create a download link and trigger the download
   const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -1473,7 +1469,6 @@ XNATImportSegmentation: async ({ arrayBuffer, studyInstanceUID, seriesInstanceUI
     throw error;
   }
 },
-
 XNATPromptSaveReport: async () => {
   const { UIModalService } = servicesManager.services;
 

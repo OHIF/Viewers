@@ -110,7 +110,6 @@ export const importSegmentation = async ({
       throw new Error('No image IDs found in referenced display set');
     }
 
-
     // Parse the DICOM SEG file using cornerstone adapters
     const tolerance = 0.001;
     const results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
@@ -122,12 +121,10 @@ export const importSegmentation = async ({
     if (!results) {
       throw new Error('Failed to parse DICOM SEG file');
     }
-
     // Ensure centroids are properly structured
     results.centroids = ensureCentroidsStructure(results.centroids, results.segMetadata);
-
-    // Debug centroids structure
     results.centroids.forEach((centroid, index) => {
+
     });
 
     // Process colors for segments (similar to cornerstone-dicom-seg extension)
@@ -174,7 +171,6 @@ export const importSegmentation = async ({
       SeriesDate: new Date().toISOString().split('T')[0], // Add SeriesDate for modifiedTime
       ...results, // Include all the parsed SEG data
     };
-
     // Create segmentation using the segmentation service with correct API
     const createdSegmentationId = await segmentationService.createSegmentationForSEGDisplaySet(
       segDisplaySet,
@@ -183,7 +179,6 @@ export const importSegmentation = async ({
         type: ToolsEnums.SegmentationRepresentations.Labelmap,
       }
     );
-
     // Get the active viewport ID
     const activeViewportId = viewportGridService.getActiveViewportId();
     
@@ -195,7 +190,6 @@ export const importSegmentation = async ({
 
     // Set the imported segmentation as active
     segmentationService.setActiveSegmentation(activeViewportId, createdSegmentationId);
-
     const createdSegmentation = segmentationService.getSegmentation(createdSegmentationId);
     if (createdSegmentation && createdSegmentation.config && createdSegmentation.config.segments) {
       Object.keys(createdSegmentation.config.segments).forEach(segmentIndex => {
