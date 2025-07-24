@@ -650,7 +650,6 @@ function commandsModule({
         });
 
         callback?.(label);
-        // setAnnotationLabel(sourceAnnotation, element, label);
         return;
       }
 
