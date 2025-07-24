@@ -795,9 +795,22 @@ export async function importMeasurementCollection({
     } else if (measurement.toolName === 'RectangleROI') {
       if (measurement.points.length >= 4) {
         // Calculate textBox position as center of the rectangle
-        const avgX = measurement.points.reduce((sum, point) => sum + point[0], 0) / measurement.points.length;
-        const avgY = measurement.points.reduce((sum, point) => sum + point[1], 0) / measurement.points.length;
-        const avgZ = measurement.points.reduce((sum, point) => sum + (point[2] || 0), 0) / measurement.points.length;
+        // Handle both array and object point formats
+        const avgX = measurement.points.reduce((sum, point) => {
+          const x = Array.isArray(point) ? point[0] : (point && typeof point === 'object' ? point.x : 0);
+          return sum + x;
+        }, 0) / measurement.points.length;
+        
+        const avgY = measurement.points.reduce((sum, point) => {
+          const y = Array.isArray(point) ? point[1] : (point && typeof point === 'object' ? point.y : 0);
+          return sum + y;
+        }, 0) / measurement.points.length;
+        
+        const avgZ = measurement.points.reduce((sum, point) => {
+          const z = Array.isArray(point) ? (point[2] || 0) : (point && typeof point === 'object' ? (point.z || 0) : 0);
+          return sum + z;
+        }, 0) / measurement.points.length;
+        
         const textBoxWorldPosition = [avgX, avgY, avgZ];
 
         // Calculate proper worldBoundingBox for the text box
@@ -828,31 +841,75 @@ export async function importMeasurementCollection({
         };
 
         // Cornerstone3D RectangleROI expects data.handles.points as array of 4 3D coordinates for rectangle corners
+        // Convert points to the expected format - handle both array and object formats
+        console.log('🔍 DEBUG: RectangleROI points before formatting:', measurement.points);
+        
+        const formattedPoints = measurement.points.map(point => {
+          if (Array.isArray(point)) {
+            return [point[0], point[1], point[2] || 0];
+          } else if (point && typeof point === 'object' && 'x' in point) {
+            return [point.x, point.y, point.z || 0];
+          } else {
+            console.warn('Unexpected point format for RectangleROI:', point);
+            return [0, 0, 0];
+          }
+        });
+        
+        console.log('🔍 DEBUG: RectangleROI formatted points:', formattedPoints);
+        
+        // Also update the measurement.points to be consistent
+        measurement.points = formattedPoints;
+        
         measurement.data.handles = {
-          points: measurement.points.map(point => [point[0], point[1], point[2] || 0]),
+          points: formattedPoints,
           textBox: {
             hasMoved: false,
             worldPosition: textBoxWorldPosition,
             worldBoundingBox: worldBoundingBox,
           },
         };
+        
+        console.log('🔍 DEBUG: RectangleROI final handles structure:', measurement.data.handles);
       } else if (im.data?.handles) {
-        measurement.data.handles = im.data.handles;
-
+        console.log('🔍 DEBUG: RectangleROI using im.data.handles:', im.data.handles);
+        
         // Extract points from handles for RectangleROI
-        if (im.data.handles.corner1 && im.data.handles.corner2) {
+        if (im.data.handles.points && Array.isArray(im.data.handles.points)) {
+          // Points are already in the correct format
+          const formattedPoints = im.data.handles.points.map((point: any) => {
+            if (Array.isArray(point)) {
+              return [point[0], point[1], point[2] || 0];
+            } else if (point && typeof point === 'object' && 'x' in point) {
+              return [point.x, point.y, point.z || 0];
+            } else {
+              console.warn('Unexpected point format in handles.points:', point);
+              return [0, 0, 0];
+            }
+          });
+          
+          measurement.points = formattedPoints;
+          measurement.data.handles = {
+            ...im.data.handles,
+            points: formattedPoints
+          };
+        } else if (im.data.handles.corner1 && im.data.handles.corner2) {
           // RectangleROI typically has corner1 and corner2
           measurement.points = [
             [im.data.handles.corner1.x, im.data.handles.corner1.y, im.data.handles.corner1.z || 0],
             [im.data.handles.corner2.x, im.data.handles.corner2.y, im.data.handles.corner2.z || 0],
           ];
+          measurement.data.handles = im.data.handles;
         } else {
           // Try to extract from any available handle points
           const handleValues = Object.values(im.data.handles).filter(
             (h: any) => h && typeof h.x === 'number' && typeof h.y === 'number'
           );
           measurement.points = handleValues.map((h: any) => [h.x, h.y, h.z || 0]);
+          measurement.data.handles = im.data.handles;
         }
+        
+        console.log('🔍 DEBUG: RectangleROI final points from handles:', measurement.points);
+        console.log('🔍 DEBUG: RectangleROI final handles from im.data.handles:', measurement.data.handles);
       }
 
       // Ensure displayText for RectangleROI measurement panel display
@@ -1013,18 +1070,31 @@ export async function importMeasurementCollection({
       // If we still don't have valid handles, try to create them from points
       if (!hasValidHandles && measurement.points && measurement.points.length >= 2) {
         console.log(`🔍 DEBUG: Creating ${measurement.toolName} handles from points:`, measurement.points);
-        measurement.data.handles = {
-          center: {
-            x: measurement.points[0][0],
-            y: measurement.points[0][1],
-            z: measurement.points[0][2] || 0
-          },
-          end: {
-            x: measurement.points[1][0],
-            y: measurement.points[1][1],
-            z: measurement.points[1][2] || 0
-          }
-        };
+        
+        if (measurement.toolName === 'RectangleROI' && measurement.points.length >= 4) {
+          // RectangleROI expects 4 corner points
+          measurement.data.handles = {
+            points: measurement.points.map((pt: any) => ({
+              x: pt[0],
+              y: pt[1],
+              z: pt[2] || 0
+            }))
+          };
+        } else {
+          // Other tools expect center/end handles
+          measurement.data.handles = {
+            center: {
+              x: measurement.points[0][0],
+              y: measurement.points[0][1],
+              z: measurement.points[0][2] || 0
+            },
+            end: {
+              x: measurement.points[1][0],
+              y: measurement.points[1][1],
+              z: measurement.points[1][2] || 0
+            }
+          };
+        }
         hasValidHandles = true;
       }
       
@@ -1032,19 +1102,35 @@ export async function importMeasurementCollection({
       if (!hasValidHandles) {
         console.warn(`🔍 DEBUG: ${measurement.toolName} has no valid data, creating default handles`);
         
-        // Create default handles at a reasonable position
-        const defaultCenter = { x: 100, y: 100, z: 0 };
-        const defaultEnd = { x: 150, y: 100, z: 0 };
-        
-        measurement.data.handles = {
-          center: defaultCenter,
-          end: defaultEnd
-        };
-        
-        measurement.points = [
-          [defaultCenter.x, defaultCenter.y, defaultCenter.z],
-          [defaultEnd.x, defaultEnd.y, defaultEnd.z]
-        ];
+        if (measurement.toolName === 'RectangleROI') {
+          // RectangleROI needs 4 corner points
+          const defaultPoints = [
+            { x: 100, y: 100, z: 0 },
+            { x: 200, y: 100, z: 0 },
+            { x: 100, y: 200, z: 0 },
+            { x: 200, y: 200, z: 0 }
+          ];
+          
+          measurement.data.handles = {
+            points: defaultPoints
+          };
+          
+          measurement.points = defaultPoints.map(pt => [pt.x, pt.y, pt.z]);
+        } else {
+          // Other tools expect center/end handles
+          const defaultCenter = { x: 100, y: 100, z: 0 };
+          const defaultEnd = { x: 150, y: 100, z: 0 };
+          
+          measurement.data.handles = {
+            center: defaultCenter,
+            end: defaultEnd
+          };
+          
+          measurement.points = [
+            [defaultCenter.x, defaultCenter.y, defaultCenter.z],
+            [defaultEnd.x, defaultEnd.y, defaultEnd.z]
+          ];
+        }
         
         hasValidHandles = true;
       }

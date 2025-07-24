@@ -1769,12 +1769,120 @@ XNATStoreMeasurements: async () => {
           base.measurements.push({ name: 'max', value: Number(maxVal), unit: '' });
         }
         break;
+      case 'CircleROI':
+        // CircleROI has specific data structure with radius, perimeter, etc.
+        let circleAreaVal = 0;
+        let circleRadiusVal = 0;
+        let circlePerimeterVal = 0;
+        let circleMeanVal = 0;
+        let circleStdDevVal = 0;
+        let circleMinVal = 0;
+        let circleMaxVal = 0;
+        
+        if (m.data?.cachedStats) {
+          // Get stats from cachedStats (the standard OHIF structure)
+          const stats = Object.values(m.data.cachedStats)[0] as any;
+          circleAreaVal = stats?.area || 0;
+          circleRadiusVal = stats?.radius || 0;
+          circlePerimeterVal = stats?.perimeter || 0;
+          circleMeanVal = stats?.mean || 0;
+          circleStdDevVal = stats?.stdDev || 0;
+          circleMinVal = stats?.min || 0;
+          circleMaxVal = stats?.max || 0;
+        } else if (m.displayText?.primary?.length > 0) {
+          // Fallback: parse from displayText
+          const primaryText = m.displayText.primary[0];
+          const areaMatch = primaryText.match(/([0-9.]+)\s*mm²/);
+          if (areaMatch) {
+            circleAreaVal = parseFloat(areaMatch[1]);
+          }
+        }
+        
+        console.log('Export: extracted CircleROI values:', {
+          area: circleAreaVal,
+          radius: circleRadiusVal,
+          perimeter: circlePerimeterVal,
+          mean: circleMeanVal,
+          stdDev: circleStdDevVal,
+          min: circleMinVal,
+          max: circleMaxVal
+        }, 'from measurement:', m);
+        console.log('Export: Full CircleROI measurement object:', JSON.stringify(m, null, 2));
+        
+        // CircleROI typically has 2 points: center and end point for radius
+        const circleHandles: any = {};
+        if (points.length >= 2) {
+          circleHandles.center = createHandle(points[0]);
+          circleHandles.end = createHandle(points[1]);
+        }
+        
+        // Extract the actual cachedStats from the measurement data
+        const actualCircleCachedStats = m.data?.cachedStats || {};
+        console.log('Export: Actual CircleROI cachedStats being exported:', actualCircleCachedStats);
+        
+        base.data = {
+          cachedStats: actualCircleCachedStats,
+          handles: circleHandles,
+        };
+        
+        // Add all available CircleROI measurements
+        if (circleAreaVal > 0) {
+          base.measurements.push({ name: 'area', value: Number(circleAreaVal), unit: 'mm²' });
+        }
+        if (circleRadiusVal > 0) {
+          base.measurements.push({ name: 'radius', value: Number(circleRadiusVal), unit: 'mm' });
+        }
+        if (circlePerimeterVal > 0) {
+          base.measurements.push({ name: 'perimeter', value: Number(circlePerimeterVal), unit: 'mm' });
+        }
+        if (circleMeanVal !== 0) {
+          base.measurements.push({ name: 'mean', value: Number(circleMeanVal), unit: '' });
+        }
+        if (circleStdDevVal !== 0) {
+          base.measurements.push({ name: 'stdDev', value: Number(circleStdDevVal), unit: '' });
+        }
+        if (circleMinVal !== 0) {
+          base.measurements.push({ name: 'min', value: Number(circleMinVal), unit: '' });
+        }
+        if (circleMaxVal !== 0) {
+          base.measurements.push({ name: 'max', value: Number(circleMaxVal), unit: '' });
+        }
+        break;
       case 'ArrowAnnotate':
+        console.log('Export: ArrowAnnotate measurement:', m);
+        console.log('Export: ArrowAnnotate points:', points);
+        console.log('Export: ArrowAnnotate textBox:', m.textBox);
+        
+        // ArrowAnnotate typically has 2 points: start and end of the arrow
+        const arrowHandles: any = {};
+        if (points.length >= 2) {
+          arrowHandles.start = createHandle(points[0]);
+          arrowHandles.end = createHandle(points[1]);
+        }
+        
+        // Extract textBox data if available
+        const textBoxData = m.textBox ? {
+          hasMoved: m.textBox.hasMoved || false,
+          worldPosition: m.textBox.worldPosition || [0, 0, 0],
+          worldBoundingBox: m.textBox.worldBoundingBox || {
+            topLeft: [0, 0, 0],
+            topRight: [0, 0, 0],
+            bottomLeft: [0, 0, 0],
+            bottomRight: [0, 0, 0]
+          }
+        } : {};
+        
         base.data = {
           text: m.text || '',
-          handles: {},
+          handles: arrowHandles,
+          textBox: textBoxData,
         };
-        base.measurements.push({ name: 'arrow', comment: m.text || '', unit: '' });
+        
+        // Add arrow measurement with any text content
+        const arrowText = m.text || m.label || '';
+        base.measurements.push({ name: 'arrow', comment: arrowText, unit: '' });
+        
+        console.log('Export: ArrowAnnotate exported data:', base.data);
         break;
       default:
         console.log(`🔍 DEBUG: No specific case for tool type: ${base.toolType}, using default`);
