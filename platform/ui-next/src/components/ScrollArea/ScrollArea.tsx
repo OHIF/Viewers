@@ -12,6 +12,8 @@ interface ScrollAreaProps extends React.ComponentPropsWithoutRef<typeof ScrollAr
   /** Flag to show/hide scroll indicator arrows at top and bottom */
   showArrows?: boolean;
   type?: 'auto' | 'always' | 'scroll';
+  /** Ref to the viewport element for external scroll control */
+  viewportRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
@@ -34,10 +36,11 @@ interface ScrollAreaProps extends React.ComponentPropsWithoutRef<typeof ScrollAr
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   ScrollAreaProps
->(({ className, children, showArrows = false, ...props }, ref) => {
+>(({ className, children, showArrows = false, viewportRef: externalViewportRef, ...props }, ref) => {
   const [showBottomArrow, setShowBottomArrow] = React.useState(false);
   const [showTopArrow, setShowTopArrow] = React.useState(false);
-  const viewportRef = React.useRef<HTMLDivElement>(null);
+  const internalViewportRef = React.useRef<HTMLDivElement>(null);
+  const viewportRef = externalViewportRef || internalViewportRef;
 
   const checkScroll = React.useCallback(() => {
     if (viewportRef.current) {

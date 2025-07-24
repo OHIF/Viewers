@@ -20,6 +20,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   } = useSegmentationTableContext('SegmentationSegments');
 
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
+  const viewportRef = React.useRef<HTMLDivElement>(null);
+  const segmentRefsMap = React.useRef<Map<number, HTMLDivElement>>(new Map());
+  const userClickedRef = React.useRef<boolean>(false);
 
   // Try to get segmentation data from expanded context first, then fall back to table context
   let segmentation;
@@ -51,49 +54,64 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     return segmentFromSegmentation?.active;
   });
 
-  // Scroll to active segment when it changes
+  // Scroll to active segment when it changes (only for programmatic activation, not user clicks)
   React.useEffect(() => {
-    if (activeSegment && isActiveSegmentation && scrollAreaRef.current) {
-      const segmentElement = scrollAreaRef.current.querySelector(
-        `[data-segment-index="${activeSegment.segmentIndex}"]`
-      );
+    // Only auto-scroll if this wasn't triggered by a user click in the panel
+    if (activeSegment && isActiveSegmentation && !userClickedRef.current && viewportRef.current) {
+      const segmentElement = segmentRefsMap.current.get(activeSegment.segmentIndex);
       
       if (segmentElement) {
-        // Check if the element is already visible
-        const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-        if (scrollContainer) {
-          const containerRect = scrollContainer.getBoundingClientRect();
-          const elementRect = segmentElement.getBoundingClientRect();
+        const scrollContainer = viewportRef.current;
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elementRect = segmentElement.getBoundingClientRect();
+        
+        // Check if element is outside the visible area
+        const isAboveView = elementRect.top < containerRect.top;
+        const isBelowView = elementRect.bottom > containerRect.bottom;
+        
+        if (isAboveView || isBelowView) {
+          // Use more controlled scroll behavior
+          const elementTop = segmentElement.offsetTop;
+          const containerHeight = scrollContainer.clientHeight;
+          const elementHeight = segmentElement.clientHeight;
           
-          // Check if element is outside the visible area
-          const isAboveView = elementRect.top < containerRect.top;
-          const isBelowView = elementRect.bottom > containerRect.bottom;
+          // Calculate scroll position to center element, with proper bounds checking
+          const targetScrollTop = Math.max(0, 
+            Math.min(
+              elementTop - (containerHeight - elementHeight) / 2,
+              scrollContainer.scrollHeight - containerHeight
+            )
+          );
           
-          if (isAboveView || isBelowView) {
-            segmentElement.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-          }
+          scrollContainer.scrollTo({
+            top: targetScrollTop,
+            behavior: 'smooth'
+          });
         }
       }
     }
-  }, [activeSegment?.segmentIndex, isActiveSegmentation]);
+    
+    // Reset the user click flag after processing
+    userClickedRef.current = false;
+  }, [activeSegment, isActiveSegmentation]);
 
   if (!representation || !segmentation) {
     return null;
   }
 
   return (
-    <ScrollArea
-      ref={scrollAreaRef}
-      className={`bg-bkg-low space-y-px`}
-      showArrows={true}
+    <div
+      ref={scrollableContainerRef}
+      style={{ maxHeight: maxHeight }}
+      className="relative"
     >
-      <div
-        ref={scrollableContainerRef}
-        style={{ maxHeight: maxHeight }}
+      <ScrollArea
+        ref={scrollAreaRef}
+        viewportRef={viewportRef}
+        className={`bg-bkg-low space-y-px h-full`}
+        showArrows={true}
       >
+        <div className="space-y-px">
         {segments.map(segment => {
           if (!segment) {
             return null;
@@ -113,74 +131,62 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
           const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
           const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
+          
+          // Common DataRow props to avoid duplication
+          const dataRowProps = {
+            number: showSegmentIndex ? segmentIndex : null,
+            title: label,
+            description: displayText,
+            colorHex: cssColor,
+            isSelected: active,
+            isVisible: visible,
+            isLocked: locked,
+            disableEditing: disableEditing,
+            className: !isActiveSegmentation ? 'opacity-80' : '',
+            onColor: () => onSegmentColorClick(segmentation.segmentationId, segmentIndex),
+            onToggleVisibility: () =>
+              onToggleSegmentVisibility(
+                segmentation.segmentationId,
+                segmentIndex,
+                representation.type
+              ),
+            onToggleLocked: () => onToggleSegmentLock(segmentation.segmentationId, segmentIndex),
+            onSelect: () => {
+              userClickedRef.current = true; // Mark as user-initiated
+              onSegmentClick(segmentation.segmentationId, segmentIndex);
+            },
+            onRename: () => onSegmentEdit(segmentation.segmentationId, segmentIndex),
+            onDelete: () => onSegmentDelete(segmentation.segmentationId, segmentIndex),
+          };
+          
+          // Function to set segment ref
+          const setSegmentRef = (element: HTMLDivElement | null) => {
+            if (element) {
+              segmentRefsMap.current.set(segmentIndex, element);
+            } else {
+              segmentRefsMap.current.delete(segmentIndex);
+            }
+          };
+
           const DataRowComponent = (
             <div
               key={segmentIndex}
-              data-segment-index={segmentIndex}
+              ref={setSegmentRef}
             >
-              <DataRow
-                number={showSegmentIndex ? segmentIndex : null}
-                title={label}
-                // details={displayText}
-                description={displayText}
-                colorHex={cssColor}
-                isSelected={active}
-                isVisible={visible}
-                isLocked={locked}
-                disableEditing={disableEditing}
-                className={!isActiveSegmentation ? 'opacity-80' : ''}
-                onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
-                onToggleVisibility={() =>
-                  onToggleSegmentVisibility(
-                    segmentation.segmentationId,
-                    segmentIndex,
-                    representation.type
-                  )
-                }
-                onToggleLocked={() => onToggleSegmentLock(segmentation.segmentationId, segmentIndex)}
-                onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
-                onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
-                onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
-              />
+              <DataRow {...dataRowProps} />
             </div>
           );
 
           return hasStats ? (
-            <div
+            <HoverCard
               key={`hover-${segmentIndex}`}
-              data-segment-index={segmentIndex}
+              openDelay={300}
             >
-              <HoverCard
-                openDelay={300}
-              >
-                <HoverCardTrigger asChild>
-                  <div>
-                    <DataRow
-                      number={showSegmentIndex ? segmentIndex : null}
-                      title={label}
-                      // details={displayText}
-                      description={displayText}
-                      colorHex={cssColor}
-                      isSelected={active}
-                      isVisible={visible}
-                      isLocked={locked}
-                      disableEditing={disableEditing}
-                      className={!isActiveSegmentation ? 'opacity-80' : ''}
-                      onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
-                      onToggleVisibility={() =>
-                        onToggleSegmentVisibility(
-                          segmentation.segmentationId,
-                          segmentIndex,
-                          representation.type
-                        )
-                      }
-                      onToggleLocked={() => onToggleSegmentLock(segmentation.segmentationId, segmentIndex)}
-                      onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
-                      onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
-                      onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
-                    />
-                  </div>
-                </HoverCardTrigger>
+              <HoverCardTrigger asChild>
+                <div ref={setSegmentRef}>
+                  <DataRow {...dataRowProps} />
+                </div>
+              </HoverCardTrigger>
               <HoverCardContent
                 side="left"
                 align="start"
@@ -205,13 +211,13 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 </SegmentStatistics>
               </HoverCardContent>
             </HoverCard>
-            </div>
           ) : (
             DataRowComponent
           );
         })}
-      </div>
-    </ScrollArea>
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 
