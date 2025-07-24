@@ -637,9 +637,22 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: async ({ callback }) => {
+    arrowTextCallback: async ({ callback, data }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
+
+      if (!labelConfig) {
+        const label = await callInputDialog({
+          uiDialogService,
+          title: 'Edit Arrow Text',
+          placeholder: data?.data?.label || 'Enter new text',
+          defaultValue: data?.data?.label || '',
+        });
+
+        callback?.(label);
+        // setAnnotationLabel(sourceAnnotation, element, label);
+        return;
+      }
 
       const value = await callInputDialogAutoComplete({
         uiDialogService,
