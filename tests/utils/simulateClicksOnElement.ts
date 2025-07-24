@@ -9,13 +9,26 @@ import { Locator } from 'playwright';
 export async function simulateClicksOnElement({
   locator,
   points,
+  button = 'left',
 }: {
   locator: Locator;
   points: { x: number; y: number }[];
+  button?: 'left' | 'right' | 'middle';
 }) {
   for (const { x, y } of points) {
-    await locator.click({ delay: 100, position: { x, y } });
+    await locator.click({ delay: 100, position: { x, y }, button });
   }
+}
+
+export async function simulateDoubleClickOnElement({
+  locator,
+  point,
+}: {
+  locator: Locator;
+  point: { x: number; y: number };
+}) {
+  const { x, y } = point;
+  await locator.dblclick({ delay: 100, position: { x, y } });
 }
 
 /**
