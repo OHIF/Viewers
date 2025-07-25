@@ -3,3 +3,4 @@ export * from './types';
 export * from './useViewportRef';
 export * from './useViewportSize';
 export * from './useViewportMousePosition';
+export * from './useCustomization';
