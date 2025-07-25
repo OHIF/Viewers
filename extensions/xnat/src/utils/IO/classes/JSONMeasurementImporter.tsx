@@ -43,13 +43,10 @@ function setupRemovalProtection(measurementService) {
       const { measurement: measurementId } = eventData;
       
       if (recentlyImportedMeasurements.has(measurementId)) {
-        console.log(`🔍 DEBUG: Intercepted removal of recently imported measurement ${measurementId}`);
-        console.log(`🔍 DEBUG: Total measurements protected from removal: ${recentlyImportedMeasurements.size}`);
         
         // Get the stored measurement data for re-adding
         const storedMeasurement = protectedMeasurements.get(measurementId);
         if (storedMeasurement) {
-          console.log(`🔍 DEBUG: Re-adding measurement ${measurementId} to prevent premature removal`);
           
           // Re-add the measurement to the service
           try {
@@ -63,12 +60,11 @@ function setupRemovalProtection(measurementService) {
               storedMeasurement.rawData, 
               identityMapping
             );
-            console.log(`🔍 DEBUG: Successfully re-added measurement ${measurementId}`);
           } catch (error) {
             console.error(`❌ Failed to re-add measurement ${measurementId}:`, error);
           }
         } else {
-          console.warn(`⚠️ No stored data found for measurement ${measurementId}`);
+          console.warn(`No stored data found for measurement ${measurementId}`);
         }
       }
     }
@@ -90,7 +86,6 @@ function setupRemovalProtection(measurementService) {
           // Check if we've already tried to restore this measurement too many times
           const attempts = displayTextRestorationAttempts.get(measurementId) || 0;
           if (attempts >= 3) {
-            console.log(`🔍 DEBUG: Max display text restoration attempts reached for ${measurementId}, skipping`);
             return;
           }
           
@@ -113,18 +108,12 @@ function setupRemovalProtection(measurementService) {
           if (needsRestoration && !isArrowAnnotateWithLabel) {
             
             displayTextRestorationAttempts.set(measurementId, attempts + 1);
-            console.log(`🔍 DEBUG: Restoring display text for measurement ${measurementId} (attempt ${attempts + 1}/3)`);
-            console.log(`🔍 DEBUG: Current display text:`, currentDisplayText);
-            console.log(`🔍 DEBUG: Stored display text:`, storedDisplayText);
             
             // Only directly modify the measurement object to avoid triggering update events
             if (measurement.displayText) {
               measurement.displayText.primary = [...storedDisplayText.primary];
               measurement.displayText.secondary = [...storedDisplayText.secondary];
-              console.log(`🔍 DEBUG: Directly modified measurement display text for ${measurementId}`);
             }
-            
-            console.log(`🔍 DEBUG: Display text restored for measurement ${measurementId}`);
           }
         }
       }
@@ -144,7 +133,6 @@ function setupRemovalProtection(measurementService) {
           // Check if we've already tried to restore this measurement too many times
           const attempts = displayTextRestorationAttempts.get(measurementId) || 0;
           if (attempts >= 3) {
-            console.log(`🔍 DEBUG: Max display text restoration attempts reached for ${measurementId}, skipping`);
             return;
           }
           
@@ -166,16 +154,12 @@ function setupRemovalProtection(measurementService) {
           if (needsRestoration && !isArrowAnnotateWithLabel) {
             
             displayTextRestorationAttempts.set(measurementId, attempts + 1);
-            console.log(`🔍 DEBUG: Restoring display text after RAW_MEASUREMENT_ADDED for ${measurementId} (attempt ${attempts + 1}/3)`);
             
             // Only directly modify the measurement object to avoid triggering update events
             if (measurement.displayText) {
               measurement.displayText.primary = [...storedDisplayText.primary];
               measurement.displayText.secondary = [...storedDisplayText.secondary];
-              console.log(`🔍 DEBUG: Directly modified measurement display text for ${measurementId}`);
             }
-            
-            console.log(`🔍 DEBUG: Display text restored after RAW_MEASUREMENT_ADDED for ${measurementId}`);
           }
         }
       }
@@ -194,9 +178,8 @@ function setupRemovalProtection(measurementService) {
       if (unsubscribeRawAdded && typeof unsubscribeRawAdded === 'function') {
         unsubscribeRawAdded();
       }
-      console.log(`🔍 DEBUG: Successfully unsubscribed from all measurement events`);
     } catch (error) {
-      console.error(`🔍 DEBUG: Error during unsubscribe:`, error);
+      console.error(`Error during unsubscribe:`, error);
     }
   };
   
@@ -229,8 +212,7 @@ function _getImageIdAndDisplaySetInfo(sopInstanceUID, frameNumber, seriesUID, di
           image.SOPInstanceUID === sopInstanceUID
         );
         if (matchingImage) {
-          matchingDisplaySet = displaySet;
-          console.log(`🔍 DEBUG: Found matching image in displaySet.images`);
+          matchingDisplaySet = displaySet;  
           break;
         }
       }
@@ -328,7 +310,6 @@ function _getImageIdAndDisplaySetInfo(sopInstanceUID, frameNumber, seriesUID, di
 const identityMapping = data => {
   // The data object contains the annotation wrapper, we need to extract the actual measurement
   if (data.annotation && data.measurement) {
-    console.log(`🔍 DEBUG: identityMapping extracting measurement:`, {
       uid: data.measurement.uid,
       displayText: data.measurement.displayText,
       label: data.measurement.label,
@@ -392,17 +373,15 @@ export async function importMeasurementCollection({
     
     // Ensure we have a valid unsubscribe function
     if (!unsubscribeProtection || typeof unsubscribeProtection !== 'function') {
-      console.warn('🔍 DEBUG: Invalid unsubscribe function returned from setupRemovalProtection');
+      console.warn('Invalid unsubscribe function returned from setupRemovalProtection');
       // Create a dummy unsubscribe function to prevent errors
       unsubscribeProtection = () => {
-        console.log('🔍 DEBUG: Dummy unsubscribe function called');
       };
     }
   } catch (error) {
-    console.error('🔍 DEBUG: Error setting up removal protection:', error);
+    console.error('Error setting up removal protection:', error);
     // Create fallback objects to prevent errors
     unsubscribeProtection = () => {
-      console.log('🔍 DEBUG: Fallback unsubscribe function called');
     };
     protectedMeasurements = new Map();
   }
@@ -445,12 +424,10 @@ export async function importMeasurementCollection({
 
   // CRITICAL: Add the series to tracking to ensure measurements appear in the panel
   if (trackedMeasurementsService && seriesUID) {
-    console.log(`🔍 DEBUG: Adding series ${seriesUID} to measurement tracking`);
     trackedMeasurementsService.addTrackedSeries(seriesUID);
     
     // The TrackedMeasurementsService will automatically broadcast events
     // that will be picked up by the measurement tracking context
-    console.log(`🔍 DEBUG: Series ${seriesUID} added to tracking service`);
   }
 
   const findDisplaySetInstanceUID = (sopInstanceUID) => {
@@ -478,9 +455,6 @@ export async function importMeasurementCollection({
   };
 
   imageMeasurements.forEach(im => {
-    console.log(`🔍 DEBUG: Processing raw measurement from XNAT:`, im);
-    console.log(`🔍 DEBUG: Measurement properties: uuid=${im.uuid}, type=${im.type}, toolType=${im.toolType}, toolName=${im.toolName}, label=${im.label}, name=${im.name}`);
-
     const sopInstanceUID = im.imageReference?.SOPInstanceUID;
 
     // Get the imageId and display set info for this measurement first
@@ -725,7 +699,6 @@ export async function importMeasurementCollection({
         primary: [arrowText],
         secondary: [],
       };
-      console.log(`🔍 DEBUG: ArrowAnnotate display text set to:`, measurement.displayText);
     } else if (measurement.toolName === 'PlanarFreehandROI' || measurement.toolName === 'SplineROI' || measurement.toolName === 'LivewireContour') {
       // Special handling for PlanarFreehandROI/SplineROI/LivewireContour - extract area and other stats
       let displayValues = [];
@@ -747,7 +720,6 @@ export async function importMeasurementCollection({
         primary: displayValues,
         secondary: [],
       };
-      console.log(`🔍 DEBUG: PlanarFreehandROI/SplineROI/LivewireContour display text set to:`, measurement.displayText);
     } else if (stats && stats.length > 0 && measurement.toolName !== 'Length' && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
       const mainStat = stats[0];
       if (typeof mainStat.value === 'number' && isFinite(mainStat.value)) {
@@ -787,7 +759,6 @@ export async function importMeasurementCollection({
     }
 
     // Ensure handles are present for supported tools
-    console.log(`🔍 DEBUG: Processing tool: ${measurement.toolName}`);
     if (measurement.toolName === 'Length') {
       if (measurement.points.length >= 2) {
         // Use the 3D coordinates directly from the handles (these are already world coordinates)
@@ -956,8 +927,7 @@ export async function importMeasurementCollection({
 
         // Cornerstone3D RectangleROI expects data.handles.points as array of 4 3D coordinates for rectangle corners
         // Convert points to the expected format - handle both array and object formats
-        console.log('🔍 DEBUG: RectangleROI points before formatting:', measurement.points);
-        
+
         const formattedPoints = measurement.points.map(point => {
           if (Array.isArray(point)) {
             return [point[0], point[1], point[2] || 0];
@@ -968,8 +938,6 @@ export async function importMeasurementCollection({
             return [0, 0, 0];
           }
         });
-        
-        console.log('🔍 DEBUG: RectangleROI formatted points:', formattedPoints);
         
         // Also update the measurement.points to be consistent
         measurement.points = formattedPoints;
@@ -983,10 +951,7 @@ export async function importMeasurementCollection({
           },
         };
         
-        console.log('🔍 DEBUG: RectangleROI final handles structure:', measurement.data.handles);
       } else if (im.data?.handles) {
-        console.log('🔍 DEBUG: RectangleROI using im.data.handles:', im.data.handles);
-        
         // Extract points from handles for RectangleROI
         if (im.data.handles.points && Array.isArray(im.data.handles.points)) {
           // Points are already in the correct format
@@ -1022,8 +987,6 @@ export async function importMeasurementCollection({
           measurement.data.handles = im.data.handles;
         }
         
-        console.log('🔍 DEBUG: RectangleROI final points from handles:', measurement.points);
-        console.log('🔍 DEBUG: RectangleROI final handles from im.data.handles:', measurement.data.handles);
       }
 
       // Ensure displayText for RectangleROI measurement panel display
@@ -1074,9 +1037,7 @@ export async function importMeasurementCollection({
         };
       }
     } else if (measurement.toolName === 'EllipticalROI' || measurement.toolName === 'CircleROI') {
-      console.log(`🔍 DEBUG: Processing EllipticalROI/CircleROI with toolName: ${measurement.toolName}`);
       // Handle CircleROI and EllipticalROI tools
-      console.log(`🔍 DEBUG: Processing ${measurement.toolName} with im.data:`, im.data);
       
       // Initialize handles structure and preserve cachedStats
       measurement.data.handles = {};
@@ -1084,7 +1045,6 @@ export async function importMeasurementCollection({
       // Preserve cachedStats if they exist
       if (im.data?.cachedStats) {
         measurement.data.cachedStats = im.data.cachedStats;
-        console.log(`🔍 DEBUG: Preserved cachedStats for ${measurement.toolName}:`, im.data.cachedStats);
       }
       
       // Try to get handles from multiple sources
@@ -1092,7 +1052,6 @@ export async function importMeasurementCollection({
       
       // Check for handles in the exported data structure
       const exportedHandles = im.data?.handles;
-      console.log(`🔍 DEBUG: Exported handles for ${measurement.toolName}:`, exportedHandles);
       
       if (exportedHandles) {
         // If we have existing handles, try to use them
@@ -1117,9 +1076,7 @@ export async function importMeasurementCollection({
           ];
           hasValidHandles = true;
         } else if (exportedHandles.points && Array.isArray(exportedHandles.points)) {
-          // Handle the case where we have points array
-          console.log(`🔍 DEBUG: Found points array in exported handles:`, exportedHandles.points);
-          
+          // Handle the case where we have points array 
           if (exportedHandles.points.length >= 4) {
             // For EllipticalROI, we typically have 4 points defining the ellipse
             measurement.data.handles = {
@@ -1184,8 +1141,6 @@ export async function importMeasurementCollection({
       
       // If we still don't have valid handles, try to create them from points
       if (!hasValidHandles && measurement.points && measurement.points.length >= 2) {
-        console.log(`🔍 DEBUG: Creating ${measurement.toolName} handles from points:`, measurement.points);
-        
         if (measurement.toolName === 'RectangleROI' && measurement.points.length >= 4) {
           // RectangleROI expects 4 corner points
           measurement.data.handles = {
@@ -1214,9 +1169,7 @@ export async function importMeasurementCollection({
       }
       
       // Last resort: create default handles if we have no data at all
-      if (!hasValidHandles) {
-        console.warn(`🔍 DEBUG: ${measurement.toolName} has no valid data, creating default handles`);
-        
+      if (!hasValidHandles) {   
         if (measurement.toolName === 'RectangleROI') {
           // RectangleROI needs 4 corner points
           const defaultPoints = [
@@ -1307,10 +1260,6 @@ export async function importMeasurementCollection({
         };
       }
       
-      console.log(`🔍 DEBUG: Final ${measurement.toolName} handles:`, measurement.data.handles);
-      console.log(`🔍 DEBUG: ${measurement.toolName} points:`, measurement.points);
-      console.log(`🔍 DEBUG: ${measurement.toolName} hasValidHandles:`, hasValidHandles);
-
           // Set displayText for other ROI tools (excluding PlanarFreehandROI, SplineROI, and LivewireContour which have their own handling)
     if (im.measurements && im.measurements.length > 0 && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
         const stats = im.measurements;
@@ -1366,9 +1315,7 @@ export async function importMeasurementCollection({
       
       // Ensure ROI tools have all required properties
           // Skip this for PlanarFreehandROI, SplineROI, and LivewireContour as they have their own specific handling
-    if ((!measurement.data.handles.center || !measurement.data.handles.end) && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
-        console.warn(`🔍 DEBUG: ${measurement.toolName} missing required handles, creating fallback`);
-        
+    if ((!measurement.data.handles.center || !measurement.data.handles.end) && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {  
         // Create fallback handles if missing
         if (!measurement.data.handles.center && measurement.points && measurement.points.length > 0) {
           measurement.data.handles.center = {
@@ -1422,8 +1369,6 @@ export async function importMeasurementCollection({
       
       // EllipticalROI specific handling - simplified to match successful tools
       if (measurement.toolName === 'EllipticalROI' || measurement.toolName === 'EllipticalRoi') {
-        console.log(`🔍 DEBUG: Processing EllipticalROI with points:`, measurement.points);
-        
         // Simplified approach: create handles directly from points like other successful tools
         if (measurement.points && measurement.points.length >= 4) {
           // Use the 4 points directly as handles
@@ -1449,7 +1394,6 @@ export async function importMeasurementCollection({
             visible: true
           };
           
-          console.log(`🔍 DEBUG: Created EllipticalROI handles from 4 points:`, measurement.data.handles);
         } else if (measurement.points && measurement.points.length >= 2) {
           // Fallback: create ellipse from 2 points (center and end)
           const [point1, point2] = measurement.points;
@@ -1473,11 +1417,8 @@ export async function importMeasurementCollection({
             visible: true
           };
           
-          console.log(`🔍 DEBUG: Created EllipticalROI handles from 2 points:`, measurement.data.handles);
         } else {
           // Last resort: create default handles
-          console.warn(`🔍 DEBUG: EllipticalROI has insufficient points, creating default handles`);
-          
           const defaultCenter = { x: 100, y: 100, z: 0 };
           const defaultEnd = { x: 150, y: 100, z: 0 };
           
@@ -1501,18 +1442,8 @@ export async function importMeasurementCollection({
           };
         }
         
-        console.log(`🔍 DEBUG: EllipticalROI final data structure:`, {
-          center: measurement.data.handles.center,
-          end: measurement.data.handles.end,
-          start: measurement.data.handles.start,
-          perpendicularStart: measurement.data.handles.perpendicularStart,
-          perpendicularEnd: measurement.data.handles.perpendicularEnd,
-          points: measurement.data.handles.points
-        });
       }
     } else if (measurement.toolName === 'Bidirectional') {
-      console.log(`🔍 DEBUG: Processing Bidirectional with points:`, measurement.points);
-      
       if (measurement.points && measurement.points.length >= 4) {
         // Create proper handles structure for Bidirectional tool
         measurement.data.handles = {
@@ -1528,10 +1459,7 @@ export async function importMeasurementCollection({
           visible: true
         };
         
-        console.log(`🔍 DEBUG: Created Bidirectional handles:`, measurement.data.handles);
-      } else {
-        console.warn(`🔍 DEBUG: Bidirectional has insufficient points (${measurement.points?.length || 0}), creating default handles`);
-        
+        } else {
         const defaultCenter = { x: 100, y: 100, z: 0 };
         const defaultEnd = { x: 150, y: 100, z: 0 };
         
@@ -1554,8 +1482,6 @@ export async function importMeasurementCollection({
         };
       }
     } else if (measurement.toolName === 'ArrowAnnotate') {
-      console.log(`🔍 DEBUG: Processing ArrowAnnotate with points:`, measurement.points);
-      
       if (measurement.points && measurement.points.length >= 2) {
         // Create proper handles structure for ArrowAnnotate tool
         measurement.data.handles = {
@@ -1569,10 +1495,7 @@ export async function importMeasurementCollection({
           visible: true
         };
         
-        console.log(`🔍 DEBUG: Created ArrowAnnotate handles:`, measurement.data.handles);
       } else {
-        console.warn(`🔍 DEBUG: ArrowAnnotate has insufficient points (${measurement.points?.length || 0}), creating default handles`);
-        
         const defaultStart = { x: 100, y: 100, z: 0 };
         const defaultEnd = { x: 150, y: 100, z: 0 };
         
@@ -1591,9 +1514,6 @@ export async function importMeasurementCollection({
         };
       }
     } else if (measurement.toolName === 'PlanarFreehandROI' || measurement.toolName === 'SplineROI' || measurement.toolName === 'LivewireContour') {
-      console.log(`🔍 DEBUG: Processing PlanarFreehandROI/SplineROI/LivewireContour with points:`, measurement.points);
-      console.log(`🔍 DEBUG: Tool name is: ${measurement.toolName}`);
-      
       if (measurement.points && measurement.points.length > 0) {
         // Create proper handles structure for PlanarFreehandROI tool
         // PlanarFreehandROI uses a points array for the freehand contour
@@ -1628,18 +1548,13 @@ export async function importMeasurementCollection({
         
         // For SplineROI, add the required spline object
         if (measurement.toolName === 'SplineROI') {
-          console.log(`🔍 DEBUG: SplineROI processing - original measurement.points:`, measurement.points);
-          console.log(`🔍 DEBUG: SplineROI processing - measurement.points length:`, measurement.points?.length);
-          
           // Check if points are in world coordinates and need conversion
           let validPoints = [];
           
           if (measurement.points && measurement.points.length > 0) {
             // First, let's see what we're working with
-            console.log(`🔍 DEBUG: First few points:`, measurement.points.slice(0, 3));
             
             // Use original world coordinates, ensure [x, y, z] format
-            console.log(`🔍 DEBUG: Using original world coordinates with [x, y, z] formatting`);
             validPoints = measurement.points
               .filter(pt => Array.isArray(pt) && pt.length >= 2 &&
                            typeof pt[0] === 'number' && typeof pt[1] === 'number' &&
@@ -1647,16 +1562,11 @@ export async function importMeasurementCollection({
               .map(pt => [pt[0], pt[1], pt[2] ?? 0]);
           }
           
-          console.log(`🔍 DEBUG: SplineROI valid 2D points after conversion:`, validPoints);
-          console.log(`🔍 DEBUG: SplineROI valid points count:`, validPoints.length);
-          
           if (validPoints.length === 0) {
-            console.warn(`🔍 DEBUG: No valid points found for SplineROI, using fallback`);
             validPoints = [[100, 100], [150, 100], [150, 150], [100, 150]];
           }
           
           // Test each point to ensure they're valid numbers
-          console.log(`🔍 DEBUG: Testing each valid point:`);
           
           // Enhanced mock spline instance for SplineROI
           let _controlPoints = validPoints;
@@ -1668,7 +1578,6 @@ export async function importMeasurementCollection({
             fixedResolution: false,
             invalidated: false,
             setControlPoints(points) {
-              console.log('🔍 DEBUG: setControlPoints called with', points);
               _controlPoints = points.filter(pt =>
                 Array.isArray(pt) && pt.length >= 2 &&
                 typeof pt[0] === 'number' && typeof pt[1] === 'number' &&
@@ -1676,11 +1585,9 @@ export async function importMeasurementCollection({
               );
             },
             getControlPoints() {
-              console.log('🔍 DEBUG: getControlPoints called, returning', _controlPoints);
               return _controlPoints;
             },
             get getControlPointsProp() {
-              console.log('🔍 DEBUG: controlPoints property accessed, returning', _controlPoints);
               return _controlPoints;
             },
             isPointNearCurve() { return false; },
@@ -1689,8 +1596,7 @@ export async function importMeasurementCollection({
               const polyline = _controlPoints.map(pt => [
                 Number(pt[0]) || 0,
                 Number(pt[1]) || 0
-              ]);
-              console.log('🔍 DEBUG: getPolylinePoints called, returning', polyline.slice(0, 3), `... (${polyline.length} total)`);
+              ]); 
               return polyline;
             },
             getPoints() { return _controlPoints; },
@@ -1716,14 +1622,7 @@ export async function importMeasurementCollection({
             instance: splineInstance,
             resolution: 0.5
           };
-          console.log(`🔍 DEBUG: Added complete spline object for SplineROI:`, measurement.data.spline);
-          console.log(`🔍 DEBUG: Spline instance controlPoints:`, splineInstance.getControlPoints().slice(0, 3), `... (${splineInstance.getControlPoints().length} total)`);
-          // Log the annotation object after adding to measurement service (simulate, if needed)
-          setTimeout(() => {
-            try {
-              console.log('🔍 DEBUG: Annotation object after add:', measurement);
-            } catch (e) {}
-          }, 1000);
+         
         }
         
         // Restore cachedStats if they existed
@@ -1731,11 +1630,7 @@ export async function importMeasurementCollection({
           measurement.data.cachedStats = existingCachedStats;
         }
         
-        console.log(`🔍 DEBUG: Created PlanarFreehandROI/SplineROI/LivewireContour handles:`, measurement.data.handles);
-        console.log(`🔍 DEBUG: Created PlanarFreehandROI/SplineROI/LivewireContour contour:`, measurement.data.contour);
       } else {
-        console.warn(`🔍 DEBUG: PlanarFreehandROI/SplineROI/LivewireContour has no points (${measurement.points?.length || 0}), creating default handles`);
-        
         // Preserve existing cachedStats if they exist
         const existingCachedStats = measurement.data?.cachedStats;
         
@@ -1780,11 +1675,7 @@ export async function importMeasurementCollection({
                          !isNaN(pt[0]) && !isNaN(pt[1]))
             .map(pt => [pt[0], pt[1]]);
           
-          console.log(`🔍 DEBUG: SplineROI fallback original points:`, defaultPoints);
-          console.log(`🔍 DEBUG: SplineROI fallback valid 2D points:`, validPoints);
-          
           if (validPoints.length === 0) {
-            console.warn(`🔍 DEBUG: No valid points found for SplineROI fallback, using default`);
             validPoints.push([100, 100], [150, 100], [150, 150], [100, 150]);
           }
           
@@ -1804,7 +1695,6 @@ export async function importMeasurementCollection({
             getPolylinePoints() { 
               // Return interpolated points for SVG path
               const polyline = catmullRomSpline(this.controlPoints, 20);
-              console.log('🔍 DEBUG: getPolylinePoints returning', polyline.slice(0, 5), '...');
               return polyline;
             },
             getPoints() { return this.controlPoints; },
@@ -1830,7 +1720,6 @@ export async function importMeasurementCollection({
             instance: splineInstance,
             resolution: 0.5
           };
-          console.log(`🔍 DEBUG: Added complete spline object for SplineROI (fallback):`, measurement.data.spline);
         }
         
         // Restore cachedStats if they existed
@@ -1880,14 +1769,11 @@ export async function importMeasurementCollection({
 
     if (finalDisplaySetInstanceUID) {
       measurement.displaySetInstanceUID = finalDisplaySetInstanceUID;
-      console.log(`🔍 DEBUG: Set measurement displaySetInstanceUID to: ${finalDisplaySetInstanceUID}`);
     } else {
-      console.warn(`🔍 DEBUG: Could not find displaySetInstanceUID for measurement ${measurement.uid}`);
     }
 
     // The FrameOfReferenceUID was already resolved and set in the measurement object above,
     // so we can skip the redundant resolution here and use the value we already have
-    console.log(`DEBUG: Using FrameOfReferenceUID: ${measurement.FrameOfReferenceUID || 'empty'} for measurement ${measurement.uid}`);
 
     /*
      * MeasurementService.addRawMeasurement expects the third argument (`data`)
@@ -1927,41 +1813,15 @@ export async function importMeasurementCollection({
       },
     };
 
-    // Add debug logging to see what displayText is being passed
-    console.log(`🔍 DEBUG: measurement.displayText before adding to service:`, measurement.displayText);
-    console.log(`�� DEBUG: measurement object being stored:`, {
-      uid: measurement.uid,
-      displayText: measurement.displayText,
-      label: measurement.label,
-      toolName: measurement.toolName
-    });
-
-    console.log(`DEBUG: Creating annotation for ${measurement.toolName} measurement ${measurement.uid}:`);
-    console.log('- handles:', rawDataForService.annotation.data.handles);
-    console.log('- referencedImageId:', rawDataForService.annotation.metadata.referencedImageId);
-    console.log('- frameNumber:', rawDataForService.annotation.data.frameNumber);
-    console.log('- toolName:', measurement.toolName);
-    console.log('- FrameOfReferenceUID:', rawDataForService.annotation.metadata.FrameOfReferenceUID);
-    console.log('- annotation data being passed to Cornerstone3D:', rawDataForService.annotation.data);
-    
     // Additional debug for ROI tools
     if (measurement.toolName === 'CircleROI' || measurement.toolName === 'EllipticalROI' || measurement.toolName === 'SplineROI') {
-      console.log(`🔍 DEBUG: ${measurement.toolName} final data structure:`, {
-        handles: measurement.data.handles,
-        center: measurement.data.handles?.center,
-        end: measurement.data.handles?.end,
-        textBox: measurement.data.handles?.textBox,
-        activeHandleIndex: measurement.data.handles?.activeHandleIndex,
-        points: measurement.data.handles?.points
-      });
+      
       
       // Additional safety check for EllipticalROI
       if (measurement.toolName === 'EllipticalROI') {
-        console.log(`🔍 DEBUG: EllipticalROI annotation data being passed to Cornerstone3D:`, rawDataForService.annotation.data);
         
         // Ensure the annotation data has all required properties
         if (!rawDataForService.annotation.data.handles.points || !Array.isArray(rawDataForService.annotation.data.handles.points)) {
-          console.warn(`🔍 DEBUG: EllipticalROI annotation data missing points array, adding it`);
           rawDataForService.annotation.data.handles.points = [
             [measurement.data.handles.center.x, measurement.data.handles.center.y, measurement.data.handles.center.z || 0],
             [measurement.data.handles.end.x, measurement.data.handles.end.y, measurement.data.handles.end.z || 0]
@@ -1977,10 +1837,6 @@ export async function importMeasurementCollection({
 
       // Add a one-time listener to see if RAW_MEASUREMENT_ADDED event fires
       const debugListener = (eventData) => {
-        console.log('🔍 DEBUG: RAW_MEASUREMENT_ADDED event fired:', eventData);
-        console.log('🔍 DEBUG: Event measurement uid:', eventData.measurement?.uid);
-        console.log('🔍 DEBUG: Event source:', eventData.source);
-        console.log('🔍 DEBUG: Event data:', eventData.data);
       };
       const unsubscribe = measurementService.subscribe(measurementService.EVENTS.RAW_MEASUREMENT_ADDED, debugListener);
 
@@ -1992,12 +1848,8 @@ export async function importMeasurementCollection({
       }, 1000);
 
       // Add the measurement to the measurement service
-      console.log(`🔍 DEBUG: Adding measurement to service with displayText:`, measurement.displayText);
-      console.log(`🔍 DEBUG: Full measurement object before service:`, measurement);
-
       // Add to recently imported set to prevent immediate removal
       recentlyImportedMeasurements.add(measurement.uid);
-      console.log(`🔍 DEBUG: Added ${measurement.uid} to recently imported set. Total protected: ${recentlyImportedMeasurements.size}`);
       
       // Store the measurement data for potential re-adding
       try {
@@ -2008,10 +1860,9 @@ export async function importMeasurementCollection({
             displayText: measurement.displayText // Store the display text separately
           });
         } else {
-          console.warn(`🔍 DEBUG: protectedMeasurements is not available for ${measurement.uid}`);
         }
       } catch (error) {
-        console.error(`🔍 DEBUG: Error storing measurement data for ${measurement.uid}:`, error);
+        console.error(`Error storing measurement data for ${measurement.uid}:`, error);
       }
       
       measurementService.addRawMeasurement(source, measurement.toolName, rawDataForService, identityMapping, dataSource);
@@ -2026,8 +1877,6 @@ export async function importMeasurementCollection({
         return; // Skip the rest of the processing for this measurement
       }
 
-      console.log(`✅ Successfully added measurement ${measurement.uid} to measurement service`);
-      
       // Proactively restore display text multiple times to ensure it persists
       let displayTextRestorationCount = 0;
       const maxDisplayTextRestorations = 3;
@@ -2036,7 +1885,6 @@ export async function importMeasurementCollection({
         try {
           // Prevent infinite loops by limiting restoration attempts
           if (displayTextRestorationCount >= maxDisplayTextRestorations) {
-            console.log(`🔍 DEBUG: Max display text restorations reached for ${measurement.uid}, skipping`);
             return;
           }
           
@@ -2066,25 +1914,17 @@ export async function importMeasurementCollection({
               if (needsRestoration && !isArrowAnnotateWithLabel) {
                 
                 displayTextRestorationCount++;
-                console.log(`🔍 DEBUG: Proactively restoring display text for measurement ${measurement.uid} (attempt ${displayTextRestorationCount}/${maxDisplayTextRestorations})`);
-                console.log(`🔍 DEBUG: Current display text:`, currentDisplayText);
-                console.log(`🔍 DEBUG: Stored display text:`, storedDisplayText);
-                
                 // Only directly modify the measurement object to avoid triggering update events
                 if (currentMeasurement.displayText) {
                   currentMeasurement.displayText.primary = [...storedDisplayText.primary];
                   currentMeasurement.displayText.secondary = [...storedDisplayText.secondary];
-                  console.log(`🔍 DEBUG: Directly modified measurement object display text for ${measurement.uid}`);
                 }
-                
-                console.log(`🔍 DEBUG: Display text proactively restored for measurement ${measurement.uid}`);
               } else {
-                console.log(`🔍 DEBUG: Display text already correct for ${measurement.uid}, no restoration needed`);
               }
             }
           }
         } catch (error) {
-          console.error(`🔍 DEBUG: Error in restoreDisplayText for ${measurement.uid}:`, error);
+          console.error(`Error in restoreDisplayText for ${measurement.uid}:`, error);
         }
       };
       
@@ -2097,23 +1937,16 @@ export async function importMeasurementCollection({
       setTimeout(() => {
         recentlyImportedMeasurements.delete(measurement.uid);
         protectedMeasurements.delete(measurement.uid);
-        console.log(`🔍 DEBUG: Removed ${measurement.uid} from recently imported set. Total protected: ${recentlyImportedMeasurements.size}`);
         
         // Verify the measurement is still in the service after protection period
         const finalCheck = measurementService.getMeasurements().find(m => m.uid === measurement.uid);
         if (finalCheck) {
-          console.log(`✅ Measurement ${measurement.uid} successfully stabilized and remains in service`);
           
           // Also verify the annotation exists in Cornerstone Tools
           try {
             const cornerstoneTools = (window as any).cornerstoneTools;
             if (cornerstoneTools?.annotation?.state) {
-              const annotation = cornerstoneTools.annotation.state.getAnnotation(measurement.uid);
-              if (annotation) {
-                console.log(`✅ Annotation ${measurement.uid} also exists in Cornerstone Tools`);
-              } else {
-                console.warn(`⚠️ Annotation ${measurement.uid} missing from Cornerstone Tools but measurement exists in service`);
-              }
+              const annotation = cornerstoneTools.annotation.state.getAnnotation(measurement.uid);  
             }
           } catch (e) {
             console.warn('Could not verify annotation in Cornerstone Tools:', e);
@@ -2122,7 +1955,6 @@ export async function importMeasurementCollection({
           console.warn(`⚠️ Measurement ${measurement.uid} was removed after protection period`);
           
           // Try to re-add the measurement if it was removed prematurely
-          console.log(`🔍 DEBUG: Attempting to re-add measurement ${measurement.uid} to service`);
           try {
             recentlyImportedMeasurements.add(measurement.uid);
             protectedMeasurements.set(measurement.uid, {
@@ -2131,7 +1963,6 @@ export async function importMeasurementCollection({
               displayText: measurement.displayText
             });
             measurementService.addRawMeasurement(source, measurement.toolName, rawDataForService, identityMapping, dataSource);
-            console.log(`🔍 DEBUG: Re-added measurement ${measurement.uid} to service`);
           } catch (e) {
             console.error(`❌ Failed to re-add measurement ${measurement.uid}:`, e);
           }
@@ -2141,10 +1972,8 @@ export async function importMeasurementCollection({
       // Verify the measurement is properly associated with the tracked series
       if (trackedMeasurementsService && seriesUID) {
         const isSeriesTracked = trackedMeasurementsService.isSeriesTracked(seriesUID);
-        console.log(`🔍 DEBUG: Series ${seriesUID} tracked status: ${isSeriesTracked}`);
         
         if (!isSeriesTracked) {
-          console.warn(`⚠️ Series ${seriesUID} is not tracked, measurement may not appear in panel`);
         }
       }
 
@@ -2152,29 +1981,22 @@ export async function importMeasurementCollection({
       setTimeout(() => {
         const storedMeasurements = measurementService.getMeasurements();
         const ourMeasurement = storedMeasurements.find(m => m.uid === measurement.uid);
-        console.log(`🔍 DEBUG: Measurement as stored in service:`, ourMeasurement);
-        console.log(`🔍 DEBUG: Stored measurement displayText:`, ourMeasurement?.displayText);
 
         // If displayText was reset, try to restore it
         if (ourMeasurement && ourMeasurement.displayText &&
           ourMeasurement.displayText.primary &&
           ourMeasurement.displayText.primary.length === 0) {
 
-          console.log(`🔍 DEBUG: DisplayText was reset, attempting to restore it`);
-
           // Try to update the measurement with the correct displayText
           const correctDisplayText = measurement.displayText;
-          console.log(`🔍 DEBUG: Restoring displayText to:`, correctDisplayText);
 
           // Update the measurement object directly (this should be enough)
           ourMeasurement.displayText = correctDisplayText;
-          console.log(`🔍 DEBUG: Updated measurement displayText directly`);
 
           // Verify the fix
           setTimeout(() => {
             const updatedMeasurements = measurementService.getMeasurements();
             const updatedMeasurement = updatedMeasurements.find(m => m.uid === measurement.uid);
-            console.log(`🔍 DEBUG: After restoration attempt, displayText is:`, updatedMeasurement?.displayText);
           }, 10);
         }
       }, 50);
@@ -2188,7 +2010,6 @@ export async function importMeasurementCollection({
         setTimeout(() => {
           const cornerstoneTools = (window as any).cornerstoneTools;
           if (cornerstoneTools?.annotation?.visibility) {
-            console.log(`🔍 DEBUG: Setting annotation visibility for ${measurement.uid}`);
             cornerstoneTools.annotation.visibility.setAnnotationVisibility(measurement.uid, true);
 
             // Also try to force render after setting visibility
@@ -2198,7 +2019,6 @@ export async function importMeasurementCollection({
               const viewportIds = renderingEngine.getViewports().map(viewport => viewport.id);
               try {
                 triggerAnnotationRenderForViewportIds(viewportIds);
-                console.log(`🔍 DEBUG: Triggered render after setting visibility for ${measurement.uid}`);
               } catch (renderErr) {
                 console.warn('Failed to trigger render after setting visibility:', renderErr);
               }
@@ -2211,8 +2031,7 @@ export async function importMeasurementCollection({
               const annotationManager = cornerstoneTools?.annotation?.state?.getAnnotationManager();
               if (annotationManager) {
                 const annotation = annotationManager.getAnnotation(measurement.uid);
-                if (annotation) {
-                  console.log(`🔍 DEBUG: Found annotation ${measurement.uid}, ensuring it's visible`);
+                if (annotation) { 
                   
                   // Force the annotation to be visible regardless of frame of reference
                   annotation.isVisible = true;
@@ -2236,7 +2055,6 @@ export async function importMeasurementCollection({
                       
                       // If no viewport has a matching frame of reference, remove the requirement
                       if (!hasMatchingFrameOfRef) {
-                        console.log(`🔍 DEBUG: No viewport has matching frame of reference, removing requirement for ${measurement.uid}`);
                         annotation.metadata.FrameOfReferenceUID = undefined;
                         
                         // Force re-render of all viewports
@@ -2276,19 +2094,15 @@ export async function importMeasurementCollection({
                         const annotation = annotationManager.getAnnotation(measurement.uid);
                         
                         if (annotation) {
-                          console.log(`🔍 DEBUG: Checking annotation association with viewport ${viewport.id}`);
                           
                           // Check if the annotation is visible in this viewport
                           const isVisibleInViewport = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
-                          console.log(`🔍 DEBUG: Annotation ${measurement.uid} visible in viewport ${viewport.id}: ${isVisibleInViewport}`);
                           
                           // Check if the annotation is in the tool's annotation list for this viewport
                           const toolAnnotations = cornerstoneTools.annotation.state.getAnnotations(measurement.uid, viewportElement);
-                          console.log(`🔍 DEBUG: Tool annotations for ${measurement.uid} in viewport ${viewport.id}:`, toolAnnotations);
                           
                           // If the annotation is not in the tool's list, try to add it directly
                           if (!toolAnnotations || toolAnnotations.length === 0) {
-                            console.log(`🔍 DEBUG: Annotation not in tool list, attempting to add it directly`);
                             
                             try {
                               // Try to add the annotation directly to the tool's annotation list
@@ -2296,7 +2110,6 @@ export async function importMeasurementCollection({
                               const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
                               if (toolGroup) {
                                 const toolName = measurement.toolName;
-                                console.log(`🔍 DEBUG: Adding annotation directly to ${toolName} tool for viewport ${viewport.id}`);
                                 
                                 // Force the annotation to be associated with this viewport
                                 cornerstoneTools.annotation.state.addAnnotation(annotation, viewportElement);
@@ -2307,38 +2120,34 @@ export async function importMeasurementCollection({
                                     newAnnotation: true,
                                     deleting: false,
                                   });
-                                  console.log(`🔍 DEBUG: Manually created annotation memo for viewport ${viewport.id}`);
                                 } catch (memoErr) {
-                                  console.warn(`🔍 DEBUG: Failed to create annotation memo manually:`, memoErr);
+                                  console.warn(`Failed to create annotation memo manually:`, memoErr);
                                 }
                                 
                                 // Force the tool to render
                                 if (viewport.render && typeof viewport.render === 'function') {
                                   viewport.render();
-                                  console.log(`🔍 DEBUG: Forced viewport render after direct annotation addition`);
                                 }
                               }
                             } catch (directAddErr) {
-                              console.warn(`🔍 DEBUG: Failed to add annotation directly:`, directAddErr);
+                              console.warn(`Failed to add annotation directly:`, directAddErr);
                             }
                           }
                           
                           // If not visible, try to force visibility
                           if (!isVisibleInViewport) {
-                            console.log(`🔍 DEBUG: Forcing annotation visibility in viewport ${viewport.id}`);
                             cornerstoneTools.annotation.visibility.setAnnotationVisibility(measurement.uid, true);
                             
                             // Force the viewport to render
                             if (viewport.render && typeof viewport.render === 'function') {
-                              viewport.render();
-                              console.log(`🔍 DEBUG: Forced viewport render after visibility fix for ${viewport.id}`);
+                              viewport.render();  
                             }
                           }
                         }
                       }
                     }
                   } catch (viewportErr) {
-                    console.warn(`🔍 DEBUG: Error checking annotation association with viewport ${viewport.id}:`, viewportErr);
+                    console.warn(`Error checking annotation association with viewport ${viewport.id}:`, viewportErr);
                   }
                 });
               }
@@ -2352,7 +2161,7 @@ export async function importMeasurementCollection({
             const annotationManager = cornerstoneTools?.annotation?.state?.getAnnotationManager();
             if (annotationManager) {
               const annotation = annotationManager.getAnnotation(measurement.uid);
-              console.log(`🔍 DEBUG: Final annotation state for ${measurement.uid}:`, {
+              console.log(`Final annotation state for ${measurement.uid}:`, {
                 exists: !!annotation,
                 isVisible: annotation?.isVisible,
                 invalidated: annotation?.invalidated,
@@ -2366,10 +2175,6 @@ export async function importMeasurementCollection({
               const viewportIds = cornerstoneViewportService.getRenderingEngine().getViewports().map(viewport => viewport.id);
               
               // Check if the annotation is properly associated with the viewport
-              console.log(`🔍 DEBUG: Checking annotation viewport association for ${measurement.uid}`);
-              console.log(`🔍 DEBUG: Annotation metadata:`, annotation?.metadata);
-              console.log(`🔍 DEBUG: Available viewport IDs:`, viewportIds);
-              
               viewportIds.forEach(viewportId => {
                 try {
                   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
@@ -2382,7 +2187,6 @@ export async function importMeasurementCollection({
                     
                     // Ensure SplineROI tool is at least passive so it can render annotations
                     if (splineROIToolMode !== 'Active' && splineROIToolMode !== 'Passive') {
-                      console.log(`🔍 DEBUG: Setting SplineROI tool to passive mode for viewport ${viewportId}`);
                       toolGroup.setToolPassive('SplineROI');
                     }
                     
@@ -2395,37 +2199,30 @@ export async function importMeasurementCollection({
                     
                     // Ensure Length tool is at least passive so it can render annotations
                     if (lengthToolMode !== 'Active' && lengthToolMode !== 'Passive') {
-                      console.log(`🔍 DEBUG: Setting Length tool to passive mode for viewport ${viewportId}`);
                       toolGroup.setToolPassive('Length');
                     }
                     
                     // Force the Length tool to render annotations
-                    console.log(`🔍 DEBUG: Forcing Length tool to render annotations for viewport ${viewportId}`);
                     try {
                       // Try to trigger annotation rendering specifically for this tool
                       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
                       if (viewport && viewport.render) {
                         viewport.render();
-                        console.log(`🔍 DEBUG: Forced viewport render for ${viewportId}`);
                       }
                     } catch (renderErr) {
-                      console.warn(`🔍 DEBUG: Failed to force render for viewport ${viewportId}:`, renderErr);
+                      console.warn(`Failed to force render for viewport ${viewportId}:`, renderErr);
                     }
                     
                     // Check if the annotation is visible in the tool's perspective
                     try {
                       const isVisibleInTool = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
-                      console.log(`🔍 DEBUG: Annotation visibility in tool for viewport ${viewportId}:`, isVisibleInTool);
                       
                       // Check if SplineROI tool exists and is properly configured
                       if (measurement.toolName === 'SplineROI') {
                         const splineROITool = cornerstoneTools.getTool('SplineROI');
-                        console.log(`🔍 DEBUG: SplineROI tool exists:`, !!splineROITool);
-                        console.log(`🔍 DEBUG: SplineROI tool configuration:`, splineROITool);
                         
                         // Check if the tool is properly registered with the tool group
                         const toolInstance = toolGroup.getToolInstance('SplineROI');
-                        console.log(`🔍 DEBUG: SplineROI tool instance in tool group:`, !!toolInstance);
                       }
                       
                       // Check if the annotation is in the tool's annotation list for this specific viewport
@@ -2433,23 +2230,19 @@ export async function importMeasurementCollection({
                       if (viewport && viewport.element) {
                         try {
                           const toolAnnotations = cornerstoneTools.annotation.state.getAnnotations(measurement.uid, viewport.element);
-                          console.log(`🔍 DEBUG: Tool annotations for ${measurement.uid} in viewport ${viewportId}:`, toolAnnotations);
                           
                           // If the annotation is not in the tool's list, try to use the tool's hydration method
                           if (!toolAnnotations || toolAnnotations.length === 0) {
-                            console.log(`🔍 DEBUG: Annotation not in tool list, attempting tool hydration for viewport ${viewportId}`);
                             
                             try {
                               // Try to use the tool's hydration method
                               const lengthTool = cornerstoneTools.getTool('Length');
-                              if (lengthTool && lengthTool.hydrate && typeof lengthTool.hydrate === 'function') {
-                                console.log(`🔍 DEBUG: Using Length tool hydration method for viewport ${viewportId}`);
+                              if (lengthTool && lengthTool.hydrate && typeof lengthTool.hydrate === 'function') { 
                                 
                                 // Get the annotation data for hydration
                                 const annotationData = annotation?.data;
                                 if (annotationData?.handles?.points) {
                                   const points = annotationData.handles.points;
-                                  console.log(`🔍 DEBUG: Hydrating with points:`, points);
                                   
                                   // Use the tool's hydration method
                                   lengthTool.hydrate(viewportId, points, {
@@ -2457,16 +2250,12 @@ export async function importMeasurementCollection({
                                     ...annotationData
                                   });
                                   
-                                  console.log(`🔍 DEBUG: Tool hydration completed for viewport ${viewportId}`);
                                   
                                   // Force render after hydration
                                   if (viewport.render && typeof viewport.render === 'function') {
                                     viewport.render();
-                                    console.log(`🔍 DEBUG: Forced render after tool hydration for ${viewportId}`);
                                   }
-                                } else {
-                                  console.warn(`🔍 DEBUG: No valid points found for tool hydration`);
-                                }
+                                }   
                               } else {
                                 console.warn(`🔍 DEBUG: Length tool does not have hydration method`);
                               }
@@ -2476,35 +2265,26 @@ export async function importMeasurementCollection({
                           }
                           
                           // Check if the annotation is in the tool's annotation list for the specific frame of reference
-                          let viewportFrameOfRef = viewport.getFrameOfReferenceUID();
-                          console.log(`🔍 DEBUG: Viewport frame of reference: ${viewportFrameOfRef}`);
-                          console.log(`🔍 DEBUG: Annotation frame of reference: ${measurement.FrameOfReferenceUID}`);
+                          let viewportFrameOfRef = viewport.getFrameOfReferenceUID(); 
                           
                           // If viewport has no frame of reference but annotation does, try to set it
                           if (!viewportFrameOfRef && measurement.FrameOfReferenceUID) {
-                            console.log(`🔍 DEBUG: Viewport has no frame of reference, attempting to set it to match annotation`);
                             try {
                               // Try to set the viewport's frame of reference UID
                               if (viewport.setFrameOfReferenceUID && typeof viewport.setFrameOfReferenceUID === 'function') {
                                 viewport.setFrameOfReferenceUID(measurement.FrameOfReferenceUID);
                                 viewportFrameOfRef = viewport.getFrameOfReferenceUID();
-                                console.log(`🔍 DEBUG: Successfully set viewport frame of reference to: ${viewportFrameOfRef}`);
-                              } else {
-                                console.warn(`🔍 DEBUG: Viewport does not have setFrameOfReferenceUID method`);
                               }
                             } catch (setFrameErr) {
-                              console.warn(`🔍 DEBUG: Failed to set viewport frame of reference:`, setFrameErr);
+                              console.warn(`Failed to set viewport frame of reference:`, setFrameErr);
                             }
                           }
                           
                           if (viewportFrameOfRef === measurement.FrameOfReferenceUID) {
-                            console.log(`🔍 DEBUG: Frame of reference matches, annotation should be visible`);
                           } else {
-                            console.warn(`🔍 DEBUG: Frame of reference mismatch, annotation may not be visible`);
                             
                             // As a fallback, try to make the annotation work without frame of reference matching
                             if (annotation && !viewportFrameOfRef) {
-                              console.log(`🔍 DEBUG: Attempting to make annotation visible without frame of reference matching`);
                               try {
                                 // Remove frame of reference requirement for this annotation
                                 annotation.metadata.FrameOfReferenceUID = undefined;
@@ -2534,40 +2314,37 @@ export async function importMeasurementCollection({
                                         const lengthTool = cornerstoneTools.getTool('Length');
                                         if (lengthTool && lengthTool.renderAnnotation) {
                                           lengthTool.renderAnnotation(enabledElement);
-                                          console.log(`🔍 DEBUG: Triggered Length tool render for annotation`);
                                         }
                                       }
                                     }
                                   }
                                 } catch (toolErr) {
-                                  console.warn(`🔍 DEBUG: Failed to force tool annotation:`, toolErr);
+                                  console.warn(`Failed to force tool annotation:`, toolErr);
                                 }
                                 
                                 // Trigger a re-render
                                 if (viewport.render && typeof viewport.render === 'function') {
                                   viewport.render();
-                                  console.log(`🔍 DEBUG: Forced re-render after removing frame of reference requirement`);
                                 }
                               } catch (fallbackErr) {
-                                console.warn(`🔍 DEBUG: Failed to apply frame of reference fallback:`, fallbackErr);
+                                console.warn(`Failed to apply frame of reference fallback:`, fallbackErr);
                               }
                             }
                           }
                           
                           // Try to get all annotations for this viewport
                           const allViewportAnnotations = cornerstoneTools.annotation.state.getAnnotations(undefined, viewport.element);
-                          console.log(`🔍 DEBUG: All annotations in viewport ${viewportId}:`, Object.keys(allViewportAnnotations || {}));
                           
                         } catch (elementErr) {
-                          console.log(`🔍 DEBUG: Could not get annotations for element in viewport ${viewportId}:`, elementErr);
+                          console.warn(`Could not get annotations for element in viewport ${viewportId}:`, elementErr);
                         }
                       }
                     } catch (toolCheckErr) {
-                      console.warn(`🔍 DEBUG: Could not check tool annotation state for viewport ${viewportId}:`, toolCheckErr);
+                      console.warn(`Could not check tool annotation state for viewport ${viewportId}:`, toolCheckErr);
                     }
                   }
                 } catch (toolErr) {
-                  console.warn(`🔍 DEBUG: Could not check Length tool for viewport ${viewportId}:`, toolErr);
+                  console.warn(`Could not check Length tool for viewport ${viewportId}:`, toolErr);
                 }
               });
             }
@@ -2577,7 +2354,6 @@ export async function importMeasurementCollection({
         console.warn('Failed to set annotation visibility:', visibilityErr);
       }
 
-      console.log(`✅ Successfully added measurement ${measurement.uid} to measurement service`);
     } catch (error) {
       console.error(`❌ Failed to add measurement ${measurement.uid}:`, error);
     }
@@ -2598,12 +2374,10 @@ export async function importMeasurementCollection({
           try {
             const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
             if (viewport) {
-              const currentFrameOfRef = viewport.getFrameOfReferenceUID();
-              console.log(`🔍 DEBUG: Viewport ${viewportId} current frame of reference: ${currentFrameOfRef}`);
+              const currentFrameOfRef = viewport.getFrameOfReferenceUID();  
               
               // If viewport has no frame of reference, try to get it from the display set
               if (!currentFrameOfRef) {
-                console.log(`🔍 DEBUG: Viewport ${viewportId} has no frame of reference, attempting to fix`);
                 
                 // Get the display sets for this viewport
                 const displaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
@@ -2624,24 +2398,18 @@ export async function importMeasurementCollection({
                   }
                   
                   if (frameOfRef) {
-                    console.log(`🔍 DEBUG: Found frame of reference ${frameOfRef} for viewport ${viewportId}, attempting to set it`);
                     
                     // Try to set the viewport's frame of reference UID
                     if (viewport.setFrameOfReferenceUID && typeof viewport.setFrameOfReferenceUID === 'function') {
                       viewport.setFrameOfReferenceUID(frameOfRef);
                       const newFrameOfRef = viewport.getFrameOfReferenceUID();
-                      console.log(`🔍 DEBUG: Successfully set viewport ${viewportId} frame of reference to: ${newFrameOfRef}`);
-                    } else {
-                      console.warn(`🔍 DEBUG: Viewport ${viewportId} does not have setFrameOfReferenceUID method`);
                     }
-                  } else {
-                    console.warn(`🔍 DEBUG: Could not find frame of reference for viewport ${viewportId}`);
-                  }
+                  }   
                 }
               }
             }
           } catch (viewportErr) {
-            console.warn(`🔍 DEBUG: Error fixing frame of reference for viewport ${viewportId}:`, viewportErr);
+            console.warn(`Error fixing frame of reference for viewport ${viewportId}:`, viewportErr);
           }
         });
 
@@ -2659,7 +2427,6 @@ export async function importMeasurementCollection({
                     const currentMode = toolGroup.getToolOptions(toolType)?.mode;
                     if (currentMode !== 'Active' && currentMode !== 'Passive') {
                       toolGroup.setToolPassive(toolType);
-                      console.log(`🔍 DEBUG: Set ${toolType} to passive mode for viewport ${viewportId}`);
                     }
                   }
                 } catch (toolErr) {
@@ -2692,7 +2459,6 @@ export async function importMeasurementCollection({
             const viewport = renderingEngine.getViewport(viewportId);
             if (viewport && typeof viewport.render === 'function') {
               viewport.render();
-              console.log(`✅ DEBUG: Rendered individual viewport ${viewportId}`);
             }
           } catch (vpErr) {
             console.warn(`Failed to render viewport ${viewportId}:`, vpErr);
@@ -2708,34 +2474,18 @@ export async function importMeasurementCollection({
   try {
     // Get all measurements and log the total count
     const allMeasurements = measurementService.getMeasurements();
-    console.log(`DEBUG: Total measurements in service: ${allMeasurements.length}`);
 
     // Debug measurement service data
     allMeasurements.forEach((serviceMeasurement, index) => {
-      console.log(`🔍 DEBUG: Service measurement ${index}:`, {
-        uid: serviceMeasurement.uid,
-        toolName: serviceMeasurement.toolName,
-        displayText: serviceMeasurement.displayText,
-        baseDisplayText: serviceMeasurement.baseDisplayText,
-        label: serviceMeasurement.label,
-        data: serviceMeasurement.data,
-        referenceSeriesUID: serviceMeasurement.referenceSeriesUID
-      });
-
+      
       // Debug display sets for this measurement
       if (serviceMeasurement.referenceSeriesUID) {
-        console.log(`🔍 DEBUG: Service measurement ${index} referenceSeriesUID:`, serviceMeasurement.referenceSeriesUID);
-
+        
         const { displaySetService } = servicesManager.services;
         const displaySets = displaySetService.getDisplaySetsForSeries(serviceMeasurement.referenceSeriesUID);
-        console.log(`🔍 DEBUG: Display sets for series ${serviceMeasurement.referenceSeriesUID}:`, displaySets);
 
         if (displaySets && displaySets.length > 0) {
-          console.log(`🔍 DEBUG: First display set has instances:`, !!displaySets[0]?.instances);
-          console.log(`🔍 DEBUG: First display set instances count:`, displaySets[0]?.instances?.length);
-          console.log(`🔍 DEBUG: First display set:`, displaySets[0]);
         } else {
-          console.log(`🔍 DEBUG: No display sets found for series ${serviceMeasurement.referenceSeriesUID}`);
         }
       }
     });
@@ -2745,7 +2495,6 @@ export async function importMeasurementCollection({
       const { panelService } = servicesManager.services;
       if (panelService) {
         // Try to refresh the measurement panel
-        console.log(`🔍 DEBUG: Attempting to refresh measurement panel`);
         
         // Trigger a measurement service event to refresh the panel
         // Use the correct method to trigger events
@@ -2754,16 +2503,13 @@ export async function importMeasurementCollection({
             measurements: allMeasurements,
             source: source,
           });
-          console.log(`🔍 DEBUG: Triggered MEASUREMENTS_LOADED event via _broadcastEvent`);
         } else if (measurementService.broadcastEvent) {
           measurementService.broadcastEvent(measurementService.EVENTS.MEASUREMENTS_LOADED, {
             measurements: allMeasurements,
             source: source,
           });
-          console.log(`🔍 DEBUG: Triggered MEASUREMENTS_LOADED event via broadcastEvent`);
         } else {
           // Fallback: try to trigger a custom event
-          console.log(`🔍 DEBUG: Using fallback method to refresh measurement panel`);
           // The measurement service should automatically notify subscribers when measurements are added
         }
       }
@@ -2777,33 +2523,21 @@ export async function importMeasurementCollection({
       const cornerstoneTools = (window as any).cornerstoneTools;
       if (cornerstoneTools && cornerstoneTools.annotation && cornerstoneTools.annotation.state) {
         const annotationManager = cornerstoneTools.annotation.state.getAnnotationManager();
-        const allAnnotations = annotationManager.getAllAnnotations();
-        console.log(`🔍 DEBUG: Total annotations in Cornerstone3D: ${Object.keys(allAnnotations).length}`);
-        console.log(`🔍 DEBUG: Annotation UIDs:`, Object.keys(allAnnotations));
+        const allAnnotations = annotationManager.getAllAnnotations(); 
 
         // Check for our specific measurements and get detailed annotation data
         allMeasurements.forEach(measurement => {
-          console.log(`🔍 DEBUG: Looking for annotation with UID: ${measurement.uid}`);
           const annotation = annotationManager.getAnnotation(measurement.uid);
           if (annotation) {
-            console.log(`🔍 DEBUG: Found annotation for ${measurement.uid}:`, annotation);
-            console.log(`🔍 DEBUG: Annotation metadata:`, annotation.metadata);
-            console.log(`🔍 DEBUG: Annotation data:`, annotation.data);
-            console.log(`🔍 DEBUG: Annotation isVisible:`, annotation.isVisible);
-            console.log(`🔍 DEBUG: Annotation highlighted:`, annotation.highlighted);
-            console.log(`🔍 DEBUG: Annotation invalidated:`, annotation.invalidated);
 
             // Check visibility state using the visibility manager
             try {
               const isVisibleFromManager = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
-              console.log(`🔍 DEBUG: Visibility from visibility manager: ${isVisibleFromManager}`);
 
               // If not visible, try to set it visible
               if (!isVisibleFromManager) {
-                console.log(`🔍 DEBUG: Annotation ${measurement.uid} is not visible, attempting to make it visible`);
                 cornerstoneTools.annotation.visibility.setAnnotationVisibility(measurement.uid, true);
                 const newVisibilityState = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
-                console.log(`🔍 DEBUG: After setting visibility: ${newVisibilityState}`);
               }
             } catch (visErr) {
               console.warn('Failed to check/set visibility:', visErr);
@@ -2811,38 +2545,24 @@ export async function importMeasurementCollection({
 
             // Check if annotation data has required fields for Length tool
             if (annotation.metadata.toolName === 'Length') {
-              console.log(`🔍 DEBUG: Length annotation handles:`, annotation.data.handles);
-              console.log(`🔍 DEBUG: Length annotation points:`, annotation.data.handles?.points);
-              console.log(`🔍 DEBUG: Length annotation textBox:`, annotation.data.handles?.textBox);
-
               // Check if the points are valid world coordinates
               if (annotation.data.handles?.points) {
                 annotation.data.handles.points.forEach((point, index) => {
-                  console.log(`🔍 DEBUG: Point ${index}:`, point, `(type: ${typeof point}, isArray: ${Array.isArray(point)})`);
                 });
               }
             }
           } else {
-            console.log(`🔍 DEBUG: NO annotation found for measurement ${measurement.uid}`);
           }
         });
 
         // Also check all annotations by their actual keys
         Object.keys(allAnnotations).forEach(annotationKey => {
           const annotation = allAnnotations[annotationKey];
-          console.log(`🔍 DEBUG: Annotation ${annotationKey} details:`, {
-            uid: annotation.annotationUID || annotation.uid,
-            toolName: annotation.metadata?.toolName,
-            referencedImageId: annotation.metadata?.referencedImageId,
-            isVisible: annotation.isVisible,
-            highlighted: annotation.highlighted,
-            invalidated: annotation.invalidated,
-            data: annotation.data
-          });
+
         });
       }
     } catch (annotationErr) {
-      console.log('🔍 DEBUG: Could not access Cornerstone3D annotation state:', annotationErr);
+      console.warn('Could not access Cornerstone3D annotation state:', annotationErr);
     }
 
     // Check tool state
@@ -2852,20 +2572,15 @@ export async function importMeasurementCollection({
       if (renderingEngine) {
         const viewports = renderingEngine.getViewports();
         viewports.forEach(viewport => {
-          console.log(`🔍 DEBUG: Checking viewport ${viewport.id}`);
 
           // Check current image in viewport
           try {
             const currentImageId = viewport.getCurrentImageId ? viewport.getCurrentImageId() : null;
-            console.log(`🔍 DEBUG: Current imageId in viewport ${viewport.id}:`, currentImageId);
 
             // Check if this matches any of our measurement imageIds
             allMeasurements.forEach(measurement => {
               const measurementImageId = measurement.metadata?.referencedImageId;
-              const matches = currentImageId === measurementImageId;
-              console.log(`🔍 DEBUG: Measurement ${measurement.uid} imageId match: ${matches}`);
-              console.log(`🔍 DEBUG: - Expected: ${measurementImageId}`);
-              console.log(`🔍 DEBUG: - Current: ${currentImageId}`);
+              const matches = currentImageId === measurementImageId;  
 
               // Check if annotation is associated with this viewport
               if (matches) {
@@ -2876,7 +2591,6 @@ export async function importMeasurementCollection({
                   
                   // Simple image-based matching - if the measurement is for the current image, it should be viewable
                   if (currentImageId && measurementImageId && currentImageId === measurementImageId) {
-                    console.log(`🔍 DEBUG: ImageId matches - measurement should be viewable in this viewport`);
                     
                     // For measurements without FrameOfReferenceUID, we can still display them
                     // by ensuring the annotation is properly registered with the viewport
@@ -2898,7 +2612,6 @@ export async function importMeasurementCollection({
                               const imageFrameOfRef = instanceMeta?.FrameOfReferenceUID || instanceMeta?.frameOfReferenceUID;
                               if (imageFrameOfRef) {
                                 annotation.metadata.FrameOfReferenceUID = imageFrameOfRef;
-                                console.log(`🔍 DEBUG: Set annotation FrameOfReferenceUID to ${imageFrameOfRef}`);
                               }
                             }
                           }
@@ -2907,62 +2620,39 @@ export async function importMeasurementCollection({
                     } catch (annotationErr) {
                       console.warn('Failed to update annotation state:', annotationErr);
                     }
-                  } else {
-                    console.log(`🔍 DEBUG: ImageId mismatch - measurement not viewable in this viewport`);
-                  }
+                  }   
                 } catch (renderCheckErr) {
                   console.warn('Failed to check viewport compatibility:', renderCheckErr);
                 }
               }
             });
           } catch (imageErr) {
-            console.log(`🔍 DEBUG: Could not get current imageId for viewport ${viewport.id}:`, imageErr);
+            console.warn(`Could not get current imageId for viewport ${viewport.id}:`, imageErr);
           }
 
           try {
             const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
             if (toolGroup) {
               const lengthToolState = toolGroup.getToolConfiguration('Length');
-              console.log(`🔍 DEBUG: Length tool state for viewport ${viewport.id}:`, lengthToolState);
             }
           } catch (toolErr) {
-            console.log(`🔍 DEBUG: Could not get tool state for viewport ${viewport.id}:`, toolErr);
+            console.warn(`Could not get tool state for viewport ${viewport.id}:`, toolErr);
           }
         });
       }
     } catch (toolStateErr) {
-      console.log('🔍 DEBUG: Could not check tool state:', toolStateErr);
+      console.warn('Could not check tool state:', toolStateErr);
     }
 
   } catch (err) {
     console.warn('Failed to get measurements count:', err);
   }
 
-  // FINAL STEP: Ensure the measurement panel shows the tracked measurements
-  console.log(`🔍 DEBUG: Import completed. Total measurements imported: ${imageMeasurements.length}`);
-  console.log(`🔍 DEBUG: Series ${seriesUID} has been added to tracking`);
-  console.log(`🔍 DEBUG: Measurements should now appear in the measurement panel`);
 
   // Final verification: check that measurements are properly tracked
   if (trackedMeasurementsService && seriesUID) {
     const isSeriesTracked = trackedMeasurementsService.isSeriesTracked(seriesUID);
-    const trackedSeries = trackedMeasurementsService.getTrackedSeries();
-    console.log(`🔍 DEBUG: Final verification - Series ${seriesUID} tracked: ${isSeriesTracked}`);
-    console.log(`🔍 DEBUG: All tracked series:`, trackedSeries);
-    
-    // Check measurements for this series
-    const seriesMeasurements = measurementService.getMeasurements(
-      measurement => measurement.referenceSeriesUID === seriesUID
-    );
-    console.log(`🔍 DEBUG: Measurements for series ${seriesUID}:`, seriesMeasurements.length);
-    seriesMeasurements.forEach((m, index) => {
-      console.log(`🔍 DEBUG: Series measurement ${index}:`, {
-        uid: m.uid,
-        toolName: m.toolName,
-        label: m.label,
-        displayText: m.displayText
-      });
-    });
+    const trackedSeries = trackedMeasurementsService.getTrackedSeries();    
   }
 
   // Cleanup: remove protection subscription after a delay
@@ -2970,9 +2660,8 @@ export async function importMeasurementCollection({
     try {
       if (unsubscribeProtection && typeof unsubscribeProtection === 'function') {
         unsubscribeProtection();
-        console.log(`🔍 DEBUG: Removed measurement removal protection subscription`);
       } else {
-        console.warn(`🔍 DEBUG: No valid unsubscribe function available for cleanup`);
+        console.warn(`No valid unsubscribe function available for cleanup`);
       }
       
       // Clear any remaining protected measurements
@@ -2980,9 +2669,8 @@ export async function importMeasurementCollection({
       if (protectedMeasurements && typeof protectedMeasurements.clear === 'function') {
         protectedMeasurements.clear();
       }
-      console.log(`🔍 DEBUG: Cleared all protection data`);
     } catch (error) {
-      console.error(`🔍 DEBUG: Error during cleanup:`, error);
+      console.error(`Error during cleanup:`, error);
     }
   }, 5000); // 5 second delay to ensure all measurements are stable
 
