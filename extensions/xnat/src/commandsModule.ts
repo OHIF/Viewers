@@ -1884,6 +1884,216 @@ XNATStoreMeasurements: async () => {
         
         console.log('Export: ArrowAnnotate exported data:', base.data);
         break;
+      case 'PlanarFreehandROI':
+        console.log('Export: PlanarFreehandROI measurement:', m);
+        console.log('Export: PlanarFreehandROI points:', points);
+        console.log('Export: PlanarFreehandROI data:', m.data);
+
+        // Extract area and other stats from cachedStats or displayText
+        let freehandAreaVal = 0;
+        let freehandMeanVal = 0;
+        let freehandStdDevVal = 0;
+        let freehandMinVal = 0;
+        let freehandMaxVal = 0;
+
+        if (m.data?.cachedStats) {
+          // Get stats from cachedStats (the standard OHIF structure)
+          const stats = Object.values(m.data.cachedStats)[0] as any;
+          freehandAreaVal = stats?.area || 0;
+          freehandMeanVal = stats?.mean || 0;
+          freehandStdDevVal = stats?.stdDev || 0;
+          freehandMinVal = stats?.min || 0;
+          freehandMaxVal = stats?.max || 0;
+        } else if (m.displayText?.primary?.length > 0) {
+          // Fallback: parse from displayText
+          const primaryText = m.displayText.primary[0];
+          const areaMatch = primaryText.match(/([0-9.]+)\s*mm²/);
+          if (areaMatch) {
+            freehandAreaVal = parseFloat(areaMatch[1]);
+          }
+        }
+
+        console.log('Export: extracted PlanarFreehandROI values:', {
+          area: freehandAreaVal,
+          mean: freehandMeanVal,
+          stdDev: freehandStdDevVal,
+          min: freehandMinVal,
+          max: freehandMaxVal
+        }, 'from measurement:', m);
+        console.log('Export: Full PlanarFreehandROI measurement object:', JSON.stringify(m, null, 2));
+
+        // PlanarFreehandROI has multiple points defining the freehand shape
+        const freehandHandles: any = {};
+        if (points.length > 0) {
+          freehandHandles.points = points.map(pt => createHandle(pt));
+        }
+
+        // Extract the actual cachedStats from the measurement data
+        const actualFreehandCachedStats = m.data?.cachedStats || {};
+        console.log('Export: Actual PlanarFreehandROI cachedStats being exported:', actualFreehandCachedStats);
+
+        base.data = {
+          cachedStats: actualFreehandCachedStats,
+          handles: freehandHandles,
+        };
+
+        // Add all available PlanarFreehandROI measurements
+        if (freehandAreaVal > 0) {
+          base.measurements.push({ name: 'area', value: Number(freehandAreaVal), unit: 'mm²' });
+        }
+        if (freehandMeanVal !== 0) {
+          base.measurements.push({ name: 'mean', value: Number(freehandMeanVal), unit: '' });
+        }
+        if (freehandStdDevVal !== 0) {
+          base.measurements.push({ name: 'stdDev', value: Number(freehandStdDevVal), unit: '' });
+        }
+        if (freehandMinVal !== 0) {
+          base.measurements.push({ name: 'min', value: Number(freehandMinVal), unit: '' });
+        }
+        if (freehandMaxVal !== 0) {
+          base.measurements.push({ name: 'max', value: Number(freehandMaxVal), unit: '' });
+        }
+        break;
+      case 'SplineROI':
+        console.log('Export: SplineROI measurement:', m);
+        console.log('Export: SplineROI points:', points);
+        console.log('Export: SplineROI data:', m.data);
+
+        // Extract area and other stats from cachedStats or displayText
+        let splineAreaVal = 0;
+        let splineMeanVal = 0;
+        let splineStdDevVal = 0;
+        let splineMinVal = 0;
+        let splineMaxVal = 0;
+
+        if (m.data?.cachedStats) {
+          // Get stats from cachedStats (the standard OHIF structure)
+          const stats = Object.values(m.data.cachedStats)[0] as any;
+          splineAreaVal = stats?.area || 0;
+          splineMeanVal = stats?.mean || 0;
+          splineStdDevVal = stats?.stdDev || 0;
+          splineMinVal = stats?.min || 0;
+          splineMaxVal = stats?.max || 0;
+        } else if (m.displayText?.primary?.length > 0) {
+          // Fallback: parse from displayText
+          const primaryText = m.displayText.primary[0];
+          const areaMatch = primaryText.match(/([0-9.]+)\s*mm²/);
+          if (areaMatch) {
+            splineAreaVal = parseFloat(areaMatch[1]);
+          }
+        }
+
+        console.log('Export: extracted SplineROI values:', {
+          area: splineAreaVal,
+          mean: splineMeanVal,
+          stdDev: splineStdDevVal,
+          min: splineMinVal,
+          max: splineMaxVal
+        }, 'from measurement:', m);
+        console.log('Export: Full SplineROI measurement object:', JSON.stringify(m, null, 2));
+
+        // SplineROI has multiple points defining the spline curve
+        const splineHandles: any = {};
+        if (points.length > 0) {
+          splineHandles.points = points.map(pt => createHandle(pt));
+        }
+
+        // Extract the actual cachedStats from the measurement data
+        const actualSplineCachedStats = m.data?.cachedStats || {};
+        console.log('Export: Actual SplineROI cachedStats being exported:', actualSplineCachedStats);
+
+        base.data = {
+          cachedStats: actualSplineCachedStats,
+          handles: splineHandles,
+        };
+
+        // Add all available SplineROI measurements
+        if (splineAreaVal > 0) {
+          base.measurements.push({ name: 'area', value: Number(splineAreaVal), unit: 'mm²' });
+        }
+        if (splineMeanVal !== 0) {
+          base.measurements.push({ name: 'mean', value: Number(splineMeanVal), unit: '' });
+        }
+        if (splineStdDevVal !== 0) {
+          base.measurements.push({ name: 'stdDev', value: Number(splineStdDevVal), unit: '' });
+        }
+        if (splineMinVal !== 0) {
+          base.measurements.push({ name: 'min', value: Number(splineMinVal), unit: '' });
+        }
+        if (splineMaxVal !== 0) {
+          base.measurements.push({ name: 'max', value: Number(splineMaxVal), unit: '' });
+        }
+        break;
+      case 'LivewireContour':
+        console.log('Export: LivewireContour measurement:', m);
+        console.log('Export: LivewireContour points:', points);
+        console.log('Export: LivewireContour data:', m.data);
+
+        // Extract area and other stats from cachedStats or displayText
+        let livewireAreaVal = 0;
+        let livewireMeanVal = 0;
+        let livewireStdDevVal = 0;
+        let livewireMinVal = 0;
+        let livewireMaxVal = 0;
+
+        if (m.data?.cachedStats) {
+          // Get stats from cachedStats (the standard OHIF structure)
+          const stats = Object.values(m.data.cachedStats)[0] as any;
+          livewireAreaVal = stats?.area || 0;
+          livewireMeanVal = stats?.mean || 0;
+          livewireStdDevVal = stats?.stdDev || 0;
+          livewireMinVal = stats?.min || 0;
+          livewireMaxVal = stats?.max || 0;
+        } else if (m.displayText?.primary?.length > 0) {
+          // Fallback: parse from displayText
+          const primaryText = m.displayText.primary[0];
+          const areaMatch = primaryText.match(/([0-9.]+)\s*mm²/);
+          if (areaMatch) {
+            livewireAreaVal = parseFloat(areaMatch[1]);
+          }
+        }
+
+        console.log('Export: extracted LivewireContour values:', {
+          area: livewireAreaVal,
+          mean: livewireMeanVal,
+          stdDev: livewireStdDevVal,
+          min: livewireMinVal,
+          max: livewireMaxVal
+        }, 'from measurement:', m);
+        console.log('Export: Full LivewireContour measurement object:', JSON.stringify(m, null, 2));
+
+        // LivewireContour has multiple points defining the contour
+        const livewireHandles: any = {};
+        if (points.length > 0) {
+          livewireHandles.points = points.map(pt => createHandle(pt));
+        }
+
+        // Extract the actual cachedStats from the measurement data
+        const actualLivewireCachedStats = m.data?.cachedStats || {};
+        console.log('Export: Actual LivewireContour cachedStats being exported:', actualLivewireCachedStats);
+
+        base.data = {
+          cachedStats: actualLivewireCachedStats,
+          handles: livewireHandles,
+        };
+
+        // Add all available LivewireContour measurements
+        if (livewireAreaVal > 0) {
+          base.measurements.push({ name: 'area', value: Number(livewireAreaVal), unit: 'mm²' });
+        }
+        if (livewireMeanVal !== 0) {
+          base.measurements.push({ name: 'mean', value: Number(livewireMeanVal), unit: '' });
+        }
+        if (livewireStdDevVal !== 0) {
+          base.measurements.push({ name: 'stdDev', value: Number(livewireStdDevVal), unit: '' });
+        }
+        if (livewireMinVal !== 0) {
+          base.measurements.push({ name: 'min', value: Number(livewireMinVal), unit: '' });
+        }
+        if (livewireMaxVal !== 0) {
+          base.measurements.push({ name: 'max', value: Number(livewireMaxVal), unit: '' });
+        }
+        break;
       default:
         console.log(`🔍 DEBUG: No specific case for tool type: ${base.toolType}, using default`);
         base.data = {};

@@ -74,6 +74,9 @@ function setupRemovalProtection(measurementService) {
     }
   );
   
+  // Track display text restoration attempts to prevent infinite loops
+  const displayTextRestorationAttempts = new Map();
+  
   // Subscribe to measurement update events to preserve display text
   const unsubscribeUpdate = measurementService.subscribe(
     measurementService.EVENTS.MEASUREMENT_UPDATED,
@@ -84,26 +87,42 @@ function setupRemovalProtection(measurementService) {
       if (recentlyImportedMeasurements.has(measurementId)) {
         const storedMeasurement = protectedMeasurements.get(measurementId);
         if (storedMeasurement && storedMeasurement.displayText) {
+          // Check if we've already tried to restore this measurement too many times
+          const attempts = displayTextRestorationAttempts.get(measurementId) || 0;
+          if (attempts >= 3) {
+            console.log(`🔍 DEBUG: Max display text restoration attempts reached for ${measurementId}, skipping`);
+            return;
+          }
+          
           // Check if display text was reset or changed
           const currentDisplayText = measurement.displayText;
           const storedDisplayText = storedMeasurement.displayText;
           
           // If display text was reset or is empty, restore it
-          if (!currentDisplayText || 
+          // For ArrowAnnotate, we want to preserve the label as the primary text
+          const needsRestoration = !currentDisplayText || 
               !currentDisplayText.primary || 
               currentDisplayText.primary.length === 0 ||
-              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '') ||
-              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === measurement.label)) {
+              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '');
+          
+          // For ArrowAnnotate, if the primary text is the label, that's actually correct
+          const isArrowAnnotateWithLabel = measurement.toolName === 'ArrowAnnotate' && 
+              currentDisplayText?.primary?.length === 1 && 
+              currentDisplayText.primary[0] === measurement.label;
+          
+          if (needsRestoration && !isArrowAnnotateWithLabel) {
             
-            console.log(`🔍 DEBUG: Restoring display text for measurement ${measurementId}`);
+            displayTextRestorationAttempts.set(measurementId, attempts + 1);
+            console.log(`🔍 DEBUG: Restoring display text for measurement ${measurementId} (attempt ${attempts + 1}/3)`);
             console.log(`🔍 DEBUG: Current display text:`, currentDisplayText);
             console.log(`🔍 DEBUG: Stored display text:`, storedDisplayText);
             
-            // Update the measurement with the correct display text
-            measurementService.update(measurementId, {
-              ...measurement,
-              displayText: storedDisplayText
-            }, true); // Force update
+            // Only directly modify the measurement object to avoid triggering update events
+            if (measurement.displayText) {
+              measurement.displayText.primary = [...storedDisplayText.primary];
+              measurement.displayText.secondary = [...storedDisplayText.secondary];
+              console.log(`🔍 DEBUG: Directly modified measurement display text for ${measurementId}`);
+            }
             
             console.log(`🔍 DEBUG: Display text restored for measurement ${measurementId}`);
           }
@@ -122,23 +141,39 @@ function setupRemovalProtection(measurementService) {
       if (recentlyImportedMeasurements.has(measurementId)) {
         const storedMeasurement = protectedMeasurements.get(measurementId);
         if (storedMeasurement && storedMeasurement.displayText) {
+          // Check if we've already tried to restore this measurement too many times
+          const attempts = displayTextRestorationAttempts.get(measurementId) || 0;
+          if (attempts >= 3) {
+            console.log(`🔍 DEBUG: Max display text restoration attempts reached for ${measurementId}, skipping`);
+            return;
+          }
+          
           // Check if display text needs restoration
           const currentDisplayText = measurement.displayText;
           const storedDisplayText = storedMeasurement.displayText;
           
-          if (!currentDisplayText || 
+          // For ArrowAnnotate, we want to preserve the label as the primary text
+          const needsRestoration = !currentDisplayText || 
               !currentDisplayText.primary || 
               currentDisplayText.primary.length === 0 ||
-              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '') ||
-              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === measurement.label)) {
+              (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '');
+          
+          // For ArrowAnnotate, if the primary text is the label, that's actually correct
+          const isArrowAnnotateWithLabel = measurement.toolName === 'ArrowAnnotate' && 
+              currentDisplayText?.primary?.length === 1 && 
+              currentDisplayText.primary[0] === measurement.label;
+          
+          if (needsRestoration && !isArrowAnnotateWithLabel) {
             
-            console.log(`🔍 DEBUG: Restoring display text after RAW_MEASUREMENT_ADDED for ${measurementId}`);
+            displayTextRestorationAttempts.set(measurementId, attempts + 1);
+            console.log(`🔍 DEBUG: Restoring display text after RAW_MEASUREMENT_ADDED for ${measurementId} (attempt ${attempts + 1}/3)`);
             
-            // Update the measurement with the correct display text
-            measurementService.update(measurementId, {
-              ...measurement,
-              displayText: storedDisplayText
-            }, true); // Force update
+            // Only directly modify the measurement object to avoid triggering update events
+            if (measurement.displayText) {
+              measurement.displayText.primary = [...storedDisplayText.primary];
+              measurement.displayText.secondary = [...storedDisplayText.secondary];
+              console.log(`🔍 DEBUG: Directly modified measurement display text for ${measurementId}`);
+            }
             
             console.log(`🔍 DEBUG: Display text restored after RAW_MEASUREMENT_ADDED for ${measurementId}`);
           }
@@ -303,6 +338,35 @@ const identityMapping = data => {
   }
     return data;
 };
+
+// Minimal Catmull-Rom spline interpolation helper
+function catmullRomSpline(points, numSegments = 20) {
+  if (!Array.isArray(points) || points.length < 2) return [];
+  const result = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1] || points[i];
+    const p3 = points[i + 2] || p2;
+    for (let t = 0; t < numSegments; t++) {
+      const s = t / numSegments;
+      const x = 0.5 * (
+        (2 * p1[0]) +
+        (-p0[0] + p2[0]) * s +
+        (2*p0[0] - 5*p1[0] + 4*p2[0] - p3[0]) * s * s +
+        (-p0[0] + 3*p1[0] - 3*p2[0] + p3[0]) * s * s * s
+      );
+      const y = 0.5 * (
+        (2 * p1[1]) +
+        (-p0[1] + p2[1]) * s +
+        (2*p0[1] - 5*p1[1] + 4*p2[1] - p3[1]) * s * s +
+        (-p0[1] + 3*p1[1] - 3*p2[1] + p3[1]) * s * s * s
+      );
+      result.push({ x, y });
+    }
+  }
+  return result;
+}
 
 export async function importMeasurementCollection({
   collectionJSON,
@@ -627,15 +691,64 @@ export async function importMeasurementCollection({
     console.log(`DEBUG: Initial im.data for ${im.uuid}:`, im.data);
 
     if (handles) {
-      const pointHandles = Object.values(handles).filter(
-        (h: any) => h && typeof h.x === 'number' && typeof h.y === 'number'
-      );
-      measurement.points = pointHandles.map((p: any) => [p.x, p.y, p.z || zCoord]);
+      // Check if handles has a points array (like PlanarFreehandROI)
+      if (handles.points && Array.isArray(handles.points)) {
+        console.log(`DEBUG: Found points array in handles with ${handles.points.length} points`);
+        measurement.points = handles.points.map((p: any) => {
+          if (Array.isArray(p)) {
+            return [p[0], p[1], p[2] || zCoord];
+          } else if (p && typeof p.x === 'number' && typeof p.y === 'number') {
+            return [p.x, p.y, p.z || zCoord];
+          } else {
+            console.warn('Unexpected point format in handles.points:', p);
+            return [0, 0, zCoord];
+          }
+        });
+      } else {
+        // Fallback to the old method for other tools
+        const pointHandles = Object.values(handles).filter(
+          (h: any) => h && typeof h.x === 'number' && typeof h.y === 'number'
+        );
+        measurement.points = pointHandles.map((p: any) => [p.x, p.y, p.z || zCoord]);
+      }
     }
+    
+    console.log(`DEBUG: After points extraction, measurement.points for ${im.uuid}:`, measurement.points);
 
     // Extract displayText from the measurements array (skip for Length tools as we'll set it later)
     const stats = im.measurements;
-    if (stats && stats.length > 0 && measurement.toolName !== 'Length') {
+    
+    // Special handling for ArrowAnnotate - use the text from data or label
+    if (measurement.toolName === 'ArrowAnnotate') {
+      const arrowText = im.data?.text || im.name || measurement.label || '';
+      measurement.displayText = {
+        primary: [arrowText],
+        secondary: [],
+      };
+      console.log(`🔍 DEBUG: ArrowAnnotate display text set to:`, measurement.displayText);
+    } else if (measurement.toolName === 'PlanarFreehandROI' || measurement.toolName === 'SplineROI' || measurement.toolName === 'LivewireContour') {
+      // Special handling for PlanarFreehandROI/SplineROI/LivewireContour - extract area and other stats
+      let displayValues = [];
+      
+      if (stats && stats.length > 0) {
+        stats.forEach(stat => {
+          if (stat.value !== undefined && stat.value !== null && typeof stat.value === 'number') {
+            displayValues.push(`${stat.value.toFixed(2)} ${stat.unit || ''}`);
+          }
+        });
+      }
+      
+      // If no stats, use the label
+      if (displayValues.length === 0) {
+        displayValues = [measurement.label || 'PlanarFreehandROI'];
+      }
+      
+      measurement.displayText = {
+        primary: displayValues,
+        secondary: [],
+      };
+      console.log(`🔍 DEBUG: PlanarFreehandROI/SplineROI/LivewireContour display text set to:`, measurement.displayText);
+    } else if (stats && stats.length > 0 && measurement.toolName !== 'Length' && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
       const mainStat = stats[0];
       if (typeof mainStat.value === 'number' && isFinite(mainStat.value)) {
         const displayValue = `${mainStat.value.toFixed(2)} ${mainStat.unit || ''}`.trim();
@@ -654,7 +767,7 @@ export async function importMeasurementCollection({
           secondary: [],
         };
       }
-    } else if (measurement.toolName !== 'Length') {
+    } else if (measurement.toolName !== 'Length' && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
       // Initialize empty displayText for non-Length tools
       measurement.displayText = {
         primary: [],
@@ -674,6 +787,7 @@ export async function importMeasurementCollection({
     }
 
     // Ensure handles are present for supported tools
+    console.log(`🔍 DEBUG: Processing tool: ${measurement.toolName}`);
     if (measurement.toolName === 'Length') {
       if (measurement.points.length >= 2) {
         // Use the 3D coordinates directly from the handles (these are already world coordinates)
@@ -960,6 +1074,7 @@ export async function importMeasurementCollection({
         };
       }
     } else if (measurement.toolName === 'EllipticalROI' || measurement.toolName === 'CircleROI') {
+      console.log(`🔍 DEBUG: Processing EllipticalROI/CircleROI with toolName: ${measurement.toolName}`);
       // Handle CircleROI and EllipticalROI tools
       console.log(`🔍 DEBUG: Processing ${measurement.toolName} with im.data:`, im.data);
       
@@ -1196,8 +1311,8 @@ export async function importMeasurementCollection({
       console.log(`🔍 DEBUG: ${measurement.toolName} points:`, measurement.points);
       console.log(`🔍 DEBUG: ${measurement.toolName} hasValidHandles:`, hasValidHandles);
 
-      // Set displayText for other ROI tools
-      if (im.measurements && im.measurements.length > 0) {
+          // Set displayText for other ROI tools (excluding PlanarFreehandROI, SplineROI, and LivewireContour which have their own handling)
+    if (im.measurements && im.measurements.length > 0 && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
         const stats = im.measurements;
         const displayValues = [];
 
@@ -1250,7 +1365,8 @@ export async function importMeasurementCollection({
       }
       
       // Ensure ROI tools have all required properties
-      if (!measurement.data.handles.center || !measurement.data.handles.end) {
+          // Skip this for PlanarFreehandROI, SplineROI, and LivewireContour as they have their own specific handling
+    if ((!measurement.data.handles.center || !measurement.data.handles.end) && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
         console.warn(`🔍 DEBUG: ${measurement.toolName} missing required handles, creating fallback`);
         
         // Create fallback handles if missing
@@ -1278,7 +1394,8 @@ export async function importMeasurementCollection({
       
       // Ensure ROI tools have all the properties that Cornerstone3D expects
       // These are additional properties that might be needed for rendering
-      if (!measurement.data.handles.points) {
+          // Skip this for PlanarFreehandROI, SplineROI, and LivewireContour as they have their own specific handling
+    if (!measurement.data.handles.points && measurement.toolName !== 'PlanarFreehandROI' && measurement.toolName !== 'SplineROI' && measurement.toolName !== 'LivewireContour') {
         measurement.data.handles.points = [
           [measurement.data.handles.center.x, measurement.data.handles.center.y, measurement.data.handles.center.z || 0],
           [measurement.data.handles.end.x, measurement.data.handles.end.y, measurement.data.handles.end.z || 0]
@@ -1436,8 +1553,294 @@ export async function importMeasurementCollection({
           visible: true
         };
       }
-    } // Add more tool types as needed
-
+    } else if (measurement.toolName === 'ArrowAnnotate') {
+      console.log(`🔍 DEBUG: Processing ArrowAnnotate with points:`, measurement.points);
+      
+      if (measurement.points && measurement.points.length >= 2) {
+        // Create proper handles structure for ArrowAnnotate tool
+        measurement.data.handles = {
+          start: { x: measurement.points[0][0], y: measurement.points[0][1], z: measurement.points[0][2] || 0 },
+          end: { x: measurement.points[1][0], y: measurement.points[1][1], z: measurement.points[1][2] || 0 },
+          points: measurement.points,
+          activeHandleIndex: null,
+          invalidated: false,
+          highlighted: false,
+          locked: false,
+          visible: true
+        };
+        
+        console.log(`🔍 DEBUG: Created ArrowAnnotate handles:`, measurement.data.handles);
+      } else {
+        console.warn(`🔍 DEBUG: ArrowAnnotate has insufficient points (${measurement.points?.length || 0}), creating default handles`);
+        
+        const defaultStart = { x: 100, y: 100, z: 0 };
+        const defaultEnd = { x: 150, y: 100, z: 0 };
+        
+        measurement.data.handles = {
+          start: defaultStart,
+          end: defaultEnd,
+          points: [
+            [defaultStart.x, defaultStart.y, defaultStart.z],
+            [defaultEnd.x, defaultEnd.y, defaultEnd.z]
+          ],
+          activeHandleIndex: null,
+          invalidated: false,
+          highlighted: false,
+          locked: false,
+          visible: true
+        };
+      }
+    } else if (measurement.toolName === 'PlanarFreehandROI' || measurement.toolName === 'SplineROI' || measurement.toolName === 'LivewireContour') {
+      console.log(`🔍 DEBUG: Processing PlanarFreehandROI/SplineROI/LivewireContour with points:`, measurement.points);
+      console.log(`🔍 DEBUG: Tool name is: ${measurement.toolName}`);
+      
+      if (measurement.points && measurement.points.length > 0) {
+        // Create proper handles structure for PlanarFreehandROI tool
+        // PlanarFreehandROI uses a points array for the freehand contour
+        
+        // Preserve existing cachedStats if they exist
+        const existingCachedStats = measurement.data?.cachedStats;
+        
+        measurement.data.handles = {
+          points: measurement.points,
+          activeHandleIndex: null,
+          invalidated: false,
+          highlighted: false,
+          locked: false,
+          visible: true,
+          textBox: {
+            hasMoved: false,
+            worldPosition: [0, 0, 0],
+            worldBoundingBox: {
+              topLeft: [0, 0, 0],
+              topRight: [0, 0, 0],
+              bottomLeft: [0, 0, 0],
+              bottomRight: [0, 0, 0]
+            }
+          }
+        };
+        
+        // Also create contour structure for compatibility with some Cornerstone tools
+        measurement.data.contour = {
+          polyline: measurement.points,
+          closed: true
+        };
+        
+        // For SplineROI, add the required spline object
+        if (measurement.toolName === 'SplineROI') {
+          console.log(`🔍 DEBUG: SplineROI processing - original measurement.points:`, measurement.points);
+          console.log(`🔍 DEBUG: SplineROI processing - measurement.points length:`, measurement.points?.length);
+          
+          // Check if points are in world coordinates and need conversion
+          let validPoints = [];
+          
+          if (measurement.points && measurement.points.length > 0) {
+            // First, let's see what we're working with
+            console.log(`🔍 DEBUG: First few points:`, measurement.points.slice(0, 3));
+            
+            // Use original world coordinates, ensure [x, y, z] format
+            console.log(`🔍 DEBUG: Using original world coordinates with [x, y, z] formatting`);
+            validPoints = measurement.points
+              .filter(pt => Array.isArray(pt) && pt.length >= 2 &&
+                           typeof pt[0] === 'number' && typeof pt[1] === 'number' &&
+                           !isNaN(pt[0]) && !isNaN(pt[1]))
+              .map(pt => [pt[0], pt[1], pt[2] ?? 0]);
+          }
+          
+          console.log(`🔍 DEBUG: SplineROI valid 2D points after conversion:`, validPoints);
+          console.log(`🔍 DEBUG: SplineROI valid points count:`, validPoints.length);
+          
+          if (validPoints.length === 0) {
+            console.warn(`🔍 DEBUG: No valid points found for SplineROI, using fallback`);
+            validPoints = [[100, 100], [150, 100], [150, 150], [100, 150]];
+          }
+          
+          // Test each point to ensure they're valid numbers
+          console.log(`🔍 DEBUG: Testing each valid point:`);
+          
+          // Enhanced mock spline instance for SplineROI
+          let _controlPoints = validPoints;
+          const splineInstance = {
+            type: 'CATMULLROM',
+            // Required properties that the SplineROI tool expects
+            closed: true, // Our contour is closed
+            resolution: 0.5, // Match the resolution in the spline object
+            fixedResolution: false,
+            invalidated: false,
+            setControlPoints(points) {
+              console.log('🔍 DEBUG: setControlPoints called with', points);
+              _controlPoints = points.filter(pt =>
+                Array.isArray(pt) && pt.length >= 2 &&
+                typeof pt[0] === 'number' && typeof pt[1] === 'number' &&
+                !isNaN(pt[0]) && !isNaN(pt[1])
+              );
+            },
+            getControlPoints() {
+              console.log('🔍 DEBUG: getControlPoints called, returning', _controlPoints);
+              return _controlPoints;
+            },
+            get getControlPointsProp() {
+              console.log('🔍 DEBUG: controlPoints property accessed, returning', _controlPoints);
+              return _controlPoints;
+            },
+            isPointNearCurve() { return false; },
+            getPolylinePoints() {
+              // Return the current control points (which are canvas coordinates after setControlPoints)
+              const polyline = _controlPoints.map(pt => [
+                Number(pt[0]) || 0,
+                Number(pt[1]) || 0
+              ]);
+              console.log('🔍 DEBUG: getPolylinePoints called, returning', polyline.slice(0, 3), `... (${polyline.length} total)`);
+              return polyline;
+            },
+            getPoints() { return _controlPoints; },
+            getNumberOfPoints() { return _controlPoints.length; },
+            getPoint(index) { return _controlPoints[index] || [0, 0]; },
+            addPoint(point) {
+              if (Array.isArray(point) && point.length >= 2 &&
+                  typeof point[0] === 'number' && typeof point[1] === 'number' &&
+                  !isNaN(point[0]) && !isNaN(point[1])) {
+                _controlPoints.push([point[0], point[1]]);
+              }
+            },
+            removePoint(index) {
+              if (index >= 0 && index < _controlPoints.length) {
+                _controlPoints.splice(index, 1);
+              }
+            },
+            clear() { _controlPoints = []; },
+            isEmpty() { return _controlPoints.length === 0; }
+          };
+          measurement.data.spline = {
+            type: 'CATMULLROM',
+            instance: splineInstance,
+            resolution: 0.5
+          };
+          console.log(`🔍 DEBUG: Added complete spline object for SplineROI:`, measurement.data.spline);
+          console.log(`🔍 DEBUG: Spline instance controlPoints:`, splineInstance.getControlPoints().slice(0, 3), `... (${splineInstance.getControlPoints().length} total)`);
+          // Log the annotation object after adding to measurement service (simulate, if needed)
+          setTimeout(() => {
+            try {
+              console.log('🔍 DEBUG: Annotation object after add:', measurement);
+            } catch (e) {}
+          }, 1000);
+        }
+        
+        // Restore cachedStats if they existed
+        if (existingCachedStats) {
+          measurement.data.cachedStats = existingCachedStats;
+        }
+        
+        console.log(`🔍 DEBUG: Created PlanarFreehandROI/SplineROI/LivewireContour handles:`, measurement.data.handles);
+        console.log(`🔍 DEBUG: Created PlanarFreehandROI/SplineROI/LivewireContour contour:`, measurement.data.contour);
+      } else {
+        console.warn(`🔍 DEBUG: PlanarFreehandROI/SplineROI/LivewireContour has no points (${measurement.points?.length || 0}), creating default handles`);
+        
+        // Preserve existing cachedStats if they exist
+        const existingCachedStats = measurement.data?.cachedStats;
+        
+        // Create a simple default contour
+        const defaultPoints = [
+          [100, 100, 0],
+          [150, 100, 0],
+          [150, 150, 0],
+          [100, 150, 0]
+        ];
+        
+        measurement.data.handles = {
+          points: defaultPoints,
+          activeHandleIndex: null,
+          invalidated: false,
+          highlighted: false,
+          locked: false,
+          visible: true,
+          textBox: {
+            hasMoved: false,
+            worldPosition: [0, 0, 0],
+            worldBoundingBox: {
+              topLeft: [0, 0, 0],
+              topRight: [0, 0, 0],
+              bottomLeft: [0, 0, 0],
+              bottomRight: [0, 0, 0]
+            }
+          }
+        };
+        
+        measurement.data.contour = {
+          polyline: defaultPoints,
+          closed: true
+        };
+        
+        // For SplineROI, add the required spline object
+        if (measurement.toolName === 'SplineROI') {
+          // Ensure we have valid 2D points for the spline (fallback case)
+          const validPoints = defaultPoints
+            .filter(pt => Array.isArray(pt) && pt.length >= 2 && 
+                         typeof pt[0] === 'number' && typeof pt[1] === 'number' &&
+                         !isNaN(pt[0]) && !isNaN(pt[1]))
+            .map(pt => [pt[0], pt[1]]);
+          
+          console.log(`🔍 DEBUG: SplineROI fallback original points:`, defaultPoints);
+          console.log(`🔍 DEBUG: SplineROI fallback valid 2D points:`, validPoints);
+          
+          if (validPoints.length === 0) {
+            console.warn(`🔍 DEBUG: No valid points found for SplineROI fallback, using default`);
+            validPoints.push([100, 100], [150, 100], [150, 150], [100, 150]);
+          }
+          
+          // Create a complete spline-like object with all required methods
+          const splineInstance = {
+            type: 'CATMULLROM',
+            controlPoints: validPoints,
+            setControlPoints(points) { 
+              this.controlPoints = points.filter(pt => 
+                Array.isArray(pt) && pt.length >= 2 && 
+                typeof pt[0] === 'number' && typeof pt[1] === 'number' &&
+                !isNaN(pt[0]) && !isNaN(pt[1])
+              );
+            },
+            getControlPoints() { return this.controlPoints; },
+            isPointNearCurve() { return false; },
+            getPolylinePoints() { 
+              // Return interpolated points for SVG path
+              const polyline = catmullRomSpline(this.controlPoints, 20);
+              console.log('🔍 DEBUG: getPolylinePoints returning', polyline.slice(0, 5), '...');
+              return polyline;
+            },
+            getPoints() { return this.controlPoints; },
+            getNumberOfPoints() { return this.controlPoints.length; },
+            getPoint(index) { return this.controlPoints[index] || [0, 0]; },
+            addPoint(point) { 
+              if (Array.isArray(point) && point.length >= 2 && 
+                  typeof point[0] === 'number' && typeof point[1] === 'number' &&
+                  !isNaN(point[0]) && !isNaN(point[1])) {
+                this.controlPoints.push([point[0], point[1]]);
+              }
+            },
+            removePoint(index) { 
+              if (index >= 0 && index < this.controlPoints.length) {
+                this.controlPoints.splice(index, 1);
+              }
+            },
+            clear() { this.controlPoints = []; },
+            isEmpty() { return this.controlPoints.length === 0; }
+          };
+          measurement.data.spline = {
+            type: 'CATMULLROM',
+            instance: splineInstance,
+            resolution: 0.5
+          };
+          console.log(`🔍 DEBUG: Added complete spline object for SplineROI (fallback):`, measurement.data.spline);
+        }
+        
+        // Restore cachedStats if they existed
+        if (existingCachedStats) {
+          measurement.data.cachedStats = existingCachedStats;
+        }
+        
+        measurement.points = defaultPoints;
+      }
+    } 
     // Defensive: ensure data and handles always exist
     if (!measurement.data) {
       measurement.data = {};
@@ -1446,14 +1849,27 @@ export async function importMeasurementCollection({
       measurement.data.handles = {};
     }
 
-    // For ArrowAnnotate, try to reconstruct a start handle if possible
+    // For ArrowAnnotate, try to reconstruct handles if possible
     if (measurement.toolName === 'ArrowAnnotate') {
+      console.log('🔍 DEBUG: ArrowAnnotate import - points:', measurement.points);
+      console.log('🔍 DEBUG: ArrowAnnotate import - existing handles:', measurement.data.handles);
+      
       if (!measurement.data.handles.start && measurement.points.length > 0) {
-        measurement.data.handles.start = { x: measurement.points[0][0], y: measurement.points[0][1] };
+        measurement.data.handles.start = { 
+          x: measurement.points[0][0], 
+          y: measurement.points[0][1], 
+          z: measurement.points[0][2] || 0 
+        };
       }
       if (!measurement.data.handles.end && measurement.points.length > 1) {
-        measurement.data.handles.end = { x: measurement.points[1][0], y: measurement.points[1][1] };
+        measurement.data.handles.end = { 
+          x: measurement.points[1][0], 
+          y: measurement.points[1][1], 
+          z: measurement.points[1][2] || 0 
+        };
       }
+      
+      console.log('🔍 DEBUG: ArrowAnnotate import - final handles:', measurement.data.handles);
     }
 
     // Set displaySetInstanceUID if we found it, otherwise try the fallback method
@@ -1513,7 +1929,7 @@ export async function importMeasurementCollection({
 
     // Add debug logging to see what displayText is being passed
     console.log(`🔍 DEBUG: measurement.displayText before adding to service:`, measurement.displayText);
-    console.log(`🔍 DEBUG: measurement object being stored:`, {
+    console.log(`�� DEBUG: measurement object being stored:`, {
       uid: measurement.uid,
       displayText: measurement.displayText,
       label: measurement.label,
@@ -1529,7 +1945,7 @@ export async function importMeasurementCollection({
     console.log('- annotation data being passed to Cornerstone3D:', rawDataForService.annotation.data);
     
     // Additional debug for ROI tools
-    if (measurement.toolName === 'CircleROI' || measurement.toolName === 'EllipticalROI') {
+    if (measurement.toolName === 'CircleROI' || measurement.toolName === 'EllipticalROI' || measurement.toolName === 'SplineROI') {
       console.log(`🔍 DEBUG: ${measurement.toolName} final data structure:`, {
         handles: measurement.data.handles,
         center: measurement.data.handles?.center,
@@ -1613,8 +2029,17 @@ export async function importMeasurementCollection({
       console.log(`✅ Successfully added measurement ${measurement.uid} to measurement service`);
       
       // Proactively restore display text multiple times to ensure it persists
+      let displayTextRestorationCount = 0;
+      const maxDisplayTextRestorations = 3;
+      
       const restoreDisplayText = () => {
         try {
+          // Prevent infinite loops by limiting restoration attempts
+          if (displayTextRestorationCount >= maxDisplayTextRestorations) {
+            console.log(`🔍 DEBUG: Max display text restorations reached for ${measurement.uid}, skipping`);
+            return;
+          }
+          
           if (!protectedMeasurements || typeof protectedMeasurements.get !== 'function') {
             return; // Skip if protectedMeasurements is not available
           }
@@ -1627,23 +2052,25 @@ export async function importMeasurementCollection({
               const storedDisplayText = storedMeasurement.displayText;
               
               // Check if display text needs restoration
-              if (!currentDisplayText || 
+              // For ArrowAnnotate, we want to preserve the label as the primary text
+              const needsRestoration = !currentDisplayText || 
                   !currentDisplayText.primary || 
                   currentDisplayText.primary.length === 0 ||
-                  (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '') ||
-                  (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === currentMeasurement.label)) {
+                  (currentDisplayText.primary.length === 1 && currentDisplayText.primary[0] === '');
+              
+              // For ArrowAnnotate, if the primary text is the label, that's actually correct
+              const isArrowAnnotateWithLabel = currentMeasurement.toolName === 'ArrowAnnotate' && 
+                  currentDisplayText?.primary?.length === 1 && 
+                  currentDisplayText.primary[0] === currentMeasurement.label;
+              
+              if (needsRestoration && !isArrowAnnotateWithLabel) {
                 
-                console.log(`🔍 DEBUG: Proactively restoring display text for measurement ${measurement.uid}`);
+                displayTextRestorationCount++;
+                console.log(`🔍 DEBUG: Proactively restoring display text for measurement ${measurement.uid} (attempt ${displayTextRestorationCount}/${maxDisplayTextRestorations})`);
                 console.log(`🔍 DEBUG: Current display text:`, currentDisplayText);
                 console.log(`🔍 DEBUG: Stored display text:`, storedDisplayText);
                 
-                // Update the measurement with the correct display text
-                measurementService.update(measurement.uid, {
-                  ...currentMeasurement,
-                  displayText: storedDisplayText
-                }, true); // Force update
-                
-                // Also directly modify the measurement object to ensure it persists
+                // Only directly modify the measurement object to avoid triggering update events
                 if (currentMeasurement.displayText) {
                   currentMeasurement.displayText.primary = [...storedDisplayText.primary];
                   currentMeasurement.displayText.secondary = [...storedDisplayText.secondary];
@@ -1651,6 +2078,8 @@ export async function importMeasurementCollection({
                 }
                 
                 console.log(`🔍 DEBUG: Display text proactively restored for measurement ${measurement.uid}`);
+              } else {
+                console.log(`🔍 DEBUG: Display text already correct for ${measurement.uid}, no restoration needed`);
               }
             }
           }
@@ -1945,12 +2374,24 @@ export async function importMeasurementCollection({
                 try {
                   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
                   if (toolGroup) {
+                    // Check SplineROI tool configuration specifically
+                    const splineROIToolConfig = toolGroup.getToolConfiguration('SplineROI');
+                    
+                    // Check if SplineROI tool is active or passive
+                    const splineROIToolMode = toolGroup.getToolOptions('SplineROI')?.mode;
+                    
+                    // Ensure SplineROI tool is at least passive so it can render annotations
+                    if (splineROIToolMode !== 'Active' && splineROIToolMode !== 'Passive') {
+                      console.log(`🔍 DEBUG: Setting SplineROI tool to passive mode for viewport ${viewportId}`);
+                      toolGroup.setToolPassive('SplineROI');
+                    }
+                    
+                    // Force the SplineROI tool to render annotations
+                    
                     const lengthToolConfig = toolGroup.getToolConfiguration('Length');
-                    console.log(`🔍 DEBUG: Length tool config for viewport ${viewportId}:`, lengthToolConfig);
                     
                     // Check if Length tool is active or passive
                     const lengthToolMode = toolGroup.getToolOptions('Length')?.mode;
-                    console.log(`🔍 DEBUG: Length tool mode for viewport ${viewportId}:`, lengthToolMode);
                     
                     // Ensure Length tool is at least passive so it can render annotations
                     if (lengthToolMode !== 'Active' && lengthToolMode !== 'Passive') {
@@ -1975,6 +2416,17 @@ export async function importMeasurementCollection({
                     try {
                       const isVisibleInTool = cornerstoneTools.annotation.visibility.isAnnotationVisible(measurement.uid);
                       console.log(`🔍 DEBUG: Annotation visibility in tool for viewport ${viewportId}:`, isVisibleInTool);
+                      
+                      // Check if SplineROI tool exists and is properly configured
+                      if (measurement.toolName === 'SplineROI') {
+                        const splineROITool = cornerstoneTools.getTool('SplineROI');
+                        console.log(`🔍 DEBUG: SplineROI tool exists:`, !!splineROITool);
+                        console.log(`🔍 DEBUG: SplineROI tool configuration:`, splineROITool);
+                        
+                        // Check if the tool is properly registered with the tool group
+                        const toolInstance = toolGroup.getToolInstance('SplineROI');
+                        console.log(`🔍 DEBUG: SplineROI tool instance in tool group:`, !!toolInstance);
+                      }
                       
                       // Check if the annotation is in the tool's annotation list for this specific viewport
                       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
