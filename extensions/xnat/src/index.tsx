@@ -29,7 +29,6 @@ import XNATThumbnail from './xnat-components/XNATStudyBrowser/XNATThumbnail';
 // Patch segmentation service to handle missing segment centers gracefully
 const patchSegmentationService = (servicesManager) => {
   const { segmentationService } = servicesManager.services;
-
   if (segmentationService && segmentationService.jumpToSegmentCenter) {
     const originalJumpToSegmentCenter = segmentationService.jumpToSegmentCenter.bind(segmentationService);
 
