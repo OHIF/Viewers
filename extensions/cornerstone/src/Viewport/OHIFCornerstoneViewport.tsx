@@ -4,6 +4,8 @@ import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService, useViewportRef } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
+import { vec3 } from 'gl-matrix';
+import { Point3 } from '@cornerstonejs/core/types';
 
 import { setEnabledElement } from '../state';
 
@@ -17,6 +19,7 @@ import ViewportColorbarsContainer from '../components/ViewportColorbar';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
+import { isMeasurementWithinViewport } from '../utils/isMeasurementWithinViewport';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 
 const STACK = 'stack';
@@ -431,8 +434,37 @@ function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewp
     console.warn('Unable to apply', metadata, e);
   }
 
+  // If the measurement is not visible inside the current viewport, we need to move the camera to the measurement
+  // otherwise do not move the camera to the measurement.
+  if (!isMeasurementWithinViewport(viewport, measurement)) {
+    try {
+      const camera = viewport.getCamera();
+      const { focalPoint: cameraFocalPoint, position: cameraPosition } = camera;
+      const focalPoint: Point3 = [
+        (measurement.points[0][0] + measurement.points[1][0]) / 2,
+        (measurement.points[0][1] + measurement.points[1][1]) / 2,
+        0,
+      ];
+      const position = vec3.sub(vec3.create(), cameraPosition, cameraFocalPoint);
+      vec3.add(position, position, focalPoint);
+      viewport.setCamera({ focalPoint, position });
+      // Zoom out if the measurement is too large
+      const measurementSize = Math.sqrt(
+        Math.pow(measurement.points[0][0] - measurement.points[1][0], 2) +
+          Math.pow(measurement.points[0][1] - measurement.points[1][1], 2)
+      );
+
+      if (measurementSize > camera.parallelScale) {
+        const scaleFactor = measurementSize / camera.parallelScale;
+        viewport.setZoom(viewport.getZoom() / scaleFactor);
+      }
+      viewport.render();
+    } catch (e) {
+      console.warn('Unable to adjust pan/zoom for the measurement', measurement.points, e);
+    }
+  }
+
   cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-  event?.consume?.();
 }
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
