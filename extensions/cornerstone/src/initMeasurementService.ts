@@ -409,10 +409,6 @@ const connectMeasurementServiceToTools = ({
         setAnnotationLabel(sourceAnnotation, element, label);
       }
 
-      if (metadata.toolName === 'ArrowAnnotate') {
-        data.text = label;
-      }
-
       // update the isLocked state
       annotation.locking.setAnnotationLocked(uid, isLocked);
 
