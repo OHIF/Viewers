@@ -145,6 +145,69 @@ function commandsModule({
   }
 
   const actions = {
+    jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
+      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
+      const { metadata } = measurement;
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      // Finds the best viewport to jump to for showing the annotation view reference
+      // This may be different from active if there is a viewport already showing the display set.
+      const viewportId = cornerstoneViewportService.findNavigationCompatibleViewportId(
+        activeViewportId,
+        metadata
+      );
+      if (viewportId) {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        viewport.setViewReference(metadata);
+        return;
+      }
+
+      const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
+      if (!referencedDisplaySetInstanceUID) {
+        console.warn('ViewportGrid::No display set found in', measurement);
+        return;
+      }
+
+      // Finds the viewport to update to show the given displayset/orientation.
+      // This will choose a view already containing the measurement display set
+      // if possible, otherwise will fallback to the active.
+      const viewportToUpdate = cornerstoneViewportService.findUpdateableViewportConfiguration(
+        activeViewportId,
+        measurement
+      );
+
+      if (!viewportToUpdate) {
+        console.warn('Unable to find a viewport to show this in');
+        return;
+      }
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportToUpdate.viewportId,
+        referencedDisplaySetInstanceUID
+      );
+
+      if (!updatedViewports?.[0]) {
+        console.warn(
+          'ViewportGrid::Unable to navigate to viewport containing',
+          referencedDisplaySetInstanceUID
+        );
+        return;
+      }
+
+      updatedViewports[0].viewportOptions = viewportToUpdate.viewportOptions;
+
+      // Update stored position presentation
+      commandsManager.run('updateStoredPositionPresentation', {
+        viewportId: viewportToUpdate.viewportId,
+        displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+        referencedImageId: measurement.referencedImageId,
+        options: {
+          ...measurement.metadata,
+        },
+      });
+
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
+    },
+
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
       if (!displaySet) {
         return;
@@ -327,6 +390,8 @@ function commandsModule({
         type,
       });
     },
+
+    /** Stores the changed position presentation */
     updateStoredPositionPresentation: ({
       viewportId,
       displaySetInstanceUIDs,
@@ -350,23 +415,20 @@ function commandsModule({
           ([key, value]) => {
             return (
               displaySetInstanceUIDs.every(uid => key.includes(uid)) &&
-              value.viewportId === viewportId
+              value?.viewportId === viewportId
             );
           }
         )?.[0];
       }
 
       // Create presentation data with referencedImageId and options if provided
-      const presentationData = referencedImageId
-        ? {
-            ...presentations.positionPresentation,
-            viewReference: {
-              referencedImageId,
-              ...options,
-            },
-          }
-        : presentations.positionPresentation;
-
+      const presentationData = {
+        ...presentations.positionPresentation,
+        viewReference: {
+          referencedImageId,
+          ...options,
+        },
+      };
       if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
@@ -2107,9 +2169,7 @@ function commandsModule({
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
-    jumpToMeasurement: {
-      commandFn: actions.jumpToMeasurement,
-    },
+    jumpToMeasurement: actions.jumpToMeasurement,
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
@@ -2369,6 +2429,7 @@ function commandsModule({
     startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
     endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
+    jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
   };
 
   return {

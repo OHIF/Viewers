@@ -12,7 +12,6 @@ import {
   utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
 import { Types, MeasurementService } from '@ohif/core';
-import { StackViewport, utilities as csUtils } from '@cornerstonejs/core';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import SCOORD3DPointTool from './tools/SCOORD3DPointTool';
@@ -57,7 +56,7 @@ export default function init({
     'SRSCOORD3DPoint',
     POINT,
     SRSCOOR3DProbeMapper.toAnnotation,
-    SRSCOOR3DProbeMapper.toMeasurement
+    SRSCOOR3DProbeMapper.toMeasurement.bind(null, { servicesManager })
   );
 
   // Modify annotation tools to use dashed lines on SR

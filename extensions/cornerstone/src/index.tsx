@@ -195,7 +195,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       {
         name: 'cornerstone',
         component: ExtendedOHIFCornerstoneViewport,
-        isReferenceViewable: props => utils.isReferenceViewable({ ...props, servicesManager }),
+        isReferenceViewable: utils.isReferenceViewable.bind(null, servicesManager),
       },
     ];
   },

@@ -7,13 +7,8 @@ const SRSCOOR3DProbe = {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  toMeasurement: (
-    csToolsEventDetail,
-    displaySetService,
-    CornerstoneViewportService,
-    getValueTypeFromToolType,
-    customizationService
-  ) => {
+  toMeasurement: ({ servicesManager, getValueTypeFromToolType }, csToolsEventDetail) => {
+    const { displaySetService } = servicesManager.services;
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
@@ -22,14 +17,25 @@ const SRSCOOR3DProbe = {
       return null;
     }
 
-    const { toolName } = metadata;
+    const { toolName, FrameOfReferenceUID } = metadata;
     const { points } = data.handles;
+
+    const displaySets = displaySetService
+      .getActiveDisplaySets()
+      .filter(ds => ds.FrameOfReferenceUID === FrameOfReferenceUID);
+    const displaySet = displaySets.filter(ds => ds.isReconstructable)[0] || displaySets[0];
+
+    const { StudyInstanceUID: referenceStudyUID, SeriesInstanceUID: referenceSeriesUID } =
+      displaySets[0] || {};
 
     const displayText = getDisplayText(annotation);
     return {
       uid: annotationUID,
       points,
       metadata,
+      referenceStudyUID,
+      referenceSeriesUID,
+      displaySetInstanceUID: displaySet?.displaySetInstanceUID,
       toolName: metadata.toolName,
       label: data.label,
       displayText: displayText,
@@ -56,7 +62,10 @@ function getDisplayText(annotation) {
     }
   }
 
-  return displayText;
+  return {
+    primary: displayText,
+    secondary: [],
+  };
 }
 
 export default SRSCOOR3DProbe;
