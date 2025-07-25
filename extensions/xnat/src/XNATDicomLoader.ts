@@ -290,8 +290,6 @@ function findMatchingInstanceForImageId(imageId: string, urlPath: string): any {
         
         if (!seriesData || !seriesData.instances || !seriesData.instances.length) continue;
         
-        // Look for instance with matching URL or filename
-        console.log('XNAT SOP DEBUG: seriesData.instances:', seriesData.instances);
         for (const instance of seriesData.instances) {
           // Check if instance URL contains the filename
           if (instance.url && (instance.url.includes(filename) || instance.url === urlPath)) {

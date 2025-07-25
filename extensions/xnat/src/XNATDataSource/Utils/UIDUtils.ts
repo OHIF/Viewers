@@ -9,7 +9,6 @@ export function extractUIDFromFilename(url: string): string | null {
       // Generate a unique SOPInstanceUID based on the timestamp and random number
       // Don't attempt to extract from filename as it contains StudyInstanceUID, not SOPInstanceUID
       const sopUID = `2.25.${Date.now()}.${Math.floor(Math.random() * 1000000)}`;
-      console.log('XNAT: Generated new SOPInstanceUID:', sopUID);
       return sopUID;
     } catch (e) {
       console.warn('Error generating SOPInstanceUID:', e);

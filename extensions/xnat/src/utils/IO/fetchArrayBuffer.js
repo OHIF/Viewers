@@ -13,7 +13,6 @@ export default function fetchArrayBuffer(route, updateProgress) {
             const baseUrl = xnatRootUrl.endsWith('/') ? xnatRootUrl : xnatRootUrl + '/';
             const url = `${baseUrl}${cleanRoute}`;
 
-            console.log(`fetching: ${url}`);
 
             xhr.onload = () => {
                 console.log(`Request returned, status: ${xhr.status}`);

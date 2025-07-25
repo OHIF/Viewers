@@ -10,7 +10,7 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
-function createTools(utilityModule) {
+function createTools(utilityModule, commandsManager) {
   const { toolNames, Enums } = utilityModule.exports;
   return {
     active: [
@@ -26,6 +26,22 @@ function createTools(utilityModule) {
       },
     ],
     passive: [
+      // Basic measurement tools
+      { toolName: toolNames.Length },
+      { toolName: toolNames.Bidirectional },
+      { toolName: toolNames.Probe },
+      { toolName: toolNames.EllipticalROI },
+      { toolName: toolNames.CircleROI },
+      { toolName: toolNames.RectangleROI },
+      { toolName: toolNames.ArrowAnnotate },
+      { toolName: toolNames.Angle },
+      { toolName: toolNames.CobbAngle },
+      { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.SplineROI },
+      { toolName: toolNames.LivewireContour },
+      { toolName: toolNames.CalibrationLine },
+
+      // Segmentation tools
       {
         toolName: 'CircularBrush',
         parentTool: 'Brush',
@@ -122,7 +138,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
-  const tools = createTools(utilityModule);
+  const tools = createTools(utilityModule, commandsManager);
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
@@ -132,7 +148,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   );
   const servicesManager = extensionManager._servicesManager;
   const { cornerstoneViewportService } = servicesManager.services;
-  const tools = createTools(utilityModule);
+  const tools = createTools(utilityModule, commandsManager);
   tools.disabled.push(
     {
       toolName: utilityModule.exports.toolNames.Crosshairs,

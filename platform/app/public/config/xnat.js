@@ -7,7 +7,6 @@ const getServerUrl = () => {
         const { protocol, hostname, port } = window.location;
         const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
         const detectedUrl = `${protocol}//${hostname}${portPart}`;
-        console.log('XNAT Plugin: Detected server URL:', detectedUrl);
         return detectedUrl;
     }
 
@@ -30,7 +29,8 @@ const xnatConfig = {
     extensions: [
         '@ohif/extension-default',
         '@ohif/extension-cornerstone',
-        '@ohif/extension-xnat'
+        '@ohif/extension-xnat',
+        '@ohif/extension-measurement-tracking'
     ],
     modes: ['@ohif/mode-xnat'],
     customizationService: {
@@ -194,8 +194,6 @@ const xnatConfig = {
             // Try to continue instead of crashing
             return true;
         }
-
-        console.log('Full error object:', JSON.stringify(error, null, 2));
         console.trace('Error stack trace:');
     },
     // whiteLabeling: {
@@ -315,7 +313,6 @@ const xnatConfig = {
     },
     // Add a global fix for missing authorization functions and other required modules
     beforeInit: () => {
-        console.log('Applying OHIF compatibility patches for XNAT...');
 
         // Create global DICOMWeb namespace if it doesn't exist
         window.DICOMWeb = window.DICOMWeb || {};
@@ -342,14 +339,12 @@ const xnatConfig = {
                 // Access event details safely
                 const customEvent = event && typeof event === 'object' ? event : {};
                 const detail = customEvent.detail || {};
-                console.log('Cornerstone image load progress:', detail);
             });
 
             document.addEventListener('cornerstoneimageloaded', function(event) {
                 // Access event details safely
                 const customEvent = event && typeof event === 'object' ? event : {};
                 const detail = customEvent.detail || {};
-                console.log('Cornerstone image loaded:', detail);
             });
 
             document.addEventListener('cornerstoneimageloadfailed', function(event) {
@@ -361,7 +356,6 @@ const xnatConfig = {
 
             // Add event listener for cornerstone initialized
             document.addEventListener('cornerstoneinitialized', function() {
-                console.log('Cornerstone initialized - configuring wadouri loaders');
 
                 // Event for other components to know cornerstone is ready
                 try {
@@ -369,7 +363,6 @@ const xnatConfig = {
                         detail: { timestamp: new Date().toISOString() }
                     });
                     document.dispatchEvent(initEvent);
-                    console.log('Dispatched ohif-cornerstone-ready event');
                 } catch (e) {
                     console.warn('Failed to dispatch cornerstone ready event:', e);
                 }
@@ -396,8 +389,6 @@ const xnatConfig = {
                                 xhr.setRequestHeader('Accept', 'application/octet-stream,*/*');
                             }
                         });
-
-                        console.log('Configured Cornerstone WadoImageLoader');
                     } catch (error) {
                         console.error('Error configuring WadoImageLoader:', error);
                     }
@@ -456,8 +447,6 @@ const xnatConfig = {
             }
             return originalFetch.apply(this, args);
         };
-
-        console.log('XNAT compatibility patches applied successfully');
     }
 };
 
@@ -474,22 +463,16 @@ const xnatConfig = {
     // Define the config property with aggressive protection
     Object.defineProperty(window, 'config', {
         get: function() {
-            console.log('🎯 Config accessed - returning protected XNAT config');
             return protectedConfig;
         },
         set: function(newConfig) {
             console.warn('⚠️ Attempt to override XNAT config blocked!');
-            console.log('Attempted config:', newConfig);
             // Always return our protected config, never allow overrides
             return;
         },
         enumerable: true,
         configurable: false
     });
-
-    console.log('🛡️ XNAT Config Protection: MAXIMUM SECURITY ENABLED');
-    console.log('🎯 Protected Extensions:', protectedConfig.extensions);
-    console.log('🎯 Protected Modes:', protectedConfig.modes);
 })();
 
 // Add immediate patches outside the beforeInit function to ensure they're applied
@@ -519,6 +502,4 @@ const xnatConfig = {
         thumbnailRendering: 'wadouri',
         getAuthorizationHeader: () => undefined
     };
-
-    console.log('Applied immediate XNAT compatibility patches');
 })();

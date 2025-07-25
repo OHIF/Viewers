@@ -98,6 +98,10 @@ const isMultiFrame = instance => {
   return instance.NumberOfFrames > 1;
 };
 
+const isSingleImageModality = modality => {
+  return modality === 'CR' || modality === 'MG' || modality === 'DX';
+};
+
 function getDisplaySetInfo(instances) {
   const dynamicVolumeInfo = getDynamicVolumeInfo(instances);
   const { appConfig } = appContext;
@@ -129,7 +133,6 @@ const makeDisplaySet = instances => {
   }
 
   const instance = instances[0];
-  console.log('XNAT xnatSopClassHandler makeDisplaySet: First instance SOPClassUID:', instance?.SOPClassUID, 'Instance data:', instance);
 
   const imageSet = new ImageSet(instances);
 
@@ -234,8 +237,6 @@ const makeDisplaySet = instances => {
     label: '',
   };
 
-  console.info(`XNAT_SOP_Handler: DisplaySet ${imageSet.uid} initialAttributes.SeriesDescription: '${initialAttributes.SeriesDescription}'`);
-
   const labelSeriesDesc = initialAttributes.SeriesDescription;
   const labelSeriesNumber = initialAttributes.SeriesNumber;
   const labelModality = initialAttributes.Modality;
@@ -248,21 +249,26 @@ const makeDisplaySet = instances => {
   return imageSet;
 };
 
-const isSingleImageModality = modality => {
-  return modality === 'CR' || modality === 'MG' || modality === 'DX';
-};
-
 function getSopClassUids(instances) {
   const uniqueSopClassUidsInSeries = new Set();
   instances.forEach(instance => {
     uniqueSopClassUidsInSeries.add(instance.SOPClassUID);
   });
-  return Array.from(uniqueSopClassUidsInSeries);
+  const sopClassUids = Array.from(uniqueSopClassUidsInSeries);
+
+  return sopClassUids;
 }
 
+/**
+ * Basic SOPClassHandler:
+ * - For all Image types that are stackable, create
+ *   a displaySet with a stack of images
+ *
+ * @param {object[]} instances The list of instances for the series
+ * @returns {Array} The list of display sets created for the given series object
+ */
 function getDisplaySetsFromSeries(instances) {
-  console.log('XNAT xnatSopClassHandler getDisplaySetsFromSeries: Entered. Number of instances:', instances?.length, 'First instance sample (SOPClassUID, Modality):', instances?.[0]?.SOPClassUID, instances?.[0]?.Modality);
-
+  // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
   }
@@ -270,9 +276,14 @@ function getDisplaySetsFromSeries(instances) {
   const displaySets = [];
   const sopClassUids = getSopClassUids(instances);
 
+  // Search through the instances (InstanceMetadata object) of this series
+  // Split Multi-frame instances and Single-image modalities
+  // into their own specific display sets. Place the rest of each
+  // series into another display set.
   const stackableInstances = [];
   instances.forEach(instance => {
-    if (!isImage(instance.SOPClassUID) && !instance.Rows && !instance.vtkPolyData) {
+    // All imaging modalities must have a valid value for sopClassUid (x00080016) or rows (x00280010)
+    if (!isImage(instance.SOPClassUID) && !instance.Rows) {
       return;
     }
 
@@ -301,6 +312,7 @@ function getDisplaySetsFromSeries(instances) {
 
   if (stackableInstances.length) {
     const displaySet = makeDisplaySet(stackableInstances);
+    displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
     displaySet.setAttributes({
       sopClassUids,
     });
@@ -310,7 +322,7 @@ function getDisplaySetsFromSeries(instances) {
   return displaySets;
 }
 
-const sopClassUidsToRegister = [
+const sopClassUids = [
   sopClassDictionary.ComputedRadiographyImageStorage,
   sopClassDictionary.DigitalXRayImageStorageForPresentation,
   sopClassDictionary.DigitalXRayImageStorageForProcessing,
@@ -344,31 +356,43 @@ const sopClassUidsToRegister = [
   sopClassDictionary.BreastProjectionXRayImageStorageForProcessing,
   sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForPresentation,
   sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForProcessing,
-  sopClassDictionary.NuclearMedicineImageStorage,
-  sopClassDictionary.VLEndoscopicImageStorage,
-  sopClassDictionary.VideoEndoscopicImageStorage,
-  sopClassDictionary.VLMicroscopicImageStorage,
-  sopClassDictionary.VideoMicroscopicImageStorage,
-  sopClassDictionary.VLSlideCoordinatesMicroscopicImageStorage,
-  sopClassDictionary.VLPhotographicImageStorage,
-  sopClassDictionary.VideoPhotographicImageStorage,
   sopClassDictionary.OphthalmicPhotography8BitImageStorage,
   sopClassDictionary.OphthalmicPhotography16BitImageStorage,
   sopClassDictionary.OphthalmicTomographyImageStorage,
-  sopClassDictionary.PositronEmissionTomographyImageStorage,
-  sopClassDictionary.EnhancedPETImageStorage,
-  sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,
-  sopClassDictionary.RTImageStorage,
-  sopClassDictionary.EnhancedUSVolumeStorage,
+  sopClassDictionary.VLWholeSlideMicroscopyImageStorage,
+  sopClassDictionary.VLSlideCoordinatesMicroscopicImageStorage,
+  sopClassDictionary.VLPhotographicImageStorage,
+  sopClassDictionary.VideoEndoscopicImageStorage,
+  sopClassDictionary.VideoMicroscopicImageStorage,
+  sopClassDictionary.VideoPhotographicImageStorage,
+  sopClassDictionary.NuclearMedicineImageStorage,
+  sopClassDictionary.ParametricMapStorage,
+  // Other SOP Classes that are not images but we are going to list them here
+  // so we can discover them and show them in the series list
+  sopClassDictionary.RTStructureSetStorage,
   sopClassDictionary.RTDoseStorage,
+  sopClassDictionary.RTPlanStorage,
+  sopClassDictionary.RTIonPlanStorage,
+  sopClassDictionary.RTIonBeamsTreatmentRecordStorage,
+  sopClassDictionary.RTBrachyTreatmentRecordStorage,
+  sopClassDictionary.RTTreatmentSummaryRecordStorage,
+  sopClassDictionary.ComprehensiveSRStorage,
+  sopClassDictionary.Comprehensive3DSRStorage,
+  sopClassDictionary.ExtensibleSRStorage,
+  sopClassDictionary.LegacyEnhancedSRStorage,
+  sopClassDictionary.EnhancedSRStorage,
+  sopClassDictionary.PDFStorage,
+  sopClassDictionary.SegmentationStorage,
+  // to be added in future
+  // sopClassDictionary.SurfaceSegmentationStorage,
 ];
 
-function getSopClassHandlerModule(appContextParam: AppContextType) {
+export default function getSopClassHandlerModule(appContextParam: AppContextType) {
   appContext = appContextParam;
 
   return [{
       name: sopClassHandlerName,
-      sopClassUids: sopClassUidsToRegister,
+      sopClassUids,
       getDisplaySetsFromSeries,
     },
     {
@@ -377,6 +401,4 @@ function getSopClassHandlerModule(appContextParam: AppContextType) {
       getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
     },
   ];
-}
-
-export default getSopClassHandlerModule;
+} 

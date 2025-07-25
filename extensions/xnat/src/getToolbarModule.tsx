@@ -1,5 +1,6 @@
 import { ToolButton, utils } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
+import { Enums } from '@cornerstonejs/tools';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
@@ -10,7 +11,7 @@ import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWi
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 // new
-import ToolButtonListWrapper from '../../default/src/Toolbar/ToolButtonListWrapper';
+import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
 
 // Define the withAppTypes interface to match ExtensionParams
@@ -19,6 +20,13 @@ interface withAppTypes {
   extensionManager: any;
   commandsManager: any;
 }
+
+// Helper function for disabled state
+const getDisabledState = (disabledText?: string) => ({
+  disabled: true,
+  className: '!text-common-bright ohif-disabled',
+  disabledText: disabledText || 'Not available',
+});
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { 
@@ -31,27 +39,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     displaySetService,
     viewportGridService,
   } = servicesManager.services;
-
-  // helper reused by multiple evaluators
-  const evaluateCornerstoneToolFn = ({ viewportId, toolNames, disabledText = 'Not available' }) => {
-    const { toolGroupService } = servicesManager.services;
-    if (!viewportId) {
-      return { disabled: true, disabledText };
-    }
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-    if (!toolGroup) {
-      return { disabled: true, disabledText };
-    }
-    if (!toolNames || !toolNames.length) {
-      return { disabled: false };
-    }
-    const hasAll = toolNames.every(name => toolGroup.hasTool(name));
-    return {
-      disabled: !hasAll,
-      disabledText: hasAll ? undefined : disabledText,
-      isActive: hasAll && toolNames.includes(toolGroup.getActivePrimaryMouseButtonTool()),
-    };
-  };
 
   return [
     // new
@@ -230,21 +217,81 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     },
     {
       name: 'evaluate.cornerstoneTool',
-      evaluate: evaluateCornerstoneToolFn,
+      evaluate: ({ viewportId, button, toolNames, disabledText }) => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+        if (!toolGroup) {
+          return;
+        }
+
+        const toolName = toolbarService.getToolNameForButton(button);
+
+        if (!toolGroup || (!toolGroup.hasTool(toolName) && !toolNames)) {
+          return getDisabledState(disabledText);
+        }
+
+        const isPrimaryActive = toolNames
+          ? toolNames.includes(toolGroup.getActivePrimaryMouseButtonTool())
+          : toolGroup.getActivePrimaryMouseButtonTool() === toolName;
+        return {
+          disabled: false,
+          isActive: isPrimaryActive,
+        };
+      },
     },
     {
       name: 'evaluate.cornerstoneTool.toggle',
-      evaluate: args => {
-        const res: any = evaluateCornerstoneToolFn(args);
-        if (res?.disabled) {
-          return res;
-        }
-        return { ...res, isActive: !res?.isActive };
-      },
+      evaluate: ({ viewportId, button, disabledText }) =>
+        _evaluateToggle({
+          viewportId,
+          button,
+          toolbarService,
+          disabledText,
+          offModes: [Enums.ToolModes.Disabled, Enums.ToolModes.Passive],
+          toolGroupService,
+        }),
+    },
+    {
+      name: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
+      evaluate: ({ viewportId, button, disabledText }) =>
+        _evaluateToggle({
+          viewportId,
+          button,
+          toolbarService,
+          disabledText,
+          offModes: [Enums.ToolModes.Disabled],
+          toolGroupService,
+        }),
     },
     {
       name: 'evaluate.action',
       evaluate: () => ({}),
     },
   ];
+}
+
+function _evaluateToggle({
+  viewportId,
+  toolbarService,
+  button,
+  disabledText,
+  offModes,
+  toolGroupService,
+}) {
+  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+  if (!toolGroup) {
+    return;
+  }
+  const toolName = toolbarService.getToolNameForButton(button);
+
+  if (!toolGroup?.hasTool(toolName)) {
+    return getDisabledState(disabledText);
+  }
+
+  const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);
+
+  return {
+    className: utils.getToggledClassName(!isOff),
+  };
 }

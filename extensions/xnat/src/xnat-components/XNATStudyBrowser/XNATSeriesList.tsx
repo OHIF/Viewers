@@ -71,7 +71,6 @@ function XNATSeriesList({
         return;
       }
       
-      console.log('XNAT: Checking for ROIs in session', session.experimentId);
       
       // Here you would typically query XNAT for ROIs associated with this session
       // For now, we'll just log that we're checking

@@ -56,6 +56,7 @@ const xnat = {
   studyBrowser: '@ohif/extension-xnat.panelModule.xnatStudyBrowser',
   segmentation: '@ohif/extension-xnat.panelModule.panelSegmentationWithTools',
   sopClassHandler: '@ohif/extension-xnat.sopClassHandlerModule.xnatSopClassHandler',
+  measurements: '@ohif/extension-xnat.panelModule.xnatMeasurements',
 };
 
 
@@ -69,6 +70,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.11.0-beta.44',
   '@ohif/extension-dicom-pdf': '^3.11.0-beta.44',
   '@ohif/extension-dicom-video': '^3.11.0-beta.44',
+  '@ohif/extension-measurement-tracking': '^3.11.0-beta.44',
   '@ohif/extension-xnat': '^0.0.1',
 
 };
@@ -104,15 +106,14 @@ function modeFactory({ modeConfiguration }) {
         try {
           const sessionRouter = new SessionRouter(
             projectId,
-            parentProjectId || projectId,
+            parentProjectId,
             subjectId,
             experimentId,
             experimentLabel
           );
-          
+
           // Store the router instance in the services manager
           servicesManager.services.sessionRouter = sessionRouter;
-          console.log('XNAT Mode Init - Session router created successfully');
           
           // Set up the layout right away since we know we'll need it
           const layoutService = servicesManager.services.layoutService;
@@ -135,11 +136,41 @@ function modeFactory({ modeConfiguration }) {
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        customizationService,
+        userAuthenticationService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
+
+      // Suppress verbose J2K decoder logs
+      try {
+        const windowWithLog = window as any;
+        if (windowWithLog.log && windowWithLog.log.getLogger) {
+          const dicomLoader = windowWithLog.log.getLogger('cs3d.dicomImageLoader');
+          if (dicomLoader && dicomLoader.setLevel) {
+            dicomLoader.setLevel('WARN'); // Only show warnings and errors, not info logs
+          }
+        }
+      } catch (e) {
+        console.warn('Could not configure J2K logging level:', e);
+      }
+      
+      toolbarService.register(toolbarButtons);
+
+      // Load cornerstone extension's customizations first
+      try {
+        const cornerstoneCustomizations = extensionManager.getModuleEntry('@ohif/extension-cornerstone.customizationModule.default');
+        if (cornerstoneCustomizations && typeof cornerstoneCustomizations === 'object') {
+          customizationService.setCustomizations(cornerstoneCustomizations as Record<string, any>);
+        }
+      } catch (error) {
+        console.warn('Could not load cornerstone customizations:', error);
+      }
 
       // Set up segmentation panel customizations
       customizationService.setCustomizations({
@@ -178,14 +209,32 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.register(toolbarButtons);
+      // Set up toolbar refresh on tool activation
+      const { viewportGridService } = servicesManager.services;
+      
+      // Listen for tool activation events to refresh toolbar state
+      const toolGroupServiceSubscription = (toolGroupService as any).subscribe(
+        (toolGroupService as any).EVENTS.PRIMARY_TOOL_ACTIVATED,
+        () => {
+          const activeViewportId = viewportGridService.getActiveViewportId();
+          if (activeViewportId) {
+            toolbarService.refreshToolbarState({ 
+              viewportId: activeViewportId 
+            });
+          }
+        }
+      );
+      
+      // Store subscription for cleanup on mode exit
+      _activatePanelTriggersSubscriptions.push(toolGroupServiceSubscription);
+
       toolbarService.updateSection(toolbarService.sections.primary, [
-        // 'MeasurementTools', // This is a section, not a button in the primary toolbar list.
+        'MeasurementTools',
         'Zoom',
         'Pan',
         'TrackballRotate',
         'WindowLevel',
-        'Capture',
+        // 'Capture',
         'Layout',
         'Crosshairs',
         'MoreTools',
@@ -196,29 +245,59 @@ function modeFactory({ modeConfiguration }) {
         'dataOverlayMenu',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomMiddle, [
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomRight, [
         'AdvancedRenderingControls',
       ]);
 
+      toolbarService.updateSection('AdvancedRenderingControls', [
+        'windowLevelMenuEmbedded',
+        'voiManualControlMenu',
+        'Colorbar',
+        'opacityMenu',
+        'thresholdMenu',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topRight, [
+        'modalityLoadBadge',
+        'trackingStatus',
+        'navigationComponent',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.viewportActionMenu.bottomLeft, [
+        'windowLevelMenu',
+      ]);
+
+      toolbarService.updateSection('MeasurementTools', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
 
       toolbarService.updateSection('MoreTools', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
-        // 'ImageSliceSync',         // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'ImageSliceSync',
         'ReferenceLines',
         'ImageOverlayViewer',
         'StackScroll',
         'invert',
-        'Probe',                  // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'Probe',
         'Cine',
-        'Angle',                  // Not in XNAT's toolbarButtons.ts, likely from default extension
-        'CobbAngle',              // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'Angle',
+        'CobbAngle',
         'Magnify',
-        // 'CalibrationLine',        // Not in XNAT's toolbarButtons.ts, likely from default extension
+        'CalibrationLine',
         'TagBrowser',
-        // 'AdvancedMagnify',        // Not in XNAT's toolbarButtons.ts, likely from default extension
-        // 'UltrasoundDirectionalTool',// Not in XNAT's toolbarButtons.ts, likely from default extension
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
       ]);
 
       // Set up segmentation toolbox sections
@@ -241,7 +320,6 @@ function modeFactory({ modeConfiguration }) {
 
       ]);
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
-
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -259,7 +337,6 @@ function modeFactory({ modeConfiguration }) {
       if (_displaySetAddedSubscription) {
         _displaySetAddedSubscription.unsubscribe();
         _displaySetAddedSubscription = null;
-        console.log('XNAT Mode - Exiting - Unsubscribed from DISPLAY_SETS_ADDED event.');
       }
 
       uiDialogService.hideAll();
@@ -278,7 +355,6 @@ function modeFactory({ modeConfiguration }) {
      * modalities of the selected studies. For instance a PET/CT mode should be
      */
     isValidMode: ({ modalities }) => {
-      console.log('XNAT isValidMode check:', { modalities });
       return { valid: true };
     },
     /**
@@ -302,7 +378,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              rightPanels: [xnat.segmentation, cornerstone.measurements],
+              rightPanels: [xnat.segmentation, xnat.measurements],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [
@@ -350,7 +426,7 @@ function modeFactory({ modeConfiguration }) {
           };
         },
         init: async ({ servicesManager, extensionManager, studyInstanceUIDs }) => {
-          console.log('XNAT Mode - Route Init - START', { studyInstanceUIDs, servicesManager, extensionManager });
+            
           // Re-enable init logic
           // console.log('XNAT Route Init - Temporarily Disabled');
           // return []; // Return empty array to prevent further processing
@@ -359,23 +435,19 @@ function modeFactory({ modeConfiguration }) {
           
           // Get the study UIDs from the session router if available
           if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
-            console.log('Route init - No study UIDs provided, checking session router');
             const sessionRouter = servicesManager.services.sessionRouter;
             
             if (sessionRouter) {
               try {
                 // Make sure to await the result
                 const studyUID = await sessionRouter.go();
-                console.log('XNAT Mode - Route Init - After sessionRouter.go()', { studyUID, studyInstanceUIDs });
                 
                 if (studyUID) {
-                  console.log('Route init - Got study UID from session router:', studyUID);
                   studyInstanceUIDs = [studyUID];
                   
                   // Explicitly update the data source
                   const dataSource = extensionManager.getActiveDataSource();
                   if (dataSource) {
-                    console.log('Route init - Setting up data source with study:', studyUID);
                     
                     // Make sure viewports are ready for the study
                     if (layoutService) {
@@ -385,7 +457,6 @@ function modeFactory({ modeConfiguration }) {
                     // Tell OHIF to show the default hanging protocol for this study
                     const hangingProtocolService = servicesManager.services.hangingProtocolService;
                     if (hangingProtocolService) {
-                      console.log('Route init - Applying hanging protocol for study');
                       hangingProtocolService.run({ studyInstanceUIDs });
                     }
                   }
@@ -400,13 +471,9 @@ function modeFactory({ modeConfiguration }) {
           try {
             const [dataSource] = extensionManager.getActiveDataSource();
             if (dataSource && typeof dataSource.initialize === 'function') {
-              console.log('XNAT Mode - Route Init - Before dataSource.initialize()', { dataSource });
-              console.log('XNAT Mode Route Init: Calling dataSource.initialize()');
               // Pass the query parameters needed for initialization
               const query = new URLSearchParams(window.location.search); 
               await dataSource.initialize({ params: {}, query }); // Assuming params might not be needed here, pass query
-              console.log('XNAT Mode - Route Init - After dataSource.initialize()');
-              console.log('XNAT Mode Route Init: dataSource.initialize() completed.');
             } else {
               console.error('XNAT Mode Route Init: Could not find active data source or initialize function.');
             }
@@ -423,29 +490,15 @@ function modeFactory({ modeConfiguration }) {
             _displaySetAddedSubscription = displaySetService.subscribe(
               displaySetService.EVENTS.DISPLAY_SETS_ADDED,
               (eventData) => { 
-                console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED FIRING! Raw event data:', eventData);
                 const displaySetsAdded = eventData?.displaySetsAdded;
                 const options = eventData?.options;
-                console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED triggered.', { numDisplaySetsAdded: displaySetsAdded ? displaySetsAdded.length : 0, options });
                 if (displaySetsAdded && displaySetsAdded.length > 0) {
-                  console.log('XNAT Mode - EVENT: Display sets were added:', displaySetsAdded);
-                  for (const ds of displaySetsAdded) {
-                    console.log(`XNAT Mode - EVENT: Added DisplaySet UID: ${ds.displaySetInstanceUID}`);
-                    console.log(`  - Modality: ${ds.Modality}`);
-                    console.log(`  - SeriesInstanceUID: ${ds.SeriesInstanceUID}`);
-                    console.log(`  - SeriesDescription: ${ds.SeriesDescription}`);
-                    console.log(`  - SOPClassUIDs:`, ds.SOPClassUIDs);
-                    console.log(`  - Instance count: ${ds.instances ? ds.instances.length : 'N/A'}`);
-                    console.log(`  - isLoaded: ${ds.isLoaded}, isDerived: ${ds.isDerived}, isReconstructable: ${ds.isReconstructable}`);
-                    console.log(`  - Made in client: ${ds.madeInClient}`);
-                    console.log(`  - Complete Added DisplaySet object UID ${ds.displaySetInstanceUID}:`, ds);
-                  }
+
                 } else {
                   console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED fired, but displaySetsAdded array is empty or missing in eventData.');
                 }
               }
             );
-            console.log('XNAT Mode - Route Init - Subscribed to DISPLAY_SETS_ADDED event.');
           } else {
             console.warn('XNAT Mode - Route Init - DisplaySetService or its event system not available for subscription.');
           }
@@ -454,7 +507,7 @@ function modeFactory({ modeConfiguration }) {
           // based on runtime error and function definition.
           // Ignore the incorrect linter error about argument count.
           const [dataSourceForDefaultRoute] = extensionManager.getActiveDataSource(); // Get dataSource again, use different name to avoid shadowing
-          console.log('XNAT Mode - Route Init - Before defaultRouteInit()', { studyInstanceUIDs, dataSourceForDefaultRoute });
+          
           // @ts-ignore - Linter incorrectly expects 3 arguments, but function needs object.
           await defaultRouteInit({
             servicesManager,
@@ -463,7 +516,7 @@ function modeFactory({ modeConfiguration }) {
             dataSource: dataSourceForDefaultRoute, // Include dataSource
             // filters and appConfig might be needed later if errors occur
           });
-          console.log('XNAT Mode - Route Init - After defaultRouteInit()');
+          
 
           // Return the study UIDs - this ensures they propagate to the rest of the app
           return studyInstanceUIDs;

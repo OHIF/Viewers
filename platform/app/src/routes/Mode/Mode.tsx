@@ -392,20 +392,8 @@ export default function ModeRoute({
   ]);
 
   useEffect(() => {
-    console.log('Mode effect running with params:', {
-      dataSourceName,
-      studyInstanceUIDs,
-      ExtensionDependenciesLoaded,
-      layoutTemplateData: !!layoutTemplateData.current
-    });
 
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
-      console.log('Mode effect early return due to:', {
-        hasLayoutTemplate: !!layoutTemplateData.current,
-        extensionsLoaded: ExtensionDependenciesLoaded,
-        hasStudyUIDs: !!studyInstanceUIDs?.length,
-        studyUIDs: studyInstanceUIDs
-      });
       return;
     }
 
@@ -413,7 +401,6 @@ export default function ModeRoute({
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    console.log('Mode effect running with studyInstanceUIDs:', studyInstanceUIDs);
   }, [studyInstanceUIDs]);
 
   if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded) {

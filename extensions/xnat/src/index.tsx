@@ -29,11 +29,10 @@ import XNATThumbnail from './xnat-components/XNATStudyBrowser/XNATThumbnail';
 // Patch segmentation service to handle missing segment centers gracefully
 const patchSegmentationService = (servicesManager) => {
   const { segmentationService } = servicesManager.services;
-  
   if (segmentationService && segmentationService.jumpToSegmentCenter) {
     const originalJumpToSegmentCenter = segmentationService.jumpToSegmentCenter.bind(segmentationService);
-    
-    segmentationService.jumpToSegmentCenter = function(segmentationId, segmentIndex, ...args) {
+
+    segmentationService.jumpToSegmentCenter = function (segmentationId, segmentIndex, ...args) {
       try {
         // Check if segment center data exists before attempting jump
         const segmentation = this.getSegmentation(segmentationId);
@@ -42,7 +41,6 @@ const patchSegmentationService = (servicesManager) => {
           if (segment.cachedStats && (segment.cachedStats.center || segment.cachedStats.namedStats?.center?.value)) {
             return originalJumpToSegmentCenter(segmentationId, segmentIndex, ...args);
           } else {
-            console.log('XNAT: Segment center not available, skipping jump to center');
             return;
           }
         }
@@ -51,8 +49,6 @@ const patchSegmentationService = (servicesManager) => {
         return;
       }
     };
-    
-    console.log('XNAT: Patched segmentationService.jumpToSegmentCenter with safe version');
   }
 };
 
@@ -62,9 +58,33 @@ const xnatExtension: Types.Extensions.Extension = {
    */
   id: '@ohif/extension-xnat',
   preRegistration,
-  onModeEnter: ({ servicesManager }) => {
+  onModeEnter: ({ servicesManager, extensionManager }) => {
+    const { toolGroupService } = servicesManager.services;
     // Patch the segmentation service when entering a mode
     setTimeout(() => patchSegmentationService(servicesManager), 100);
+
+    const toolGroup = toolGroupService.getToolGroup('default');
+
+    if (toolGroup) {
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.utilityModule.tools'
+      );
+      const { Enums } = utilityModule.exports;
+      const measurementTools = [
+        'Length',
+        'Bidirectional',
+        'EllipticalROI',
+        'CircleROI',
+        'RectangleROI',
+        'ArrowAnnotate',
+      ];
+
+      measurementTools.forEach(toolName => {
+        if (toolGroup.hasTool(toolName)) {
+          toolGroup.setToolMode(toolName, Enums.ToolModes.Enabled);
+        }
+      });
+    }
   },
   onModeExit() {
     useViewportGridStore.getState().clearViewportGridState();
@@ -82,16 +102,6 @@ const xnatExtension: Types.Extensions.Extension = {
   getToolbarModule,
   getCommandsModule,
   getLayoutTemplateModule,
-  getUtilityModule({ servicesManager }) {
-    return [
-      {
-        name: 'common',
-        exports: {
-          getStudiesForPatientByMRN,
-        },
-      },
-    ];
-  },
   getCustomizationModule,
 };
 

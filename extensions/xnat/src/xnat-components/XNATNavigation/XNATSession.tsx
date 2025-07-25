@@ -231,8 +231,6 @@ export default class XNATSession extends React.Component<XNATSessionProps, XNATS
   onLaunchViewerClick(): void {
     const { subjectId, projectId, ID, label } = this.props;
     const viewerUrl = `/VIEWER/?subjectId=${subjectId}&projectId=${projectId}&experimentId=${ID}&experimentLabel=${label}`;
-    
-    console.log(`XNATSession: Launching viewer with URL: ${viewerUrl}`);
     window.open(viewerUrl, '_blank');
   }
 

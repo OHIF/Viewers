@@ -69,21 +69,11 @@ function App({
   const [init, setInit] = useState(null);
   const history = createBrowserHistory();
 
-  console.log('Initial config:', config);
-  console.log('Default extensions:', defaultExtensions);
-  console.log('Default modes:', defaultModes);
 
   useEffect(() => {
     const run = async () => {
       try {
-        console.log('Starting app initialization...');
         const initResult = await appInit(config, defaultExtensions, defaultModes);
-        console.log('Init Results:', initResult);
-        console.log('App initialization complete:', {
-          modes: initResult.extensionManager.modes,
-          registeredModeIds: initResult.extensionManager.registeredModeIds,
-          defaultMode: config.defaultMode
-        });
         setInit(initResult);
       } catch (error) {
         console.error('App initialization failed:', error);
@@ -99,7 +89,6 @@ function App({
   }, []);
 
   if (!init) {
-    console.log('Waiting for initialization...');
     return null;
   }
 
@@ -165,9 +154,7 @@ function App({
 
   // Should there be a generic call to init on the extension manager?
   customizationService.init(extensionManager);
-  console.log(modes);
-  console.log(dataSources);
-  console.log(routerBasename);
+
   // Use config to create routes
   const appRoutes = createRoutes({
     modes,
@@ -179,7 +166,7 @@ function App({
     routerBasename,
     showStudyList,
   });
-  console.log('Created routes:', appRoutes);
+
   if (oidc) {
     authRoutes = (
       <OpenIdConnectRoutes
@@ -190,15 +177,7 @@ function App({
     );
   }
 
-  console.log('Render state:', {
-    init,
-    routerBasename,
-    modes,
-    dataSources,
-    oidc,
-    showStudyList,
-    history: history.location
-  });
+  
 
   return (
     <ErrorBoundary

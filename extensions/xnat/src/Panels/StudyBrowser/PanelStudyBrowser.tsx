@@ -145,10 +145,8 @@ function PanelStudyBrowser({
           console.warn('XNAT: Failed to get studies for patient by MRN:', error);
         }
 
-        console.log('XNAT: Fetched studies for patient:', qidoStudiesForPatient);
 
         const mappedStudies = await _mapDataSourceStudies(qidoStudiesForPatient);
-        console.log('XNAT: Mapped studies:', mappedStudies);
 
         // Force expand StudyInstanceUIDs when studies are loaded
         setExpandedStudyInstanceUIDs(prevExpanded => {
@@ -156,7 +154,6 @@ function PanelStudyBrowser({
           mappedStudies.forEach(study => {
             if (study.StudyInstanceUID && !updated.includes(study.StudyInstanceUID)) {
               updated.push(study.StudyInstanceUID);
-              console.log('XNAT: Auto-expanding study', study.StudyInstanceUID);
             }
           });
           return updated;
@@ -174,7 +171,6 @@ function PanelStudyBrowser({
             displayPatientName: qidoStudy.displayPatientName || qidoStudy.PatientName,
             displayStudyDescription: qidoStudy.displayStudyDescription || qidoStudy.StudyDescription
           };
-          console.log('XNAT: Mapped study for display:', study);
           return study;
         });
 
@@ -276,22 +272,18 @@ function PanelStudyBrowser({
         // }
         const { displaySetsAdded } = data;
         
-        // Log display sets added for debugging
-        console.log('XNAT: Display sets added to service:', displaySetsAdded.length);
-        
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
           
           if (displaySet?.unsupported) {
-            console.log('XNAT: Skipping unsupported display set', displaySet);
             return;
           }
 
           // Ensure StudyInstanceUID is set on the display set
           if (!displaySet.StudyInstanceUID && sessionStorage.getItem('xnat_studyInstanceUID')) {
             displaySet.StudyInstanceUID = sessionStorage.getItem('xnat_studyInstanceUID');
-            console.log('XNAT: Added missing StudyInstanceUID to display set', displaySet.displaySetInstanceUID);
+            
           }
 
           // Check if dataSource has getImageIdsForDisplaySet method
@@ -304,7 +296,6 @@ function PanelStudyBrowser({
           
           // If no imageIds, try another approach or skip
           if (!imageIds || imageIds.length === 0) {
-            console.log('XNAT: No imageIds for display set', displaySet);
             return;
           }
           
@@ -312,7 +303,6 @@ function PanelStudyBrowser({
 
           // TODO: Is it okay that imageIds are not returned here for SR displaySets?
           if (!imageId) {
-            console.log('XNAT: No image ID selected for display set', displaySet);
             return;
           }
           
@@ -385,7 +375,6 @@ function PanelStudyBrowser({
         
         // Check if this looks like an XNAT response
         if (data.transactionId && data.transactionId.startsWith('XNAT_') && Array.isArray(data.studies)) {
-          console.log('XNAT: Captured direct API response with transaction ID:', data.transactionId);
           
           // Process each study in the response
           data.studies.forEach(study => {
@@ -413,8 +402,6 @@ function PanelStudyBrowser({
                 }
               });
               
-              console.log(`XNAT: Extracted metadata for ${Object.keys(seriesMap).length} series from direct API response`);
-              
               // Update the series metadata state
               if (Object.keys(seriesMap).length > 0) {
                 setXnatSeriesMetadata(prevState => ({
@@ -441,18 +428,13 @@ function PanelStudyBrowser({
   
   // Add a function to extract series metadata from the dataSource
   async function extractSeriesMetadataFromDataSource() {
-    if (!dataSource || !StudyInstanceUIDs || StudyInstanceUIDs.length === 0) return;
-    
-    console.log('XNAT: Attempting to extract series metadata from dataSource');
-    
+    if (!dataSource || !StudyInstanceUIDs || StudyInstanceUIDs.length === 0) return;    
     try {
       // Try to access the raw data in the dataSource if available
       if (typeof dataSource.getRawStudyData === 'function') {
         for (const studyUID of StudyInstanceUIDs) {
           const rawData = await dataSource.getRawStudyData(studyUID);
-          if (rawData) {
-            console.log('XNAT: Found raw study data:', rawData);
-            
+          if (rawData) {            
             // Check for series data in different possible formats
             const seriesData = 
               rawData.series || 
@@ -471,8 +453,6 @@ function PanelStudyBrowser({
                   };
                 }
               });
-              
-              console.log(`XNAT: Extracted metadata for ${Object.keys(seriesMap).length} series from raw data`);
               
               // Update the state with the new metadata
               if (Object.keys(seriesMap).length > 0) {
@@ -498,8 +478,6 @@ function PanelStudyBrowser({
         return;
       }
 
-      console.log('XNAT: Fetching series metadata from XNAT API');
-      
       try {
         // Try our data source extraction function first
         await extractSeriesMetadataFromDataSource();
@@ -518,8 +496,6 @@ function PanelStudyBrowser({
                   seriesMap[series.SeriesInstanceUID] = series;
                 }
               });
-              
-              console.log(`XNAT: Retrieved metadata for ${Object.keys(seriesMap).length} series from XNAT API`);
               
               // Update the state with the new metadata
               setXnatSeriesMetadata(prevState => ({
@@ -545,8 +521,6 @@ function PanelStudyBrowser({
                 }
               });
               
-              console.log(`XNAT: Retrieved metadata for ${Object.keys(seriesMap).length} series from query API`);
-              
               // Update the state with the new metadata
               setXnatSeriesMetadata(prevState => ({
                 ...prevState,
@@ -568,10 +542,7 @@ function PanelStudyBrowser({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    // Debug the click
-    console.log('XNAT: Study clicked:', StudyInstanceUID);
-    
-    // Guard against undefined StudyInstanceUID
+  
     if (!StudyInstanceUID) {
       console.warn('XNAT: Attempted to click on study with undefined StudyInstanceUID');
       return;
@@ -583,13 +554,12 @@ function PanelStudyBrowser({
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
-    console.log('XNAT: Expanded studies:', updatedExpandedStudyInstanceUIDs);
 
     // Always request display sets for the study, regardless of collapse state
     // Store the StudyInstanceUID in sessionStorage for later use
     try {
       sessionStorage.setItem('xnat_studyInstanceUID', StudyInstanceUID);
-      console.log(`XNAT: Stored StudyInstanceUID in sessionStorage: ${StudyInstanceUID}`);
+      
     } catch (e) {
       console.warn('XNAT: Failed to store StudyInstanceUID in sessionStorage:', e);
     }
@@ -599,10 +569,7 @@ function PanelStudyBrowser({
     // Check if requestDisplaySetCreationForStudy is actually a function
     if (typeof requestDisplaySetCreationForStudy === 'function') {
       // Always create display sets when study is clicked
-      console.log('XNAT: Calling requestDisplaySetCreationForStudy with:', {
-        StudyInstanceUID, 
-        madeInClient
-      });
+      
       
       requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     } else {
@@ -613,17 +580,12 @@ function PanelStudyBrowser({
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const getStudyDisplayDate = (studyData) => {
-    // Debug study data to identify the issue
-    console.log('XNAT: getStudyDisplayDate called for study:', {
-      StudyInstanceUID: studyData.StudyInstanceUID || studyData.studyInstanceUid,
-      StudyDate: studyData.StudyDate || studyData.date,
-      hasInstancesArray: !!studyData.instances
-    });
+    
     
     // First try getting it from study metadata directly
     if (studyData && (studyData.StudyDate || studyData.date)) {
       const dateStr = studyData.StudyDate || studyData.date;
-      console.log('XNAT: Using study date from studyData:', dateStr);
+      
       return formatDate(dateStr);
     }
     
@@ -631,7 +593,6 @@ function PanelStudyBrowser({
     if (studyData.instances && studyData.instances.length > 0) {
       const instance = studyData.instances[0];
       if (instance.metadata && instance.metadata.StudyDate) {
-        console.log('XNAT: Using study date from instance metadata:', instance.metadata.StudyDate);
         return formatDate(instance.metadata.StudyDate);
       }
     }
@@ -639,14 +600,14 @@ function PanelStudyBrowser({
     // Try to extract from DicomMetadataStore if available
     const studyMetadata = DicomMetadataStore.getStudy(studyData.StudyInstanceUID || studyData.studyInstanceUid);
     if (studyMetadata && studyMetadata.StudyDate) {
-      console.log('XNAT: Using study date from DicomMetadataStore:', studyMetadata.StudyDate);
+
       return formatDate(studyMetadata.StudyDate);
     }
     
     // Try from sessionStorage as last resort
     const storedDate = sessionStorage.getItem('xnat_studyDate');
     if (storedDate) {
-      console.log('XNAT: Using study date from sessionStorage:', storedDate);
+      
       return formatDate(storedDate);
     }
     
@@ -721,14 +682,6 @@ async function _mapDataSourceStudies(studies) {
     const storedDate = sessionStorage.getItem('xnat_studyDate');
     const storedTime = sessionStorage.getItem('xnat_studyTime');
 
-    console.log('XNAT: Mapping study data:', {
-      study,
-      storedDate,
-      storedTime,
-      defaultDate,
-      defaultTime
-    });
-
     const studyDate = study.date || study.StudyDate || storedDate || defaultDate;
     const studyTime = study.time || study.StudyTime || storedTime || defaultTime;
     
@@ -737,7 +690,6 @@ async function _mapDataSourceStudies(studies) {
     if (studyInstanceUID) {
       try {
         sessionStorage.setItem('xnat_studyInstanceUID', studyInstanceUID);
-        console.log('XNAT: Stored StudyInstanceUID during mapping:', studyInstanceUID);
       } catch (e) {
         console.warn('XNAT: Failed to store StudyInstanceUID in sessionStorage:', e);
       }
@@ -747,7 +699,6 @@ async function _mapDataSourceStudies(studies) {
     if (studyDate) {
       try {
         sessionStorage.setItem('xnat_studyDate', studyDate);
-        console.log('XNAT: Stored study date:', studyDate);
       } catch (e) {
         console.warn('XNAT: Failed to store study date in sessionStorage:', e);
       }
@@ -757,7 +708,6 @@ async function _mapDataSourceStudies(studies) {
     let displayStudyDate;
     try {
       displayStudyDate = formatDate(studyDate);
-      console.log('XNAT: Formatted study date:', studyDate, 'to', displayStudyDate);
     } catch (error) {
       console.error('XNAT: Error formatting study date:', error);
       displayStudyDate = 'Invalid Date';
@@ -999,37 +949,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
 
-  // Log the number of display sets for debugging
-  console.log('XNAT: Mapping display sets to UI. Count:', displaySets.length);
-
-  // If first time, dump full info for first display set to help debugging
-  if (displaySets.length > 0) {
-    const firstDs = displaySets[0];
-    console.log('XNAT: First display set keys:', Object.keys(firstDs));
-    console.log('XNAT: First display set:', firstDs);
-    
-    // Add more detailed logging of the display set fields we're interested in
-    console.log('XNAT: Detailed display set fields:', {
-      SeriesDate: firstDs.SeriesDate,
-      SeriesTime: firstDs.SeriesTime,
-      SeriesDescription: firstDs.SeriesDescription,
-      SeriesNumber: firstDs.SeriesNumber,
-      Modality: firstDs.Modality,
-      StudyDate: firstDs.StudyDate,
-      PatientID: firstDs.PatientID,
-      PatientName: firstDs.PatientName
-    });
-    
-    if (firstDs.images && firstDs.images.length > 0) {
-      console.log('XNAT: Display set has images array with length:', firstDs.images.length);
-    }
-    if (firstDs.instances && firstDs.instances.length > 0) {
-      console.log('XNAT: First instance keys:', Object.keys(firstDs.instances[0]));
-      if (firstDs.instances[0].metadata) {
-        console.log('XNAT: First instance metadata keys:', Object.keys(firstDs.instances[0].metadata));
-      }
-    }
-  }
   
   displaySets
     .filter(ds => !ds.excludeFromThumbnailBrowser)
@@ -1062,22 +981,13 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
           if (!seriesNumber) seriesNumber = xnatMetadata.SeriesNumber;
           if (!modality) modality = xnatMetadata.Modality;
           
-          if (seriesDescription) {
-            console.log(`XNAT: Using SeriesDescription "${seriesDescription}" from XNAT API metadata for ${displaySetUID}`);
-          }
         }
       }
-      
-      // Debug output to see what we're working with
-      console.log(`XNAT: Finding SeriesDescription for set ${displaySetUID}. Direct property:`, seriesDescription);
       
       // Try the direct cornerstone metadata format if available
       if (!seriesDescription) {
         // For SeriesDescription - tag is 0008103E
         seriesDescription = getCornerstoneMetadata(ds, '0008103E');
-        if (seriesDescription) {
-          console.log(`XNAT: Found SeriesDescription "${seriesDescription}" from cornerstone format metadata for ${displaySetUID}`);
-        }
         
         // Also get series number and modality if available
         if (!seriesNumber) {
@@ -1101,7 +1011,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
         const deepMetadata = inspectMetadataDeep(firstInstance);
         if (deepMetadata.found && deepMetadata.SeriesDescription) {
           seriesDescription = deepMetadata.SeriesDescription;
-          console.log(`XNAT: Found SeriesDescription "${seriesDescription}" using deep inspection from ${deepMetadata.source} for ${displaySetUID}`);
           
           // Also use the other metadata if available
           if (!seriesNumber && deepMetadata.SeriesNumber) {
@@ -1118,13 +1027,11 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
             try {
               const metadataStr = JSON.stringify(firstInstance.metadata);
               if (metadataStr.includes('SeriesDescription')) {
-                console.log('XNAT: Found SeriesDescription in stringified metadata, but unable to extract properly');
                 
                 // Try to find it with a regex
                 const match = metadataStr.match(/"SeriesDescription":"([^"]+)"/);
                 if (match && match[1]) {
                   seriesDescription = match[1];
-                  console.log(`XNAT: Extracted SeriesDescription "${seriesDescription}" using regex for ${displaySetUID}`);
                 }
               }
             } catch (e) {
@@ -1136,17 +1043,12 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
           if (!seriesDescription) {
             // First try our cornerstone extractor
             seriesDescription = extractTagFromCornerstone(firstInstance, 'SeriesDescription');
-            if (seriesDescription) {
-              console.log(`XNAT: Found SeriesDescription "${seriesDescription}" using cornerstone extractor for ${displaySetUID}`);
-            }
           }
           
           // If that failed, use our generic helper
           if (!seriesDescription) {
             seriesDescription = findDicomTag(firstInstance, 'SeriesDescription', '0008103E');
-            if (seriesDescription) {
-              console.log(`XNAT: Found SeriesDescription "${seriesDescription}" using tag finder for ${displaySetUID}`);
-            }
+
           }
           
           // Also get SeriesNumber and Modality if missing
@@ -1171,9 +1073,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
             if (!seriesNumber) seriesNumber = seriesMetadata.SeriesNumber || '';
             if (!modality) modality = seriesMetadata.Modality || '';
             
-            if (seriesDescription) {
-              console.log(`XNAT: Using SeriesDescription "${seriesDescription}" from DicomMetadataStore for ${displaySetUID}`);
-            }
           }
         } catch (error) {
           console.warn('XNAT: Error getting series metadata from DicomMetadataStore:', error);
@@ -1190,14 +1089,12 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
             // Check if we have SeriesDescription directly in the series
             if (series.SeriesDescription) {
               seriesDescription = series.SeriesDescription;
-              console.log(`XNAT: Found SeriesDescription "${seriesDescription}" in DicomMetadataStore series for ${displaySetUID}`);
             }
             
             // Check the first instance
             const firstInst = series.instances[0];
             if (firstInst && firstInst.SeriesDescription) {
               seriesDescription = firstInst.SeriesDescription;
-              console.log(`XNAT: Found SeriesDescription "${seriesDescription}" in DicomMetadataStore instance for ${displaySetUID}`);
             }
             
             // Also get SeriesNumber and Modality if missing
@@ -1218,7 +1115,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
       if (!seriesDescription) {
         if (seriesNumber && modality) {
           seriesDescription = `${modality} - Series ${seriesNumber}`;
-          console.log(`XNAT: Created SeriesDescription "${seriesDescription}" from series tags for ${displaySetUID}`);
         } else {
           // Last resort - try to get protocol name or any identifying information
           if (ds.instances && ds.instances.length > 0) {
@@ -1230,15 +1126,11 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
             
             if (protocolName) {
               seriesDescription = protocolName;
-              console.log(`XNAT: Using ProtocolName "${seriesDescription}" for ${displaySetUID}`);
             } else if (sequenceName) {
               seriesDescription = sequenceName;
-              console.log(`XNAT: Using SequenceName "${seriesDescription}" for ${displaySetUID}`);
             } else if (seriesType) {
               seriesDescription = seriesType;
-              console.log(`XNAT: Using SeriesType "${seriesDescription}" for ${displaySetUID}`);
             } else {
-              console.log(`XNAT: Display set ${displaySetUID} missing all descriptive tags. Using default with SeriesInstanceUID.`);
               // Use the last part of the SeriesInstanceUID as an identifier
               if (seriesInstanceUID) {
                 const lastSection = seriesInstanceUID.split('.').pop();
@@ -1248,7 +1140,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
               }
             }
           } else {
-            console.log(`XNAT: Display set ${displaySetUID} missing SeriesDescription. Using default.`);
             seriesDescription = 'Unknown Series';
           }
         }
@@ -1279,7 +1170,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap, xnatSeriesMetadataMa
       });
     });
 
-  console.log('XNAT: Mapped displaySets for UI:', thumbnailDisplaySets.length + thumbnailNoImageDisplaySets.length);
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 

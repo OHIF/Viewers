@@ -18,7 +18,6 @@ interface ServicesManager {
  * @param servicesManager The services manager
  */
 export function initXNATDicomLoader(servicesManager: ServicesManager): void {
-  console.log('XNAT: Initializing XNAT DICOM loader adapter');
   
   const { userAuthenticationService, uiNotificationService } = servicesManager.services;
   
@@ -30,8 +29,7 @@ export function initXNATDicomLoader(servicesManager: ServicesManager): void {
   try {
     // Check if cornerstone and its image loader are available globally
     if (window.cornerstone && window.cornerstoneWADOImageLoader) {
-      console.log('XNAT: Configuring WADO image loader for XNAT URLs');
-      
+
       // Configure the wadors loader
       const wadorsConfig = window.cornerstoneWADOImageLoader.wadors.getConfiguration();
       wadorsConfig.requestOptions = {
@@ -67,7 +65,6 @@ export function initXNATDicomLoader(servicesManager: ServicesManager): void {
         }
       });
       
-      console.log('XNAT: WADO image loader configured successfully');
     } else {
       console.warn('XNAT: Cornerstone or WADO image loader not available - cannot configure');
     }
@@ -82,11 +79,9 @@ export function initXNATDicomLoader(servicesManager: ServicesManager): void {
     });
     
     document.dispatchEvent(event);
-    console.log('XNAT: Dispatched xnatDicomLoaderInitialized event');
     
     // Register for cornerstone initialized event to ensure we're ready
     document.addEventListener('cornerstoneinitialized', function() {
-      console.log('XNAT: Received cornerstoneinitialized event, ensuring loaders are configured');
       
       if (window.cornerstone && window.cornerstoneWADOImageLoader) {
         // Reconfigure to be sure
@@ -96,7 +91,6 @@ export function initXNATDicomLoader(servicesManager: ServicesManager): void {
           useSessionCookies: true
         };
         
-        console.log('XNAT: Reconfigured Cornerstone WadoImageLoader during initialization');
       }
     });
     

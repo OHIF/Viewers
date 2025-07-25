@@ -18,20 +18,11 @@ export default class DICOMSEGExporter {
         );
 
         this._label = label;
-
-        console.log('DICOMSEGExporter initialized with:', {
-            seriesInstanceUid: this._seriesInstanceUID,
-            projectID: this._projectID,
-            experimentID: this._experimentID,
-            label: this._label,
-            providedExperimentId: experimentId
-        });
     }
 
     get experimentID() {
         return this._experimentID;
     }
-
     /**
      * exportToXNAT - Exports the DICOMSEG to XNAT.
      *

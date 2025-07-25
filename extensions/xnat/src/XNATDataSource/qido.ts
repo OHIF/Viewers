@@ -103,14 +103,10 @@ export function processSeriesResults(qidoSeries) {
  * @returns {Promise<results>} - Promise that resolves results
  */
 async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, queryParameters) {
-    console.log('XNAT: search: studyInstanceUid', studyInstanceUid);
-    console.log('XNAT: search: seriesInstanceUid', seriesInstanceUid);
-    console.log('XNAT: search: queryParameters', queryParameters);
     let searchResult = await dicomWebClient.searchForStudies({
         studyInstanceUid: undefined,
         queryParams: queryParameters,
     });
-    console.log('XNAT: search: searchResult', searchResult);
     return searchResult;
 }
 

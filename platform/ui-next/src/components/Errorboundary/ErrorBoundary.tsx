@@ -135,7 +135,12 @@ const DefaultFallback = ({
 }: DefaultFallbackProps) => {
   const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
-  const { show } = useNotification();
+  const notificationContext = useNotification();
+  
+  // Safely handle case where NotificationProvider is not available
+  const show = notificationContext?.show || (() => {
+    console.warn('NotificationProvider not available, cannot show notification');
+  });
 
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { XNATThumbnail } from './XNATThumbnail';
+import XNATThumbnail from './XNATThumbnail';
 import XnatSessionRoiCollections from '../../utils/IO/queryXnatRois';
 import sessionMap from '../../utils/sessionMap';
 
@@ -60,18 +60,15 @@ function XNATSeriesThumbnails({
   // Get thumbnails from study
   useEffect(() => {
     if (study && study.thumbnails) {
-      console.log('XNATSeriesThumbnails: Setting thumbnails from study', study.thumbnails);
       setThumbnails(study.thumbnails);
     }
   }, [study]);
 
   // Check for ROIs
   useEffect(() => {
-    console.log('XNATSeriesThumbnails: Checking for ROIs');
     const xnatStudyInstanceUID = study?.StudyInstanceUID;
     
     if (!xnatStudyInstanceUID) {
-      console.log('XNATSeriesThumbnails: No StudyInstanceUID found');
       return;
     }
 
@@ -88,8 +85,6 @@ function XNATSeriesThumbnails({
           experimentId: session.data?.experimentId || session.experimentId,
         };
         
-        console.log('XNATSeriesThumbnails: Using session data for ROI check', sessionData);
-        
         // Query for ROIs if we have minimum required data
         if (sessionData.experimentId) {
           const queryObject = new XnatSessionRoiCollections();
@@ -99,7 +94,6 @@ function XNATSeriesThumbnails({
             try {
               const roisResult = await queryObject.queryAll(sessionData);
               const hasAnyRois = !!roisResult;
-              console.log('XNATSeriesThumbnails: ROIs found:', hasAnyRois);
               setHasRois(hasAnyRois);
             } catch (error) {
               console.error('XNATSeriesThumbnails: Error checking for ROIs', error);
@@ -109,12 +103,10 @@ function XNATSeriesThumbnails({
 
           checkForRois();
         } else {
-          console.log('XNATSeriesThumbnails: Missing experimentId in session data');
         }
       } else {
         // Try to see if there's a direct session available in the study object
         if (study.session) {
-          console.log('XNATSeriesThumbnails: Using session from study object', study.session);
           
           const sessionData = {
             projectId: study.session.project || study.session.projectId,
@@ -129,7 +121,6 @@ function XNATSeriesThumbnails({
               try {
                 const roisResult = await queryObject.queryAll(sessionData);
                 const hasAnyRois = !!roisResult;
-                console.log('XNATSeriesThumbnails: ROIs found from study session:', hasAnyRois);
                 setHasRois(hasAnyRois);
               } catch (error) {
                 console.error('XNATSeriesThumbnails: Error checking for ROIs from study session:', error);
@@ -139,10 +130,8 @@ function XNATSeriesThumbnails({
 
             checkForRois();
           } else {
-            console.log('XNATSeriesThumbnails: Missing experimentId in study session data');
           }
         } else {
-          console.log('XNATSeriesThumbnails: No session or experiment ID found');
         }
       }
     } catch (error) {
@@ -153,8 +142,6 @@ function XNATSeriesThumbnails({
   const filteredThumbnails = thumbnails.filter(
     thumbnail => thumbnail.SeriesDescription !== 'Segmentation'
   );
-
-  console.log('XNATSeriesThumbnails: Rendering with thumbnails:', filteredThumbnails);
 
   const handleThumbnailClick = (id: string, event: React.MouseEvent) => {
     if (onThumbnailClick) {

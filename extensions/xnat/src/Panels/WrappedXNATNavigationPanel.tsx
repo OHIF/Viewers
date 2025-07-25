@@ -11,24 +11,15 @@ import XNATNavigationPanel from '../xnat-components/XNATNavigationPanel';
  * @param {object} commandsManager
  */
 function WrappedXNATNavigationPanel({ extensionManager, servicesManager, commandsManager }) {
-  console.log('XNAT: WrappedXNATNavigationPanel rendering with', {
-    extensionManager: typeof extensionManager,
-    servicesManager: typeof servicesManager,
-    commandsManager: typeof commandsManager
-  });
   
   // Get the data source
   const [dataSource] = extensionManager.getActiveDataSource();
-  
-  console.log('XNAT: Active dataSource for navigation:', dataSource);
-  
+    
   // Debug available icons in the UI package
   useEffect(() => {
     try {
       // Check what's available in the UI package
       const uiPackage = window['@ohif/ui'];
-      console.log('XNAT: OHIF UI package available icons:', 
-        uiPackage?.Icons ? Object.keys(uiPackage.Icons) : 'Icons not directly accessible');
     } catch (err) {
       console.error('XNAT: Error checking available UI components', err);
     }
@@ -36,11 +27,9 @@ function WrappedXNATNavigationPanel({ extensionManager, servicesManager, command
     // Check if this is connected to XNAT properly
     try {
       const url = 'data/archive/projects/?format=json';
-      console.log('XNAT: Testing connection to XNAT API at', url);
       
       fetch(url)
         .then(response => {
-          console.log('XNAT: API response status:', response.status);
           return response.json();
         })
         .then(data => {
@@ -53,8 +42,6 @@ function WrappedXNATNavigationPanel({ extensionManager, servicesManager, command
       console.error('XNAT: Error testing API connection', err);
     }
   }, []);
-
-  console.log('XNAT: Rendering XNATNavigationPanel with servicesManager');
   
   return (
     <div className="xnat-debug-wrapper">

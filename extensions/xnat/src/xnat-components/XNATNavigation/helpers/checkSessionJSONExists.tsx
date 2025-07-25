@@ -7,7 +7,6 @@ export default function(projectId, subjectId, experimentId) {
     const xhr = new XMLHttpRequest();
     const url = `${xnatRootUrl}xapi/viewer/projects/${projectId}/experiments/${experimentId}/exists`;
 
-    console.log(`fetching: ${url}`);
 
     xhr.onload = () => {
       console.log(`Request returned, status: ${xhr.status}`);

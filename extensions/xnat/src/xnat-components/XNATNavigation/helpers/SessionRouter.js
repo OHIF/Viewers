@@ -31,18 +31,11 @@ export default class SessionRouter {
         const experimentId = this.experimentId ? String(this.experimentId) : '';
         const subjectId = this.subjectId ? String(this.subjectId) : '';
 
-        console.log('SessionRouter.go() called with validated params:', {
-            projectId,
-            subjectId,
-            experimentId
-        });
-
         // Store these in sessionStorage for recovery if needed
         try {
             sessionStorage.setItem('xnat_projectId', projectId);
             sessionStorage.setItem('xnat_experimentId', experimentId);
             sessionStorage.setItem('xnat_subjectId', subjectId);
-            console.log('Stored XNAT session parameters in sessionStorage');
         } catch (e) {
             console.warn('Failed to store XNAT parameters in sessionStorage:', e);
         }
@@ -54,8 +47,6 @@ export default class SessionRouter {
 
         try {
             const url = `/data/projects/${projectId}/experiments/${experimentId}?format=json`;
-            console.log('SessionRouter fetching session data from:', url);
-
             // Fetch the experiment data from XNAT API with less specific Accept header
             return fetch(url, {
                     credentials: 'include', // Ensure cookies are sent
@@ -71,8 +62,6 @@ export default class SessionRouter {
                     return response.json();
                 })
                 .then(data => {
-                    console.log('SessionRouter: Received data from XNAT API', data);
-
                     // Extract study instance UID from the data
                     if (!data || !data.items || !data.items[0] || !data.items[0].data_fields) {
                         throw new Error('Invalid session data structure from XNAT API');
@@ -85,8 +74,6 @@ export default class SessionRouter {
                         throw new Error('Study Instance UID not found in session data');
                     }
 
-                    console.log('SessionRouter: Extracted studyInstanceUID:', studyInstanceUID);
-
                     // Store the studyInstanceUID in sessionStorage for recovery
                     try {
                         sessionStorage.setItem('xnat_studyInstanceUID', studyInstanceUID);
@@ -94,23 +81,16 @@ export default class SessionRouter {
                         // Also store study date and time if available in the session data
                         if (sessionData.date) {
                             sessionStorage.setItem('xnat_studyDate', sessionData.date);
-                            console.log('Stored study date in sessionStorage:', sessionData.date);
                         }
 
                         if (sessionData.time) {
                             sessionStorage.setItem('xnat_studyTime', sessionData.time);
-                            console.log('Stored study time in sessionStorage:', sessionData.time);
                         } else if (sessionData.insert_date) {
                             // Try to extract time from insert_date if time is not available
                             const timeMatch = sessionData.insert_date.match(/\d{2}:\d{2}:\d{2}/);
                             if (timeMatch) {
                                 const formattedTime = timeMatch[0].replace(/:/g, '');
                                 sessionStorage.setItem('xnat_studyTime', formattedTime);
-                                console.log('Stored study time from insert_date in sessionStorage:', formattedTime);
-                            }
-                        }
-
-                        console.log('Stored studyInstanceUID in sessionStorage');
                     } catch (e) {
                         console.warn('Failed to store studyInstanceUID in sessionStorage:', e);
                     }
@@ -134,7 +114,6 @@ export default class SessionRouter {
                                     StudyDescription: sessionData.label || '',
                                     NumInstances: 0 // Will be updated when series are loaded
                                 });
-                                console.log('SessionRouter: Added study to DicomMetadataStore:', studyInstanceUID);
                             }
                         } catch (e) {
                             console.warn('Error adding study to DicomMetadataStore:', e);
@@ -156,7 +135,6 @@ export default class SessionRouter {
                             }
                         });
                         window.dispatchEvent(event);
-                        console.log('Dispatched xnatSessionReady event');
                     } catch (e) {
                         console.warn('Failed to dispatch xnatSessionReady event:', e);
                     }
@@ -196,7 +174,6 @@ export default class SessionRouter {
                 `/xapi/viewer/projects/${this.projectId}/experiments/${this.experimentId}`
             )
             .promise.then(result => {
-                console.log('SessionRouter: Generated session metadata:', result);
                 if (result) {
                     this._loadRoute();
                 } else {
@@ -208,7 +185,6 @@ export default class SessionRouter {
 
     _loadRoute() {
         let params = `?subjectId=${this.subjectId}&projectId=${this.projectId}&experimentId=${this.experimentId}&experimentLabel=${this.experimentLabel}`;
-        console.log('SessionRouter: Loading route with params:', params);
         if (this.parentProjectId !== this.projectId) {
             //Shared Project
             params += `&parentProjectId=${this.parentProjectId}`;
@@ -218,8 +194,6 @@ export default class SessionRouter {
 
         // Ensure we don't have double slashes
         const baseUrl = xnatRootUrl.endsWith('/') ? `${xnatRootUrl}VIEWER` : `${xnatRootUrl}/VIEWER`;
-
-        console.log(`Routing to: ${baseUrl}${params}`);
 
         if (process.env.APP_CONFIG === 'config/xnat-dev.js') {
             window.location.href = `${params}`;
@@ -240,9 +214,6 @@ export default class SessionRouter {
         };
 
         const basePath = getServerUrl();
-
-        console.log('Setting up XNAT data source with basePath:', basePath);
-
         // Configure the server details
         const server = {
             name: `XNAT Server - ${this.projectId}/${this.experimentId}`,
@@ -274,8 +245,6 @@ export default class SessionRouter {
             }
         };
 
-        console.log('SessionRouter: Server configuration:', server);
-
         try {
             // Use multiple ways to get DicomMetadataStore
             const metadataStore = this.dicomMetadataStore ||
@@ -285,7 +254,6 @@ export default class SessionRouter {
             if (!metadataStore) {
                 console.error('DicomMetadataStore is not available - storing configuration without study registration');
             } else {
-                console.log('DicomMetadataStore found, registering study:', studyInstanceUID);
 
                 try {
                     // Check if study already exists
@@ -310,16 +278,12 @@ export default class SessionRouter {
                             wadoUri: basePath,
                             server
                         });
-
-                        console.log('Study added to DicomMetadataStore');
                     } else {
                         // Study exists, update server details
                         study.wadoRoot = basePath;
                         study.qidoRoot = basePath;
                         study.wadoUri = basePath;
                         study.server = server;
-
-                        console.log('Updated existing study in DicomMetadataStore');
                     }
                 } catch (e) {
                     console.error('Error updating DicomMetadataStore:', e);
@@ -352,14 +316,11 @@ export default class SessionRouter {
                         xnatDataSource.configuration.wadoUriRoot = basePath;
                         xnatDataSource.configuration.qidoRoot = basePath;
                         xnatDataSource.configuration.wadoRoot = basePath;
-                        console.log('Updated xnat data source configuration with paths:', basePath);
                     }
                 }
             } catch (e) {
                 console.error('Error updating data source configuration:', e);
             }
-
-            console.log('DICOM web server configuration stored in global objects');
 
         } catch (error) {
             console.error('Error setting up DICOM web data source:', error);
