@@ -268,7 +268,7 @@ export function useViewportRendering(
             }
 
             // Get opacity from colormap if available
-            if (properties.colormap && properties.colormap.opacity !== undefined) {
+            if (properties?.colormap && properties.colormap.opacity !== undefined) {
               const isArray = Array.isArray(properties.colormap.opacity);
               const opacity = isArray
                 ? properties.colormap.opacity.reduce((max, current) => Math.max(max, current), 0)
