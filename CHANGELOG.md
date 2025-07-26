@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.107...v3.11.0-beta.108) (2025-07-25)
+
+
+### Bug Fixes
+
+* **tooltips:** tool tips should be portals ([#5265](https://github.com/OHIF/Viewers/issues/5265)) ([570e087](https://github.com/OHIF/Viewers/commit/570e08700720d561c3d1201e03142634fccf5939))
+
+
+
+
+
+# [3.11.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.106...v3.11.0-beta.107) (2025-07-25)
+
+
+### Bug Fixes
+
+* prevent failure in DICOM loader for wadouri type ([#5260](https://github.com/OHIF/Viewers/issues/5260)) ([d0cf9e0](https://github.com/OHIF/Viewers/commit/d0cf9e02f438cd8d26ed5bca5fb528549f4c8b98))
+
+
+
+
+
+# [3.11.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.105...v3.11.0-beta.106) (2025-07-24)
+
+
+### Bug Fixes
+
+* **ArrowAnnotate:** Allow free-form text for arrow annotations ([#5259](https://github.com/OHIF/Viewers/issues/5259)) ([3c8446a](https://github.com/OHIF/Viewers/commit/3c8446a5e5caf8c050275bd4c193defa9e370b32))
+
+
+
+
+
+# [3.11.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.104...v3.11.0-beta.105) (2025-07-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.11.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.103...v3.11.0-beta.104) (2025-07-23)
 
 
