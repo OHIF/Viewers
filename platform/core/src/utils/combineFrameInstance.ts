@@ -26,7 +26,14 @@ const combineFrameInstance = (frame, instance) => {
   instance.ImageType = dicomSplit(ImageType);
   const frameNumber = Number.parseInt(frame || 1);
 
-  if (PerFrameFunctionalGroupsSequence && SharedFunctionalGroupsSequence) {
+  const hasDetectorButMissingSpatialInfo =
+    instance.DetectorInformationSequence &&
+    (!instance.ImagePositionPatient || !instance.ImageOrientationPatient);
+
+  if (
+    (PerFrameFunctionalGroupsSequence && SharedFunctionalGroupsSequence) ||
+    hasDetectorButMissingSpatialInfo
+  ) {
     // this is to fix NM multiframe datasets with position and orientation
     // information inside DetectorInformationSequence
     if (!instance.ImageOrientationPatient && instance.DetectorInformationSequence) {
