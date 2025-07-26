@@ -262,7 +262,7 @@ export function useViewportRendering(
 
           if (volumeId) {
             properties = viewport.getProperties(volumeId);
-            if (properties.voiRange) {
+            if (properties?.voiRange) {
               setVoiRange(properties.voiRange);
               voiRangeRef.current = properties.voiRange;
             }
