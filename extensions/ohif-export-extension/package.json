@@ -43,5 +43,8 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@types/jszip": "^3.4.1"
   }
 }

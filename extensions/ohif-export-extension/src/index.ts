@@ -1,5 +1,6 @@
 import { Types } from '@ohif/core';
 import getToolbarModule from './getToolbarModule';
+import getCommandsModule from './getCommandModule';
 
 const id = '@ohif/extension-export';
 
@@ -30,6 +31,7 @@ const exportExtension: Types.Extensions.Extension = {
    * Modules
    */
   getToolbarModule,
+  getCommandsModule,
 };
 
 export default exportExtension;
