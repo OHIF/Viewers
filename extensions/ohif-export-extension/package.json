@@ -1,0 +1,47 @@
+{
+  "name": "@ohif/extension-export",
+  "version": "1.0.0",
+  "description": "OHIF Extension for exporting images and metadata as ZIP files",
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": "json0130/Viewers",
+  "main": "dist/ohif-extension-export.umd.js",
+  "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6",
+    "yarn": ">=1.18.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "ohif-extension",
+    "export",
+    "zip",
+    "medical-imaging"
+  ],
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "start": "yarn run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
+  },
+  "peerDependencies": {
+    "@ohif/core": "3.11.0-beta.108",
+    "@ohif/i18n": "3.11.0-beta.108",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.13",
+    "jszip": "^3.10.1"
+  }
+}
