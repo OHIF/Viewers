@@ -1,4 +1,5 @@
 import { Types } from '@ohif/core';
+import getToolbarModule from './getToolbarModule';
 
 const id = '@ohif/extension-export';
 
@@ -24,6 +25,11 @@ const exportExtension: Types.Extensions.Extension = {
     // Called when exiting a mode using this extension
     console.log('Export extension mode exited');
   },
+
+  /**
+   * Modules
+   */
+  getToolbarModule,
 };
 
 export default exportExtension;
