@@ -1,5 +1,5 @@
 import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useViewportRendering } from '../../hooks';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 import classNames from 'classnames';
@@ -42,6 +42,7 @@ function AdvancedRenderingControls({
   const [showAllIcons, setShowAllIcons] = useState(true);
   const firstMountRef = useRef(true);
   const { hasColorbar } = useViewportRendering(viewportId);
+  const [isAnItemOpen, setIsAnItemOpen] = useState(false);
 
   useEffect(() => {
     if (firstMountRef.current) {
@@ -66,6 +67,22 @@ function AdvancedRenderingControls({
     }
   }, [location, mousePosition, showAllIcons]);
 
+  const handleOnItemOpen = useCallback(
+    (id, viewportId) => {
+      openItem(id, viewportId);
+      setIsAnItemOpen(true);
+    },
+    [openItem, setIsAnItemOpen]
+  );
+
+  const handleOnItemClose = useCallback(
+    (id, viewportId) => {
+      closeItem(id, viewportId);
+      setIsAnItemOpen(false);
+    },
+    [closeItem, setIsAnItemOpen]
+  );
+
   if (!toolbarButtons?.length) {
     return null;
   }
@@ -88,8 +105,8 @@ function AdvancedRenderingControls({
           ...componentProps,
           isOpen: isItemOpen(id, viewportId),
           isLocked: isItemLocked(id, viewportId),
-          onOpen: () => openItem(id, viewportId),
-          onClose: () => closeItem(id, viewportId),
+          onOpen: () => handleOnItemOpen(id, viewportId),
+          onClose: () => handleOnItemClose(id, viewportId),
           onToggleLock: () => toggleLock(id, viewportId),
           viewportId,
         };
@@ -112,7 +129,8 @@ function AdvancedRenderingControls({
 
         // Always show all icons on first mount for 3 seconds
         // After that, always show Colorbar, show others only when mouse is at bottom
-        const shouldBeVisible = showAllIcons || id === 'Colorbar' || isMouseNearControls;
+        const shouldBeVisible =
+          isAnItemOpen || showAllIcons || id === 'Colorbar' || isMouseNearControls;
 
         return (
           <div
