@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.109...v3.11.0-beta.110) (2025-07-28)
+
+
+### Bug Fixes
+
+* **multiframes:** Corrected combining frame instances for multiframes. ([#5264](https://github.com/OHIF/Viewers/issues/5264)) ([47e231f](https://github.com/OHIF/Viewers/commit/47e231f0618443e70c1daae718e7dd0908954b52))
+* null save voi range properties ([#5268](https://github.com/OHIF/Viewers/issues/5268)) ([04dcacd](https://github.com/OHIF/Viewers/commit/04dcacd3a5d0d565b163c96222c8c7f948a05abd))
+
+
+
+
+
 # [3.11.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.108...v3.11.0-beta.109) (2025-07-28)
 
 **Note:** Version bump only for package ohif-monorepo-root
