@@ -17,10 +17,10 @@ import { identityMapping } from './utils/identityMapping';
 
 // Import protection system
 import { setupRemovalProtection, recentlyImportedMeasurements } from './protection/removalProtection';
-
 // Import tool handlers
 import { processLengthTool } from './handlers/lengthToolHandler';
 import { processRectangleROI, processEllipticalROI } from './handlers/roiToolHandler';
+
 
 export async function importMeasurementCollection({
   collectionJSON,
