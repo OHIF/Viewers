@@ -262,13 +262,13 @@ export function useViewportRendering(
 
           if (volumeId) {
             properties = viewport.getProperties(volumeId);
-            if (properties.voiRange) {
+            if (properties?.voiRange) {
               setVoiRange(properties.voiRange);
               voiRangeRef.current = properties.voiRange;
             }
 
             // Get opacity from colormap if available
-            if (properties.colormap && properties.colormap.opacity !== undefined) {
+            if (properties?.colormap?.opacity !== undefined) {
               const isArray = Array.isArray(properties.colormap.opacity);
               const opacity = isArray
                 ? properties.colormap.opacity.reduce((max, current) => Math.max(max, current), 0)
