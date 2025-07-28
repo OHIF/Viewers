@@ -1,6 +1,12 @@
 import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
 import React, { useState, useEffect, useRef } from 'react';
 import { useViewportRendering } from '../../hooks';
+import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
+
+const mouseNearControlsRanges = {
+  [ButtonLocation.TopMiddle]: { minX: 0, minY: 0, maxX: 1, maxY: 0.1 },
+  [ButtonLocation.BottomMiddle]: { minX: 0, minY: 0.9, maxX: 1, maxY: 1 },
+};
 
 function AdvancedRenderingControls({
   viewportId,
@@ -24,7 +30,7 @@ function AdvancedRenderingControls({
   });
 
   const mousePosition = useViewportMousePosition(viewportId);
-  const [isAtBottom, setIsAtBottom] = useState(false);
+  const [isMouseNearControls, setIsMouseNearControls] = useState(false);
   const [showAllIcons, setShowAllIcons] = useState(true);
   const firstMountRef = useRef(true);
   const { hasColorbar } = useViewportRendering(viewportId);
@@ -43,10 +49,11 @@ function AdvancedRenderingControls({
 
   useEffect(() => {
     if (!showAllIcons && mousePosition.isInViewport) {
-      if (mousePosition.isInBottomPercentage(10)) {
-        setIsAtBottom(true);
+      const mouseHoverLocation = mouseNearControlsRanges[location];
+      if (mousePosition.isWithinNormalizedBox(mouseHoverLocation)) {
+        setIsMouseNearControls(true);
       } else {
-        setIsAtBottom(false);
+        setIsMouseNearControls(false);
       }
     }
   }, [mousePosition, showAllIcons]);
@@ -97,7 +104,7 @@ function AdvancedRenderingControls({
 
         // Always show all icons on first mount for 3 seconds
         // After that, always show Colorbar, show others only when mouse is at bottom
-        const shouldBeVisible = showAllIcons || id === 'Colorbar' || isAtBottom;
+        const shouldBeVisible = showAllIcons || id === 'Colorbar' || isMouseNearControls;
 
         return (
           <div
