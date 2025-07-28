@@ -15,7 +15,6 @@ interface MousePosition {
   isInViewport: boolean;
   relativeX: number;
   relativeY: number; // Position as percentage from top (0-1)
-  isInBottomPercentage: (percentage: number) => boolean;
   isWithinNormalizedBox?: (normalizedBox: NormalizedBox) => boolean;
 }
 
@@ -29,7 +28,6 @@ function useViewportMousePosition(viewportId: string): MousePosition {
     isInViewport: false,
     relativeY: 0,
     relativeX: 0,
-    isInBottomPercentage: (percentage: number) => false,
     isWithinNormalizedBox: (normalizedBox: NormalizedBox) => false,
   });
 
@@ -52,15 +50,6 @@ function useViewportMousePosition(viewportId: string): MousePosition {
       const relativeX = Math.max(0, Math.min(1, x / width));
       const relativeY = Math.max(0, Math.min(1, y / height));
 
-      const isInBottomPercentage = (percentage: number) => {
-        return isWithinNormalizedBox({
-          minX: 0,
-          minY: 1 - percentage / 100,
-          maxX: 1,
-          maxY: 1,
-        });
-      };
-
       const isWithinNormalizedBox = (normalizedBox: NormalizedBox) => {
         return (
           relativeX >= normalizedBox.minX &&
@@ -76,7 +65,6 @@ function useViewportMousePosition(viewportId: string): MousePosition {
         isInViewport,
         relativeX,
         relativeY,
-        isInBottomPercentage,
         isWithinNormalizedBox,
       });
     };
