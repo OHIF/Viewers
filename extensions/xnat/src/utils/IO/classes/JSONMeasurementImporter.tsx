@@ -310,11 +310,6 @@ function _getImageIdAndDisplaySetInfo(sopInstanceUID, frameNumber, seriesUID, di
 const identityMapping = data => {
   // The data object contains the annotation wrapper, we need to extract the actual measurement
   if (data.annotation && data.measurement) {
-      uid: data.measurement.uid,
-      displayText: data.measurement.displayText,
-      label: data.measurement.label,
-      toolName: data.measurement.toolName
-    });
     return data.measurement;
   }
     return data;
