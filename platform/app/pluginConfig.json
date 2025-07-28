@@ -8,6 +8,10 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "@ohif/extension-export",
+      "version": "1.0.0"
+    },
+    {
       "packageName": "@ohif/extension-measurement-tracking",
       "default": false,
       "version": "3.0.0"
@@ -89,9 +93,8 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "@ohif/mode-basic-dev-mode",
-      "default": false,
-      "version": "3.0.0"
+      "packageName": "@ohif/mode-export",
+      "version": "1.0.0"
     },
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
