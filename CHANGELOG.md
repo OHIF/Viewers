@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.111...v3.11.0-beta.112) (2025-07-28)
+
+
+### Bug Fixes
+
+* **colorbar:** Allow for AdvancedRenderingControls to be placed at the left or right of the viewport. ([#5273](https://github.com/OHIF/Viewers/issues/5273)) ([341f1c4](https://github.com/OHIF/Viewers/commit/341f1c4ce799d1bcef3632e0d135be0cfcb333a9))
+
+
+
+
+
 # [3.11.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.110...v3.11.0-beta.111) (2025-07-28)
 
 
