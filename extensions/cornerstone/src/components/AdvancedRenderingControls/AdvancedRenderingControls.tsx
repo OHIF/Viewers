@@ -2,11 +2,19 @@ import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
 import React, { useState, useEffect, useRef } from 'react';
 import { useViewportRendering } from '../../hooks';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
+import classNames from 'classnames';
 
 const mouseNearControlsRanges = {
   [ButtonLocation.TopMiddle]: { minX: 0, minY: 0, maxX: 1, maxY: 0.1 },
   [ButtonLocation.BottomMiddle]: { minX: 0, minY: 0.9, maxX: 1, maxY: 1 },
+  [ButtonLocation.LeftMiddle]: { minX: 0, minY: 0, maxX: 0.1, maxY: 1 },
+  [ButtonLocation.RightMiddle]: { minX: 0.9, minY: 0, maxX: 1, maxY: 1 },
 };
+
+const getFlexDirectionClassName = (location: ButtonLocation) =>
+  location === ButtonLocation.LeftMiddle || location === ButtonLocation.RightMiddle
+    ? 'flex-col'
+    : 'flex-row';
 
 function AdvancedRenderingControls({
   viewportId,
@@ -56,7 +64,7 @@ function AdvancedRenderingControls({
         setIsMouseNearControls(false);
       }
     }
-  }, [mousePosition, showAllIcons]);
+  }, [location, mousePosition, showAllIcons]);
 
   if (!toolbarButtons?.length) {
     return null;
@@ -67,7 +75,7 @@ function AdvancedRenderingControls({
   }
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className={classNames('flex gap-2', getFlexDirectionClassName(location))}>
       {toolbarButtons.map(toolDef => {
         if (!toolDef) {
           return null;
