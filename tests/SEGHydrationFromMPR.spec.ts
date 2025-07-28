@@ -13,6 +13,7 @@ test('should properly display MPR for MR', async ({ page }) => {
   await page.getByTestId('Layout').click();
   await page.getByTestId('MPR').click();
 
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationFromMPR.mprBeforeSEG);
 
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
@@ -26,6 +27,7 @@ test('should properly display MPR for MR', async ({ page }) => {
   await page.getByTestId('Layout').click();
   await page.getByTestId('Axial Primary').click();
 
+  await page.waitForTimeout(5000);
   await checkForScreenshot(
     page,
     page,
