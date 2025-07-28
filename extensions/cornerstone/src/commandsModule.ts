@@ -422,13 +422,19 @@ function commandsModule({
       }
 
       // Create presentation data with referencedImageId and options if provided
-      const presentationData = {
-        ...presentations.positionPresentation,
-        viewReference: {
-          referencedImageId,
-          ...options,
-        },
-      };
+      console.warn("Updating position presentaiton data to", referencedImageId, options);
+
+      // Create presentation data with referencedImageId and options if provided
+      const presentationData = referencedImageId
+        ? {
+            ...presentations.positionPresentation,
+            viewReference: {
+              referencedImageId,
+              ...options,
+            },
+          }
+        : presentations.positionPresentation;
+
       if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
