@@ -83,72 +83,78 @@ export default class SessionRouter {
                             sessionStorage.setItem('xnat_studyDate', sessionData.date);
                         }
 
-                        if (sessionData.time) {
-                            sessionStorage.setItem('xnat_studyTime', sessionData.time);
-                        } else if (sessionData.insert_date) {
-                            // Try to extract time from insert_date if time is not available
-                            const timeMatch = sessionData.insert_date.match(/\d{2}:\d{2}:\d{2}/);
-                            if (timeMatch) {
-                                const formattedTime = timeMatch[0].replace(/:/g, '');
-                                sessionStorage.setItem('xnat_studyTime', formattedTime);
-                    } catch (e) {
-                        console.warn('Failed to store studyInstanceUID in sessionStorage:', e);
-                    }
-
-                    // Add the study to DicomMetadataStore if needed
-                    const DicomMetadataStore = this.dicomMetadataStore || window.DicomMetadataStore;
-                    if (DicomMetadataStore) {
                         try {
-                            // Check if study already exists in store
-                            const existingStudy = DicomMetadataStore.getStudy(studyInstanceUID);
-                            if (!existingStudy) {
-                                // Create a minimal study entry that will be populated later
-                                DicomMetadataStore.addStudy({
-                                    StudyInstanceUID: studyInstanceUID,
-                                    PatientID: sessionData.subject_ID || subjectId,
-                                    PatientName: sessionData.dcmPatientName || subjectId,
-                                    StudyDate: sessionData.date || '',
-                                    StudyTime: '',
-                                    AccessionNumber: experimentId,
-                                    StudyID: sessionData.study_id || experimentId,
-                                    StudyDescription: sessionData.label || '',
-                                    NumInstances: 0 // Will be updated when series are loaded
-                                });
+                            if (sessionData.time) {
+                                sessionStorage.setItem('xnat_studyTime', sessionData.time);
+                            } else if (sessionData.insert_date) {
+                                // Try to extract time from insert_date if time is not available
+                                const timeMatch = sessionData.insert_date.match(/\d{2}:\d{2}:\d{2}/);
+                                if (timeMatch) {
+                                    const formattedTime = timeMatch[0].replace(/:/g, '');
+                                    sessionStorage.setItem('xnat_studyTime', formattedTime);
+                                }
                             }
                         } catch (e) {
-                            console.warn('Error adding study to DicomMetadataStore:', e);
+                            console.warn('Failed to store studyInstanceUID in sessionStorage:', e);
                         }
-                    }
 
-                    // Set up DICOM web data source for this study
-                    this._setupDicomWebDataSource(studyInstanceUID);
-
-                    // Dispatch a custom event to notify that XNAT session is ready
-                    // This helps coordinate the data source and router
-                    try {
-                        const event = new CustomEvent('xnatSessionReady', {
-                            detail: {
-                                projectId,
-                                experimentId,
-                                subjectId,
-                                studyInstanceUID
+                        // Add the study to DicomMetadataStore if needed
+                        const DicomMetadataStore = this.dicomMetadataStore || window.DicomMetadataStore;
+                        if (DicomMetadataStore) {
+                            try {
+                                // Check if study already exists in store
+                                const existingStudy = DicomMetadataStore.getStudy(studyInstanceUID);
+                                if (!existingStudy) {
+                                    // Create a minimal study entry that will be populated later
+                                    DicomMetadataStore.addStudy({
+                                        StudyInstanceUID: studyInstanceUID,
+                                        PatientID: sessionData.subject_ID || subjectId,
+                                        PatientName: sessionData.dcmPatientName || subjectId,
+                                        StudyDate: sessionData.date || '',
+                                        StudyTime: '',
+                                        AccessionNumber: experimentId,
+                                        StudyID: sessionData.study_id || experimentId,
+                                        StudyDescription: sessionData.label || '',
+                                        NumInstances: 0 // Will be updated when series are loaded
+                                    });
+                                }
+                            } catch (e) {
+                                console.warn('Error adding study to DicomMetadataStore:', e);
                             }
-                        });
-                        window.dispatchEvent(event);
-                    } catch (e) {
-                        console.warn('Failed to dispatch xnatSessionReady event:', e);
-                    }
+                        }
 
-                    // Return the study instance UID
-                    return studyInstanceUID;
+                        // Set up DICOM web data source for this study
+                        this._setupDicomWebDataSource(studyInstanceUID);
+
+                        // Dispatch a custom event to notify that XNAT session is ready
+                        // This helps coordinate the data source and router
+                        try {
+                            const event = new CustomEvent('xnatSessionReady', {
+                                detail: {
+                                    projectId,
+                                    experimentId,
+                                    subjectId,
+                                    studyInstanceUID
+                                }
+                            });
+                            window.dispatchEvent(event);
+                        } catch (e) {
+                            console.warn('Failed to dispatch xnatSessionReady event:', e);
+                        }
+
+                        // Return the study instance UID
+                        return studyInstanceUID;
+                    } catch (error) {
+                        console.error('SessionRouter fetch error:', error);
+                        throw error;
+                    }
                 })
                 .catch(error => {
-                    console.error('SessionRouter fetch error:', error);
-                    throw error;
+                    console.error('SessionRouter setup error:', error);
+                    return Promise.reject(error);
                 });
         } catch (error) {
             console.error('SessionRouter setup error:', error);
-            return Promise.reject(error);
         }
     }
 

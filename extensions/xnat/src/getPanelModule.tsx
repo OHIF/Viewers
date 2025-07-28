@@ -101,7 +101,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     },
     {
       name: 'xnatMeasurements',
-      iconName: 'tab-measurement',
+      iconName: 'tab-linear',
       iconLabel: 'Measurements',
       label: 'Measurements',
       component: XNATPanelMeasurement,
