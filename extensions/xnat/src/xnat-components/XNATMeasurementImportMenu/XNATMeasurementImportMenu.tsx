@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { retrieveMeasurementCollections } from '../../utils/IO/retrieveMeasurementCollections';
-import { importMeasurementCollection } from '../../utils/IO/classes/JSONMeasurementImporter';
+import importMeasurementCollection from '../../utils/IO/classes/JSONMeasurementImporter';
 import fetchJSON from '../../utils/IO/fetchJSON';
 import './XNATMeasurementImportMenu.css';
 
