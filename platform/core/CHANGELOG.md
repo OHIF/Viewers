@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.110...v3.11.0-beta.111) (2025-07-28)
+
+
+### Bug Fixes
+
+* **colorbar:** Allow for `AdvancedRenderingControls` to be placed at the top or bottom of the viewport. ([#5270](https://github.com/OHIF/Viewers/issues/5270)) ([d24fe54](https://github.com/OHIF/Viewers/commit/d24fe54d2b5598c8356afa9ce91939018940ee19))
+
+
+
+
+
+# [3.11.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.109...v3.11.0-beta.110) (2025-07-28)
+
+
+### Bug Fixes
+
+* **multiframes:** Corrected combining frame instances for multiframes. ([#5264](https://github.com/OHIF/Viewers/issues/5264)) ([47e231f](https://github.com/OHIF/Viewers/commit/47e231f0618443e70c1daae718e7dd0908954b52))
+
+
+
+
+
+# [3.11.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.108...v3.11.0-beta.109) (2025-07-28)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.107...v3.11.0-beta.108) (2025-07-25)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.106...v3.11.0-beta.107) (2025-07-25)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.105...v3.11.0-beta.106) (2025-07-24)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.11.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.104...v3.11.0-beta.105) (2025-07-23)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.11.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.103...v3.11.0-beta.104) (2025-07-23)
 
 

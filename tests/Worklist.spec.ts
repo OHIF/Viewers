@@ -14,12 +14,16 @@ test('should render scroll bars with the correct look-and-feel', async ({ page }
   );
 
   await studyRowHeader.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(3000);
+
   await studyRowHeader.click();
 
   const expandedStudyRow = await page.getByTestId(
     'studyRow-1.3.6.1.4.1.14519.5.2.1.5099.8010.217836670708542506360829799868'
   );
+
   await expandedStudyRow.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(3000);
 
   await checkForScreenshot({
     page,
