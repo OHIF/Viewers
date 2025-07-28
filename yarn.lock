@@ -3156,6 +3156,17 @@
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
 
+"@ohif/extension-cornerstone-dicom-seg@3.11.0-beta.106":
+  version "3.11.0-beta.106"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone-dicom-seg/-/extension-cornerstone-dicom-seg-3.11.0-beta.106.tgz#fd1fc42ca6cdfe2ead9a10cc28fc4d49064b2b44"
+  integrity sha512-+0kNGZ3EuGb31hF8zC/VFK/qDqLsIlQnzwk4b8oXHWcxDB3Beirn/jEMLnID43TAuSX6wBWl14sU8EPFvPpLuA==
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+    "@cornerstonejs/adapters" "^3.30.3"
+    "@cornerstonejs/core" "^3.30.3"
+    "@kitware/vtk.js" "32.12.0"
+    react-color "^2.19.3"
+
 "@oozcitak/dom@1.15.10":
   version "1.15.10"
   resolved "https://registry.yarnpkg.com/@oozcitak/dom/-/dom-1.15.10.tgz#dca7289f2b292cff2a901ea4fbbcc0a1ab0b05c2"
