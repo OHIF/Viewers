@@ -5,7 +5,7 @@ const id = '@ohif/mode-export';
 const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-export': '^1.0.0', // Our custom extension
+  '@ohif/extension-export': '^1.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -69,7 +69,6 @@ function modeFactory({ modeConfiguration }) {
             commandFn: ({ servicesManager }) => {
               console.log('🚀 Export ZIP button clicked!');
 
-              // Get services we need
               const { cornerstoneViewportService, displaySetService } = servicesManager.services;
 
               try {
@@ -82,7 +81,7 @@ function modeFactory({ modeConfiguration }) {
                   return;
                 }
 
-                // Get the canvas element and convert to image
+                // Get the canvas and convert to image
                 const canvas = viewport.getCanvas();
                 const imageDataUrl = canvas.toDataURL('image/jpeg', 0.95);
 
@@ -92,53 +91,55 @@ function modeFactory({ modeConfiguration }) {
                   type: 'image/jpeg'
                 });
 
-                // Get display set for metadata
-                const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
-                const displaySetUIDs = viewportInfo.getDisplaySetUIDs();
-
+                // Get metadata from display set (fixed approach)
                 let metadata = {
                   PatientName: 'Unknown',
                   StudyDate: 'Unknown',
-                  exportDate: new Date().toISOString()
+                  ExportDate: new Date().toISOString()
                 };
 
-                if (displaySetUIDs && displaySetUIDs.length > 0) {
-                  const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
-                  if (displaySet && displaySet.instances && displaySet.instances.length > 0) {
-                    const firstInstance = displaySet.instances[0];
-                    metadata.PatientName = firstInstance.PatientName || 'Unknown';
-                    metadata.StudyDate = firstInstance.StudyDate || 'Unknown';
-                    metadata.StudyInstanceUID = firstInstance.StudyInstanceUID || 'Unknown';
-                    metadata.SeriesInstanceUID = firstInstance.SeriesInstanceUID || 'Unknown';
+                try {
+                  // Try to get viewport info and display sets
+                  const viewportInfo = cornerstoneViewportService.getViewportInfo(activeViewportId);
+                  if (viewportInfo && viewportInfo.getDisplaySetUIDs) {
+                    const displaySetUIDs = viewportInfo.getDisplaySetUIDs();
+
+                    if (displaySetUIDs && displaySetUIDs.length > 0) {
+                      const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+                      if (displaySet && displaySet.instances && displaySet.instances.length > 0) {
+                        const firstInstance = displaySet.instances[0];
+                        metadata.PatientName = firstInstance.PatientName || 'Unknown';
+                        metadata.StudyDate = firstInstance.StudyDate || 'Unknown';
+                        metadata.StudyInstanceUID = firstInstance.StudyInstanceUID || 'Unknown';
+                        metadata.SeriesInstanceUID = firstInstance.SeriesInstanceUID || 'Unknown';
+                        metadata.Modality = firstInstance.Modality || 'Unknown';
+                      }
+                    }
                   }
+                } catch (metadataError) {
+                  console.warn('Could not extract metadata:', metadataError);
+                  // Continue with default metadata
                 }
 
-                // Create ZIP file using JSZip (assuming it's loaded globally)
+                // Create and download ZIP
                 if (typeof JSZip !== 'undefined') {
                   const zip = new JSZip();
-
-                  // Add image to zip
                   zip.file('image.jpg', imageBlob);
-
-                  // Add metadata to zip
                   zip.file('metadata.json', JSON.stringify(metadata, null, 2));
 
-                  // Generate and download zip
                   zip.generateAsync({ type: 'blob' }).then(function(content) {
-                    // Create download link
                     const url = URL.createObjectURL(content);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'report.zip';
+                    a.download = 'ohif-export-' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.zip';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-
                     console.log('✅ Export completed successfully!');
                   });
                 } else {
-                  alert('JSZip library not loaded. Please include JSZip in your HTML.');
+                  alert('JSZip library not loaded. Please include JSZip.');
                 }
 
               } catch (error) {
@@ -153,18 +154,154 @@ function modeFactory({ modeConfiguration }) {
         }
       }
 
-      // Update toolbar to include export button from our extension
+      // Register the export button directly in the mode with correct OHIF structure
+      const exportButton = {
+        name: 'ExportZip',
+        id: 'ExportZip',
+        uiType: 'ohif.toolbarButton',
+        props: {
+          icon: 'icon-download',
+          label: 'Export ZIP',
+          tooltip: 'Export current viewport as ZIP file with image and metadata',
+          commands: [
+            {
+              commandName: 'exportViewportAsZip',
+            },
+          ],
+        },
+      };
+
+      // Register the button with the toolbar service
+      try {
+        toolbarService.register([exportButton]);
+        console.log('✅ EXPORT MODE: Export button registered directly in mode');
+      } catch (error) {
+        console.error('❌ EXPORT MODE: Error registering export button:', error);
+      }
+
+      // Update toolbar WITHOUT the export button to avoid errors for now
       toolbarService.updateSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Pan',
-        'ExportZip', // Our export button from the extension
+        // 'ExportZip', // Commented out to avoid defaultComponent error
         'Layout',
         'MoreTools',
       ]);
 
-      console.log('🔧 EXPORT MODE: Toolbar configured with export button');
+      console.log('✅ EXPORT MODE: Toolbar configured (export button available via console command)');
+
+      // Automatically add the export button when entering export mode
+      setTimeout(() => {
+        window.addExportButton();
+      }, 1000); // Wait 1 second for mode to fully load
+
+      // Make export function available globally for easy access
+      window.exportCurrentViewport = () => {
+        try {
+          console.log('🚀 Export ZIP button clicked!');
+
+          // Simple approach: get the canvas directly from the DOM
+          const canvas = document.querySelector('canvas');
+          if (!canvas) {
+            alert('No viewport canvas found!');
+            return;
+          }
+
+          // Convert canvas to image
+          const imageDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+          const base64Data = imageDataUrl.split(',')[1];
+          const imageBlob = new Blob([Uint8Array.from(atob(base64Data), c => c.charCodeAt(0))], {
+            type: 'image/jpeg'
+          });
+
+          // Create simple metadata
+          const metadata = {
+            PatientName: 'OHIF Patient',
+            StudyDate: new Date().toISOString().split('T')[0],
+            ExportDate: new Date().toISOString(),
+            ExportTime: new Date().toLocaleTimeString(),
+            Source: 'OHIF Viewer Export Mode'
+          };
+
+          // Create and download ZIP
+          if (typeof JSZip !== 'undefined') {
+            const zip = new JSZip();
+            zip.file('image.jpg', imageBlob);
+            zip.file('metadata.json', JSON.stringify(metadata, null, 2));
+
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+              const url = URL.createObjectURL(content);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'ohif-export-' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.zip';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              console.log('✅ Export completed successfully!');
+
+              // Show success message
+              const successMsg = document.createElement('div');
+              successMsg.textContent = '✅ ZIP file downloaded successfully!';
+              successMsg.style.cssText = `
+                position: fixed;
+                top: 120px;
+                right: 10px;
+                z-index: 10000;
+                padding: 12px 16px;
+                background: #10b981;
+                color: white;
+                border-radius: 6px;
+                font-size: 14px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+              `;
+              document.body.appendChild(successMsg);
+              setTimeout(() => successMsg.remove(), 3000);
+            });
+          } else {
+            alert('JSZip library not loaded. Please include JSZip.');
+          }
+
+        } catch (error) {
+          console.error('❌ Export failed:', error);
+          alert('Export failed: ' + error.message);
+        }
+      };
+
+      // Function to add temporary export button
+      window.addExportButton = () => {
+        // Remove existing button if present
+        const existingButton = document.getElementById('temp-export-btn');
+        if (existingButton) {
+          existingButton.remove();
+        }
+
+        const button = document.createElement('button');
+        button.id = 'temp-export-btn';
+        button.textContent = '📥 Export ZIP';
+        button.style.cssText = `
+          position: fixed;
+          top: 70px;
+          right: 10px;
+          z-index: 9999;
+          padding: 12px 16px;
+          background: #0066cc;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: bold;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        `;
+        button.onclick = window.exportCurrentViewport;
+        button.onmouseover = () => button.style.background = '#0052a3';
+        button.onmouseout = () => button.style.background = '#0066cc';
+        document.body.appendChild(button);
+        console.log('✅ Export button added to top-right corner');
+      };
     },
 
     onModeExit: ({ servicesManager }) => {
@@ -181,7 +318,6 @@ function modeFactory({ modeConfiguration }) {
     },
 
     isValidMode: ({ modalities }) => {
-      // Accept all modalities except Slide Microscopy
       const modalitiesList = modalities.split('\\');
       return {
         valid: !modalitiesList.includes('SM'),

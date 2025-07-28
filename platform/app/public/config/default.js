@@ -4,8 +4,22 @@ window.config = {
   name: 'config/default.js',
   routerBasename: null,
   // whiteLabeling: {},
-  extensions: [],
-  modes: [],
+  extensions: [
+    '@ohif/extension-default',
+    '@ohif/extension-cornerstone',
+    '@ohif/extension-measurement-tracking',
+    '@ohif/extension-cornerstone-dicom-sr',
+    '@ohif/extension-cornerstone-dicom-rt',
+    '@ohif/extension-cornerstone-dicom-seg',
+    '@ohif/extension-dicom-pdf',
+    '@ohif/extension-dicom-video',
+    '@ohif/extension-test',
+    '@ohif/extension-export', // Add your export extension here
+  ],
+  modes: [
+    '@ohif/mode-longitudinal',
+    '@ohif/mode-export', // Add your export mode here
+  ],
   customizationService: {},
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
