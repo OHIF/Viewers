@@ -1,39 +1,35 @@
-console.log('🔥 EXPORT EXTENSION: Loading...');
-
 const EXTENSION_ID = '@ohif/extension-export';
 
-// Load JSZip dynamically since it might not be bundled
+// Load JSZip dynamically
 async function loadJSZip() {
-  if (typeof window.JSZip !== 'undefined') {
-    return window.JSZip;
+  if (typeof JSZip !== 'undefined') {
+    return JSZip;
   }
 
-  console.log('📦 Loading JSZip...');
+  console.log('📦 Loading JSZip library...');
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
     script.onload = () => {
-      console.log('✅ JSZip loaded successfully');
-      resolve(window.JSZip);
+      console.log('JSZip library loaded');
+      resolve(JSZip);
     };
     script.onerror = () => {
-      console.error('❌ Failed to load JSZip');
+      console.error('Failed to load JSZip library');
       reject(new Error('Failed to load JSZip'));
     };
     document.head.appendChild(script);
   });
 }
 
-// Simple notification function
+// OHIF-style notification function
 function showNotification(message, type = 'info') {
-  console.log(`📢 ${type.toUpperCase()}: ${message}`);
-
   const notification = document.createElement('div');
   notification.style.cssText = `
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 10000;
+    z-index: 10001;
     padding: 12px 16px;
     background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
     color: white;
@@ -41,6 +37,7 @@ function showNotification(message, type = 'info') {
     font-size: 14px;
     font-weight: 500;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-family: inherit;
     max-width: 300px;
     word-wrap: break-word;
   `;
@@ -55,38 +52,25 @@ function showNotification(message, type = 'info') {
   }, 4000);
 }
 
-// Extract basic metadata
+// Extract metadata from display set
 function extractMetadata(displaySet) {
-  const now = new Date();
   const metadata = {
-    PatientName: 'Unknown Patient',
-    StudyDate: now.toISOString().split('T')[0],
-    ExportDate: now.toISOString(),
-    ExportTime: now.toLocaleTimeString(),
-    Source: 'OHIF Viewer Export Extension',
-    Timestamp: now.getTime()
+    PatientName: 'Unknown',
+    StudyDate: 'Unknown',
+    StudyInstanceUID: 'Unknown',
+    SeriesInstanceUID: 'Unknown',
+    ExportDate: new Date().toISOString(),
   };
 
-  try {
-    if (displaySet && displaySet.instances && displaySet.instances.length > 0) {
-      const instance = displaySet.instances[0];
+  if (displaySet && displaySet.instances && displaySet.instances.length > 0) {
+    const instance = displaySet.instances[0];
 
-      if (instance.PatientName) {
-        if (typeof instance.PatientName === 'object') {
-          metadata.PatientName = instance.PatientName.Alphabetic || instance.PatientName.toString();
-        } else {
-          metadata.PatientName = instance.PatientName;
-        }
-      }
-
-      if (instance.StudyDate) metadata.StudyDate = instance.StudyDate;
-      if (instance.StudyInstanceUID) metadata.StudyInstanceUID = instance.StudyInstanceUID;
-      if (instance.SeriesInstanceUID) metadata.SeriesInstanceUID = instance.SeriesInstanceUID;
-      if (instance.Modality) metadata.Modality = instance.Modality;
-      if (instance.SeriesDescription) metadata.SeriesDescription = instance.SeriesDescription;
-    }
-  } catch (error) {
-    console.warn('Error extracting metadata:', error);
+    metadata.PatientName = instance.PatientName?.Alphabetic || 'Unknown';
+    metadata.StudyDate = instance.StudyDate || 'Unknown';
+    metadata.StudyInstanceUID = instance.StudyInstanceUID || 'Unknown';
+    metadata.SeriesInstanceUID = instance.SeriesInstanceUID || 'Unknown';
+    metadata.Modality = instance.Modality || 'Unknown';
+    metadata.SeriesDescription = instance.SeriesDescription || 'Unknown';
   }
 
   return metadata;
@@ -94,48 +78,44 @@ function extractMetadata(displaySet) {
 
 // Create and download ZIP file
 async function createAndDownloadZip(imageBlob, metadata) {
-  console.log('📦 Creating ZIP file...');
 
-  try {
-    const JSZip = await loadJSZip();
-    const zip = new JSZip();
-
-    // Add image file
-    zip.file('image.jpg', imageBlob);
-
-    // Add metadata file
-    const metadataJson = JSON.stringify(metadata, null, 2);
-    zip.file('metadata.json', metadataJson);
-
-    console.log('📋 Files added to ZIP: image.jpg, metadata.json');
-
-    // Generate ZIP
-    const zipBlob = await zip.generateAsync({
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: { level: 6 }
-    });
-
-    console.log('📦 ZIP generated, size:', zipBlob.size, 'bytes');
-
-    // Download ZIP
-    const url = URL.createObjectURL(zipBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `ohif-export-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.zip`;
-    link.style.display = 'none';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    console.log('✅ ZIP file downloaded successfully');
-    return true;
-  } catch (error) {
-    console.error('❌ Error creating ZIP:', error);
-    throw error;
+  // Make sure JSZip is loaded
+  if (typeof JSZip === 'undefined') {
+    await loadJSZip();
   }
+
+  if (typeof JSZip === 'undefined') {
+    throw new Error('JSZip library could not be loaded');
+  }
+
+  const zip = new JSZip();
+
+  // Add image to ZIP
+  zip.file('image.jpg', imageBlob);
+
+  // Add metadata as JSON
+  const metadataJson = JSON.stringify(metadata, null, 2);
+  zip.file('metadata.json', metadataJson);
+
+  // Generate ZIP file
+  const zipBlob = await zip.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+    compressionOptions: {
+      level: 6
+    }
+  });
+
+  // Create download link and trigger download
+  const url = URL.createObjectURL(zipBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `ohif-export-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.zip`;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 function getCommandsModule({ servicesManager }) {
@@ -145,12 +125,11 @@ function getCommandsModule({ servicesManager }) {
     definitions: {
       exportViewportAsZip: {
         commandFn: async () => {
-          console.log('🚀 Export command started');
 
           try {
             showNotification('Starting export...', 'info');
 
-            // Get active viewport
+            // Get the active viewport using the correct API
             const viewportGridState = viewportGridService.getState();
             const { activeViewportId, viewports } = viewportGridState;
 
@@ -160,7 +139,7 @@ function getCommandsModule({ servicesManager }) {
 
             console.log('Active viewport ID:', activeViewportId);
 
-            // Get viewport info
+            // Get viewport info using the correct approach
             const viewportInfo = viewports.get(activeViewportId);
             if (!viewportInfo) {
               throw new Error('Could not get viewport information');
@@ -168,8 +147,9 @@ function getCommandsModule({ servicesManager }) {
 
             console.log('Viewport info:', viewportInfo);
 
-            // Get display set UIDs
+            // Get display set UIDs from the viewport info
             let displaySetUIDs = [];
+
             if (viewportInfo.displaySetInstanceUIDs) {
               displaySetUIDs = viewportInfo.displaySetInstanceUIDs;
             } else if (viewportInfo.displaySetOptions) {
@@ -182,15 +162,22 @@ function getCommandsModule({ servicesManager }) {
 
             console.log('Display Set UIDs:', displaySetUIDs);
 
-            // Get display set and extract metadata
+            // Get the first display set
             const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
-            const metadata = extractMetadata(displaySet);
-            console.log('📋 Extracted metadata:', metadata);
+            if (!displaySet) {
+              throw new Error('Could not get display set');
+            }
 
-            // Get viewport canvas
+            console.log('Display set:', displaySet);
+
+            // Extract metadata
+            const metadata = extractMetadata(displaySet);
+            console.log('Extracted metadata:', metadata);
+
+            // Get the viewport and canvas
             const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
             if (!viewport) {
-              throw new Error('Could not get cornerstone viewport');
+              throw new Error('Could not get viewport');
             }
 
             const canvas = viewport.getCanvas();
@@ -213,14 +200,15 @@ function getCommandsModule({ servicesManager }) {
 
                 try {
                   await createAndDownloadZip(blob, metadata);
-                  showNotification('Export successful!', 'success');
+                  console.log('Export completed successfully');
+                  showNotification('ZIP file exported successfully!', 'success');
                   resolve();
                 } catch (error) {
                   console.error('ZIP creation failed:', error);
                   showNotification('Failed to create ZIP: ' + error.message, 'error');
                   reject(error);
                 }
-              }, 'image/jpeg', 0.9);
+              }, 'image/jpeg', 0.8);
             });
 
           } catch (error) {
@@ -237,7 +225,9 @@ function getCommandsModule({ servicesManager }) {
   };
 }
 
-function getToolbarModule() {
+function getToolbarModule({ servicesManager, commandsManager }) {
+  console.log('EXPORT EXTENSION: Creating toolbar module');
+
   return [
     {
       name: 'ExportZip',
@@ -251,6 +241,7 @@ function getToolbarModule() {
         commands: [
           {
             commandName: 'exportViewportAsZip',
+            commandOptions: {},
             context: 'CORNERSTONE',
           },
         ],
@@ -264,7 +255,5 @@ const extension = {
   getCommandsModule,
   getToolbarModule,
 };
-
-console.log('🔥 EXPORT EXTENSION: Loaded successfully');
 
 export default extension;
