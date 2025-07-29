@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import merge from 'lodash.merge';
 
-import PropTypes from 'prop-types';
 import { ViewportGridService, utils } from '@ohif/core';
 
 const DEFAULT_STATE: AppTypes.ViewportGrid.State = {
@@ -139,7 +138,15 @@ interface ViewportGridProviderProps {
   service: ViewportGridService;
 }
 
-export function ViewportGridProvider({ children, service }: ViewportGridProviderProps) {
+interface ViewportGridProviderProps {
+  children?: any;
+  service: ViewportGridService;
+}
+
+export function ViewportGridProvider({
+  children,
+  service
+}: ViewportGridProviderProps) {
   const viewportGridReducer = (state: AppTypes.ViewportGrid.State, action) => {
     switch (action.type) {
       case 'SET_IS_REFERENCE_VIEWABLE': {
@@ -549,11 +556,6 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
     </ViewportGridContext.Provider>
   );
 }
-
-ViewportGridProvider.propTypes = {
-  children: PropTypes.any,
-  service: PropTypes.instanceOf(ViewportGridService).isRequired,
-};
 
 // Update the useViewportGrid hook
 export const useViewportGrid = (): [AppTypes.ViewportGrid.State, ViewportGridApi] =>

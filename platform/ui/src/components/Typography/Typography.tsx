@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses = 'm-0 leading-tight';
@@ -77,6 +76,19 @@ const classes = {
   },
 };
 
+interface TypographyProps {
+  component?: React.ElementType;
+  paragraph?: boolean;
+  display?: "initial" | "block" | "inline";
+  variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "subtitle" | "body" | "caption" | "button" | "overline" | "srOnly" | "inherit";
+  color?: "initial" | "inherit" | "primary" | "primaryActive" | "secondary" | "error" | "primaryLight";
+  className?: string;
+  children?: React.ReactNode;
+  align?: "inherit" | "left" | "center" | "right" | "justify";
+  gutterBottom?: boolean;
+  noWrap?: boolean;
+}
+
 const Typography = ({
   align = defaults.align,
   color = defaults.color,
@@ -88,7 +100,7 @@ const Typography = ({
   component,
   className,
   ...rest
-}) => {
+}: TypographyProps) => {
   const Component = component || (paragraph ? 'p' : defaultVariantMapping[variant]) || 'span';
   return (
     <Component
@@ -106,41 +118,6 @@ const Typography = ({
       {...rest}
     />
   );
-};
-
-Typography.propTypes = {
-  component: PropTypes.elementType,
-  paragraph: PropTypes.bool,
-  display: PropTypes.oneOf(['initial', 'block', 'inline']),
-  variant: PropTypes.oneOf([
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'subtitle',
-    'body',
-    'caption',
-    'button',
-    'overline',
-    'srOnly',
-    'inherit',
-  ]),
-  color: PropTypes.oneOf([
-    'initial',
-    'inherit',
-    'primary',
-    'primaryActive',
-    'secondary',
-    'error',
-    'primaryLight',
-  ]),
-  className: PropTypes.string,
-  children: PropTypes.node,
-  align: PropTypes.oneOf(['inherit', 'left', 'center', 'right', 'justify']),
-  gutterBottom: PropTypes.bool,
-  noWrap: PropTypes.bool,
 };
 
 export default Typography;

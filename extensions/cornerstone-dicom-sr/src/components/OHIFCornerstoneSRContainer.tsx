@@ -1,8 +1,32 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { OHIFCornerstoneSRContentItem } from './OHIFCornerstoneSRContentItem';
 
-export function OHIFCornerstoneSRContainer(props) {
+interface OHIFCornerstoneSRContainerProps {
+  /**
+   * A tree node that may contain another container or one or more content items
+   * (text, code, uidref, pname, etc.)
+   */
+  container?: object;
+  /**
+   * A 0-based index list
+   */
+  nodeIndexesTree?: number[];
+  /**
+   * A 1-based index list that represents a container in a multi-level numbered
+   * list (tree).
+   *
+   * Example:
+   *  1. History
+   *    1.1. Chief Complaint
+   *    1.2. Present Illness
+   *    1.3. Past History
+   *    1.4. Family History
+   *  2. Findings
+   * */
+  containerNumberedTree?: number[];
+}
+
+export function OHIFCornerstoneSRContainer(props: OHIFCornerstoneSRContainerProps) {
   const { container, nodeIndexesTree = [0], containerNumberedTree = [1] } = props;
   const { ContinuityOfContent, ConceptNameCodeSequence } = container;
   const { CodeMeaning } = ConceptNameCodeSequence ?? {};
@@ -51,28 +75,3 @@ export function OHIFCornerstoneSRContainer(props) {
     </div>
   );
 }
-
-OHIFCornerstoneSRContainer.propTypes = {
-  /**
-   * A tree node that may contain another container or one or more content items
-   * (text, code, uidref, pname, etc.)
-   */
-  container: PropTypes.object,
-  /**
-   * A 0-based index list
-   */
-  nodeIndexesTree: PropTypes.arrayOf(PropTypes.number),
-  /**
-   * A 1-based index list that represents a container in a multi-level numbered
-   * list (tree).
-   *
-   * Example:
-   *  1. History
-   *    1.1. Chief Complaint
-   *    1.2. Present Illness
-   *    1.3. Past History
-   *    1.4. Family History
-   *  2. Findings
-   * */
-  containerNumberedTree: PropTypes.arrayOf(PropTypes.number),
-};

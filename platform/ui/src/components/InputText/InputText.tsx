@@ -1,8 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import Input from '../Input';
 import InputLabelWrapper from '../InputLabelWrapper';
+
+interface InputTextProps {
+  id?: string;
+  label: string;
+  isSortable?: boolean;
+  sortDirection?: "ascending" | "descending" | "none";
+  onLabelClick?(...args: unknown[]): unknown;
+  value?: any;
+  onChange(...args: unknown[]): unknown;
+}
 
 const InputText = ({
   id,
@@ -11,8 +20,8 @@ const InputText = ({
   sortDirection = 'none',
   onLabelClick = () => {},
   value = '',
-  onChange,
-}) => {
+  onChange
+}: InputTextProps) => {
   return (
     <InputLabelWrapper
       label={label}
@@ -32,16 +41,6 @@ const InputText = ({
       />
     </InputLabelWrapper>
   );
-};
-
-InputText.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string.isRequired,
-  isSortable: PropTypes.bool,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
-  onLabelClick: PropTypes.func,
-  value: PropTypes.any,
-  onChange: PropTypes.func.isRequired,
 };
 
 export default InputText;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Icons } from '@ohif/ui-next';
 import { Button } from '../Button';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +9,18 @@ export enum showDialogOption {
   ShowOnceAndConfigure = 'configure',
 }
 
+interface InvestigationalUseDialogProps {
+  dialogConfiguration?: {
+    option: unknown[];
+    days?: number;
+  };
+}
+
 const InvestigationalUseDialog = ({
   dialogConfiguration = {
     option: showDialogOption.AlwaysShowDialog,
-  },
-}) => {
+  }
+}: InvestigationalUseDialogProps) => {
   const { option, days } = dialogConfiguration;
   const [isHidden, setIsHidden] = useState(true);
   const { t } = useTranslation('InvestigationalUseDialog');
@@ -93,13 +99,6 @@ const InvestigationalUseDialog = ({
       </div>
     </div>
   );
-};
-
-InvestigationalUseDialog.propTypes = {
-  dialogConfiguration: PropTypes.shape({
-    option: PropTypes.oneOf(Object.values(showDialogOption)).isRequired,
-    days: PropTypes.number,
-  }),
 };
 
 export default InvestigationalUseDialog;

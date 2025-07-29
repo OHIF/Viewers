@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback, useState, ReactElement, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { PanelSection, WindowLevel } from '@ohif/ui-next';
 import { BaseVolumeViewport, Enums, eventTarget } from '@cornerstonejs/core';
@@ -13,12 +12,15 @@ import {
 
 const { Events } = Enums;
 
+interface ViewportWindowLevelProps {
+  servicesManager: object;
+  viewportId: string;
+}
+
 const ViewportWindowLevel = ({
   servicesManager,
-  viewportId,
-}: withAppTypes<{
-  viewportId: string;
-}>): ReactElement => {
+  viewportId
+}: ViewportWindowLevelProps): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -233,11 +235,6 @@ const ViewportWindowLevel = ({
       </PanelSection.Content>
     </PanelSection>
   );
-};
-
-ViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
-  viewportId: PropTypes.string.isRequired,
 };
 
 export default ViewportWindowLevel;

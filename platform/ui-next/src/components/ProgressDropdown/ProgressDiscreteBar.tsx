@@ -1,9 +1,14 @@
 import React, { ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
-const ProgressDiscreteBar = ({ options }: { options: ProgressDropdownOption[] }): ReactElement => {
+interface ProgressDiscreteBarProps {
+  options: unknown[];
+}
+
+const ProgressDiscreteBar = ({
+  options
+}: ProgressDiscreteBarProps): ReactElement => {
   return (
     <div className="flex">
       {options.map((option, i) => (
@@ -18,10 +23,6 @@ const ProgressDiscreteBar = ({ options }: { options: ProgressDropdownOption[] })
       ))}
     </div>
   );
-};
-
-ProgressDiscreteBar.propTypes = {
-  options: PropTypes.arrayOf(ProgressDropdownOptionPropType).isRequired,
 };
 
 export default ProgressDiscreteBar;

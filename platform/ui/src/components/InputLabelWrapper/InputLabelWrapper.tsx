@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icons } from '@ohif/ui-next';
 
@@ -12,14 +11,23 @@ const sortIconMap = {
   none: () => <Icons.Sorting className="text-primary-main mx-2 w-2" />,
 };
 
+interface InputLabelWrapperProps {
+  label: string;
+  isSortable: boolean;
+  sortDirection: "ascending" | "descending" | "none";
+  onLabelClick(...args: unknown[]): unknown;
+  className?: string;
+  children?: React.ReactNode;
+}
+
 const InputLabelWrapper = ({
   label,
   isSortable,
   sortDirection,
   onLabelClick,
   className = '',
-  children,
-}) => {
+  children
+}: InputLabelWrapperProps) => {
   const onClickHandler = e => {
     if (!isSortable) {
       return;
@@ -43,15 +51,6 @@ const InputLabelWrapper = ({
       <span>{children}</span>
     </label>
   );
-};
-
-InputLabelWrapper.propTypes = {
-  label: PropTypes.string.isRequired,
-  isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
-  onLabelClick: PropTypes.func.isRequired,
-  className: PropTypes.string,
-  children: PropTypes.node,
 };
 
 export default InputLabelWrapper;

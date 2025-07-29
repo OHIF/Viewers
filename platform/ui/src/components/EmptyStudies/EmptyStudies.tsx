@@ -1,12 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
 import { Icons } from '@ohif/ui-next';
 
-const EmptyStudies = ({ className = '' }) => {
+interface EmptyStudiesProps {
+  className?: string;
+}
+
+const EmptyStudies = ({
+  className = ''
+}: EmptyStudiesProps) => {
   const { t } = useTranslation('StudyList');
   return (
     <div className={classnames('inline-flex flex-col items-center', className)}>
@@ -19,10 +24,6 @@ const EmptyStudies = ({ className = '' }) => {
       </Typography>
     </div>
   );
-};
-
-EmptyStudies.propTypes = {
-  className: PropTypes.string,
 };
 
 export default EmptyStudies;

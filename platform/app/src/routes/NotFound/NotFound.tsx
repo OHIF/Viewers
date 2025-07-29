@@ -1,10 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 import { useAppConfig } from '@state';
 
-const NotFound = ({ message = 'Sorry, this page does not exist.', showGoBackButton = true }) => {
+interface NotFoundProps {
+  message?: string;
+  showGoBackButton?: boolean;
+}
+
+const NotFound = ({
+  message = 'Sorry, this page does not exist.',
+  showGoBackButton = true
+}: NotFoundProps) => {
   const [appConfig] = useAppConfig();
   const { showStudyList } = appConfig;
 
@@ -20,11 +27,6 @@ const NotFound = ({ message = 'Sorry, this page does not exist.', showGoBackButt
       </div>
     </div>
   );
-};
-
-NotFound.propTypes = {
-  message: PropTypes.string,
-  showGoBackButton: PropTypes.bool,
 };
 
 export default NotFound;

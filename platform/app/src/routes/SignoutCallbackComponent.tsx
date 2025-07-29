@@ -1,8 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
-function SignoutCallbackComponent({ userManager }) {
+interface SignoutCallbackComponentProps {
+  userManager: object;
+}
+
+function SignoutCallbackComponent({
+  userManager
+}: SignoutCallbackComponentProps) {
   const navigate = useNavigate();
 
   const onRedirectSuccess = (/* user */) => {
@@ -22,9 +27,5 @@ function SignoutCallbackComponent({ userManager }) {
 
   return null;
 }
-
-SignoutCallbackComponent.propTypes = {
-  userManager: PropTypes.object.isRequired,
-};
 
 export default SignoutCallbackComponent;

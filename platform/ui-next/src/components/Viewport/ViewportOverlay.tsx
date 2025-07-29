@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
 import './ViewportOverlay.css';
 
@@ -17,7 +16,23 @@ const classes = {
   bottomLeft: 'overlay-bottom left-viewport',
 };
 
-function ViewportOverlay({ topLeft, topRight, bottomRight, bottomLeft, color = 'text-highlight', shadowClass = 'shadow-dark' }) {
+interface ViewportOverlayProps {
+  topLeft?: React.ReactNode;
+  topRight?: React.ReactNode;
+  bottomRight?: React.ReactNode;
+  bottomLeft?: React.ReactNode;
+  color?: string;
+  shadowClass?: string;
+}
+
+function ViewportOverlay({
+  topLeft,
+  topRight,
+  bottomRight,
+  bottomLeft,
+  color = 'text-highlight',
+  shadowClass = 'shadow-dark'
+}: ViewportOverlayProps) {
   const overlay = 'absolute pointer-events-none viewport-overlay';
 
   return (
@@ -51,14 +66,5 @@ function ViewportOverlay({ topLeft, topRight, bottomRight, bottomLeft, color = '
     </div>
   );
 }
-
-ViewportOverlay.propTypes = {
-  topLeft: PropTypes.node,
-  topRight: PropTypes.node,
-  bottomRight: PropTypes.node,
-  bottomLeft: PropTypes.node,
-  color: PropTypes.string,
-  shadowClass: PropTypes.string,
-};
 
 export { ViewportOverlay };

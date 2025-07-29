@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Label from '../Label';
 import classnames from 'classnames';
 
@@ -15,6 +14,26 @@ const smallInputClasses = {
   true: 'input-small',
   false: '',
 };
+
+interface InputProps {
+  id?: string;
+  label?: string;
+  containerClassName?: string;
+  labelClassName?: string;
+  className?: string;
+  transparent?: boolean;
+  smallInput?: boolean;
+  type?: string;
+  value?: any;
+  onChange?(...args: unknown[]): unknown;
+  onFocus?(...args: unknown[]): unknown;
+  autoFocus?: boolean;
+  readOnly?: boolean;
+  onKeyPress?(...args: unknown[]): unknown;
+  onKeyDown?(...args: unknown[]): unknown;
+  disabled?: boolean;
+  labelChildren?: React.ReactNode;
+}
 
 const Input = ({
   id,
@@ -35,7 +54,7 @@ const Input = ({
   disabled,
   labelChildren,
   ...otherProps
-}) => {
+}: InputProps) => {
   return (
     <div className={classnames('flex flex-1 flex-col', containerClassName)}>
       <Label
@@ -66,26 +85,6 @@ const Input = ({
       />
     </div>
   );
-};
-
-Input.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string,
-  containerClassName: PropTypes.string,
-  labelClassName: PropTypes.string,
-  className: PropTypes.string,
-  transparent: PropTypes.bool,
-  smallInput: PropTypes.bool,
-  type: PropTypes.string,
-  value: PropTypes.any,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  autoFocus: PropTypes.bool,
-  readOnly: PropTypes.bool,
-  onKeyPress: PropTypes.func,
-  onKeyDown: PropTypes.func,
-  disabled: PropTypes.bool,
-  labelChildren: PropTypes.node,
 };
 
 export default Input;

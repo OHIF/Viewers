@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 const FG_SIZE = 8;
 const BG_SIZE = 9;
+
+interface PortalTooltipCardProps {
+  active?: boolean;
+  position?: "top" | "right" | "bottom" | "left";
+  arrow?: unknown | "center" | "top" | "right" | "bottom" | "left";
+  align?: unknown | "center" | "right" | "left";
+  style?: object;
+  useHover?: boolean;
+}
 
 /**
  * A portal based tooltip card component.
@@ -10,16 +18,7 @@ const BG_SIZE = 9;
  * This component has been repurposed and modified
  * for OHIF usage: https://github.com/romainberger/react-portal-tooltip
  */
-export default class PortalTooltipCard extends Component {
-  static propTypes = {
-    active: PropTypes.bool,
-    position: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
-    arrow: PropTypes.oneOf([null, 'center', 'top', 'right', 'bottom', 'left']),
-    align: PropTypes.oneOf([null, 'center', 'right', 'left']),
-    style: PropTypes.object,
-    useHover: PropTypes.bool,
-  };
-
+export default class PortalTooltipCard extends Component<PortalTooltipCardProps> {
   static defaultProps = {
     active: false,
     position: 'right',

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 
-function OHIFCornerstoneVideoViewport({ displaySets }) {
+interface OHIFCornerstoneVideoViewportProps {
+  displaySets: object[];
+}
+
+function OHIFCornerstoneVideoViewport({
+  displaySets
+}: OHIFCornerstoneVideoViewportProps) {
   if (displaySets && displaySets.length > 1) {
     throw new Error(
       'OHIFCornerstoneVideoViewport: only one display set is supported for dicom video right now'
@@ -47,9 +52,5 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
     </div>
   );
 }
-
-OHIFCornerstoneVideoViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
 
 export default OHIFCornerstoneVideoViewport;

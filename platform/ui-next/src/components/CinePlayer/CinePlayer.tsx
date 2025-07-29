@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import { Icons } from '@ohif/ui-next';
@@ -25,6 +24,27 @@ export type CinePlayerProps = {
   };
 };
 
+interface CinePlayerProps {
+  /** Minimum value for range slider */
+  minFrameRate?: number;
+  /** Maximum value for range slider */
+  maxFrameRate?: number;
+  /** Increment range slider can "step" in either direction */
+  stepFrameRate?: number;
+  frameRate?: number;
+  /** 'true' if playing, 'false' if paused */
+  isPlaying: boolean;
+  onPlayPauseChange?(...args: unknown[]): unknown;
+  onFrameRateChange?(...args: unknown[]): unknown;
+  onClose?(...args: unknown[]): unknown;
+  isDynamic?: boolean;
+  dynamicInfo?: {
+    dimensionGroupNumber?: number;
+    numDimensionGroups?: number;
+    label?: string;
+  };
+}
+
 const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
   isPlaying = false,
@@ -36,8 +56,8 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   onPlayPauseChange = () => {},
   onClose = () => {},
   dynamicInfo = {},
-  updateDynamicInfo,
-}) => {
+  updateDynamicInfo
+}: CinePlayerProps) => {
   const isDynamic = !!dynamicInfo?.numDimensionGroups;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -180,27 +200,6 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       )}
     </div>
   );
-};
-
-CinePlayer.propTypes = {
-  /** Minimum value for range slider */
-  minFrameRate: PropTypes.number,
-  /** Maximum value for range slider */
-  maxFrameRate: PropTypes.number,
-  /** Increment range slider can "step" in either direction */
-  stepFrameRate: PropTypes.number,
-  frameRate: PropTypes.number,
-  /** 'true' if playing, 'false' if paused */
-  isPlaying: PropTypes.bool.isRequired,
-  onPlayPauseChange: PropTypes.func,
-  onFrameRateChange: PropTypes.func,
-  onClose: PropTypes.func,
-  isDynamic: PropTypes.bool,
-  dynamicInfo: PropTypes.shape({
-    dimensionGroupNumber: PropTypes.number,
-    numDimensionGroups: PropTypes.number,
-    label: PropTypes.string,
-  }),
 };
 
 export default CinePlayer;

@@ -1,9 +1,21 @@
 import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import * as d3Selection from 'd3-selection';
 import { lineChart } from './d3LineChart';
 import './LineChart.css';
+
+interface LineChartProps {
+  title?: string;
+  width?: number;
+  height?: number;
+  showAxisLabels?: boolean;
+  showAxisGrid?: boolean;
+  showLegend?: boolean;
+  legendWidth?: number;
+  transparentChartBackground?: boolean;
+  containerClassName?: string;
+  chartContainerClassName?: string;
+}
 
 const LineChart = ({
   width: widthProp,
@@ -16,19 +28,8 @@ const LineChart = ({
   legendWidth = 120,
   transparentChartBackground = false,
   containerClassName,
-  chartContainerClassName,
-}: {
-  title: string;
-  width: number;
-  height: number;
-  showAxisGrid: boolean;
-  showAxisLabels: boolean;
-  showLegend: boolean;
-  legendWidth: number;
-  transparentChartBackground: boolean;
-  containerClassName: string;
-  chartContainerClassName: string;
-}): JSX.Element => {
+  chartContainerClassName
+}: LineChartProps): JSX.Element => {
   const chartContainerRef = useRef(null);
   const [d3SVGContainer, setD3SVGRef] = useState(null);
   const [width, setWidth] = useState(0);
@@ -103,19 +104,6 @@ const LineChart = ({
       ></div>
     </div>
   );
-};
-
-LineChart.propTypes = {
-  title: PropTypes.string,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  showAxisLabels: PropTypes.bool,
-  showAxisGrid: PropTypes.bool,
-  showLegend: PropTypes.bool,
-  legendWidth: PropTypes.number,
-  transparentChartBackground: PropTypes.bool,
-  containerClassName: PropTypes.string,
-  chartContainerClassName: PropTypes.string,
 };
 
 export default LineChart;

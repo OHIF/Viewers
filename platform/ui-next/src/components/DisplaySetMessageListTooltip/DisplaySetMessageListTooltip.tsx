@@ -1,15 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Icons } from '../Icons';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
+
+interface DisplaySetMessageListTooltipProps {
+  messages?: object;
+  id?: string;
+}
 
 /**
  * Displays a tooltip with a list of messages of a displaySet
  * @param param0
  * @returns
  */
-const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
+const DisplaySetMessageListTooltip = ({
+  messages,
+  id
+}: DisplaySetMessageListTooltipProps): React.ReactNode => {
   const { t } = useTranslation('Messages');
   if (messages?.size()) {
     return (
@@ -58,11 +65,6 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
     );
   }
   return <></>;
-};
-
-DisplaySetMessageListTooltip.propTypes = {
-  messages: PropTypes.object,
-  id: PropTypes.string,
 };
 
 export { DisplaySetMessageListTooltip };

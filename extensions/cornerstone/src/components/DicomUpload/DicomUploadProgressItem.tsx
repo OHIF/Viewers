@@ -1,5 +1,4 @@
 import React, { ReactElement, memo, useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import DicomFileUploader, {
   DicomFileUploaderProgressEvent,
   EVENTS,
@@ -12,9 +11,15 @@ type DicomUploadProgressItemProps = {
   dicomFileUploader: DicomFileUploader;
 };
 
+interface DicomUploadProgressItemProps {
+  dicomFileUploader: DicomFileUploader;
+}
+
 // eslint-disable-next-line react/display-name
 const DicomUploadProgressItem = memo(
-  ({ dicomFileUploader }: DicomUploadProgressItemProps): ReactElement => {
+  ({
+    dicomFileUploader
+  }: DicomUploadProgressItemProps): ReactElement => {
     const [percentComplete, setPercentComplete] = useState(dicomFileUploader.getPercentComplete());
     const [failedReason, setFailedReason] = useState('');
     const [status, setStatus] = useState(dicomFileUploader.getStatus());
@@ -100,9 +105,5 @@ const DicomUploadProgressItem = memo(
     );
   }
 );
-
-DicomUploadProgressItem.propTypes = {
-  dicomFileUploader: PropTypes.instanceOf(DicomFileUploader).isRequired,
-};
 
 export default DicomUploadProgressItem;

@@ -1,8 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const Label = ({ children, className, text, ...rest }) => {
+interface LabelProps {
+  children?: React.ReactNode;
+}
+
+const Label = ({
+  children,
+  className,
+  text,
+  ...rest
+}: LabelProps) => {
   const baseClasses = '';
 
   return (
@@ -14,10 +22,6 @@ const Label = ({ children, className, text, ...rest }) => {
       {children}
     </label>
   );
-};
-
-Label.propTypes = {
-  children: PropTypes.node,
 };
 
 export default Label;

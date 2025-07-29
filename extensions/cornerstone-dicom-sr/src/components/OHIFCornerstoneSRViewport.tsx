@@ -1,11 +1,21 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { ExtensionManager } from '@ohif/core';
 
 import OHIFCornerstoneSRMeasurementViewport from './OHIFCornerstoneSRMeasurementViewport';
 import OHIFCornerstoneSRTextViewport from './OHIFCornerstoneSRTextViewport';
 
-function OHIFCornerstoneSRViewport(props: withAppTypes) {
+interface OHIFCornerstoneSRViewportProps {
+  displaySets?: object[];
+  viewportId: string;
+  dataSource?: object;
+  children?: React.ReactNode;
+  viewportLabel?: string;
+  viewportOptions?: object;
+  servicesManager: object;
+  extensionManager: ExtensionManager;
+}
+
+function OHIFCornerstoneSRViewport(props: OHIFCornerstoneSRViewportProps) {
   const { displaySets } = props;
   const { isImagingMeasurementReport } = displaySets[0];
 
@@ -15,16 +25,5 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
 
   return <OHIFCornerstoneSRTextViewport {...props}></OHIFCornerstoneSRTextViewport>;
 }
-
-OHIFCornerstoneSRViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-  viewportLabel: PropTypes.string,
-  viewportOptions: PropTypes.object,
-  servicesManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
-};
 
 export default OHIFCornerstoneSRViewport;

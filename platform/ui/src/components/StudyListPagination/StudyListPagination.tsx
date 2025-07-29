@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import LegacyButton from '../LegacyButton';
@@ -7,7 +6,19 @@ import LegacyButtonGroup from '../LegacyButtonGroup';
 import Typography from '../Typography';
 import Select from '../Select';
 
-const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPage }) => {
+interface StudyListPaginationProps {
+  onChangePage(...args: unknown[]): unknown;
+  currentPage: number;
+  perPage: number;
+  onChangePerPage(...args: unknown[]): unknown;
+}
+
+const StudyListPagination = ({
+  onChangePage,
+  currentPage,
+  perPage,
+  onChangePerPage
+}: StudyListPaginationProps) => {
   const { t } = useTranslation('StudyList');
 
   const navigateToPage = page => {
@@ -89,13 +100,6 @@ const StudyListPagination = ({ onChangePage, currentPage, perPage, onChangePerPa
       </div>
     </div>
   );
-};
-
-StudyListPagination.propTypes = {
-  onChangePage: PropTypes.func.isRequired,
-  currentPage: PropTypes.number.isRequired,
-  perPage: PropTypes.number.isRequired,
-  onChangePerPage: PropTypes.func.isRequired,
 };
 
 export default StudyListPagination;

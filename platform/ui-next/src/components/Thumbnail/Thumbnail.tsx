@@ -1,10 +1,42 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+
+interface ThumbnailProps {
+  displaySetInstanceUID: string;
+  className?: string;
+  imageSrc?: string;
+  /**
+   * Data the thumbnail should expose to a receiving drop target. Use a matching
+   * `dragData.type` to identify which targets can receive this draggable item.
+   * If this is not set, drag-n-drop will be disabled for this thumbnail.
+   *
+   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+   */
+  dragData?: {
+    /** Must match the "type" a dropTarget expects */
+    type: string;
+  };
+  imageAltText?: string;
+  description: string;
+  seriesNumber?: any;
+  numInstances: number;
+  loadingProgress?: number;
+  messages?: object;
+  isActive: boolean;
+  onClick(...args: unknown[]): unknown;
+  onDoubleClick(...args: unknown[]): unknown;
+  viewPreset?: string;
+  modality?: string;
+  isHydratedForDerivedDisplaySet?: boolean;
+  isTracked?: boolean;
+  onClickUntrack?(...args: unknown[]): unknown;
+  countIcon?: string;
+  thumbnailType?: "thumbnail" | "thumbnailTracked" | "thumbnailNoImage";
+}
 
 /**
  * Display a thumbnail for a display set.
@@ -32,8 +64,8 @@ const Thumbnail = ({
   dragData = {},
   onReject = () => {},
   onClickUntrack = () => {},
-  ThumbnailMenuItems = () => {},
-}: withAppTypes): React.ReactNode => {
+  ThumbnailMenuItems = () => {}
+}: ThumbnailProps): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
@@ -278,39 +310,6 @@ const Thumbnail = ({
       </div>
     </div>
   );
-};
-
-Thumbnail.propTypes = {
-  displaySetInstanceUID: PropTypes.string.isRequired,
-  className: PropTypes.string,
-  imageSrc: PropTypes.string,
-  /**
-   * Data the thumbnail should expose to a receiving drop target. Use a matching
-   * `dragData.type` to identify which targets can receive this draggable item.
-   * If this is not set, drag-n-drop will be disabled for this thumbnail.
-   *
-   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-   */
-  dragData: PropTypes.shape({
-    /** Must match the "type" a dropTarget expects */
-    type: PropTypes.string.isRequired,
-  }),
-  imageAltText: PropTypes.string,
-  description: PropTypes.string.isRequired,
-  seriesNumber: PropTypes.any,
-  numInstances: PropTypes.number.isRequired,
-  loadingProgress: PropTypes.number,
-  messages: PropTypes.object,
-  isActive: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onDoubleClick: PropTypes.func.isRequired,
-  viewPreset: PropTypes.string,
-  modality: PropTypes.string,
-  isHydratedForDerivedDisplaySet: PropTypes.bool,
-  isTracked: PropTypes.bool,
-  onClickUntrack: PropTypes.func,
-  countIcon: PropTypes.string,
-  thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
 };
 
 export { Thumbnail };

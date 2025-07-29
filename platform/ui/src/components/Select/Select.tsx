@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactSelect, { components } from 'react-select';
 import { Icons } from '@ohif/ui-next';
@@ -39,6 +38,25 @@ const Option = props => {
   );
 };
 
+interface SelectProps {
+  className?: string;
+  closeMenuOnSelect?: boolean;
+  hideSelectedOptions?: boolean;
+  isClearable?: boolean;
+  isDisabled?: boolean;
+  isMulti?: boolean;
+  isSearchable?: boolean;
+  noIcons?: boolean;
+  menuPlacement?: "auto" | "bottom" | "top";
+  onChange(...args: unknown[]): unknown;
+  options?: {
+    value?: string;
+    label?: string;
+  }[];
+  placeholder?: string;
+  value?: string[] | any;
+}
+
 const Select = ({
   id,
   className = '',
@@ -54,8 +72,8 @@ const Select = ({
   noIcons = false,
   menuPlacement = 'auto',
   components = {},
-  value = [],
-}) => {
+  value = []
+}: SelectProps) => {
   const _noIconComponents = {
     DropdownIndicator: () => null,
     IndicatorSeparator: () => null,
@@ -110,27 +128,6 @@ const Select = ({
       }}
     />
   );
-};
-
-Select.propTypes = {
-  className: PropTypes.string,
-  closeMenuOnSelect: PropTypes.bool,
-  hideSelectedOptions: PropTypes.bool,
-  isClearable: PropTypes.bool,
-  isDisabled: PropTypes.bool,
-  isMulti: PropTypes.bool,
-  isSearchable: PropTypes.bool,
-  noIcons: PropTypes.bool,
-  menuPlacement: PropTypes.oneOf(['auto', 'bottom', 'top']),
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string,
-      label: PropTypes.string,
-    })
-  ),
-  placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.any]),
 };
 
 export default Select;

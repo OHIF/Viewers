@@ -1,9 +1,19 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { ExtensionManager } from '@ohif/core';
 import { OHIFCornerstoneSRContainer } from './OHIFCornerstoneSRContainer';
 
-function OHIFCornerstoneSRTextViewport(props: withAppTypes) {
+interface OHIFCornerstoneSRTextViewportProps {
+  displaySets?: object[];
+  viewportId: string;
+  dataSource?: object;
+  children?: React.ReactNode;
+  viewportLabel?: string;
+  viewportOptions?: object;
+  servicesManager: object;
+  extensionManager: ExtensionManager;
+}
+
+function OHIFCornerstoneSRTextViewport(props: OHIFCornerstoneSRTextViewportProps) {
   const { displaySets } = props;
   const displaySet = displaySets[0];
   const instance = displaySet.instances[0];
@@ -17,16 +27,5 @@ function OHIFCornerstoneSRTextViewport(props: withAppTypes) {
     </div>
   );
 }
-
-OHIFCornerstoneSRTextViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-  viewportLabel: PropTypes.string,
-  viewportOptions: PropTypes.object,
-  servicesManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
-};
 
 export default OHIFCornerstoneSRTextViewport;

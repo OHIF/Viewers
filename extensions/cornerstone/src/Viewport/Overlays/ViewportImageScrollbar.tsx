@@ -1,7 +1,16 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Enums, VolumeViewport3D, utilities as csUtils } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui-next';
+
+interface CornerstoneImageScrollbarProps {
+  viewportData?: object;
+  viewportId: string;
+  element?: Element;
+  scrollbarHeight?: string;
+  imageSliceData: object;
+  setImageSliceData(...args: unknown[]): unknown;
+  servicesManager: object;
+}
 
 function CornerstoneImageScrollbar({
   viewportData,
@@ -10,10 +19,8 @@ function CornerstoneImageScrollbar({
   imageSliceData,
   setImageSliceData,
   scrollbarHeight,
-  servicesManager,
-}: withAppTypes<{
-  element: HTMLElement;
-}>) {
+  servicesManager
+}: CornerstoneImageScrollbarProps) {
   const { cineService, cornerstoneViewportService } = servicesManager.services;
 
   const onImageScrollbarChange = (imageIndex, viewportId) => {
@@ -97,15 +104,5 @@ function CornerstoneImageScrollbar({
     />
   );
 }
-
-CornerstoneImageScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  scrollbarHeight: PropTypes.string,
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 export default CornerstoneImageScrollbar;

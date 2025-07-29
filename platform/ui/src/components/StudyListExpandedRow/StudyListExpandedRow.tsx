@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import Table from '../Table';
 import TableHead from '../TableHead';
@@ -7,7 +6,17 @@ import TableBody from '../TableBody';
 import TableRow from '../TableRow';
 import TableCell from '../TableCell';
 
-const StudyListExpandedRow = ({ seriesTableColumns, seriesTableDataSource, children }) => {
+interface StudyListExpandedRowProps {
+  seriesTableDataSource: object[];
+  seriesTableColumns: object;
+  children: React.ReactNode;
+}
+
+const StudyListExpandedRow = ({
+  seriesTableColumns,
+  seriesTableDataSource,
+  children
+}: StudyListExpandedRowProps) => {
   return (
     <div className="w-full bg-black py-4 pl-12 pr-2">
       <div className="block">{children}</div>
@@ -42,12 +51,6 @@ const StudyListExpandedRow = ({ seriesTableColumns, seriesTableDataSource, child
       </div>
     </div>
   );
-};
-
-StudyListExpandedRow.propTypes = {
-  seriesTableDataSource: PropTypes.arrayOf(PropTypes.object).isRequired,
-  seriesTableColumns: PropTypes.object.isRequired,
-  children: PropTypes.node.isRequired,
 };
 
 export default StudyListExpandedRow;

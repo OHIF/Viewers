@@ -1,8 +1,24 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import Select from '../Select';
 import InputLabelWrapper from '../InputLabelWrapper';
+
+interface InputMultiSelectProps {
+  id?: string;
+  label: string;
+  isSortable: boolean;
+  sortDirection: "ascending" | "descending" | "none";
+  onLabelClick(...args: unknown[]): unknown;
+  onChange(...args: unknown[]): unknown;
+  placeholder?: string;
+  /** Array of options to list as options */
+  options?: {
+    value?: string;
+    label?: string;
+  }[];
+  /** Array of string values that exist in our list of options */
+  value?: string[];
+}
 
 const InputMultiSelect = ({
   id,
@@ -13,8 +29,8 @@ const InputMultiSelect = ({
   value = [],
   placeholder = '',
   options = [],
-  onChange,
-}) => {
+  onChange
+}: InputMultiSelectProps) => {
   return (
     <InputLabelWrapper
       label={label}
@@ -48,25 +64,6 @@ const InputMultiSelect = ({
       />
     </InputLabelWrapper>
   );
-};
-
-InputMultiSelect.propTypes = {
-  id: PropTypes.string,
-  label: PropTypes.string.isRequired,
-  isSortable: PropTypes.bool.isRequired,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']).isRequired,
-  onLabelClick: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  placeholder: PropTypes.string,
-  /** Array of options to list as options */
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string,
-      label: PropTypes.string,
-    })
-  ),
-  /** Array of string values that exist in our list of options */
-  value: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default InputMultiSelect;

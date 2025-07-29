@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '../../components';
@@ -10,6 +9,19 @@ const classes = {
   firstRow: 'flex flex-col',
   row: 'flex flex-col ml-4',
 };
+
+interface PatientInfoProps {
+  patientName?: string;
+  patientSex?: string;
+  patientAge?: string;
+  MRN?: string;
+  thickness?: string;
+  thicknessUnits?: string;
+  spacing?: string;
+  scanner?: string;
+  isOpen?: boolean;
+  showPatientInfoRef?: object;
+}
 
 /**
  * A small info icon that, when clicked, can reveal additional patient details in a tooltip overlay.
@@ -24,8 +36,8 @@ function PatientInfo({
   spacing,
   scanner,
   isOpen,
-  showPatientInfoRef,
-}) {
+  showPatientInfoRef
+}: PatientInfoProps) {
   const { t } = useTranslation('PatientInfo');
 
   // strip leading '0' from age if present
@@ -121,18 +133,5 @@ function PatientInfo({
     </div>
   );
 }
-
-PatientInfo.propTypes = {
-  patientName: PropTypes.string,
-  patientSex: PropTypes.string,
-  patientAge: PropTypes.string,
-  MRN: PropTypes.string,
-  thickness: PropTypes.string,
-  thicknessUnits: PropTypes.string,
-  spacing: PropTypes.string,
-  scanner: PropTypes.string,
-  isOpen: PropTypes.bool,
-  showPatientInfoRef: PropTypes.object,
-};
 
 export { PatientInfo };

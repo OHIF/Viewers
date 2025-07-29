@@ -1,18 +1,28 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+
+interface TableCellProps {
+  align?: "left" | "center" | "right" | "justify";
+  children: React.ReactNode;
+  className?: string;
+  colSpan?: number;
+  isTableHead?: boolean;
+  style?: object;
+}
 
 const TableCell = ({
   children,
   className = '',
   colSpan = 1,
+
   // ignored because we don't want to expose this prop
   // eslint-disable-next-line react/prop-types
   cellsNum,
+
   isTableHead = false,
   align = 'left',
-  style = {},
-}) => {
+  style = {}
+}: TableCellProps) => {
   const classes = {
     align: {
       left: 'text-left',
@@ -40,15 +50,6 @@ const TableCell = ({
       {children}
     </div>
   );
-};
-
-TableCell.propTypes = {
-  align: PropTypes.oneOf(['left', 'center', 'right', 'justify']),
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  colSpan: PropTypes.number,
-  isTableHead: PropTypes.bool,
-  style: PropTypes.object,
 };
 
 export default TableCell;

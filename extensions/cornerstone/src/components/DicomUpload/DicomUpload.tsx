@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { ReactElement } from 'react';
 import Dropzone from 'react-dropzone';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
@@ -14,7 +13,17 @@ type DicomUploadProps = {
   onStarted: () => void;
 };
 
-function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
+interface DicomUploadProps {
+  dataSource: object;
+  onComplete(...args: unknown[]): unknown;
+  onStarted(...args: unknown[]): unknown;
+}
+
+function DicomUpload({
+  dataSource,
+  onComplete,
+  onStarted
+}: DicomUploadProps): ReactElement {
   const baseClassNames = 'min-h-[480px] flex flex-col bg-black select-none';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
@@ -98,11 +107,5 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
     </>
   );
 }
-
-DicomUpload.propTypes = {
-  dataSource: PropTypes.object.isRequired,
-  onComplete: PropTypes.func.isRequired,
-  onStarted: PropTypes.func.isRequired,
-};
 
 export default DicomUpload;

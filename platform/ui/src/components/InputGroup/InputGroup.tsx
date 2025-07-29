@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import getGridWidthClass from '../../utils/getGridWidthClass';
 
@@ -8,14 +7,36 @@ import InputDateRange from '../InputDateRange';
 import InputMultiSelect from '../InputMultiSelect';
 import InputLabelWrapper from '../InputLabelWrapper';
 
+interface InputGroupProps {
+  inputMeta: {
+    name: string;
+    displayName: string;
+    inputType: "Text" | "MultiSelect" | "DateRange" | "None";
+    isSortable: boolean;
+    gridCol: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    option?: {
+      value?: string;
+      label?: string;
+    }[];
+  }[];
+  values: object;
+  onValuesChange(...args: unknown[]): unknown;
+  sorting: {
+    sortBy?: string;
+    sortDirection?: "ascending" | "descending" | "none";
+  };
+  onSortingChange(...args: unknown[]): unknown;
+  isSortingEnabled: boolean;
+}
+
 const InputGroup = ({
   inputMeta,
   values,
   onValuesChange,
   sorting,
   onSortingChange,
-  isSortingEnabled,
-}) => {
+  isSortingEnabled
+}: InputGroupProps) => {
   const { sortBy, sortDirection } = sorting;
 
   const handleFilterLabelClick = name => {
@@ -132,32 +153,6 @@ const InputGroup = ({
       </div>
     </div>
   );
-};
-
-InputGroup.propTypes = {
-  inputMeta: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      displayName: PropTypes.string.isRequired,
-      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None']).isRequired,
-      isSortable: PropTypes.bool.isRequired,
-      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).isRequired,
-      option: PropTypes.arrayOf(
-        PropTypes.shape({
-          value: PropTypes.string,
-          label: PropTypes.string,
-        })
-      ),
-    })
-  ).isRequired,
-  values: PropTypes.object.isRequired,
-  onValuesChange: PropTypes.func.isRequired,
-  sorting: PropTypes.shape({
-    sortBy: PropTypes.string,
-    sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
-  }).isRequired,
-  onSortingChange: PropTypes.func.isRequired,
-  isSortingEnabled: PropTypes.bool.isRequired,
 };
 
 export default InputGroup;

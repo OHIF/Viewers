@@ -1,19 +1,20 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const stickyClasses = 'sticky top-0';
 const notStickyClasses = 'relative';
 
-const NavBar = ({
-  className,
-  children,
-  isSticky,
-}: {
+interface NavBarProps {
   className?: string;
   children?: React.ReactNode;
   isSticky?: boolean;
-}) => {
+}
+
+const NavBar = ({
+  className,
+  children,
+  isSticky
+}: NavBarProps) => {
   return (
     <div
       className={classnames(
@@ -26,12 +27,6 @@ const NavBar = ({
       {children}
     </div>
   );
-};
-
-NavBar.propTypes = {
-  className: PropTypes.string,
-  children: PropTypes.node,
-  isSticky: PropTypes.bool,
 };
 
 export default NavBar;

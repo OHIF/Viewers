@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
 import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
@@ -11,14 +10,34 @@ import useResizablePanels from './ResizablePanelsHook';
 
 const resizableHandleClassName = 'mt-[1px] bg-black';
 
+interface ViewerLayoutProps {
+  // From extension module params
+  extensionManager: {
+    getModuleEntry(...args: unknown[]): unknown;
+  };
+  commandsManager?: CommandsManager;
+  servicesManager: object;
+  // From modes
+  leftPanels?: unknown[];
+  rightPanels?: unknown[];
+  leftPanelClosed: boolean;
+  rightPanelClosed: boolean;
+  /** Responsible for rendering our grid of viewports; provided by consuming application */
+  children: React.ReactNode | (...args: unknown[]) => unknown;
+  viewports?: unknown[];
+}
+
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
+
   servicesManager,
   hotkeysManager,
   commandsManager,
+
   // From Modes
   viewports,
+
   ViewportGridComp,
   leftPanelClosed = false,
   rightPanelClosed = false,
@@ -27,8 +46,8 @@ function ViewerLayout({
   leftPanelInitialExpandedWidth,
   rightPanelInitialExpandedWidth,
   leftPanelMinimumExpandedWidth,
-  rightPanelMinimumExpandedWidth,
-}: withAppTypes): React.FunctionComponent {
+  rightPanelMinimumExpandedWidth
+}: ViewerLayoutProps): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
   const { panelService, hangingProtocolService, customizationService } = servicesManager.services;
@@ -222,22 +241,5 @@ function ViewerLayout({
     </div>
   );
 }
-
-ViewerLayout.propTypes = {
-  // From extension module params
-  extensionManager: PropTypes.shape({
-    getModuleEntry: PropTypes.func.isRequired,
-  }).isRequired,
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object.isRequired,
-  // From modes
-  leftPanels: PropTypes.array,
-  rightPanels: PropTypes.array,
-  leftPanelClosed: PropTypes.bool.isRequired,
-  rightPanelClosed: PropTypes.bool.isRequired,
-  /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
-  viewports: PropTypes.array,
-};
 
 export default ViewerLayout;

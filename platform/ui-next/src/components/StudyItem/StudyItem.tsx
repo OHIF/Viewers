@@ -1,10 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ThumbnailList } from '../ThumbnailList';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../Accordion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
+
+interface StudyItemProps {
+  date: string;
+  description?: string;
+  modalities: string;
+  numInstances: number;
+  isActive?: boolean;
+  onClick(...args: unknown[]): unknown;
+  isExpanded?: boolean;
+  displaySets?: unknown[];
+  activeDisplaySetInstanceUIDs?: unknown[];
+  onClickThumbnail?(...args: unknown[]): unknown;
+  onDoubleClickThumbnail?(...args: unknown[]): unknown;
+  onClickUntrack?(...args: unknown[]): unknown;
+  viewPreset?: string;
+  StudyMenuItems?(...args: unknown[]): unknown;
+  StudyInstanceUID?: string;
+}
 
 const StudyItem = ({
   date,
@@ -22,8 +39,8 @@ const StudyItem = ({
   viewPreset = 'thumbnails',
   ThumbnailMenuItems,
   StudyMenuItems,
-  StudyInstanceUID,
-}: withAppTypes) => {
+  StudyInstanceUID
+}: StudyItemProps) => {
   return (
     <Accordion
       type="single"
@@ -94,24 +111,6 @@ const StudyItem = ({
       </AccordionItem>
     </Accordion>
   );
-};
-
-StudyItem.propTypes = {
-  date: PropTypes.string.isRequired,
-  description: PropTypes.string,
-  modalities: PropTypes.string.isRequired,
-  numInstances: PropTypes.number.isRequired,
-  isActive: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-  isExpanded: PropTypes.bool,
-  displaySets: PropTypes.array,
-  activeDisplaySetInstanceUIDs: PropTypes.array,
-  onClickThumbnail: PropTypes.func,
-  onDoubleClickThumbnail: PropTypes.func,
-  onClickUntrack: PropTypes.func,
-  viewPreset: PropTypes.string,
-  StudyMenuItems: PropTypes.func,
-  StudyInstanceUID: PropTypes.string,
 };
 
 export { StudyItem };

@@ -1,11 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+interface ViewportGridProps {
+  numRows: number;
+  numCols: number;
+  layoutType?: string;
+  children: React.ReactNode[];
+}
 
 /**
  * A minimal top-level container that organizes multiple <ViewportPane>
  * children in a grid. Typically driven by a layout config.
  */
-function ViewportGrid({ numRows, numCols, layoutType, children }) {
+function ViewportGrid({
+  numRows,
+  numCols,
+  layoutType,
+  children
+}: ViewportGridProps) {
   return (
     <div
       data-cy="viewport-grid"
@@ -19,12 +30,5 @@ function ViewportGrid({ numRows, numCols, layoutType, children }) {
     </div>
   );
 }
-
-ViewportGrid.propTypes = {
-  numRows: PropTypes.number.isRequired,
-  numCols: PropTypes.number.isRequired,
-  layoutType: PropTypes.string,
-  children: PropTypes.arrayOf(PropTypes.node).isRequired,
-};
 
 export { ViewportGrid };

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import debounce from 'lodash.debounce';
@@ -33,6 +32,20 @@ const arrowPositionStyle = {
   },
 };
 
+interface TooltipProps {
+  isDisabled?: boolean;
+  content?: React.ReactNode | (...args: unknown[]) => unknown;
+  secondaryContent?: React.ReactNode | (...args: unknown[]) => unknown;
+  position?: "bottom" | "bottom-left" | "bottom-right" | "left" | "right" | "top";
+  isSticky?: boolean;
+  tight?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  tooltipBoxClassName?: string;
+  showHideDelay?: number;
+  onHide?(...args: unknown[]): unknown;
+}
+
 const Tooltip = ({
   content,
   secondaryContent = null,
@@ -43,10 +56,12 @@ const Tooltip = ({
   children,
   isDisabled = false,
   tooltipBoxClassName,
+
   // time to show/hide the tooltip on mouse over and  mouse out events (default: 300ms)
   showHideDelay = 300,
-  onHide,
-}) => {
+
+  onHide
+}: TooltipProps) => {
   const [isActive, setIsActive] = useState(false);
   const isOpen = useMemo(
     () => (isSticky || isActive) && !isDisabled,
@@ -187,20 +202,6 @@ const Tooltip = ({
       {tooltipContainer && ReactDOM.createPortal(tooltipContent, tooltipContainer)}
     </div>
   );
-};
-
-Tooltip.propTypes = {
-  isDisabled: PropTypes.bool,
-  content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  secondaryContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  position: PropTypes.oneOf(['bottom', 'bottom-left', 'bottom-right', 'left', 'right', 'top']),
-  isSticky: PropTypes.bool,
-  tight: PropTypes.bool,
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  tooltipBoxClassName: PropTypes.string,
-  showHideDelay: PropTypes.number,
-  onHide: PropTypes.func,
 };
 
 export default Tooltip;

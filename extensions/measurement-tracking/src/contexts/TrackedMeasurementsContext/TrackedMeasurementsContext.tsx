@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -23,12 +22,21 @@ const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
 const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
 
+interface TrackedMeasurementsContextProviderProps {
+  children?: unknown | unknown;
+  appConfig?: object;
+}
+
 /**
  *
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, commandsManager, extensionManager }: withAppTypes, // Bound by consumer
+  {
+    servicesManager,
+    commandsManager,
+    extensionManager
+  }: TrackedMeasurementsContextProviderProps, // Bound by consumer
   { children } // Component props
 ) {
   const [appConfig] = useAppConfig();
@@ -378,10 +386,5 @@ function TrackedMeasurementsContextProvider(
     </TrackedMeasurementsContext.Provider>
   );
 }
-
-TrackedMeasurementsContextProvider.propTypes = {
-  children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  appConfig: PropTypes.object,
-};
 
 export { TrackedMeasurementsContext, TrackedMeasurementsContextProvider, useTrackedMeasurements };

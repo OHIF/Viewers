@@ -1,12 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+interface ComposeProps {
+  components?: unknown[];
+  children: React.ReactNode;
+}
 
 /**
  * Nests React components as ordered in array. We use this to
  * simplify composition a Mode specify's in it's configuration
  * for React Contexts that should wrap a Mode Route.
  */
-export default function Compose(props) {
+export default function Compose(props: ComposeProps) {
   const { components = [], children } = props;
 
   return (
@@ -18,9 +22,3 @@ export default function Compose(props) {
     </React.Fragment>
   );
 }
-
-// https://juliuskoronci.medium.com/avoid-a-long-list-of-react-providers-c45a269d80c1
-Compose.propTypes = {
-  components: PropTypes.array,
-  children: PropTypes.node.isRequired,
-};

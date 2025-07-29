@@ -1,8 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const Table = ({ children, className = '', fullWidth = true, style = {} }) => {
+interface TableProps {
+  fullWidth?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  style?: object;
+}
+
+const Table = ({
+  children,
+  className = '',
+  fullWidth = true,
+  style = {}
+}: TableProps) => {
   const classes = {
     base: 'text-lg text-white',
     fullWidth: {
@@ -19,13 +30,6 @@ const Table = ({ children, className = '', fullWidth = true, style = {} }) => {
       {children}
     </div>
   );
-};
-
-Table.propTypes = {
-  fullWidth: PropTypes.bool,
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  style: PropTypes.object,
 };
 
 export default Table;

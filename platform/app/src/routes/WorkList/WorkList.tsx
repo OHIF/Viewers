@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -46,6 +45,16 @@ const { sortBySeriesDate } = utils;
 
 const seriesInStudiesMap = new Map();
 
+interface WorkListProps {
+  data: unknown[];
+  dataSource: {
+    query: object;
+    getConfig?(...args: unknown[]): unknown;
+  };
+  isLoadingData: boolean;
+  servicesManager: object;
+}
+
 /**
  * TODO:
  * - debounce `setFilterValues` (150ms?)
@@ -58,8 +67,8 @@ function WorkList({
   hotkeysManager,
   dataPath,
   onRefresh,
-  servicesManager,
-}: withAppTypes) {
+  servicesManager
+}: WorkListProps) {
   const { show, hide } = useModal();
   const { t } = useTranslation();
   // ~ Modes
@@ -601,16 +610,6 @@ function WorkList({
     </div>
   );
 }
-
-WorkList.propTypes = {
-  data: PropTypes.array.isRequired,
-  dataSource: PropTypes.shape({
-    query: PropTypes.object.isRequired,
-    getConfig: PropTypes.func,
-  }).isRequired,
-  isLoadingData: PropTypes.bool.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 const defaultFilterValues = {
   patientName: '',
