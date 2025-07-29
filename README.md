@@ -52,9 +52,15 @@ This project implements a custom OHIF extension and mode that enables users to e
 
 ### Activating Export Mode and Export ZIP file
 1. Load OHIF Viewer in your browser
+![Export Button](assets/FrontPage.png)
+
 2. Select the Medical Study List you want to Export
 3. Select "Export Mode" Button from the selected Study
+![Export Button](assets/FrontPage_ExportMode.png)
+
 4. Press the "Export ZIP" Button on the left-top cornernof the interface
+![Export Button](assets/ExportMode_ExportZIP.png)
+
 5. Download Begins Automatically : A ZIP file will be downloaded to your default downloads folder
 6. Verify Contents: The ZIP file contains:
 - image.jpg - High-quality JPEG of the current viewport
