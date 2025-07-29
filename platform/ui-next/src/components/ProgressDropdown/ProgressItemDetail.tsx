@@ -12,7 +12,7 @@ interface ProgressItemDetailProps {
 
 const ProgressItemDetail = ({
   option
-}: ProgressItemDetailProps): ReactElement => {
+}: ProgressItemDetailProps): ReactElement<any> => {
   const { label, info, completed } = option;
   const [truncate, setTruncate] = useState(true);
   const handleOnHideTooltip = () => setTruncate(true);

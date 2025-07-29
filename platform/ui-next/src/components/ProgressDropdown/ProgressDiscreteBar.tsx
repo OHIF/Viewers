@@ -8,7 +8,7 @@ interface ProgressDiscreteBarProps {
 
 const ProgressDiscreteBar = ({
   options
-}: ProgressDiscreteBarProps): ReactElement => {
+}: ProgressDiscreteBarProps): ReactElement<any> => {
   return (
     <div className="flex">
       {options.map((option, i) => (

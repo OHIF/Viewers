@@ -10,7 +10,7 @@ interface ProgressItemProps {
 const ProgressItem = ({
   option,
   onSelect
-}: ProgressItemProps): ReactElement => {
+}: ProgressItemProps): ReactElement<any> => {
   const { value } = option;
 
   return (

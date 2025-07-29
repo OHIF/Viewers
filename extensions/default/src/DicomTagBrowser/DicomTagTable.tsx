@@ -115,8 +115,8 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   );
 }
 function DicomTagTable({ rows }: { rows: Row[] }) {
-  const listRef = useRef();
-  const canvasRef = useRef();
+  const listRef = useRef(undefined);
+  const canvasRef = useRef(undefined);
 
   const [tagHeaderElem, setTagHeaderElem] = useState(null);
   const [vrHeaderElem, setVrHeaderElem] = useState(null);
@@ -248,7 +248,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
 
   const getRowComponent = useCallback(
     ({ rows }: { rows: Row[] }) =>
-      function RowList({ index, style }) {
+      (function RowList({ index, style }) {
         const row = useMemo(() => rows[index], [index]);
 
         return (
@@ -259,7 +259,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
             onToggle={onToggle(row)}
           />
         );
-      },
+      }),
     [onToggle]
   );
 

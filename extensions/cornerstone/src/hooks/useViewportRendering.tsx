@@ -132,7 +132,7 @@ export function useViewportRendering(
     options?.location ? getPosition(options.location) : 'bottom'
   );
   const [voiRange, setVoiRange] = useState<{ lower: number; upper: number } | undefined>();
-  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>();
+  const voiRangeRef = React.useRef<{ lower: number; upper: number } | undefined>(undefined);
   const [opacity, setOpacityState] = useState<number | undefined>();
   const [opacityLinear, setOpacityLinearState] = useState<number | undefined>();
   const [threshold, setThresholdState] = useState<number | undefined>();

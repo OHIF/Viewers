@@ -16,7 +16,7 @@ export function useDynamicMaxHeight(
   buffer = 20,
   minHeight = 100
 ): {
-  ref: RefObject<HTMLDivElement>;
+  ref: RefObject<HTMLDivElement | null>;
   maxHeight: string;
 } {
   const ref = useRef<HTMLDivElement>(null);

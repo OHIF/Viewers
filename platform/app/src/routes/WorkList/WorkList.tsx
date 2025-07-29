@@ -35,6 +35,8 @@ import {
   InvestigationalUseDialog,
 } from '@ohif/ui-next';
 
+import { ShepherdJourneyProvider } from 'react-shepherd';
+
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
@@ -559,7 +561,9 @@ function WorkList({
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
-      <Onboarding />
+      <ShepherdJourneyProvider>
+        <Onboarding />
+      </ShepherdJourneyProvider>
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full flex-col overflow-y-auto">
         <ScrollArea>

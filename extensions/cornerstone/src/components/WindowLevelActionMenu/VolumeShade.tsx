@@ -6,7 +6,7 @@ import { useSystem } from '@ohif/core';
 export function VolumeShade({
   viewportId,
   onClickShade = bool => {},
-}: VolumeShadeProps): ReactElement {
+}: VolumeShadeProps): ReactElement<any> {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [shade, setShade] = useState(true);

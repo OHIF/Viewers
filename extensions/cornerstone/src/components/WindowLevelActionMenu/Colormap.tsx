@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 
-export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { viewportDisplaySets } = useViewportRendering(viewportId);
 
   const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(

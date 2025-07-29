@@ -8,7 +8,7 @@ interface ActiveViewportWindowLevelProps {
 
 const ActiveViewportWindowLevel = ({
   servicesManager
-}: ActiveViewportWindowLevelProps): ReactElement => {
+}: ActiveViewportWindowLevelProps): ReactElement<any> => {
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
 

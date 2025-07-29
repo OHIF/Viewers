@@ -20,7 +20,7 @@ interface ViewportWindowLevelProps {
 const ViewportWindowLevel = ({
   servicesManager,
   viewportId
-}: ViewportWindowLevelProps): ReactElement => {
+}: ViewportWindowLevelProps): ReactElement<any> => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
