@@ -1,0 +1,20 @@
+{
+  "name": "@ohif/mode-export",
+  "version": "1.0.0",
+  "description": "OHIF Mode for exporting medical images with metadata",
+  "main": "dist/index.umd.js",
+  "module": "src/index.ts",
+  "keywords": [
+    "ohif-mode"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./dist/index.umd.js"
+    }
+  },
+  "files": [
+    "dist/**",
+    "README.md"
+  ]
+}

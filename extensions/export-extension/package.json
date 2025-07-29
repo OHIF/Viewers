@@ -1,0 +1,27 @@
+{
+  "name": "@ohif/extension-export",
+  "version": "1.0.0",
+  "description": "OHIF Extension for exporting viewport images and metadata as ZIP files",
+  "main": "dist/index.umd.js",
+  "module": "src/index.ts",
+  "keywords": [
+    "ohif-extension"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./dist/index.umd.js"
+    }
+  },
+  "files": [
+    "dist/**",
+    "public/**",
+    "README.md"
+  ],
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@types/jszip": "^3.4.1"
+  }
+}
