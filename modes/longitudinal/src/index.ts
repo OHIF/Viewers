@@ -15,8 +15,9 @@ const ohif = {
     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
 };
 
-const segmentation = {
-  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
+const cornerstone = {
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
 const tracked = {
@@ -160,12 +161,8 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
+        'SegmentLabelTool',
       ]);
-
-      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
-        'SegmentationUtilities',
-      ]);
-      toolbarService.updateSection('SegmentationUtilities', ['SegmentLabelTool']);
 
       customizationService.setCustomizations({
         'panelSegmentation.disableEditing': {
@@ -250,7 +247,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
-              rightPanels: [segmentation.panelTool, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, tracked.measurements],
               rightPanelClosed: true,
               rightPanelResizable: true,
               viewports: [
