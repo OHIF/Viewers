@@ -203,7 +203,7 @@ function addExportButton(commandsManager) {
       display: inline-flex;
       align-items: center;
       margin: 0 8px;
-      ${containerType === 'header' ? 'margin-left: auto;' : ''}
+      margin-left: auto;
     `;
 
     // Create the export button
@@ -258,20 +258,6 @@ function addExportButton(commandsManager) {
       `;
       button.disabled = true;
 
-      // Add spinning animation
-      if (!document.getElementById('spin-animation')) {
-        const style = document.createElement('style');
-        style.id = 'spin-animation';
-        style.textContent = `
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `;
-        document.head.appendChild(style);
-      }
-
-      // Use the extension command that we proved works
       try {
         commandsManager.runCommand('exportViewportAsZip', {}, 'CORNERSTONE');
 
