@@ -14,11 +14,11 @@ window.config = {
     '@ohif/extension-dicom-pdf',
     '@ohif/extension-dicom-video',
     '@ohif/extension-test',
-    '@ohif/extension-export', // Add your export extension here
+    '@ohif/extension-export',
   ],
   modes: [
     '@ohif/mode-longitudinal',
-    '@ohif/mode-export', // Add your export mode here
+    '@ohif/mode-export',
   ],
   customizationService: {},
   showStudyList: true,

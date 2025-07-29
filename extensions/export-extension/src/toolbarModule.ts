@@ -6,13 +6,13 @@ export function getToolbarModule() {
     {
       name: 'ExportZip',
       id: 'ExportZip',
-      Icon: 'icon-download',
+      icon: 'tool-download',
       label: 'Export ZIP',
       tooltip: 'Export current viewport as ZIP file with image and metadata',
       commands: [
         {
           commandName: 'exportViewportAsZip',
-          context: 'EXPORT',
+          context: 'CORNERSTONE', // Changed from 'EXPORT' to 'CORNERSTONE'
         },
       ],
     },

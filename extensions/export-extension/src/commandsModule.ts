@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 
-const CONTEXT = 'EXPORT';
+const CONTEXT = 'CORNERSTONE'; // Changed from 'EXPORT' to 'CORNERSTONE'
 
 /**
  * Commands module for export functionality
@@ -77,14 +77,14 @@ export function getCommandsModule({ servicesManager }) {
       commandFn: actions.exportViewportAsZip,
       storeContexts: [],
       options: {},
-      context: CONTEXT,
+      context: CONTEXT, // Now uses CORNERSTONE context
     },
   };
 
   return {
     actions,
     definitions,
-    defaultContext: CONTEXT,
+    defaultContext: CONTEXT, // Now uses CORNERSTONE context
   };
 }
 
