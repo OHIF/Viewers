@@ -34,8 +34,8 @@ const arrowPositionStyle = {
 
 interface TooltipProps {
   isDisabled?: boolean;
-  content?: React.ReactNode | (...args: unknown[]) => unknown;
-  secondaryContent?: React.ReactNode | (...args: unknown[]) => unknown;
+  content?: React.ReactNode | ((...args: unknown[]) => unknown);
+  secondaryContent?: React.ReactNode | ((...args: unknown[]) => unknown);
   position?: "bottom" | "bottom-left" | "bottom-right" | "left" | "right" | "top";
   isSticky?: boolean;
   tight?: boolean;

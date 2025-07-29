@@ -23,7 +23,7 @@ interface ViewerLayoutProps {
   leftPanelClosed: boolean;
   rightPanelClosed: boolean;
   /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: React.ReactNode | (...args: unknown[]) => unknown;
+  children: React.ReactNode | ((...args: unknown[]) => unknown);
   viewports?: unknown[];
 }
 

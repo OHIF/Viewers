@@ -22,7 +22,7 @@ interface StudyListTableRowProps {
   };
 }
 
-const StudyListTableRow = props: StudyListTableRowProps => {
+const StudyListTableRow = (props: StudyListTableRowProps) => {
   const { tableData } = props;
   const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
   return (

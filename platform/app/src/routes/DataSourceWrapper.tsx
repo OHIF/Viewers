@@ -20,7 +20,7 @@ const areLocationsTheSame = (location0, location1) => {
 
 interface DataSourceWrapperProps {
   /** Layout Component to wrap with a Data Source */
-  children: React.ReactElement | (...args: unknown[]) => unknown;
+  children: React.ReactElement | ((...args: unknown[]) => unknown);
 }
 
 /**
