@@ -3,6 +3,7 @@ import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
   simulateClicksOnElement,
+  simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
 } from './simulateClicksOnElement';
@@ -20,6 +21,7 @@ export {
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
+  simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
   reduce3DViewportSize,
