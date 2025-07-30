@@ -1,6 +1,4 @@
 import React from 'react';
-import { Tooltip } from '@ohif/ui';
-import classnames from 'classnames';
 import { useToolbar } from '@ohif/core';
 
 export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
@@ -15,7 +13,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
 
   return (
     <>
-      {toolbarButtons.map(toolDef => {
+      {toolbarButtons?.map(toolDef => {
         if (!toolDef) {
           return null;
         }

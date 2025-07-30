@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, useModal } from '@ohif/ui';
+import { Icons, useModal } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 import DataSourceConfigurationModalComponent from './DataSourceConfigurationModalComponent';
 
@@ -24,12 +24,13 @@ function DataSourceConfigurationComponent({
     const dataSourceChangedCallback = async () => {
       const activeDataSourceDef = extensionManager.getActiveDataSourceDefinition();
 
-      if (!activeDataSourceDef.configuration.configurationAPI) {
+      if (!activeDataSourceDef?.configuration?.configurationAPI) {
         return;
       }
 
-      const { factory: configurationAPIFactory } =
-        customizationService.get(activeDataSourceDef.configuration.configurationAPI) ?? {};
+      const { factory: configurationAPIFactory } = customizationService.getCustomization(
+        activeDataSourceDef.configuration.configurationAPI
+      ) ?? { factory: () => null };
 
       if (!configurationAPIFactory) {
         return;
@@ -86,11 +87,10 @@ function DataSourceConfigurationComponent({
 
   return configuredItems ? (
     <div className="text-aqua-pale flex items-center overflow-hidden">
-      <Icon
-        name="settings"
+      <Icons.Settings
         className="mr-2.5 h-3.5 w-3.5 shrink-0 cursor-pointer"
         onClick={showConfigurationModal}
-      ></Icon>
+      />
       {configuredItems.map((item, itemIndex) => {
         return (
           <div

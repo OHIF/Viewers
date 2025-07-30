@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const baseLabelClassName = 'flex flex-col flex-1 text-white text-lg pl-1 select-none';
 const spanClassName = 'flex flex-row items-center cursor-pointer focus:outline-none';
+
 const sortIconMap = {
-  descending: 'sorting-active-up',
-  ascending: 'sorting-active-down',
-  none: 'sorting',
+  descending: () => <Icons.SortingDescending className="text-primary-main mx-2 w-2" />,
+  ascending: () => <Icons.SortingAscending className="text-primary-main mx-2 w-2" />,
+  none: () => <Icons.Sorting className="text-primary-main mx-2 w-2" />,
 };
 
 const InputLabelWrapper = ({
@@ -38,15 +38,7 @@ const InputLabelWrapper = ({
         tabIndex="0"
       >
         {label}
-        {isSortable && (
-          <Icon
-            name={sortIconMap[sortDirection]}
-            className={classnames(
-              'mx-2 w-2',
-              sortDirection !== 'none' ? 'text-primary-light' : 'text-primary-main'
-            )}
-          />
-        )}
+        {isSortable && sortIconMap[sortDirection]()}
       </span>
       <span>{children}</span>
     </label>

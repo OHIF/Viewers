@@ -142,7 +142,7 @@ stateSyncService.store({
 
 ```js
 import { useViewportGridStore } from '../stores/useViewportGridStore';
-const { viewportGridState, setViewportGridState } = useViewportGridStore();
+const { viewportGridState, setViewportGridState } = useViewportGridStore.getState();
 const gridState = viewportGridState[storeId];
 // ...to update
 setViewportGridState(storeId, newGridState);

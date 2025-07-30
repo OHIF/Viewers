@@ -2,7 +2,7 @@ import isLowPriorityModality from './isLowPriorityModality';
 
 const compareSeriesDateTime = (a, b) => {
   const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
-  const seriesDateB = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
+  const seriesDateB = Date.parse(`${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`);
   return seriesDateA - seriesDateB;
 };
 

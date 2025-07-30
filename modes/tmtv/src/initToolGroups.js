@@ -6,7 +6,7 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const tools = {
     active: [
       {
@@ -28,27 +28,22 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
           getTextCallback: (callback, eventDetails) => {
-            if (modeLabelConfig) {
-              callback(' ');
-            } else {
-              commandsManager.runCommand('arrowTextCallback', {
-                callback,
-                eventDetails,
-              });
-            }
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              eventDetails,
+            });
           },
           changeTextCallback: (data, eventDetails, callback) => {
-            if (modeLabelConfig === undefined) {
-              commandsManager.runCommand('arrowTextCallback', {
-                callback,
-                data,
-                eventDetails,
-              });
-            }
+            commandsManager.runCommand('arrowTextCallback', {
+              callback,
+              data,
+              eventDetails,
+            });
           },
         },
       },
@@ -111,14 +106,9 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
           // preview: {
           //   enabled: true,
           // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
         },
       },
@@ -180,8 +170,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 }
 
 export default initToolGroups;

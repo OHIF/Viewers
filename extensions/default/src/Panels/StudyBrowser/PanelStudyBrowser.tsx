@@ -1,47 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { useImageViewer, useViewportGrid } from '@ohif/ui';
-import { StudyBrowser } from '@ohif/ui-next';
-import { utils } from '@ohif/core';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useImageViewer } from '@ohif/ui-next';
+import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
-import { Separator } from '@ohif/ui-next';
+import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
-import { defaultActionIcons, defaultViewPresets } from './constants';
+import { defaultActionIcons } from './constants';
+import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
+import { CallbackCustomization } from 'platform/core/src/types';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'SM',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+  'DOC',
+  'OT',
+  'PMAP',
+];
+
 /**
- *
- * @param {*} param0
+ * Study Browser component that displays and manages studies and their display sets
  */
 function PanelStudyBrowser({
-  servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
-}: withAppTypes) {
-  const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
-    servicesManager.services;
+  customMapDisplaySets,
+  onClickUntrack,
+  onDoubleClickThumbnailHandlerCallBack,
+}) {
+  const { servicesManager, commandsManager, extensionManager } = useSystem();
+  const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
+  const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
 
-  // Normally you nest the components so the tree isn't so deep, and the data
-  // doesn't have to have such an intense shape. This works well enough for now.
-  // Tabs --> Studies --> DisplaySets --> Thumbnails
-  const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
-    useViewportGrid();
-  const [activeTabName, setActiveTabName] = useState('all');
+  const internalImageViewer = useImageViewer();
+  const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
+
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
+  const [activeTabName, setActiveTabName] = useState(studyMode);
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
   const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
+  const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+  const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   const [viewPresets, setViewPresets] = useState(
-    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+    customizationService.getCustomization('studyBrowser.viewPresets')
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
@@ -65,27 +79,37 @@ function PanelStudyBrowser({
     setViewPresets(newViewPresets);
   };
 
-  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    let updatedViewports = [];
-    const viewportId = activeViewportId;
-    try {
-      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportId,
-        displaySetInstanceUID,
-        isHangingProtocolLayout
-      );
-    } catch (error) {
-      console.warn(error);
-      uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message: 'The selected display sets could not be added to the viewport.',
-        type: 'error',
-        duration: 3000,
-      });
-    }
+  const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
 
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
-  };
+  const onDoubleClickThumbnailHandler = useCallback(
+    async displaySetInstanceUID => {
+      const customHandler = customizationService.getCustomization(
+        'studyBrowser.thumbnailDoubleClickCallback'
+      ) as CallbackCustomization;
+
+      const setupArgs = {
+        activeViewportId,
+        commandsManager,
+        servicesManager,
+        isHangingProtocolLayout,
+        appConfig: extensionManager._appConfig,
+      };
+
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
+
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
+      }
+      onDoubleClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
+    },
+    [
+      activeViewportId,
+      commandsManager,
+      servicesManager,
+      isHangingProtocolLayout,
+      customizationService,
+    ]
+  );
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -115,10 +139,10 @@ function PanelStudyBrowser({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: formatDate(qidoStudy.StudyDate),
+          date: formatDate(qidoStudy.StudyDate) || '',
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
-          numInstances: qidoStudy.NumInstances,
+          numInstances: Number(qidoStudy.NumInstances),
         };
       });
 
@@ -136,7 +160,7 @@ function PanelStudyBrowser({
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
   }, [StudyInstanceUIDs, dataSource, getStudiesForPatientByMRN, navigate]);
 
-  // // ~~ Initial Thumbnails
+  // ~~ Initial Thumbnails
   useEffect(() => {
     if (!hasLoadedViewports) {
       if (activeViewportId) {
@@ -144,48 +168,78 @@ function PanelStudyBrowser({
         // so wait a bit of time to allow the viewports preferential loading
         // which improves user experience of responsiveness significantly on slower
         // systems.
-        window.setTimeout(() => setHasLoadedViewports(true), 250);
+        const delayMs = 250 + displaySetService.getActiveDisplaySets().length * 10;
+        window.setTimeout(() => setHasLoadedViewports(true), delayMs);
       }
 
       return;
     }
 
-    const currentDisplaySets = displaySetService.activeDisplaySets;
+    let currentDisplaySets = displaySetService.activeDisplaySets;
+    // filter non based on the list of modalities that are supported by cornerstone
+    currentDisplaySets = currentDisplaySets.filter(
+      ds => !thumbnailNoImageModalities.includes(ds.Modality)
+    );
+
+    if (!currentDisplaySets.length) {
+      return;
+    }
+
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-      const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+      const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (!imageId || displaySet?.unsupported) {
         return;
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+      let { thumbnailSrc } = displaySet;
+      if (!thumbnailSrc && displaySet.getThumbnailSrc) {
+        thumbnailSrc = await displaySet.getThumbnailSrc();
+      }
+      if (!thumbnailSrc) {
+        const thumbnailSrc = await getImageSrc(imageId);
+        displaySet.thumbnailSrc = thumbnailSrc;
+      }
+      newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
 
       setThumbnailImageSrcMap(prevState => {
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, [
-    StudyInstanceUIDs,
-    dataSource,
-    displaySetService,
-    getImageSrc,
-    hasLoadedViewports,
-    activeViewportId,
-  ]);
+  }, [displaySetService, dataSource, getImageSrc, activeViewportId, hasLoadedViewports]);
 
   // ~~ displaySets
   useEffect(() => {
-    // TODO: Are we sure `activeDisplaySets` will always be accurate?
     const currentDisplaySets = displaySetService.activeDisplaySets;
-    const mappedDisplaySets = _mapDisplaySets(currentDisplaySets, thumbnailImageSrcMap);
-    sortStudyInstances(mappedDisplaySets);
+
+    if (!currentDisplaySets.length) {
+      return;
+    }
+
+    const mappedDisplaySets = mapDisplaySetsWithState(
+      currentDisplaySets,
+      displaySetsLoadingState,
+      thumbnailImageSrcMap,
+      viewports
+    );
+
+    if (!customMapDisplaySets) {
+      sortStudyInstances(mappedDisplaySets);
+    }
 
     setDisplaySets(mappedDisplaySets);
-  }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
+  }, [
+    displaySetService.activeDisplaySets,
+    displaySetsLoadingState,
+    viewports,
+    thumbnailImageSrcMap,
+    customMapDisplaySets,
+  ]);
 
   // ~~ subscriptions --> displaySets
   useEffect(() => {
@@ -193,30 +247,41 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        // for some reason this breaks thumbnail loading
-        // if (!hasLoadedViewports) {
-        //   return;
-        // }
-        const { displaySetsAdded } = data;
+        if (!hasLoadedViewports) {
+          return;
+        }
+        const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
+          const displaySetInstanceUID = dSet.displaySetInstanceUID;
+
           const newImageSrcEntry = {};
-          const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
           if (displaySet?.unsupported) {
             return;
           }
 
+          if (options?.madeInClient) {
+            setJumpToDisplaySet(displaySetInstanceUID);
+          }
+
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (!imageId) {
             return;
           }
+
           // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-          newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-            imageId,
-            dSet.initialViewport
-          );
+          let { thumbnailSrc } = displaySet;
+          if (!thumbnailSrc && displaySet.getThumbnailSrc) {
+            thumbnailSrc = await displaySet.getThumbnailSrc();
+          }
+          if (!thumbnailSrc) {
+            thumbnailSrc = await getImageSrc(imageId);
+            displaySet.thumbnailSrc = thumbnailSrc;
+          }
+          newImageSrcEntry[displaySetInstanceUID] = thumbnailSrc;
 
           setThumbnailImageSrcMap(prevState => {
             return { ...prevState, ...newImageSrcEntry };
@@ -228,7 +293,7 @@ function PanelStudyBrowser({
     return () => {
       SubscriptionDisplaySetsAdded.unsubscribe();
     };
-  }, [getImageSrc, dataSource, displaySetService]);
+  }, [displaySetService, dataSource, getImageSrc, hasLoadedViewports]);
 
   useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?
@@ -236,7 +301,17 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
-        const mappedDisplaySets = _mapDisplaySets(changedDisplaySets, thumbnailImageSrcMap);
+        const mappedDisplaySets = mapDisplaySetsWithState(
+          changedDisplaySets,
+          displaySetsLoadingState,
+          thumbnailImageSrcMap,
+          viewports
+        );
+
+        if (!customMapDisplaySets) {
+          sortStudyInstances(mappedDisplaySets);
+        }
+
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -244,10 +319,16 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       () => {
-        const mappedDisplaySets = _mapDisplaySets(
+        const mappedDisplaySets = mapDisplaySetsWithState(
           displaySetService.getActiveDisplaySets(),
-          thumbnailImageSrcMap
+          displaySetsLoadingState,
+          thumbnailImageSrcMap,
+          viewports
         );
+
+        if (!customMapDisplaySets) {
+          sortStudyInstances(mappedDisplaySets);
+        }
 
         setDisplaySets(mappedDisplaySets);
       }
@@ -257,7 +338,13 @@ function PanelStudyBrowser({
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-  }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
+  }, [
+    displaySetsLoadingState,
+    thumbnailImageSrcMap,
+    viewports,
+    displaySetService,
+    customMapDisplaySets,
+  ]);
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
@@ -265,8 +352,7 @@ function PanelStudyBrowser({
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? // eslint-disable-next-line prettier/prettier
-        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -277,11 +363,44 @@ function PanelStudyBrowser({
     }
   }
 
-  const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
+  useEffect(() => {
+    if (jumpToDisplaySet) {
+      // Get element by displaySetInstanceUID
+      const displaySetInstanceUID = jumpToDisplaySet;
+      const element = document.getElementById(`thumbnail-${displaySetInstanceUID}`);
 
-  const onThumbnailContextMenu = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
-  };
+      if (element && typeof element.scrollIntoView === 'function') {
+        // TODO: Any way to support IE here?
+        element.scrollIntoView({ behavior: 'smooth' });
+
+        setJumpToDisplaySet(null);
+      }
+    }
+  }, [jumpToDisplaySet, expandedStudyInstanceUIDs, activeTabName]);
+
+  useEffect(() => {
+    if (!jumpToDisplaySet) {
+      return;
+    }
+
+    const displaySetInstanceUID = jumpToDisplaySet;
+    // Set the activeTabName and expand the study
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs);
+    if (!thumbnailLocation) {
+      console.warn('jumpToThumbnail: displaySet thumbnail not found.');
+
+      return;
+    }
+    const { tabName, StudyInstanceUID } = thumbnailLocation;
+    setActiveTabName(tabName);
+    const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+    if (!studyExpanded) {
+      const updatedExpandedStudyInstanceUIDs = [...expandedStudyInstanceUIDs, StudyInstanceUID];
+      setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+    }
+  }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
+
+  const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   return (
     <>
@@ -303,16 +422,27 @@ function PanelStudyBrowser({
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}
-        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
-        showSettings={actionIcons.find(icon => icon.id === 'settings').value}
+        onClickUntrack={onClickUntrack}
+        onClickThumbnail={() => {}}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
+        showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
-        onThumbnailContextMenu={onThumbnailContextMenu}
+        ThumbnailMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
+        })}
+        StudyMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.studyMenuItems',
+        })}
       />
     </>
   );
@@ -342,35 +472,36 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
+function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcMap, viewports) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
-
   displaySets
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
-      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const { thumbnailSrc, displaySetInstanceUID } = ds;
       const componentType = _getComponentType(ds);
 
       const array =
         componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
+      const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
+
       array.push({
-        displaySetInstanceUID: ds.displaySetInstanceUID,
+        displaySetInstanceUID,
         description: ds.SeriesDescription || '',
         seriesNumber: ds.SeriesNumber,
         modality: ds.Modality,
-        seriesDate: ds.SeriesDate,
-        seriesTime: ds.SeriesTime,
+        seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames,
+        loadingProgress,
         countIcon: ds.countIcon,
-        StudyInstanceUID: ds.StudyInstanceUID,
         messages: ds.messages,
+        StudyInstanceUID: ds.StudyInstanceUID,
         componentType,
-        imageSrc,
+        imageSrc: thumbnailSrc || thumbnailImageSrcMap[displaySetInstanceUID],
         dragData: {
           type: 'displayset',
-          displaySetInstanceUID: ds.displaySetInstanceUID,
+          displaySetInstanceUID,
           // .. Any other data to pass
         },
         isHydratedForDerivedDisplaySet: ds.isHydrated,
@@ -380,13 +511,44 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
-
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
-    // TODO probably others.
     return 'thumbnailNoImage';
   }
 
   return 'thumbnail';
+}
+
+function getImageIdForThumbnail(displaySet, imageIds) {
+  let imageId;
+  if (displaySet.isDynamicVolume) {
+    const timePoints = displaySet.dynamicVolumeInfo.timePoints;
+    const middleIndex = Math.floor(timePoints.length / 2);
+    const middleTimePointImageIds = timePoints[middleIndex];
+    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
+  } else {
+    imageId = imageIds[Math.floor(imageIds.length / 2)];
+  }
+  return imageId;
+}
+
+function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {
+  for (let t = 0; t < tabs.length; t++) {
+    const { studies } = tabs[t];
+
+    for (let s = 0; s < studies.length; s++) {
+      const { displaySets } = studies[s];
+
+      for (let d = 0; d < displaySets.length; d++) {
+        const displaySet = displaySets[d];
+
+        if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
+          return {
+            tabName: tabs[t].name,
+            StudyInstanceUID: studies[s].studyInstanceUid,
+          };
+        }
+      }
+    }
+  }
 }

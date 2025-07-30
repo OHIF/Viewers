@@ -13,7 +13,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
+      'bg-background text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
       className
     )}
     {...props}
@@ -40,10 +40,10 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div
-    className="flex items-center border-b px-3"
+    className="border-input flex items-center border-b px-3"
     cmdk-input-wrapper=""
   >
-    <MagnifyingGlassIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+    <MagnifyingGlassIcon className="text-primary mr-2 h-4 w-4 shrink-0" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
@@ -76,7 +76,7 @@ const CommandEmpty = React.forwardRef<
 >((props, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className="py-6 text-center text-base"
+    className="py-5 text-center text-base"
     {...props}
   />
 ));
@@ -105,7 +105,7 @@ const CommandSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Separator
     ref={ref}
-    className={cn('bg-border -mx-1 h-px', className)}
+    className={cn('bg-input -mx-1 h-px', className)}
     {...props}
   />
 ));
@@ -118,7 +118,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      'aria-selected:bg-accent aria-selected:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
+      'aria-selected:bg-primary/30 aria-selected:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-base outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
       className
     )}
     {...props}

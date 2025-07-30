@@ -51,12 +51,6 @@ export default function Versions() {
             </li>
           ))}
         </ul>
-
-        <p>
-          You can read more about the differences between the versions in the{' '}
-          <Link to="/docs/development/getting-started#branches">development section</Link> of the
-          documentation to understand which version is more suitable for your use case.
-        </p>
       </div>
     </Layout>
   );

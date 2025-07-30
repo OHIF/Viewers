@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
+import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { Onboarding } from '@ohif/ui-next';
+import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
+import useResizablePanels from './ResizablePanelsHook';
+
+const resizableHandleClassName = 'mt-[1px] bg-black';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -19,10 +22,12 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanelClosed = false,
   rightPanelClosed = false,
+  leftPanelResizable = false,
+  rightPanelResizable = false,
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
-  const { panelService, hangingProtocolService } = servicesManager.services;
+  const { panelService, hangingProtocolService, customizationService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const hasPanels = useCallback(
@@ -35,6 +40,31 @@ function ViewerLayout({
   const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
   const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
 
+  const [
+    leftPanelProps,
+    rightPanelProps,
+    resizablePanelGroupProps,
+    resizableLeftPanelProps,
+    resizableViewportGridPanelProps,
+    resizableRightPanelProps,
+    onHandleDragging,
+  ] = useResizablePanels(
+    leftPanelClosed,
+    setLeftPanelClosed,
+    rightPanelClosed,
+    setRightPanelClosed,
+    hasLeftPanels,
+    hasRightPanels
+  );
+
+  const handleMouseEnter = () => {
+    (document.activeElement as HTMLElement)?.blur();
+  };
+
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
+
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window
@@ -43,6 +73,7 @@ function ViewerLayout({
   useEffect(() => {
     document.body.classList.add('bg-black');
     document.body.classList.add('overflow-hidden');
+
     return () => {
       document.body.classList.remove('bg-black');
       document.body.classList.remove('overflow-hidden');
@@ -58,7 +89,7 @@ function ViewerLayout({
       );
     }
 
-    return { entry, content: entry.component };
+    return { entry };
   };
 
   useEffect(() => {
@@ -83,6 +114,7 @@ function ViewerLayout({
 
     return {
       component: entry.component,
+      isReferenceViewable: entry.isReferenceViewable,
       displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
     };
   };
@@ -123,34 +155,61 @@ function ViewerLayout({
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
-          {/* LEFT SIDEPANELS */}
-          {hasLeftPanels ? (
-            <SidePanelWithServices
-              side="left"
-              activeTabIndex={leftPanelClosedState ? null : 0}
-              servicesManager={servicesManager}
-            />
-          ) : null}
-          {/* TOOLBAR + GRID */}
-          <div className="flex h-full flex-1 flex-col">
-            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ViewportGridComp
-                servicesManager={servicesManager}
-                viewportComponents={viewportComponents}
-                commandsManager={commandsManager}
-              />
-            </div>
-          </div>
-          {hasRightPanels ? (
-            <SidePanelWithServices
-              side="right"
-              activeTabIndex={rightPanelClosedState ? null : 0}
-              servicesManager={servicesManager}
-            />
-          ) : null}
+          <ResizablePanelGroup {...resizablePanelGroupProps}>
+            {/* LEFT SIDEPANELS */}
+            {hasLeftPanels ? (
+              <>
+                <ResizablePanel {...resizableLeftPanelProps}>
+                  <SidePanelWithServices
+                    side="left"
+                    isExpanded={!leftPanelClosedState}
+                    servicesManager={servicesManager}
+                    {...leftPanelProps}
+                  />
+                </ResizablePanel>
+                <ResizableHandle
+                  onDragging={onHandleDragging}
+                  disabled={!leftPanelResizable}
+                  className={resizableHandleClassName}
+                />
+              </>
+            ) : null}
+            {/* TOOLBAR + GRID */}
+            <ResizablePanel {...resizableViewportGridPanelProps}>
+              <div className="flex h-full flex-1 flex-col">
+                <div
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  onMouseEnter={handleMouseEnter}
+                >
+                  <ViewportGridComp
+                    servicesManager={servicesManager}
+                    viewportComponents={viewportComponents}
+                    commandsManager={commandsManager}
+                  />
+                </div>
+              </div>
+            </ResizablePanel>
+            {hasRightPanels ? (
+              <>
+                <ResizableHandle
+                  onDragging={onHandleDragging}
+                  disabled={!rightPanelResizable}
+                  className={resizableHandleClassName}
+                />
+                <ResizablePanel {...resizableRightPanelProps}>
+                  <SidePanelWithServices
+                    side="right"
+                    isExpanded={!rightPanelClosedState}
+                    servicesManager={servicesManager}
+                    {...rightPanelProps}
+                  />
+                </ResizablePanel>
+              </>
+            ) : null}
+          </ResizablePanelGroup>
         </React.Fragment>
       </div>
-      <Onboarding />
+      <Onboarding tours={customizationService.getCustomization('ohif.tours')} />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );

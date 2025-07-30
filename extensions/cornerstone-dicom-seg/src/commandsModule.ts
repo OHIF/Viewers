@@ -1,20 +1,12 @@
 import dcmjs from 'dcmjs';
-import { createReportDialogPrompt } from '@ohif/extension-default';
-import { Types } from '@ohif/core';
+import { classes, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
-import {
-  segmentation as cornerstoneToolsSegmentation,
-  Enums as cornerstoneToolsEnums,
-  utilities,
-} from '@cornerstonejs/tools';
+import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
-import { classes, DicomMetadataStore } from '@ohif/core';
+import { createReportDialogPrompt } from '@ohif/extension-default';
+import { DicomMetadataStore } from '@ohif/core';
 
-import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
-import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
-
-const { segmentation: segmentationUtils } = utilities;
+import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 
 const { datasetToBlob } = dcmjs.data;
 
@@ -45,13 +37,8 @@ const commandsModule = ({
   servicesManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const {
-    segmentationService,
-    uiDialogService,
-    displaySetService,
-    viewportGridService,
-    toolGroupService,
-  } = servicesManager.services as AppTypes.Services;
+  const { segmentationService, displaySetService, viewportGridService, toolGroupService } =
+    servicesManager.services as AppTypes.Services;
 
   const actions = {
     /**
@@ -226,14 +213,6 @@ const commandsModule = ({
      * otherwise throws an error.
      */
     storeSegmentation: async ({ segmentationId, dataSource }) => {
-      const promptResult = await createReportDialogPrompt(uiDialogService, {
-        extensionManager,
-      });
-
-      if (promptResult.action !== 1 && !promptResult.value) {
-        return;
-      }
-
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
       if (!segmentation) {
@@ -241,33 +220,50 @@ const commandsModule = ({
       }
 
       const { label } = segmentation;
-      const SeriesDescription = promptResult.value || label || 'Research Derived Series';
+      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource();
 
-      const generatedData = actions.generateSegmentation({
-        segmentationId,
-        options: {
-          SeriesDescription,
-        },
+      const {
+        value: reportName,
+        dataSourceName: selectedDataSource,
+        action,
+      } = await createReportDialogPrompt({
+        servicesManager,
+        extensionManager,
+        title: 'Store Segmentation',
       });
 
-      if (!generatedData || !generatedData.dataset) {
-        throw new Error('Error during segmentation generation');
+      if (action === PROMPT_RESPONSES.CREATE_REPORT) {
+        try {
+          const selectedDataSourceConfig = selectedDataSource
+            ? extensionManager.getDataSources(selectedDataSource)[0]
+            : defaultDataSource;
+
+          const generatedData = actions.generateSegmentation({
+            segmentationId,
+            options: {
+              SeriesDescription: reportName || label || 'Research Derived Series',
+            },
+          });
+
+          if (!generatedData || !generatedData.dataset) {
+            throw new Error('Error during segmentation generation');
+          }
+
+          const { dataset: naturalizedReport } = generatedData;
+
+          await selectedDataSourceConfig.store.dicom(naturalizedReport);
+
+          // add the information for where we stored it to the instance as well
+          naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
+
+          DicomMetadataStore.addInstances([naturalizedReport], true);
+
+          return naturalizedReport;
+        } catch (error) {
+          console.debug('Error storing segmentation:', error);
+          throw error;
+        }
       }
-
-      const { dataset: naturalizedReport } = generatedData;
-
-      await dataSource.store.dicom(naturalizedReport);
-
-      // The "Mode" route listens for DicomMetadataStore changes
-      // When a new instance is added, it listens and
-      // automatically calls makeDisplaySets
-
-      // add the information for where we stored it to the instance as well
-      naturalizedReport.wadoRoot = dataSource.getConfig().wadoRoot;
-
-      DicomMetadataStore.addInstances([naturalizedReport], true);
-
-      return naturalizedReport;
     },
     /**
      * Converts segmentations into RTSS for download.
@@ -276,21 +272,24 @@ const commandsModule = ({
      * converts dataset to downloadable blob.
      *
      */
-    downloadRTSS: ({ segmentationId }) => {
+    downloadRTSS: async ({ segmentationId }) => {
       const segmentations = segmentationService.getSegmentation(segmentationId);
-      const vtkUtils = {
-        vtkImageMarchingSquares,
-        vtkDataArray,
-        vtkImageData,
-      };
 
-      const RTSS = generateRTSSFromSegmentations(
+      // inject colors to the segmentIndex
+      const firstRepresentation =
+        segmentationService.getRepresentationsForSegmentation(segmentationId)[0];
+      Object.entries(segmentations.segments).forEach(([segmentIndex, segment]) => {
+        segment.color = segmentationService.getSegmentColor(
+          firstRepresentation.viewportId,
+          segmentationId,
+          segmentIndex
+        );
+      });
+
+      const RTSS = await generateRTSSFromSegmentations(
         segmentations,
         classes.MetadataProvider,
-        DicomMetadataStore,
-        cache,
-        cornerstoneToolsEnums,
-        vtkUtils
+        DicomMetadataStore
       );
 
       try {
@@ -303,48 +302,9 @@ const commandsModule = ({
         console.warn(e);
       }
     },
-    setBrushSize: ({ value, toolNames }) => {
-      const brushSize = Number(value);
-
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        if (toolNames?.length === 0) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
-        } else {
-          toolNames?.forEach(toolName => {
-            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
-          });
-        }
-      });
-    },
-    setThresholdRange: ({
-      value,
-      toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
-    }) => {
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        toolNames?.forEach(toolName => {
-          toolGroup.setToolConfiguration(toolName, {
-            strategySpecificConfiguration: {
-              THRESHOLD: {
-                threshold: value,
-              },
-            },
-          });
-        });
-      });
-    },
   };
 
   const definitions = {
-    /**
-     * Obsolete?
-     */
-    loadSegmentationDisplaySetsForViewport: {
-      commandFn: actions.loadSegmentationDisplaySetsForViewport,
-    },
-    /**
-     * Obsolete?
-     */
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
     },
@@ -360,12 +320,6 @@ const commandsModule = ({
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
-    },
-    setBrushSize: {
-      commandFn: actions.setBrushSize,
-    },
-    setThresholdRange: {
-      commandFn: actions.setThresholdRange,
     },
   };
 

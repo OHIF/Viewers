@@ -1,7 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
+import { useViewportGrid } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
@@ -50,7 +51,7 @@ export function WindowLevelActionMenu({
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  const backgroundColor = viewportInfo.getViewportOptions().background;
+  const backgroundColor = viewportInfo?.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   const { t } = useTranslation('WindowLevelActionMenu');
@@ -118,8 +119,8 @@ export function WindowLevelActionMenu({
       iconClassName={classNames(
         // Visible on hover and for the active viewport
         activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
-        'flex shrink-0 cursor-pointer rounded active:text-white text-primary-light',
-        isLight ? ' hover:bg-secondary-dark' : 'hover:bg-secondary-light/60'
+        'flex shrink-0 cursor-pointer rounded active:text-foreground text-highlight',
+        isLight ? ' hover:bg-primary/30' : 'hover:bg-primary/30'
       )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
       onVisibilityChange={() => {
@@ -143,8 +144,10 @@ export function WindowLevelActionMenu({
             key="colorLUTPresets"
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
+            className="flex h-[calc(100%-32px)] flex-col"
           >
             <Colormap
+              className="flex h-full w-full flex-col"
               colormaps={colormaps}
               viewportId={viewportId}
               displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}

@@ -4,12 +4,11 @@ import { ComponentType } from 'react';
 export type Obj = Record<string, unknown>;
 
 export interface BaseCustomization extends Obj {
-  id: string;
-  customizationType?: string;
+  id?: string;
+  inheritsFrom?: string;
   description?: string;
   label?: string;
   commands?: Command[];
-  content?: (...props: any) => React.JSX.Element;
 }
 
 export interface LabelCustomization extends BaseCustomization {
@@ -28,12 +27,18 @@ export interface ComponentCustomization extends BaseCustomization {
   content: (...props: any) => React.JSX.Element;
 }
 
+export interface CallbackCustomization extends BaseCustomization {
+  callbacks: Array<(...props: any) => any>;
+}
+
 export type Customization =
+  | React.ComponentType
   | BaseCustomization
   | LabelCustomization
   | CommandCustomization
   | CodeCustomization
-  | ComponentCustomization;
+  | ComponentCustomization
+  | CallbackCustomization;
 
 export default Customization;
 
