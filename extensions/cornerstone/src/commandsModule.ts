@@ -102,6 +102,7 @@ let segmentAIEnabled = false;
 function commandsModule({
   servicesManager,
   commandsManager,
+  extensionManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
@@ -1743,16 +1744,61 @@ function commandsModule({
         }
       });
     },
-    toggleSegmentLabel: ({ toggle }) => {
+    toggleSegmentLabel: () => {
+      const toolName = cornerstoneTools.SegmentLabelTool.toolName;
       const toolGroupIds = toolGroupService.getToolGroupIds();
+
+      const isOn = toolGroupIds.some(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        const mode = toolGroup.getToolInstance(toolName)?.mode;
+        return mode === 'Active';
+      });
+
       toolGroupIds.forEach(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        if (toggle) {
-          toolGroup.setToolActive(cornerstoneTools.SegmentLabelTool.toolName);
+        if (isOn) {
+          toolGroup.setToolDisabled(toolName);
         } else {
-          toolGroup.setToolDisabled(cornerstoneTools.SegmentLabelTool.toolName);
+          toolGroup.setToolActive(toolName);
         }
       });
+    },
+    /**
+     * Used to sync the apps initial state with the config file settings.
+     *
+     * Will mutate the tools object of the given tool group and add the segmentLabelTool to the proper place.
+     *
+     * Use it before initializing the toolGroup with the tools.
+     */
+    initializeSegmentLabelTool: ({ tools }) => {
+      const appConfig = extensionManager.appConfig;
+      const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
+
+      if (segmentLabelConfig?.enabledByDefault) {
+        const activeTools = tools?.active ?? [];
+        activeTools.push({
+          toolName: toolNames.SegmentLabel,
+          configuration: {
+            hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
+            color: segmentLabelConfig?.labelColor,
+            background: segmentLabelConfig?.background,
+          },
+        });
+
+        tools.active = activeTools;
+        return tools;
+      }
+
+      const disabledTools = tools?.disabled ?? [];
+      disabledTools.push({
+        toolName: toolNames.SegmentLabel,
+        configuration: {
+          hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
+          color: segmentLabelConfig?.labelColor,
+        },
+      });
+      tools.disabled = disabledTools;
+      return tools;
     },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
@@ -2369,6 +2415,7 @@ function commandsModule({
     startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
     endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
+    initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
   };
 
   return {
