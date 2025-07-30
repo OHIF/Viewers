@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.113...v3.11.0-beta.114) (2025-07-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
+
+
+
+
+
 # [3.11.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.112...v3.11.0-beta.113) (2025-07-30)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
