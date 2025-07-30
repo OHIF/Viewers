@@ -42,7 +42,9 @@ import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
 import * as MeasurementFilters from './measurementFilters';
-import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
+import getClosestOrientationFromIOP, {
+  getClosestOrientation,
+} from './getClosestOrientationFromIOP';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 // Commented out unused functionality.
@@ -93,6 +95,7 @@ const utils = {
   createStudyBrowserTabs,
   MeasurementFilters,
   getClosestOrientationFromIOP,
+  getClosestOrientation,
   calculateScanAxisNormal,
   areAllImageOrientationsEqual,
 };
@@ -131,6 +134,7 @@ export {
   createStudyBrowserTabs,
   MeasurementFilters,
   getClosestOrientationFromIOP,
+  getClosestOrientation,
 };
 
 export default utils;
