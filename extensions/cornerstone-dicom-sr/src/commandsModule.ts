@@ -1,4 +1,4 @@
-import { metaData, utilities } from '@cornerstonejs/core';
+import { metaData } from '@cornerstonejs/core';
 
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import dcmjs from 'dcmjs';
@@ -32,12 +32,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     additionalFindingTypes
   );
 
-  const report = MeasurementReport.generateReport(
-    filteredToolState,
-    metaData,
-    utilities.worldToImageCoords,
-    options
-  );
+  const report = MeasurementReport.generateReport(filteredToolState, metaData, options);
 
   const { dataset } = report;
 
