@@ -10,6 +10,8 @@ test.beforeEach(async ({ page }) => {
 test('should hydrate SEG reports correctly', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydration.segPreHydration);
 
   await page.evaluate(() => {
@@ -32,5 +34,7 @@ test('should hydrate SEG reports correctly', async ({ page }) => {
   });
 
   await page.getByTestId('yes-hydrate-btn').click();
+
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydration.segPostHydration);
 });
