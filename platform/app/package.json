@@ -48,6 +48,8 @@
     "README.md"
   ],
   "dependencies": {
+    "@ohif/extension-idc": "0.0.1",
+    "@ohif/extension-gcp": "https://github.com/ImagingDataCommons/ohif-gcp-extension#main",
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/codec-charls": "^1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
@@ -87,7 +89,6 @@
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
-    "ohif-gcp-extension": "https://github.com/ImagingDataCommons/ohif-gcp-extension#main",
     "oidc-client": "1.11.5",
     "oidc-client-ts": "^3.0.1",
     "prop-types": "^15.7.2",
