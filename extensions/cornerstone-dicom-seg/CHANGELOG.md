@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.112...v3.11.0-beta.113) (2025-07-30)
+
+
+### Features
+
+* improve segment label ([#5217](https://github.com/OHIF/Viewers/issues/5217)) ([271b84f](https://github.com/OHIF/Viewers/commit/271b84f78fcc3974006c7e1a4dbb2ef322fdb9ec))
+
+
+
+
+
 # [3.11.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.111...v3.11.0-beta.112) (2025-07-28)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
