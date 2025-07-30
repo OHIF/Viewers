@@ -252,6 +252,9 @@ async function _getViewportReferencedDisplaySetData(
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  if (!referencedDisplaySet?.images) {
+    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
+  }
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

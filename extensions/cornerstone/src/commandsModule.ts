@@ -423,10 +423,7 @@ function commandsModule({
       }
 
       // Create presentation data with referencedImageId and options if provided
-      console.warn('Updating position presentaiton data to', referencedImageId, options);
-
-      // Create presentation data with referencedImageId and options if provided
-      const presentationData = referencedImageId
+      const presentationData = (referencedImageId || options?.FrameOfReferenceUID)
         ? {
             ...presentations.positionPresentation,
             viewReference: {

@@ -3,8 +3,18 @@ import * as cornerstone from '@cornerstonejs/core';
 function getDisplaySet({ metadata, displaySetService }) {
   const { volumeId } = metadata;
 
-  if (!volumeId) {
-    if (!metadata.FrameOfReferenceUID) {
+  if( volumeId ) {
+    const displaySet = displaySetService.getDisplaySetsBy(displaySet =>
+      volumeId.includes(displaySet.uid)
+    )[0];
+    if( displaySet ) {
+      return displaySet;
+    }
+    console.warn("Unable to find volumeId", volumeId);
+    metadata.volumeId = null;
+  }
+
+  if (!metadata.FrameOfReferenceUID) {
       throw new Error(
         'No volumeId and no FrameOfReferenceUID provided. Could not find matching displaySet.'
       );
@@ -18,17 +28,7 @@ function getDisplaySet({ metadata, displaySetService }) {
     }
 
     return displaySet;
-  }
 
-  const displaySet = displaySetService.getDisplaySetsBy(displaySet =>
-    volumeId.includes(displaySet.uid)
-  )[0];
-
-  if (!displaySet) {
-    throw new Error('Could not find matching displaySet for the provided volumeId.');
-  }
-
-  return displaySet;
 }
 
 /**
