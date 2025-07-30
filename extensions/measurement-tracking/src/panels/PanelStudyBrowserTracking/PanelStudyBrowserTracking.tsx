@@ -24,7 +24,7 @@ export default function PanelStudyBrowserTracking({
 
   const checkDirtyMeasurements = displaySetInstanceUID => {
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-    if (displaySet.Modality === 'SR') {
+    if (displaySet.Modality === 'SR' || displaySet.Modality === 'ANN') {
       const activeViewportId = viewportGridService.getActiveViewportId();
       sendTrackedMeasurementsEvent('CHECK_DIRTY', {
         viewportId: activeViewportId,

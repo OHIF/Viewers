@@ -36,7 +36,8 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
-import { VOLUME_LOADER_SCHEME } from '../../constants';
+
+console.warn('Hello 4');
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -1085,8 +1086,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-        Math.pow(dimensions[1] * spacing[1], 2) +
-        Math.pow(dimensions[2] * spacing[2], 2)
+          Math.pow(dimensions[1] * spacing[1], 2) +
+          Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
