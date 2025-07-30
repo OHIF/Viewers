@@ -670,7 +670,12 @@ const toolbarButtons: Button[] = [
       label: 'Segment Label Display',
       tooltip: 'Click to show or hide segment labels when hovering with your mouse.',
       commands: { commandName: 'toggleSegmentLabel' },
-      evaluate: 'evaluate.cornerstoneTool.toggle',
+      evaluate: [
+        'evaluate.cornerstoneTool.toggle',
+        {
+          name: 'evaluate.cornerstone.hasSegmentation',
+        },
+      ],
     },
   },
   // {
