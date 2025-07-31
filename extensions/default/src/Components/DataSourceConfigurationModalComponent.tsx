@@ -115,7 +115,7 @@ function DataSourceConfigurationModalComponent({
   const getSelectedItemTextClasses = itemIndex =>
     itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary';
 
-  const getErrorComponent = (): ReactElement => {
+  const getErrorComponent = (): ReactElement<any> => {
     return (
       <div className="flex min-h-[1px] grow flex-col gap-4">
         <div className="text-primary-light text-[20px]">
@@ -126,7 +126,7 @@ function DataSourceConfigurationModalComponent({
     );
   };
 
-  const getSelectedItemsComponent = (): ReactElement => {
+  const getSelectedItemsComponent = (): ReactElement<any> => {
     return (
       <div className="flex gap-4">
         {itemLabels.map((itemLabel, itemLabelIndex) => {

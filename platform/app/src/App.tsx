@@ -1,7 +1,6 @@
 // External
 
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
@@ -43,6 +42,21 @@ let commandsManager: CommandsManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 
+interface AppProps {
+  config: (...args: unknown[]) => unknown | {
+    routerBasename: string;
+    oidc?: unknown[];
+    whiteLabeling?: object;
+    extensions?: unknown[];
+  };
+  /* Extensions that are "bundled" or "baked-in" to the application.
+   * These would be provided at build time as part of they entry point. */
+  defaultExtensions?: unknown[];
+  /* Modes that are "bundled" or "baked-in" to the application.
+   * These would be provided at build time as part of they entry point. */
+  defaultModes?: unknown[];
+}
+
 function App({
   config = {
     /**
@@ -61,9 +75,10 @@ function App({
     oidc: [],
     extensions: [],
   },
+
   defaultExtensions = [],
-  defaultModes = [],
-}) {
+  defaultModes = []
+}: AppProps) {
   const [init, setInit] = useState(null);
   useEffect(() => {
     const run = async () => {
@@ -171,24 +186,6 @@ function App({
     </CombinedProviders>
   );
 }
-
-App.propTypes = {
-  config: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({
-      routerBasename: PropTypes.string.isRequired,
-      oidc: PropTypes.array,
-      whiteLabeling: PropTypes.object,
-      extensions: PropTypes.array,
-    }),
-  ]).isRequired,
-  /* Extensions that are "bundled" or "baked-in" to the application.
-   * These would be provided at build time as part of they entry point. */
-  defaultExtensions: PropTypes.array,
-  /* Modes that are "bundled" or "baked-in" to the application.
-   * These would be provided at build time as part of they entry point. */
-  defaultModes: PropTypes.array,
-};
 
 export default App;
 

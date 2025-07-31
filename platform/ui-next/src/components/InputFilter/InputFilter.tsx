@@ -11,7 +11,7 @@ type InputFilterContextType = {
   setValue: (value: string) => void;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   clearValue: () => void;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
 };
 
 const InputFilterContext = createContext<InputFilterContextType | undefined>(undefined);

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import { Icons } from '@ohif/ui-next';
@@ -7,23 +6,26 @@ import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 import { Button } from '../Button/Button';
 import { Numeric } from '../Numeric/Numeric';
 
-export type CinePlayerProps = {
-  className: string;
-  isPlaying: boolean;
+interface CinePlayerProps {
+  /** Minimum value for range slider */
   minFrameRate?: number;
+  /** Maximum value for range slider */
   maxFrameRate?: number;
+  /** Increment range slider can "step" in either direction */
   stepFrameRate?: number;
   frameRate?: number;
-  onFrameRateChange: (value: number) => void;
-  onPlayPauseChange: (value: boolean) => void;
-  onClose: () => void;
-  updateDynamicInfo?: (info: any) => void;
+  /** 'true' if playing, 'false' if paused */
+  isPlaying: boolean;
+  onPlayPauseChange?(...args: unknown[]): unknown;
+  onFrameRateChange?(...args: unknown[]): unknown;
+  onClose?(...args: unknown[]): unknown;
+  isDynamic?: boolean;
   dynamicInfo?: {
-    dimensionGroupNumber: number;
-    numDimensionGroups: number;
+    dimensionGroupNumber?: number;
+    numDimensionGroups?: number;
     label?: string;
   };
-};
+}
 
 const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
@@ -37,7 +39,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   onClose = () => {},
   dynamicInfo = {},
   updateDynamicInfo,
-}) => {
+}: CinePlayerProps) => {
   const isDynamic = !!dynamicInfo?.numDimensionGroups;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -180,27 +182,6 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       )}
     </div>
   );
-};
-
-CinePlayer.propTypes = {
-  /** Minimum value for range slider */
-  minFrameRate: PropTypes.number,
-  /** Maximum value for range slider */
-  maxFrameRate: PropTypes.number,
-  /** Increment range slider can "step" in either direction */
-  stepFrameRate: PropTypes.number,
-  frameRate: PropTypes.number,
-  /** 'true' if playing, 'false' if paused */
-  isPlaying: PropTypes.bool.isRequired,
-  onPlayPauseChange: PropTypes.func,
-  onFrameRateChange: PropTypes.func,
-  onClose: PropTypes.func,
-  isDynamic: PropTypes.bool,
-  dynamicInfo: PropTypes.shape({
-    dimensionGroupNumber: PropTypes.number,
-    numDimensionGroups: PropTypes.number,
-    label: PropTypes.string,
-  }),
 };
 
 export default CinePlayer;

@@ -1,9 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useViewportRef } from '@ohif/core';
 import './OHIFCornerstonePdfViewport.css';
 
-function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
+interface OHIFCornerstonePdfViewportProps {
+  displaySets: object[];
+  viewportId?: string;
+}
+
+function OHIFCornerstonePdfViewport({
+  displaySets,
+  viewportId = 'pdf-viewport'
+}: OHIFCornerstonePdfViewportProps) {
   const [url, setUrl] = useState(null);
   const viewportElementRef = useRef(null);
   const viewportRef = useViewportRef(viewportId);
@@ -62,10 +69,5 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
     </div>
   );
 }
-
-OHIFCornerstonePdfViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  viewportId: PropTypes.string,
-};
 
 export default OHIFCornerstonePdfViewport;

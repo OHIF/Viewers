@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
-import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '../../hooks';
@@ -13,14 +12,23 @@ import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
 
+interface ModeRouteProps {
+  mode: object;
+  dataSourceName?: string;
+  extensionManager?: object;
+  servicesManager?: object;
+  hotkeysManager?: object;
+  commandsManager?: object;
+}
+
 export default function ModeRoute({
   mode,
   dataSourceName,
   extensionManager,
   servicesManager,
   commandsManager,
-  hotkeysManager,
-}: withAppTypes) {
+  hotkeysManager
+}: ModeRouteProps) {
   const [appConfig] = useAppConfig();
 
   // Parse route params/querystring
@@ -393,12 +401,3 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
     return Compose({ components: contextModuleProviders, children });
   };
 }
-
-ModeRoute.propTypes = {
-  mode: PropTypes.object.isRequired,
-  dataSourceName: PropTypes.string,
-  extensionManager: PropTypes.object,
-  servicesManager: PropTypes.object,
-  hotkeysManager: PropTypes.object,
-  commandsManager: PropTypes.object,
-};

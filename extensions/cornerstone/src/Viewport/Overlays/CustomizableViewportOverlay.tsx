@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
-import PropTypes from 'prop-types';
 import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
@@ -49,6 +48,12 @@ const OverlayItemComponents = {
   'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
 };
 
+interface CustomizableViewportOverlayProps {
+  viewportData?: object;
+  imageIndex?: number;
+  viewportId?: string;
+}
+
 /**
  * Customizable Viewport Overlay
  */
@@ -57,14 +62,8 @@ function CustomizableViewportOverlay({
   viewportData,
   imageSliceData,
   viewportId,
-  servicesManager,
-}: {
-  element: HTMLElement;
-  viewportData: ViewportData;
-  imageSliceData: ImageSliceData;
-  viewportId: string;
-  servicesManager: AppTypes.ServicesManager;
-}) {
+  servicesManager
+}: CustomizableViewportOverlayProps) {
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
@@ -462,12 +461,6 @@ function InstanceNumberOverlayItem({
     </div>
   );
 }
-
-CustomizableViewportOverlay.propTypes = {
-  viewportData: PropTypes.object,
-  imageIndex: PropTypes.number,
-  viewportId: PropTypes.string,
-};
 
 export default CustomizableViewportOverlay;
 

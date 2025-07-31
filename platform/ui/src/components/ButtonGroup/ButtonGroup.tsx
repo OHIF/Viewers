@@ -1,7 +1,16 @@
 import React, { useState, useEffect, cloneElement, Children } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { ButtonEnums } from '../../components';
+
+interface ButtonGroupProps {
+  children: React.ReactNode;
+  orientation?: unknown[];
+  activeIndex?: number;
+  onActiveIndexChange?(...args: unknown[]): unknown;
+  className?: string;
+  disabled?: boolean;
+  separated?: boolean;
+}
 
 const ButtonGroup = ({
   children,
@@ -10,8 +19,8 @@ const ButtonGroup = ({
   activeIndex: defaultActiveIndex = 0,
   onActiveIndexChange,
   separated = false,
-  disabled = false,
-}) => {
+  disabled = false
+}: ButtonGroupProps) => {
   const [activeIndex, setActiveIndex] = useState(defaultActiveIndex);
 
   useEffect(() => {
@@ -90,16 +99,6 @@ const ButtonGroup = ({
       )}
     </div>
   );
-};
-
-ButtonGroup.propTypes = {
-  children: PropTypes.node.isRequired,
-  orientation: PropTypes.oneOf(Object.values(ButtonEnums.orientation)),
-  activeIndex: PropTypes.number,
-  onActiveIndexChange: PropTypes.func,
-  className: PropTypes.string,
-  disabled: PropTypes.bool,
-  separated: PropTypes.bool,
 };
 
 export default ButtonGroup;

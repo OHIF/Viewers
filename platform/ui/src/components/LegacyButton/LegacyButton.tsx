@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
@@ -136,6 +135,36 @@ const fullWidthClasses = {
   false: 'inline-flex',
 };
 
+interface LegacyButtonProps {
+  /** What is inside the button, can be text or react component */
+  children?: React.ReactNode;
+  /** Callback to be called when the button is clicked  */
+  onClick(...args: unknown[]): unknown;
+  /** Button size  */
+  size?: "small" | "medium" | "large" | "initial" | "inherit";
+  /** Button corner roundness  */
+  rounded?: "none" | "small" | "medium" | "large" | "full";
+  variant?: "text" | "outlined" | "contained" | "disabled";
+  /* color prop must have all the possible keys of variants defined above */
+  color?: "default" | "primary" | "primaryDark" | "primaryActive" | "secondary" | "white" | "black" | "inherit" | "light" | "translucent";
+  border?: "none" | "light" | "default" | "primary" | "primaryActive" | "secondary" | "white" | "black";
+  /** Whether the button should have full width  */
+  fullWidth?: boolean;
+  /** Whether the button should be disabled  */
+  disabled?: boolean;
+  /** Button type  */
+  type?: string;
+  name?: string;
+  /** Button start icon name - if any icon is specified  */
+  startIcon?: React.ReactNode;
+  /** Button end icon name - if any icon is specified  */
+  endIcon?: React.ReactNode;
+  /** Additional TailwindCSS classnames */
+  className?: string;
+  /** Background color for the button to override*/
+  bgColor?: string;
+}
+
 const LegacyButton = ({
   children = '',
   variant = defaults.variant,
@@ -152,9 +181,10 @@ const LegacyButton = ({
   name,
   className,
   onClick = () => {},
+
   /** TODO: All possible props should be explicitly defined -- avoid spreading props  */
   ...rest
-}) => {
+}: LegacyButtonProps) => {
   const startIcon = startIconProp && (
     <div className="mr-2">
       {React.cloneElement(startIconProp, {
@@ -204,56 +234,6 @@ const LegacyButton = ({
       {endIcon}
     </button>
   );
-};
-
-LegacyButton.propTypes = {
-  /** What is inside the button, can be text or react component */
-  children: PropTypes.node,
-  /** Callback to be called when the button is clicked  */
-  onClick: PropTypes.func.isRequired,
-  /** Button size  */
-  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial', 'inherit']),
-  /** Button corner roundness  */
-  rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
-  variant: PropTypes.oneOf(['text', 'outlined', 'contained', 'disabled']),
-  /* color prop must have all the possible keys of variants defined above */
-  color: PropTypes.oneOf([
-    'default',
-    'primary',
-    'primaryDark',
-    'primaryActive',
-    'secondary',
-    'white',
-    'black',
-    'inherit',
-    'light',
-    'translucent',
-  ]),
-  border: PropTypes.oneOf([
-    'none',
-    'light',
-    'default',
-    'primary',
-    'primaryActive',
-    'secondary',
-    'white',
-    'black',
-  ]),
-  /** Whether the button should have full width  */
-  fullWidth: PropTypes.bool,
-  /** Whether the button should be disabled  */
-  disabled: PropTypes.bool,
-  /** Button type  */
-  type: PropTypes.string,
-  name: PropTypes.string,
-  /** Button start icon name - if any icon is specified  */
-  startIcon: PropTypes.node,
-  /** Button end icon name - if any icon is specified  */
-  endIcon: PropTypes.node,
-  /** Additional TailwindCSS classnames */
-  className: PropTypes.string,
-  /** Background color for the button to override*/
-  bgColor: PropTypes.string,
 };
 
 export default LegacyButton;

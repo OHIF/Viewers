@@ -1,9 +1,21 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import StudyListTableRow from './StudyListTableRow';
 
-const StudyListTable = ({ tableDataSource, querying }) => {
+interface StudyListTableProps {
+  tableDataSource?: {
+    row: unknown[];
+    expandedContent: React.ReactNode;
+    querying?: boolean;
+    onClickRow(...args: unknown[]): unknown;
+    isExpanded: boolean;
+  }[];
+}
+
+const StudyListTable = ({
+  tableDataSource,
+  querying
+}: StudyListTableProps) => {
   return (
     <div className="bg-black">
       <div className="container relative m-auto">
@@ -25,18 +37,6 @@ const StudyListTable = ({ tableDataSource, querying }) => {
       </div>
     </div>
   );
-};
-
-StudyListTable.propTypes = {
-  tableDataSource: PropTypes.arrayOf(
-    PropTypes.shape({
-      row: PropTypes.array.isRequired,
-      expandedContent: PropTypes.node.isRequired,
-      querying: PropTypes.bool,
-      onClickRow: PropTypes.func.isRequired,
-      isExpanded: PropTypes.bool.isRequired,
-    })
-  ),
 };
 
 export default StudyListTable;

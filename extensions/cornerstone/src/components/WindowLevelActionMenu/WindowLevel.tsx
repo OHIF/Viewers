@@ -3,7 +3,7 @@ import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { WindowLevelPreset } from '../../types/WindowLevel';
 
-export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement {
+export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement<any> {
   const { viewportDisplaySets } = useViewportRendering(viewportId);
   const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
     viewportDisplaySets?.[0]?.displaySetInstanceUID

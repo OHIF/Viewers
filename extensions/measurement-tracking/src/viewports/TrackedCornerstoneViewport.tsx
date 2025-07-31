@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
 import { ViewportActionArrows } from '@ohif/ui-next';
 import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
@@ -9,8 +8,15 @@ import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
+interface TrackedCornerstoneViewportProps {
+  displaySets: object[];
+  viewportId: string;
+  dataSource?: object;
+  children?: React.ReactNode;
+}
+
 function TrackedCornerstoneViewport(
-  props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
+  props: TrackedCornerstoneViewportProps
 ) {
   const { servicesManager } = useSystem();
   const { displaySets, viewportId } = props as {
@@ -193,13 +199,6 @@ function TrackedCornerstoneViewport(
     </div>
   );
 }
-
-TrackedCornerstoneViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
 
 function _getNextMeasurementUID(
   direction,

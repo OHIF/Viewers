@@ -1,20 +1,22 @@
 import React, { useState, createContext, useContext } from 'react';
-import PropTypes from 'prop-types';
 
 const appConfigContext = createContext(null);
 const { Provider } = appConfigContext;
 
 export const useAppConfig = () => useContext(appConfigContext);
 
-export function AppConfigProvider({ children, value: initAppConfig }) {
+interface AppConfigProviderProps {
+  children?: any;
+  value?: any;
+}
+
+export function AppConfigProvider({
+  children,
+  value: initAppConfig
+}: AppConfigProviderProps) {
   const [appConfig, setAppConfig] = useState(initAppConfig);
 
   return <Provider value={[appConfig, setAppConfig]}>{children}</Provider>;
 }
-
-AppConfigProvider.propTypes = {
-  children: PropTypes.any,
-  value: PropTypes.any,
-};
 
 export default AppConfigProvider;

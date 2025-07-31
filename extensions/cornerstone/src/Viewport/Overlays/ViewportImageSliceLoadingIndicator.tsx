@@ -1,8 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
-function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
+interface ViewportImageSliceLoadingIndicatorProps {
+  error?: object;
+  element?: object;
+}
+
+function ViewportImageSliceLoadingIndicator({
+  viewportData,
+  element
+}: ViewportImageSliceLoadingIndicatorProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -66,20 +73,15 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
     return (
       // IMPORTANT: we need to use the pointer-events-none class to prevent the loading indicator from
       // interacting with the mouse, since scrolling should propagate to the viewport underneath
-      <div className="pointer-events-none absolute top-0 left-0 h-full w-full bg-black opacity-50">
+      (<div className="pointer-events-none absolute top-0 left-0 h-full w-full bg-black opacity-50">
         <div className="transparent flex h-full w-full items-center justify-center">
           <p className="text-primary-light text-xl font-light">Loading...</p>
         </div>
-      </div>
+      </div>)
     );
   }
 
   return null;
 }
-
-ViewportImageSliceLoadingIndicator.propTypes = {
-  error: PropTypes.object,
-  element: PropTypes.object,
-};
 
 export default ViewportImageSliceLoadingIndicator;

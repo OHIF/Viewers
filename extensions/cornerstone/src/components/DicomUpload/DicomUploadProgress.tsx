@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
 import { Button } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
@@ -11,11 +10,6 @@ import DicomFileUploader, {
 } from '../../utils/DicomFileUploader';
 import DicomUploadProgressItem from './DicomUploadProgressItem';
 import classNames from 'classnames';
-
-type DicomUploadProgressProps = {
-  dicomFileUploaderArr: DicomFileUploader[];
-  onComplete: () => void;
-};
 
 const ONE_SECOND = 1000;
 const ONE_MINUTE = ONE_SECOND * 60;
@@ -36,6 +30,11 @@ const BASE_INTERVAL_TIME = 15000;
 const UPLOAD_RATE_THRESHOLD = 75;
 
 const NO_WRAP_ELLIPSIS_CLASS_NAMES = 'text-ellipsis whitespace-nowrap overflow-hidden';
+
+interface DicomUploadProgressProps {
+  dicomFileUploaderArr: DicomFileUploader[];
+  onComplete(...args: unknown[]): unknown;
+}
 
 function DicomUploadProgress({
   dicomFileUploaderArr,
@@ -359,7 +358,7 @@ function DicomUploadProgress({
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
-                <div className="w-10 text-right text-foreground">{`${getPercentCompleteRounded()}%`}</div>
+                <div className="text-foreground w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
             </>
@@ -391,10 +390,5 @@ function DicomUploadProgress({
     </div>
   );
 }
-
-DicomUploadProgress.propTypes = {
-  dicomFileUploaderArr: PropTypes.arrayOf(PropTypes.instanceOf(DicomFileUploader)).isRequired,
-  onComplete: PropTypes.func.isRequired,
-};
 
 export default DicomUploadProgress;

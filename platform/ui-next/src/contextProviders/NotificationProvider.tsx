@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useCallback, useEffect, ReactNode, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { Toaster, toast } from '../components';
 
 const NotificationContext = createContext(null);
@@ -18,10 +17,18 @@ interface NotificationProviderProps {
   deduplicationInterval?: number;
 }
 
+interface NotificationProviderProps {
+  children: React.ReactNode;
+  service?: object;
+  deduplicationInterval?: number;
+}
+
 const NotificationProvider = ({
   children,
   service,
-  deduplicationInterval = 10000, // Default to 10 seconds
+
+  // Default to 10 seconds
+  deduplicationInterval = 10000
 }: NotificationProviderProps) => {
   const DEFAULT_OPTIONS = {
     title: '',
@@ -202,12 +209,6 @@ const NotificationProvider = ({
       {children}
     </NotificationContext.Provider>
   );
-};
-
-NotificationProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  service: PropTypes.object,
-  deduplicationInterval: PropTypes.number,
 };
 
 export const withNotification = Component => {

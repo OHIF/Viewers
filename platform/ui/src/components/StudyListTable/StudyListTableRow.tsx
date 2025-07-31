@@ -1,10 +1,28 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import getGridWidthClass from '../../utils/getGridWidthClass';
 import { Icons } from '@ohif/ui-next';
 
-const StudyListTableRow = props => {
+interface StudyListTableRowProps {
+  tableData?: {
+    /** A table row represented by an array of "cell" objects */
+    row: {
+      key: string;
+      /** Optional content to render in row's cell */
+      content?: React.ReactNode;
+      /** Title attribute to use for provided content */
+      title?: string;
+      gridCol: number;
+    }[];
+    expandedContent: React.ReactNode;
+    onClickRow(...args: unknown[]): unknown;
+    isExpanded: boolean;
+    dataCY?: string;
+    clickableCY?: string;
+  };
+}
+
+const StudyListTableRow = (props: StudyListTableRowProps) => {
   const { tableData } = props;
   const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
   return (
@@ -90,27 +108,6 @@ const StudyListTableRow = props => {
       </tr>
     </>
   );
-};
-
-StudyListTableRow.propTypes = {
-  tableData: PropTypes.shape({
-    /** A table row represented by an array of "cell" objects */
-    row: PropTypes.arrayOf(
-      PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        /** Optional content to render in row's cell */
-        content: PropTypes.node,
-        /** Title attribute to use for provided content */
-        title: PropTypes.string,
-        gridCol: PropTypes.number.isRequired,
-      })
-    ).isRequired,
-    expandedContent: PropTypes.node.isRequired,
-    onClickRow: PropTypes.func.isRequired,
-    isExpanded: PropTypes.bool.isRequired,
-    dataCY: PropTypes.string,
-    clickableCY: PropTypes.string,
-  }),
 };
 
 export default StudyListTableRow;

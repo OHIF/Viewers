@@ -1,7 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useDrop } from 'react-dnd';
+
+interface ViewportPaneProps {
+  children: React.ReactNode;
+  className?: string;
+  isActive: boolean;
+  acceptDropsFor: string;
+  onDrop(...args: unknown[]): unknown;
+  onInteraction(...args: unknown[]): unknown;
+  onDoubleClick?(...args: unknown[]): unknown;
+  customStyle?: object;
+}
 
 /**
  * The "pane" that encloses a Cornerstone or other type of Viewport. This handles
@@ -15,8 +25,8 @@ function ViewportPane({
   onDrop,
   onDoubleClick,
   onInteraction = () => {},
-  acceptDropsFor,
-}) {
+  acceptDropsFor
+}: ViewportPaneProps) {
   let dropElement = null;
 
   const [{ isHovered, isHighlighted }, drop] = useDrop({
@@ -76,16 +86,5 @@ function ViewportPane({
     </div>
   );
 }
-
-ViewportPane.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  isActive: PropTypes.bool.isRequired,
-  acceptDropsFor: PropTypes.string.isRequired,
-  onDrop: PropTypes.func.isRequired,
-  onInteraction: PropTypes.func.isRequired,
-  onDoubleClick: PropTypes.func,
-  customStyle: PropTypes.object,
-};
 
 export { ViewportPane };

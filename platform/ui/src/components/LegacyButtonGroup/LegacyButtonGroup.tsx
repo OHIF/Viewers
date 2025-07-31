@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseButtonClass = 'border outline-none';
@@ -73,6 +72,18 @@ const nonFirstLastClasses = {
   horizontal: 'border-l-0 last:border-r-0',
 };
 
+interface LegacyButtonGroupProps {
+  children: React.ReactNode;
+  className?: string;
+  color?: "default" | "inherit" | "primary" | "secondary" | "white" | "black";
+  disabled?: boolean;
+  fullWidth?: boolean;
+  orientation?: "vertical" | "horizontal";
+  rounded?: "none" | "small" | "medium" | "large" | "full";
+  size?: "small" | "medium" | "large" | "inherit";
+  variant?: "text" | "outlined" | "contained";
+}
+
 const LegacyButtonGroup = ({
   children,
   className,
@@ -85,7 +96,7 @@ const LegacyButtonGroup = ({
   variant = 'outlined',
   splitBorder = true,
   ...other
-}) => {
+}: LegacyButtonGroupProps) => {
   const ref = useRef(null);
 
   const buttonClasses = classnames(
@@ -133,18 +144,6 @@ const LegacyButtonGroup = ({
       })}
     </div>
   );
-};
-
-LegacyButtonGroup.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  color: PropTypes.oneOf(['default', 'inherit', 'primary', 'secondary', 'white', 'black']),
-  disabled: PropTypes.bool,
-  fullWidth: PropTypes.bool,
-  orientation: PropTypes.oneOf(['vertical', 'horizontal']),
-  rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
-  size: PropTypes.oneOf(['small', 'medium', 'large', 'inherit']),
-  variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
 };
 
 export default LegacyButtonGroup;

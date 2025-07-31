@@ -1,5 +1,4 @@
 import React, { Component, useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useViewportGrid } from '@ohif/ui-next';
 import {
   utils,
@@ -12,7 +11,14 @@ import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 import { useSystem } from '@ohif/core/src';
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
-function OHIFCornerstoneRTViewport(props: withAppTypes) {
+interface OHIFCornerstoneRTViewportProps {
+  displaySets?: object[];
+  viewportId: string;
+  dataSource?: object;
+  children?: React.ReactNode;
+}
+
+function OHIFCornerstoneRTViewport(props: OHIFCornerstoneRTViewportProps) {
   const { servicesManager, commandsManager } = useSystem();
   const { children, displaySets, viewportOptions } = props as {
     children: React.ReactNode;
@@ -235,13 +241,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     </>
   );
 }
-
-OHIFCornerstoneRTViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {
   const image0 = referencedDisplaySet.images[0];

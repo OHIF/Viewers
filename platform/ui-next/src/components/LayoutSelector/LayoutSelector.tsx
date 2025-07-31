@@ -4,7 +4,6 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons';
-import * as PropTypes from 'prop-types';
 
 // Types
 type LayoutCommandOptions = {
@@ -39,16 +38,15 @@ const useLayoutSelector = () => {
   return context;
 };
 
-// Main component
-type LayoutSelectorProps = {
-  onSelectionChange?: (commandOptions: LayoutCommandOptions, isPreset: boolean) => void;
-  onSelection?: (commandOptions: LayoutCommandOptions) => void;
-  onSelectionPreset?: (commandOptions: LayoutCommandOptions) => void;
+interface LayoutSelectorProps {
+  onSelectionChange?(...args: unknown[]): unknown;
+  onSelection?(...args: unknown[]): unknown;
+  onSelectionPreset?(...args: unknown[]): unknown;
   children: React.ReactNode;
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  tooltipDisabled?: boolean; // Keep this prop for now as it might be used elsewhere
-};
+  onOpenChange?(...args: unknown[]): unknown;
+  tooltipDisabled?: boolean;
+}
 
 const LayoutSelector = ({
   onSelectionChange,
@@ -347,17 +345,6 @@ LayoutSelector.Preset = Preset;
 LayoutSelector.GridSelector = GridSelector;
 LayoutSelector.Divider = Divider;
 LayoutSelector.HelpText = HelpText;
-
-// PropTypes
-LayoutSelector.propTypes = {
-  onSelectionChange: PropTypes.func,
-  onSelection: PropTypes.func,
-  onSelectionPreset: PropTypes.func,
-  children: PropTypes.node.isRequired,
-  open: PropTypes.bool,
-  onOpenChange: PropTypes.func,
-  tooltipDisabled: PropTypes.bool,
-};
 
 export { LayoutSelector };
 export default LayoutSelector;

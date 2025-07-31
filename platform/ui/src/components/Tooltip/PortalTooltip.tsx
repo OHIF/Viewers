@@ -1,3 +1,4 @@
+import { createRoot, createRoot } from "react-dom/client";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
@@ -41,13 +42,12 @@ export default class PortalTooltip extends React.Component {
     }
     const { parent, ...other } = props;
     const parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent;
-    ReactDOM.render(
-      <Card
-        parentEl={parentEl}
-        {...other}
-      />,
-      portalNodes[this.props.group].node
-    );
+    const root = createRoot(portalNodes[this.props.group].node);
+
+    root.render(<Card
+      parentEl={parentEl}
+      {...other}
+    />);
   }
 
   componentDidMount() {
@@ -86,8 +86,8 @@ export default class PortalTooltip extends React.Component {
 
   componentWillUnmount() {
     if (portalNodes[this.props.group]) {
-      // Todo: move this to root.unmount
-      ReactDOM.unmountComponentAtNode(portalNodes[this.props.group].node);
+      const root = createRoot(portalNodes[this.props.group].node);
+      root.unmount();
       clearTimeout(portalNodes[this.props.group].timeout);
 
       try {

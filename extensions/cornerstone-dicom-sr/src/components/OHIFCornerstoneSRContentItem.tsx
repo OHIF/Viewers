@@ -1,11 +1,16 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { CodeNameCodeSequenceValues } from '../enums';
 import formatContentItemValue from '../utils/formatContentItem';
 
 const EMPTY_TAG_VALUE = '[empty]';
 
-function OHIFCornerstoneSRContentItem(props) {
+interface OHIFCornerstoneSRContentItemProps {
+  contentItem?: object;
+  nodeIndexesTree?: number[];
+  continuityOfContent?: string;
+}
+
+function OHIFCornerstoneSRContentItem(props: OHIFCornerstoneSRContentItemProps) {
   const { contentItem, nodeIndexesTree, continuityOfContent } = props;
   const { ConceptNameCodeSequence } = contentItem;
   const { CodeValue, CodeMeaning } = ConceptNameCodeSequence;
@@ -53,11 +58,5 @@ function OHIFCornerstoneSRContentItem(props) {
     </>
   );
 }
-
-OHIFCornerstoneSRContentItem.propTypes = {
-  contentItem: PropTypes.object,
-  nodeIndexesTree: PropTypes.arrayOf(PropTypes.number),
-  continuityOfContent: PropTypes.string,
-};
 
 export { OHIFCornerstoneSRContentItem };

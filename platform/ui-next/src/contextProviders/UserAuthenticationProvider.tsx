@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
-import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
   user: null,
@@ -8,7 +7,17 @@ const DEFAULT_STATE = {
 
 export const UserAuthenticationContext = createContext(DEFAULT_STATE);
 
-export function UserAuthenticationProvider({ children, service }) {
+interface UserAuthenticationProviderProps {
+  children?: any;
+  service: {
+    setServiceImplementation?(...args: unknown[]): unknown;
+  };
+}
+
+export function UserAuthenticationProvider({
+  children,
+  service
+}: UserAuthenticationProviderProps) {
   const userAuthenticationReducer = (state, action) => {
     switch (action.type) {
       case 'SET_USER': {
@@ -122,12 +131,5 @@ export default UserAuthenticationProvider;
 
 const UserAuthenticationConsumer = UserAuthenticationContext.Consumer;
 export { UserAuthenticationConsumer };
-
-UserAuthenticationProvider.propTypes = {
-  children: PropTypes.any,
-  service: PropTypes.shape({
-    setServiceImplementation: PropTypes.func,
-  }).isRequired,
-};
 
 export const useUserAuthentication = () => useContext(UserAuthenticationContext);

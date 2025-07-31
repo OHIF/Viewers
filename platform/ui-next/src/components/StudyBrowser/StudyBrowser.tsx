@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { StudyItem } from '../StudyItem';
 import { StudyBrowserSort } from '../StudyBrowserSort';
@@ -7,6 +6,51 @@ import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
 import { ScrollArea } from '../ScrollArea';
 
 const noop = () => {};
+
+interface StudyBrowserProps {
+  onClickTab(...args: unknown[]): unknown;
+  onClickStudy?(...args: unknown[]): unknown;
+  onClickThumbnail?(...args: unknown[]): unknown;
+  onDoubleClickThumbnail?(...args: unknown[]): unknown;
+  onClickUntrack?(...args: unknown[]): unknown;
+  activeTabName: string;
+  expandedStudyInstanceUIDs: string[];
+  activeDisplaySetInstanceUIDs?: string[];
+  tabs?: {
+    name: string;
+    label: string;
+    studies: {
+      studyInstanceUid: string;
+      date?: string;
+      numInstances?: number;
+      modalities?: string;
+      description?: string;
+      displaySets?: {
+        displaySetInstanceUID: string;
+        imageSrc?: string;
+        imageAltText?: string;
+        seriesDate?: string;
+        seriesNumber?: any;
+        numInstances?: number;
+        description?: string;
+        componentType: "thumbnail" | "thumbnailTracked" | "thumbnailNoImage";
+        isTracked?: boolean;
+        /**
+         * Data the thumbnail should expose to a receiving drop target. Use a matching
+         * `dragData.type` to identify which targets can receive this draggable item.
+         * If this is not set, drag-n-drop will be disabled for this thumbnail.
+         *
+         * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+         */
+        dragData?: {
+          /** Must match the "type" a dropTarget expects */
+          type: string;
+        };
+      }[];
+    }[];
+  }[];
+  StudyMenuItems?(...args: unknown[]): unknown;
+}
 
 const StudyBrowser = ({
   tabs,
@@ -22,8 +66,8 @@ const StudyBrowser = ({
   showSettings,
   viewPresets,
   ThumbnailMenuItems,
-  StudyMenuItems,
-}: withAppTypes) => {
+  StudyMenuItems
+}: StudyBrowserProps) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
     const viewPreset = viewPresets
@@ -83,58 +127,6 @@ const StudyBrowser = ({
       </div>
     </ScrollArea>
   );
-};
-
-StudyBrowser.propTypes = {
-  onClickTab: PropTypes.func.isRequired,
-  onClickStudy: PropTypes.func,
-  onClickThumbnail: PropTypes.func,
-  onDoubleClickThumbnail: PropTypes.func,
-  onClickUntrack: PropTypes.func,
-  activeTabName: PropTypes.string.isRequired,
-  expandedStudyInstanceUIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeDisplaySetInstanceUIDs: PropTypes.arrayOf(PropTypes.string),
-  tabs: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      studies: PropTypes.arrayOf(
-        PropTypes.shape({
-          studyInstanceUid: PropTypes.string.isRequired,
-          date: PropTypes.string,
-          numInstances: PropTypes.number,
-          modalities: PropTypes.string,
-          description: PropTypes.string,
-          displaySets: PropTypes.arrayOf(
-            PropTypes.shape({
-              displaySetInstanceUID: PropTypes.string.isRequired,
-              imageSrc: PropTypes.string,
-              imageAltText: PropTypes.string,
-              seriesDate: PropTypes.string,
-              seriesNumber: PropTypes.any,
-              numInstances: PropTypes.number,
-              description: PropTypes.string,
-              componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])
-                .isRequired,
-              isTracked: PropTypes.bool,
-              /**
-               * Data the thumbnail should expose to a receiving drop target. Use a matching
-               * `dragData.type` to identify which targets can receive this draggable item.
-               * If this is not set, drag-n-drop will be disabled for this thumbnail.
-               *
-               * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-               */
-              dragData: PropTypes.shape({
-                /** Must match the "type" a dropTarget expects */
-                type: PropTypes.string.isRequired,
-              }),
-            })
-          ),
-        })
-      ).isRequired,
-    })
-  ),
-  StudyMenuItems: PropTypes.func,
 };
 
 export { StudyBrowser };

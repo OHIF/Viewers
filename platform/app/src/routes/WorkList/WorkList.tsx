@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -36,6 +35,8 @@ import {
   InvestigationalUseDialog,
 } from '@ohif/ui-next';
 
+import { ShepherdJourneyProvider } from 'react-shepherd';
+
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
@@ -45,6 +46,16 @@ const PatientInfoVisibility = Types.PatientInfoVisibility;
 const { sortBySeriesDate } = utils;
 
 const seriesInStudiesMap = new Map();
+
+interface WorkListProps {
+  data: unknown[];
+  dataSource: {
+    query: object;
+    getConfig?(...args: unknown[]): unknown;
+  };
+  isLoadingData: boolean;
+  servicesManager: object;
+}
 
 /**
  * TODO:
@@ -58,8 +69,8 @@ function WorkList({
   hotkeysManager,
   dataPath,
   onRefresh,
-  servicesManager,
-}: withAppTypes) {
+  servicesManager
+}: WorkListProps) {
   const { show, hide } = useModal();
   const { t } = useTranslation();
   // ~ Modes
@@ -550,7 +561,9 @@ function WorkList({
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
-      <Onboarding />
+      <ShepherdJourneyProvider>
+        <Onboarding />
+      </ShepherdJourneyProvider>
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full flex-col overflow-y-auto">
         <ScrollArea>
@@ -601,16 +614,6 @@ function WorkList({
     </div>
   );
 }
-
-WorkList.propTypes = {
-  data: PropTypes.array.isRequired,
-  dataSource: PropTypes.shape({
-    query: PropTypes.object.isRequired,
-    getConfig: PropTypes.func,
-  }).isRequired,
-  isLoadingData: PropTypes.bool.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 const defaultFilterValues = {
   patientName: '',

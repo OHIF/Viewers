@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import * as ButtonEnums from './ButtonEnums';
 import Tooltip from '../Tooltip/Tooltip';
@@ -57,6 +56,32 @@ const defaults = {
   type: ButtonEnums.type.primary,
 };
 
+interface ButtonProps {
+  /** What is inside the button, can be text or react component */
+  children?: React.ReactNode;
+  /** Callback to be called when the button is clicked  */
+  onClick(...args: unknown[]): unknown;
+  /** Button size  */
+  size?: unknown | unknown;
+  /** Whether the button should be disabled  */
+  disabled?: boolean;
+  /** Button type  */
+  type?: unknown | unknown;
+  name?: string;
+  /** Button start icon name - if any icon is specified  */
+  startIcon?: React.ReactNode;
+  /** Button end icon name - if any icon is specified  */
+  endIcon?: React.ReactNode;
+  /** Additional TailwindCSS classnames */
+  className?: string;
+  /** Tooltip for the start icon */
+  startIconTooltip?: React.ReactNode;
+  /** Tooltip for the end icon */
+  endIconTooltip?: React.ReactNode;
+  /** Data attribute for testing */
+  dataCY?: string;
+}
+
 const Button = ({
   children = '',
   size = defaults.size,
@@ -69,8 +94,8 @@ const Button = ({
   onClick = () => {},
   dataCY,
   startIconTooltip = null,
-  endIconTooltip = null,
-}) => {
+  endIconTooltip = null
+}: ButtonProps) => {
   dataCY = dataCY || `${name}-btn`;
 
   const startIcon = startIconProp && (
@@ -119,32 +144,6 @@ const Button = ({
       {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}
     </button>
   );
-};
-
-Button.propTypes = {
-  /** What is inside the button, can be text or react component */
-  children: PropTypes.node,
-  /** Callback to be called when the button is clicked  */
-  onClick: PropTypes.func.isRequired,
-  /** Button size  */
-  size: PropTypes.oneOf([ButtonEnums.size.medium, ButtonEnums.size.small]),
-  /** Whether the button should be disabled  */
-  disabled: PropTypes.bool,
-  /** Button type  */
-  type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]),
-  name: PropTypes.string,
-  /** Button start icon name - if any icon is specified  */
-  startIcon: PropTypes.node,
-  /** Button end icon name - if any icon is specified  */
-  endIcon: PropTypes.node,
-  /** Additional TailwindCSS classnames */
-  className: PropTypes.string,
-  /** Tooltip for the start icon */
-  startIconTooltip: PropTypes.node,
-  /** Tooltip for the end icon */
-  endIconTooltip: PropTypes.node,
-  /** Data attribute for testing */
-  dataCY: PropTypes.string,
 };
 
 export default Button;

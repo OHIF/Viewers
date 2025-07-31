@@ -6,7 +6,13 @@ import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types'
 const MAX_TOOLTIP_LENGTH = 150;
 const iconClassNames = 'grow-0 text-primary-light h-4 w-4 mt-1 mr-2 mb-0 ml-1';
 
-const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): ReactElement => {
+interface ProgressItemDetailProps {
+  option: unknown;
+}
+
+const ProgressItemDetail = ({
+  option
+}: ProgressItemDetailProps): ReactElement<any> => {
   const { label, info, completed } = option;
   const [truncate, setTruncate] = useState(true);
   const handleOnHideTooltip = () => setTruncate(true);
@@ -85,10 +91,6 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
       </div>
     </>
   );
-};
-
-ProgressItemDetail.propTypes = {
-  option: ProgressDropdownOptionPropType.isRequired,
 };
 
 export default ProgressItemDetail;

@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Enums, ExtensionManager, MODULE_TYPES, log } from '@ohif/core';
 //
 import { extensionManager } from '../App';
@@ -19,6 +18,11 @@ const areLocationsTheSame = (location0, location1) => {
   );
 };
 
+interface DataSourceWrapperProps {
+  /** Layout Component to wrap with a Data Source */
+  children: React.ReactElement<any> | ((...args: unknown[]) => unknown);
+}
+
 /**
  * Uses route properties to determine the data source that should be passed
  * to the child layout template. In some instances, initiates requests and
@@ -27,7 +31,7 @@ const areLocationsTheSame = (location0, location1) => {
  * @param {object} props
  * @param {function} props.children - Layout Template React Component
  */
-function DataSourceWrapper(props: withAppTypes) {
+function DataSourceWrapper(props: DataSourceWrapperProps) {
   const { servicesManager } = props;
   const navigate = useNavigate();
   const { children: LayoutTemplate, ...rest } = props;
@@ -234,11 +238,6 @@ function DataSourceWrapper(props: withAppTypes) {
     />
   );
 }
-
-DataSourceWrapper.propTypes = {
-  /** Layout Component to wrap with a Data Source */
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
-};
 
 export default DataSourceWrapper;
 

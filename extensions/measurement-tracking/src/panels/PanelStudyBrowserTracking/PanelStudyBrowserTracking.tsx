@@ -1,11 +1,19 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
 import PanelStudyBrowser from '@ohif/extension-default/src/Panels/StudyBrowser/PanelStudyBrowser';
 import { UntrackSeriesModal } from './untrackSeriesModal';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'PMAP'];
+
+interface PanelStudyBrowserTrackingProps {
+  dataSource: {
+    getImageIdsForDisplaySet(...args: unknown[]): unknown;
+  };
+  getImageSrc(...args: unknown[]): unknown;
+  getStudiesForPatientByMRN(...args: unknown[]): unknown;
+  requestDisplaySetCreationForStudy(...args: unknown[]): unknown;
+}
 
 /**
  * Panel component for the Study Browser with tracking capabilities
@@ -14,8 +22,8 @@ export default function PanelStudyBrowserTracking({
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
-  dataSource,
-}) {
+  dataSource
+}: PanelStudyBrowserTrackingProps) {
   const { servicesManager } = useSystem();
   const { displaySetService, uiModalService, measurementService, viewportGridService } =
     servicesManager.services;
@@ -138,12 +146,3 @@ export default function PanelStudyBrowserTracking({
     />
   );
 }
-
-PanelStudyBrowserTracking.propTypes = {
-  dataSource: PropTypes.shape({
-    getImageIdsForDisplaySet: PropTypes.func.isRequired,
-  }).isRequired,
-  getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByMRN: PropTypes.func.isRequired,
-  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
-};

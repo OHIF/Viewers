@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
@@ -9,7 +8,16 @@ import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
-function OHIFCornerstoneSRMeasurementViewport(props) {
+interface OHIFCornerstoneSRMeasurementViewportProps {
+  displaySets?: object[];
+  viewportId: string;
+  dataSource?: object;
+  children?: React.ReactNode;
+  viewportLabel?: string;
+  viewportOptions?: object;
+}
+
+function OHIFCornerstoneSRMeasurementViewport(props: OHIFCornerstoneSRMeasurementViewportProps) {
   const { servicesManager } = useSystem();
   const { children, dataSource, displaySets, viewportOptions } = props as {
     children: React.ReactNode;
@@ -220,15 +228,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
     </>
   );
 }
-
-OHIFCornerstoneSRMeasurementViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-  viewportLabel: PropTypes.string,
-  viewportOptions: PropTypes.object,
-};
 
 async function _getViewportReferencedDisplaySetData(
   displaySet,

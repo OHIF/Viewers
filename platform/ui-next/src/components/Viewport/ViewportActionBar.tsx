@@ -6,22 +6,30 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import { Icons } from '@ohif/ui-next';
 import { PatientInfo } from './PatientInfo';
-
-/**
- * This is the modern Viewport Action Bar, showing patient info, series date,
- * series description, and optional next/prev arrows if there's enough screen width.
- */
-type ViewportActionBarProps = {
-  studyData: any;
-  onArrowsClick: (arrow: string) => void;
-  onDoubleClick: MouseEventHandler;
-  getStatusComponent: () => ReactElement;
-};
+interface ViewportActionBarProps {
+  onArrowsClick(...args: unknown[]): unknown;
+  onDoubleClick?(...args: unknown[]): unknown;
+  studyData: {
+    label: string;
+    studyDate: string;
+    seriesDescription: string;
+    patientInformation?: {
+      patientName?: string;
+      patientSex?: string;
+      patientAge?: string;
+      MRN?: string;
+      thickness?: string;
+      thicknessUnits?: string;
+      spacing?: string;
+      scanner?: string;
+    };
+  };
+  getStatusComponent(...args: unknown[]): unknown;
+}
 
 function ViewportActionBar({
   studyData,
@@ -103,26 +111,5 @@ function ViewportActionBar({
     </div>
   );
 }
-
-ViewportActionBar.propTypes = {
-  onArrowsClick: PropTypes.func.isRequired,
-  onDoubleClick: PropTypes.func,
-  studyData: PropTypes.shape({
-    label: PropTypes.string.isRequired,
-    studyDate: PropTypes.string.isRequired,
-    seriesDescription: PropTypes.string.isRequired,
-    patientInformation: PropTypes.shape({
-      patientName: PropTypes.string,
-      patientSex: PropTypes.string,
-      patientAge: PropTypes.string,
-      MRN: PropTypes.string,
-      thickness: PropTypes.string,
-      thicknessUnits: PropTypes.string,
-      spacing: PropTypes.string,
-      scanner: PropTypes.string,
-    }),
-  }).isRequired,
-  getStatusComponent: PropTypes.func.isRequired,
-};
 
 export { ViewportActionBar };

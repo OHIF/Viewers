@@ -1,9 +1,15 @@
 // Updated ToolbarLayoutSelector.tsx
 import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { CommandsManager } from '@ohif/core';
 
 import { LayoutSelector } from '@ohif/ui-next';
+
+interface ToolbarLayoutSelectorWithServicesProps {
+  commandsManager?: CommandsManager;
+  servicesManager?: object;
+  rows?: number;
+  columns?: number;
+}
 
 function ToolbarLayoutSelectorWithServices({
   commandsManager,
@@ -11,7 +17,7 @@ function ToolbarLayoutSelectorWithServices({
   rows = 3,
   columns = 4,
   ...props
-}) {
+}: ToolbarLayoutSelectorWithServicesProps) {
   const { customizationService } = servicesManager.services;
 
   // Get the presets from the customization service
@@ -190,12 +196,5 @@ function ToolbarLayoutSelectorWithServices({
     </div>
   );
 }
-
-ToolbarLayoutSelectorWithServices.propTypes = {
-  commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.object,
-  rows: PropTypes.number,
-  columns: PropTypes.number,
-};
 
 export default ToolbarLayoutSelectorWithServices;

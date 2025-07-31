@@ -8,7 +8,7 @@ interface Props extends VolumeRenderingPresetsContentProps {
   hide: () => void;
 }
 
-export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Props): ReactElement {
+export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Props): ReactElement<any> {
   const { commandsManager } = useSystem();
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);

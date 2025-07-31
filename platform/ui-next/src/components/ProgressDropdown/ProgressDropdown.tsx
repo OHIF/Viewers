@@ -1,5 +1,4 @@
-import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef, type JSX } from 'react';
 import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';
 import ProgressItemDetail from './ProgressItemDetail';
@@ -7,18 +6,21 @@ import ProgressItem from './ProgressItem';
 import { Icons } from '../Icons';
 import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
+interface ProgressDropdownProps {
+  options: unknown[];
+  value?: string;
+  onChange?(...args: unknown[]): unknown;
+  children?: React.ReactNode;
+  dropDownWidth?: string;
+}
+
 const ProgressDropdown = ({
   options: optionsProps,
   value,
   children,
   dropDownWidth = '170',
-  onChange,
-}: {
-  options: ProgressDropdownOption[];
-  value?: string;
-  children?: ReactNode;
-  onChange?: ({ selectedOption }) => void;
-}): JSX.Element => {
+  onChange
+}: ProgressDropdownProps): JSX.Element => {
   const element = useRef(null);
   const [open, setOpen] = useState(false);
   const toggleOpen = () => setOpen(s => !s);
@@ -151,14 +153,6 @@ const ProgressDropdown = ({
       </div>
     </div>
   );
-};
-
-ProgressDropdown.propTypes = {
-  options: PropTypes.arrayOf(ProgressDropdownOptionPropType).isRequired,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  children: PropTypes.node,
-  dropDownWidth: PropTypes.string,
 };
 
 export default ProgressDropdown;

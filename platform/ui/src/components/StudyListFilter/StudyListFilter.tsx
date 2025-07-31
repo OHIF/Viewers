@@ -1,11 +1,36 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import LegacyButton from '../LegacyButton';
 import Typography from '../Typography';
 import InputGroup from '../InputGroup';
 import { Icons } from '@ohif/ui-next';
+
+interface StudyListFilterProps {
+  filtersMeta: {
+    /** Identifier used to map a field to it's value in `filterValues` */
+    name: string;
+    /** Friendly label for filter field */
+    displayName: string;
+    /** One of the supported filter field input types */
+    inputType: "Text" | "MultiSelect" | "DateRange" | "None";
+    isSortable: boolean;
+    /** Size of filter field in a 12-grid system */
+    gridCol: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    /** Options for a "MultiSelect" inputType */
+    option?: {
+      value?: string;
+      label?: string;
+    }[];
+  }[];
+  filterValues: object;
+  numOfStudies: number;
+  onChange(...args: unknown[]): unknown;
+  clearFilters(...args: unknown[]): unknown;
+  isFiltering: boolean;
+  onUploadClick?(...args: unknown[]): unknown;
+  getDataSourceConfigurationComponent?(...args: unknown[]): unknown;
+}
 
 const StudyListFilter = ({
   filtersMeta,
@@ -15,8 +40,8 @@ const StudyListFilter = ({
   isFiltering,
   numOfStudies,
   onUploadClick,
-  getDataSourceConfigurationComponent,
-}) => {
+  getDataSourceConfigurationComponent
+}: StudyListFilterProps) => {
   const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
@@ -109,36 +134,6 @@ const StudyListFilter = ({
       </div>
     </React.Fragment>
   );
-};
-
-StudyListFilter.propTypes = {
-  filtersMeta: PropTypes.arrayOf(
-    PropTypes.shape({
-      /** Identifier used to map a field to it's value in `filterValues` */
-      name: PropTypes.string.isRequired,
-      /** Friendly label for filter field */
-      displayName: PropTypes.string.isRequired,
-      /** One of the supported filter field input types */
-      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None']).isRequired,
-      isSortable: PropTypes.bool.isRequired,
-      /** Size of filter field in a 12-grid system */
-      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).isRequired,
-      /** Options for a "MultiSelect" inputType */
-      option: PropTypes.arrayOf(
-        PropTypes.shape({
-          value: PropTypes.string,
-          label: PropTypes.string,
-        })
-      ),
-    })
-  ).isRequired,
-  filterValues: PropTypes.object.isRequired,
-  numOfStudies: PropTypes.number.isRequired,
-  onChange: PropTypes.func.isRequired,
-  clearFilters: PropTypes.func.isRequired,
-  isFiltering: PropTypes.bool.isRequired,
-  onUploadClick: PropTypes.func,
-  getDataSourceConfigurationComponent: PropTypes.func,
 };
 
 export default StudyListFilter;

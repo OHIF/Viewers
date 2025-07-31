@@ -1,14 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import getIcon from './getIcon';
 
-const Icon = ({ name, ...otherProps }) => {
-  return <React.Fragment>{getIcon(name, { ...otherProps })}</React.Fragment>;
-};
+interface IconProps {
+  name: string;
+  className?: string;
+}
 
-Icon.propTypes = {
-  name: PropTypes.string.isRequired,
-  className: PropTypes.string,
+const Icon = ({
+  name,
+  ...otherProps
+}: IconProps) => {
+  return <React.Fragment>{getIcon(name, { ...otherProps })}</React.Fragment>;
 };
 
 export default Icon;

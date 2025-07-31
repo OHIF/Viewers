@@ -1,9 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Typography from '../Typography';
 import { Icons } from '@ohif/ui-next';
 
-const ContextMenu = ({ items, ...props }) => {
+interface ContextMenuProps {
+  defaultPosition?: {
+    x?: number;
+    y?: number;
+  };
+  items?: {
+    label: string;
+    action(...args: unknown[]): unknown;
+  }[];
+}
+
+const ContextMenu = ({
+  items,
+  ...props
+}: ContextMenuProps) => {
   if (!items) {
     return null;
   }
@@ -33,19 +46,6 @@ const ContextMenu = ({ items, ...props }) => {
       ))}
     </div>
   );
-};
-
-ContextMenu.propTypes = {
-  defaultPosition: PropTypes.shape({
-    x: PropTypes.number,
-    y: PropTypes.number,
-  }),
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      action: PropTypes.func.isRequired,
-    })
-  ),
 };
 
 export default ContextMenu;

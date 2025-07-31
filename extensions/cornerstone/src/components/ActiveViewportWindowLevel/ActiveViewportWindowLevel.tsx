@@ -1,9 +1,14 @@
 import React, { ReactElement } from 'react';
-import PropTypes from 'prop-types';
 import { useViewportGrid } from '@ohif/ui-next';
 import ViewportWindowLevel from '../ViewportWindowLevel/ViewportWindowLevel';
 
-const ActiveViewportWindowLevel = ({ servicesManager }: withAppTypes): ReactElement => {
+interface ActiveViewportWindowLevelProps {
+  servicesManager: object;
+}
+
+const ActiveViewportWindowLevel = ({
+  servicesManager
+}: ActiveViewportWindowLevelProps): ReactElement<any> => {
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
 
@@ -17,10 +22,6 @@ const ActiveViewportWindowLevel = ({ servicesManager }: withAppTypes): ReactElem
       )}
     </>
   );
-};
-
-ActiveViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
 };
 
 export default ActiveViewportWindowLevel;
