@@ -34,8 +34,6 @@ import * as PanelModuleTypes from './PanelModule';
 import * as StudyMetadataTypes from './StudyMetadata';
 import * as ViewportGridTypes from './ViewportGridType';
 
-import { StepOptions, TourOptions } from 'shepherd.js';
-
 declare global {
   namespace AppTypes {
     export type ServicesManager = ServicesManagerType;
@@ -161,7 +159,7 @@ declare global {
       export type ComplexCommand = CommandTypes.ComplexCommand;
       export type Command = CommandTypes.Command;
       export type RunCommand = CommandTypes.RunCommand;
-      export interface Commands extends CommandTypes.Commands {}
+      export interface Commands extends CommandTypes.Commands { }
     }
 
     // Color types
@@ -249,7 +247,7 @@ declare global {
     }
   }
 
-  export interface PresentationIds {}
+  export interface PresentationIds { }
 
   export type withAppTypes<T = object> = T &
     AppTypes.Services &

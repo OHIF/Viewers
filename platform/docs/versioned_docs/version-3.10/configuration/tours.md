@@ -3,9 +3,9 @@ sidebar_position: 3
 sidebar_label: Tours
 ---
 
-# Configuring Tours in OHIF with Shepherd.js
+# Configuring Tours in OHIF with ReactTour
 
-In OHIF, you can configure guided tours for users by leveraging [Shepherd.js](https://shepherdjs.dev/), a JavaScript library for building feature tours. This page explains how you can define and customize these tours within your app configuration file.
+In OHIF, you can configure guided tours for users by leveraging [ReactTour](https://www.react.tours/), a JavaScript library for building feature tours. This page explains how you can define and customize these tours within your app configuration file.
 
 ## Overview
 
@@ -98,7 +98,7 @@ floatingUIOptions: {
 }
 ```
 
-### Shepherd.js Lifecycle Events
+### ReactTour Lifecycle Events
 
 Each step and tour can have lifecycle events like `show`, `hide`, `complete`, or `cancel`. These events allow you to hook into the tour’s lifecycle to perform actions when certain events are triggered.
 
@@ -117,12 +117,10 @@ when: {
 
 ## Customizing Your Tour
 
-Once you have a basic tour in place, you can extend it with more advanced features like custom scrolling behavior, dynamic elements, and event-based step advancement. For more details, check out the [Shepherd.js documentation](https://shepherdjs.dev/).
+Once you have a basic tour in place, you can extend it with more advanced features like custom scrolling behavior, dynamic elements, and event-based step advancement. For more details, check out the [ReactTour documentation](https://docs.react.tours/).
 
 ## Licensing
-All versions below 14.0 for Shepherd.JS is under the MIT license, if you wish to use any version above 14.0, you can visit the ShepherdJS website to learn about their pricing and plans [Shepherd.js](https://www.shepherdjs.dev/)
-
-[LICENSE](https://github.com/shipshapecode/shepherd?tab=License-1-ov-file#readme)
+ReactTour is licensed under the [MIT License](https://github.com/elrumordelaluz/reactour/blob/main/LICENSE).
 
 ## Demo
 
@@ -130,4 +128,4 @@ All versions below 14.0 for Shepherd.JS is under the MIT license, if you wish to
 
 ## Conclusion
 
-By leveraging **Shepherd.js**, you can provide users with interactive and informative guided tours of the viewer. This can greatly improve the user experience and help users understand how to use key features.
+By leveraging **ReactTour**, you can provide users with interactive and informative guided tours of the viewer. This can greatly improve the user experience and help users understand how to use key features.

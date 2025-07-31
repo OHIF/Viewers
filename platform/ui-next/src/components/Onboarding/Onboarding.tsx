@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
-import { useShepherd } from 'react-shepherd';
-import { StepOptions, TourOptions } from 'shepherd.js';
 import { useLocation } from 'react-router';
-import 'shepherd.js/dist/css/shepherd.css';
 import './Onboarding.css';
+import { useTour } from '@reactour/tour';
 
-import { hasTourBeenShown, markTourAsShown, defaultShowHandler, middleware } from './utilities';
+import { hasTourBeenShown, markTourAsShown } from './utilities';
 
 const Onboarding = ({
   tours = [],
@@ -13,11 +11,11 @@ const Onboarding = ({
   tours?: Array<{
     id: string;
     route: string;
-    tourOptions: TourOptions;
-    steps: StepOptions[];
+    tourOptions?: any;
+    steps: any;
   }>;
 }) => {
-  const Shepherd = useShepherd();
+  const { setSteps, setIsOpen } = useTour();
   const location = useLocation();
 
   /**
@@ -34,25 +32,15 @@ const Onboarding = ({
       return;
     }
 
-    const tourInstance = new Shepherd.Tour({
-      ...matchingTour.tourOptions,
-      defaultStepOptions: {
-        ...matchingTour.tourOptions?.defaultStepOptions,
-        floatingUIOptions: matchingTour.tourOptions?.defaultStepOptions?.floatingUIOptions || {
-          middleware,
-        },
-        when: {
-          ...matchingTour.tourOptions?.defaultStepOptions?.when,
-          show:
-            matchingTour.tourOptions?.defaultStepOptions?.when?.show ||
-            (() => defaultShowHandler(Shepherd)),
-        },
-      },
-    });
-    matchingTour.steps.forEach(step => tourInstance.addStep(step));
-    tourInstance.start();
+    // Set the steps for the tour
+    setSteps(matchingTour.steps);
+    
+    // Open the tour
+    setIsOpen(true);
+    
+    // Mark the tour as shown
     markTourAsShown(matchingTour.id);
-  }, [Shepherd, tours, location.pathname]);
+  }, [tours, location.pathname, setSteps, setIsOpen]);
 
   return null;
 };

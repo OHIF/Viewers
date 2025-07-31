@@ -34,9 +34,7 @@ import {
   ScrollArea,
   InvestigationalUseDialog,
 } from '@ohif/ui-next';
-
-import { ShepherdJourneyProvider } from 'react-shepherd';
-
+import { TourProvider } from '@reactour/tour';
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
@@ -69,7 +67,7 @@ function WorkList({
   hotkeysManager,
   dataPath,
   onRefresh,
-  servicesManager
+  servicesManager,
 }: WorkListProps) {
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -561,9 +559,9 @@ function WorkList({
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
-      <ShepherdJourneyProvider>
-        <Onboarding />
-      </ShepherdJourneyProvider>
+      <TourProvider steps={[]}>
+        <Onboarding tours={customizationService.getCustomization('ohif.tours')} />
+      </TourProvider>
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full flex-col overflow-y-auto">
         <ScrollArea>

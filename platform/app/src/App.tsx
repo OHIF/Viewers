@@ -33,8 +33,8 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
-import { ShepherdJourneyProvider } from 'react-shepherd';
 import './App.css';
+import { TourProvider } from '@reactour/tour';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
@@ -43,12 +43,14 @@ let commandsManager: CommandsManager,
   hotkeysManager: HotkeysManager;
 
 interface AppProps {
-  config: (...args: unknown[]) => unknown | {
-    routerBasename: string;
-    oidc?: unknown[];
-    whiteLabeling?: object;
-    extensions?: unknown[];
-  };
+  config: (...args: unknown[]) =>
+    | unknown
+    | {
+        routerBasename: string;
+        oidc?: unknown[];
+        whiteLabeling?: object;
+        extensions?: unknown[];
+      };
   /* Extensions that are "bundled" or "baked-in" to the application.
    * These would be provided at build time as part of they entry point. */
   defaultExtensions?: unknown[];
@@ -77,7 +79,7 @@ function App({
   },
 
   defaultExtensions = [],
-  defaultModes = []
+  defaultModes = [],
 }: AppProps) {
   const [init, setInit] = useState(null);
   useEffect(() => {
@@ -137,7 +139,7 @@ function App({
     [TooltipProvider],
     [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
     [ModalProvider, { service: uiModalService, modal: ModalNext }],
-    [ShepherdJourneyProvider],
+    [TourProvider, { steps: [] }],
   ];
 
   // Loop through and register each of the service providers registered with the ServiceProvidersManager.
