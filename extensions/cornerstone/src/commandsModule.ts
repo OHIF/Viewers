@@ -160,6 +160,7 @@ function commandsModule({
       if (viewportId) {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
         viewport.setViewReference(metadata);
+        viewport.render();
         return;
       }
 
@@ -423,15 +424,16 @@ function commandsModule({
       }
 
       // Create presentation data with referencedImageId and options if provided
-      const presentationData = (referencedImageId || options?.FrameOfReferenceUID)
-        ? {
-            ...presentations.positionPresentation,
-            viewReference: {
-              referencedImageId,
-              ...options,
-            },
-          }
-        : presentations.positionPresentation;
+      const presentationData =
+        referencedImageId || options?.FrameOfReferenceUID
+          ? {
+              ...presentations.positionPresentation,
+              viewReference: {
+                referencedImageId,
+                ...options,
+              },
+            }
+          : presentations.positionPresentation;
 
       if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
