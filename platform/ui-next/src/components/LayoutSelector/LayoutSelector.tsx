@@ -38,17 +38,6 @@ const useLayoutSelector = () => {
   return context;
 };
 
-// Main component
-type LayoutSelectorProps = {
-  onSelectionChange?: (commandOptions: LayoutCommandOptions, isPreset: boolean) => void;
-  onSelection?: (commandOptions: LayoutCommandOptions) => void;
-  onSelectionPreset?: (commandOptions: LayoutCommandOptions) => void;
-  children: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  tooltipDisabled?: boolean; // Keep this prop for now as it might be used elsewhere
-};
-
 interface LayoutSelectorProps {
   onSelectionChange?(...args: unknown[]): unknown;
   onSelection?(...args: unknown[]): unknown;
@@ -66,7 +55,7 @@ const LayoutSelector = ({
   children,
   open,
   onOpenChange,
-  tooltipDisabled
+  tooltipDisabled,
 }: LayoutSelectorProps) => {
   const [isOpenInternal, setIsOpenInternal] = useState(false);
 

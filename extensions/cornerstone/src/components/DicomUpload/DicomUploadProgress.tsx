@@ -11,11 +11,6 @@ import DicomFileUploader, {
 import DicomUploadProgressItem from './DicomUploadProgressItem';
 import classNames from 'classnames';
 
-type DicomUploadProgressProps = {
-  dicomFileUploaderArr: DicomFileUploader[];
-  onComplete: () => void;
-};
-
 const ONE_SECOND = 1000;
 const ONE_MINUTE = ONE_SECOND * 60;
 const ONE_HOUR = ONE_MINUTE * 60;
@@ -43,7 +38,7 @@ interface DicomUploadProgressProps {
 
 function DicomUploadProgress({
   dicomFileUploaderArr,
-  onComplete
+  onComplete,
 }: DicomUploadProgressProps): ReactElement {
   const { servicesManager } = useSystem();
 
@@ -363,7 +358,7 @@ function DicomUploadProgress({
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
-                <div className="w-10 text-right text-foreground">{`${getPercentCompleteRounded()}%`}</div>
+                <div className="text-foreground w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
             </>

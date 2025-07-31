@@ -6,24 +6,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 import { Button } from '../Button/Button';
 import { Numeric } from '../Numeric/Numeric';
 
-export type CinePlayerProps = {
-  className: string;
-  isPlaying: boolean;
-  minFrameRate?: number;
-  maxFrameRate?: number;
-  stepFrameRate?: number;
-  frameRate?: number;
-  onFrameRateChange: (value: number) => void;
-  onPlayPauseChange: (value: boolean) => void;
-  onClose: () => void;
-  updateDynamicInfo?: (info: any) => void;
-  dynamicInfo?: {
-    dimensionGroupNumber: number;
-    numDimensionGroups: number;
-    label?: string;
-  };
-};
-
 interface CinePlayerProps {
   /** Minimum value for range slider */
   minFrameRate?: number;
@@ -56,7 +38,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   onPlayPauseChange = () => {},
   onClose = () => {},
   dynamicInfo = {},
-  updateDynamicInfo
+  updateDynamicInfo,
 }: CinePlayerProps) => {
   const isDynamic = !!dynamicInfo?.numDimensionGroups;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);

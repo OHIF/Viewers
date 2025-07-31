@@ -10,18 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Icons } from '@ohif/ui-next';
 import { PatientInfo } from './PatientInfo';
-
-/**
- * This is the modern Viewport Action Bar, showing patient info, series date,
- * series description, and optional next/prev arrows if there's enough screen width.
- */
-type ViewportActionBarProps = {
-  studyData: any;
-  onArrowsClick: (arrow: string) => void;
-  onDoubleClick: MouseEventHandler;
-  getStatusComponent: () => ReactElement;
-};
-
 interface ViewportActionBarProps {
   onArrowsClick(...args: unknown[]): unknown;
   onDoubleClick?(...args: unknown[]): unknown;
@@ -47,7 +35,7 @@ function ViewportActionBar({
   studyData,
   onArrowsClick,
   onDoubleClick,
-  getStatusComponent
+  getStatusComponent,
 }: ViewportActionBarProps): JSX.Element {
   const { label, studyDate, seriesDescription, patientInformation } = studyData;
   const { patientName, patientSex, patientAge, MRN, thickness, thicknessUnits, spacing, scanner } =

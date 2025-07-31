@@ -7,19 +7,13 @@ import DicomFileUploader, {
 } from '../../utils/DicomFileUploader';
 import { Icons } from '@ohif/ui-next';
 
-type DicomUploadProgressItemProps = {
-  dicomFileUploader: DicomFileUploader;
-};
-
 interface DicomUploadProgressItemProps {
   dicomFileUploader: DicomFileUploader;
 }
 
 // eslint-disable-next-line react/display-name
 const DicomUploadProgressItem = memo(
-  ({
-    dicomFileUploader
-  }: DicomUploadProgressItemProps): ReactElement => {
+  ({ dicomFileUploader }: DicomUploadProgressItemProps): ReactElement => {
     const [percentComplete, setPercentComplete] = useState(dicomFileUploader.getPercentComplete());
     const [failedReason, setFailedReason] = useState('');
     const [status, setStatus] = useState(dicomFileUploader.getStatus());

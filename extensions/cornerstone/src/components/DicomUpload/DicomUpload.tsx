@@ -7,23 +7,13 @@ import DicomUploadProgress from './DicomUploadProgress';
 import { Button, ButtonEnums } from '@ohif/ui';
 import './DicomUpload.css';
 
-type DicomUploadProps = {
-  dataSource;
-  onComplete: () => void;
-  onStarted: () => void;
-};
-
 interface DicomUploadProps {
   dataSource: object;
   onComplete(...args: unknown[]): unknown;
   onStarted(...args: unknown[]): unknown;
 }
 
-function DicomUpload({
-  dataSource,
-  onComplete,
-  onStarted
-}: DicomUploadProps): ReactElement {
+function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
   const baseClassNames = 'min-h-[480px] flex flex-col bg-black select-none';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
