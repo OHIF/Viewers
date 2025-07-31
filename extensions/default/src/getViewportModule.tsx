@@ -5,7 +5,6 @@ const getViewportModule = () => {
     {
       name: 'chartViewport',
       component: LineChartViewport,
-      isReferenceViewable: () => false,
     },
   ];
 };
