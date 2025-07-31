@@ -77,15 +77,25 @@ export default class HangingProtocolService extends PubSubService {
     },
     ModalitiesInStudy: {
       name: 'Gets the array of the modalities for the series',
-      callback: metadata =>
-        metadata.ModalitiesInStudy ??
-        (metadata.series || []).reduce((prev, curr) => {
-          const { Modality } = curr;
-          if (Modality && prev.indexOf(Modality) == -1) {
-            prev.push(Modality);
-          }
-          return prev;
-        }, []),
+      callback: metadata => {
+        if (Array.isArray(metadata.ModalitiesInStudy) && metadata.ModalitiesInStudy.length > 0) {
+          return metadata.ModalitiesInStudy;
+        }
+        if (Array.isArray(metadata.series)) {
+          const modalities = metadata.series.reduce((prev, curr) => {
+            let { Modality } = curr;
+            if (!Modality) {
+              Modality = curr.instances[0]?.Modality;
+            }
+            if (Modality && prev.indexOf(Modality) === -1) {
+              prev.push(Modality);
+            }
+            return prev;
+          }, []);
+          return modalities;
+        }
+        return [];
+      },
     },
     isReconstructable: {
       name: 'Checks if the display set is reconstructable',
