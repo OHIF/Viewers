@@ -42,8 +42,8 @@
     "dcmjs": "^0.42.0",
     "lodash.debounce": "^4.0.8",
     "prop-types": "^15.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "webpack": "5.89.0",
     "webpack-merge": "^5.7.3"
   },
