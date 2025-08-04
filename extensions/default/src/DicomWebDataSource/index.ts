@@ -97,6 +97,11 @@ export type BulkDataURIConfig = {
   relativeResolution?: 'studies' | 'series';
 };
 
+interface HeadersInterface {
+  Accept?: string[];
+  Authorization?: object;
+}
+
 /**
  * Creates a DICOM Web API based on the provided configuration.
  *
@@ -136,19 +141,24 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         return xhrRequestHeaders;
       };
 
-      generateWadoHeader = () => {
+      generateWadoHeader = (skipAccept: bool = false): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        //Generate accept header depending on config params
-        const formattedAcceptHeader = utils.generateAcceptHeader(
-          dicomWebConfig.acceptHeader,
-          dicomWebConfig.requestTransferSyntaxUID,
-          dicomWebConfig.omitQuotationForMultipartRequest
-        );
-
-        return {
-          ...authorizationHeader,
-          Accept: formattedAcceptHeader,
-        };
+        if (!skipAccept) {
+          //Generate accept header depending on config params
+          const formattedAcceptHeader = utils.generateAcceptHeader(
+            dicomWebConfig.acceptHeader,
+            dicomWebConfig.requestTransferSyntaxUID,
+            dicomWebConfig.omitQuotationForMultipartRequest
+          );
+          return {
+            ...authorizationHeader,
+            Accept: formattedAcceptHeader,
+          };
+        } else {
+          return {
+            ...authorizationHeader
+          };
+        }
       };
 
       qidoConfig = {
@@ -410,7 +420,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      wadoDicomWebClient.headers = generateWadoHeader(true);
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -484,7 +494,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      wadoDicomWebClient.headers = generateWadoHeader(true);
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
