@@ -22,19 +22,14 @@ export interface HeadersInterface {
  * requestOptions struct.
  */
 export interface RequestOptions {
-  /**
-   * Authentication options to include. Can be a function.
-   */
-  auth?: Function | string;
-}
-
-/**
- * Interface to clearly present the expected fields to linters when passing the user credential's
- * struct containing a `getAccessToken()` method at a minimum.
- */
-export interface UserCredentials {
-  /**
-   * Expected method signature used for obtaining the access token encapsulated by the passed object.
-   */
-  getAccessToken?: () => string;
+  requestOptions?: {
+    /**
+     * Authentication options to include. Can be a function.
+     */
+    auth?: Function | string;
+    /**
+     * Authentication token. Satisfies the test requirement?
+     */
+    token?: string;
+  }
 }
