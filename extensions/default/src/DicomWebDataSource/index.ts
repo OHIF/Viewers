@@ -416,6 +416,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
+      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
+      // See issue #5288
       wadoDicomWebClient.headers = generateWadoHeader(true);
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
@@ -490,6 +492,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
+      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
+      // See issue #5288
       wadoDicomWebClient.headers = generateWadoHeader(true);
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
