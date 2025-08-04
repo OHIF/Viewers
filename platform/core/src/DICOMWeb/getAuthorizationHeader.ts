@@ -1,17 +1,23 @@
 import 'isomorphic-base64';
 import user from '../user';
+import { HeadersInterface, RequestOptions, UserCredentials } from '../types/RequestHeaders';
 
 /**
  * Returns the Authorization header as part of an Object.
  *
  * @export
  * @param {Object} [server={}]
- * @param {Object} [server.requestOptions]
- * @param {string|function} [server.requestOptions.auth]
+ * @param {Object} [requestOptions]
+ * @param {string|function} [requestOptions.auth]
+ * @param {Object} [user]
+ * @param {function} [user.getAccessToken]
  * @returns {Object} { Authorization }
  */
-export default function getAuthorizationHeader({ requestOptions } = {}, user) {
-  const headers = {};
+export default function getAuthorizationHeader(
+  requestOptions: RequestOptions,
+  user: UserCredentials): HeadersInterface
+{
+  const headers: HeadersInterface = {};
 
   // Check for OHIF.user since this can also be run on the server
   const accessToken = user && user.getAccessToken && user.getAccessToken();
