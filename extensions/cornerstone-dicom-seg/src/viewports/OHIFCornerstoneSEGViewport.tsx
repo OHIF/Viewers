@@ -214,7 +214,12 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
-    toolGroup = createSEGToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
+    toolGroup = createSEGToolGroupAndAddTools({
+      commandsManager,
+      toolGroupService,
+      customizationService,
+      toolGroupId,
+    });
 
     return () => {
       // remove the segmentation representations if seg displayset changed

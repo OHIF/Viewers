@@ -22,13 +22,20 @@ export default function isRehydratable(displaySet, mappings) {
   const { measurements } = displaySet;
 
   for (let i = 0; i < measurements.length; i++) {
-    const { TrackingIdentifier } = measurements[i] || {};
-    if (!TrackingIdentifier) {
-      console.warn('No tracking identifier for measurement ', measurements[i]);
+    const measurement = measurements[i];
+    if (!measurement) {
+      continue;
+    }
+    const { TrackingIdentifier = '', graphicType, graphicCode, pointsLength } = measurement;
+    if (!TrackingIdentifier && !graphicType) {
+      console.warn('No tracking identifier  or graphicType for measurement ', measurement);
       continue;
     }
     const adapter = MeasurementReport.getAdapterForTrackingIdentifier(TrackingIdentifier);
-    const hydratable = adapter && mappingDefinitions.has(adapter.toolType);
+    const adapters = MeasurementReport.getAdaptersForTypes(graphicCode, graphicType, pointsLength);
+    const hydratable =
+      (adapter && mappingDefinitions.has(adapter.toolType)) ||
+      (adapters && adapters.some(adapter => mappingDefinitions.has(adapter.toolType)));
 
     if (hydratable) {
       return true;
