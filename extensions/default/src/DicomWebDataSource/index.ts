@@ -97,8 +97,22 @@ export type BulkDataURIConfig = {
   relativeResolution?: 'studies' | 'series';
 };
 
+/**
+ * Interface to clearly present the expected fields to linters when building a request header.
+ */
 interface HeadersInterface {
+  /**
+   * Request Accept options. For example,
+   * `['multipart/related; type=application/octet-stream; transfer-syntax=1.2.840.10008.1.2.1.99',]`.
+   *
+   * Defines to the server the formats it can use to deliver data to us.
+   */
   Accept?: string[];
+  /**
+   * Request Authorization field. It can be overridden with the `requestOptions.auth` config item.
+   * Contains the authorization credentials or tokens necessary to authorize the request with the
+   * server.
+   */
   Authorization?: object;
 }
 
@@ -141,7 +155,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         return xhrRequestHeaders;
       };
 
-      generateWadoHeader = (skipAccept: bool = false): HeadersInterface => {
+      generateWadoHeader = (skipAccept: boolean = false): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
         if (!skipAccept) {
           //Generate accept header depending on config params
