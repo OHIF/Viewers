@@ -16,7 +16,7 @@ describe('getAuthorizationHeader', () => {
       Authorization: `Basic ${btoa(validServer.requestOptions.auth)}`,
     };
 
-    const authentication = getAuthorizationHeader(validServer);
+    const authentication: HeadersInterface = getAuthorizationHeader(validServer);
 
     expect(authentication).toEqual(expectedAuthorizationHeader);
   });
@@ -49,13 +49,13 @@ describe('getAuthorizationHeader', () => {
       Authorization: `Basic ${validServerCustomAuth.requestOptions.token}`,
     };
 
-    const authentication = getAuthorizationHeader(validServerCustomAuth);
+    const authentication: HeadersInterface = getAuthorizationHeader(validServerCustomAuth);
 
     expect(authentication).toEqual(expectedAuthorizationHeader);
   });
 
   it('should return an empty object when there is no either server.requestOptions.auth or accessToken', () => {
-    const authentication = getAuthorizationHeader({});
+    const authentication: HeadersInterface = getAuthorizationHeader({});
 
     expect(authentication).toEqual({});
   });
