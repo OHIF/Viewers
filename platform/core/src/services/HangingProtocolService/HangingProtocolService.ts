@@ -19,6 +19,26 @@ const DEFAULT_VIEWPORT_OPTIONS: HangingProtocol.ViewportOptions = {
   viewportType: 'stack',
 };
 
+/**
+ * Returns an array of unique values for the given attribute from a series array.
+ * If the attribute is not present on the series, attempts to get it from the first instance.
+ * @param {Array} series - The series array to extract attributes from.
+ * @param {string} attribute - The attribute name to extract.
+ * @returns {Array} Array of unique attribute values.
+ */
+function getUniqueAttributeFromSeries(series, attribute) {
+  return series.reduce((prev, curr) => {
+    let value = curr[attribute];
+    if (!value && curr.instances && curr.instances[0]) {
+      value = curr.instances[0][attribute];
+    }
+    if (value && prev.indexOf(value) === -1) {
+      prev.push(value);
+    }
+    return prev;
+  }, []);
+}
+
 export default class HangingProtocolService extends PubSubService {
   static EVENTS = {
     // The PROTOCOL_CHANGED event is fired when the protocol changes
@@ -78,21 +98,11 @@ export default class HangingProtocolService extends PubSubService {
     ModalitiesInStudy: {
       name: 'Gets the array of the modalities for the series',
       callback: metadata => {
-        if (Array.isArray(metadata.ModalitiesInStudy) && metadata.ModalitiesInStudy.length > 0) {
+        if (metadata.ModalitiesInStudy?.length > 0) {
           return metadata.ModalitiesInStudy;
         }
         if (Array.isArray(metadata.series)) {
-          const modalities = metadata.series.reduce((prev, curr) => {
-            let { Modality } = curr;
-            if (!Modality) {
-              Modality = curr.instances[0]?.Modality;
-            }
-            if (Modality && prev.indexOf(Modality) === -1) {
-              prev.push(Modality);
-            }
-            return prev;
-          }, []);
-          return modalities;
+          return getUniqueAttributeFromSeries(metadata.series, 'Modality');
         }
         return [];
       },
