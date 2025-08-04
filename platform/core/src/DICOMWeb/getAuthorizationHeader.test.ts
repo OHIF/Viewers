@@ -1,7 +1,8 @@
 import getAuthorizationHeader from './getAuthorizationHeader';
 import user from './../user';
+import { HeadersInterface, RequestOptions } from '../types/RequestHeaders';
 
-jest.mock('./../user.js');
+jest.mock('../user');
 
 describe('getAuthorizationHeader', () => {
   it('should return a HTTP Basic Auth when server contains requestOptions.auth', () => {
@@ -31,13 +32,13 @@ describe('getAuthorizationHeader', () => {
       Authorization: `Basic ${btoa(validServerWithoutPassword.requestOptions.auth)}`,
     };
 
-    const authentication = getAuthorizationHeader(validServerWithoutPassword);
+    const authentication: HeadersInterface = getAuthorizationHeader(validServerWithoutPassword);
 
     expect(authentication).toEqual(expectedAuthorizationHeader);
   });
 
   it('should return a HTTP Basic Auth when server contains requestOptions.auth custom function', () => {
-    const validServerCustomAuth = {
+    const validServerCustomAuth: RequestOptions = {
       requestOptions: {
         auth: options => `Basic ${options.token}`,
         token: 'ZHVtbXlfdXNlcjpkdW1teV9wYXNzd29yZA==',
@@ -62,7 +63,7 @@ describe('getAuthorizationHeader', () => {
   it('should return an Authorization with accessToken when server is not defined and there is an accessToken', () => {
     user.getAccessToken.mockImplementationOnce(() => 'MOCKED_TOKEN');
 
-    const authentication = getAuthorizationHeader({}, user);
+    const authentication: HeadersInterface = getAuthorizationHeader({}, user);
     const expectedHeaderBasedOnUserAccessToken = {
       Authorization: 'Bearer MOCKED_TOKEN',
     };

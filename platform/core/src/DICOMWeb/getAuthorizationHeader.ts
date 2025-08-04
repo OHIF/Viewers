@@ -1,6 +1,6 @@
 import 'isomorphic-base64';
-import user from '../user';
-import { HeadersInterface, RequestOptions, UserCredentials } from '../types/RequestHeaders';
+import {UserAccountInterface} from '../user';
+import { HeadersInterface, RequestOptions } from '../types/RequestHeaders';
 
 /**
  * Returns the Authorization header as part of an Object.
@@ -14,8 +14,8 @@ import { HeadersInterface, RequestOptions, UserCredentials } from '../types/Requ
  * @returns {Object} { Authorization }
  */
 export default function getAuthorizationHeader(
-  requestOptions: RequestOptions,
-  user: UserCredentials): HeadersInterface
+  {requestOptions}: RequestOptions,
+  user: UserAccountInterface = {}): HeadersInterface
 {
   const headers: HeadersInterface = {};
 
