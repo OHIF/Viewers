@@ -6,10 +6,11 @@ import {
 export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManager }) => {
   const { segmentationService, customizationService, displaySetService } = servicesManager.services;
 
-  const updateSegmentationStats = customizationService.getCustomization('panelSegmentation.updateSegmentationStats');
-  console.debug(updateSegmentationStats)
+  const disableAutomaticStatsUpdate = customizationService.getCustomization('panelSegmentation.disableAutomaticStatsUpdate');
+  console.debug(disableAutomaticStatsUpdate)
+
   let unsubscribeSegmentationDataModifiedHandler = () => {};
-  if(updateSegmentationStats) {
+  if(!disableAutomaticStatsUpdate) {
     const { unsubscribe } =
       setupSegmentationDataModifiedHandler({
         segmentationService,
@@ -18,8 +19,6 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
       });
       unsubscribeSegmentationDataModifiedHandler = unsubscribe;
   }
-
-
 
   const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
     segmentationService,
