@@ -78,8 +78,6 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
-        path.resolve(__dirname, '../ohif-gcp-extension/node_modules'),
-        path.resolve(__dirname, '../ohif-gcp-mode/node_modules'),
       ],
     },
     plugins: [
