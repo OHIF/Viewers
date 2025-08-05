@@ -7,6 +7,7 @@ import {
   seriesInStudy,
   processResults,
   processSeriesResults,
+  listSeries,
 } from './qido.js';
 import dcm4cheeReject from './dcm4cheeReject.js';
 
@@ -211,6 +212,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           return processSeriesResults(results);
         },
         // processResults: processResults.bind(),
+        list: async (studyInstanceUid: string, filters) => {
+          if (!studyInstanceUid) {
+            throw new Error('Unable to query for Series List without studyInstanceUid');
+          }
+          return listSeries(qidoDicomWebClient, studyInstanceUid, filters)
+        },
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
@@ -356,7 +363,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             );
           }
 
-          return implementation._retrieveSeriesMetadataSync(
+          return implementation._retrieveSeriesMetadataOptimizedSync(
             StudyInstanceUID,
             filters,
             sortCriteria,
@@ -406,6 +413,90 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           await wadoDicomWebClient.storeInstances(options);
         }
       },
+    },
+
+    _retrieveSeriesMetadataOptimizedSync: async (
+      StudyInstanceUID,
+      filters,
+      sortCriteria,
+      sortFunction,
+      madeInClient
+    ) => {
+      const enableStudyLazyLoad = false;
+
+      const series_list = await listSeries(
+        qidoDicomWebClient,
+        StudyInstanceUID,
+        filters
+      )
+
+
+
+      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
+      // See issue #5288
+      wadoDicomWebClient.headers = generateWadoHeader(true);
+      // data is all SOPInstanceUIDs
+      const data = await retrieveStudyMetadata(
+        wadoDicomWebClient,
+        StudyInstanceUID,
+        enableStudyLazyLoad,
+        filters,
+        sortCriteria,
+        sortFunction,
+        dicomWebConfig
+      );
+
+      // first naturalize the data
+      const naturalizedInstancesMetadata = data.map(naturalizeDataset);
+
+      const seriesSummaryMetadata = {};
+      const instancesPerSeries = {};
+
+      naturalizedInstancesMetadata.forEach(instance => {
+        if (!seriesSummaryMetadata[instance.SeriesInstanceUID]) {
+          seriesSummaryMetadata[instance.SeriesInstanceUID] = {
+            StudyInstanceUID: instance.StudyInstanceUID,
+            StudyDescription: instance.StudyDescription,
+            SeriesInstanceUID: instance.SeriesInstanceUID,
+            SeriesDescription: instance.SeriesDescription,
+            SeriesNumber: instance.SeriesNumber,
+            SeriesTime: instance.SeriesTime,
+            SOPClassUID: instance.SOPClassUID,
+            ProtocolName: instance.ProtocolName,
+            Modality: instance.Modality,
+          };
+        }
+
+        if (!instancesPerSeries[instance.SeriesInstanceUID]) {
+          instancesPerSeries[instance.SeriesInstanceUID] = [];
+        }
+
+        const imageId = implementation.getImageIdsForInstance({
+          instance,
+        });
+
+        instance.imageId = imageId;
+        instance.wadoRoot = dicomWebConfig.wadoRoot;
+        instance.wadoUri = dicomWebConfig.wadoUri;
+
+        metadataProvider.addImageIdToUIDs(imageId, {
+          StudyInstanceUID,
+          SeriesInstanceUID: instance.SeriesInstanceUID,
+          SOPInstanceUID: instance.SOPInstanceUID,
+        });
+
+        instancesPerSeries[instance.SeriesInstanceUID].push(instance);
+      });
+
+      // grab all the series metadata
+      const seriesMetadata = Object.values(seriesSummaryMetadata);
+      DicomMetadataStore.addSeriesMetadata(seriesMetadata, madeInClient);
+
+      Object.keys(instancesPerSeries).forEach(seriesInstanceUID =>
+        DicomMetadataStore.addInstances(instancesPerSeries[seriesInstanceUID], madeInClient)
+      );
+
+      return seriesSummaryMetadata;
     },
 
     _retrieveSeriesMetadataSync: async (

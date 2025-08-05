@@ -212,4 +212,61 @@ function mapParams(params, options = {}) {
   return final;
 }
 
-export { mapParams, search, processResults };
+async function ListSeries(
+  dicomWebClient,
+  StudyInstanceUID,
+){
+  const results = await seriesInStudy(dicomWebClient, StudyInstanceUID);
+
+  return processSeriesResults(results)
+}
+
+function listSeries (
+  dicomWebClient,
+  StudyInstanceUID,
+  filters,
+){
+  let promise;
+
+  if (filters && filters.seriesInstanceUID && Array.isArray(filters.seriesInstanceUID)) {
+    promise = ListSeries(
+      dicomWebClient,
+      StudyInstanceUID,
+    );
+  } else {
+    // Create a promise to handle the data retrieval
+    promise = new Promise((resolve, reject) => {
+      ListSeries(
+        dicomWebClient,
+        StudyInstanceUID,
+      ).then(function(data) {
+        resolve(data);
+      }, reject);
+    });
+  }
+
+  return promise;
+}
+
+function listSeriesInstances (
+  dicomWebClient,
+  StudyInstanceUID,
+  SeriesInstanceUID
+){
+  let promise;
+
+  // Create a promise to handle the data retrieval
+  promise = new Promise((resolve, reject) => {
+    ListSeriesInstances(
+      dicomWebClient,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+    ).then(function(data) {
+      resolve(data);
+      }, reject);
+    });
+
+  return promise;
+}
+
+export { mapParams, search, processResults, listSeries };
