@@ -50,8 +50,9 @@ export async function defaultRouteInit(
   const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
     function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+      console.log(StudyInstanceUID);
       const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
-
+      console.log(seriesMetadata);
       // checks if the series filter was used, if it exists
       const seriesInstanceUIDs = filters?.seriesInstanceUID;
       if (
@@ -79,6 +80,7 @@ export async function defaultRouteInit(
   log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
 
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
+     //dataSource.query.series.list(StudyInstanceUID, filters)
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
@@ -106,17 +108,13 @@ export async function defaultRouteInit(
     displaySetFromUrl = true;
   }
 
-  await Promise.allSettled(allRetrieves).then(async promises => {
+  await Promise.allSettled(allRetrieves).then(async (promises: Promise<any>[]) => {
     log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
     log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
     log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
 
     const allPromises = [];
     const remainingPromises = [];
-
-    function startRemainingPromises(remainingPromises) {
-      remainingPromises.forEach(p => p.forEach(p => p.start()));
-    }
 
     promises.forEach(promise => {
       const retrieveSeriesMetadataPromise = promise.value;
@@ -125,24 +123,21 @@ export async function defaultRouteInit(
       }
 
       if (displaySetFromUrl) {
-        const requiredSeriesPromises = retrieveSeriesMetadataPromise.map(promise =>
-          promise.start()
-        );
-        allPromises.push(Promise.allSettled(requiredSeriesPromises));
+        allPromises.push(Promise.allSettled(retrieveSeriesMetadataPromise));
       } else {
         const { requiredSeries, remaining } = hangingProtocolService.filterSeriesRequiredForRun(
           hangingProtocolId,
           retrieveSeriesMetadataPromise
         );
-        const requiredSeriesPromises = requiredSeries.map(promise => promise.start());
-        allPromises.push(Promise.allSettled(requiredSeriesPromises));
+
+        allPromises.push(Promise.allSettled(requiredSeries));
         remainingPromises.push(remaining);
       }
     });
 
+    console.log(Promise.allSettled(allPromises));
     await Promise.allSettled(allPromises).then(applyHangingProtocol);
-    startRemainingPromises(remainingPromises);
-    applyHangingProtocol();
+    console.log("???");
   });
 
   return unsubscriptions;
