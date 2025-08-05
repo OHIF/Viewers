@@ -6,12 +6,20 @@ import {
 export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManager }) => {
   const { segmentationService, customizationService, displaySetService } = servicesManager.services;
 
-  const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
-    setupSegmentationDataModifiedHandler({
-      segmentationService,
-      customizationService,
-      commandsManager,
-    });
+  const updateSegmentationStats = customizationService.getCustomization('panelSegmentation.updateSegmentationStats');
+  console.debug(updateSegmentationStats)
+  let unsubscribeSegmentationDataModifiedHandler = () => {};
+  if(updateSegmentationStats) {
+    const { unsubscribe } =
+      setupSegmentationDataModifiedHandler({
+        segmentationService,
+        customizationService,
+        commandsManager,
+      });
+      unsubscribeSegmentationDataModifiedHandler = unsubscribe;
+  }
+
+
 
   const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
     segmentationService,
