@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-sidebar_label: 3.10 -> 3.11 beta
+sidebar_label: 3.10 -> 3.11
 ---
 
 # Migration Guide
