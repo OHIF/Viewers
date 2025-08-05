@@ -63,18 +63,14 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "@ohif/extension-idc",
-      "version": "0.0.1"
+      "packageName": "@ohif/extension-idc"
     },
     {
-      "packageName": "@ohif/extension-gcp",
+      "packageName": "ohif-gcp-extension",
       "version": "0.0.1"
     }
   ],
   "modes": [
-    {
-      "packageName": "@ohif/mode-longitudinal"
-    },
     {
       "packageName": "@ohif/mode-segmentation"
     },
@@ -96,6 +92,10 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "ohif-gcp-mode",
+      "version": "0.0.1"
     }
   ],
   "public": [
