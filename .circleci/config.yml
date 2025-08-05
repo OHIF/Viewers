@@ -455,9 +455,13 @@ workflows:
           filters:
             branches:
               only: master
-      - NPM_PUBLISH:
+      - HOLD_FOR_APPROVAL:
+          type: approval
           requires:
             - BUILD
+      - NPM_PUBLISH:
+          requires:
+            - HOLD_FOR_APPROVAL
       - DOCKER_BETA_PUBLISH:
           requires:
             - NPM_PUBLISH
