@@ -8,7 +8,7 @@ const { naturalizeDataset } = DicomMetaDictionary;
 export type DicomStructure = any;
 export type DicomStructureData = DicomStructure[];
 export type SeriesDicomStructureData = DicomStructureData[];
-export type RawDicomInstances = PromiseFulfilledResult<any[]>;
+export type RawDicomInstances = PromiseFulfilledResult<any[]>[];
 export type SettledRawDicomInstances = RawDicomInstances[];
 export type DicomSeriesHeaderMetaData = {
   StudyInstanceUID: string,
@@ -32,8 +32,10 @@ export type DicomStudyMetaData = {
 
 export function dicomWebToDicomStructure(data: SettledRawDicomInstances): DicomStructureData {
   let naturalizedInstancesMetadata: DicomStructureData = [];
-  data.forEach((seriesInstances: RawDicomInstances) => {
-    return seriesInstances.value.map((instance) => {
+  data.forEach((seriesInstances) => {
+    // This should be a single layer of promise => { status: "fulfilled", value: [{tags...}] }
+    console.log(seriesInstances);
+    return seriesInstances.map((instance) => {
       naturalizedInstancesMetadata.push(naturalizeDataset(instance));
     });
   });
@@ -41,15 +43,13 @@ export function dicomWebToDicomStructure(data: SettledRawDicomInstances): DicomS
   return naturalizedInstancesMetadata;
 }
 
-export function generateStudyMetaData(data: DicomStructure[], dicomWebConfig): DicomStudyMetaData {
+export function generateStudyMetaData(data: SeriesDicomStructureData, dicomWebConfig): DicomStudyMetaData {
   const seriesSummaryMetadata = new Map<string, DicomSeriesHeaderMetaData>();
   const instancesPerSeries = new Map<string, DicomStructureData>();
 
   data.forEach((series: DicomStructureData) => {
     series.forEach((instance) => {
       const seriesInstanceUID = instance.SeriesInstanceUID;
-      console.log(seriesInstanceUID);
-      console.log(instance);
       if (!seriesSummaryMetadata[seriesInstanceUID]) {
         seriesSummaryMetadata[seriesInstanceUID] = {
           StudyInstanceUID: instance.StudyInstanceUID,
@@ -68,17 +68,15 @@ export function generateStudyMetaData(data: DicomStructure[], dicomWebConfig): D
         instancesPerSeries[seriesInstanceUID] = [];
       }
 
-      const imageId = getImageIdsForInstance({
+      instance.imageId = getImageIdsForInstance({
         instance,
         frame: undefined,
-        config: dicomWebConfig
+        config: dicomWebConfig,
       });
-
-      instance.imageId = imageId;
       instance.wadoRoot = dicomWebConfig.wadoRoot;
       instance.wadoUri = dicomWebConfig.wadoUri;
 
-      instancesPerSeries[instance.SeriesInstanceUID].push(instance)
+      instancesPerSeries[instance.SeriesInstanceUID].push(instance);
     });
 
   });
@@ -87,9 +85,9 @@ export function generateStudyMetaData(data: DicomStructure[], dicomWebConfig): D
 }
 
 export function generateInstanceMetaData (
-  instanceQIDOMeta: SettledRawDicomInstances,
+  instanceQIDOMeta: any[],
   instanceWADOMeta: SettledRawDicomInstances
-): DicomStructureData
+): SeriesDicomStructureData
 {
   const naturalizedQIDOMetadata= instanceQIDOMeta;
   const naturalizedInstancesMetadata= dicomWebToDicomStructure(instanceWADOMeta);
