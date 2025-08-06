@@ -145,6 +145,7 @@ import {
   ToolContract,
   ToolExpand,
   ToolClickSegment,
+  ToolSegmentLabel,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -730,6 +731,7 @@ export const Icons = {
   'tool-ultrasound-bidirectional': (props: IconProps) => ToolUltrasoundBidirectional(props),
   'tool-window-level': (props: IconProps) => ToolWindowLevel(props),
   'tool-window-region': (props: IconProps) => ToolWindowRegion(props),
+  'tool-segment-label': (props: IconProps) => ToolSegmentLabel(props),
   'icon-tool-window-region': (props: IconProps) => ToolWindowRegion(props),
   'icon-tool-ultrasound-bidirectional': (props: IconProps) => ToolUltrasoundBidirectional(props),
   'icon-tool-cobb-angle': (props: IconProps) => ToolCobbAngle(props),
