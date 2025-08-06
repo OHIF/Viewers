@@ -123,14 +123,6 @@ export default defineConfig({
         from: path.resolve(PUBLIC_DIR, APP_CONFIG),
         to: 'app-config.js',
       },
-      // Copy Dicom Microscopy Viewer files
-      {
-        from: path.resolve(__dirname, 'node_modules/dicom-microscopy-viewer/dist/dynamic-import'),
-        to: DIST_DIR,
-        globOptions: {
-          ignore: ['**/*.min.js.map'],
-        },
-      },
     ],
   },
   html: {
