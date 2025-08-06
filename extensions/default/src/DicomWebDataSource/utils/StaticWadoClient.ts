@@ -146,6 +146,10 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return filtered;
   }
 
+  async searchForInstances(options) {
+    return super.searchForInstances(options);
+  }
+
   /**
    * Compares values, matching any instance of desired to any instance of
    * actual by recursively go through the paired set of values.  That is,
