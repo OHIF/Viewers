@@ -52,3 +52,12 @@ export default function getImageId({ instance, frame, config, thumbnail = false 
     return getWADORSImageId(instance, config, frame); // WADO-RS Retrieve Frame
   }
 }
+
+export function getImageIdsForInstance({ instance, config, frame = undefined }) {
+  const imageIds = getImageId({
+    instance,
+    frame,
+    config,
+  });
+  return imageIds;
+}
