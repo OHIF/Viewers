@@ -65,6 +65,11 @@ const commandsModule = ({
      * @param options.removeFirst - Optional flag to remove the display set first if it's already added
      */
     addDisplaySetAsLayer: ({ viewportId, displaySetInstanceUID, removeFirst = false }) => {
+      if (!viewportId) {
+          const { activeViewportId } = servicesManager.services.viewportGridService.getState();
+          viewportId = activeViewportId;
+      }
+
       if (!viewportId || !displaySetInstanceUID) {
         console.warn('Missing required parameters for addDisplaySetAsLayer command');
         return;
