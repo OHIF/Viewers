@@ -52,7 +52,6 @@ export default function loadAnnotation({
           );
 
           uiNotificationService.show({
-            title: 'Loading Annotations',
             message: 'Loading annotations...',
             type: 'info',
           });
