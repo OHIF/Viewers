@@ -32,12 +32,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     additionalFindingTypes
   );
 
-  const report = MeasurementReport.generateReport(
-    filteredToolState,
-    metaData,
-    utilities.worldToImageCoords,
-    options
-  );
+  const report = MeasurementReport.generateReport(filteredToolState, metaData, options);
 
   const { dataset } = report;
 
@@ -54,7 +49,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager, extensionManager, commandsManager } = props;
-  const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
+  const { customizationService } = servicesManager.services;
 
   const actions = {
     changeColorMeasurement: ({ uid }) => {
@@ -128,6 +123,9 @@ const commandsModule = (props: withAppTypes) => {
         if (!ContentSequence?.[4].ContentSequence?.length) {
           console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
+        }
+        if (!naturalizedReport.SOPClassUID) {
+          throw new Error('No sop class uid');
         }
 
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');

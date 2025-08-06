@@ -279,7 +279,7 @@ export function useViewportRendering(
             }
 
             // Get threshold from colormap if available
-            if (properties.colormap && properties.colormap.threshold !== undefined) {
+            if (properties?.colormap && properties.colormap.threshold !== undefined) {
               setThresholdState(properties.colormap.threshold);
             }
           }

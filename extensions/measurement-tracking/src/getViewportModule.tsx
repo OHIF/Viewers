@@ -29,7 +29,7 @@ function getViewportModule({ servicesManager, commandsManager, extensionManager 
     {
       name: 'cornerstone-tracked',
       component: ExtendedOHIFCornerstoneTrackingViewport,
-      isReferenceViewable: props => utils.isReferenceViewable({ ...props, servicesManager }),
+      isReferenceViewable: utils.isReferenceViewable.bind(null, servicesManager),
     },
   ];
 }
