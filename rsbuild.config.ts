@@ -24,7 +24,7 @@ const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 
 // Add port constant
-const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
+const OHIF_PORT = Number(process.env.OHIF_PORT || 3005);
 
 export default defineConfig({
   source: {
