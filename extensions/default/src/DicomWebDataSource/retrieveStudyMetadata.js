@@ -39,8 +39,7 @@ export function retrieveStudyMetadata(
   }
 
   const {seriesInstanceUID, sopInstanceUID} = filters;
-  const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}:${filters}`;
-  console.log(promiseId);
+  const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}:${seriesInstanceUID}:${sopInstanceUID}`;
 
   // Already waiting on result? Return cached promise
   if (StudyMetaDataPromises.has(promiseId)) {
