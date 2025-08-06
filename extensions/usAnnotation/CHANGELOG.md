@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.0...v3.12.0-beta.1) (2025-08-05)
+
+**Note:** Version bump only for package @ohif/extension-ultrasound-pleura-bline
+
+
+
+
+
+# [3.12.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.116...v3.12.0-beta.0) (2025-08-05)
+
+**Note:** Version bump only for package @ohif/extension-ultrasound-pleura-bline
+
+
+
+
+
+# [3.11.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.115...v3.11.0-beta.116) (2025-08-05)
+
+
+### Bug Fixes
+
+* **annotation:** Add command to show pleura percentage in USAnnotationPanel and update condition for BLinePleuraPercentage ([#5297](https://github.com/OHIF/Viewers/issues/5297)) ([35bc074](https://github.com/OHIF/Viewers/commit/35bc074a53bd8c804dba44830145a6633302f11d))
+
+
+
+
+
 # [3.11.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.114...v3.11.0-beta.115) (2025-07-31)
 
 
