@@ -11,6 +11,7 @@ import { isDisplaySetFromUrl, sopInstanceLocation } from './custom-attribute/isD
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
 import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 import uuidv4 from '../../utils/uuidv4';
+import { getUniqueAttributeFromList } from './lib/getUniqueAttributeFromList';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
@@ -18,26 +19,6 @@ const DEFAULT_VIEWPORT_OPTIONS: HangingProtocol.ViewportOptions = {
   toolGroupId: 'default',
   viewportType: 'stack',
 };
-
-/**
- * Returns an array of unique values for the given attribute from a series array.
- * If the attribute is not present on the series, attempts to get it from the first instance.
- * @param {Array} series - The series array to extract attributes from.
- * @param {string} attribute - The attribute name to extract.
- * @returns {Array} Array of unique attribute values.
- */
-function getUniqueAttributeFromSeries(series, attribute) {
-  return series.reduce((prev, curr) => {
-    let value = curr[attribute];
-    if (!value && curr.instances && curr.instances[0]) {
-      value = curr.instances[0][attribute];
-    }
-    if (value && prev.indexOf(value) === -1) {
-      prev.push(value);
-    }
-    return prev;
-  }, []);
-}
 
 export default class HangingProtocolService extends PubSubService {
   static EVENTS = {
@@ -102,7 +83,7 @@ export default class HangingProtocolService extends PubSubService {
           return metadata.ModalitiesInStudy;
         }
         if (Array.isArray(metadata.series)) {
-          return getUniqueAttributeFromSeries(metadata.series, 'Modality');
+          return getUniqueAttributeFromList(metadata.series, 'Modality');
         }
         return [];
       },
