@@ -4,6 +4,6 @@
   "version": "3.12.0-beta.1",
   "license": "MIT",
   "dependencies": {
-    "dicom-microscopy-viewer": "^0.48.3"
+    "dicom-microscopy-viewer": "^0.48.6"
   }
 }
