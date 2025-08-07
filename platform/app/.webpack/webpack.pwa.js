@@ -83,7 +83,7 @@
 //         path.resolve(__dirname, '../src'),
 //         path.resolve(__dirname, '../../../extensions/extension2/node_modules'),
 //         path.resolve(__dirname, '../../../modes/mode2/node_modules'),
-//         ],
+//           path.resolve(__dirname, 'modes/rtmode/node_modules'),  path.resolve(__dirname, 'extensions/mammo/node_modules'),],
 //     },
 //     plugins: [
 //       // For debugging re-renders
@@ -300,6 +300,7 @@ module.exports = (env, argv) => {
         ),
         segmentation: path.resolve(__dirname, '../../../modes/segmentation/src'),
         extension2: path.resolve(__dirname, '../../../extensions/extension2/src'),
+        mammo: path.resolve(__dirname, '../../../extensions/mammo/src'),
         mode2: path.resolve(__dirname, '../../../modes/mode2/src'),
         rtmode: path.resolve(__dirname, '../../../modes/rtmode/src'),
       },
