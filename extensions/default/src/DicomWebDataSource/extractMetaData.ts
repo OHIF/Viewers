@@ -5,9 +5,6 @@ const { DicomMetaDictionary } = dcmjs.data;
 const { naturalizeDataset } = DicomMetaDictionary;
 
 
-export type DicomStructure = any;
-export type DicomStructureData = DicomStructure[];
-export type SeriesDicomStructureData = DicomStructureData[];
 export type RawDicomInstance = PromiseFulfilledResult<any>;
 export type RawDicomInstances = RawDicomInstance[];
 export type SettledRawDicomInstances = RawDicomInstances[];
@@ -23,6 +20,20 @@ export type DicomSeriesHeaderMetaData = {
   Modality: string,
 }
 
+export interface DicomReferenceMetadata extends DicomSeriesHeaderMetaData {
+  SOPInstanceUID: string,
+  ImagePositionPatient?: number[],
+  BitsAllocated: number,
+  Rows: number,
+  Columns: number,
+  InstanceNumber: number,
+  imageId?: string,
+  wadoRoot?: string,
+  wadoUri?: string,
+}
+export type DicomStructure = DicomReferenceMetadata;
+export type DicomStructureData = DicomStructure[];
+
 export type DicomSeriesMetaData = Map<string, DicomSeriesHeaderMetaData>;
 export type DicomInstancesMetaData = Map<string, DicomStructureData>;
 
@@ -30,6 +41,7 @@ export type DicomStudyMetaData = {
   seriesSummaryMetadata: DicomSeriesMetaData,
   instancesPerSeries: DicomInstancesMetaData
 }
+export type DicomSeriesStructureData = DicomStructureData[];
 
 export function dicomWebToSettledRawDicomInstances(instances: any[]): SettledRawDicomInstances {
   return instances.map((promise) => promise.value)
@@ -47,7 +59,7 @@ export function dicomWebToDicomStructure(data: RawDicomInstances): DicomStructur
   return naturalizedInstancesMetadata;
 }
 
-export function generateStudyMetaData(data: SeriesDicomStructureData, dicomWebConfig): DicomStudyMetaData {
+export function generateStudyMetaData(data: DicomSeriesStructureData, dicomWebConfig): DicomStudyMetaData {
   const seriesSummaryMetadata = new Map<string, DicomSeriesHeaderMetaData>();
   const instancesPerSeries = new Map<string, DicomStructureData>();
 
@@ -88,14 +100,37 @@ export function generateStudyMetaData(data: SeriesDicomStructureData, dicomWebCo
   return {seriesSummaryMetadata, instancesPerSeries}
 }
 
+
+export function generateInstanceReferenceMetadata(
+  firstSlice: DicomReferenceMetadata,
+  lastSlice: DicomReferenceMetadata,
+  indx: number,
+  totalSliceCount: number,
+): DicomReferenceMetadata
+{
+  let reference: DicomReferenceMetadata = JSON.parse(JSON.stringify(firstSlice));
+
+  // Compute slice IPP. Necessary for 3D reconstruction. We might need to account for gantry tilt
+  // Someone feel free to add corrections as needed
+  const firstIPP = firstSlice.ImagePositionPatient;
+  const lastIPP = lastSlice.ImagePositionPatient;
+  if (lastIPP) {
+    const deltaIPP = (lastIPP[2] - firstIPP[2]) / totalSliceCount;
+    const newIPPz = firstIPP[2] + indx * deltaIPP;
+    reference.ImagePositionPatient[2] = newIPPz;
+  }
+
+  return reference;
+}
+
 export function generateInstanceMetaData (
   instanceQIDOMeta: any[],
   instanceWADOMeta: SettledRawDicomInstances
-): SeriesDicomStructureData
+): DicomSeriesStructureData
 {
   const naturalizedQIDOMetadata= instanceQIDOMeta;
   const naturalizedInstancesMetadata= [];
-  const newNaturalizedInstancesMetadata: DicomStructureData = [];
+  const newNaturalizedInstancesMetadata: DicomSeriesStructureData = [];
 
   instanceWADOMeta.forEach(
     instances => naturalizedInstancesMetadata.push(dicomWebToDicomStructure(instances))
@@ -104,14 +139,20 @@ export function generateInstanceMetaData (
 
   for(let i = 0; i < naturalizedQIDOMetadata.length; i++) {
     const referenceMetaData = naturalizedInstancesMetadata[i];
-    console.log(referenceMetaData);
     const [firstSlice, lastSlice] = referenceMetaData;
-    console.log(firstSlice);
     const seriesInstances = naturalizedQIDOMetadata[i];
     const newInstances: DicomStructureData = [];
+    const instances = seriesInstances.value;
+    const totalSliceCount = instances.length;
 
-    seriesInstances.value.forEach((instance) => {
-      let newInstance = JSON.parse(JSON.stringify(firstSlice));
+    for (let i = 0; i < totalSliceCount; i++) {
+      const instance = instances[i];
+      let newInstance = generateInstanceReferenceMetadata(
+        firstSlice,
+        lastSlice,
+        i,
+        totalSliceCount
+      );
 
       newInstance.BitsAllocated = instance.bitsAllocated;
       newInstance.Columns = instance.columns;
@@ -123,8 +164,8 @@ export function generateInstanceMetaData (
       newInstance.StudyInstanceUID = instance.studyInstanceUID;
 
       newInstances.push(newInstance);
-    })
-    newNaturalizedInstancesMetadata.push(newInstances)
+    }
+    newNaturalizedInstancesMetadata.push(newInstances);
   }
 
   return newNaturalizedInstancesMetadata;
