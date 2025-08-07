@@ -8,7 +8,8 @@ const { naturalizeDataset } = DicomMetaDictionary;
 export type DicomStructure = any;
 export type DicomStructureData = DicomStructure[];
 export type SeriesDicomStructureData = DicomStructureData[];
-export type RawDicomInstances = PromiseFulfilledResult<any[]>[];
+export type RawDicomInstance = PromiseFulfilledResult<any>;
+export type RawDicomInstances = RawDicomInstance[];
 export type SettledRawDicomInstances = RawDicomInstances[];
 export type DicomSeriesHeaderMetaData = {
   StudyInstanceUID: string,
@@ -30,12 +31,15 @@ export type DicomStudyMetaData = {
   instancesPerSeries: DicomInstancesMetaData
 }
 
-export function dicomWebToDicomStructure(data: SettledRawDicomInstances): DicomStructureData {
+export function dicomWebToSettledRawDicomInstances(instances: any[]): SettledRawDicomInstances {
+  return instances.map((promise) => promise.value)
+}
+
+export function dicomWebToDicomStructure(data: RawDicomInstances): DicomStructureData {
   let naturalizedInstancesMetadata: DicomStructureData = [];
   data.forEach((seriesInstances) => {
     // This should be a single layer of promise => { status: "fulfilled", value: [{tags...}] }
-    console.log(seriesInstances);
-    return seriesInstances.map((instance) => {
+    return seriesInstances.value.map((instance) => {
       naturalizedInstancesMetadata.push(naturalizeDataset(instance));
     });
   });
@@ -90,16 +94,24 @@ export function generateInstanceMetaData (
 ): SeriesDicomStructureData
 {
   const naturalizedQIDOMetadata= instanceQIDOMeta;
-  const naturalizedInstancesMetadata= dicomWebToDicomStructure(instanceWADOMeta);
+  const naturalizedInstancesMetadata= [];
   const newNaturalizedInstancesMetadata: DicomStructureData = [];
 
+  instanceWADOMeta.forEach(
+    instances => naturalizedInstancesMetadata.push(dicomWebToDicomStructure(instances))
+  );
+  console.log(naturalizedInstancesMetadata);
+
   for(let i = 0; i < naturalizedQIDOMetadata.length; i++) {
-    const referenceMeta = naturalizedInstancesMetadata[i];
+    const referenceMetaData = naturalizedInstancesMetadata[i];
+    console.log(referenceMetaData);
+    const [firstSlice, lastSlice] = referenceMetaData;
+    console.log(firstSlice);
     const seriesInstances = naturalizedQIDOMetadata[i];
     const newInstances: DicomStructureData = [];
 
     seriesInstances.value.forEach((instance) => {
-      let newInstance = JSON.parse(JSON.stringify(referenceMeta));
+      let newInstance = JSON.parse(JSON.stringify(firstSlice));
 
       newInstance.BitsAllocated = instance.bitsAllocated;
       newInstance.Columns = instance.columns;
