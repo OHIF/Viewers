@@ -251,11 +251,9 @@ const DefaultFallback = ({
 const ErrorBoundary = ({
   context = 'OHIF',
   onReset = () => {},
-  onError = () => {},
+  onError = _error => {},
   fallbackComponent: FallbackComponent = DefaultFallback,
   children,
-  fallbackRoute = null,
-  isPage,
 }: ErrorBoundaryProps) => {
   const [error, setError] = useState<ErrorBoundaryError | null>(null);
 
@@ -281,8 +279,8 @@ const ErrorBoundary = ({
       event.preventDefault();
       clearTimeout(errorTimeout);
       errorTimeout = setTimeout(() => {
-        setError(event.reason);
-        onErrorHandler(event.reason, null);
+        setError(event.reason || event);
+        onErrorHandler(event.reason || event, null);
       }, 100);
     };
 
@@ -296,7 +294,10 @@ const ErrorBoundary = ({
     };
   }, []);
 
-  const onErrorHandler = (error: ErrorBoundaryError, componentStack: string | null) => {
+  const onErrorHandler = (
+    error: ErrorBoundaryError | ErrorEvent,
+    componentStack: string | null
+  ) => {
     console.debug(`${context} Error Boundary`, error, componentStack, context);
     onError(error, componentStack || '', context);
   };

@@ -27,6 +27,9 @@ type ColorbarProps = {
   numColorbars: number;
 };
 
+export const isHorizontal = (position: ColorbarPositionType): boolean =>
+  position === 'top' || position === 'bottom';
+
 /**
  * ViewportColorbar Component
  * A React wrapper for the cornerstone ViewportColorbar that adds a close button
@@ -143,8 +146,9 @@ const ViewportColorbar = memo(function ViewportColorbar({
         display: 'flex',
         alignItems: 'center',
         pointerEvents: 'auto',
-        minWidth: position === 'bottom' ? width / 2.5 : '17px',
-        minHeight: position === 'bottom' ? '20px' : numColorbars === 1 ? height / 3 : height / 4,
+        minWidth: isHorizontal(position) ? width / 2.5 : '17px',
+        minHeight: isHorizontal(position) ? '20px' : numColorbars === 1 ? height / 3 : height / 4,
+        height: '1px', // sometimes flex items with min-height need a starting point for its height calculation
         ...positionStylesFromConfig,
       }}
     ></div>

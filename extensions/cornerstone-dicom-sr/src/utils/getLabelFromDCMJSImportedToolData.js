@@ -11,7 +11,11 @@ const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
  * @returns {string} The extracted label.
  */
 export default function getLabelFromDCMJSImportedToolData(toolData) {
-  const { findingSites = [], finding } = toolData;
+  const { findingSites = [], finding, annotation } = toolData;
+
+  if (annotation.data.label) {
+    return annotation.data.label;
+  }
 
   let freeTextLabel = findingSites.find(
     fs => fs.CodeValue === Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT
