@@ -151,8 +151,12 @@ const makeDisplaySet = instances => {
   return imageSet;
 };
 
-const isSingleImageModality = modality => {
-  return modality === 'CR' || modality === 'MG' || modality === 'DX';
+const isSingleImageModality = (modality, hasMultiSourceImageSequenceInstance) => {
+  return (
+    modality === 'CR' ||
+    (modality === 'MG' && !hasMultiSourceImageSequenceInstance) ||
+    modality === 'DX'
+  );
 };
 
 function getSopClassUids(instances) {
@@ -178,6 +182,9 @@ function getDisplaySetsFromSeries(instances) {
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
   }
+  const hasMultiSourceImageSequenceInstance = instances.some(
+    i => (i.SourceImageSequence || []).length > 1
+  );
 
   const displaySets = [];
   const sopClassUids = getSopClassUids(instances);
@@ -203,7 +210,7 @@ function getDisplaySetsFromSeries(instances) {
         acquisitionDatetime: instance.AcquisitionDateTime,
       });
       displaySets.push(displaySet);
-    } else if (isSingleImageModality(instance.Modality)) {
+    } else if (isSingleImageModality(instance.Modality, hasMultiSourceImageSequenceInstance)) {
       displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
