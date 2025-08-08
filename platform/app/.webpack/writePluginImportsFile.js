@@ -120,10 +120,11 @@ const createCopyPluginToDistForLink = (srcDir, distDir, plugins, folderName) => 
       const fromDir = fromDirectory(srcDir, plugin.directory);
       const from = fromDir || `${srcDir}/../node_modules/${plugin.packageName}/${folderName}/`;
       const exists = fs.existsSync(from);
+      console.warn('create copy plugin to dist', exists, from, distDir, plugin.to);
       return exists
         ? {
             from,
-            to: distDir,
+            to: `${distDir}${plugin.to || ''}`,
             toType: 'dir',
           }
         : undefined;

@@ -94,8 +94,6 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
       '@routes': path.resolve(__dirname, './platform/app/src/routes'),
       '@state': path.resolve(__dirname, './platform/app/src/state'),
-      'dicom-microscopy-viewer':
-        'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
     },
   },
   output: {
@@ -124,14 +122,6 @@ export default defineConfig({
       {
         from: path.resolve(PUBLIC_DIR, APP_CONFIG),
         to: 'app-config.js',
-      },
-      // Copy Dicom Microscopy Viewer files
-      {
-        from: path.resolve(__dirname, 'node_modules/dicom-microscopy-viewer/dist/dynamic-import'),
-        to: DIST_DIR,
-        globOptions: {
-          ignore: ['**/*.min.js.map'],
-        },
       },
     ],
   },

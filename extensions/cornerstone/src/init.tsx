@@ -55,6 +55,10 @@ export default async function init({
   extensionManager,
   appConfig,
 }: withAppTypes): Promise<void> {
+  // Use a public library path of PUBLIC_URL plus the component name
+  // This safely separates components that are loaded as-is.
+  window.PUBLIC_LIB_URL ||= './${component}/';
+
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
 
@@ -194,7 +198,6 @@ export default async function init({
     const { uid: annotationUID } = measurement;
     commandsManager.runCommand('jumpToMeasurementViewport', { measurement, annotationUID, evt });
   });
-
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
