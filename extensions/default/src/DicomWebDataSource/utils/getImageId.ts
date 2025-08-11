@@ -30,7 +30,7 @@ export function getImageId(
   instance: DicomReferenceMetadata,
   frame: number | undefined,
   config: DicomWebConfig,
-  thumbnail = false
+  thumbnail: boolean = false
 ): string | undefined {
   if (!instance) {
     return;
@@ -60,11 +60,14 @@ export function getImageId(
   }
 }
 
-export function getImageIdsForInstance({ instance, config, frame = undefined }) {
-  const imageIds = getImageId(
+export function getImageIdsForInstance(
+  instance: DicomReferenceMetadata,
+  frame: number | undefined = undefined,
+  config: DicomWebConfig,
+): string | undefined {
+  return getImageId(
     instance,
     frame,
     config,
   );
-  return imageIds;
 }
