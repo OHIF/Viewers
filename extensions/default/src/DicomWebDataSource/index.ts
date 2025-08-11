@@ -497,11 +497,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           // Process all frames consistently, whether single or multiframe
           for (let i = 0; i < numberOfFrames; i++) {
             const frameNumber = i + 1;
-            const frameImageId = getImageIdsForInstance({
+            const frameImageId = getImageIdsForInstance(
               instance,
-              frame: frameNumber,
-              config: dicomWebConfig,
-            });
+              frameNumber,
+              dicomWebConfig,
+            );
             // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
             metadataProvider.addImageIdToUIDs(frameImageId, {
               StudyInstanceUID,
@@ -514,11 +514,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           // Adding imageId to each instance
           // Todo: This is not the best way I can think of to let external
           // metadata handlers know about the imageId that is stored in the store
-          const imageId = getImageIdsForInstance({
+          const imageId = getImageIdsForInstance(
             instance,
-            frame: undefined,
-            config: dicomWebConfig,
-          });
+            undefined,
+            dicomWebConfig,
+          );
           instance.imageId = imageId;
         });
 
@@ -574,19 +574,19 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
         if (NumberOfFrames > 1) {
           for (let frame = 1; frame <= NumberOfFrames; frame++) {
-            const imageId = getImageIdsForInstance({
+            const imageId = getImageIdsForInstance(
               instance,
               frame,
-              config: dicomWebConfig,
-            });
+              dicomWebConfig,
+            );
             imageIds.push(imageId);
           }
         } else {
-          const imageId = getImageIdsForInstance({
+          const imageId = getImageIdsForInstance(
             instance,
-            frame: undefined,
-            config: dicomWebConfig,
-          });
+            undefined,
+            dicomWebConfig,
+          );
           imageIds.push(imageId);
         }
       });

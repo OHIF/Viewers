@@ -97,11 +97,11 @@ export function generateStudyMetaData(
         instancesPerSeries[seriesInstanceUID] = [];
       }
 
-      instance.imageId = getImageIdsForInstance({
+      instance.imageId = getImageIdsForInstance(
         instance,
-        frame: undefined,
-        config: dicomWebConfig,
-      });
+        undefined,
+        dicomWebConfig,
+      );
       instance.wadoRoot = dicomWebConfig.wadoRoot;
       instance.wadoUri = dicomWebConfig.wadoUri;
       instance = addRetrieveBulkData(instance, client, dicomWebConfig);
