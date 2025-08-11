@@ -3,7 +3,7 @@ import DICOMwebClient from 'dicomweb-client/types/api';
 import { DicomWebConfig, BulkDataURIConfig } from './dicomWebConfig';
 
 /**
- * Retrieval of study metadata updated to allow optional passthrough of SOPInstanceUID so that we can
+ * Retrieval of instance metadata updated to allow optional passthrough of SOPInstanceUID so that we can
  * retrieve individual slices instead of the full series or study.
  *
  * @param wadoDicomWebClient client needed to execute retrieval
