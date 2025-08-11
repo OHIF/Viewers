@@ -262,17 +262,19 @@ function createDicomJSONApi(dicomJsonConfig) {
 
       const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
       const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
-      const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID) || [];
+      const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID) || {};
 
       const instanceMap = new Map();
-      series.instances.forEach(instance => {
-        if (instance?.metadata?.SOPInstanceUID) {
-          const { metadata, url } = instance;
-          const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
-          existingInstances.push({ ...metadata, url });
-          instanceMap.set(metadata.SOPInstanceUID, existingInstances);
-        }
-      });
+      if (series.instances) {
+        series.instances.forEach(instance => {
+          if (instance?.metadata?.SOPInstanceUID) {
+            const { metadata, url } = instance;
+            const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
+            existingInstances.push({ ...metadata, url });
+            instanceMap.set(metadata.SOPInstanceUID, existingInstances);
+          }
+        });
+      }
 
       displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames || 1;
