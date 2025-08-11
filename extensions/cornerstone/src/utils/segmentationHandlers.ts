@@ -17,7 +17,7 @@ export function setupSegmentationDataModifiedHandler({
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
     async ({ segmentationId }) => {
 
-      const disableUpdateSegmentationStats = customizationService.getCustomization('panelSegmentation.disableUpdateSegmentationStats') ?? true;
+      const disableUpdateSegmentationStats = customizationService.getCustomization('panelSegmentation.disableUpdateSegmentationStats');
 
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
