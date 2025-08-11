@@ -6,7 +6,7 @@ import {
 export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManager }) => {
   const { segmentationService, customizationService, displaySetService } = servicesManager.services;
 
-  const { unsubscribe :unsubscribeSegmentationDataModifiedHandler } =
+  const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
     setupSegmentationDataModifiedHandler({
       segmentationService,
       customizationService,
