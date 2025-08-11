@@ -6,17 +6,12 @@ import {
 export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManager }) => {
   const { segmentationService, customizationService, displaySetService } = servicesManager.services;
 
-  
-  let unsubscribeSegmentationDataModifiedHandler = () => {};
-
-  const { unsubscribe } =
+  const { unsubscribe :unsubscribeSegmentationDataModifiedHandler } =
     setupSegmentationDataModifiedHandler({
       segmentationService,
       customizationService,
       commandsManager,
     });
-    unsubscribeSegmentationDataModifiedHandler = unsubscribe;
-  
 
   const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
     segmentationService,
