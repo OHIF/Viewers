@@ -32,7 +32,7 @@ export function getImageId(
   config: DicomWebConfig,
   thumbnail: boolean = false
 ): string | undefined {
-  if (!instance) {
+  if (!instance || !config) {
     return;
   }
 
@@ -71,3 +71,5 @@ export function getImageIdsForInstance(
     config,
   );
 }
+
+export default { getImageId, getImageIdsForInstance };

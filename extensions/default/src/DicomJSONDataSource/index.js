@@ -2,7 +2,7 @@ import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
 import qs from 'query-string';
 
-import getImageId from '../DicomWebDataSource/utils/getImageId';
+import {getImageId, getImageIdsForInstance} from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
@@ -89,7 +89,11 @@ function createDicomJSONApi(dicomJsonConfig) {
 
           series.instances.forEach(instance => {
             const { metadata: naturalizedDicom } = instance;
-            const imageId = getImageId({ instance, config: dicomJsonConfig });
+            const imageId = getImageId(
+              instance,
+              undefined,
+              dicomJsonConfig
+          );
 
             const { query } = qs.parseUrl(instance.url);
 
@@ -231,7 +235,11 @@ function createDicomJSONApi(dicomJsonConfig) {
               const obj = {
                 ...modifiedMetadata,
                 url: instance.url,
-                imageId: getImageId({ instance, config: dicomJsonConfig }),
+                imageId: getImageId(
+                  instance,
+                  undefined,
+                  dicomJsonConfig
+                ),
                 ...series,
                 ...study,
               };
@@ -278,21 +286,18 @@ function createDicomJSONApi(dicomJsonConfig) {
         const NumberOfFrames = instance.NumberOfFrames || 1;
         const instances = instanceMap.get(instance.SOPInstanceUID) || [instance];
         for (let i = 0; i < NumberOfFrames; i++) {
-          const imageId = getImageId({
-            instance: instances[Math.min(i, instances.length - 1)],
-            frame: NumberOfFrames > 1 ? i : undefined,
-            config: dicomJsonConfig,
-          });
+          const imageId = getImageId(
+            instances[Math.min(i, instances.length - 1)],
+            NumberOfFrames > 1 ? i : undefined,
+            dicomJsonConfig,
+          );
           imageIds.push(imageId);
         }
       });
 
       return imageIds;
     },
-    getImageIdsForInstance({ instance, frame }) {
-      const imageIds = getImageId({ instance, frame });
-      return imageIds;
-    },
+    getImageIdsForInstance: getImageIdsForInstance,
     getStudyInstanceUIDs: ({ params, query }) => {
       const url = query.get('url');
       return _store.studyInstanceUIDMap.get(url);

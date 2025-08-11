@@ -38,7 +38,6 @@ export function retrieveStudyMetadata(
     throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
-  console.log(filters);
   const seriesInstanceUID = filters && filters.seriesInstanceUID ? filters.seriesInstanceUID : undefined;
   const sopInstanceUID = filters && filters.sopInstanceUID ? filters.sopInstanceUID : undefined;
   const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}:${seriesInstanceUID}:${sopInstanceUID}`;

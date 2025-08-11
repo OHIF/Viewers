@@ -421,7 +421,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       // are satisfied! We do this by using the first slice as reference and then patch the IPP information.
       const rawInstances = dicomWebToSettledRawDicomInstances(instances);
       const naturalizedInstancesMetadata= generateInstanceMetaData(instanceMetaList, rawInstances);
-      const { seriesSummaryMetadata, instancesPerSeries } = generateStudyMetaData(naturalizedInstancesMetadata, dicomWebConfig);
+      const { seriesSummaryMetadata, instancesPerSeries } = generateStudyMetaData(
+        naturalizedInstancesMetadata,
+        dicomWebConfig
+      );
 
       // Now, register the study/images with tha metadata provider.
       instancesPerSeries.forEach(instances => {
@@ -619,36 +622,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   }
 
   return IWebApiDataSource.create(implementation);
-}
-
-/**
- * A bindable function that retrieves the bulk data against this as the
- * dicomweb client, and on the given value element.
- *
- * @param value - a bind value that stores the retrieve value to short circuit the
- *    next retrieve instance.
- * @param options - to allow specifying the content type.
- */
-function retrieveBulkData(value, options = {}) {
-  const { mediaType } = options;
-  const useOptions = {
-    // The bulkdata fetches work with either multipart or
-    // singlepart, so set multipart to false to let the server
-    // decide which type to respond with.
-    multipart: false,
-    BulkDataURI: value.BulkDataURI,
-    mediaTypes: mediaType ? [{ mediaType }, { mediaType: 'application/octet-stream' }] : undefined,
-    ...options,
-  };
-  return this.retrieveBulkData(useOptions).then(val => {
-    // There are DICOM PDF cases where the first ArrayBuffer in the array is
-    // the bulk data and DICOM video cases where the second ArrayBuffer is
-    // the bulk data. Here we play it safe and do a find.
-    const ret =
-      (val instanceof Array && val.find(arrayBuffer => arrayBuffer?.byteLength)) || undefined;
-    value.Value = ret;
-    return ret;
-  });
 }
 
 export { createDicomWebApi };

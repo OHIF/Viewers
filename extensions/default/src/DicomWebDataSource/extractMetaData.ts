@@ -69,7 +69,6 @@ export function dicomWebToDicomStructure(data: RawDicomInstances): DicomStructur
  */
 export function generateStudyMetaData(
   data: DicomSeriesStructureData,
-  client: DICOMwebClient,
   dicomWebConfig: DicomWebConfig
 ): DicomStudyMetaData
 {
@@ -104,7 +103,6 @@ export function generateStudyMetaData(
       );
       instance.wadoRoot = dicomWebConfig.wadoRoot;
       instance.wadoUri = dicomWebConfig.wadoUri;
-      instance = addRetrieveBulkData(instance, client, dicomWebConfig);
 
       instancesPerSeries[instance.SeriesInstanceUID].push(instance);
     });
