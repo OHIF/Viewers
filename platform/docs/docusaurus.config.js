@@ -126,7 +126,7 @@ module.exports = {
       announcementBar: {
         id: 'ohif311_multimodality_rt_ultrasound',
         content:
-          'OHIF v3.11 is here! New features include multimodality fusion with viewport overlays, RT Dose visualization, dedicated ultrasound mode for cardiac imaging, DICOM Labelmap support, and advanced RT Structure Set visualization. Read the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p11/">here</a>!',
+          'OHIF v3.11 is here! New features include multimodality fusion with viewport overlays, RT Dose visualization, dedicated ultrasound mode, DICOM Labelmap support, and advanced RT Structure Set visualization. Read the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p11/">here</a>!',
       },
       prism: {
         theme: require('prism-react-renderer').themes.github,
@@ -177,9 +177,9 @@ module.exports = {
             position: 'left',
           },
           {
-            to: '/migration-guide/3p9-to-3p10/',
+            to: '/migration-guide/3p10-to-3p11/',
             //activeBaseRegex: '(^/help$)|(/help)',
-            label: '3.10 Migration Guides',
+            label: '3.11 Migration Guides',
             position: 'left',
           },
           {
