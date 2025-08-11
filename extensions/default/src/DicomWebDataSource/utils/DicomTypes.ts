@@ -36,6 +36,7 @@ export interface DicomReferenceMetadata extends DicomSeriesHeaderMetaData {
   InstanceNumber: number,
   NumberOfFrames?: number,
   imageId?: string,
+  url?: string,
   wadoRoot?: string,
   wadoUri?: string,
 }

@@ -23,7 +23,7 @@ import {
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
-import getImageIdsForInstance from './utils/getImageId';
+import {getImageIdsForInstance} from './utils/getImageId';
 import {addRetrieveBulkData} from './wado/retrieveBulkData';
 import { DicomWebConfig, BulkDataURIConfig } from './utils/dicomWebConfig';
 import { retrieveInstanceMetadata } from './retrieveInstanceMetadata';

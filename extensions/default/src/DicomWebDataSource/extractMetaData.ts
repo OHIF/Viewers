@@ -3,7 +3,7 @@
  * by the viewer.
  */
 import dcmjs from 'dcmjs';
-import getImageIdsForInstance from './utils/getImageId';
+import {getImageIdsForInstance} from './utils/getImageId';
 import {DicomWebConfig} from './utils/dicomWebConfig';
 import DICOMwebClient from 'dicomweb-client/types/api';
 import {
