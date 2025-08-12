@@ -12,7 +12,7 @@ export default function TabsShowcase() {
       title="Tabs"
       description="Tabs (or segmented controls) can be used to provide navigation options or allow users to switch between multiple options (e.g., tool settings) "
       code={`
-<Tabs className="w-[400px]" onValueChange={newValue => console.log(newValue)}>
+<Tabs defaultValue="circle" className="w-[400px]" onValueChange={newValue => console.log(newValue)}>
   <TabsList>
     <TabsTrigger value="circle">Circle</TabsTrigger>
     <Separator orientation="vertical" />
@@ -24,6 +24,7 @@ export default function TabsShowcase() {
       `}
     >
       <Tabs
+        defaultValue="circle"
         className="w-[400px]"
         onValueChange={newValue => console.log(newValue)}
       >

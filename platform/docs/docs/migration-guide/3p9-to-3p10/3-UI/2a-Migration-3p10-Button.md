@@ -1,5 +1,6 @@
 ---
 title: Button
+summary: Migration guide for Button components in OHIF 3.10, explaining the transition from @ohif/ui to @ohif/ui-next, the replacement of ButtonEnums with string-based variants, and changes to IconButton, ButtonGroup, and styling approach.
 ---
 
 ## Key Changes:

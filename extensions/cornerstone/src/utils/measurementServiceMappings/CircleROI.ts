@@ -84,7 +84,7 @@ const CircleROI = {
 
 function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
-  const { cachedStats } = data;
+  const { cachedStats={} } = data;
   const { referencedImageId } = metadata;
   const targets = Object.keys(cachedStats);
 

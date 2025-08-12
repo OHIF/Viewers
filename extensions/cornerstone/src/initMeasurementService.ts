@@ -38,6 +38,7 @@ const initMeasurementService = (
     LivewireContour,
     Probe,
     UltrasoundDirectional,
+    UltrasoundPleuraBLine,
     SegmentBidirectional,
   } = measurementServiceMappingsFactory(
     measurementService,
@@ -179,6 +180,14 @@ const initMeasurementService = (
 
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
+    'UltrasoundPleuraBLineTool',
+    UltrasoundPleuraBLine.matchingCriteria,
+    UltrasoundPleuraBLine.toAnnotation,
+    UltrasoundPleuraBLine.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
     'SegmentBidirectional',
     SegmentBidirectional.matchingCriteria,
     SegmentBidirectional.toAnnotation,
@@ -188,13 +197,20 @@ const initMeasurementService = (
   return csTools3DVer1MeasurementSource;
 };
 
-const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesManager) => {
+const connectToolsToMeasurementService = ({
+  commandsManager,
+  servicesManager,
+  extensionManager,
+}: {
+  commandsManager: AppTypes.CommandsManager;
+  servicesManager: AppTypes.ServicesManager;
+  extensionManager: AppTypes.ExtensionManager;
+}) => {
   const {
     measurementService,
     displaySetService,
     cornerstoneViewportService,
     customizationService,
-    viewportGridService,
   } = servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
@@ -202,11 +218,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
     cornerstoneViewportService,
     customizationService
   );
-  connectMeasurementServiceToTools(
-    measurementService,
-    cornerstoneViewportService,
-    viewportGridService
-  );
+  connectMeasurementServiceToTools({ servicesManager, commandsManager, extensionManager });
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
 
   //
@@ -332,11 +344,13 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
   return csTools3DVer1MeasurementSource;
 };
 
-const connectMeasurementServiceToTools = (
-  measurementService,
-  cornerstoneViewportService,
-  viewportGridService
-) => {
+const connectMeasurementServiceToTools = ({
+  servicesManager,
+  commandsManager,
+  extensionManager,
+}) => {
+  const { measurementService, cornerstoneViewportService, viewportGridService } =
+    servicesManager.services;
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
 
@@ -345,13 +359,21 @@ const connectMeasurementServiceToTools = (
       return;
     }
 
+    commandsManager.run('startRecordingForAnnotationGroup');
     for (const measurement of Object.values(measurements)) {
       const { uid, source } = measurement;
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
       }
+      const removedAnnotation = annotation.state.getAnnotation(uid);
       removeAnnotation(uid);
+      commandsManager.run('triggerCreateAnnotationMemo', {
+        annotation: removedAnnotation,
+        FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
+        options: { deleting: true },
+      });
     }
+    commandsManager.run('endRecordingForAnnotationGroup');
 
     // trigger a render
     cornerstoneViewportService.getRenderingEngine().render();
@@ -387,10 +409,6 @@ const connectMeasurementServiceToTools = (
         setAnnotationLabel(sourceAnnotation, element, label);
       }
 
-      if (metadata.toolName === 'ArrowAnnotate') {
-        data.text = label;
-      }
-
       // update the isLocked state
       annotation.locking.setAnnotationLocked(uid, isLocked);
 
@@ -418,7 +436,7 @@ const connectMeasurementServiceToTools = (
         return;
       }
 
-      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } = measurement;
+      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID, metadata } = measurement;
 
       const instance = DicomMetadataStore.getInstance(
         referenceStudyUID,
@@ -441,12 +459,16 @@ const connectMeasurementServiceToTools = (
        * This is not the read-only annotation rendered by the SR viewport.
        */
       const annotationManager = annotation.state.getAnnotationManager();
-      annotationManager.addAnnotation({
+      const newAnnotation = {
         annotationUID: measurement.uid,
         highlighted: false,
         isLocked: false,
-        invalidated: false,
+        // This is used to force a re-render of the annotation to
+        // re-calculate cached stats since sometimes in SR we
+        // get empty cached stats
+        invalidated: true,
         metadata: {
+          ...metadata,
           toolName: measurement.toolName,
           FrameOfReferenceUID: measurement.FrameOfReferenceUID,
           referencedImageId: imageId,
@@ -463,6 +485,12 @@ const connectMeasurementServiceToTools = (
           label: data.annotation.data.label,
           frameNumber,
         },
+      };
+      annotationManager.addAnnotation(newAnnotation);
+      commandsManager.run('triggerCreateAnnotationMemo', {
+        annotation: newAnnotation,
+        FrameOfReferenceUID: newAnnotation.metadata.FrameOfReferenceUID,
+        options: { newAnnotation: true },
       });
     }
   );
@@ -473,7 +501,13 @@ const connectMeasurementServiceToTools = (
       if (source?.name && source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }
+      const removedAnnotation = annotation.state.getAnnotation(removedMeasurementId);
       removeAnnotation(removedMeasurementId);
+      commandsManager.run('triggerCreateAnnotationMemo', {
+        annotation: removedAnnotation,
+        FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
+        options: { deleting: true },
+      });
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       // Note: We could do a better job by triggering the render on the
       // viewport itself, but the removeAnnotation does not include that info...

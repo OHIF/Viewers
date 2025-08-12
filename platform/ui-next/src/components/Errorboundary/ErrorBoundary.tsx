@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary as ReactErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { Dialog, DialogContent } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { Button } from '../Button/Button';
+import { useNotification } from '../../contextProviders';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -112,7 +112,7 @@ interface ErrorBoundaryError extends Error {
   stack?: string;
 }
 
-interface DefaultFallbackProps {
+interface DefaultFallbackProps extends FallbackProps {
   error: ErrorBoundaryError;
   context: string;
   resetErrorBoundary: () => void;
@@ -135,6 +135,8 @@ const DefaultFallback = ({
 }: DefaultFallbackProps) => {
   const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
+  const { show } = useNotification();
+
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
@@ -143,20 +145,32 @@ const DefaultFallback = ({
   const copyErrorToClipboard = () => {
     if (code) {
       navigator.clipboard.writeText(code);
-      toast.success(t('Error copied to clipboard'));
+      show({
+        title: t('Success'),
+        message: t('Error copied to clipboard'),
+        type: 'success',
+        duration: 3000,
+      });
     }
   };
 
   useEffect(() => {
-    toast.error(title, {
-      description: subtitle,
+    // Use a stable ID based on error message to support deduplication
+    const errorId = `error-${errorTitle || error.message}`;
+
+    // We don't need to track shown state - instead rely on the notification deduplication system
+    show({
+      title,
+      message: subtitle,
+      type: 'error',
+      duration: 0,
+      id: errorId,
       action: {
         label: t('Show Details'),
         onClick: () => setShowDetails(true),
       },
-      duration: 0,
     });
-  }, [error, subtitle, t, title]);
+  }, [error, errorTitle, subtitle, t, title, show]);
 
   if (isProduction) {
     return null;
@@ -232,11 +246,9 @@ const DefaultFallback = ({
 const ErrorBoundary = ({
   context = 'OHIF',
   onReset = () => {},
-  onError = () => {},
+  onError = _error => {},
   fallbackComponent: FallbackComponent = DefaultFallback,
   children,
-  fallbackRoute = null,
-  isPage,
 }: ErrorBoundaryProps) => {
   const [error, setError] = useState<ErrorBoundaryError | null>(null);
 
@@ -262,8 +274,8 @@ const ErrorBoundary = ({
       event.preventDefault();
       clearTimeout(errorTimeout);
       errorTimeout = setTimeout(() => {
-        setError(event.reason);
-        onErrorHandler(event.reason, null);
+        setError(event.reason || event);
+        onErrorHandler(event.reason || event, null);
       }, 100);
     };
 
@@ -277,7 +289,10 @@ const ErrorBoundary = ({
     };
   }, []);
 
-  const onErrorHandler = (error: ErrorBoundaryError, componentStack: string | null) => {
+  const onErrorHandler = (
+    error: ErrorBoundaryError | ErrorEvent,
+    componentStack: string | null
+  ) => {
     console.debug(`${context} Error Boundary`, error, componentStack, context);
     onError(error, componentStack || '', context);
   };
@@ -286,9 +301,8 @@ const ErrorBoundary = ({
     <ReactErrorBoundary
       fallbackRender={props => (
         <FallbackComponent
-          error={props.error}
+          {...props}
           context={context}
-          resetErrorBoundary={props.resetErrorBoundary}
         />
       )}
       onReset={onResetHandler}

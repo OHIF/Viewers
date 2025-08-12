@@ -227,6 +227,20 @@ validate.validators.contains = function (value, options, key) {
     return key + 'must contain ' + testValue;
   }
 };
+
+// Custom validator: containsAll
+// Checks that all items in testValue are present in value
+validate.validators.containsAll = function (value, options, key) {
+  const testValue = getTestValue(options);
+  if (!Array.isArray(value) || !Array.isArray(testValue)) {
+    return `${key} must be an array and test value must be an array.`;
+  }
+  const missing = testValue.filter(item => !value.includes(item));
+  if (missing.length > 0) {
+    return `${key} must contain all of: ${testValue.join(', ')}. Missing: ${missing.join(', ')}`;
+  }
+};
+
 /**
  * @example
  * value = 'Attenuation Corrected'
