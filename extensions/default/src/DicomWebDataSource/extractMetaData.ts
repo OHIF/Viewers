@@ -7,6 +7,7 @@ import {getImageIdsForInstance} from './utils/getImageId';
 import {DicomWebConfig} from './utils/dicomWebConfig';
 import DICOMwebClient from 'dicomweb-client/types/api';
 import {
+  RawDicomInstance,
   RawDicomInstances,
   SettledRawDicomInstances,
   DicomStructureData,
@@ -46,9 +47,19 @@ export function dicomWebToDicomStructure(data: RawDicomInstances): DicomStructur
   let naturalizedInstancesMetadata: DicomStructureData = [];
   data.forEach((seriesInstances) => {
     // This should be a single layer of promise => { status: "fulfilled", value: [{tags...}] }
-    return seriesInstances.value.map((instance) => {
-      naturalizedInstancesMetadata.push(naturalizeDataset(instance));
-    });
+    if (seriesInstances && typeof seriesInstances === 'object' && "value" in seriesInstances) {
+      return seriesInstances.value.map((instance) => {
+        naturalizedInstancesMetadata.push(naturalizeDataset(instance));
+      });
+    // If we are getting a list of lists of raw dicom instances from a wado client.
+    } else if (Array.isArray(seriesInstances)) {
+      return seriesInstances.map((instance) => {
+        naturalizedInstancesMetadata.push(naturalizeDataset(instance));
+      });
+    // If we are getting a list of raw instances from a wado client.
+    } else {
+      return naturalizedInstancesMetadata.push(naturalizeDataset(seriesInstances));
+    }
   });
 
   return naturalizedInstancesMetadata;
