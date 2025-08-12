@@ -50,9 +50,7 @@ export async function defaultRouteInit(
   const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
     function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-      console.log(StudyInstanceUID);
       const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
-      console.log(seriesMetadata);
       // checks if the series filter was used, if it exists
       const seriesInstanceUIDs = filters?.seriesInstanceUID;
       if (
@@ -135,9 +133,7 @@ export async function defaultRouteInit(
       }
     });
 
-    console.log(Promise.allSettled(allPromises));
     await Promise.allSettled(allPromises).then(applyHangingProtocol);
-    console.log("???");
   });
 
   return unsubscriptions;
