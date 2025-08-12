@@ -27,7 +27,7 @@ import {getImageIdsForInstance} from './utils/getImageId';
 import {addRetrieveBulkData} from './wado/retrieveBulkData';
 import { DicomWebConfig, BulkDataURIConfig } from './utils/dicomWebConfig';
 import { retrieveInstanceMetadata } from './retrieveInstanceMetadata';
-import { RetrieveStudyMetadataInterface } from './utils/DicomTypes';
+import { RetrieveStudyMetadataInterface } from './utils/Types';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -546,15 +546,13 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
       const seriesDeliveredPromises = seriesPromises.map(promise => {
-        console.log("?promise");
-        console.log(promise);
-        console.log(returnPromises);
-        if (returnPromises) {
-          console.log('promise');
-          return promise.then(instances => {
-            storeInstances(instances);
-          });
+        if (!returnPromises) {
+          promise?.start();
         }
+
+        return promise.then(instances => {
+          storeInstances(instances);
+        });
       });
 
       if (returnPromises) {
