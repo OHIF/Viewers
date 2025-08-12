@@ -110,6 +110,7 @@ export default function USAnnotationPanel() {
    */
   const setShowOverlayCommand = (value: boolean) => {
     commandsManager.runCommand('setDisplayFanAnnotation', { value });
+    commandsManager.runCommand('setShowPleuraPercentage', { value });
     setShowOverlay(value);
   };
   /**
