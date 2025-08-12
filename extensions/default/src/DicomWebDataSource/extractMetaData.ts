@@ -15,7 +15,7 @@ import {
   DicomStudyMetaData,
   DicomSeriesHeaderMetaData,
   DicomReferenceMetadata,
-} from './utils/DicomTypes';
+} from './utils/Types';
 import {addRetrieveBulkData} from './wado/retrieveBulkData';
 
 const { DicomMetaDictionary } = dcmjs.data;

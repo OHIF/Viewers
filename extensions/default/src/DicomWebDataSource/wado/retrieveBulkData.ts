@@ -7,7 +7,7 @@ const { naturalizeDataset } = DicomMetaDictionary;
 
 import DICOMwebClient from 'dicomweb-client/types/api';
 import {DicomWebConfig} from '../utils/dicomWebConfig';
-import {DicomStructure} from '../utils/DicomTypes';
+import {DicomStructure} from '../utils/Types';
 
 /**
  * Adds the retrieve bulkdata function to naturalized DICOM data.

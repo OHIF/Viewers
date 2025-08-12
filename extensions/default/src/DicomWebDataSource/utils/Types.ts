@@ -3,6 +3,8 @@
  * from the server.
  */
 
+///////////////////////////DICOM Types///////////////////////////////
+
 export type RawDicomInstance = PromiseFulfilledResult<any>;
 export type RawDicomInstances = RawDicomInstance[];
 export type SettledRawDicomInstances = RawDicomInstances[];
@@ -54,12 +56,74 @@ export type DicomStudyMetaData = {
   seriesSummaryMetadata: DicomSeriesMetaData,
   instancesPerSeries: DicomInstancesMetaData
 }
+export type DicomSeriesStructureData = DicomStructureData[];
+
+///////////////////////////Retrieval Types//////////////////////////////////
+
+/**
+ * Deferred promise class type hadnling retrieval of data in a lazy context.
+ *
+ * If you use the constructor, the promise will be auto queued. Otherwise, you need to call start()
+ * to get the underlying promised queued in the background.
+ */
+export class DeferredPromise {
+  metadata = undefined;
+  processFunction = undefined;
+  internalPromise = undefined;
+  thenFunction = undefined;
+  rejectFunction = undefined;
+
+  constructor(metadata, processFunction) {
+    this.setMetadata(metadata);
+    this.setProcessFunction(processFunction);
+    this.start();
+  }
+
+  setMetadata(metadata) {
+    this.metadata = metadata;
+  }
+  setProcessFunction(func) {
+    this.processFunction = func;
+  }
+  getPromise() {
+    return this.start();
+  }
+  start() {
+    if (this.internalPromise) {
+      return this.internalPromise;
+    }
+    this.internalPromise = this.processFunction();
+    // in case then and reject functions called before start
+    if (this.thenFunction) {
+      this.then(this.thenFunction);
+      this.thenFunction = undefined;
+    }
+    if (this.rejectFunction) {
+      this.reject(this.rejectFunction);
+      this.rejectFunction = undefined;
+    }
+    return this.internalPromise;
+  }
+  then(func) {
+    if (this.internalPromise) {
+      return this.internalPromise.then(func);
+    } else {
+      this.thenFunction = func;
+    }
+  }
+  reject(func) {
+    if (this.internalPromise) {
+      return this.internalPromise.reject(func);
+    } else {
+      this.rejectFunction = func;
+    }
+  }
+}
 
 /**
  * Interface to be used by retrieveStudyMetadata to annotate the expected result fields.
  */
 export type RetrieveStudyMetadataInterface = {
   preLoadData: Array<DicomSeriesHeaderMetaData>;
-  promises: Array<DicomStructure>;
+  promises: Array<DeferredPromise>;
 }
-export type DicomSeriesStructureData = DicomStructureData[];

@@ -1,5 +1,5 @@
 import getWADORSImageId from './getWADORSImageId';
-import {DicomReferenceMetadata} from './DicomTypes';
+import {DicomReferenceMetadata} from './Types';
 import { DicomWebConfig } from './dicomWebConfig';
 
 function buildInstanceWadoUrl(config, instance) {

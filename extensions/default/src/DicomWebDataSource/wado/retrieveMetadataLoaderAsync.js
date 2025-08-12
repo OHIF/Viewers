@@ -1,64 +1,12 @@
 import dcmjs from 'dcmjs';
 import { sortStudySeries } from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
+import {DeferredPromise} from '../utils/Types'
 
 // Series Date, Series Time, Series Description and Series Number to be included
 // in the series metadata query result
 const includeField = ['00080021', '00080031', '0008103E', '00200011'].join(',');
 
-export class DeferredPromise {
-  metadata = undefined;
-  processFunction = undefined;
-  internalPromise = undefined;
-  thenFunction = undefined;
-  rejectFunction = undefined;
-
-  constructor(metadata, processFunction) {
-    this.setMetadata(metadata);
-    this.setProcessFunction(processFunction);
-    this.start();
-  }
-
-  setMetadata(metadata) {
-    this.metadata = metadata;
-  }
-  setProcessFunction(func) {
-    this.processFunction = func;
-  }
-  getPromise() {
-    return this.start();
-  }
-  start() {
-    if (this.internalPromise) {
-      return this.internalPromise;
-    }
-    this.internalPromise = this.processFunction();
-    // in case then and reject functions called before start
-    if (this.thenFunction) {
-      this.then(this.thenFunction);
-      this.thenFunction = undefined;
-    }
-    if (this.rejectFunction) {
-      this.reject(this.rejectFunction);
-      this.rejectFunction = undefined;
-    }
-    return this.internalPromise;
-  }
-  then(func) {
-    if (this.internalPromise) {
-      return this.internalPromise.then(func);
-    } else {
-      this.thenFunction = func;
-    }
-  }
-  reject(func) {
-    if (this.internalPromise) {
-      return this.internalPromise.reject(func);
-    } else {
-      this.rejectFunction = func;
-    }
-  }
-}
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface.
  *
