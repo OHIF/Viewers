@@ -76,17 +76,16 @@ export function retrieveBulkData(
 /**
  * naturalizes the dataset, and adds a retrieve bulkdata method
  * to any values containing BulkDataURI.
- * @param {*} instance
- * @param config
+ * @param {DicomStructure} naturalized
+ * @param {DICOMwebClient} client
+ * @param {DicomWebConfig} config
  * @returns naturalized dataset, with retrieveBulkData methods
  */
 export function addRetrieveBulkData(
-  instance: DicomStructure,
+  naturalized: DicomStructure,
   client: DICOMwebClient,
   config: DicomWebConfig): DicomStructure
 {
-  const naturalized = naturalizeDataset(instance);
-
   // if we know the server doesn't use bulkDataURI, then don't
   if (!config.bulkDataURI?.enabled) {
     return naturalized;
