@@ -1,5 +1,6 @@
 import { api } from 'dicomweb-client';
 import fixMultipart from './fixMultipart';
+import { DicomWebClientOptionsInterface } from './Types';
 
 const { DICOMwebClient } = api;
 
@@ -122,11 +123,14 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return filtered;
   }
 
-  async searchForSeries(options) {
+  async searchForSeries(options: DicomWebClientOptionsInterface) {
     if (!this.staticWado) {
       return super.searchForSeries(options);
     }
 
+    // Linters will complain that awaiting on a non promise type is redundant, but if you skip this await
+    // images do not load. Linters might be getting confused with the dicomweb-client method
+    // signatures which call `_httpRequest` and return the promise.
     const searchResult = await super.searchForSeries(options);
     const { queryParams } = options;
     if (!queryParams) {
@@ -146,7 +150,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return filtered;
   }
 
-  async searchForInstances(options) {
+  async searchForInstances(options?: DicomWebClientOptionsInterface) {
     return super.searchForInstances(options);
   }
 

@@ -50,7 +50,7 @@ export function addRetrieveBulkDataNaturalized(
  */
 export function retrieveBulkData(
   value,
-  options = {}
+  options = { mediaType: undefined }
 ) {
   const { mediaType } = options;
   const useOptions = {

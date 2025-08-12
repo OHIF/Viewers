@@ -123,7 +123,14 @@ export class DeferredPromise {
 /**
  * Interface to be used by retrieveStudyMetadata to annotate the expected result fields.
  */
-export type RetrieveStudyMetadataInterface = {
-  preLoadData: Array<DicomSeriesHeaderMetaData>;
-  promises: Array<DeferredPromise>;
+export interface RetrieveStudyMetadataInterface {
+  preLoadData: Array<DicomSeriesHeaderMetaData>,
+  promises: Array<DeferredPromise>,
+}
+
+
+export interface DicomWebClientOptionsInterface {
+  studyInstanceUID?: string,
+  seriesInstanceUID?: string,
+  queryParams?: any,
 }
