@@ -27,6 +27,7 @@ import {getImageIdsForInstance} from './utils/getImageId';
 import {addRetrieveBulkData} from './wado/retrieveBulkData';
 import { DicomWebConfig, BulkDataURIConfig } from './utils/dicomWebConfig';
 import { retrieveInstanceMetadata } from './retrieveInstanceMetadata';
+import { RetrieveStudyMetadataInterface } from './utils/DicomTypes';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -468,7 +469,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       // See issue #5288
       wadoDicomWebClient.headers = generateWadoHeader(true);
       // Get Series
-      const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
+      const results: RetrieveStudyMetadataInterface =
         await retrieveStudyMetadata(
           wadoDicomWebClient,
           StudyInstanceUID,
@@ -478,10 +479,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           sortFunction,
           dicomWebConfig
         );
+      const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } = results;
 
       // Async load series, store as retrieved
       function storeInstances(instances) {
-        console.log(instances);
         const naturalizedInstances = dicomWebToDicomStructure(instances)
           .map(instance =>
             addRetrieveBulkData(
@@ -545,12 +546,15 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
       const seriesDeliveredPromises = seriesPromises.map(promise => {
-        if (!returnPromises) {
-          promise?.start();
+        console.log("?promise");
+        console.log(promise);
+        console.log(returnPromises);
+        if (returnPromises) {
+          console.log('promise');
+          return promise.then(instances => {
+            storeInstances(instances);
+          });
         }
-        return promise.then(instances => {
-          storeInstances(instances);
-        });
       });
 
       if (returnPromises) {
