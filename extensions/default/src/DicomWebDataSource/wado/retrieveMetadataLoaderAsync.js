@@ -13,6 +13,12 @@ export class DeferredPromise {
   thenFunction = undefined;
   rejectFunction = undefined;
 
+  constructor(metadata, processFunction) {
+    this.setMetadata(metadata);
+    this.setProcessFunction(processFunction);
+    this.start();
+  }
+
   setMetadata(metadata) {
     this.metadata = metadata;
   }
@@ -69,15 +75,13 @@ function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) 
     },
     next() {
       const { seriesInstanceUID, metadata } = seriesInstanceUIDList.shift();
-      const promise = new DeferredPromise();
-      promise.setMetadata(metadata);
-      promise.setProcessFunction(() => {
+
+      return new DeferredPromise(metadata, () => {
         return client.retrieveSeriesMetadata({
           studyInstanceUID,
           seriesInstanceUID,
         });
       });
-      return promise;
     },
   });
 }
