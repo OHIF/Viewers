@@ -54,4 +54,12 @@ export type DicomStudyMetaData = {
   seriesSummaryMetadata: DicomSeriesMetaData,
   instancesPerSeries: DicomInstancesMetaData
 }
+
+/**
+ * Interface to be used by retrieveStudyMetadata to annotate the expected result fields.
+ */
+export type RetrieveStudyMetadataInterface = {
+  preLoadData: Array<DicomSeriesHeaderMetaData>;
+  promises: Array<DicomStructure>;
+}
 export type DicomSeriesStructureData = DicomStructureData[];
