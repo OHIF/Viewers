@@ -6,7 +6,6 @@ import {
   expectedNaturalizedInstances,
   bulkDataURIExample,
 } from '../utils/data.test';
-import * as assert from 'node:assert';
 import { DicomStructure, DicomStructureData } from '../utils/Types';
 
 describe('retrieveBulkData', () => {
