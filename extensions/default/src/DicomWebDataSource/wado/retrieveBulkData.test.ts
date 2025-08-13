@@ -18,7 +18,7 @@ describe('retrieveBulkData', () => {
         dicomWebConfig,
       )
     );
-    expect(result.toString()).toEqual(expectedNaturalizedInstances.toString());
+    expect(JSON.stringify(result)).toStrictEqual(JSON.stringify(expectedNaturalizedInstances));
   });
 
 
@@ -30,6 +30,6 @@ describe('retrieveBulkData', () => {
         dicomWebConfig,
       )
     );
-    expect(result.toString()).toEqual(expectedNaturalizedInstances.toString());
+    expect(JSON.stringify(result)).toStrictEqual(JSON.stringify(expectedNaturalizedInstances));
   });
 });
