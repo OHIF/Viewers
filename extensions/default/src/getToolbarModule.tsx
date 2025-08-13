@@ -1,17 +1,15 @@
-import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
-import { ToolButton, utils } from '@ohif/ui-next';
+import { utils } from '@ohif/ui-next';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
 // legacy
-import ToolbarDividerLegacy from './Toolbar/ToolbarDivider';
-import ToolbarSplitButtonWithServicesLegacy from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWithServices';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
+import ToolRowWrapper from './Toolbar/ToolRowWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
+import { ToolButtonWrapper } from './Toolbar/ToolButtonWrapper';
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
@@ -19,11 +17,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // new
     {
       name: 'ohif.toolButton',
-      defaultComponent: ToolButton,
+      defaultComponent: ToolButtonWrapper,
     },
     {
       name: 'ohif.toolButtonList',
       defaultComponent: ToolButtonListWrapper,
+    },
+    {
+      name: 'ohif.row',
+      defaultComponent: ToolRowWrapper,
     },
     {
       name: 'ohif.toolBoxButtonGroup',
@@ -32,28 +34,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.toolBoxButton',
       defaultComponent: ToolBoxButtonWrapper,
-    },
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    {
-      name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButtonLegacy,
-    },
-    {
-      name: 'ohif.buttonGroup',
-      defaultComponent: ToolbarButtonGroupWithServicesLegacy,
-    },
-    {
-      name: 'ohif.divider',
-      defaultComponent: ToolbarDividerLegacy,
-    },
-    {
-      name: 'ohif.splitButton',
-      defaultComponent: ToolbarSplitButtonWithServicesLegacy,
     },
     // others
     {

@@ -39,10 +39,6 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
-import {
-  setupSegmentationDataModifiedHandler,
-  setupSegmentationModifiedHandler,
-} from './utils/segmentationHandlers';
 import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgressHandler';
 
 const { registerColormap } = csUtilities.colormap;
@@ -97,7 +93,14 @@ export default async function init({
     viewportGridService,
     segmentationService,
     measurementService,
+    colorbarService,
+    displaySetService,
+    toolbarService,
   } = servicesManager.services;
+
+  toolbarService.registerEventForToolbarUpdate(colorbarService, [
+    colorbarService.EVENTS.STATE_CHANGED,
+  ]);
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
@@ -177,33 +180,21 @@ export default async function init({
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
 
   /* Measurement Service */
-  this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
+  this.measurementServiceSource = connectToolsToMeasurementService({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+  });
 
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
 
-  [
-    measurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-    measurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-  ].forEach(event => {
-    measurementService.subscribe(event, evt => {
-      const { measurement } = evt;
-      const { uid: annotationUID } = measurement;
-      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
-    });
+  measurementService.subscribe(measurementService.EVENTS.JUMP_TO_MEASUREMENT, evt => {
+    const { measurement } = evt;
+    const { uid: annotationUID } = measurement;
+    commandsManager.runCommand('jumpToMeasurementViewport', { measurement, annotationUID, evt });
   });
 
-  // Setup segmentation event handlers
-  const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
-    setupSegmentationDataModifiedHandler({
-      segmentationService,
-      customizationService,
-      commandsManager,
-    });
-
-  const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
-    segmentationService,
-  });
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
@@ -233,16 +224,6 @@ export default async function init({
     }
   );
 
-  // resize the cornerstone viewport service when the grid size changes
-  // IMPORTANT: this should happen outside of the OHIFCornerstoneViewport
-  // since it will trigger a rerender of each viewport and each resizing
-  // the offscreen canvas which would result in a performance hit, this should
-  // done only once per grid resize here. Doing it once here, allows us to reduce
-  // the refreshRage(in ms) to 10 from 50. I tried with even 1 or 5 ms it worked fine
-  viewportGridService.subscribe(viewportGridService.EVENTS.GRID_SIZE_CHANGED, () => {
-    cornerstoneViewportService.resize(true);
-  });
-
   initContextMenu({
     cornerstoneViewportService,
     customizationService,
@@ -266,8 +247,17 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
+  const getDisplaySetFromVolumeId = (volumeId: string) => {
+    const allDisplaySets = displaySetService.getActiveDisplaySets();
+    const volume = cornerstone.cache.getVolume(volumeId);
+    const imageIds = volume.imageIds;
+    return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
+  };
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
+    const { viewport } = getEnabledElement(element);
+    initViewTiming({ element });
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
@@ -279,7 +269,10 @@ export default async function init({
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
-    initViewTiming({ element });
+    // limitation: currently supporting only volume viewports with fusion
+    if (viewport.type !== cornerstone.Enums.ViewportType.ORTHOGRAPHIC) {
+      return;
+    }
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
@@ -305,15 +298,10 @@ export default async function init({
     100
   );
 
+  // Subscribe to actor events to dynamically update colorbars
+
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
-
-  const unsubscriptions = [
-    unsubscribeSegmentationDataModifiedHandler,
-    unsubscribeSegmentationModifiedHandler,
-  ];
-
-  return { unsubscriptions };
 }
 
 /**

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
-
+import { useSystem } from '@ohif/core';
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
 
@@ -56,13 +56,14 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
  * @param {Object} options.valueTypes - The value types for mapping measurements.
  * @returns {Array} An array of mapped and filtered measurements.
  */
-export function useMeasurements(servicesManager, { measurementFilter }) {
+export function useMeasurements({ measurementFilter } = { measurementFilter: () => true }) {
+  const { servicesManager } = useSystem();
   const { measurementService, displaySetService } = servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
     const updateDisplayMeasurements = () => {
-      let measurements = measurementService.getMeasurements(measurementFilter);
+      const measurements = measurementService.getMeasurements(measurementFilter);
       const mappedMeasurements = measurements.map(m =>
         mapMeasurementToDisplay(m, displaySetService)
       );

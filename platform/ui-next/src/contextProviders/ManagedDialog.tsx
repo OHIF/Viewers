@@ -1,6 +1,11 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/Dialog/Dialog';
 import { cn } from '../lib/utils';
+
+type Position = {
+  x: number;
+  y: number;
+};
 
 export interface ManagedDialogProps {
   id: string;
@@ -20,8 +25,27 @@ export interface ManagedDialogProps {
 }
 
 export interface ManagedDialogRef {
-  updatePosition: (position: { x: number; y: number }) => void;
+  updatePosition: (position: Position) => void;
 }
+
+const _updatePosition = (
+  contentNode: HTMLElement,
+  desiredPosition: { x: number; y: number },
+  setCurrentPosition: (pt: Position) => void
+) => {
+  if (!contentNode) {
+    return;
+  }
+
+  const boundingClientRect = contentNode.getBoundingClientRect();
+  if (boundingClientRect.bottom > window.innerHeight) {
+    desiredPosition.y = desiredPosition.y - boundingClientRect.height;
+  }
+  if (boundingClientRect.right > window.innerWidth) {
+    desiredPosition.x = desiredPosition.x - boundingClientRect.width;
+  }
+  setCurrentPosition(desiredPosition);
+};
 
 const ManagedDialog = forwardRef<ManagedDialogRef, ManagedDialogProps>(
   (
@@ -43,12 +67,13 @@ const ManagedDialog = forwardRef<ManagedDialogRef, ManagedDialogProps>(
     ref
   ) => {
     const [currentPosition, setCurrentPosition] = useState(defaultPosition);
+    const [contentNode, setContentNode] = useState<HTMLElement | null>(null);
 
     useImperativeHandle(
       ref,
       () => ({
-        updatePosition: (position: { x: number; y: number }) => {
-          setCurrentPosition(position);
+        updatePosition: (position: Position) => {
+          _updatePosition(contentNode, position, setCurrentPosition);
         },
       }),
       []
@@ -57,6 +82,33 @@ const ManagedDialog = forwardRef<ManagedDialogRef, ManagedDialogProps>(
     useEffect(() => {
       setCurrentPosition(defaultPosition);
     }, [defaultPosition]);
+
+    // When a default position is provided, the assumption is that the position
+    // is respected unless the position chosen results in the dialog being
+    // clipped off-screen (i.e. part of the dialog is rendered outside the browser
+    // window). When the dialog is clipped it will be repositioned about
+    // the default position such that it is no longer clipped. To avoid a flash
+    // during the reposition, we initially hide the dialog.
+    const [contentVisibility, setContentVisibility] = useState(
+      defaultPosition ? 'invisible' : 'visible'
+    );
+
+    // The callback to reposition an explicitly positioned dialog. Note that
+    // if the dialog is larger than the window (in either dimension), the
+    // dialog will still be clipped in some manner.
+    const contentRef = useCallback(
+      contentNode => {
+        if (!contentNode) {
+          return;
+        }
+
+        setContentNode(contentNode);
+        _updatePosition(contentNode, defaultPosition, setCurrentPosition);
+        setContentVisibility('visible');
+      },
+      [defaultPosition]
+    );
+
     return (
       <Dialog
         open={isOpen}
@@ -72,7 +124,8 @@ const ManagedDialog = forwardRef<ManagedDialogRef, ManagedDialogProps>(
         showOverlay={showOverlay}
       >
         <DialogContent
-          className={cn(unstyled ? 'p-0' : '', containerClassName)}
+          ref={contentRef}
+          className={cn(unstyled ? 'p-0' : '', containerClassName, contentVisibility)}
           unstyled={unstyled}
           style={{
             ...(currentPosition
@@ -83,6 +136,7 @@ const ManagedDialog = forwardRef<ManagedDialogRef, ManagedDialogProps>(
                   transform: 'translate(0, 0)',
                   margin: 0,
                   animation: 'none',
+                  transition: 'none',
                 }
               : {}),
           }}

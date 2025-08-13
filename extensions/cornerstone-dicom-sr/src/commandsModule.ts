@@ -32,12 +32,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     additionalFindingTypes
   );
 
-  const report = MeasurementReport.generateReport(
-    filteredToolState,
-    metaData,
-    utilities.worldToImageCoords,
-    options
-  );
+  const report = MeasurementReport.generateReport(filteredToolState, metaData, options);
 
   const { dataset } = report;
 
@@ -54,7 +49,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager, extensionManager, commandsManager } = props;
-  const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
+  const { customizationService } = servicesManager.services;
 
   const actions = {
     changeColorMeasurement: ({ uid }) => {
@@ -129,6 +124,9 @@ const commandsModule = (props: withAppTypes) => {
           console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
         }
+        if (!naturalizedReport.SOPClassUID) {
+          throw new Error('No sop class uid');
+        }
 
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
 
@@ -160,36 +158,18 @@ const commandsModule = (props: withAppTypes) => {
      * Loads measurements by hydrating and loading the SR for the given display set instance UID
      * and displays it in the active viewport.
      */
-    loadSRMeasurements: ({ displaySetInstanceUID }) => {
-      const { SeriesInstanceUIDs } = hydrateStructuredReport(
+    hydrateStructuredReport: ({ displaySetInstanceUID }) => {
+      return hydrateStructuredReport(
         { servicesManager, extensionManager, commandsManager },
         displaySetInstanceUID
       );
-
-      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
-      if (displaySets.length) {
-        commandsManager.run('setDisplaySetsForViewports', {
-          viewportsToUpdate: [
-            {
-              viewportId: viewportGridService.getActiveViewportId(),
-              displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-            },
-          ],
-        });
-      }
     },
   };
 
   const definitions = {
-    downloadReport: {
-      commandFn: actions.downloadReport,
-    },
-    storeMeasurements: {
-      commandFn: actions.storeMeasurements,
-    },
-    loadSRMeasurements: {
-      commandFn: actions.loadSRMeasurements,
-    },
+    downloadReport: actions.downloadReport,
+    storeMeasurements: actions.storeMeasurements,
+    hydrateStructuredReport: actions.hydrateStructuredReport,
   };
 
   return {

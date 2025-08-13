@@ -184,10 +184,12 @@ const CornerstoneViewportDownloadForm = ({
     const toolInstancesArray = Object.values(toolInstances);
 
     toolInstancesArray.forEach(toolInstance => {
-      if (show && toolInstance.constructor.isAnnotation !== false) {
-        toolGroup.setToolEnabled(toolInstance.toolName);
-      } else {
-        toolGroup.setToolDisabled(toolInstance.toolName);
+      if (toolInstance.constructor.isAnnotation !== false) {
+        if (show) {
+          toolGroup.setToolEnabled(toolInstance.toolName);
+        } else {
+          toolGroup.setToolDisabled(toolInstance.toolName);
+        }
       }
     });
   };

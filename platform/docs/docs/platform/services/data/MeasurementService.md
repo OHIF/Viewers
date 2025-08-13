@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Measurement Service
+title: Measurement Service
+summary: Documentation for OHIF's MeasurementService, which handles annotation representation with extensible sources and mappers, supporting various measurement tools and allowing custom implementations beyond the built-in CornerstoneTools integration.
 ---
 
 # Measurement Service
@@ -29,8 +31,7 @@ There are seven events that get publish in `MeasurementService`:
 | RAW_MEASUREMENT_ADDED | Fires when a raw measurement is added (e.g., dicom-sr) |
 | MEASUREMENT_REMOVED   | Fires when a measurement is removed                    |
 | MEASUREMENTS_CLEARED  | Fires when all measurements are deleted                |
-| JUMP_TO_MEASUREMENT_VIEWPORT   | Fires when a measurement is requested to be jumped to, applying to individual viewports. |
-| JUMP_TO_MEASUREMENT_LAYOUT   | Fires when a measurement is requested to be jumped to, applying to the overall layout. |
+| JUMP_TO_MEASUREMENT   | Fires when a measurement is requested to be jumped to  |
 
 ## API
 

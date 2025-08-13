@@ -1,5 +1,7 @@
 ---
 sidebar_position: 12
+title: Microsoft Azure Integration
+summary: Comprehensive guide for configuring OHIF with Microsoft Azure Healthcare APIs, including step-by-step instructions for Azure AD registration, DICOM service setup, CORS configuration, and OAuth authentication implementation.
 ---
 
 # Microsoft Azure

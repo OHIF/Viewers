@@ -1,29 +1,28 @@
 import React from 'react';
-import { utils } from '@ohif/core';
+import { useSystem, utils } from '@ohif/core';
 import { AccordionTrigger, MeasurementTable, ScrollArea, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
   StudyMeasurements,
-  StudyMeasurementsActions,
   StudySummaryFromMetadata,
   AccordionGroup,
+  StudyMeasurementsActions,
   MeasurementsOrAdditionalFindings,
 } from '@ohif/extension-cornerstone';
 
 import { useTrackedMeasurements } from '../getContextModule';
 import { UntrackSeriesModal } from './PanelStudyBrowserTracking/untrackSeriesModal';
 
-const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
-  utils.MeasurementFilters;
+const { filterMeasurementsBySeriesUID, filterAny } = utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking(props) {
   const [viewportGrid] = useViewportGrid();
-  const { measurementService, uiModalService } = props.servicesManager.services;
+  const { servicesManager } = useSystem();
+  const { measurementService, uiModalService } = servicesManager.services;
+
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
-  const measurementFilter = trackedStudy
-    ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
-    : filterPlanarMeasurement;
+  const measurementFilter = trackedStudy ? filterMeasurementsBySeriesUID(trackedSeries) : filterAny;
 
   const onUntrackConfirm = () => {
     sendTrackedMeasurementsEvent('UNTRACK_ALL', {});

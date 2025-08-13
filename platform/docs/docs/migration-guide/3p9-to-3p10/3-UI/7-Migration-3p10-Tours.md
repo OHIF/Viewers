@@ -1,5 +1,6 @@
 ---
 title: Tours and Onboarding
+summary: Migration guide for Tours and Onboarding features in OHIF 3.10, explaining the transition from defining tours directly in window.config.tours to using the customization service, enabling mode-specific tours and better organization.
 ---
 
 ## Migration Guide: Tours

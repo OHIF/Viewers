@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: Internationalization
+title: Internationalization
+summary: Documentation of OHIF's internationalization (i18n) implementation, including how to change languages, extend existing languages, add new languages, and contribute translations, using the @ohif/i18n package powered by i18next.
 ---
 
 # Viewer: Internationalization

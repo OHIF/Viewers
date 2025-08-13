@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright-test-coverage';
 import {
   visitStudy,
   checkForScreenshot,
@@ -24,11 +24,12 @@ test.describe('3D four up Test', async () => {
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
+    await page.waitForTimeout(5000);
+
     await checkForScreenshot(
       page,
       page,
-      screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly,
-      200
+      screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly
     );
   });
 });

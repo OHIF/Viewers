@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright-test-coverage';
 import {
   visitStudy,
   checkForScreenshot,
@@ -22,11 +22,13 @@ test.describe('3D only Test', async () => {
       .first()
       .click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await checkForScreenshot(
+    await page.waitForTimeout(5000);
+    // Use a 4 percent diff pixel ratio to account for slight color differences in the 3D viewport
+    await checkForScreenshot({
       page,
-      page,
-      screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
-      200
-    );
+      locator: page,
+      screenshotPath: screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
+      maxDiffPixelRatio: 0.04,
+    });
   });
 });
