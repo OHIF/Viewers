@@ -37,6 +37,9 @@ export interface DicomReferenceMetadata extends DicomSeriesHeaderMetaData {
   Columns: number,
   InstanceNumber: number,
   NumberOfFrames?: number,
+  PixelData: {
+    BulkDataURI: string,
+  },
   imageId?: string,
   url?: string,
   wadoRoot?: string,
