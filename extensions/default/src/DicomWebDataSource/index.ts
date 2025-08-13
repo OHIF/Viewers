@@ -15,10 +15,10 @@ import dcm4cheeReject from './dcm4cheeReject.js';
 import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import {
-  dicomWebToSettledRawDicomInstances,
   generateInstanceMetaData,
   generateStudyMetaData,
   dicomWebToDicomStructure,
+  dicomWebToRawDicomInstances,
 } from './extractMetaData';
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
@@ -420,7 +420,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       // dcmjs naturalizes the dataset. Also. note that since we only retrieved 2 slices worth of
       // metadata per series, we have to "reconstruct" the other slices so the hanging protocol's requirements
       // are satisfied! We do this by using the first slice as reference and then patch the IPP information.
-      const rawInstances = dicomWebToSettledRawDicomInstances(instances);
+      const rawInstances = dicomWebToRawDicomInstances(instances);
       const naturalizedInstancesMetadata= generateInstanceMetaData(instanceMetaList, rawInstances);
       const { seriesSummaryMetadata, instancesPerSeries } = generateStudyMetaData(
         naturalizedInstancesMetadata,

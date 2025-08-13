@@ -5,7 +5,8 @@
 
 ///////////////////////////DICOM Types///////////////////////////////
 
-export type RawDicomInstance = PromiseFulfilledResult<any>;
+export type RawFulfilledDicomInstance = PromiseFulfilledResult<any>;
+export type RawDicomInstance = any;
 export type RawDicomInstances = RawDicomInstance[];
 export type SettledRawDicomInstances = RawDicomInstances[];
 

@@ -3,20 +3,16 @@
  * by the viewer.
  */
 import dcmjs from 'dcmjs';
-import {getImageIdsForInstance} from './utils/getImageId';
-import {DicomWebConfig} from './utils/dicomWebConfig';
-import DICOMwebClient from 'dicomweb-client/types/api';
+import { getImageIdsForInstance } from './utils/getImageId';
+import { DicomWebConfig } from './utils/dicomWebConfig';
 import {
-  RawDicomInstance,
-  RawDicomInstances,
-  SettledRawDicomInstances,
-  DicomStructureData,
-  DicomSeriesStructureData,
-  DicomStudyMetaData,
-  DicomSeriesHeaderMetaData,
   DicomReferenceMetadata,
+  DicomSeriesHeaderMetaData,
+  DicomSeriesStructureData,
+  DicomStructureData,
+  DicomStudyMetaData,
+  RawDicomInstances,
 } from './utils/Types';
-import {addRetrieveBulkData} from './wado/retrieveBulkData';
 
 const { DicomMetaDictionary } = dcmjs.data;
 const { naturalizeDataset } = DicomMetaDictionary;
@@ -28,10 +24,13 @@ const { naturalizeDataset } = DicomMetaDictionary;
  * The goal here is to take the data returned by `dicomweb-client`, which lacks type information and
  * begin adding type annotations.
  *
+ * We also want to coerce the input into an array of instances.
+ *
  * @param instances list of settled promises containing fulfilled promises
  */
-export function dicomWebToSettledRawDicomInstances(instances: any[]): SettledRawDicomInstances {
-  return instances.map((promise) => promise.value)
+export function dicomWebToRawDicomInstances(instances: any[]): RawDicomInstances {
+  const rawInstances = instances.value ? instances.value : instances
+  return rawInstances.map((promise) => promise.value ? promise.value : promise);
 }
 
 
@@ -156,8 +155,7 @@ export function generateInstanceReferenceMetadata(
   const lastIPP = lastSlice.ImagePositionPatient;
   if (lastIPP) {
     const deltaIPP = (lastIPP[2] - firstIPP[2]) / totalSliceCount;
-    const newIPPz = firstIPP[2] + indx * deltaIPP;
-    reference.ImagePositionPatient[2] = newIPPz;
+    reference.ImagePositionPatient[2] = firstIPP[2] + indx * deltaIPP;
   }
 
   return reference;
@@ -178,23 +176,20 @@ export function generateInstanceReferenceMetadata(
  */
 export function generateInstanceMetaData (
   instanceQIDOMeta: any[],
-  instanceWADOMeta: SettledRawDicomInstances
+  instanceWADOMeta: RawDicomInstances
 ): DicomSeriesStructureData
 {
-  const naturalizedQIDOMetadata= instanceQIDOMeta;
-  const naturalizedInstancesMetadata= [];
   const newNaturalizedInstancesMetadata: DicomSeriesStructureData = [];
-
-  instanceWADOMeta.forEach(
-    instances => naturalizedInstancesMetadata.push(dicomWebToDicomStructure(instances))
+  const naturalizedInstancesMetadata= instanceWADOMeta.map(
+    instances => dicomWebToDicomStructure(instances)
   );
 
-  for(let i = 0; i < naturalizedQIDOMetadata.length; i++) {
+  for(let i = 0; i < instanceQIDOMeta.length; i++) {
     const referenceMetaData = naturalizedInstancesMetadata[i];
     const [firstSlice, lastSlice] = referenceMetaData;
-    const seriesInstances = naturalizedQIDOMetadata[i];
+    const seriesInstances = instanceQIDOMeta[i];
     const newInstances: DicomStructureData = [];
-    const instances = seriesInstances.value;
+    const instances = seriesInstances.value ? seriesInstances.value : seriesInstances;
     const totalSliceCount = instances.length;
 
     for (let i = 0; i < totalSliceCount; i++) {
