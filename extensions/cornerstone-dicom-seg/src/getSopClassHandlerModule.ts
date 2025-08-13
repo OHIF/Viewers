@@ -1,12 +1,13 @@
-import { utils } from '@ohif/core';
-import { metaData, triggerEvent, eventTarget } from '@cornerstonejs/core';
+import { utils, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
+import { metaData, eventTarget } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
 import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 
-const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4'];
+const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4', '1.2.840.10008.5.1.4.1.1.66.7'];
 
 const loadPromises = {};
 
@@ -33,7 +34,7 @@ function _getDisplaySetsFromSeries(
   const displaySet = {
     Modality: 'SEG',
     loading: false,
-    isReconstructable: true, // by default for now since it is a volumetric SEG currently
+    isReconstructable: false,
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
@@ -57,6 +58,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SEG')}`,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -89,12 +91,14 @@ function _getDisplaySetsFromSeries(
         const addedDisplaySet = displaySetsAdded[0];
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
+          displaySet.isReconstructable = addedDisplaySet.isReconstructable;
           unsubscribe();
         }
       }
     );
   } else {
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
+    displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
   }
 
   displaySet.load = async ({ headers }) =>
@@ -177,12 +181,16 @@ async function _loadSegments({
     throw new Error('referencedDisplaySet is missing for SEG');
   }
 
-  const { instances: images } = referencedDisplaySet;
-  const imageIds = images.map(({ imageId }) => imageId);
+  let { imageIds } = referencedDisplaySet;
+
+  if (!imageIds) {
+    // try images
+    const { images } = referencedDisplaySet;
+    imageIds = images.map(image => image.imageId);
+  }
 
   // Todo: what should be defaults here
   const tolerance = 0.001;
-  const skipOverlapping = true;
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
     segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
@@ -190,11 +198,10 @@ async function _loadSegments({
     });
   });
 
-  const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+  const results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
     imageIds,
     arrayBuffer,
-    metaData,
-    { skipOverlapping, tolerance, eventTarget, triggerEvent }
+    { metadataProvider: metaData, tolerance }
   );
 
   let usedRecommendedDisplayCIELabValue = true;
@@ -210,15 +217,6 @@ async function _loadSegments({
       }
     }
   });
-
-  if (results.overlappingSegments) {
-    uiNotificationService.show({
-      title: 'Overlapping Segments',
-      message:
-        'Unsupported overlapping segments detected, segmentation rendering results may be incorrect.',
-      type: 'warning',
-    });
-  }
 
   if (!usedRecommendedDisplayCIELabValue) {
     // Display a notification about the non-utilization of RecommendedDisplayCIELabValue
@@ -238,7 +236,8 @@ function _segmentationExists(segDisplaySet) {
   return cstSegmentation.state.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

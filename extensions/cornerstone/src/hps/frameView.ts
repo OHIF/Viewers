@@ -9,7 +9,7 @@ const frameView: Types.HangingProtocol.Protocol = {
   toolGroupIds: ['default'],
   protocolMatchingRules: [],
   displaySetSelectors: {
-    defaultDisplaySetId: {
+    activeDisplaySet: {
       seriesMatchingRules: [
         {
           attribute: 'numImageFrames',
@@ -36,8 +36,7 @@ const frameView: Types.HangingProtocol.Protocol = {
     },
     displaySets: [
       {
-        id: 'defaultDisplaySetId',
-        matchedDisplaySetsIndex: -1,
+        id: 'activeDisplaySet',
       },
     ],
   },
@@ -55,6 +54,7 @@ const frameView: Types.HangingProtocol.Protocol = {
       viewports: [
         {
           viewportOptions: {
+            viewportId: 'custom_R0_C0',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -85,12 +85,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R0_C1',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -121,12 +122,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R0_C2',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -157,12 +159,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R0_C3',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -193,12 +196,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R1_C0',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -229,12 +233,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R1_C1',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -265,12 +270,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R1_C2',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -301,12 +307,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R1_C3',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -337,12 +344,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R2_C0',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -373,12 +381,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R2_C1',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -409,12 +418,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R2_C2',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -445,12 +455,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R2_C3',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -481,12 +492,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R3_C0',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -517,12 +529,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R3_C1',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -553,12 +566,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R3_C2',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -589,12 +603,13 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
         {
           viewportOptions: {
+            viewportId: 'custom_R3_C3',
             toolGroupId: 'default',
             syncGroups: [
               {
@@ -625,7 +640,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -674,7 +689,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -710,7 +725,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -746,7 +761,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -782,7 +797,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -818,7 +833,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -854,7 +869,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -890,7 +905,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -926,7 +941,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -962,7 +977,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1011,7 +1026,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1047,7 +1062,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1083,7 +1098,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1119,7 +1134,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1155,7 +1170,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1191,7 +1206,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1240,7 +1255,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1276,7 +1291,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1312,7 +1327,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1348,7 +1363,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1397,7 +1412,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1433,7 +1448,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1469,7 +1484,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1518,7 +1533,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -1554,7 +1569,7 @@ const frameView: Types.HangingProtocol.Protocol = {
           },
           displaySets: [
             {
-              id: 'defaultDisplaySetId',
+              id: 'activeDisplaySet',
             },
           ],
         },

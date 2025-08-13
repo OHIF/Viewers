@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Data Source
+title: Data Source Module
+summary: Documentation for OHIF Data Source Module, which defines ways to fetch and map data into OHIF's native format, covering built-in sources like dicomweb and dicomjson, and explaining how to create custom data sources for proprietary backends.
 ---
 
 # Module: Data Source
@@ -36,8 +38,8 @@ Default extension provides two main data sources that are commonly used:
 `dicomweb` and `dicomjson`
 
 ```js
-import { createDicomWebApi } from './DicomWebDataSource/index.js';
-import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
+import { createDicomWebApi } from './DicomWebDataSource/index';
+import { createDicomJSONApi } from './DicomJSONDataSource/index';
 
 function getDataSourcesModule() {
   return [

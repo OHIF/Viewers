@@ -1,0 +1,32 @@
+.imageViewerViewport.empty ~ .ViewportOverlay {
+  display: none;
+}
+.ViewportOverlay {
+  color: hsl(var(--highlight));
+}
+.ViewportOverlay .overlay-element {
+  position: absolute;
+  font-weight: 400;
+  pointer-events: none;
+}
+.overlay-top {
+  top: 2.15rem;
+}
+.overlay-bottom {
+  bottom: 2.15rem;
+}
+
+/* Base text styling without shadow */
+.overlay-text {
+  /* No default shadow - will be applied by shadow classes */
+}
+
+/* Dark shadow for light backgrounds */
+.shadow-dark {
+  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.65);
+}
+
+/* Light shadow for dark backgrounds */
+.shadow-light {
+  text-shadow: 0.8px 0.8px 0.5px rgba(255, 255, 255, 0.65);
+}

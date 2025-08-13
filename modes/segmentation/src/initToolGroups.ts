@@ -10,14 +10,21 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
-function createTools(utilityModule) {
+function createTools({ utilityModule, commandsManager }) {
   const { toolNames, Enums } = utilityModule.exports;
-  return {
+
+  const tools = {
     active: [
       { toolName: toolNames.WindowLevel, bindings: [{ mouseButton: Enums.MouseBindings.Primary }] },
       { toolName: toolNames.Pan, bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }] },
-      { toolName: toolNames.Zoom, bindings: [{ mouseButton: Enums.MouseBindings.Secondary }] },
-      { toolName: toolNames.StackScroll, bindings: [{ mouseButton: Enums.MouseBindings.Wheel }] },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
+      },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
+      },
     ],
     passive: [
       {
@@ -26,6 +33,15 @@ function createTools(utilityModule) {
         configuration: {
           activeStrategy: 'FILL_INSIDE_CIRCLE',
         },
+      },
+      {
+        toolName: toolNames.LabelmapSlicePropagation,
+      },
+      {
+        toolName: toolNames.MarkerLabelmap,
+      },
+      {
+        toolName: toolNames.RegionSegmentPlus,
       },
       {
         toolName: 'CircularEraser',
@@ -67,17 +83,26 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          // preview: {
-          //   enabled: true,
-          // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: toolNames.SegmentBidirectional,
+      },
+      {
+        toolName: toolNames.SegmentSelect,
+      },
+      {
+        toolName: 'ThresholdSphereBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
         },
       },
@@ -92,13 +117,17 @@ function createTools(utilityModule) {
     ],
     disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
+
+  const updatedTools = commandsManager.run('initializeSegmentLabelTool', { tools });
+
+  return updatedTools;
 }
 
 function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
-  const tools = createTools(utilityModule);
+  const tools = createTools({ commandsManager, utilityModule });
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
@@ -108,7 +137,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   );
   const servicesManager = extensionManager._servicesManager;
   const { cornerstoneViewportService } = servicesManager.services;
-  const tools = createTools(utilityModule);
+  const tools = createTools({ commandsManager, utilityModule });
   tools.disabled.push(
     {
       toolName: utilityModule.exports.toolNames.Crosshairs,
@@ -160,7 +189,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.Pan,

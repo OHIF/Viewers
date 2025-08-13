@@ -1,4 +1,5 @@
-import { Icon } from '@ohif/ui';
+import { Icons, Button } from '@ohif/ui-next';
+import Typography from '@ohif/ui/src/components/Typography';
 import React, { useCallback, useState } from 'react';
 import { useAppConfig } from '@state';
 
@@ -39,42 +40,42 @@ const DialogInstruction = ({
 }: {
   instruction: { command: string; label: string };
 }) => {
-  const [message, setMessage] = useState('');
+  const [copyState, setCopyState] = useState<'idle' | 'success' | 'error'>('idle');
   const { command, label } = instruction;
 
   const copyToClipboard = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(command);
-      setMessage('Copied');
+      setCopyState('success');
     } catch (err) {
       console.error('Failed to copy: ', err);
-      setMessage('Failed');
+      setCopyState('error');
     } finally {
       setTimeout(() => {
-        resetState();
-      }, 500);
+        setCopyState('idle');
+      }, 1500);
     }
   }, [command]);
 
-  const resetState = () => {
-    setMessage(null);
-  };
-
   return (
-    <div>
-      {label ? <section>{label}</section> : <></>}
-      <section className="bg-secondary-dark my-4 flex flex-row justify-between py-1 px-2">
-        {command}
-        <div className="relative flex h-8 items-center rounded border px-2 py-2 text-base text-white">
-          {message || (
-            <>
-              <div className="cursor-pointer" onClick={copyToClipboard}>
-                <Icon name="clipboard" className="w-4 text-white" />
-              </div>
-            </>
-          )}
-        </div>
-      </section>
+    <div className="mb-6">
+      <Typography variant="body" className="mb-2 text-white" component="p">
+        {label}
+      </Typography>
+      <div className="bg-secondary-dark flex items-center justify-between rounded-md p-3">
+        <code className="flex-1 break-all pr-3 text-sm text-white">{command}</code>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={copyToClipboard}
+          className="hover:bg-primary/25 flex-shrink-0 text-white"
+          title="Copy to clipboard"
+        >
+          {copyState === 'idle' && <Icons.Copy className="h-5 w-5" />}
+          {copyState === 'success' && <Icons.FeedbackComplete className="h-5 w-5 text-green-400" />}
+          {copyState === 'error' && <Icons.ByName name="Error" className="h-5 w-5 text-red-400" />}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -103,11 +104,13 @@ const DownloadStudySeriesDialog = ({
   });
 
   return (
-    <div>
-      <h1>{config.description}</h1>
-      <div className="mt-2 p-2">
-        {instructions.map(instruction => (
-          <DialogInstruction instruction={instruction} key={instruction.command} />
+    <div className="bg-primary-dark rounded-lg p-6">
+      <Typography variant="body" className="mb-6 text-white/80" component="p">
+        {config.description}
+      </Typography>
+      <div className="space-y-4">
+        {instructions.map((instruction, index) => (
+          <DialogInstruction instruction={instruction} key={`${instruction.command}-${index}`} />
         ))}
       </div>
     </div>

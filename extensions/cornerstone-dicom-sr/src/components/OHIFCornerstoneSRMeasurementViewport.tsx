@@ -1,34 +1,24 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ExtensionManager } from '@ohif/core';
-
+import React, { useCallback, useEffect, useState } from 'react';
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
-import hydrateStructuredReport from '../utils/hydrateStructuredReport';
-import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
-import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
-
-const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
+import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
+import { useViewportGrid } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
-function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
-  const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
-    props;
+function OHIFCornerstoneSRMeasurementViewport(props) {
+  const { servicesManager } = useSystem();
+  const { children, dataSource, displaySets, viewportOptions } = props as {
+    children: React.ReactNode;
+    dataSource: unknown;
+    displaySets: AppTypes.DisplaySet[];
+    viewportOptions: AppTypes.ViewportOptions;
+  };
 
-  const [appConfig] = useAppConfig();
-
-  const { setPositionPresentation } = usePositionPresentationStore();
-
-  const {
-    displaySetService,
-    cornerstoneViewportService,
-    measurementService,
-    viewportActionCornersService,
-  } = servicesManager.services;
+  const { displaySetService } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -39,66 +29,15 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
   const srDisplaySet = displaySets[0];
 
+  const { setPositionPresentation } = usePositionPresentationStore();
+
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
-  const [measurementCount, setMeasurementCount] = useState(1);
   const [activeImageDisplaySetData, setActiveImageDisplaySetData] = useState(null);
   const [referencedDisplaySetMetadata, setReferencedDisplaySetMetadata] = useState(null);
   const [element, setElement] = useState(null);
   const { viewports, activeViewportId } = viewportGrid;
 
-  const { t } = useTranslation('Common');
-
-  // Optional hook into tracking extension, if present.
-  let trackedMeasurements;
-  let sendTrackedMeasurementsEvent;
-
-  const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
-    MEASUREMENT_TRACKING_EXTENSION_ID
-  );
-
-  if (hasMeasurementTrackingExtension) {
-    const contextModule = extensionManager.getModuleEntry(
-      '@ohif/extension-measurement-tracking.contextModule.TrackedMeasurementsContext'
-    );
-
-    const tracked = useContext(contextModule.context);
-    trackedMeasurements = tracked?.[0];
-    sendTrackedMeasurementsEvent = tracked?.[1];
-  }
-
-  if (!sendTrackedMeasurementsEvent) {
-    // if no panels from measurement-tracking extension is used, this code will run
-    trackedMeasurements = null;
-    sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
-      measurementService.clearMeasurements();
-      const { SeriesInstanceUIDs } = hydrateStructuredReport(
-        { servicesManager, extensionManager, appConfig },
-        displaySetInstanceUID
-      );
-
-      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
-      if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewports([
-          {
-            viewportId: activeViewportId,
-            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-          },
-        ]);
-      }
-    };
-  }
-
-  /**
-   * Todo: what is this, not sure what it does regarding the react aspect,
-   * it is updating a local variable? which is not state.
-   */
-  const [isLocked, setIsLocked] = useState(trackedMeasurements?.context?.trackedSeries?.length > 0);
-  /**
-   * Store the tracking identifiers per viewport in order to be able to
-   * show the SR measurements on the referenced image on the correct viewport,
-   * when multiple viewports are used.
-   */
   const setTrackingIdentifiers = useCallback(
     measurementSelected => {
       const { measurements } = srDisplaySet;
@@ -124,21 +63,11 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
   const updateViewport = useCallback(
     newMeasurementSelected => {
-      const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } = srDisplaySet;
+      const { StudyInstanceUID, displaySetInstanceUID } = srDisplaySet;
 
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
       }
-
-      if (sopClassUids && sopClassUids.length > 1) {
-        // Todo: what happens if there are multiple SOP Classes? Why we are
-        // not throwing an error?
-        console.warn('More than one SOPClassUID in the same series is not yet supported.');
-      }
-
-      // if (!srDisplaySet.measurements || !srDisplaySet.measurements.length) {
-      //   return;
-      // }
 
       _getViewportReferencedDisplaySetData(
         srDisplaySet,
@@ -150,6 +79,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         }
 
         setMeasurementSelected(newMeasurementSelected);
+
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
 
@@ -170,10 +100,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
       return null;
     }
 
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
-
     const { measurements } = srDisplaySet;
     const measurement = measurements[measurementSelected];
 
@@ -182,7 +108,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     }
 
     return (
-      <Component
+      <OHIFCornerstoneViewport
         {...props}
         // should be passed second since we don't want SR displaySet to
         // override the activeImageDisplaySetData
@@ -206,26 +132,9 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           onElementEnabled(evt);
         }}
         isJumpToMeasurementDisabled={true}
-      ></Component>
+      />
     );
   }, [activeImageDisplaySetData, viewportId, measurementSelected]);
-
-  const onMeasurementChange = useCallback(
-    direction => {
-      let newMeasurementSelected = measurementSelected;
-
-      newMeasurementSelected += direction;
-      if (newMeasurementSelected >= measurementCount) {
-        newMeasurementSelected = 0;
-      } else if (newMeasurementSelected < 0) {
-        newMeasurementSelected = measurementCount - 1;
-      }
-
-      setTrackingIdentifiers(newMeasurementSelected);
-      updateViewport(newMeasurementSelected);
-    },
-    [measurementSelected, measurementCount, updateViewport, setTrackingIdentifiers]
-  );
 
   /**
    Cleanup the SR viewport when the viewport is destroyed
@@ -261,8 +170,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
       if (!srDisplaySet.isLoaded) {
         await srDisplaySet.load();
       }
-      const numMeasurements = srDisplaySet.measurements.length;
-      setMeasurementCount(numMeasurements);
       updateViewport(measurementSelected);
     };
     loadSR();
@@ -284,50 +191,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     };
     updateSR();
   }, [measurementSelected, element, setTrackingIdentifiers, srDisplaySet]);
-
-  useEffect(() => {
-    setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
-  }, [trackedMeasurements]);
-
-  useEffect(() => {
-    viewportActionCornersService.addComponents([
-      {
-        viewportId,
-        id: 'viewportStatusComponent',
-        component: _getStatusComponent({
-          srDisplaySet,
-          viewportId,
-          isRehydratable: srDisplaySet.isRehydratable,
-          isLocked,
-          sendTrackedMeasurementsEvent,
-          t,
-        }),
-        indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topLeft,
-      },
-      {
-        viewportId,
-        id: 'viewportActionArrowsComponent',
-        index: 0,
-        component: (
-          <ViewportActionArrows
-            key="actionArrows"
-            onArrowsClick={onMeasurementChange}
-          ></ViewportActionArrows>
-        ),
-        indexPriority: 0,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-    ]);
-  }, [
-    isLocked,
-    onMeasurementChange,
-    sendTrackedMeasurementsEvent,
-    srDisplaySet,
-    t,
-    viewportActionCornersService,
-    viewportId,
-  ]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -365,8 +228,6 @@ OHIFCornerstoneSRMeasurementViewport.propTypes = {
   children: PropTypes.node,
   viewportLabel: PropTypes.string,
   viewportOptions: PropTypes.object,
-  servicesManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.instanceOf(ExtensionManager).isRequired,
 };
 
 async function _getViewportReferencedDisplaySetData(
@@ -391,6 +252,9 @@ async function _getViewportReferencedDisplaySetData(
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  if (!referencedDisplaySet?.images) {
+    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
+  }
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {
@@ -408,99 +272,6 @@ async function _getViewportReferencedDisplaySetData(
   };
 
   return { referencedDisplaySetMetadata, referencedDisplaySet };
-}
-
-function _getStatusComponent({
-  srDisplaySet,
-  viewportId,
-  isRehydratable,
-  isLocked,
-  sendTrackedMeasurementsEvent,
-  t,
-}) {
-  const handleMouseUp = () => {
-    sendTrackedMeasurementsEvent('HYDRATE_SR', {
-      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-      viewportId,
-    });
-  };
-
-  const loadStr = t('LOAD');
-
-  // 1 - Incompatible
-  // 2 - Locked
-  // 3 - Rehydratable / Open
-  const state = isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
-  let ToolTipMessage = null;
-  let StatusIcon = null;
-
-  switch (state) {
-    case 1:
-      StatusIcon = () => <Icon name="status-alert" />;
-
-      ToolTipMessage = () => (
-        <div>
-          This structured report is not compatible
-          <br />
-          with this application.
-        </div>
-      );
-      break;
-    case 2:
-      StatusIcon = () => <Icon name="status-locked" />;
-
-      ToolTipMessage = () => (
-        <div>
-          This structured report is currently read-only
-          <br />
-          because you are tracking measurements in
-          <br />
-          another viewport.
-        </div>
-      );
-      break;
-    case 3:
-      StatusIcon = () => (
-        <Icon
-          className="text-aqua-pale"
-          name="status-untracked"
-        />
-      );
-
-      ToolTipMessage = () => <div>{`Click ${loadStr} to restore measurements.`}</div>;
-  }
-
-  const StatusArea = () => (
-    <div className="flex h-6 cursor-default text-sm leading-6 text-white">
-      <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
-        <StatusIcon />
-        <span className="ml-1">SR</span>
-      </div>
-      {state === 3 && (
-        <div
-          className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
-          // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
-          onMouseUp={handleMouseUp}
-        >
-          {loadStr}
-        </div>
-      )}
-    </div>
-  );
-
-  return (
-    <>
-      {ToolTipMessage && (
-        <Tooltip
-          content={<ToolTipMessage />}
-          position="bottom-left"
-        >
-          <StatusArea />
-        </Tooltip>
-      )}
-      {!ToolTipMessage && <StatusArea />}
-    </>
-  );
 }
 
 export default OHIFCornerstoneSRMeasurementViewport;

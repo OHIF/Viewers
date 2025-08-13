@@ -63,10 +63,15 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "@ohif/extension-ultrasound-pleura-bline",
+      "version": "3.0.0"
+    },
+    {
       "packageName": "@ohif/extension-idc"
     },
     {
-      "packageName": "ohif-gcp-extension"
+      "packageName": "ohif-gcp-extension",
+      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -96,7 +101,12 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "ohif-gcp-mode"
+      "packageName": "@ohif/mode-ultrasound-pleura-bline",
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "ohif-gcp-mode",
+      "version": "0.0.1"
     }
   ],
   "public": [

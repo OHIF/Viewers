@@ -1,6 +1,8 @@
 ---
 sidebar_position: 8
 sidebar_label: Hanging Protocol
+title: Hanging Protocol Module
+summary: Documentation for OHIF Hanging Protocol Module, which controls image arrangement in viewports based on matching rules, with capabilities for layout configuration, viewport settings, synchronization, and advanced study comparison workflows.
 ---
 # Module: Hanging Protocol
 
@@ -505,7 +507,7 @@ running OHIF with two studies, and a comparison hanging protocol available by
 default.
 
 ```bash
-http://localhost:3000/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095722.1&hangingprotocolId=@ohif/hpCompare
+https://viewer-dev.ohif.org/viewer?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5&StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1&hangingprotocolId=@ohif/hpCompare
 ```
 
 The `&hangingProtocolId` option forces the specific hanging protocol to be

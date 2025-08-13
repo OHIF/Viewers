@@ -18,14 +18,9 @@ describe('OHIF Double Click', () => {
 
       // For whatever reason, with Cypress tests, we have to activate the
       // viewport we are double clicking first.
-      cy.get('[data-cy="viewport-pane"]')
-        .eq(i)
-        .trigger('mousedown', 'center', {
-          force: true,
-        })
-        .trigger('mouseup', 'center', {
-          force: true,
-        });
+      cy.get('[data-cy="viewport-pane"]').eq(i).trigger('click', 'center', {
+        force: true,
+      });
 
       // Wait for the viewport to be 'active'.
       // TODO Is there a better way to do this?

@@ -1,4 +1,4 @@
-import { addIcon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 import DownloadStudySeriesDialog from './DownloadStudySeriesDialog';
 import { ReactComponent as downloadIcon } from '../assets/icons/download.svg';
@@ -8,7 +8,7 @@ import { id } from './id';
 const extension = {
   id,
   preRegistration: () => {
-    addIcon('download', downloadIcon);
+    Icons.addIcon('download', downloadIcon);
   },
   onModeEnter: ({ servicesManager }) => {
     const { toolbarService, UIModalService, viewportGridService, displaySetService } =

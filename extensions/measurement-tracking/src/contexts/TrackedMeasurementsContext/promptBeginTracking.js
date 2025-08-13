@@ -1,4 +1,3 @@
-import { ButtonEnums } from '@ohif/ui';
 import i18n from 'i18next';
 
 const RESPONSE = {
@@ -9,17 +8,29 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
+export const measurementTrackingMode = {
+  STANDARD: 'standard',
+  SIMPLIFIED: 'simplified',
+  NONE: 'none',
+};
+
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
-  const { uiViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService, customizationService } = servicesManager.services;
   const appConfig = extensionManager._appConfig;
   // When the state change happens after a promise, the state machine sends the retult in evt.data;
   // In case of direct transition to the state, the state machine sends the data in evt;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = appConfig?.disableConfirmationPrompts
-      ? RESPONSE.SET_STUDY_AND_SERIES
-      : await _askTrackMeasurements(uiViewportDialogService, viewportId);
+    const standardMode = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
+    const noTrackingMode = appConfig?.measurementTrackingMode === measurementTrackingMode.NONE;
+    let promptResult;
+
+    promptResult = noTrackingMode
+      ? RESPONSE.NO_NEVER
+      : standardMode
+        ? await _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId)
+        : RESPONSE.SET_STUDY_AND_SERIES;
 
     resolve({
       userResponse: promptResult,
@@ -30,25 +41,27 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askTrackMeasurements(uiViewportDialogService, viewportId) {
+function _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = i18n.t('MeasurementTable:Track measurements for this series?');
+    const message = customizationService.getCustomization(
+      'viewportNotification.beginTrackingMessage'
+    );
     const actions = [
       {
         id: 'prompt-begin-tracking-cancel',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: i18n.t('Common:No'),
         value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: i18n.t('MeasurementTable:No, do not ask again'),
         value: RESPONSE.NO_NEVER,
       },
       {
         id: 'prompt-begin-tracking-yes',
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: i18n.t('Common:Yes'),
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },

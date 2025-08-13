@@ -6,7 +6,7 @@ import DicomFileUploader, {
   UploadRejection,
   UploadStatus,
 } from '../../utils/DicomFileUploader';
-import { Icon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 type DicomUploadProgressItemProps = {
   dicomFileUploader: DicomFileUploader;
@@ -54,17 +54,17 @@ const DicomUploadProgressItem = memo(
       switch (dicomFileUploader.getStatus()) {
         case UploadStatus.Success:
           return (
-            <Icon
+            <Icons.ByName
               name="status-tracked"
               className="text-primary-light"
-            ></Icon>
+            />
           );
         case UploadStatus.InProgress:
-          return <Icon name="icon-transferring"></Icon>;
+          return <Icons.ByName name="icon-transferring" />;
         case UploadStatus.Failed:
-          return <Icon name="icon-alert-small"></Icon>;
+          return <Icons.ByName name="icon-alert-small" />;
         case UploadStatus.Cancelled:
-          return <Icon name="icon-alert-outline"></Icon>;
+          return <Icons.ByName name="icon-alert-outline" />;
         default:
           return <></>;
       }
@@ -75,7 +75,7 @@ const DicomUploadProgressItem = memo(
         <div className="self-top flex w-0 shrink grow flex-col gap-1">
           <div className="flex gap-4">
             <div className="flex w-6 shrink-0 items-center justify-center">{getStatusIcon()}</div>
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-white">
               {dicomFileUploader.getFileName()}
             </div>
           </div>
@@ -88,9 +88,8 @@ const DicomUploadProgressItem = memo(
                 <div className="w-10 text-right">{percentComplete}%</div>
               )}
               <div className="ml-auto flex cursor-pointer">
-                <Icon
-                  className="text-primary-active self-center"
-                  name="close"
+                <Icons.Close
+                  className="text-primary self-center"
                   onClick={cancelUpload}
                 />
               </div>

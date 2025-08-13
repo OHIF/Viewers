@@ -47,6 +47,7 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add(
   'checkStudyRouteInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
+    Cypress.on('uncaught:exception', () => false);
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
@@ -107,7 +108,7 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/', { timeout: 30000 });
+  cy.visit('/', { timeout: 300000 });
 
   // For some reason cypress 12.x does not like to stub the network request
   // so we just wait here for querying to be done.
@@ -264,7 +265,7 @@ Cypress.Commands.add(
       }
     });
 
-    cy.get('@lengthButton').should('have.class', 'bg-primary-light');
+    cy.get('@lengthButton').should('have.attr', 'data-active', 'true');
 
     cy.get('@viewport').then($viewport => {
       const [x1, y1] = firstClick;

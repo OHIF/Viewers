@@ -1,26 +1,8 @@
 import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useSegmentationTableContext, useSegmentationExpanded } from './contexts';
 
-/**
- * Props interface for the AddSegmentRow component
- */
-interface AddSegmentRowProps {
-  /** Optional child elements to render within the row */
-  children?: React.ReactNode;
-  /** Optional segmentation object to override the active segmentation */
-  segmentation?: unknown;
-}
-
-/**
- * A component that renders a row with controls for adding segments and toggling visibility
- * in the segmentation table.
- *
- * @param props - Component properties
- * @param props.children - Optional child elements to render within the row
- * @param props.segmentation - Optional segmentation object to override the active segmentation
- */
-export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, segmentation }) => {
+export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ children = null }) => {
   const {
     activeRepresentation,
     disableEditing,
@@ -29,17 +11,31 @@ export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, s
     onToggleSegmentationRepresentationVisibility,
     data,
     showAddSegment,
-  } = useSegmentationTableContext('SegmentationTable');
+  } = useSegmentationTableContext('AddSegmentRow');
 
-  const allSegmentsVisible = Object.values(activeRepresentation?.segments || {}).every(
-    segment => segment?.visible !== false
-  );
+  // Try to get from expanded context first, then fall back to active segmentation
+  let segmentationId = activeSegmentationId;
+  let representation = activeRepresentation;
 
-  const segmentationIdToUse = segmentation ? segmentation.segmentationId : activeSegmentationId;
+  try {
+    const expandedContext = useSegmentationExpanded('AddSegmentRow');
+    if (expandedContext.isActive) {
+      segmentationId = expandedContext.segmentation.segmentationId;
+      representation = expandedContext.representation;
+    }
+  } catch (e) {
+    // Use the default values from table context
+  }
 
+  // If no segmentations, don't render
   if (!data?.length) {
     return null;
   }
+
+  // Check if all segments are visible
+  const allSegmentsVisible = Object.values(representation?.segments || {}).every(
+    segment => segment?.visible !== false
+  );
 
   const Icon = allSegmentsVisible ? (
     <Icons.Hide className="h-6 w-6" />
@@ -50,14 +46,14 @@ export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, s
   const allowAddSegment = showAddSegment && !disableEditing;
 
   return (
-    <div className="bg-primary-dark my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
-      <div className="flex-1">
+    <div className="my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
+      <div className="mt-1 flex-1">
         {allowAddSegment ? (
           <Button
             size="sm"
             variant="ghost"
             className="pr pl-0.5"
-            onClick={() => onSegmentAdd(segmentationIdToUse)}
+            onClick={() => onSegmentAdd(segmentationId)}
           >
             <Icons.Add />
             Add Segment
@@ -68,10 +64,7 @@ export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, s
         size="icon"
         variant="ghost"
         onClick={() =>
-          onToggleSegmentationRepresentationVisibility(
-            segmentationIdToUse,
-            activeRepresentation?.type
-          )
+          onToggleSegmentationRepresentationVisibility(segmentationId, representation?.type)
         }
       >
         {Icon}

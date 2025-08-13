@@ -26,6 +26,7 @@ import sortInstancesByPosition from './sortInstancesByPosition';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
+import toNumber from './toNumber';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
 import addAccessors from './addAccessors';
@@ -35,11 +36,15 @@ import {
   sortStudyInstances,
   sortingCriteria,
   seriesSortCriteria,
+  instancesSortCriteria,
 } from './sortStudy';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
-
+import * as MeasurementFilters from './measurementFilters';
+import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
+import calculateScanAxisNormal from './calculateScanAxisNormal';
+import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -55,6 +60,7 @@ const utils = {
   sortStudyInstances,
   sortingCriteria,
   seriesSortCriteria,
+  instancesSortCriteria,
   writeScript,
   formatDate,
   formatTime,
@@ -79,11 +85,16 @@ const utils = {
   isDisplaySetReconstructable,
   debounce,
   roundNumber,
+  toNumber,
   downloadCSVReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  MeasurementFilters,
+  getClosestOrientationFromIOP,
+  calculateScanAxisNormal,
+  areAllImageOrientationsEqual,
 };
 
 export {
@@ -112,11 +123,14 @@ export {
   imageIdToURI,
   debounce,
   roundNumber,
+  toNumber,
   downloadCSVReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  MeasurementFilters,
+  getClosestOrientationFromIOP,
 };
 
 export default utils;

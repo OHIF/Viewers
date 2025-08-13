@@ -1,29 +1,358 @@
 import { Enums } from '@cornerstonejs/tools';
-
-const getToggledClassName = (isToggled: boolean) => {
-  return isToggled
-    ? '!text-primary-active'
-    : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
-};
+import { utils } from '@ohif/ui-next';
+import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
+import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
+import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
+import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
+import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
+import { OpacityMenuWrapper } from './components/OpacityMenu/OpacityMenuWrapper';
+import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
+import NavigationComponent from './components/NavigationComponent/NavigationComponent';
+import TrackingStatus from './components/TrackingStatus/TrackingStatus';
+import ViewportColorbarsContainer from './components/ViewportColorbar';
+import AdvancedRenderingControls from './components/AdvancedRenderingControls';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
-  className: '!text-common-bright ohif-disabled',
   disabledText: disabledText ?? 'Not available on the current viewport',
 });
 
-export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
+export default function getToolbarModule({ servicesManager, extensionManager }: withAppTypes) {
   const {
     toolGroupService,
     toolbarService,
     syncGroupService,
     cornerstoneViewportService,
-    hangingProtocolService,
+    colorbarService,
     displaySetService,
     viewportGridService,
+    segmentationService,
   } = servicesManager.services;
 
   return [
+    {
+      name: 'ohif.advancedRenderingControls',
+      defaultComponent: AdvancedRenderingControls,
+    },
+    {
+      name: 'evaluate.advancedRenderingControls',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        const hasColorbar = colorbarService?.hasColorbar(viewportId) || false;
+        return {
+          disabled: !hasColorbar,
+        };
+      },
+    },
+    {
+      name: 'ohif.colorbar',
+      defaultComponent: ViewportColorbarsContainer,
+    },
+    {
+      name: 'ohif.trackingStatus',
+      defaultComponent: TrackingStatus,
+    },
+    {
+      name: 'evaluate.trackingStatus',
+      evaluate: ({ viewportId }) => {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        return {
+          disabled: false,
+        };
+      },
+    },
+    // ModalityLoadBadge
+    {
+      name: 'ohif.modalityLoadBadge',
+      defaultComponent: ModalityLoadBadge,
+    },
+    {
+      name: 'evaluate.modalityLoadBadge',
+      evaluate: ({ viewportId }) => {
+        // We can't use useViewportDisplaySets hook here since we're in a non-React context,
+        // but we'll follow the same pattern by getting only the display sets for this viewport
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Get the display sets that are specifically in this viewport
+        const viewportDisplaySets = displaySetUIDs.map(uid =>
+          displaySetService.getDisplaySetByUID(uid)
+        );
+
+        // Only show status for supported types like SR, SEG, RTSTRUCT
+        const isSupportedType = viewportDisplaySets.some(
+          displaySet =>
+            displaySet?.Modality === 'SR' ||
+            displaySet?.Modality === 'SEG' ||
+            displaySet?.Modality === 'RTSTRUCT'
+        );
+
+        return {
+          disabled: !isSupportedType,
+        };
+      },
+    },
+    // NavigationComponent
+    {
+      name: 'ohif.navigationComponent',
+      defaultComponent: NavigationComponent,
+    },
+    {
+      name: 'evaluate.navigationComponent',
+      evaluate: ({ viewportId }) => {
+        const { trackedMeasurementsService } = servicesManager.services;
+        // Same logic as statusComponent - only show for SR, SEG, RTSTRUCT
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Get the display sets that are specifically in this viewport
+        const viewportDisplaySets = displaySetUIDs.map(uid =>
+          displaySetService.getDisplaySetByUID(uid)
+        );
+
+        // Check if there's a need for navigation:
+        // 1. Segmentations are present (for SEG/RTSTRUCT navigation)
+        // 2. There are tracked measurements in the viewport (for SR navigation)
+
+        // Check for SEG/RTSTRUCT navigation
+        const hasSegmentation =
+          segmentationService.getSegmentationRepresentations(viewportId).length > 0;
+
+        if (!trackedMeasurementsService) {
+          return {
+            disabled: !hasSegmentation,
+          };
+        }
+
+        // Check if any of the viewport's series are being tracked
+        const hasTrackedInViewport = viewportDisplaySets.some(
+          displaySet =>
+            displaySet?.SeriesInstanceUID &&
+            trackedMeasurementsService.isSeriesTracked(displaySet.SeriesInstanceUID)
+        );
+
+        const isSRDisplaySet = viewportDisplaySets.some(
+          displaySet => displaySet?.Modality === 'SR'
+        );
+
+        // Enable navigation if:
+        // - There's a segmentation to navigate (SEG/RTSTRUCT)
+        // - OR there are tracked measurements in the viewport (SR/etc.)
+        const needsNavigation = hasSegmentation || hasTrackedInViewport || isSRDisplaySet;
+
+        return {
+          disabled: !needsNavigation,
+        };
+      },
+    },
+    {
+      name: 'ohif.dataOverlayMenu',
+      defaultComponent: ViewportDataOverlayMenuWrapper,
+    },
+    {
+      name: 'evaluate.dataOverlayMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Example: Show data overlay menu only for certain modalities
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        if (!displaySetUIDs?.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        return {
+          disabled: false,
+        };
+      },
+    },
+    {
+      name: 'ohif.orientationMenu',
+      defaultComponent: ViewportOrientationMenuWrapper,
+    },
+    {
+      name: 'evaluate.orientationMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        // Only show orientation menu for 3D capable viewports
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const isNotReconstructable = displaySets.some(displaySet => !displaySet?.isReconstructable);
+
+        const disabled = isNotReconstructable;
+
+        return {
+          disabled,
+        };
+      },
+    },
+    {
+      name: 'ohif.windowLevelMenu',
+      defaultComponent: WindowLevelActionMenuWrapper,
+    },
+    {
+      name: 'ohif.voiManualControlMenu',
+      defaultComponent: VOIManualControlMenuWrapper,
+    },
+    {
+      name: 'ohif.windowLevelMenuEmbedded',
+      defaultComponent: WindowLevelActionMenuWrapper,
+    },
+    {
+      name: 'evaluate.windowLevelMenuEmbedded',
+      evaluate: () => {
+        return {
+          isEmbedded: true,
+        };
+      },
+    },
+    {
+      name: 'ohif.thresholdMenu',
+      defaultComponent: ThresholdMenuWrapper,
+    },
+    {
+      name: 'ohif.opacityMenu',
+      defaultComponent: OpacityMenuWrapper,
+    },
+    {
+      name: 'evaluate.windowLevelMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        const supportWindowLevel = displaySets.some(displaySet => displaySet?.supportsWindowLevel);
+
+        const isInAnySection = toolbarService.isInAnySection('windowLevelMenuEmbedded');
+
+        return {
+          disabled: !supportWindowLevel,
+          hasEmbeddedVariantToUse: !!isInAnySection,
+        };
+      },
+    },
+    {
+      name: 'evaluate.voiManualControlMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        const supportWindowLevel = displaySets.some(displaySet => displaySet?.supportsWindowLevel);
+
+        return {
+          disabled: !supportWindowLevel,
+        };
+      },
+    },
+    {
+      name: 'evaluate.thresholdMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            disabled: true,
+          };
+        }
+
+        if (viewport.type !== 'orthographic') {
+          return {
+            disabled: true,
+          };
+        }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        if (!displaySetUIDs.length) {
+          return {
+            disabled: true,
+          };
+        }
+
+        return {
+          disabled: false,
+        };
+      },
+    },
+    {
+      name: 'evaluate.opacityMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport || viewport.type !== 'orthographic') {
+          return {
+            disabled: true,
+          };
+        }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (displaySetUIDs.length <= 1) {
+          return {
+            disabled: true,
+          };
+        }
+
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const hasOverlayable = displaySets.some(displaySet => displaySet?.isOverlayDisplaySet);
+
+        return {
+          disabled: hasOverlayable,
+        };
+      },
+    },
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not
     {
@@ -93,69 +422,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
 
         return {
           disabled: false,
-          className: isPrimaryActive
-            ? '!text-black bg-primary-light rounded'
-            : '!text-common-bright hover:!bg-primary-dark hover:!text-primary-light rounded',
-          // Todo: isActive right now is used for nested buttons where the primary
-          // button needs to be fully rounded (vs partial rounded) when active
-          // otherwise it does not have any other use
           isActive: isPrimaryActive,
         };
       },
     },
     {
-      name: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
-      evaluate: ({ viewportId, button, itemId }) => {
-        const { items } = button.props;
-
-        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-        if (!toolGroup) {
-          return {
-            primary: button.props.primary,
-            items,
-          };
-        }
-
-        const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
-        // check if the active toolName is part of the items then we need
-        // to move it to the primary button
-        const activeToolIndex = items.findIndex(item => {
-          const toolName = toolbarService.getToolNameForButton(item);
-          return toolName === activeToolName;
-        });
-
-        // if there is an active tool in the items dropdown bound to the primary mouse/touch
-        // we should show that no matter what
-        if (activeToolIndex > -1) {
-          return {
-            primary: items[activeToolIndex],
-            items,
-          };
-        }
-
-        if (!itemId) {
-          return {
-            primary: button.props.primary,
-            items,
-          };
-        }
-
-        // other wise we can move the clicked tool to the primary button
-        const clickedItemProps = items.find(item => item.id === itemId || item.itemId === itemId);
-
-        return {
-          primary: clickedItemProps,
-          items,
-        };
-      },
-    },
-    {
       name: 'evaluate.action',
-      evaluate: ({ viewportId, button }) => {
+      evaluate: () => {
         return {
-          className: '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
+          disabled: false,
         };
       },
     },
@@ -188,23 +463,23 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       evaluate: ({ viewportId, button }) => {
         let synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
 
-        if (!synchronizers?.length) {
+        if (!synchronizers?.length || synchronizers.length <= 1) {
           return {
-            className: getToggledClassName(false),
+            className: utils.getToggledClassName(false),
           };
         }
 
-        const isArray = Array.isArray(button.commands);
+        const isArray = Array.isArray(button.props?.commands);
 
         const synchronizerType = isArray
-          ? button.commands?.[0].commandOptions.type
-          : button.commands?.commandOptions.type;
+          ? button.props?.commands?.[0].commandOptions.type
+          : button.props?.commands?.commandOptions.type;
 
         synchronizers = syncGroupService.getSynchronizersOfType(synchronizerType);
 
         if (!synchronizers?.length) {
           return {
-            className: getToggledClassName(false),
+            className: utils.getToggledClassName(false),
           };
         }
 
@@ -216,7 +491,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const isEnabled = synchronizer?._enabled;
 
         return {
-          className: getToggledClassName(isEnabled),
+          className: utils.getToggledClassName(isEnabled),
         };
       },
     },
@@ -239,27 +514,26 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         if (!prop) {
           return {
             disabled: false,
-            className: '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
           };
         }
 
         const isToggled = prop;
 
         return {
-          className: getToggledClassName(isToggled),
+          className: utils.getToggledClassName(isToggled),
         };
       },
     },
     {
-      name: 'evaluate.mpr',
+      name: 'evaluate.displaySetIsReconstructable',
       evaluate: ({ viewportId, disabledText = 'Selected viewport is not reconstructable' }) => {
-        const { protocol } = hangingProtocolService.getActiveProtocol();
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-        if (!displaySetUIDs?.length) {
+        if (!viewport) {
           return;
         }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
 
@@ -271,11 +545,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
           return getDisabledState(disabledText);
         }
 
-        const isMpr = protocol?.id === 'mpr';
-
         return {
           disabled: false,
-          className: getToggledClassName(isMpr),
         };
       },
     },
@@ -297,13 +568,13 @@ function _evaluateToggle({
   }
   const toolName = toolbarService.getToolNameForButton(button);
 
-  if (!toolGroup.hasTool(toolName)) {
+  if (!toolGroup?.hasTool(toolName)) {
     return getDisabledState(disabledText);
   }
 
   const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);
 
   return {
-    className: getToggledClassName(!isOff),
+    className: utils.getToggledClassName(!isOff),
   };
 }

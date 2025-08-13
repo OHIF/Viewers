@@ -22,7 +22,6 @@ export default function getUserManagerForOpenIdConnectClient(oidcSettings) {
     automaticSilentRenew: true,
     revokeAccessTokenOnSignout: true,
     filterProtocolClaims: true,
-    loadUserInfo: true,
   };
 
   const userManager = new UserManager(settings);

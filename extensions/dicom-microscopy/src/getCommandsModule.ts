@@ -29,13 +29,9 @@ export default function getCommandsModule({
       callInputDialog({
         uiDialogService,
         defaultValue: '',
-        callback: (value: string, action: string) => {
-          switch (action) {
-            case 'save': {
-              roiAnnotation.setLabel(value);
-              microscopyService.triggerRelabel(roiAnnotation);
-            }
-          }
+        onSave: (value: string) => {
+          roiAnnotation.setLabel(value);
+          microscopyService.triggerRelabel(roiAnnotation);
         },
       });
     },

@@ -1,6 +1,6 @@
 /** @type {AppTypes.Config} */
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   showStudyList: true,
   extensions: [],
   modes: [],

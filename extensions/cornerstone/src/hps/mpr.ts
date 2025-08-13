@@ -1,6 +1,6 @@
 import { Types } from '@ohif/core';
 
-const VOI_SYNC_GROUP = {
+export const VOI_SYNC_GROUP = {
   type: 'voi',
   id: 'mpr',
   source: true,
@@ -10,7 +10,7 @@ const VOI_SYNC_GROUP = {
   },
 };
 
-const HYDRATE_SEG_SYNC_GROUP = {
+export const HYDRATE_SEG_SYNC_GROUP = {
   type: 'hydrateseg',
   id: 'sameFORId',
   source: true,

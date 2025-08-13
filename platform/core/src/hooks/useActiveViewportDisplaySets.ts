@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { DisplaySet } from '../types';
-
+import { useSystem } from '../';
 /**
  * Hook that listens for changes in the active viewport and its display sets.
  * It returns the display sets associated with the active viewport.
@@ -8,10 +8,9 @@ import { DisplaySet } from '../types';
  * @param servicesManager - Services manager instance
  * @returns Array of display sets for the active viewport
  */
-const useActiveViewportDisplaySets = ({ servicesManager }): DisplaySet[] => {
-  const [displaySets, setDisplaySets] = useState<DisplaySet[]>([]);
+const useActiveViewportDisplaySets = (): DisplaySet[] => {
+  const { servicesManager } = useSystem();
   const { displaySetService, viewportGridService } = servicesManager.services;
-
   // Move this function outside useEffect and memoize it
   const getDisplaySetsForViewport = useCallback(
     (viewportId: string) => {
@@ -21,19 +20,22 @@ const useActiveViewportDisplaySets = ({ servicesManager }): DisplaySet[] => {
     [displaySetService, viewportGridService]
   );
 
-  useEffect(() => {
-    // Get initial state
-    const viewportId = viewportGridService.getActiveViewportId();
-    setDisplaySets(getDisplaySetsForViewport(viewportId));
+  // Get initial state
+  const viewportId = viewportGridService.getActiveViewportId();
+  const displaySetsNew = getDisplaySetsForViewport(viewportId) || [];
+  const [displaySets, setDisplaySets] = useState<DisplaySet[]>(displaySetsNew);
 
+  useEffect(() => {
     const handleViewportChange = ({ viewportId }) => {
-      setDisplaySets(getDisplaySetsForViewport(viewportId));
+      const displaySetsNew = getDisplaySetsForViewport(viewportId);
+      setDisplaySets(displaySetsNew);
     };
 
     const handleGridStateChange = ({ state }) => {
       const activeViewportId = state.activeViewportId;
       if (activeViewportId) {
-        setDisplaySets(getDisplaySetsForViewport(activeViewportId));
+        const displaySetsNew = getDisplaySetsForViewport(activeViewportId);
+        setDisplaySets(displaySetsNew);
       }
     };
 

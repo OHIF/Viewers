@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Overview
+title: Data Services Overview
+summary: Overview of OHIF's data services architecture, which replaced the Redux store with a more modular approach using service-specific state management and a pub/sub pattern for communication between components.
 ---
 
 # Overview
@@ -19,8 +21,7 @@ We maintain the following non-ui Services:
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
 - [Toolbar Service](./ToolbarService.md)
 - [Measurement Service](../data/MeasurementService.md)
-- [Customization Service](./../ui/customization-service.md)
-- [State Sync Service](../data/StateSyncService.md)
+- [Customization Service](./../customization-service/customizationService.md)
 - [Panel Service](../data/PanelService.md)
 
 ## Service Architecture

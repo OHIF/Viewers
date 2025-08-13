@@ -1,5 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
-import { get, uniqBy } from 'lodash';
+import get from 'lodash.get';
+import uniqBy from 'lodash.uniqby';
 import {
   MergeConfig,
   CallForAllDataSourcesAsyncOptions,
@@ -157,7 +158,7 @@ export const callByRetrieveAETitle = ({
   const [displaySet] = args;
   const seriesMetadata = DicomMetadataStore.getSeries(
     displaySet.StudyInstanceUID,
-    displaySet.SeriesInstanceUID
+    displaySet.SeriesInstanceUID || displaySet.instance?.SeriesInstanceUID
   );
   const [dataSource] = extensionManager.getDataSources(
     seriesMetadata.RetrieveAETitle || defaultDataSourceName

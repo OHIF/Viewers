@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
-import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
+import { DicomMetadataStore, MODULE_TYPES, useSystem } from '@ohif/core';
 
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
 
-import { extensionManager } from '../../App.tsx';
+import { extensionManager } from '../../App';
 
-import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
+import { Button, Icons } from '@ohif/ui-next';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -19,11 +19,9 @@ const getLoadButton = (onDrop, text, isDir) => {
       {({ getRootProps, getInputProps }) => (
         <div {...getRootProps()}>
           <Button
-            rounded="full"
-            variant="contained" // outlined
+            variant="default"
+            className="w-28"
             disabled={false}
-            endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-            className={classnames('font-medium', 'ml-2')}
             onClick={() => {}}
           >
             {text}
@@ -32,9 +30,13 @@ const getLoadButton = (onDrop, text, isDir) => {
                 {...getInputProps()}
                 webkitdirectory="true"
                 mozdirectory="true"
+                style={{ display: 'none' }}
               />
             ) : (
-              <input {...getInputProps()} />
+              <input
+                {...getInputProps()}
+                style={{ display: 'none' }}
+              />
             )}
           </Button>
         </div>
@@ -48,9 +50,15 @@ type LocalProps = {
 };
 
 function Local({ modePath }: LocalProps) {
+  const { servicesManager } = useSystem();
+  const { customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const dropzoneRef = useRef();
   const [dropInitiated, setDropInitiated] = React.useState(false);
+
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
 
   // Initializing the dicom local dataSource
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
@@ -123,33 +131,30 @@ function Local({ modePath }: LocalProps) {
           {...getRootProps()}
           style={{ width: '100%', height: '100%' }}
         >
-          <div className="flex h-screen w-screen items-center justify-center ">
-            <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
+          <div className="flex h-screen w-screen items-center justify-center">
+            <div className="bg-muted border-primary/60 mx-auto space-y-2 rounded-xl border border-dashed py-12 px-12 drop-shadow-md">
               <div className="flex items-center justify-center">
-                <Icon
-                  name="logo-dark-background"
-                  className="h-28"
-                />
+                <Icons.OHIFLogoColorDarkBackground className="h-18" />
               </div>
-              <div className="space-y-2 pt-4 text-center">
+              <div className="space-y-2 py-6 text-center">
                 {dropInitiated ? (
-                  <div className="flex flex-col items-center justify-center pt-48">
+                  <div className="flex flex-col items-center justify-center pt-12">
                     <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-base text-blue-300">
-                      Note: You data is not uploaded to any server, it will stay in your local
-                      browser application
+                    <p className="text-primary pt-0 text-xl">
+                      Drag and drop your DICOM files & folders here <br />
+                      to load them locally.
                     </p>
-                    <p className="text-xg text-primary-active pt-6 font-semibold">
-                      Drag and Drop DICOM files here to load them in the Viewer
+                    <p className="text-muted-foreground text-base">
+                      Note: Your data remains locally within your browser
+                      <br /> and is never uploaded to any server.
                     </p>
-                    <p className="text-lg text-blue-300">Or click to </p>
                   </div>
                 )}
               </div>
-              <div className="flex justify-around pt-4 ">
+              <div className="flex justify-center gap-2 pt-4">
                 {getLoadButton(onDrop, 'Load files', false)}
                 {getLoadButton(onDrop, 'Load folders', true)}
               </div>

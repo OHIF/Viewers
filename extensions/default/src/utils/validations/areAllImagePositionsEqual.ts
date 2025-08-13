@@ -1,7 +1,9 @@
 import { vec3 } from 'gl-matrix';
 import toNumber from '@ohif/core/src/utils/toNumber';
 import { _getPerpendicularDistance } from '@ohif/core/src/utils/isDisplaySetReconstructable';
-import calculateScanAxisNormal from '../calculateScanAxisNormal';
+import { utils } from '@ohif/core';
+
+const { calculateScanAxisNormal } = utils;
 
 /**
  * Checks if there is a position shift between consecutive frames
@@ -44,6 +46,10 @@ export default function areAllImagePositionsEqual(instances: Array<any>): boolea
   const scanAxisNormal = calculateScanAxisNormal(firstImageOrientationPatient);
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
+
+  if (!firstImagePositionPatient || !lastIpp) {
+    return false;
+  }
 
   const averageSpacingBetweenFrames =
     _getPerpendicularDistance(firstImagePositionPatient, lastIpp) / (instances.length - 1);

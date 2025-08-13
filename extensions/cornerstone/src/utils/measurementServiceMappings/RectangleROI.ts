@@ -92,6 +92,8 @@ function getMappedAnnotations(annotation, displaySetService) {
   }
 
   const annotations = [];
+
+  const addedModalities = new Set();
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
@@ -105,6 +107,16 @@ function getMappedAnnotations(annotation, displaySetService) {
 
     const { SeriesNumber } = displaySet;
     const { mean, stdDev, max, area, Modality, modalityUnit, areaUnit } = targetStats;
+
+    // Skip if we've already added this modality
+    if (Modality && addedModalities.has(Modality)) {
+      return;
+    }
+
+    // Add modality to the set if it exists
+    if (Modality) {
+      addedModalities.add(Modality);
+    }
 
     annotations.push({
       SeriesInstanceUID,
@@ -199,9 +211,11 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   mappedAnnotations.forEach(mappedAnnotation => {
     const { unit, max, SeriesNumber } = mappedAnnotation;
 
-    const maxStr = getStatisticDisplayString(max, unit, 'max');
+    if (Number.isFinite(max)) {
+      const maxStr = getStatisticDisplayString(max, unit, 'max');
 
-    displayText.primary.push(maxStr);
+      displayText.primary.push(maxStr);
+    }
     displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   });
 

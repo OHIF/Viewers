@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Configuration UI
+title: Configuration UI
+summary: Describes interfaces for implementing configurable data sources in OHIF, with details on BaseDataSourceConfigurationAPI and BaseDataSourceConfigurationAPIItem to enable generic UIs for hierarchical data source configuration.
 ---
 
 # Configuration UI
@@ -117,7 +119,7 @@ with the labels returned from `getItemLabels`.
 ## Creation via Customization Module
 
 The generic UI (i.e. `DataSourceConfigurationComponent`) uses the
-[OHIF UI customization service](../../platform/services/ui/customization-service.md) to
+[OHIF UI customization service](../../platform/services/customization-service/customizationService.md) to
 instantiate the `BaseDataSourceConfigurationAPI` instance to configure a data source.
 
 A UI configurable data source should have a `configurationAPI` field as part of

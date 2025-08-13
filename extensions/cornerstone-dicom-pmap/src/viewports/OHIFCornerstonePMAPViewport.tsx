@@ -1,24 +1,22 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
+import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 
 function OHIFCornerstonePMAPViewport(props: withAppTypes) {
-  const {
-    displaySets,
-    children,
-    viewportOptions,
-    displaySetOptions,
-    servicesManager,
-    extensionManager,
-  } = props;
+  const { displaySets, children, viewportOptions, displaySetOptions, servicesManager } = props;
   const viewportId = viewportOptions.viewportId;
-  const { displaySetService, segmentationService, uiNotificationService } =
+  const { displaySetService, segmentationService, uiNotificationService, customizationService } =
     servicesManager.services;
 
   // PMAP viewport will always have a single display set
   if (displaySets.length !== 1) {
     throw new Error('PMAP viewport must have a single display set');
   }
+
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
 
   const pmapDisplaySet = displaySets[0];
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -55,9 +53,6 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
 
   const getCornerstoneViewport = useCallback(() => {
     const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
-    const { component: Component } = extensionManager.getModuleEntry(
-      '@ohif/extension-cornerstone.viewportModule.cornerstone'
-    );
 
     displaySetOptions.unshift({});
     const [pmapDisplaySetOptions] = displaySetOptions;
@@ -89,7 +84,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     });
 
     return (
-      <Component
+      <OHIFCornerstoneViewport
         {...props}
         // Referenced + PMAP displaySets must be passed as parameter in this order
         displaySets={[referencedDisplaySet, pmapDisplaySet]}
@@ -100,15 +95,16 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
           presentationIds: viewportOptions.presentationIds,
         }}
         displaySetOptions={[{}, pmapDisplaySetOptions]}
-      ></Component>
+      />
     );
   }, [
-    extensionManager,
     displaySetOptions,
     props,
     pmapDisplaySet,
     viewportOptions.orientation,
     viewportOptions.viewportId,
+    viewportOptions.presentationIds,
+    uiNotificationService,
   ]);
 
   // Cleanup the PMAP viewport when the viewport is destroyed

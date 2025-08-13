@@ -12,7 +12,6 @@ import {
   utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
 import { Types, MeasurementService } from '@ohif/core';
-import { StackViewport, utilities as csUtils } from '@cornerstonejs/core';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import SCOORD3DPointTool from './tools/SCOORD3DPointTool';
@@ -57,7 +56,7 @@ export default function init({
     'SRSCOORD3DPoint',
     POINT,
     SRSCOOR3DProbeMapper.toAnnotation,
-    SRSCOOR3DProbeMapper.toMeasurement
+    SRSCOOR3DProbeMapper.toMeasurement.bind(null, { servicesManager })
   );
 
   // Modify annotation tools to use dashed lines on SR
@@ -77,28 +76,4 @@ export default function init({
     SRRectangleROI: dashedLine,
     global: {},
   });
-
-  measurementService.subscribe(
-    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-    ({ viewportId, measurement, isConsumed }) => {
-      if (isConsumed) {
-        return;
-      }
-      try {
-        const currentViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        const { viewPlaneNormal } = currentViewport.getCamera();
-        const referencedImageId = csToolsUtils.getClosestImageIdForStackViewport(
-          currentViewport as StackViewport,
-          measurement.points[0],
-          viewPlaneNormal
-        );
-        const imageIndex = (currentViewport as StackViewport)
-          .getImageIds()
-          .indexOf(referencedImageId);
-        csUtils.jumpToSlice(currentViewport.element, { imageIndex });
-      } catch (error) {
-        console.warn('Unable to jump to image based on measurement coordinate', error);
-      }
-    }
-  );
 }

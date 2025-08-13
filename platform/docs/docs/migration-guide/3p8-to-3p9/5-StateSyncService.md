@@ -1,6 +1,7 @@
 ---
 id: state-sync-service
 title: StateSyncService
+summary: Migration guide for transitioning from StateSyncService to Zustand stores in OHIF 3.9, covering all store types including LutPresentationStore, PositionPresentationStore, ViewportGridStore, and more with examples of old and new API usage.
 ---
 
 
@@ -142,7 +143,7 @@ stateSyncService.store({
 
 ```js
 import { useViewportGridStore } from '../stores/useViewportGridStore';
-const { viewportGridState, setViewportGridState } = useViewportGridStore();
+const { viewportGridState, setViewportGridState } = useViewportGridStore.getState();
 const gridState = viewportGridState[storeId];
 // ...to update
 setViewportGridState(storeId, newGridState);

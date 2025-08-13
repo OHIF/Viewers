@@ -1,37 +1,33 @@
-import { AllInOneMenu, Icon } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
+import { Icons } from '@ohif/ui-next';
 import React, { ReactElement } from 'react';
-import { VolumeRenderingPresetsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
+import { useSystem } from '@ohif/core';
+import { useViewportRendering } from '../../hooks/useViewportRendering';
 
-export function VolumeRenderingPresets({
-  viewportId,
-  servicesManager,
-  commandsManager,
-  volumeRenderingPresets,
-}: VolumeRenderingPresetsProps): ReactElement {
-  const { uiModalService } = servicesManager.services;
+export function VolumeRenderingPresets({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { volumeRenderingPresets } = useViewportRendering(viewportId);
+  const { servicesManager } = useSystem();
+  const { uiDialogService } = servicesManager.services;
 
   const onClickPresets = () => {
-    uiModalService.show({
+    uiDialogService.show({
+      id: 'volume-rendering-presets',
       content: VolumeRenderingPresetsContent,
       title: 'Rendering Presets',
-      movable: true,
+      isDraggable: true,
       contentProps: {
-        onClose: uiModalService.hide,
         presets: volumeRenderingPresets,
         viewportId,
-        commandsManager,
       },
-      containerDimensions: 'h-[543px] w-[460px]',
-      contentDimensions: 'h-[493px] w-[460px]  pl-[12px] pr-[12px]',
     });
   };
 
   return (
     <AllInOneMenu.Item
       label="Rendering Presets"
-      icon={<Icon name="VolumeRendering" />}
-      rightIcon={<Icon name="action-new-dialog" />}
+      icon={<Icons.VolumeRendering />}
+      rightIcon={<Icons.ByName name="action-new-dialog" />}
       onClick={onClickPresets}
     />
   );

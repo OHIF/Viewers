@@ -1,12 +1,13 @@
 ---
 id: 0-general
 title: General
+summary: General migration changes from OHIF 3.8 to 3.9, including removing SharedArrayBuffer requirements, React 18 updates, Polyfill removal, webpack changes, scroll utility relocation, Crosshairs improvements, and toolbar button evaluation enhancements.
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Not SharedArrayBuffer anymore!
+# No SharedArrayBuffer anymore!
 
 We have streamlined the process of loading volumes without sacrificing speed by eliminating the need for shared array buffers. This change resolves issues across various frameworks, where previously, specific security headers were required. Now, you can remove any previously set headers, which lowers the barrier for adopting Cornerstone 3D in frameworks that didn't support those headers. Shared array buffers are no longer necessary, and all related headers can be removed.
 

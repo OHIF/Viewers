@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Routes
+title: Mode Routes
+summary: Documentation for OHIF Mode routes, which define URL paths, initialization logic, and layout templates for specific viewer workflows, allowing multiple modes to coexist within a single application.
 ---
 
 # Mode: Routes
@@ -95,7 +97,7 @@ Therefore, navigating to
 `http://localhost:3000/viewer/?StudyInstanceUIDs=1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1`
 will run the app with the layout and functionalities of the `viewer` mode using
 the `defaultDataSourceName` which is defined in the
-[App Config](../../configuration/index.md)
+[App Config](../../configuration/configurationFiles.md)
 
 You can use the same exact mode using a different registered data source (e.g.,
 `dicomjson`) by navigating to

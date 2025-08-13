@@ -1,6 +1,8 @@
 import log from '../log.js';
 import { Command, Commands, ComplexCommand } from '../types/Command';
 
+export type RunInput = Command | Commands | Command[] | string | undefined;
+
 /**
  * The definition of a command
  *
@@ -19,8 +21,12 @@ import { Command, Commands, ComplexCommand } from '../types/Command';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({} = {}) {
-    this.contexts = {};
+  private contexts = {};
+  // Has the reverse order in which contexts are created, used for the default ordering
+  private contextOrder = new Array<string>();
+
+  constructor(_options = {}) {
+    // No-op
   }
 
   /**
@@ -33,7 +39,7 @@ export class CommandsManager {
    * @param {string} contextName - Namespace for commands
    * @returns {undefined}
    */
-  createContext(contextName) {
+  createContext(contextName, priority?: number) {
     if (!contextName) {
       return;
     }
@@ -43,6 +49,8 @@ export class CommandsManager {
     }
 
     this.contexts[contextName] = {};
+    // Add the context name to the start of the list.
+    this.contextOrder.splice(0, 0, contextName);
   }
 
   /**
@@ -86,8 +94,17 @@ export class CommandsManager {
    * @param {CommandDefinition} definition - {@link CommandDefinition}
    */
   registerCommand(contextName, commandName, definition) {
-    if (typeof definition !== 'object') {
+    if (typeof definition !== 'object' && typeof definition !== 'function') {
       return;
+    }
+
+    // Validate and restrict keys to prevent prototype pollution
+    const isSafeKey = key => {
+      return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+    };
+
+    if (!isSafeKey(contextName) || !isSafeKey(commandName)) {
+      throw new Error('Invalid key name to prevent prototype pollution');
     }
 
     const context = this.getContext(contextName);
@@ -95,7 +112,11 @@ export class CommandsManager {
       return;
     }
 
-    context[commandName] = definition;
+    if (typeof definition === 'function') {
+      context[commandName] = { commandFn: definition, options: {} };
+    } else {
+      context[commandName] = definition;
+    }
   }
 
   /**
@@ -104,34 +125,22 @@ export class CommandsManager {
    *
    * @method
    * @param {String} commandName - Command to find
-   * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts
+   * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts.
+   *                 Also allows an array of contexts to look in.
    */
-  getCommand = (commandName: string, contextName?: string) => {
+  getCommand = (commandName: string, contextName: string | string[] = this.contextOrder) => {
     const contexts = [];
 
-    if (contextName) {
+    if (Array.isArray(contextName)) {
+      contexts.push(...contextName.map(name => this.getContext(name)).filter(it => !!it));
+    } else if (contextName) {
       const context = this.getContext(contextName);
       if (context) {
         contexts.push(context);
       }
-    } else {
-      Object.keys(this.contexts).forEach(contextName => {
-        contexts.push(this.getContext(contextName));
-      });
     }
 
-    if (contexts.length === 0) {
-      return;
-    }
-
-    let foundCommand;
-    contexts.forEach(context => {
-      if (context[commandName]) {
-        foundCommand = context[commandName];
-      }
-    });
-
-    return foundCommand;
+    return contexts.find(context => !!context[commandName])?.[commandName];
   };
 
   /**
@@ -141,7 +150,12 @@ export class CommandsManager {
    * @param {Object} [options={}] - Extra options to pass the command. Like a mousedown event
    * @param {String} [contextName]
    */
-  public runCommand(commandName: string, options = {}, contextName?: string) {
+  public runCommand(commandName: string, options = {}, contextName?: string | string[]) {
+    if (typeof commandName === 'function') {
+      // If commandName is a function, run it directly
+      return commandName(options);
+    }
+
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);
@@ -151,7 +165,7 @@ export class CommandsManager {
     const { commandFn } = definition;
     const commandParams = Object.assign(
       {},
-      definition.options, // "Command configuration"
+      definition.options || {}, // "Command configuration"
       options // "Time of call" info
     );
 
@@ -163,9 +177,60 @@ export class CommandsManager {
     }
   }
 
+  public static convertCommands(toRun: Command | Commands | Command[] | string | Function) {
+    if (typeof toRun === 'string') {
+      return [{ commandName: toRun }];
+    }
+    if ('commandName' in toRun) {
+      return [toRun as ComplexCommand];
+    }
+    if (typeof toRun === 'function') {
+      return [{ commandName: toRun }];
+    }
+    if ('commands' in toRun) {
+      const commandsInput = (toRun as Commands).commands;
+      return this.convertCommands(commandsInput);
+    }
+    if (Array.isArray(toRun)) {
+      return toRun.map(command => CommandsManager.convertCommands(command)[0]);
+    }
+
+    return [];
+  }
+
+  private validate(input: RunInput, options: Record<string, unknown> = {}): ComplexCommand[] {
+    if (!input) {
+      console.debug('No command to run');
+      return [];
+    }
+
+    // convert commands
+    const converted: ComplexCommand[] = CommandsManager.convertCommands(input);
+    if (!converted.length) {
+      console.debug('Command is not runnable', input);
+      return [];
+    }
+
+    return converted.map(command => ({
+      commandName: command.commandName,
+      commandOptions: { ...options, ...command.commandOptions },
+      context: command.context,
+    }));
+  }
+
   /**
    * Run one or more commands with specified extra options.
    * Returns the result of the last command run.
+   *
+   * Example commands to run are:
+   * * 'updateMeasurement'
+   * * `{ commandName: 'displayWhatever'}`
+   * * `['updateMeasurement', {commandName: 'displayWhatever'}]`
+   * * `{ commands: 'updateMeasurement' }`
+   * * `{ commands: ['updateMeasurement', {commandName: 'displayWhatever'}]}`
+   *
+   * Note how the various styles can be mixed, simplifying the declaration of
+   * sets of commands.
    *
    * @param toRun - A specification of one or more commands,
    *  typically an object of { commandName, commandOptions, context }
@@ -174,57 +239,31 @@ export class CommandsManager {
    * @param options - to include in the commands run beyond
    *   the commandOptions specified in the base.
    */
-  public run(
-    toRun: Command | Commands | Command[] | string | undefined,
-    options?: Record<string, unknown>
-  ): unknown {
-    if (!toRun) {
-      return;
-    }
+  public run(input: RunInput, options: Record<string, unknown> = {}): unknown {
+    const commands = this.validate(input, options);
 
-    // Normalize `toRun` to an array of `ComplexCommand`
-    let commands: ComplexCommand[] = [];
-    if (typeof toRun === 'string') {
-      commands = [{ commandName: toRun }];
-    } else if ('commandName' in toRun) {
-      commands = [toRun as ComplexCommand];
-    } else if ('commands' in toRun) {
-      const commandsInput = (toRun as Commands).commands;
-      commands = Array.isArray(commandsInput)
-        ? commandsInput.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd))
-        : [{ commandName: commandsInput }];
-    } else if (Array.isArray(toRun)) {
-      commands = toRun.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd));
-    }
-
-    if (commands.length === 0) {
-      console.log("Command isn't runnable", toRun);
-      return;
-    }
-
-    // Execute each command in the array
-    let result: unknown;
-    commands.forEach(command => {
+    const results: unknown[] = [];
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
       const { commandName, commandOptions, context } = command;
-      if (commandName) {
-        result = this.runCommand(
-          commandName,
-          {
-            ...commandOptions,
-            ...options,
-          },
-          context
-        );
-      } else {
-        if (typeof command === 'function') {
-          result = command();
-        } else {
-          console.warn('No command name supplied in', toRun);
-        }
-      }
-    });
+      results.push(this.runCommand(commandName, commandOptions, context));
+    }
 
-    return result;
+    return results.length === 1 ? results[0] : results;
+  }
+
+  /** Like run, but await each command before continuing */
+  public async runAsync(input: RunInput, options: Record<string, unknown> = {}): Promise<unknown> {
+    const commands = this.validate(input, options);
+
+    const results: unknown[] = [];
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
+      const { commandName, commandOptions, context } = command;
+      results.push(await this.runCommand(commandName, commandOptions, context));
+    }
+
+    return results.length === 1 ? results[0] : results;
   }
 }
 

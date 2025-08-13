@@ -1,4 +1,4 @@
-import { Types, getEnabledElementByViewportId } from '@cornerstonejs/core';
+import { Enums as CoreEnums, Types, getEnabledElementByViewportId } from '@cornerstonejs/core';
 import {
   SynchronizerManager,
   Synchronizer,
@@ -7,7 +7,8 @@ import {
 } from '@cornerstonejs/tools';
 
 const { createSynchronizer } = SynchronizerManager;
-const { SEGMENTATION_REPRESENTATION_ADDED } = Enums.Events;
+const { SEGMENTATION_REPRESENTATION_MODIFIED } = Enums.Events;
+const { BlendModes } = CoreEnums;
 
 export default function createHydrateSegmentationSynchronizer(
   synchronizerName: string,
@@ -15,15 +16,16 @@ export default function createHydrateSegmentationSynchronizer(
 ): Synchronizer {
   const stackImageSynchronizer = createSynchronizer(
     synchronizerName,
-    SEGMENTATION_REPRESENTATION_ADDED,
-    (synchronizerInstance, sourceViewport, targetViewport, sourceEvent) =>
-      segmentationRepresentationModifiedCallback(
+    SEGMENTATION_REPRESENTATION_MODIFIED,
+    (synchronizerInstance, sourceViewport, targetViewport, sourceEvent) => {
+      return segmentationRepresentationModifiedCallback(
         synchronizerInstance,
         sourceViewport,
         targetViewport,
         sourceEvent,
         { servicesManager, options }
-      ),
+      );
+    },
     {
       eventSource: 'eventTarget',
     }
@@ -41,8 +43,8 @@ const segmentationRepresentationModifiedCallback = async (
 ) => {
   const event = sourceEvent as ToolsTypes.EventTypes.SegmentationRepresentationModifiedEventType;
 
-  const { segmentationId, viewportId } = event.detail;
-  const { segmentationService, hangingProtocolService } = servicesManager.services;
+  const { segmentationId } = event.detail;
+  const { segmentationService } = servicesManager.services;
 
   const targetViewportId = targetViewport.viewportId;
 
@@ -51,7 +53,6 @@ const segmentationRepresentationModifiedCallback = async (
   const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
 
   if (!targetFrameOfReferenceUID) {
-    console.debug('No frame of reference UID found for the target viewport');
     return;
   }
 
@@ -75,5 +76,9 @@ const segmentationRepresentationModifiedCallback = async (
   await segmentationService.addSegmentationRepresentation(targetViewportId, {
     segmentationId,
     type,
+    config: {
+      blendMode:
+        viewport.getBlendMode() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
+    },
   });
 };

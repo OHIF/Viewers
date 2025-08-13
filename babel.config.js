@@ -1,14 +1,12 @@
 // https://babeljs.io/docs/en/options#babelrcroots
-const { extendDefaultPlugins } = require('svgo');
-
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
   presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
   plugins: [
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
+    ['@babel/plugin-transform-class-properties', { loose: true }],
     '@babel/plugin-transform-typescript',
-    ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-    ['@babel/plugin-proposal-private-methods', { loose: true }],
+    ['@babel/plugin-transform-private-property-in-object', { loose: true }],
+    ['@babel/plugin-transform-private-methods', { loose: true }],
     '@babel/plugin-transform-class-static-block',
   ],
   env: {
@@ -20,19 +18,23 @@ module.exports = {
           {
             modules: 'commonjs',
             debug: false,
+            targets: { node: 'current' },
+            bugfixes: true,
           },
         ],
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
       plugins: [
-        '@babel/plugin-proposal-object-rest-spread',
+        'babel-plugin-istanbul',
+        '@babel/plugin-transform-object-rest-spread',
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',
         '@babel/transform-destructuring',
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-typescript',
         '@babel/plugin-transform-class-static-block',
+        '@babel/plugin-transform-for-of',
       ],
     },
     production: {
@@ -51,7 +53,6 @@ module.exports = {
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      plugins: ['react-refresh/babel'],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
   },

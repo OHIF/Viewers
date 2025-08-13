@@ -1,24 +1,25 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-const path = require('path');
-
 // read this text file
 const fs = require('fs');
 const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const ArchivedVersionsDropdownItems = [
   {
-    version: '2.0-deprecated',
+    version: '3.9',
+    href: 'https://v3p9.docs.ohif.org',
+    isExternal: true,
+  },
+  {
+    version: '3.8.5',
+    href: 'https://v3p8.docs.ohif.org',
+    isExternal: true,
+  },
+  {
+    version: '2.0',
     href: 'https://v2.docs.ohif.org',
     isExternal: true,
   },
   {
-    version: '1.0-deprecated',
+    version: '1.0',
     href: 'https://v1.docs.ohif.org',
     isExternal: true,
   },
@@ -42,24 +43,11 @@ module.exports = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
-    () => ({
-      name: 'resolve-react',
-      configureWebpack() {
-        return {
-          resolve: {
-            alias: {
-              // assuming root node_modules is up from "./packages/<your-docusaurus>
-              react: path.resolve('../../node_modules/react'),
-            },
-          },
-        };
-      },
-    }),
     // path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     // /path.resolve(__dirname, './postcss.js'),
     'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
@@ -136,13 +124,14 @@ module.exports = {
         // respectPrefersColorScheme: true,
       },
       announcementBar: {
-        id: 'healthimaging',
+        id: 'ohif310_segmentation_ui_update',
         content:
-          '🎉 OHIF 3.8 has landed! Explore 4D and volume rendering, enhanced layout menus, streamlined visualization controls, workflow steps, and more. You can find the release notes by following this <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p8/">Link!</a> 🌟',
+          '🛠️ OHIF 3.10 is here! Explore powerful new segmentation tools, including local AI-assisted workflows, real-time 3D GrowCut, segment statistics, and undo/redo. Plus, enjoy a polished new UI library and smoother interactions across the board. Read the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p10/">here</a>! 🔍✨',
       },
       prism: {
         theme: require('prism-react-renderer').themes.github,
         darkTheme: require('prism-react-renderer').themes.dracula,
+        additionalLanguages: ['diff'],
       },
       algolia: {
         appId: 'EFLT6YIHHZ',
@@ -185,6 +174,12 @@ module.exports = {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',
             label: 'Help',
+            position: 'left',
+          },
+          {
+            to: '/migration-guide/3p9-to-3p10/',
+            //activeBaseRegex: '(^/help$)|(/help)',
+            label: '3.10 Migration Guides',
             position: 'left',
           },
           {

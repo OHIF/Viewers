@@ -7,7 +7,7 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  rightPanel: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
 const cornerstone = {
@@ -48,16 +48,50 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.register([...toolbarButtons]);
+      toolbarService.updateSection('primary', [
         'MeasurementTools',
         'Zoom',
-        'WindowLevel',
         'Pan',
+        'TrackballRotate',
+        'WindowLevel',
         'Capture',
         'Layout',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      toolbarService.updateSection('MeasurementTools', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
+
+      toolbarService.updateSection('MoreTools', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ImageSliceSync',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Probe',
+        'Cine',
+        'Angle',
+        'CobbAngle',
+        'Magnify',
+        'CalibrationLine',
+        'TagBrowser',
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -70,7 +104,7 @@ function modeFactory({ modeConfiguration }) {
         uiModalService,
       } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -128,7 +162,6 @@ function modeFactory({ modeConfiguration }) {
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

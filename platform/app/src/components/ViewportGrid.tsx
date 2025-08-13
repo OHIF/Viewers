@@ -1,29 +1,20 @@
 import React, { useEffect, useCallback, useRef } from 'react';
-import { useResizeDetector } from 'react-resize-detector';
-import { Types, MeasurementService } from '@ohif/core';
-import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
+import { Types } from '@ohif/core';
+import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
+import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
-import classNames from 'classnames';
 import { useAppConfig } from '@state';
 
 function ViewerViewportGrid(props: withAppTypes) {
-  const { servicesManager, viewportComponents = [], dataSource } = props;
+  const { servicesManager, viewportComponents = [], dataSource, commandsManager } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
 
   const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
-  const { ref: resizeRef } = useResizeDetector({
-    refreshMode: 'debounce',
-    refreshRate: 7,
-    refreshOptions: { leading: true },
-    onResize: () => {
-      viewportGridService.setViewportGridSizeChanged();
-    },
-  });
   const layoutHash = useRef(null);
 
-  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
+  const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
     servicesManager.services;
 
   const generateLayoutHash = () => `${numCols}-${numRows}`;
@@ -36,9 +27,9 @@ function ViewerViewportGrid(props: withAppTypes) {
 
    */
   const updateDisplaySetsFromProtocol = (
-    protocol: Types.HangingProtocol.Protocol,
+    _protocol: Types.HangingProtocol.Protocol,
     stage,
-    activeStudyUID,
+    _activeStudyUID,
     viewportMatchDetails
   ) => {
     const availableDisplaySets = displaySetService.getActiveDisplaySets();
@@ -158,57 +149,23 @@ function ViewerViewportGrid(props: withAppTypes) {
     }
   }, [viewportGridService, generateLayoutHash]);
 
-  useEffect(() => {
-    const { unsubscribe } = measurementService.subscribe(
-      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-      ({ viewportId, measurement, isConsumed }) => {
-        if (isConsumed) {
-          return;
-        }
-        // This occurs when no viewport has elected to consume the event
-        // so we need to change layouts into a layout which can consume
-        // the event.
-        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
-
-        const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
-        if (!updatedViewports[0]) {
-          console.warn(
-            'ViewportGrid::Unable to navigate to viewport containing',
-            referencedDisplaySetInstanceUID
-          );
-          return;
-        }
-
-        // Arbitrarily assign the viewport to element 0
-        // TODO - this should perform a search to find the most suitable viewport.
-        updatedViewports[0] = { ...updatedViewports[0] };
-        const [viewport] = updatedViewports;
-
-        // Copy the viewport options to prevent modifying the internal data
-        viewport.viewportOptions = {
-          ...viewport.viewportOptions,
-          orientation: 'acquisition',
-          // The preferred way to jump to the measurement view is to set the
-          // view reference, as this can hold information such as the orientation
-          // or zoom level required to display an annotation.  The metadata attribute
-          // of the measurement is a viewReference, so use it to show the measurement.
-          // Longer term this should clear the view reference data
-          viewReference: measurement.metadata,
-          viewportType: measurement.metadata.volumeId ? 'volume' : null,
-        };
-
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [viewports]);
-
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
-    const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    const { viewportGridService } = servicesManager.services;
+    const customOnDropHandler = customizationService.getCustomization('customOnDropHandler');
+    const dropHandlerPromise = customOnDropHandler({
+      ...props,
+      viewportId,
+      displaySetInstanceUID,
+      appConfig,
+    });
+    dropHandlerPromise.then(({ handled }) => {
+      if (!handled) {
+        const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
+
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
+      }
+    });
+    viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
   const getViewportPanes = useCallback(() => {
@@ -242,7 +199,7 @@ function ViewerViewportGrid(props: withAppTypes) {
           return !displaySet?.unsupported;
         });
 
-      const ViewportComponent = _getViewportComponent(
+      const { component: ViewportComponent } = _getViewportComponent(
         displaySets,
         viewportComponents,
         uiNotificationService
@@ -258,12 +215,35 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        if (event) {
+        if (event && (appConfig?.activateViewportBeforeInteraction ?? true)) {
           event.preventDefault();
           event.stopPropagation();
         }
 
         viewportGridService.setActiveViewportId(viewportId);
+      };
+
+      const getBorderStyle = viewportIndex => {
+        const style = {} as any;
+        const layoutOptions = viewportGridService.getLayoutOptionsFromState(
+          viewportGridService.getState()
+        );
+        const vp = layoutOptions[viewportIndex];
+        if (!vp) {
+          return style;
+        }
+        const { x, y, width, height } = vp;
+        const tolerance = 0.01;
+
+        if (x + width < 1 - tolerance) {
+          style.borderRight = '1px solid hsl(var(--input))';
+        }
+
+        if (y + height < 1 - tolerance) {
+          style.borderBottom = '1px solid hsl(var(--input))';
+        }
+
+        return style;
       };
 
       viewportPanes[i] = (
@@ -283,19 +263,17 @@ function ViewerViewportGrid(props: withAppTypes) {
           onInteraction={onInteractionHandler}
           customStyle={{
             position: 'absolute',
-            top: viewportY * 100 + 0.2 + '%',
-            left: viewportX * 100 + 0.2 + '%',
-            width: viewportWidth * 100 - 0.3 + '%',
-            height: viewportHeight * 100 - 0.3 + '%',
+            top: viewportY * 100 + '%',
+            left: viewportX * 100 + '%',
+            width: viewportWidth * 100 + '%',
+            height: viewportHeight * 100 + '%',
+            ...getBorderStyle(i),
           }}
           isActive={isActive}
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('flex h-full w-full min-w-[5px] flex-col', {
-              'pointer-events-none':
-                !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
-            })}
+            className="flex h-full w-full min-w-[5px] flex-col"
           >
             <ViewportComponent
               displaySets={displaySets}
@@ -306,7 +284,7 @@ function ViewerViewportGrid(props: withAppTypes) {
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
               isHangingProtocolLayout={isHangingProtocolLayout}
-              onElementEnabled={() => {
+              onElementEnabled={evt => {
                 viewportGridService.setViewportIsReady(viewportId, true);
               }}
             />
@@ -326,10 +304,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   }
 
   return (
-    <div
-      ref={resizeRef}
-      className="h-full w-full"
-    >
+    <div className="border-input h-[calc(100%-0.25rem)] w-full border">
       <ViewportGrid
         numRows={numRows}
         numCols={numCols}
@@ -342,7 +317,7 @@ function ViewerViewportGrid(props: withAppTypes) {
 
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {
-    return EmptyViewport;
+    return { component: EmptyViewport, isReferenceViewable: () => false };
   }
 
   // Todo: Do we have a viewport that has two different SOPClassHandlerIds?
@@ -357,7 +332,7 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
     }
     if (viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)) {
       const { component } = viewportComponents[i];
-      return component;
+      return { component };
     }
   }
 
@@ -368,7 +343,7 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
     type: 'error',
   });
 
-  return EmptyViewport;
+  return { component: EmptyViewport };
 }
 
 export default ViewerViewportGrid;

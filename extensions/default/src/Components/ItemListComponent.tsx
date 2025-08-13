@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon, InputFilterText, LoadingIndicatorProgress } from '@ohif/ui';
+import { useSystem } from '@ohif/core';
+import { Button, InputFilterText } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 
 type ItemListComponentProps = {
@@ -15,12 +17,17 @@ function ItemListComponent({
   itemList,
   onItemClicked,
 }: ItemListComponentProps): ReactElement {
+  const { servicesManager } = useSystem();
   const { t } = useTranslation('DataSourceConfiguration');
   const [filterValue, setFilterValue] = useState('');
 
   useEffect(() => {
     setFilterValue('');
   }, [itemList]);
+
+  const LoadingIndicatorProgress = servicesManager.services.customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
 
   return (
     <div className="flex min-h-[1px] grow flex-col gap-4">
@@ -38,10 +45,7 @@ function ItemListComponent({
           <LoadingIndicatorProgress className={'h-full w-full'} />
         ) : itemList.length === 0 ? (
           <div className="text-primary-light flex h-full flex-col items-center justify-center px-6 py-4">
-            <Icon
-              name="magnifier"
-              className="mb-4"
-            />
+            <Icons.ToolMagnify className="mb-4" />
             <span>{t(`No ${itemLabel} available`)}</span>
           </div>
         ) : (
@@ -68,7 +72,7 @@ function ItemListComponent({
                       <Button
                         onClick={() => onItemClicked(item)}
                         className="invisible group-hover:visible"
-                        endIcon={<Icon name="arrow-left" />}
+                        endIcon={<Icons.ByName name="arrow-left" />}
                       >
                         {t('Select')}
                       </Button>

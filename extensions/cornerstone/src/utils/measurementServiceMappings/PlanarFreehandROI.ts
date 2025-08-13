@@ -95,6 +95,11 @@ function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
   const { cachedStats } = data;
   const { referencedImageId } = metadata;
+
+  if( !cachedStats ) {
+    return;
+  }
+
   const targets = Object.keys(cachedStats);
 
   if (!targets.length) {
@@ -142,7 +147,7 @@ function getMappedAnnotations(annotation, displaySetService) {
  * @returns {object} Report's content.
  */
 function getColumnValueReport(annotation, customizationService) {
-  const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
+  const { PlanarFreehandROI } = customizationService.getCustomization('cornerstone.measurements');
   const { report } = PlanarFreehandROI;
   const columns = [];
   const values = [];

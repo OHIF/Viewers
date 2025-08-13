@@ -1,0 +1,108 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches: [master]
+
+env:
+  ACTIONS_STEP_DEBUG: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy-docs:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    # Need permissions to read actions and pull requests
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Or your desired Node version
+
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+
+      # Removed Playwright tests and coverage generation steps
+
+      - name: Find PR and associated workflow run
+        id: find_pr_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MERGE_COMMIT_SHA: ${{ github.sha }}
+        run: |
+          # Find the PR associated with the merge commit SHA
+          # Note: This relies on the merge commit being directly pushed to main
+          PR_DATA=$(gh pr list --state merged --search "$MERGE_COMMIT_SHA" --json number,headRefOid --jq '.[0]')
+          if [ -z "$PR_DATA" ]; then
+            echo "Could not find merged PR for commit $MERGE_COMMIT_SHA."
+            # Decide how to handle - fail, or maybe generate coverage now?
+            # For now, let's fail.
+            exit 1
+          fi
+          PR_HEAD_SHA=$(echo "$PR_DATA" | jq -r '.headRefOid')
+          PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number')
+          echo "Found PR Number: $PR_NUMBER"
+          echo "Found PR Head SHA: $PR_HEAD_SHA"
+
+          # Find the latest workflow run ID for the playwright workflow on the PR head commit
+          # Uses the workflow file name 'playwright.yml'
+          # Remove the --status success flag to find any run
+          RUN_ID=$(gh run list --workflow playwright.yml --commit "$PR_HEAD_SHA" --event pull_request --json databaseId --jq '.[0].databaseId')
+
+          if [ -z "$RUN_ID" ]; then
+            echo "Could not find any 'playwright.yml' run for PR $PR_NUMBER (Head SHA: $PR_HEAD_SHA)."
+            # Decide how to handle - maybe try finding the artifact from the merge commit run if that exists?
+            # For now, let's fail.
+            exit 1
+          fi
+          echo "Found Run ID: $RUN_ID"
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+      - name: Download coverage artifact from PR run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p ./coverage-artifact
+          gh run download ${{ steps.find_pr_run.outputs.run_id }} -n coverage-report-pr --dir ./coverage-artifact
+          # Check if download was successful (e.g., check if files exist)
+          if [ ! -f ./coverage-artifact/base.css ]; then
+            echo "Failed to download or find expected files in artifact 'coverage-report-pr' from run ${{ steps.find_pr_run.outputs.run_id }}."
+            exit 1
+          fi
+          echo "Artifact downloaded successfully."
+
+      - name: Install docs dependencies
+        run: cd platform/docs && bun install
+
+      - name: Copy coverage to docs static directory
+        run: |
+          # Copy files from the downloaded artifact directory
+          mkdir -p platform/docs/static/coverage
+          cp -r ./coverage-artifact/* platform/docs/static/coverage/
+          # Copy specific asset files from the downloaded artifact root to static root
+          cp ./coverage-artifact/base.css platform/docs/static/
+          cp ./coverage-artifact/block-navigation.js platform/docs/static/
+          cp ./coverage-artifact/prettify.css platform/docs/static/
+          cp ./coverage-artifact/prettify.js platform/docs/static/
+          cp ./coverage-artifact/favicon.png platform/docs/static/
+          cp ./coverage-artifact/sort-arrow-sprite.png platform/docs/static/
+          cp ./coverage-artifact/sorter.js platform/docs/static/
+
+      - name: Build docs
+        run: cd platform/docs && bun run build
+
+      - name: Deploy to Netlify
+        run: |
+          cd platform/docs
+          npx netlify-cli deploy --dir=./build --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
