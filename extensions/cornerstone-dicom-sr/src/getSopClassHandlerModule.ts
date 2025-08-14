@@ -35,6 +35,7 @@ const sopClassUids = [
   sopClassDictionary.BasicTextSR,
   sopClassDictionary.EnhancedSR,
   sopClassDictionary.ComprehensiveSR,
+  sopClassDictionary.Comprehensive3DSR,
 ];
 
 const validateSameStudyUID = (uid: string, instances): void => {
