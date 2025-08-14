@@ -58,10 +58,7 @@ const getLabelmapTools = ({ toolGroupService }) => {
     // tools is an object with toolName as the key and tool as the value
     Object.keys(tools).forEach(toolName => {
       const tool = tools[toolName];
-      if (
-        tool instanceof cornerstoneTools.LabelmapBaseTool &&
-        tool.shouldResolvePreviewRequests()
-      ) {
+      if (tool instanceof cornerstoneTools.LabelmapBaseTool) {
         labelmapTools.push(tool);
       }
     });
