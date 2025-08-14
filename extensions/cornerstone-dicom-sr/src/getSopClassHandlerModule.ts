@@ -54,7 +54,7 @@ const validateSameStudyUID = (uid: string, instances): void => {
  * @param instances is a list of instances from THIS series that are not
  *     in this DICOM SR Display Set already.
  */
-function addInstances(instances: InstanceMetadata[], displaySetService: DisplaySetService) {
+function addInstances(instances: InstanceMetadata[], _displaySetService: DisplaySetService) {
   this.instances.push(...instances);
   utils.sortStudyInstances(this.instances);
   // The last instance is the newest one, so is the one most interesting.
