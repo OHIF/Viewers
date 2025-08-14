@@ -289,6 +289,8 @@ function _checkIfCanAddMeasurementsToDisplaySet(
       is3DMeasurement &&
       _measurementBelongsToDisplaySet({ measurement, displaySet: newDisplaySet })
     ) {
+      _measurementBelongsToDisplaySet({ measurement, displaySet: newDisplaySet })
+
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
       measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
