@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { CodeNameCodeSequenceValues } from '../enums';
 import formatContentItemValue from '../utils/formatContentItem';
+import { OHIFCornerstoneSRContainerItemReport } from './OHIFCornerstoneSRContainerItemReport';
+import { stringToBlob } from '../utils/payload';
 
 const EMPTY_TAG_VALUE = '[empty]';
 
@@ -44,11 +46,12 @@ function OHIFCornerstoneSRContentItem(props) {
     <>
       <div className="mb-2">
         <span className="font-bold">{CodeMeaning}: </span>
-        {isFinding ? (
-          <pre>{formattedValue}</pre>
-        ) : (
-          <span className={className}>{formattedValue}</span>
-        )}
+        <OHIFCornerstoneSRContainerItemReport
+          content={stringToBlob(
+            formattedValue,
+          )}
+        >
+        </OHIFCornerstoneSRContainerItemReport>
       </div>
     </>
   );

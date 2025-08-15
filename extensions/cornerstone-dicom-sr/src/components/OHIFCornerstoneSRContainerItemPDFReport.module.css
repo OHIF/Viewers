@@ -1,0 +1,17 @@
+
+.icon {
+    width: 21px;
+    height: 21px;
+    border-radius: 21px;
+}
+
+.page {
+    flexDirection: 'row';
+    backgroundColor: '#E4E4E4';
+}
+
+.section {
+    margin: 10;
+    padding: 10;
+    flexGrow: 1;
+}
