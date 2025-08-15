@@ -1313,6 +1313,24 @@ window.config = {
 };
   `,
   },
+    {
+    id: 'panelSegmentation.disableUpdateSegmentationStats',
+    description: 'Disables the automatic update of segmentation statistics in the panel.',
+    default: false,
+    image: [],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'panelSegmentation.disableUpdateSegmentationStats': {
+        $set: true, // Disables the automatic update of segmentation statistics in the panel
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const measurementsCustomizations = [
