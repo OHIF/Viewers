@@ -158,7 +158,7 @@ export const callByRetrieveAETitle = ({
   const [displaySet] = args;
   const seriesMetadata = DicomMetadataStore.getSeries(
     displaySet.StudyInstanceUID,
-    displaySet.SeriesInstanceUID || displaySet.instance?.SeriesInstanceUID
+    displaySet.SeriesInstanceUID
   );
   const [dataSource] = extensionManager.getDataSources(
     seriesMetadata.RetrieveAETitle || defaultDataSourceName
