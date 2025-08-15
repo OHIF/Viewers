@@ -26,26 +26,24 @@ apt-get update -qq
 apt-get upgrade -y
 
 apt-get install -y	git
-apt-get install -y make # needed by yarn install...
-apt-get install -y g++ # needed by yarn install...
+apt-get install -y make # needed by bun install...
+apt-get install -y g++ # needed by bun install...
 
 #
-# Following instructions at https://classic.yarnpkg.com/ and
+# Following instructions at https://bun.sh/docs/installation and
 # https://github.com/nodesource/distributions/blob/master/README.md#deb
 #
 
 curl -sL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
 
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-apt-get install -y yarn
+# Install bun using the official installer
+curl -fsSL https://bun.sh/install | bash
 
-# See https://github.com/yarnpkg/yarn/issues/3708:
-apt-get remove cmdinstall
-apt update
-apt-get install -y yarn
+# Add bun to PATH for the current session
+export PATH="$HOME/.bun/bin:$PATH"
 
-yarn config set workspaces-experimental true
+# Verify bun installation
+bun --version
 
 echo "Libraries Installed"

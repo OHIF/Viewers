@@ -17,8 +17,8 @@
 
 if [ "${CONFIG_ONLY}" != "True" ]; then
   export PUBLIC_URL='/v3/'
-  yarn install
-  yarn run build
+  bun install
+  bun run build
 else
   mkdir -p platform/viewer/dist/
 fi
