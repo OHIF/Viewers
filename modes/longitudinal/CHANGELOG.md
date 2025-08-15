@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.6...v3.12.0-beta.7) (2025-08-15)
+
+
+### Bug Fixes
+
+* load 3dsr ([#5335](https://github.com/OHIF/Viewers/issues/5335)) ([becba78](https://github.com/OHIF/Viewers/commit/becba7861f99ae4e190caddea8b663e60a9883f5))
+
+
+
+
+
 # [3.12.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.5...v3.12.0-beta.6) (2025-08-13)
 
 **Note:** Version bump only for package @ohif/mode-longitudinal
