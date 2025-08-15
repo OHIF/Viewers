@@ -123,7 +123,7 @@ const createCopyPluginToDistForLink = (srcDir, distDir, plugins, folderName) => 
       return exists
         ? {
             from,
-            to: distDir,
+            to: `${distDir}${plugin.to || ''}`,
             toType: 'dir',
           }
         : undefined;
