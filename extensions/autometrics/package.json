@@ -1,0 +1,16 @@
+{
+  "name": "@ohif/extension-autometrics",
+  "version": "3.0.0",
+  "description": "Autometrics panel extension for OHIF",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'"
+  },
+  "dependencies": {
+    "@ohif/ui-next": "^3.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  }
+}
