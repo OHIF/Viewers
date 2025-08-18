@@ -12,53 +12,49 @@ import { useState } from 'react';
 
 export interface ReportContentDisplayProps {
   readonly content: Blob;
+  readonly expectB64: boolean;
 }
 
 export function OHIFCornerstoneSRContainerItemReport(
   props: ReportContentDisplayProps
 ): JSX.Element {
-  const content = props.content;
+  const data = props.content;
   const [mime, setMime] = useState<string>(payloadMIMEOptions.DEFAULT);
   const [textContent, setTextContent] = useState<string>();
 
   useEffect(() => {
-    content.text().then(data => setTextContent(data));
+    data.text().then(content => {
+      const decoded = props.expectB64 ? fromBase64(content) : content;
+      // Sometimes, we may receive a mime of text/plain because the originator based it on the extension of the file instead
+      // of conducting a more thorough search by peaking at the contents and testing.
+      // I understand that can be a very expensive operation, so we do the bare minimum mime correction we need.
+      const correctMime = getPayloadType(decoded, mime);
+      setTextContent(decoded);
+      setMime(correctMime);
+    });
   })
 
-  if (!textContent) return (<></>);
-
-  let text_content = fromBase64(textContent);
-
-  // Sometimes, we may receive a mime of text/plain because the originator based it on the extension of the file instead
-  // of conducting a more thorough search by peaking at the contents and testing.
-  // I understand that can be a very expensive operation, so we do the bare minimum mime correction we need.
-  const correctMime = getPayloadType(text_content, mime);
-
-  if (correctMime != mime) {
-    setMime(correctMime);
-  }
-
-  switch (correctMime) {
+  switch (mime) {
     case payloadMIMEOptions.TEXT:
       return (
         <Markdown>
-          {text_content}
+          {textContent}
         </Markdown>
       );
     case payloadMIMEOptions.HTML:
-      text_content = extractHTMLFromPayload(text_content);
+      const htmlContent = extractHTMLFromPayload(textContent);
       return (
         //<div dangerouslySetInnerHTML={{ __html: sanitizeHTML(text_content) }} />
-        <div dangerouslySetInnerHTML={{ __html: text_content }} />
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
       );
     case payloadMIMEOptions.PDF:
       return (
-        <OHIFCornerstoneSRContainerItemPDFReport content={content} />
+        <OHIFCornerstoneSRContainerItemPDFReport content={data} />
       );
     default:
       return (
         <p>
-          `Document with mime ${correctMime} is not recognized or supported for display.`
+          `Document with mime ${mime} is not recognized or supported for display.`
         </p>
       );
   }

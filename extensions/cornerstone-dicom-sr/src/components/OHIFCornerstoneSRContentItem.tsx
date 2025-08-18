@@ -15,7 +15,6 @@ function OHIFCornerstoneSRContentItem(props) {
   const formattedValue = formatContentItemValue(contentItem) ?? EMPTY_TAG_VALUE;
   const startWithAlphaNumCharRegEx = /^[a-zA-Z0-9]/;
   const isContinuous = continuityOfContent === 'CONTINUOUS';
-  const isFinding = CodeValue === CodeNameCodeSequenceValues.Finding;
   const addExtraSpace =
     isContinuous && !isChildFirstNode && startWithAlphaNumCharRegEx.test(formattedValue?.[0]);
 
@@ -27,6 +26,7 @@ function OHIFCornerstoneSRContentItem(props) {
     // "Findings" ConceptNameCodeSequence
     className = 'whitespace-pre-wrap';
   }
+  console.log(className);
 
   if (isContinuous) {
     return (
@@ -50,6 +50,7 @@ function OHIFCornerstoneSRContentItem(props) {
           content={stringToBlob(
             formattedValue,
           )}
+          isB64={false}
         >
         </OHIFCornerstoneSRContainerItemReport>
       </div>
