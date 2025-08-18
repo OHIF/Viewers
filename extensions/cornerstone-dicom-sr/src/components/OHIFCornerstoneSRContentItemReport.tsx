@@ -7,7 +7,7 @@ import {
   sanitizeHTML,
   payloadMIMEOptions,
 } from '../utils/payload';
-import { OHIFCornerstoneSRContainerItemPDFReport } from './OHIFCornerstoneSRContainerItemPDFReport';
+import { OHIFCornerstoneSRContentItemPDFReport } from './OHIFCornerstoneSRContentItemPDFReport';
 import { useState } from 'react';
 
 export interface ReportContentDisplayProps {
@@ -15,7 +15,7 @@ export interface ReportContentDisplayProps {
   readonly expectB64: boolean;
 }
 
-export function OHIFCornerstoneSRContainerItemReport(
+export function OHIFCornerstoneSRContentItemReport(
   props: ReportContentDisplayProps
 ): JSX.Element {
   const data = props.content;
@@ -49,7 +49,7 @@ export function OHIFCornerstoneSRContainerItemReport(
       );
     case payloadMIMEOptions.PDF:
       return (
-        <OHIFCornerstoneSRContainerItemPDFReport content={data} />
+        <OHIFCornerstoneSRContentItemPDFReport content={data} />
       );
     default:
       return (

@@ -4,7 +4,7 @@ export interface PDFViewProps {
     readonly content: Blob;
 }
 
-export function OHIFCornerstoneSRContainerItemPDFReport(props: PDFViewProps): JSX.Element {
+export function OHIFCornerstoneSRContentItemPDFReport(props: PDFViewProps): JSX.Element {
     const content = props.content;
     const fileURL = URL.createObjectURL(content);
 
