@@ -4,8 +4,6 @@ import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService, useViewportRef } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
-import { vec3 } from 'gl-matrix';
-import { Point3 } from '@cornerstonejs/core/types';
 
 import { setEnabledElement } from '../state';
 
@@ -18,6 +16,7 @@ import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
+import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 
 const STACK = 'stack';
 
