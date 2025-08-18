@@ -189,16 +189,12 @@ export default async function init({
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
 
-  [
-    measurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-    measurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-  ].forEach(event => {
-    measurementService.subscribe(event, evt => {
-      const { measurement } = evt;
-      const { uid: annotationUID } = measurement;
-      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
-    });
+  measurementService.subscribe(measurementService.EVENTS.JUMP_TO_MEASUREMENT, evt => {
+    const { measurement } = evt;
+    const { uid: annotationUID } = measurement;
+    commandsManager.runCommand('jumpToMeasurementViewport', { measurement, annotationUID, evt });
   });
+
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(

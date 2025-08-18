@@ -87,24 +87,17 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     enabled: [
       { toolName: toolNames.ImageOverlayViewer },
       { toolName: toolNames.ReferenceLines },
-      {
-        toolName: SRToolNames.SRSCOORD3DPoint,
-      },
     ],
     disabled: [
       {
         toolName: toolNames.AdvancedMagnify,
       },
-      {
-        toolName: toolNames.SegmentLabel,
-        configuration: {
-          hoverTimeout: 1,
-        },
-      },
     ],
   };
 
-  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
+  const updatedTools = commandsManager.run('initializeSegmentLabelTool', { tools });
+
+  toolGroupService.createToolGroupAndAddTools(toolGroupId, updatedTools);
 }
 
 function initSRToolGroup(extensionManager, toolGroupService) {

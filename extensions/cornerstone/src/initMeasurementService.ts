@@ -409,10 +409,6 @@ const connectMeasurementServiceToTools = ({
         setAnnotationLabel(sourceAnnotation, element, label);
       }
 
-      if (metadata.toolName === 'ArrowAnnotate') {
-        data.text = label;
-      }
-
       // update the isLocked state
       annotation.locking.setAnnotationLocked(uid, isLocked);
 
@@ -440,7 +436,7 @@ const connectMeasurementServiceToTools = ({
         return;
       }
 
-      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID } = measurement;
+      const { referenceSeriesUID, referenceStudyUID, SOPInstanceUID, metadata } = measurement;
 
       const instance = DicomMetadataStore.getInstance(
         referenceStudyUID,
@@ -467,8 +463,12 @@ const connectMeasurementServiceToTools = ({
         annotationUID: measurement.uid,
         highlighted: false,
         isLocked: false,
-        invalidated: false,
+        // This is used to force a re-render of the annotation to
+        // re-calculate cached stats since sometimes in SR we
+        // get empty cached stats
+        invalidated: true,
         metadata: {
+          ...metadata,
           toolName: measurement.toolName,
           FrameOfReferenceUID: measurement.FrameOfReferenceUID,
           referencedImageId: imageId,

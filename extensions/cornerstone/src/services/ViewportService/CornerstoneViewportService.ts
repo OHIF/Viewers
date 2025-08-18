@@ -36,7 +36,6 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
-import { VOLUME_LOADER_SCHEME } from '../../constants';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -47,6 +46,7 @@ const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
 
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
+export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -551,10 +551,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    *          was initiated.
    * @return the viewportId that the measurement should be displayed in.
    */
-  public getViewportIdToJump(activeViewportId: string, metadata): string {
+  public findNavigationCompatibleViewportId(activeViewportId: string, metadata): string {
     // First check if the active viewport can just be navigated to show the given item
     const activeViewport = this.getCornerstoneViewport(activeViewportId);
-    if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
+    if (!activeViewport) {
+      console.warn('No active viewport found for', activeViewportId);
+    }
+    if (activeViewport?.isReferenceViewable(metadata, { withNavigation: true })) {
       return activeViewportId;
     }
 
@@ -570,7 +573,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // No viewport is in the right display set/orientation to show this, so see if
     // the active viewport could change orientations to show this
     if (
-      activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
+      activeViewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
     ) {
       return activeViewportId;
     }
@@ -587,6 +590,86 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // No luck, need to update the viewport itself
     return null;
+  }
+
+  /**
+   * Figures out which viewport to update when the viewport type needs to change.
+   * This may not be the active viewport if there is already a viewport showing
+   * the display set, but in the wrong orientation.
+   *
+   * The viewport will need to update the viewport type and/or display set to
+   * display the resulting data.
+   *
+   * The first choice will be a viewport already showing the correct display set,
+   * but showing it as a stack.
+   *
+   * Second choice is to see if there is a viewport already showing the right
+   * orientation for the image, but the wrong display set.  This fixes the
+   * case where the user is in MPR and a viewport other than active should be
+   * the one to change to display the iamge.
+   *
+   * Final choice is to use the provide activeViewportId.  This will cover
+   * changes to/from video and wsi viewports and other cases where no
+   * viewport is really even close to being able to display the measurement.
+   */
+  public findUpdateableViewportConfiguration(activeViewportId: string, measurement) {
+    const { metadata, displaySetInstanceUID } = measurement;
+    const { volumeId, referencedImageId } = metadata;
+    const { displaySetService, viewportGridService } = this.servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+    let { viewportType } = displaySet;
+    if (!viewportType) {
+      if (referencedImageId && !displaySet.isReconstructable) {
+        viewportType = csEnums.ViewportType.STACK;
+      } else if (volumeId) {
+        viewportType = 'volume';
+      }
+    }
+
+    // Find viewports that could be updated to be volumes to show this view
+    // That prefers a viewport already showing the right display set.
+    if (volumeId) {
+      for (const id of this.viewportsById.keys()) {
+        const viewport = this.getCornerstoneViewport(id);
+        if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
+          return {
+            viewportId: id,
+            displaySetInstanceUID,
+            viewportOptions: { viewportType },
+          };
+        }
+      }
+    }
+
+    // Find a viewport in the correct orientation showing a different display set
+    // which could be used to display the annotation.
+    const altMetadata = { ...metadata, volumeId: null, referencedImageId: null };
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      const viewportDisplaySetUID = viewportGridService.getDisplaySetsUIDsForViewport(id)?.[0];
+      if (!viewportDisplaySetUID || !viewport) {
+        continue;
+      }
+      if (volumeId) {
+        altMetadata.volumeId = viewportDisplaySetUID;
+      }
+      altMetadata.FrameOfReferenceUID = this._getFrameOfReferenceUID(viewportDisplaySetUID);
+      if (viewport.isReferenceViewable(altMetadata, { asVolume: true, withNavigation: true })) {
+        return {
+          viewportId: id,
+          displaySetInstanceUID,
+          viewportOptions: { viewportType },
+        };
+      }
+    }
+
+    // Just display in the active viewport
+    return {
+      viewportId: activeViewportId,
+      displaySetInstanceUID,
+      viewportOptions: { viewportType },
+    };
   }
 
   /**
@@ -626,7 +709,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // is being used to navigate to the initial view position for measurement
     // navigation and other navigation forcing specific views.
     let initialImageIndexToUse =
-      presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ?? <number>initialImageIndex;
 
     const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
@@ -662,7 +745,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = imageIds.indexOf(referencedImageId);
     }
 
-    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
+    if (
+      initialImageIndexToUse === undefined ||
+      initialImageIndexToUse === null ||
+      initialImageIndexToUse < 0
+    ) {
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
@@ -1085,8 +1172,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-        Math.pow(dimensions[1] * spacing[1], 2) +
-        Math.pow(dimensions[2] * spacing[2], 2)
+          Math.pow(dimensions[1] * spacing[1], 2) +
+          Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
@@ -1214,7 +1301,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   ): void {
     const viewRef = positionPresentation?.viewReference;
     if (viewRef) {
-      if (viewport.isReferenceViewable(viewRef, WITH_NAVIGATION)) {
+      // The orientation can be updated here to navigate to the specified
+      // measurement or previous item, but this will not switch to volume
+      // or to stack from the other type
+      if (viewport.isReferenceViewable(viewRef, WITH_ORIENTATION)) {
         viewport.setViewReference(viewRef);
       } else {
         console.warn('Unable to apply reference viewable', viewRef);

@@ -15,12 +15,9 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
-import ViewportColorbarsContainer from '../components/ViewportColorbar';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
-import { isMeasurementWithinViewport } from '../utils/isMeasurementWithinViewport';
-import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 
 const STACK = 'stack';
 
@@ -308,31 +305,6 @@ const OHIFCornerstoneViewport = React.memo(
       loadViewportData();
     }, [viewportOptions, displaySets, dataSource]);
 
-    /**
-     * There are two scenarios for jump to click
-     * 1. Current viewports contain the displaySet that the annotation was drawn on
-     * 2. Current viewports don't contain the displaySet that the annotation was drawn on
-     * and we need to change the viewports displaySet for jumping.
-     * Since measurement_jump happens via events and listeners, the former case is handled
-     * by the measurement_jump direct callback, but the latter case is handled first by
-     * the viewportGrid to set the correct displaySet on the viewport, AND THEN we check
-     * the cache for jumping to see if there is any jump queued, then we jump to the correct slice.
-     */
-    useEffect(() => {
-      if (isJumpToMeasurementDisabled) {
-        return;
-      }
-
-      const { unsubscribe } = measurementService.subscribe(
-        MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-        event => handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService)
-      );
-
-      return () => {
-        unsubscribe();
-      };
-    }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
-
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -389,83 +361,6 @@ const OHIFCornerstoneViewport = React.memo(
   },
   areEqual
 );
-
-// Helper function to handle jumping to measurements
-function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService) {
-  const { measurement, isConsumed } = event;
-  if (!measurement || isConsumed) {
-    return;
-  }
-
-  const enabledElement = getEnabledElement(elementRef.current);
-
-  if (!enabledElement) {
-    return;
-  }
-
-  const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
-
-  const { metadata, displaySetInstanceUID } = measurement;
-
-  const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
-
-  const showingDisplaySet = viewportDisplaySets.find(
-    ds => ds.displaySetInstanceUID === displaySetInstanceUID
-  );
-
-  let metadataToUse = metadata;
-  // if it is not showing the displaySet we need to remove the FOR from the metadata
-  if (!showingDisplaySet) {
-    metadataToUse = {
-      ...metadata,
-      FrameOfReferenceUID: undefined,
-    };
-  }
-
-  // Todo: make it work with cases where we want to define FOR based measurements too
-  if (!viewport.isReferenceViewable(metadataToUse, WITH_NAVIGATION)) {
-    return;
-  }
-
-  try {
-    viewport.setViewReference(metadata);
-    viewport.render();
-  } catch (e) {
-    console.warn('Unable to apply', metadata, e);
-  }
-
-  // If the measurement is not visible inside the current viewport, we need to move the camera to the measurement
-  // otherwise do not move the camera to the measurement.
-  if (!isMeasurementWithinViewport(viewport, measurement)) {
-    try {
-      const camera = viewport.getCamera();
-      const { focalPoint: cameraFocalPoint, position: cameraPosition } = camera;
-      const focalPoint: Point3 = [
-        (measurement.points[0][0] + measurement.points[1][0]) / 2,
-        (measurement.points[0][1] + measurement.points[1][1]) / 2,
-        0,
-      ];
-      const position = vec3.sub(vec3.create(), cameraPosition, cameraFocalPoint);
-      vec3.add(position, position, focalPoint);
-      viewport.setCamera({ focalPoint, position });
-      // Zoom out if the measurement is too large
-      const measurementSize = Math.sqrt(
-        Math.pow(measurement.points[0][0] - measurement.points[1][0], 2) +
-          Math.pow(measurement.points[0][1] - measurement.points[1][1], 2)
-      );
-
-      if (measurementSize > camera.parallelScale) {
-        const scaleFactor = measurementSize / camera.parallelScale;
-        viewport.setZoom(viewport.getZoom() / scaleFactor);
-      }
-      viewport.render();
-    } catch (e) {
-      console.warn('Unable to adjust pan/zoom for the measurement', measurement.points, e);
-    }
-  }
-
-  cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-}
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
   const { synchronizersStore } = useSynchronizersStore.getState();
@@ -588,18 +483,6 @@ function areEqual(prevProps, nextProps) {
   }
 
   return true;
-}
-
-// Helper function to check if display sets have changed
-function haveDisplaySetsChanged(prevDisplaySets, currentDisplaySets) {
-  if (prevDisplaySets.length !== currentDisplaySets.length) {
-    return true;
-  }
-
-  return currentDisplaySets.some((currentDS, index) => {
-    const prevDS = prevDisplaySets[index];
-    return currentDS.displaySetInstanceUID !== prevDS.displaySetInstanceUID;
-  });
 }
 
 export default OHIFCornerstoneViewport;

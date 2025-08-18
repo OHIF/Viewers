@@ -9,6 +9,7 @@ import promptHydrationDialog, {
   HydrationCallback,
   HydrationSRResult,
 } from './promptHydrationDialog';
+import { handleJumpToMeasurement } from './handleJumpToMeasurement';
 
 const utils = {
   handleSegmentChange,
@@ -16,6 +17,7 @@ const utils = {
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
   promptHydrationDialog,
+  handleJumpToMeasurement,
 };
 
 export type { HydrationDialogProps, HydrationCallback, HydrationSRResult };

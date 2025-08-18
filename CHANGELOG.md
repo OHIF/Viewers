@@ -3,6 +3,217 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.6...v3.12.0-beta.7) (2025-08-15)
+
+
+### Bug Fixes
+
+* load 3dsr ([#5335](https://github.com/OHIF/Viewers/issues/5335)) ([becba78](https://github.com/OHIF/Viewers/commit/becba7861f99ae4e190caddea8b663e60a9883f5))
+
+
+
+
+
+# [3.12.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.5...v3.12.0-beta.6) (2025-08-13)
+
+
+### Features
+
+* **orientationMarkers:** improved the orientation markers with a simplified version ([#5328](https://github.com/OHIF/Viewers/issues/5328)) ([266b1f5](https://github.com/OHIF/Viewers/commit/266b1f58f01ac6742a9bb40dda28459e7cddc683))
+
+
+
+
+
+# [3.12.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.4...v3.12.0-beta.5) (2025-08-11)
+
+
+### Bug Fixes
+
+* Update Dockerfile ([#5319](https://github.com/OHIF/Viewers/issues/5319)) ([0e83f45](https://github.com/OHIF/Viewers/commit/0e83f4515c902ffa3dbab2d68ec81b93881e1768))
+
+
+
+
+
+# [3.12.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.3...v3.12.0-beta.4) (2025-08-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.2...v3.12.0-beta.3) (2025-08-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.1...v3.12.0-beta.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* Guard series.instances in DicomJSONDataSource to prevent TypeError (OHI-2114) ([#5312](https://github.com/OHIF/Viewers/issues/5312)) ([f1d158b](https://github.com/OHIF/Viewers/commit/f1d158bbe81fd9f6052ce23c8588c9c93d76360c))
+
+
+
+
+
+# [3.12.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.0...v3.12.0-beta.1) (2025-08-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.116...v3.12.0-beta.0) (2025-08-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.115...v3.11.0-beta.116) (2025-08-05)
+
+
+### Bug Fixes
+
+* **annotation:** Add command to show pleura percentage in USAnnotationPanel and update condition for BLinePleuraPercentage ([#5297](https://github.com/OHIF/Viewers/issues/5297)) ([35bc074](https://github.com/OHIF/Viewers/commit/35bc074a53bd8c804dba44830145a6633302f11d))
+
+
+
+
+
+# [3.11.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.114...v3.11.0-beta.115) (2025-07-31)
+
+
+### Features
+
+* add support to scoord3d ([#5016](https://github.com/OHIF/Viewers/issues/5016)) ([735405a](https://github.com/OHIF/Viewers/commit/735405a8554c7ee6283faa83fc42ff8bb9ac34ff))
+
+
+
+
+
+# [3.11.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.113...v3.11.0-beta.114) (2025-07-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.112...v3.11.0-beta.113) (2025-07-30)
+
+
+### Features
+
+* improve segment label ([#5217](https://github.com/OHIF/Viewers/issues/5217)) ([271b84f](https://github.com/OHIF/Viewers/commit/271b84f78fcc3974006c7e1a4dbb2ef322fdb9ec))
+
+
+
+
+
+# [3.11.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.111...v3.11.0-beta.112) (2025-07-28)
+
+
+### Bug Fixes
+
+* **colorbar:** Allow for AdvancedRenderingControls to be placed at the left or right of the viewport. ([#5273](https://github.com/OHIF/Viewers/issues/5273)) ([341f1c4](https://github.com/OHIF/Viewers/commit/341f1c4ce799d1bcef3632e0d135be0cfcb333a9))
+
+
+
+
+
+# [3.11.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.110...v3.11.0-beta.111) (2025-07-28)
+
+
+### Bug Fixes
+
+* **colorbar:** Allow for `AdvancedRenderingControls` to be placed at the top or bottom of the viewport. ([#5270](https://github.com/OHIF/Viewers/issues/5270)) ([d24fe54](https://github.com/OHIF/Viewers/commit/d24fe54d2b5598c8356afa9ce91939018940ee19))
+
+
+
+
+
+# [3.11.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.109...v3.11.0-beta.110) (2025-07-28)
+
+
+### Bug Fixes
+
+* **multiframes:** Corrected combining frame instances for multiframes. ([#5264](https://github.com/OHIF/Viewers/issues/5264)) ([47e231f](https://github.com/OHIF/Viewers/commit/47e231f0618443e70c1daae718e7dd0908954b52))
+* null save voi range properties ([#5268](https://github.com/OHIF/Viewers/issues/5268)) ([04dcacd](https://github.com/OHIF/Viewers/commit/04dcacd3a5d0d565b163c96222c8c7f948a05abd))
+
+
+
+
+
+# [3.11.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.108...v3.11.0-beta.109) (2025-07-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.107...v3.11.0-beta.108) (2025-07-25)
+
+
+### Bug Fixes
+
+* **tooltips:** tool tips should be portals ([#5265](https://github.com/OHIF/Viewers/issues/5265)) ([570e087](https://github.com/OHIF/Viewers/commit/570e08700720d561c3d1201e03142634fccf5939))
+
+
+
+
+
+# [3.11.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.106...v3.11.0-beta.107) (2025-07-25)
+
+
+### Bug Fixes
+
+* prevent failure in DICOM loader for wadouri type ([#5260](https://github.com/OHIF/Viewers/issues/5260)) ([d0cf9e0](https://github.com/OHIF/Viewers/commit/d0cf9e02f438cd8d26ed5bca5fb528549f4c8b98))
+
+
+
+
+
+# [3.11.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.105...v3.11.0-beta.106) (2025-07-24)
+
+
+### Bug Fixes
+
+* **ArrowAnnotate:** Allow free-form text for arrow annotations ([#5259](https://github.com/OHIF/Viewers/issues/5259)) ([3c8446a](https://github.com/OHIF/Viewers/commit/3c8446a5e5caf8c050275bd4c193defa9e370b32))
+
+
+
+
+
+# [3.11.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.104...v3.11.0-beta.105) (2025-07-23)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.11.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.103...v3.11.0-beta.104) (2025-07-23)
+
+
+### Bug Fixes
+
+* issue introduced from PR 5022 ([#5223](https://github.com/OHIF/Viewers/issues/5223)) ([428b6ff](https://github.com/OHIF/Viewers/commit/428b6ffbe75d606a72548555ac0e365299b0de4f))
+
+
+
+
+
 # [3.11.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.102...v3.11.0-beta.103) (2025-07-23)
 
 **Note:** Version bump only for package ohif-monorepo-root
