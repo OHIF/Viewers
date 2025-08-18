@@ -7,7 +7,6 @@ import {
   asStandardReportContentItem,
   getCodeMeaningFromConceptNameCodeSequence,
   getCodeValueFromConceptNameCodeSequence,
-  isSRValidReportSection,
 } from '../utils/srInspection';
 import { CodeNameCodeSequenceValues } from '../enums';
 
@@ -24,11 +23,6 @@ function OHIFCornerstoneSRContainerItem(props) {
   const isContinuous = continuityOfContent === 'CONTINUOUS';
   const addExtraSpace =
     isContinuous && !isChildFirstNode && startWithAlphaNumCharRegEx.test(formattedValue?.[0]);
-
-  // Check we have a valid container item
-  if (!isSRValidReportSection(codeMeaning)) {
-    return (<></>);
-  }
 
   // Collapse sequences of white space preserving newline characters
   let className = 'whitespace-pre-line';

@@ -5,7 +5,6 @@ import {
   getCodeMeaningFromConceptNameCodeSequence,
   getContentSequenceFromSR,
   asStandardReport,
-  isSRValidReportSection,
 } from '../utils/srInspection';
 
 /**

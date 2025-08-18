@@ -4,7 +4,6 @@ import {
   ContentSequence,
   ContentSequenceItem,
   DICOMStandardReport,
-  reportFields,
 } from './srTypes';
 
 export function getCodeMeaningFromConceptNameCodeSequence(
@@ -33,14 +32,4 @@ export function asStandardReport(root): DICOMStandardReport {
 
 export function asStandardReportContentItem(root): ContentSequenceItem {
   return root;
-}
-
-export function isSRValidReportSection(field: string): boolean {
-  switch (field) {
-    case reportFields.PNAME:
-    case reportFields.ObserverType:
-      return false;
-    default:
-      return true;
-  }
 }
