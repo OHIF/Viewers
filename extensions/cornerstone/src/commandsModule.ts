@@ -40,6 +40,7 @@ import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -161,6 +162,34 @@ function commandsModule({
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
         viewport.setViewReference(metadata);
         viewport.render();
+
+        /**
+         * If the measurement is not visible inside the current viewport,
+         * we need to move the camera to the measurement.
+         */
+        if (!isMeasurementWithinViewport(viewport, measurement)) {
+          const camera = viewport.getCamera();
+          const { focalPoint: cameraFocalPoint, position: cameraPosition } = camera;
+          const focalPoint: Point3 = [
+            (measurement.points[0][0] + measurement.points[1][0]) / 2,
+            (measurement.points[0][1] + measurement.points[1][1]) / 2,
+            0,
+          ];
+          const position = vec3.sub(vec3.create(), cameraPosition, cameraFocalPoint);
+          vec3.add(position, position, focalPoint);
+          viewport.setCamera({ focalPoint, position });
+          /** Zoom out if the measurement is too large */
+          const measurementSize = Math.sqrt(
+            Math.pow(measurement.points[0][0] - measurement.points[1][0], 2) +
+              Math.pow(measurement.points[0][1] - measurement.points[1][1], 2)
+          );
+          if (measurementSize > camera.parallelScale) {
+            const scaleFactor = measurementSize / camera.parallelScale;
+            viewport.setZoom(viewport.getZoom() / scaleFactor);
+          }
+          viewport.render();
+        }
+
         return;
       }
 
