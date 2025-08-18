@@ -4,10 +4,12 @@ import { OHIFCornerstoneSRContainerItem } from './OHIFCornerstoneSRContainerItem
 import {
   getCodeMeaningFromConceptNameCodeSequence,
   getContentSequenceFromSR,
-  getStandardReport,
+  asStandardReport,
+  isSRValidReportSection,
 } from '../utils/srInspection';
 
-/** Let's explain this logic a bit since I was briefly confused and almost broke a real feature.
+/**
+ * Let's explain this logic a bit since I was briefly confused and almost broke a real feature.
  * OHIFCornerstoneSRContainer will render the contents in the SR content container. For a well formed
  * SR this could take the form of a tree outlining report contents like you would typically see from
  * a physician report.
@@ -39,7 +41,7 @@ import {
  */
 export function OHIFCornerstoneSRContainer(props) {
   const { nodeIndexesTree = [0], containerNumberedTree = [1] } = props;
-  const container = getStandardReport(props.container);
+  const container = asStandardReport(props.container);
   const { ContinuityOfContent, ConceptNameCodeSequence } = container;
   const codeMeaning = getCodeMeaningFromConceptNameCodeSequence(ConceptNameCodeSequence);
   const contentSequence = getContentSequenceFromSR(container);

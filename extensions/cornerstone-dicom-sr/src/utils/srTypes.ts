@@ -1,7 +1,16 @@
+/**
+ * Enum used to check if the top level section is a section of interest.
+ *
+ * See https://dicom.nema.org/dicom/2013/output/chtml/part20/sect_A.6.html#sect_A.6.1
+ */
 export const enum reportFields {
   Findings = 'Findings',
   History = 'History',
-
+  Finding = 'Finding',
+  Impression = 'Impression',
+  Impressions = 'Impressions',
+  PNAME = 'Person Observer Name',
+  ObserverType = 'Person',
 }
 
 /**

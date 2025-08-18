@@ -2,6 +2,7 @@ import {
   ConceptNameCodeSequence,
   ConceptNameCodeSequenceItem,
   ContentSequence,
+  ContentSequenceItem,
   DICOMStandardReport,
   reportFields,
 } from './srTypes';
@@ -14,20 +15,32 @@ export function getCodeMeaningFromConceptNameCodeSequence(
   return CodeMeaning ?? "";
 }
 
+export function getCodeValueFromConceptNameCodeSequence(
+  conceptNameCodeSequence: ConceptNameCodeSequence
+): string {
+  let item: ConceptNameCodeSequenceItem = conceptNameCodeSequence[0];
+  const { CodeValue } = item;
+  return CodeValue ?? "";
+}
+
 export function getContentSequenceFromSR(root: DICOMStandardReport): ContentSequence{
   return root.ContentSequence ? root.ContentSequence : [];
 }
 
-export function getStandardReport(root): DICOMStandardReport {
+export function asStandardReport(root): DICOMStandardReport {
   return root;
 }
 
-export function isSRReportField(field: string): boolean {
+export function asStandardReportContentItem(root): ContentSequenceItem {
+  return root;
+}
+
+export function isSRValidReportSection(field: string): boolean {
   switch (field) {
-    case reportFields.Findings:
-    case reportFields.History:
-      return true;
-    default:
+    case reportFields.PNAME:
+    case reportFields.ObserverType:
       return false;
+    default:
+      return true;
   }
 }
