@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import formatContentItemValue from '../utils/formatContentItem';
-import { OHIFCornerstoneSRContentItemReport } from './OHIFCornerstoneSRContentItemReport';
+import { OHIFCornerstoneSREncapsulatedReport } from './OHIFCornerstoneSREncapsulatedReport';
 import { stringToBlob } from '../utils/payload';
 
 const EMPTY_TAG_VALUE = '[empty]';
 
-function OHIFCornerstoneSRContentItem(props) {
+function OHIFCornerstoneSRContainerItem(props) {
   const { contentItem, nodeIndexesTree, continuityOfContent } = props;
   const { ConceptNameCodeSequence } = contentItem;
   const { CodeValue, CodeMeaning } = ConceptNameCodeSequence;
@@ -17,22 +17,22 @@ function OHIFCornerstoneSRContentItem(props) {
     <>
       <div className="mb-2">
         <span className="font-bold">{CodeMeaning}: </span>
-        <OHIFCornerstoneSRContentItemReport
+        <OHIFCornerstoneSREncapsulatedReport
           content={stringToBlob(
             formattedValue,
           )}
           expectB64={false}
         >
-        </OHIFCornerstoneSRContentItemReport>
+        </OHIFCornerstoneSREncapsulatedReport>
       </div>
     </>
   );
 }
 
-OHIFCornerstoneSRContentItem.propTypes = {
+OHIFCornerstoneSRContainerItem.propTypes = {
   contentItem: PropTypes.object,
   nodeIndexesTree: PropTypes.arrayOf(PropTypes.number),
   continuityOfContent: PropTypes.string,
 };
 
-export { OHIFCornerstoneSRContentItem };
+export { OHIFCornerstoneSRContainerItem };

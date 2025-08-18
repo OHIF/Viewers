@@ -1,13 +1,51 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { OHIFCornerstoneSRContentItem } from './OHIFCornerstoneSRContentItem';
+import { OHIFCornerstoneSRContainerItem } from './OHIFCornerstoneSRContainerItem';
+import {
+  getCodeMeaningFromConceptNameCodeSequence,
+  getContentSequenceFromSR,
+  getStandardReport,
+} from '../utils/srInspection';
 
+/** Let's explain this logic a bit since I was briefly confused and almost broke a real feature.
+ * OHIFCornerstoneSRContainer will render the contents in the SR content container. For a well formed
+ * SR this could take the form of a tree outlining report contents like you would typically see from
+ * a physician report.
+ *
+ * Example:
+ *  1. History
+ *    1.1. Chief Complaint
+ *    1.2. Present Illness
+ *    1.3. Past History
+ *    1.4. Family History
+ *  2. Findings
+ *
+ *  However, SR adoption has not been uniform across the board, which I understand as a developer.
+ *  Many enterprise solutions opted for encapsulation of report.
+ *  CareStream (now Philips) opted for embedding an HTML version of the reports at a sing findings
+ *  level. The issue here is that there might be other nodes we don't care.
+ *
+ * Example:
+ *  1. English
+ *  2. Person
+ *  3. [empty]
+ *    1.1? Findings
+ *
+ * To discriminate between both report types, I limit the rendering to container items and items
+ * whitelisted via enum.
+ *
+ * @param props
+ * @constructor
+ */
 export function OHIFCornerstoneSRContainer(props) {
-  const { container, nodeIndexesTree = [0], containerNumberedTree = [1] } = props;
+  const { nodeIndexesTree = [0], containerNumberedTree = [1] } = props;
+  const container = getStandardReport(props.container);
   const { ContinuityOfContent, ConceptNameCodeSequence } = container;
-  const { CodeMeaning } = ConceptNameCodeSequence ?? {};
+  const codeMeaning = getCodeMeaningFromConceptNameCodeSequence(ConceptNameCodeSequence);
+  const contentSequence = getContentSequenceFromSR(container);
   let childContainerIndex = 1;
-  const contentItems = container.ContentSequence?.map((contentItem, i) => {
+
+  const contentItems = contentSequence.map((contentItem, i) => {
     const { ValueType } = contentItem;
     const childNodeLevel = [...nodeIndexesTree, i];
     const key = childNodeLevel.join('.');
@@ -25,7 +63,7 @@ export function OHIFCornerstoneSRContainer(props) {
         containerNumberedTree: childContainerNumberedTree,
       };
     } else {
-      Component = OHIFCornerstoneSRContentItem;
+      Component = OHIFCornerstoneSRContainerItem;
       componentProps = {
         contentItem,
         nodeIndexesTree: childNodeLevel,
@@ -41,15 +79,16 @@ export function OHIFCornerstoneSRContainer(props) {
     );
   });
 
-  return (
-    <div>
-      <div className="font-bold">
-        {containerNumberedTree.join('.')}.&nbsp;
-        {CodeMeaning}
+
+    return (
+      <div>
+        <div className="font-bold">
+          {containerNumberedTree.join('.')}.&nbsp;
+          {codeMeaning}
+        </div>
+        <div className="ml-4 mb-2">{contentItems}</div>
       </div>
-      <div className="ml-4 mb-2">{contentItems}</div>
-    </div>
-  );
+    );
 }
 
 OHIFCornerstoneSRContainer.propTypes = {
