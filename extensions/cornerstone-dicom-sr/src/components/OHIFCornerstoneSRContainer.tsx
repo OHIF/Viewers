@@ -23,17 +23,9 @@ import {
  *
  *  However, SR adoption has not been uniform across the board, which I understand as a developer.
  *  Many enterprise solutions opted for encapsulation of report.
- *  CareStream (now Philips) opted for embedding an HTML version of the reports at a sing findings
- *  level. The issue here is that there might be other nodes we don't care.
- *
- * Example:
- *  1. English
- *  2. Person
- *  3. [empty]
- *    1.1? Findings
- *
- * To discriminate between both report types, I limit the rendering to container items and items
- * whitelisted via enum.
+ *  CareStream (now Philips) opted for embedding an HTML or PDF version of the reports at the findings
+ *  level. For such cases, we now have a more versatile React component that will handle the correct
+ *  rendering automatically.
  *
  * @param props
  * @constructor

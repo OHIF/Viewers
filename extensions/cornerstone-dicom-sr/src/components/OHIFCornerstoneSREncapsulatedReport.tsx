@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Markdown from 'marked-react';
 import {
-  extractHTMLFromPayload,
   fromBase64,
   getPayloadType,
   sanitizeHTML,
@@ -42,14 +41,16 @@ export function OHIFCornerstoneSREncapsulatedReport(
         </Markdown>
       );
     case payloadMIMEOptions.HTML:
-      const htmlContent = extractHTMLFromPayload(textContent);
       return (
-        //<div dangerouslySetInnerHTML={{ __html: sanitizeHTML(text_content) }} />
-        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+        <blockquote>
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(textContent) }} />
+        </blockquote>
       );
     case payloadMIMEOptions.PDF:
       return (
-        <OHIFCornerstoneSREncapsulatedPDFReport content={data} />
+        <blockquote>
+          <OHIFCornerstoneSREncapsulatedPDFReport content={data} />
+        </blockquote>
       );
     default:
       return (
