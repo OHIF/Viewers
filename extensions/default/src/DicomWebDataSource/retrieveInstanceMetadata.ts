@@ -1,6 +1,6 @@
 import { retrieveStudyMetadata } from './retrieveStudyMetadata';
 import DICOMwebClient from 'dicomweb-client/types/api';
-import { DicomWebConfig, BulkDataURIConfig } from './dicomWebConfig';
+import { DicomWebConfig, BulkDataURIConfig } from './utils/dicomWebConfig';
 
 /**
  * Retrieval of instance metadata updated to allow optional passthrough of SOPInstanceUID so that we can
