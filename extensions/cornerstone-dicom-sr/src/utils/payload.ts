@@ -1,9 +1,21 @@
+/**
+ * Set of functions and constants for managing input payloads before rendering in the browser.
+ */
 import sanitize from 'sanitize-html';
 
+/**
+ * RegEx for detecting HTML contents in a payload.
+ */
 export const HTML_REGEX =
   /<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\/\2>/i;
+/**
+ * RegEx for extracting HTML contents from a payload.
+ */
 export const HTML_EXTRACTION_REGEX = /<html.*>.*<\/html.*>/gms;
 
+/**
+ * Enum of MIMEs currently supported for document payloads.
+ */
 export const enum payloadMIMEOptions {
   TEXT = 'text/plain',
   HTML = 'text/html',
@@ -388,6 +400,16 @@ export const htmlSanitizerOptions = {
   enforceHtmlBoundary: true,
 };
 
+/**
+ * Given a string payload, attempt to find out the likely MIME associated with it.
+ * This function focuses on the MIMEs we care about for document handling.
+ *
+ * This is helpful in deciding how to render and clean up the payload later on.
+ *
+ * @param {string} payload
+ * @param {string} suggested_mime Default MIME to use if we cannot identify the content's MIME
+ * @return string
+ */
 export function getPayloadType(payload: string, suggested_mime: string = 'text/plain') {
   // PDF
   if (!payload.indexOf('%PDF-')) {
@@ -402,12 +424,28 @@ export function getPayloadType(payload: string, suggested_mime: string = 'text/p
   return suggested_mime;
 }
 
+/**
+ * Given a string payload, encapsulate it into a Blob object.
+ * This is used mostly to interface with components expecting blobs from different sources.
+ *
+ * @param {string} data
+ * @param {string} mime MIME to add to Blob so other components can know how to handle contents.
+ * @return Blob
+ */
 export function stringToBlob(data: string, mime: string = payloadMIMEOptions.DEFAULT): Blob {
   return new Blob([data], {
     type: mime,
   });
 }
 
+/**
+ * One of the concerns with arbitrary payloads is sanitization. Here, we take an alleged HTML payload
+ * and ensure we only capture contents between html tags. Ignore any other potential garbage outside
+ * those boundaries.
+ *
+ * @param {string} data HTML input.
+ * @return string
+ */
 export function extractHTMLFromPayload(data: string): string {
   const results = HTML_EXTRACTION_REGEX.exec(data);
   if (results && results.length) {
@@ -422,6 +460,22 @@ export function toUTF8(data: string, initialEncoding: string = 'latin1'): string
   return Buffer.from(data, initialEncoding).toString('utf-8');
 }
 
+/**
+ * As part of sanitization of HTML, we do a pass using sanitize-html library which handles a whole set
+ * of cases for us including CSS and inlined element properties. The goal is to have a given input HTML
+ * string be as clean as possible so that we meet these objectives:
+ *
+ *  1. Avoid XSS vulnerabilities.
+ *  2. Minimize chances of scripts running and potentially mining data.
+ *  3. Avoid allowing special links of unknown behavior that could trick users into falling for some fishing attack.
+ *  4. Correct defects coming from vendor document generators and other scripts.
+ *
+ *  Unfortunately, I still allow http and https links so there is opportunity for an attacker to abuse that.
+ *  However, blocking these kinds of URLs could severally limit legitimate functionality in a document.
+ *  I encourage others to help optimize the option lists in this module so we can find a good compromise.
+ *
+ * @param {string} data HTML payload we wish to clean up.
+ */
 export function sanitizeHTML(
   data: string
 ): string {
