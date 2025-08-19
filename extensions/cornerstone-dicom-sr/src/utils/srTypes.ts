@@ -29,6 +29,7 @@ export type ConceptCodeSequenceItem = {
 export type ConceptCodeSequence = ConceptCodeSequenceItem[];
 
 export type ContentSequenceItem = {
+  SpecificCharacterSet: string; // encapsulated reports may use this to drive the encoding.
   ConceptCodeSequence?: ConceptCodeSequence;
   ConceptNameCodeSequence: ConceptNameCodeSequence;
   ContentSequence?: ContentSequence;
