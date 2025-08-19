@@ -422,9 +422,10 @@ export function toUTF8(data: string, initialEncoding: string = 'latin1'): string
   return Buffer.from(data, initialEncoding).toString('utf-8');
 }
 
-export function sanitizeHTML(data: string): string {
-  let html = toUTF8(data);
-  html = extractHTMLFromPayload(html);
+export function sanitizeHTML(
+  data: string
+): string {
+  const html = extractHTMLFromPayload(data);
   return sanitize(html, htmlSanitizerOptions);
 }
 

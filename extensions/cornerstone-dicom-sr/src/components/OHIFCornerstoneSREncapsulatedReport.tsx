@@ -4,13 +4,14 @@ import {
   fromBase64,
   getPayloadType,
   sanitizeHTML,
-  payloadMIMEOptions,
+  payloadMIMEOptions, toUTF8,
 } from '../utils/payload';
 import { OHIFCornerstoneSREncapsulatedPDFReport } from './OHIFCornerstoneSREncapsulatedPDFReport';
 import { useState } from 'react';
 
 export interface ReportContentDisplayProps {
   readonly content: Blob;
+  readonly encoding: string,
   readonly expectB64: boolean;
 }
 
@@ -28,7 +29,8 @@ export function OHIFCornerstoneSREncapsulatedReport(
       // of conducting a more thorough search by peaking at the contents and testing.
       // I understand that can be a very expensive operation, so we do the bare minimum mime correction we need.
       const correctMime = getPayloadType(decoded, mime);
-      setTextContent(decoded);
+      const utf8Text = toUTF8(decoded, props.encoding);
+      setTextContent(utf8Text);
       setMime(correctMime);
     });
   })

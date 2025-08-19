@@ -11,6 +11,10 @@ import {
 import { CodeNameCodeSequenceValues } from '../enums';
 
 const EMPTY_TAG_VALUE = '[empty]';
+const encodings = {
+  'default': 'latin1',
+  'ISO 2022 IR 100': 'latin1'
+}
 
 function OHIFCornerstoneSRContainerItem(props) {
   const { contentItem, nodeIndexesTree, continuityOfContent } = props;
@@ -23,8 +27,11 @@ function OHIFCornerstoneSRContainerItem(props) {
   const isContinuous = continuityOfContent === 'CONTINUOUS';
   const addExtraSpace =
     isContinuous && !isChildFirstNode && startWithAlphaNumCharRegEx.test(formattedValue?.[0]);
+  //TODO: phase out once we have dcmjs PR #455 merged in and a new version of dcmjs. A comprehensive mapping is present there.
+  const dicomEncoding = contentItem ? contentItem.SpecificCharacterSet : 'ISO 2022 IR 100'
+  const webEncoding = dicomEncoding in encodings ? encodings[dicomEncoding] : encodings['default'];
 
-  // Collapse sequences of white space preserving newline characters
+    // Collapse sequences of white space preserving newline characters
   let className = 'whitespace-pre-line';
 
   if (codeValue === CodeNameCodeSequenceValues.Finding) {
@@ -55,6 +62,7 @@ function OHIFCornerstoneSRContainerItem(props) {
           content={stringToBlob(
             formattedValue,
           )}
+          encoding={ webEncoding }
           expectB64={false}
         >
         </OHIFCornerstoneSREncapsulatedReport>
