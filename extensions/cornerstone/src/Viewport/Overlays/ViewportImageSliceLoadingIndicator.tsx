@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Enums } from '@cornerstonejs/core';
+import { Enums, StackViewport } from '@cornerstonejs/core';
 
 function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesManager }) {
   const [loading, setLoading] = useState(false);
@@ -12,12 +12,16 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesMan
 
   const setLoadingState = evt => {
     if (evt?.detail?.imageId && evt?.detail?.newImageIdIndex && evt?.target?.dataset?.viewportid) {
-      const viewport = servicesManager.cornerstoneViewportService.getCornerstoneViewport(
+      const services = servicesManager.services as AppTypes.Services;
+      const viewport = services.cornerstoneViewportService.getCornerstoneViewport(
         evt.target.dataset.viewportid,
       );
-      const imageCount = viewport.getImageIds().length;
-      const loadingPercentage = (evt.detail.newImageIdIndex / imageCount) * 100;
-      setLoadingPercentage(loadingPercentage);
+
+      if (viewport instanceof StackViewport) {
+        const imageCount = viewport.getImageIds().length;
+        const loadingPercentage = (evt.detail.newImageIdIndex / imageCount) * 100;
+        setLoadingPercentage(loadingPercentage);
+      }
     }
     clearTimeout(loadIndicatorRef.current);
 
