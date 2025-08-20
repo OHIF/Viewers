@@ -104,9 +104,10 @@
     },
     {
       "packageName": "dicom-microscopy-viewer",
-      "importPath": "/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
+      "importPath": "dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
       "globalName": "dicomMicroscopyViewer",
-      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import"
+      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
+      "to": "/dicom-microscopy-viewer/"
     }
   ]
 }
