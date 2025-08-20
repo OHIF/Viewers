@@ -2,14 +2,23 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
-function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
+function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesManager }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [loadingPercentage, setLoadingPercentage] = useState(0);
 
   const loadIndicatorRef = useRef(null);
   const imageIdToBeLoaded = useRef(null);
 
   const setLoadingState = evt => {
+    if (evt?.detail?.imageId && evt?.detail?.newImageIdIndex && evt?.target?.dataset?.viewportid) {
+      const viewport = servicesManager.cornerstoneViewportService.getCornerstoneViewport(
+        evt.target.dataset.viewportid,
+      );
+      const imageCount = viewport.getImageIds().length;
+      const loadingPercentage = (evt.detail.newImageIdIndex / imageCount) * 100;
+      setLoadingPercentage(loadingPercentage);
+    }
     clearTimeout(loadIndicatorRef.current);
 
     loadIndicatorRef.current = setTimeout(() => {
@@ -19,7 +28,7 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
 
   const setFinishLoadingState = evt => {
     clearTimeout(loadIndicatorRef.current);
-
+    setLoadingPercentage(0);
     setLoading(false);
   };
 
@@ -68,7 +77,9 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
       // interacting with the mouse, since scrolling should propagate to the viewport underneath
       <div className="pointer-events-none absolute top-0 left-0 h-full w-full bg-black opacity-50">
         <div className="transparent flex h-full w-full items-center justify-center">
-          <p className="text-primary-light text-xl font-light">Loading...</p>
+          <p className="text-primary-light text-xl font-light">
+            Loading... {loadingPercentage.toFixed(2)}%
+          </p>
         </div>
       </div>
     );
