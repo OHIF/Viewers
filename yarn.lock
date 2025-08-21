@@ -1651,6 +1651,20 @@
     gl-matrix "^3.4.3"
     loglevel "^1.9.2"
 
+"@cornerstonejs/dicom-image-loader@^2.19.3":
+  version "2.19.16"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.19.16.tgz#1a764a3e401cfa90a7a14de782d305b4aeee2fbe"
+  integrity sha512-xIgunmOhMO7ljHJYEgmREA5BHXr4abe4lyCwEjkD5tJu26ya3awpg/kcZIT7eLdr58/g0Ukmag4M5AK2M9G1XQ==
+  dependencies:
+    "@cornerstonejs/codec-charls" "^1.2.3"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
+    "@cornerstonejs/codec-openjpeg" "^1.2.2"
+    "@cornerstonejs/codec-openjph" "^2.4.5"
+    comlink "^4.4.1"
+    jpeg-lossless-decoder-js "^2.1.0"
+    pako "^2.0.4"
+    uuid "^9.0.0"
+
 "@cornerstonejs/dicom-image-loader@^3.32.5":
   version "3.32.5"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.32.5.tgz#b91bf19b31a307b03766b154f39eabd58caafd36"
@@ -3122,17 +3136,6 @@
   integrity sha512-D4iHGTdAnEEVsB8fl95m1hiz7D5YiRdQ9b/OEb3BYRVwbLsGHcRVPz+u+BgRLNk0Q0/4iZCBqDN96j2XNxfXrA==
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
-
-"@ohif/extension-cornerstone-dicom-seg@3.11.0-beta.106":
-  version "3.11.0-beta.106"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone-dicom-seg/-/extension-cornerstone-dicom-seg-3.11.0-beta.106.tgz#fd1fc42ca6cdfe2ead9a10cc28fc4d49064b2b44"
-  integrity sha512-+0kNGZ3EuGb31hF8zC/VFK/qDqLsIlQnzwk4b8oXHWcxDB3Beirn/jEMLnID43TAuSX6wBWl14sU8EPFvPpLuA==
-  dependencies:
-    "@babel/runtime" "^7.20.13"
-    "@cornerstonejs/adapters" "^3.30.3"
-    "@cornerstonejs/core" "^3.30.3"
-    "@kitware/vtk.js" "32.12.0"
-    react-color "^2.19.3"
 
 "@oozcitak/dom@1.15.10":
   version "1.15.10"
@@ -20189,7 +20192,7 @@ string-width@^1.0.1:
     is-fullwidth-code-point "^3.0.0"
     strip-ansi "^6.0.1"
 
-string-width@^2.1.1:
+string-width@^2.1.0, string-width@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-2.1.1.tgz#ab93f27a8dc13d28cac815c462143a6d9012ae9e"
   integrity sha512-nOqH59deCq9SRHlxq1Aw85Jnt4w6KvLKqWVik6oA9ZklXLNIOlqg4F2yrT1MVaTjAqvVwdfeZ7w7aCvJD7ugkw==
@@ -20326,6 +20329,13 @@ strip-ansi@^4.0.0:
   integrity sha512-4XaJ2zQdCzROZDivEVIDPkcQn8LMFSa8kj8Gxb/Lnwzv9A8VctNZ+lfivC/sV3ivW8ElJTERXZoPBRrZKkNKow==
   dependencies:
     ansi-regex "^3.0.0"
+
+strip-ansi@^5.1.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.2.0.tgz#8c9a536feb6afc962bdfa5b104a5091c1ad9c0ae"
+  integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
+  dependencies:
+    ansi-regex "^4.1.0"
 
 strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"

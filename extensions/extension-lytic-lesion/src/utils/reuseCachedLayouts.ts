@@ -3,7 +3,7 @@ import { HangingProtocolService, StateSyncService, Types } from '@ohif/core';
 export type ReturnType = {
   hangingProtocolStageIndexMap: Record<string, Types.HangingProtocol.HPInfo>;
   viewportGridStore: Record<string, unknown>;
-  displaySetSelectorMap: Record<string, string>;
+  displaySetSelectorMap: Record<string, Array<string>>;
 };
 
 /**
@@ -54,13 +54,13 @@ const reuseCachedLayout = (
       if (idx === activeViewportIndex && i === 0) {
         displaySetSelectorMap[
           `${activeStudyUID}:activeDisplaySet:0`
-        ] = displaySetUID;
+        ] = [displaySetUID];
       }
       if (displaySetOptions[i]?.id) {
         displaySetSelectorMap[
           `${activeStudyUID}:${displaySetOptions[i].id}:${displaySetOptions[i]
             .matchedDisplaySetsIndex || 0}`
-        ] = displaySetUID;
+        ] = [displaySetUID];
       }
     }
   }

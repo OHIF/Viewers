@@ -5,10 +5,14 @@ import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarSe
 import classNames from 'classnames';
 
 const mouseNearControlsRanges = {
+  [ButtonLocation.TopLeft]: { minX: 0, minY: 0, maxX: 0.1, maxY: 0.1 },
   [ButtonLocation.TopMiddle]: { minX: 0, minY: 0, maxX: 1, maxY: 0.1 },
-  [ButtonLocation.BottomMiddle]: { minX: 0, minY: 0.9, maxX: 1, maxY: 1 },
+  [ButtonLocation.TopRight]: { minX: 0.9, minY: 0, maxX: 1, maxY: 0.1 },
   [ButtonLocation.LeftMiddle]: { minX: 0, minY: 0, maxX: 0.1, maxY: 1 },
   [ButtonLocation.RightMiddle]: { minX: 0.9, minY: 0, maxX: 1, maxY: 1 },
+  [ButtonLocation.BottomLeft]: { minX: 0, minY: 0.9, maxX: 0.1, maxY: 1 },
+  [ButtonLocation.BottomMiddle]: { minX: 0, minY: 0.9, maxX: 1, maxY: 1 },
+  [ButtonLocation.BottomRight]: { minX: 0.9, minY: 0.9, maxX: 1, maxY: 1 },
 };
 
 const getFlexDirectionClassName = (location: ButtonLocation) =>
@@ -22,7 +26,7 @@ function AdvancedRenderingControls({
   buttonSection,
 }: {
   viewportId: string;
-  location: number;
+  location: ButtonLocation;
   buttonSection: string;
 }) {
   const {
@@ -58,8 +62,15 @@ function AdvancedRenderingControls({
 
   useEffect(() => {
     if (!showAllIcons && mousePosition.isInViewport) {
+      // Ensure location is a valid ButtonLocation enum value
+      if (typeof location !== 'number' || location < 0 || location > 7) {
+        console.warn(`Invalid location value: ${location}`);
+        setIsMouseNearControls(false);
+        return;
+      }
+      
       const mouseHoverLocation = mouseNearControlsRanges[location];
-      if (mousePosition.isWithinNormalizedBox(mouseHoverLocation)) {
+      if (mouseHoverLocation && mousePosition.isWithinNormalizedBox(mouseHoverLocation)) {
         setIsMouseNearControls(true);
       } else {
         setIsMouseNearControls(false);

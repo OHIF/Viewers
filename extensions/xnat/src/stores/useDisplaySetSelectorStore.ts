@@ -22,17 +22,27 @@ type DisplaySetSelectorState = {
   type: string;
 
   /**
-   * Stores a mapping from `<activeStudyUID>:<displaySetSelectorId>:<matchOffset>` to `displaySetInstanceUID`.
+   * Stores a mapping from `<activeStudyUID>:<displaySetSelectorId>:<matchOffset>` to `displaySetInstanceUID[]`.
+   * The values are arrays of display set instance UIDs to support multiple display sets per selector.
    */
-  displaySetSelectorMap: Record<string, string>;
+  displaySetSelectorMap: Record<string, Array<string>>;
 
   /**
    * Sets the display set selector for a given key.
    *
    * @param key - The key.
-   * @param value - The `displaySetInstanceUID` to associate with the key.
+   * @param value - The array of `displaySetInstanceUID`s to associate with the key.
    */
-  setDisplaySetSelector: (key: string, value: string) => void;
+  setDisplaySetSelector: (key: string, value: Array<string>) => void;
+
+  /**
+   * Adds a display set instance UID to the array for a given key.
+   * If the key doesn't exist, it creates a new array with the value.
+   *
+   * @param key - The key.
+   * @param value - The `displaySetInstanceUID` to add to the array.
+   */
+  addDisplaySetSelector: (key: string, value: string) => void;
 
   /**
    * Clears the entire display set selector map.
@@ -52,8 +62,11 @@ const createDisplaySetSelectorStore = (set): DisplaySetSelectorState => ({
 
   /**
    * Sets the display set selector for a given key.
+   *
+   * @param key - The key.
+   * @param value - The array of `displaySetInstanceUID`s to associate with the key.
    */
-  setDisplaySetSelector: (key: string, value: string) =>
+  setDisplaySetSelector: (key: string, value: Array<string>) =>
     set(
       state => ({
         displaySetSelectorMap: {
@@ -63,6 +76,25 @@ const createDisplaySetSelectorStore = (set): DisplaySetSelectorState => ({
       }),
       false,
       'setDisplaySetSelector'
+    ),
+
+  /**
+   * Adds a display set instance UID to the array for a given key.
+   * If the key doesn't exist, it creates a new array with the value.
+   *
+   * @param key - The key.
+   * @param value - The `displaySetInstanceUID` to add to the array.
+   */
+  addDisplaySetSelector: (key: string, value: string) =>
+    set(
+      state => ({
+        displaySetSelectorMap: {
+          ...state.displaySetSelectorMap,
+          [key]: [...(state.displaySetSelectorMap[key] || []), value],
+        },
+      }),
+      false,
+      'addDisplaySetSelector'
     ),
 
   /**

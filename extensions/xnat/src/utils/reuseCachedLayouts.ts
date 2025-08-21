@@ -6,7 +6,7 @@ import { useHangingProtocolStageIndexStore } from '../stores/useHangingProtocolS
 export type ReturnType = {
   hangingProtocolStageIndexMap: Record<string, Types.HangingProtocol.HPInfo>;
   viewportGridStore: Record<string, unknown>;
-  displaySetSelectorMap: Record<string, string>;
+  displaySetSelectorMap: Record<string, Array<string>>;
 };
 
 /**
@@ -59,14 +59,14 @@ const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService
         continue;
       }
       if (viewportId === activeViewportId && i === 0) {
-        setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:0`, displaySetUID);
+        setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:0`, [displaySetUID]);
       }
       if (displaySetOptions[i]?.id) {
         setDisplaySetSelector(
           `${activeStudyUID}:${displaySetOptions[i].id}:${
             displaySetOptions[i].matchedDisplaySetsIndex || 0
           }`,
-          displaySetUID
+          [displaySetUID]
         );
       }
     }

@@ -136,8 +136,14 @@ export function updateSegmentBidirectionalStats({
   segmentationService: AppTypes.SegmentationService;
   annotation: any;
 }) {
-  if (!segmentationId || segmentIndex === undefined || !bidirectionalData) {
+  if (!segmentationId || segmentIndex === undefined || !bidirectionalData || !annotation) {
     console.debug('Missing required data for bidirectional stats update');
+    return null;
+  }
+
+  // Validate that annotation has the required annotationUID
+  if (!annotation.annotationUID) {
+    console.debug('Annotation missing annotationUID for bidirectional stats update');
     return null;
   }
 

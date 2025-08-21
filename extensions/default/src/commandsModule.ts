@@ -412,7 +412,7 @@ const commandsModule = ({
         const { setDisplaySetSelector } = useDisplaySetSelectorStore.getState();
         setDisplaySetSelector(
           `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
-          null
+          []
         );
         return true;
       } catch (e) {

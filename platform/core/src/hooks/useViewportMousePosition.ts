@@ -51,6 +51,14 @@ function useViewportMousePosition(viewportId: string): MousePosition {
       const relativeY = Math.max(0, Math.min(1, y / height));
 
       const isWithinNormalizedBox = (normalizedBox: NormalizedBox) => {
+        if (!normalizedBox || 
+            typeof normalizedBox.minX !== 'number' || 
+            typeof normalizedBox.maxX !== 'number' || 
+            typeof normalizedBox.minY !== 'number' || 
+            typeof normalizedBox.maxY !== 'number') {
+          return false;
+        }
+        
         return (
           relativeX >= normalizedBox.minX &&
           relativeX <= normalizedBox.maxX &&

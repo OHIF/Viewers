@@ -1,46 +1,50 @@
 .viewport-wrapper {
-  width: 100%;
-  height: 100%; /* MUST have `height` to prevent resize infinite loop */
-  position: relative;
-  /* Prevent text selection on the entire viewport wrapper */
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+    width: 100%;
+    height: 100%;
+    /* MUST have `height` to prevent resize infinite loop */
+    position: relative;
+    /* Prevent text selection on the entire viewport wrapper */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default !important
 }
 
 .cornerstone-viewport-element {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background-color: black;
-
-  /* Prevent the blue outline in Chrome when a viewport is selected */
-  outline: 0 !important;
-
-  /* Prevents the entire page from getting larger
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: black;
+    /* Prevent the blue outline in Chrome when a viewport is selected */
+    outline: 0 !important;
+    /* Prevents the entire page from getting larger
      when the magnify tool is near the sides/corners of the page */
-  overflow: hidden;
-  
-  /* Prevent text selection on the viewport element */
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+    overflow: hidden;
+    /* Prevent text selection on the viewport element */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default !important
 }
+
 
 /* Prevent text selection on overlay elements */
+
 .noselect {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
+
 /* Ensure all elements within viewport wrapper prevent text selection */
+
 .viewport-wrapper * {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }

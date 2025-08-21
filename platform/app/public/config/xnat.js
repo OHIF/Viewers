@@ -23,7 +23,7 @@ window.config = window.config || {};
 // Create the configuration object with protection against overrides
 const xnatConfig = {
     name: 'config/xnat.js',
-    routerBasename: '/',
+    routerBasename: '/VIEWER/',
     // whiteLabeling: {},
     defaultDataSourceName: 'xnat',
     extensions: [
@@ -32,7 +32,7 @@ const xnatConfig = {
         '@ohif/extension-xnat',
         '@ohif/extension-measurement-tracking'
     ],
-    modes: ['@ohif/mode-xnat'],
+    modes: ['@ohif/mode-xnat', '@ohif/mode-overread-xnat'],
     customizationService: {
         'autoCineModalities': { $set: [] } // Set to an empty array by default
     },

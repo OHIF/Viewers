@@ -281,11 +281,23 @@ function commandsModule({
 
       const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
 
+      // Validate that we have valid segmentation data
+      if (!targetId || targetIndex === undefined) {
+        console.warn('runSegmentBidirectional: No valid segmentation or segment index found');
+        return;
+      }
+
       // Get bidirectional measurement data
       const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
         segmentationId: targetId,
         segmentIndices: [targetIndex],
       });
+
+      // Check if we got valid bidirectional data
+      if (!bidirectionalData || !Array.isArray(bidirectionalData) || bidirectionalData.length === 0) {
+        console.warn('runSegmentBidirectional: No bidirectional data found for segment');
+        return;
+      }
 
       const activeViewportId = viewportGridService.getActiveViewportId();
 
@@ -302,6 +314,12 @@ function commandsModule({
             segmentationId: targetId,
           }
         );
+
+        // Validate that annotation was created successfully
+        if (!annotation || !annotation.annotationUID) {
+          console.warn('runSegmentBidirectional: Failed to create annotation for measurement');
+          return;
+        }
 
         measurement.annotationUID = annotation.annotationUID;
 
@@ -327,9 +345,15 @@ function commandsModule({
       const activeBidirectional = bidirectionalData.find(
         measurement => measurement.segmentIndex === targetIndex
       );
-      commandsManager.run('jumpToMeasurement', {
-        uid: activeBidirectional.annotationUID,
-      });
+
+      // Check if we found a valid bidirectional measurement before jumping
+      if (activeBidirectional && activeBidirectional.annotationUID) {
+        commandsManager.run('jumpToMeasurement', {
+          uid: activeBidirectional.annotationUID,
+        });
+      } else {
+        console.warn('runSegmentBidirectional: No valid bidirectional measurement found to jump to');
+      }
     },
     interpolateLabelmap: () => {
       const { segmentationId, segmentIndex } = _getActiveSegmentationInfo();

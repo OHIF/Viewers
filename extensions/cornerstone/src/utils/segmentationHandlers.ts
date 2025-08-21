@@ -101,7 +101,9 @@ export function setupSegmentationModifiedHandler({ segmentationService }) {
             !segmentIndices.includes(annotation.metadata.segmentIndex)
         );
 
-        toRemoveUIDs = bidirectionalAnnotationsToRemove.map(annotation => annotation.annotationUID);
+        toRemoveUIDs = bidirectionalAnnotationsToRemove
+          .filter(annotation => annotation.annotationUID) // Only include annotations with valid UIDs
+          .map(annotation => annotation.annotationUID);
       }
 
       toRemoveUIDs.forEach(uid => {

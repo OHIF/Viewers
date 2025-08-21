@@ -81,22 +81,14 @@ function modeFactory({ modeConfiguration }) {
   let _displaySetAddedSubscription = null;
   return {
     id,
-    routeName: '',
-    displayName: ({ servicesManager }) => {
-      const isOverreadMode = servicesManager?.services?.isOverreadMode === true;
-      return isOverreadMode ? 'XNAT Overread Viewer' : 'XNAT Viewer';
-    },
+    routeName: 'overreads',
+    displayName: 'Overread Viewer',
     onModeInit: ({ servicesManager, extensionManager, commandsManager, appConfig, query }) => {
       
       // Get query parameters
-      const { projectId, parentProjectId, subjectId, experimentId, experimentLabel, overreadMode } = 
+      const { projectId, parentProjectId, subjectId, experimentId, experimentLabel } = 
         Object.fromEntries(query.entries());
       
-      // Store overread mode flag in services manager for use in layout
-      if (overreadMode === 'true') {
-        servicesManager.services.isOverreadMode = true;
-        console.log('XNAT Mode: Overread mode detected');
-      }
       
       // ---> ADD SESSION MAP SETTERS HERE <---
       if (projectId) {
@@ -135,10 +127,10 @@ function modeFactory({ modeConfiguration }) {
             });
           }
         } catch (error) {
-          console.error('XNAT Mode Init - Error creating session router:', error);
+          console.error('Overread Mode Init - Error creating session router:', error);
         }
       } else {
-        console.warn('XNAT Mode Init - Missing required params for session router');
+        console.warn('Overread Mode Init - Missing required params for session router');
       }
     },
     /**
@@ -146,16 +138,6 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      // Log the current mode state
-      const isOverreadMode = servicesManager?.services?.isOverreadMode === true;
-      console.log('XNAT Mode Enter:', isOverreadMode ? 'Overread Mode' : 'Regular Mode');
-      
-      // Add visual indicator for overread mode
-      if (isOverreadMode) {
-        console.log('🎯 OVERREAD MODE ACTIVE - Custom forms panel should be visible');
-        console.log('📋 Available panels:', servicesManager.services.panelService?.getPanels()?.map(p => p.name) || 'Not available');
-      }
-      
       const {
         measurementService,
         toolbarService,
@@ -223,11 +205,6 @@ function modeFactory({ modeConfiguration }) {
             ],
           },
         },
-        // Overread mode specific customizations
-        ...(isOverreadMode && {
-          'worklist.showStudyList': { $set: false },
-          'worklist.showPatientInfo': { $set: false },
-        }),
       });
 
       // Init Default and SR ToolGroups
@@ -395,22 +372,14 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: '/',
-        layoutTemplate: ({ servicesManager }) => {
-          // Check if we're in overread mode
-          const isOverreadMode = servicesManager?.services?.isOverreadMode === true;
-          
-          // Choose panels based on mode
-          const rightPanels = isOverreadMode 
-            ? [xnat.segmentation, xnat.measurements, xnat.customForms]  // Overread mode: include custom forms
-            : [xnat.segmentation, xnat.measurements];                   // Regular mode: standard panels
-          
+        path: 'overreads',
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              rightPanels: rightPanels,
+              rightPanels: [xnat.segmentation, xnat.measurements, xnat.customForms],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [
@@ -460,9 +429,9 @@ function modeFactory({ modeConfiguration }) {
         init: async ({ servicesManager, extensionManager, studyInstanceUIDs }) => {
             
           // Re-enable init logic
-          // console.log('XNAT Route Init - Temporarily Disabled');
-          // return []; // Return empty array to prevent further processing
-          // /*
+          console.log('XNAT Route Init - Temporarily Disabled');
+          return []; // Return empty array to prevent further processing
+          /*
           const layoutService = servicesManager.services.layoutService;
           
           // Get the study UIDs from the session router if available
@@ -507,10 +476,10 @@ function modeFactory({ modeConfiguration }) {
               const query = new URLSearchParams(window.location.search); 
               await dataSource.initialize({ params: {}, query }); // Assuming params might not be needed here, pass query
             } else {
-              console.error('XNAT Mode Route Init: Could not find active data source or initialize function.');
+              console.error('Overread Mode Route Init: Could not find active data source or initialize function.');
             }
           } catch (error) {
-            console.error('XNAT Mode Route Init: Error calling dataSource.initialize():', error);
+            console.error('Overread Mode Route Init: Error calling dataSource.initialize():', error);
             // Decide how to handle error - maybe prevent further execution?
             return; // Stop processing if initialization fails
           }
@@ -527,12 +496,12 @@ function modeFactory({ modeConfiguration }) {
                 if (displaySetsAdded && displaySetsAdded.length > 0) {
 
                 } else {
-                  console.log('XNAT Mode - EVENT: DISPLAY_SETS_ADDED fired, but displaySetsAdded array is empty or missing in eventData.');
+                  console.log('Overread Mode - EVENT: DISPLAY_SETS_ADDED fired, but displaySetsAdded array is empty or missing in eventData.');
                 }
               }
             );
           } else {
-            console.warn('XNAT Mode - Route Init - DisplaySetService or its event system not available for subscription.');
+            console.warn('Overread Mode - Route Init - DisplaySetService or its event system not available for subscription.');
           }
 
           // Now call defaultRouteInit - Reverting back to single object argument
@@ -552,7 +521,7 @@ function modeFactory({ modeConfiguration }) {
 
           // Return the study UIDs - this ensures they propagate to the rest of the app
           return studyInstanceUIDs;
-          // */
+          */
         },
       },
     ],
