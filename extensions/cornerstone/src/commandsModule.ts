@@ -2052,7 +2052,6 @@ function commandsModule({
       panelService.activatePanel('@ohif/extension-cornerstone.panelModule.panelTemplate', true);
 
       // Dispatch the event to open the dropdown
-      console.log('Dispatching openTemplateDropdown event');
       window.dispatchEvent(new CustomEvent('openTemplateDropdown'));
     },
     triggerCreateAnnotationMemo: ({

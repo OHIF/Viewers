@@ -76,6 +76,7 @@
   },
   "dependencies": {
     "@tinymce/tinymce-react": "^6.3.0",
+    "axios": "^1.11.0",
     "execa": "^8.0.1"
   },
   "optionalDependencies": {

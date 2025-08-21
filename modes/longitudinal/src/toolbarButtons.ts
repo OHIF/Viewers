@@ -600,9 +600,9 @@ const toolbarButtons: Button[] = [
     id: 'GenerateReport',
     uiType: 'ohif.toolButton',
     props: {
-      icon: 'Pencil',
+      icon: 'icon-generate-report',
       label: 'Generate Report',
-      tooltip: 'Generate Medical Report',
+      // tooltip: 'Generate Medical Report',
       commands: 'generateReport',
       evaluate: 'evaluate.action',
     },

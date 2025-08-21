@@ -95,7 +95,6 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
         'Zoom',
-        'GenerateReport',
         'Pan',
         'TrackballRotate',
         'WindowLevel',
@@ -103,6 +102,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        'GenerateReport',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
