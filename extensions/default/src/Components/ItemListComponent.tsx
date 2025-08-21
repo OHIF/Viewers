@@ -32,7 +32,7 @@ function ItemListComponent({
   return (
     <div className="flex min-h-[1px] grow flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div className="text-primary-light text-[20px]">{t(`Select ${itemLabel}`)}</div>
+        <div className="text-highlight text-[20px]">{t(`Select ${itemLabel}`)}</div>
         <InputFilterText
           className="max-w-[40%] grow"
           value={filterValue}
@@ -44,7 +44,7 @@ function ItemListComponent({
         {itemList == null ? (
           <LoadingIndicatorProgress className={'h-full w-full'} />
         ) : itemList.length === 0 ? (
-          <div className="text-primary-light flex h-full flex-col items-center justify-center px-6 py-4">
+          <div className="text-highlight flex h-full flex-col items-center justify-center px-6 py-4">
             <Icons.ToolMagnify className="mb-4" />
             <span>{t(`No ${itemLabel} available`)}</span>
           </div>
@@ -59,11 +59,11 @@ function ItemListComponent({
                 )
                 .map(item => {
                   const border =
-                    'rounded border-transparent border-b-secondary-light border-[1px] hover:border-primary-light';
+                    'rounded border-transparent border-b-secondary-light border-[1px] hover:border-highlight';
                   return (
                     <div
                       className={classNames(
-                        'hover:text-primary-light hover:bg-muted group mx-2 flex items-center justify-between px-6 py-2',
+                        'hover:text-highlight hover:bg-muted group mx-2 flex items-center justify-between px-6 py-2',
                         border
                       )}
                       key={item.id}

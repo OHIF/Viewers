@@ -71,7 +71,7 @@ const InvestigationalUseDialog = ({
           <div className="flex flex-col">
             <div className="text-[19px] text-white">
               OHIF Viewer is{' '}
-              <span className="text-primary-light">{t('for investigational use only')}</span>
+              <span className="text-highlight">{t('for investigational use only')}</span>
             </div>
             <div className="text-[13px] text-white">
               <span

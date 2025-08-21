@@ -78,12 +78,12 @@ function ViewportActionBar({
       </span>
       {/* Prev/Next icons */}
       <Icons.ByName
-        className="hover:text-primary-light ml-auto mr-2 cursor-pointer text-white"
+        className="hover:text-highlight ml-auto mr-2 cursor-pointer text-white"
         name="chevron-prev"
         onClick={() => onArrowsClick('left')}
       />
       <Icons.ByName
-        className="hover:text-primary-light mr-2 cursor-pointer text-white"
+        className="hover:text-highlight mr-2 cursor-pointer text-white"
         name="chevron-next"
         onClick={() => onArrowsClick('right')}
       />

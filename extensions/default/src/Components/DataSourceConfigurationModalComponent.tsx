@@ -107,18 +107,18 @@ function DataSourceConfigurationModalComponent({
 
   const getSelectedItemBorderClasses = itemIndex =>
     itemIndex === currentSelectedItemIndex + 1
-      ? classNames('border-2', 'border-solid', 'border-primary-light')
+      ? classNames('border-2', 'border-solid', 'border-highlight')
       : itemIndex < selectedItems.length
-        ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
+        ? 'border border-solid border-primary-active hover:border-highlight active:border-white'
         : 'border border-dashed border-secondary-light';
 
   const getSelectedItemTextClasses = itemIndex =>
-    itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary';
+    itemIndex <= selectedItems.length ? 'text-highlight' : 'text-primary';
 
   const getErrorComponent = (): ReactElement => {
     return (
       <div className="flex min-h-[1px] grow flex-col gap-4">
-        <div className="text-primary-light text-[20px]">
+        <div className="text-highlight text-[20px]">
           {t(`Error fetching ${itemLabels[selectedItems.length]} list`)}
         </div>
         <div className="grow bg-black p-4 text-[14px]">{errorMessage}</div>
