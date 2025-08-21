@@ -308,7 +308,7 @@ function DicomUploadProgress({
 
             <span
               className={
-                'text-primary hover:text-primary-lightactive:text-aqua-pale ml-auto cursor-pointer whitespace-nowrap'
+                'text-primary hover:text-primary-lightactive:text-muted-foreground ml-auto cursor-pointer whitespace-nowrap'
               }
               onClick={cancelAllUploads}
             >
@@ -359,7 +359,7 @@ function DicomUploadProgress({
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
-                <div className="w-10 text-right text-foreground">{`${getPercentCompleteRounded()}%`}</div>
+                <div className="text-foreground w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
             </>

@@ -64,7 +64,7 @@ function ViewportActionBar({
       onDoubleClick={onDoubleClick}
     >
       {getStatusComponent()}
-      {!!label?.length && <span className="text-aqua-pale text-large ml-1">{label}</span>}
+      {!!label?.length && <span className="text-muted-foreground text-large ml-1">{label}</span>}
       <div className="border-secondary-light mx-2 border-l py-2"></div>
       <span
         data-cy="studyDate"
@@ -73,7 +73,9 @@ function ViewportActionBar({
         {studyDate}
       </span>
       <div className="border-secondary-light mx-2 border-l py-2"></div>
-      <span className="text-aqua-pale mr-1 overflow-hidden text-ellipsis">{seriesDescription}</span>
+      <span className="text-muted-foreground mr-1 overflow-hidden text-ellipsis">
+        {seriesDescription}
+      </span>
       {/* Prev/Next icons */}
       <Icons.ByName
         className="hover:text-primary-light ml-auto mr-2 cursor-pointer text-white"

@@ -54,7 +54,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
             <div className="self-start text-[13px] font-bold text-white">
               {formattedPatientName}
             </div>
-            <div className="text-aqua-pale flex gap-2 text-[11px]">
+            <div className="text-muted-foreground flex gap-2 text-[11px]">
               <div>{formattedPatientID}</div>
               <div>{patientInfo.PatientSex}</div>
               <div>{patientInfo.PatientDOB}</div>
