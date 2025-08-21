@@ -1,5 +1,5 @@
-import toNumber from '@ohif/core/src/utils/toNumber';
-import { _isSameOrientation } from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import toNumber from './toNumber';
+import { _isSameOrientation } from './isDisplaySetReconstructable';
 
 /**
  * Check is the series has frames with different orientations

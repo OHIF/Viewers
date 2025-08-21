@@ -383,8 +383,6 @@ function PanelStudyBrowser({
     // Set the activeTabName and expand the study
     const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs);
     if (!thumbnailLocation) {
-      console.warn('jumpToThumbnail: displaySet thumbnail not found.');
-
       return;
     }
     const { tabName, StudyInstanceUID } = thumbnailLocation;

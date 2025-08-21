@@ -29,6 +29,9 @@ export type DisplaySet = {
   /** A fetch method to get the thumbnail */
   getThumbnailSrc?(imageId?: string): Promise<string>;
 
+  /** An opaque type of this viewport, used internally to specify which viewport to use */
+  viewportType;
+
   /**
    * A fetch URL to display the content.  This is used for content such as
    * pdf display.

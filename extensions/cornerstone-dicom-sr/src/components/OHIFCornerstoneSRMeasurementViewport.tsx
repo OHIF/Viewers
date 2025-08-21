@@ -63,16 +63,10 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
 
   const updateViewport = useCallback(
     newMeasurementSelected => {
-      const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } = srDisplaySet;
+      const { StudyInstanceUID, displaySetInstanceUID } = srDisplaySet;
 
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
-      }
-
-      if (sopClassUids && sopClassUids.length > 1) {
-        // Todo: what happens if there are multiple SOP Classes? Why we are
-        // not throwing an error?
-        console.warn('More than one SOPClassUID in the same series is not yet supported.');
       }
 
       _getViewportReferencedDisplaySetData(
@@ -92,7 +86,7 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
         const { presentationIds } = viewportOptions;
         const measurement = srDisplaySet.measurements[newMeasurementSelected];
         setPositionPresentation(presentationIds.positionPresentationId, {
-          viewReference: {
+          viewReference: measurement.viewReference || {
             referencedImageId: measurement.imageId,
           },
         });
@@ -258,6 +252,9 @@ async function _getViewportReferencedDisplaySetData(
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  if (!referencedDisplaySet?.images) {
+    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
+  }
 
   const image0 = referencedDisplaySet.images[0];
   const referencedDisplaySetMetadata = {

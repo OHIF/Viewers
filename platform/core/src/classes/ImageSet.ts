@@ -103,7 +103,7 @@ class ImageSet {
       return this.images.sort(combinedSortFunctions[userSpecifiedCriteria]);
     }
     // If image position patient is not available, sort by InstanceNumber
-    if (!isValidForPositionSort(this.images)) {
+    if (!this.isReconstructable || !isValidForPositionSort(this.images)) {
       return this.images.sort(instancesSortCriteria.sortByInstanceNumber);
     }
     // Do image position patient sorting as default sort

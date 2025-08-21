@@ -24,36 +24,38 @@ export const groupByStudy = (items, grouping, childProps) => {
 
   let firstSelected, firstGroup;
 
-  items.forEach(item => {
-    const studyUID = getItemStudyInstanceUID(item);
-    if (!groups.has(studyUID)) {
-      const items = [];
-      const filter = MeasurementFilters.filterAnd(
-        MeasurementFilters.filterMeasurementsByStudyUID(studyUID),
-        grouping.filter
-      );
-      const group = {
-        ...grouping,
-        items,
-        displayMeasurements: items,
-        key: studyUID,
-        isSelected: studyUID === activeStudyUID,
-        StudyInstanceUID: studyUID,
-        filter,
-        measurementFilter: filter,
-      };
-      if (group.isSelected && !firstSelected) {
-        firstSelected = group;
+  items
+    .filter(item => item.displaySetInstanceUID)
+    .forEach(item => {
+      const studyUID = getItemStudyInstanceUID(item);
+      if (!groups.has(studyUID)) {
+        const items = [];
+        const filter = MeasurementFilters.filterAnd(
+          MeasurementFilters.filterMeasurementsByStudyUID(studyUID),
+          grouping.filter
+        );
+        const group = {
+          ...grouping,
+          items,
+          displayMeasurements: items,
+          key: studyUID,
+          isSelected: studyUID === activeStudyUID,
+          StudyInstanceUID: studyUID,
+          filter,
+          measurementFilter: filter,
+        };
+        if (group.isSelected && !firstSelected) {
+          firstSelected = group;
+        }
+        firstGroup ||= group;
+        groups.set(studyUID, group);
       }
-      firstGroup ||= group;
-      groups.set(studyUID, group);
-    }
-    if (!firstSelected && firstGroup) {
-      firstGroup.isSelected = true;
-    }
-    const group = groups.get(studyUID);
-    group.items.push(item);
-  });
+      if (!firstSelected && firstGroup) {
+        firstGroup.isSelected = true;
+      }
+      const group = groups.get(studyUID);
+      group.items.push(item);
+    });
 
   return groups;
 };
