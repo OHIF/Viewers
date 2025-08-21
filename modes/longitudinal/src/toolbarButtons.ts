@@ -597,6 +597,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'GenerateReport',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-generate-report',
+      label: 'Generate Report',
+      // tooltip: 'Generate Medical Report',
+      commands: 'generateReport',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
     id: 'TrackballRotate',
     uiType: 'ohif.toolButton',
     props: {

@@ -18,6 +18,7 @@ const ohif = {
 const cornerstone = {
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+  template: '@ohif/extension-cornerstone.panelModule.panelTemplate',
 };
 
 const tracked = {
@@ -101,6 +102,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        'GenerateReport',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
@@ -247,7 +249,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.segmentation, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, tracked.measurements, cornerstone.template],
               rightPanelClosed: true,
               rightPanelResizable: true,
               viewports: [

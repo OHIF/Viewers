@@ -2158,6 +2158,27 @@ function commandsModule({
     endRecordingForAnnotationGroup: () => {
       cornerstoneTools.AnnotationTool.endGroupRecording();
     },
+    // generate report
+    generateReport: () => {
+      const { panelService } = servicesManager.services;
+
+      console.log('Generate Report button clicked - activating panel');
+
+      // Force the right panel to open by setting panels with rightPanelClosed: false
+      const currentPanels = {
+        left: panelService.getPanels('left').map(panel => panel.id),
+        right: panelService.getPanels('right').map(panel => panel.id),
+      };
+
+      // Set panels with rightPanelClosed: false to force the sidebar open
+      panelService.setPanels(currentPanels, { rightPanelClosed: false });
+
+      // Activate the template panel
+      panelService.activatePanel('@ohif/extension-cornerstone.panelModule.panelTemplate', true);
+
+      // Dispatch the event to open the dropdown
+      window.dispatchEvent(new CustomEvent('openTemplateDropdown'));
+    },
     triggerCreateAnnotationMemo: ({
       annotation,
       FrameOfReferenceUID,
@@ -2344,6 +2365,9 @@ function commandsModule({
     },
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
+    },
+    generateReport: {
+      commandFn: actions.generateReport,
     },
     setViewportPreset: {
       commandFn: actions.setViewportPreset,

@@ -35,6 +35,7 @@ import MultiplePatients from './Sources/MultiplePatients';
 import NavigationPanelReveal from './Sources/NavigationPanelReveal';
 import OHIFLogo from './Sources/OHIFLogo';
 import Patient from './Sources/Patient';
+import GenerateReport from './Sources/GenerateReport';
 import Pin from './Sources/Pin';
 import PinFill from './Sources/PinFill';
 import Plus from './Sources/Plus';
@@ -684,6 +685,7 @@ export const Icons = {
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
   'icon-patient': (props: IconProps) => Patient(props),
+  'icon-generate-report': (props: IconProps) => GenerateReport(props),
   'chevron-down': (props: IconProps) => ChevronOpen(props),
   'tool-length': (props: IconProps) => ToolLength(props),
   'tool-3d-rotate': (props: IconProps) => Tool3DRotate(props),
