@@ -113,7 +113,7 @@ const ProgressDropdown = ({
           <button
             className={classnames('ml-1.5 w-[26px] rounded text-base', {
               'bg-primary-main': canMoveNext,
-              'bg-primary-dark pointer-events-none': !canMoveNext,
+              'bg-muted pointer-events-none': !canMoveNext,
             })}
           >
             <Icons.ArrowRight
@@ -128,7 +128,7 @@ const ProgressDropdown = ({
         <div
           className={classnames(
             'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top',
-            'bg-primary-dark overflow-hidden transition-[max-height] duration-300',
+            'bg-muted overflow-hidden transition-[max-height] duration-300',
             'border-secondary-main rounded border shadow',
             {
               hidden: !open,

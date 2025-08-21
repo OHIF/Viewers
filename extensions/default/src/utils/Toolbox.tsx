@@ -130,7 +130,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
           );
         })}
         {activeToolOptions && (
-          <div className="bg-primary-dark mt-1 h-auto px-2">
+          <div className="bg-muted mt-1 h-auto px-2">
             <ToolSettings options={activeToolOptions} />
           </div>
         )}

@@ -63,7 +63,7 @@ function ItemListComponent({
                   return (
                     <div
                       className={classNames(
-                        'hover:text-primary-light hover:bg-primary-dark group mx-2 flex items-center justify-between px-6 py-2',
+                        'hover:text-primary-light hover:bg-muted group mx-2 flex items-center justify-between px-6 py-2',
                         border
                       )}
                       key={item.id}
