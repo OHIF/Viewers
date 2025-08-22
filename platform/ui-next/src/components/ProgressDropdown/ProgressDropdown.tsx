@@ -108,7 +108,7 @@ const ProgressDropdown = ({
 
               {!selectedOption && <div className="ml-1 grow text-base leading-6">{children}</div>}
             </div>
-            <Icons.ChevronDown className="text-primary-active mt-1.5 ml-1 mr-2" />
+            <Icons.ChevronDown className="text-primary mt-1.5 ml-1 mr-2" />
           </div>
           <button
             className={classnames('ml-1.5 w-[26px] rounded text-base', {

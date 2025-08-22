@@ -33,7 +33,7 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
       <>
         {info.slice(0, MAX_TOOLTIP_LENGTH)}
         <button
-          className="text-primary-active font-bold"
+          className="text-primary font-bold"
           onClick={handleReadMoreClick}
         >
           &nbsp;Read more...
