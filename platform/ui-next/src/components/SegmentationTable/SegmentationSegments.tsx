@@ -48,7 +48,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
 
   return (
     <ScrollArea
-      className={`bg-bkg-low space-y-px`}
+      className={`bg-background space-y-px`}
       showArrows={true}
     >
       <div
