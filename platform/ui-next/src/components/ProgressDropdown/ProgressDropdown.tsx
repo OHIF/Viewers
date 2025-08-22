@@ -119,7 +119,7 @@ const ProgressDropdown = ({
             <Icons.ArrowRight
               className={classnames('relative left-0.5 h-6 w-6 text-white', {
                 'text-white': canMoveNext,
-                'text-secondary-light': !canMoveNext,
+                'text-': !canMoveNext,
               })}
               onClick={handleNextButtonClick}
             />

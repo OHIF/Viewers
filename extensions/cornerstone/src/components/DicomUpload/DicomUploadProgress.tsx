@@ -337,7 +337,7 @@ function DicomUploadProgress({
 
   const getPercentCompleteComponent = (): ReactElement => {
     return (
-      <div className="ohif-scrollbar border-secondary-light overflow-y-scroll border-b px-2">
+      <div className="ohif-scrollbar border-input overflow-y-scroll border-b px-2">
         <div className="min-h-14 flex w-full items-center p-2.5">
           {numFilesCompleted === dicomFileUploaderArr.length ? (
             <>

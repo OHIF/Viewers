@@ -110,7 +110,7 @@ function DataSourceConfigurationModalComponent({
       ? classNames('border-2', 'border-solid', 'border-highlight')
       : itemIndex < selectedItems.length
         ? 'border border-solid border-primary hover:border-highlight active:border-white'
-        : 'border border-dashed border-secondary-light';
+        : 'border border-dashed border-input';
 
   const getSelectedItemTextClasses = itemIndex =>
     itemIndex <= selectedItems.length ? 'text-highlight' : 'text-primary';

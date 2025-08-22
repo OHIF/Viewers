@@ -59,7 +59,7 @@ function ItemListComponent({
                 )
                 .map(item => {
                   const border =
-                    'rounded border-transparent border-b-secondary-light border-[1px] hover:border-highlight';
+                    'rounded border-transparent border-b-input border-[1px] hover:border-highlight';
                   return (
                     <div
                       className={classNames(
