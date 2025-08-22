@@ -56,7 +56,7 @@ const DicomUploadProgressItem = memo(
           return (
             <Icons.ByName
               name="status-tracked"
-              className="text-primary-light"
+              className="text-highlight"
             />
           );
         case UploadStatus.InProgress:

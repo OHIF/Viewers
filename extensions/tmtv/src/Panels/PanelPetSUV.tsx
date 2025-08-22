@@ -167,7 +167,7 @@ export default function PanelPetSUV() {
           <PanelSection defaultOpen={true}>
             <PanelSection.Header>{t('Patient Information')}</PanelSection.Header>
             <PanelSection.Content>
-              <div className="bg-primary-dark flex flex-col gap-3 p-2">
+              <div className="bg-muted flex flex-col gap-3 p-2">
                 <InputRow>
                   <InputRow.Label>{t('Patient Sex')}</InputRow.Label>
                   <InputRow.Input
