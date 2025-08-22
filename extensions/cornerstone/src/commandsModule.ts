@@ -40,6 +40,8 @@ import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
+import { getCenterExtent } from './utils/getCenterExtent';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -158,6 +160,27 @@ function commandsModule({
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
         viewport.setViewReference(metadata);
         viewport.render();
+
+        /**
+         * If the measurement is not visible inside the current viewport,
+         * we need to move the camera to the measurement.
+         */
+        if (!isMeasurementWithinViewport(viewport, measurement)) {
+          const camera = viewport.getCamera();
+          const { focalPoint: cameraFocalPoint, position: cameraPosition } = camera;
+          const { center, extent } = getCenterExtent(measurement);
+          const position = vec3.sub(vec3.create(), cameraPosition, cameraFocalPoint);
+          vec3.add(position, position, center);
+          viewport.setCamera({ focalPoint: center, position: position as any });
+          /** Zoom out if the measurement is too large */
+          const measurementSize = vec3.dist(extent.min, extent.max);
+          if (measurementSize > camera.parallelScale) {
+            const scaleFactor = measurementSize / camera.parallelScale;
+            viewport.setZoom(viewport.getZoom() / scaleFactor);
+          }
+          viewport.render();
+        }
+
         return;
       }
 
