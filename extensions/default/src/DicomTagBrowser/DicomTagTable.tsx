@@ -74,9 +74,7 @@ const RowComponent = ({
 function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   return (
     <div
-      className={classNames(
-        'bg-secondary-dark ohif-scrollbar flex w-full flex-row overflow-y-scroll'
-      )}
+      className={classNames('bg-popover ohif-scrollbar flex w-full flex-row overflow-y-scroll')}
       style={rowVerticalPaddingStyle}
     >
       <div className="w-4/24 px-3">

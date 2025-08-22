@@ -50,7 +50,7 @@ function ItemListComponent({
           </div>
         ) : (
           <>
-            <div className="bg-secondary-dark px-3 py-1.5 text-white">{t(itemLabel)}</div>
+            <div className="bg-popover px-3 py-1.5 text-white">{t(itemLabel)}</div>
             <div className="ohif-scrollbar overflow-auto">
               {itemList
                 .filter(

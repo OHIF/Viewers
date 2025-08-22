@@ -99,7 +99,7 @@ const ProgressDropdown = ({
       <div>
         <div className="mb-1.5 flex h-[26px]">
           <div
-            className="bg-secondary-dark border-primary-main flex grow cursor-pointer rounded border"
+            className="bg-popover border-primary-main flex grow cursor-pointer rounded border"
             style={{ width: `${dropDownWidth}px` }}
             onClick={toggleOpen}
           >

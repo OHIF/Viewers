@@ -101,7 +101,7 @@ function DataSourceConfigurationModalComponent({
     itemIndex < selectedItems.length
       ? classNames(
           'bg-black/[.4]',
-          itemIndex !== itemLabels.length - 1 ? 'hover:bg-transparent active:bg-secondary-dark' : ''
+          itemIndex !== itemLabels.length - 1 ? 'hover:bg-transparent active:bg-popover' : ''
         )
       : 'bg-transparent';
 
