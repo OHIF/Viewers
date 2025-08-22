@@ -13,7 +13,7 @@ import {
 
 import { Icons } from '@ohif/ui-next';
 
-import '../XNATNavigationPanel.css';
+
 
 interface XNATSessionProps {
   ID: string;
@@ -116,22 +116,7 @@ export default class XNATSession extends React.Component<XNATSessionProps, XNATS
     sessionRouter.go();
   }
 
-  /**
-   * _getSessionButtonClassNames - Returns the class names for the subject
-   * button based on state.
-   *
-   * @returns {string}  A string of the classnames.
-   */
-  _getSessionButtonClassNames(): string {
-    let sessionButtonClassNames =
-      'btn btn-sm btn-primary xnat-nav-button xnat-nav-session';
 
-    if (this.state.active) {
-      sessionButtonClassNames += ' xnat-nav-button-disabled';
-    }
-
-    return sessionButtonClassNames;
-  }
 
   /**
    * _fetchROICollectionInfo - Fetches the list of ROICollections, and counts up
@@ -237,18 +222,17 @@ export default class XNATSession extends React.Component<XNATSessionProps, XNATS
   render(): React.ReactNode {
     const { ID, label, parentProjectId } = this.props;
     const { active, shared, hasRois, maskCount, contourCount } = this.state;
-    const sessionButtonClassNames = this._getSessionButtonClassNames();
 
     return (
       <React.Fragment>
-        <div className="xnat-nav-horizontal-box">
-          <a
-            className={sessionButtonClassNames}
+        <div className="flex items-center space-x-2 p-2 hover:bg-accent/50 rounded cursor-pointer">
+          <button
+            className="flex-shrink-0 p-1 hover:bg-accent rounded text-primary"
             onClick={this.onLaunchViewerClick}
             title="Launch Session in Viewer"
           >
             <Icons.LaunchInfo />
-          </a>
+          </button>
           <XNATSessionLabel
             ID={ID}
             label={label}

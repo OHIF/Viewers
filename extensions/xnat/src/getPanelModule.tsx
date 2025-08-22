@@ -6,6 +6,8 @@ import XNATPanelMeasurement from './Panels/XNATPanelMeasurement';
 import { useAppConfig } from '@state';
 import { Toolbox } from '@ohif/extension-default';
 import ActiveViewportWindowLevel from '@ohif/extension-cornerstone';
+import { Types } from '@ohif/core';
+import XNATCustomFormsPanel from './Panels/XNATCustomFormsPanel';
 
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
@@ -50,6 +52,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       </>
     );
   };
+
   return [
     {
       name: 'activeViewportWindowLevel',
@@ -105,6 +108,18 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconLabel: 'Measurements',
       label: 'Measurements',
       component: XNATPanelMeasurement,
+    },
+    {
+      name: 'xnatCustomForms',
+      iconName: 'tab-custom-forms',
+      iconLabel: 'Custom Forms',
+      label: 'Custom Forms',
+      component: props => (
+        <XNATCustomFormsPanel
+          {...props}
+          servicesManager={servicesManager}
+        />
+      ),
     },
   ];
 }

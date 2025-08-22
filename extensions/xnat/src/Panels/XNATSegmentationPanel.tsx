@@ -227,11 +227,11 @@ export default function XNATSegmentationPanel({ configuration }) {
             >
               💾 Download DICOM SEG
             </DropdownMenuItem>
-            <DropdownMenuItem 
+            {/* <DropdownMenuItem 
               onClick={() => commandsManager.run('downloadRTSS', { segmentationId: activeSegmentationId })}
             >
               💾 Download RTSS
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem 
               onClick={() => commandsManager.run('XNATExportSegmentation', { segmentationId: activeSegmentationId })}
             >

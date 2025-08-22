@@ -55,7 +55,7 @@ function XNATThumbnail(props: XNATThumbnailProps) {
     const svgContent = `
       <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100">
         <rect width="100%" height="100%" fill="${color}" />
-        <text x="50%" y="50%" font-family="Arial" font-size="14" font-weight="bold" fill="#555" text-anchor="middle" dominant-baseline="middle">
+        <text x="50%" y="50%" font-family="Arial" font-size="14" font-weight="bold" fill="#7bb2ce" text-anchor="middle" dominant-baseline="middle">
           ${seriesNum || '?'}
         </text>
       </svg>
@@ -80,9 +80,9 @@ function XNATThumbnail(props: XNATThumbnailProps) {
   const finalImageSrc = !renderError && imageSrc ? imageSrc : createPlaceholderSvg(SeriesNumber);
 
   const thumbnailClasses = [
-    'thumbnail',
-    active ? 'active' : '',
-    renderError || !imageSrc ? 'has-error' : '', // Add error class if needed
+    'w-40 bg-card rounded overflow-hidden transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:-translate-y-0.5',
+    active ? 'border-2 border-primary' : '',
+    renderError || !imageSrc ? 'border-destructive' : '',
     className || '',
   ].join(' ');
 
@@ -94,16 +94,18 @@ function XNATThumbnail(props: XNATThumbnailProps) {
       onDoubleClick={onDoubleClick}
       data-cy="thumbnail"
     >
-      <div className="series-details">
-        <div className="series-description">{SeriesDescription}</div>
-        <div className="series-info">
-          {SeriesNumber !== '' && <span className="item-series">Series: {SeriesNumber}</span>}
-          {numImageFrames > 0 && <span className="item-frames">{numImageFrames} frames</span>}
+      <div className="p-2">
+        <div className="text-xs font-bold text-aqua-pale whitespace-nowrap overflow-hidden text-ellipsis mb-1">
+          {SeriesDescription}
+        </div>
+        <div className="flex justify-between text-xs text-aqua-pale/70">
+          {SeriesNumber !== '' && <span>Series: {SeriesNumber}</span>}
+          {numImageFrames > 0 && <span>{numImageFrames} frames</span>}
         </div>
       </div>
-      <div className="image-thumbnail">
+      <div className="h-24 flex items-center justify-center bg-black relative">
         <img
-          className="image"
+          className="max-w-full max-h-full object-contain"
           src={finalImageSrc} // Use finalImageSrc (data URL or placeholder SVG)
           alt={alt || SeriesDescription || 'Image thumbnail'}
           onError={handleImageError} // Use the handler to set renderError state

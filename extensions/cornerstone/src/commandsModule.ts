@@ -102,6 +102,7 @@ let segmentAIEnabled = false;
 function commandsModule({
   servicesManager,
   commandsManager,
+  extensionManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
@@ -145,6 +146,70 @@ function commandsModule({
   }
 
   const actions = {
+    jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
+      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
+      const { metadata } = measurement;
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      // Finds the best viewport to jump to for showing the annotation view reference
+      // This may be different from active if there is a viewport already showing the display set.
+      const viewportId = cornerstoneViewportService.findNavigationCompatibleViewportId(
+        activeViewportId,
+        metadata
+      );
+      if (viewportId) {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        viewport.setViewReference(metadata);
+        viewport.render();
+        return;
+      }
+
+      const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
+      if (!referencedDisplaySetInstanceUID) {
+        console.warn('ViewportGrid::No display set found in', measurement);
+        return;
+      }
+
+      // Finds the viewport to update to show the given displayset/orientation.
+      // This will choose a view already containing the measurement display set
+      // if possible, otherwise will fallback to the active.
+      const viewportToUpdate = cornerstoneViewportService.findUpdateableViewportConfiguration(
+        activeViewportId,
+        measurement
+      );
+
+      if (!viewportToUpdate) {
+        console.warn('Unable to find a viewport to show this in');
+        return;
+      }
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportToUpdate.viewportId,
+        referencedDisplaySetInstanceUID
+      );
+
+      if (!updatedViewports?.[0]) {
+        console.warn(
+          'ViewportGrid::Unable to navigate to viewport containing',
+          referencedDisplaySetInstanceUID
+        );
+        return;
+      }
+
+      updatedViewports[0].viewportOptions = viewportToUpdate.viewportOptions;
+
+      // Update stored position presentation
+      commandsManager.run('updateStoredPositionPresentation', {
+        viewportId: viewportToUpdate.viewportId,
+        displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
+        referencedImageId: measurement.referencedImageId,
+        options: {
+          ...measurement.metadata,
+        },
+      });
+
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
+    },
+
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
       if (!displaySet) {
         return;
@@ -216,11 +281,23 @@ function commandsModule({
 
       const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
 
+      // Validate that we have valid segmentation data
+      if (!targetId || targetIndex === undefined) {
+        console.warn('runSegmentBidirectional: No valid segmentation or segment index found');
+        return;
+      }
+
       // Get bidirectional measurement data
       const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
         segmentationId: targetId,
         segmentIndices: [targetIndex],
       });
+
+      // Check if we got valid bidirectional data
+      if (!bidirectionalData || !Array.isArray(bidirectionalData) || bidirectionalData.length === 0) {
+        console.warn('runSegmentBidirectional: No bidirectional data found for segment');
+        return;
+      }
 
       const activeViewportId = viewportGridService.getActiveViewportId();
 
@@ -237,6 +314,12 @@ function commandsModule({
             segmentationId: targetId,
           }
         );
+
+        // Validate that annotation was created successfully
+        if (!annotation || !annotation.annotationUID) {
+          console.warn('runSegmentBidirectional: Failed to create annotation for measurement');
+          return;
+        }
 
         measurement.annotationUID = annotation.annotationUID;
 
@@ -262,9 +345,15 @@ function commandsModule({
       const activeBidirectional = bidirectionalData.find(
         measurement => measurement.segmentIndex === targetIndex
       );
-      commandsManager.run('jumpToMeasurement', {
-        uid: activeBidirectional.annotationUID,
-      });
+
+      // Check if we found a valid bidirectional measurement before jumping
+      if (activeBidirectional && activeBidirectional.annotationUID) {
+        commandsManager.run('jumpToMeasurement', {
+          uid: activeBidirectional.annotationUID,
+        });
+      } else {
+        console.warn('runSegmentBidirectional: No valid bidirectional measurement found to jump to');
+      }
     },
     interpolateLabelmap: () => {
       const { segmentationId, segmentIndex } = _getActiveSegmentationInfo();
@@ -327,6 +416,8 @@ function commandsModule({
         type,
       });
     },
+
+    /** Stores the changed position presentation */
     updateStoredPositionPresentation: ({
       viewportId,
       displaySetInstanceUIDs,
@@ -350,22 +441,23 @@ function commandsModule({
           ([key, value]) => {
             return (
               displaySetInstanceUIDs.every(uid => key.includes(uid)) &&
-              value.viewportId === viewportId
+              value?.viewportId === viewportId
             );
           }
         )?.[0];
       }
 
       // Create presentation data with referencedImageId and options if provided
-      const presentationData = referencedImageId
-        ? {
-            ...presentations.positionPresentation,
-            viewReference: {
-              referencedImageId,
-              ...options,
-            },
-          }
-        : presentations.positionPresentation;
+      const presentationData =
+        referencedImageId || options?.FrameOfReferenceUID
+          ? {
+              ...presentations.positionPresentation,
+              viewReference: {
+                referencedImageId,
+                ...options,
+              },
+            }
+          : presentations.positionPresentation;
 
       if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
@@ -1743,16 +1835,61 @@ function commandsModule({
         }
       });
     },
-    toggleSegmentLabel: ({ toggle }) => {
+    toggleSegmentLabel: () => {
+      const toolName = cornerstoneTools.SegmentLabelTool.toolName;
       const toolGroupIds = toolGroupService.getToolGroupIds();
+
+      const isOn = toolGroupIds.some(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        const mode = toolGroup.getToolInstance(toolName)?.mode;
+        return mode === 'Active';
+      });
+
       toolGroupIds.forEach(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        if (toggle) {
-          toolGroup.setToolActive(cornerstoneTools.SegmentLabelTool.toolName);
+        if (isOn) {
+          toolGroup.setToolDisabled(toolName);
         } else {
-          toolGroup.setToolDisabled(cornerstoneTools.SegmentLabelTool.toolName);
+          toolGroup.setToolActive(toolName);
         }
       });
+    },
+    /**
+     * Used to sync the apps initial state with the config file settings.
+     *
+     * Will mutate the tools object of the given tool group and add the segmentLabelTool to the proper place.
+     *
+     * Use it before initializing the toolGroup with the tools.
+     */
+    initializeSegmentLabelTool: ({ tools }) => {
+      const appConfig = extensionManager.appConfig;
+      const segmentLabelConfig = appConfig.segmentation?.segmentLabel;
+
+      if (segmentLabelConfig?.enabledByDefault) {
+        const activeTools = tools?.active ?? [];
+        activeTools.push({
+          toolName: toolNames.SegmentLabel,
+          configuration: {
+            hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
+            color: segmentLabelConfig?.labelColor,
+            background: segmentLabelConfig?.background,
+          },
+        });
+
+        tools.active = activeTools;
+        return tools;
+      }
+
+      const disabledTools = tools?.disabled ?? [];
+      disabledTools.push({
+        toolName: toolNames.SegmentLabel,
+        configuration: {
+          hoverTimeout: segmentLabelConfig?.hoverTimeout ?? 1,
+          color: segmentLabelConfig?.labelColor,
+        },
+      });
+      tools.disabled = disabledTools;
+      return tools;
     },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
@@ -2132,9 +2269,7 @@ function commandsModule({
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
-    jumpToMeasurement: {
-      commandFn: actions.jumpToMeasurement,
-    },
+    jumpToMeasurement: actions.jumpToMeasurement,
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
     },
@@ -2403,6 +2538,8 @@ function commandsModule({
     startRecordingForAnnotationGroup: actions.startRecordingForAnnotationGroup,
     endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
+    jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
+    initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
   };
 
   return {

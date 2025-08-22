@@ -11,7 +11,7 @@ import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
-import { createReportDialogPrompt } from './Panels';
+import createReportDialogPrompt from './Panels/createReportDialogPrompt';
 import PROMPT_RESPONSES from './utils/_shared/PROMPT_RESPONSES';
 import DICOMSEGExporter from './utils/IO/classes/DICOMSEGExporter';
 import sessionMap from './utils/sessionMap';
@@ -316,7 +316,7 @@ const commandsModule = ({
         const { setDisplaySetSelector } = useDisplaySetSelectorStore.getState();
         setDisplaySetSelector(
           `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
-          null
+          []
         );
         return true;
       } catch (e) {
@@ -2270,6 +2270,75 @@ XNATImportMeasurements: async () => {
       throw error;
     }
   },
+
+  /**
+   * Initialize and use the XNAT Custom Forms API for form operations
+   */
+  XNATCustomFormsApi: async (options: {
+    action?: 'getForms' | 'getFormData' | 'saveFormData';
+    projectId?: string;
+    experimentId?: string;
+    formUuid?: string;
+    formData?: any;
+  } = {}) => {
+    try {
+      const {
+        fetchCustomForms,
+        getExperimentCustomFormData,
+        saveExperimentCustomFormData,
+        updateExperimentFormData
+      } = await import('./utils/IO/customFormsApi');
+      
+      // If specific options are provided, handle them
+      if (options.action) {
+        switch (options.action) {
+          case 'getForms':
+            if (options.projectId) {
+              const forms = await fetchCustomForms(options.projectId);
+              return forms;
+            }
+            break;
+          case 'getFormData':
+            if (options.experimentId) {
+              const data = await getExperimentCustomFormData(options.experimentId, options.formUuid);
+              return data;
+            }
+            break;
+          case 'saveFormData':
+            if (options.experimentId && options.formUuid && options.formData) {
+              const result = await updateExperimentFormData(options.experimentId, options.formUuid, options.formData);
+              return result;
+            }
+            break;
+          default:
+            console.log('XNATCustomFormsApi: No specific action provided, API initialized successfully');
+        }
+      }
+      
+      uiNotificationService.show({
+        title: 'XNAT Custom Forms API',
+        message: 'XNAT Custom Forms API initialized successfully',
+        type: 'success',
+        duration: 3000,
+      });
+      
+      return {
+        fetchCustomForms,
+        getExperimentCustomFormData,
+        saveExperimentCustomFormData,
+        updateExperimentFormData
+      };
+    } catch (error) {
+      console.error('Error initializing XNATCustomFormsApi:', error);
+      uiNotificationService.show({
+        title: 'XNAT Custom Forms API Error',
+        message: `Failed to initialize XNAT Custom Forms API: ${error.message}`,
+        type: 'error',
+        duration: 5000,
+      });
+      throw error;
+    }
+  },
 };
   const definitions = {
     multimonitor: {
@@ -2384,6 +2453,9 @@ XNATImportMeasurements: async () => {
     },
     XNATMeasurementApi: {
       commandFn: actions.XNATMeasurementApi,
+    },
+    XNATCustomFormsApi: {
+      commandFn: actions.XNATCustomFormsApi,
     },
   };
 

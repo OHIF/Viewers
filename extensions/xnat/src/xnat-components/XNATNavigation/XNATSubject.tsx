@@ -14,7 +14,7 @@ import navigateConfirmationContent from './helpers/navigateConfirmationContent';
 
 import { Icons } from '@ohif/ui-next';
 
-import '../XNATNavigationPanel.css';
+
 
 interface Session {
   ID: string;
@@ -169,42 +169,27 @@ export default class XNATSubject extends React.Component<XNATSubjectProps, XNATS
     subjectRouter.go();
   }
 
-  /**
-   * _getSubjectButtonClassNames - Returns the class names for the subject
-   * button based on state.
-   *
-   * @returns {string}  A string of the classnames.
-   */
-  _getSubjectButtonClassNames(): string {
-    let subjectButtonClassNames = 'btn btn-sm btn-primary xnat-nav-button';
 
-    if (this.state.subjectViewActive) {
-      subjectButtonClassNames += ' xnat-nav-button-disabled';
-    }
-
-    return subjectButtonClassNames;
-  }
 
   render(): React.ReactNode {
     const { ID, label, projectId, parentProjectId } = this.props;
     const { sessions, active, shared, fetched, expanded } = this.state;
-    const subjectButtonClassNames = this._getSubjectButtonClassNames();
 
     return (
       <React.Fragment>
-        <div className="xnat-nav-horizontal-box">
-          <a
-            className="btn btn-sm btn-secondary"
+        <div className="flex items-center space-x-2 p-2 hover:bg-accent/50 rounded cursor-pointer">
+          <button
+            className="flex-shrink-0 p-1 hover:bg-accent rounded"
             onClick={this.onExpandIconClick}
           >
             {this.getExpandIcon()}
-          </a>
-          <a
-            className={subjectButtonClassNames}
+          </button>
+          <button
+            className="flex-shrink-0 p-1 hover:bg-accent rounded text-primary"
             onClick={this.onViewSubjectClick}
           >
             <Icons.LaunchInfo />
-          </a>
+          </button>
           <XNATSubjectLabel
             ID={ID}
             label={label}
@@ -214,13 +199,15 @@ export default class XNATSubject extends React.Component<XNATSubjectProps, XNATS
           />
         </div>
         {expanded ? (
-          <XNATSessionList
-            projectId={projectId}
-            parentProjectId={parentProjectId}
-            subjectId={ID}
-            sessions={sessions}
-            fetched={fetched}
-          />
+          <div className="ml-4 border-l border-border pl-4">
+            <XNATSessionList
+              projectId={projectId}
+              parentProjectId={parentProjectId}
+              subjectId={ID}
+              sessions={sessions}
+              fetched={fetched}
+            />
+          </div>
         ) : null}
       </React.Fragment>
     );

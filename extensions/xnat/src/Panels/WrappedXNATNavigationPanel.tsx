@@ -44,7 +44,7 @@ function WrappedXNATNavigationPanel({ extensionManager, servicesManager, command
   }, []);
   
   return (
-    <div className="xnat-debug-wrapper">
+    <div className="h-full">
       <XNATNavigationPanel
         servicesManager={servicesManager}
       />

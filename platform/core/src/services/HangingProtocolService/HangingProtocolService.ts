@@ -1485,7 +1485,7 @@ export default class HangingProtocolService extends PubSubService {
     const { displaySetSelectorMap } = options;
     if (displaySetSelectorMap) {
       Object.entries(displaySetSelectorMap).forEach(([key, displaySetInstanceUIDs]) => {
-        displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
+        (displaySetInstanceUID => {
           const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
           if (!displaySet) {

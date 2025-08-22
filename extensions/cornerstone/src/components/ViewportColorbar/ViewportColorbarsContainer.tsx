@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, memo, useCallback } from 'react';
 import { useSystem } from '@ohif/core';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
-import ViewportColorbar from './ViewportColorbar';
+import ViewportColorbar, { isHorizontal } from './ViewportColorbar';
 import useViewportRendering from '../../hooks/useViewportRendering';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 type ViewportColorbarsContainerProps = {
@@ -74,10 +74,8 @@ const ViewportColorbarsContainer = memo(function ViewportColorbarsContainer({
     return null;
   }
 
-  const isBottom = position === 'bottom';
-
   const isSingleViewport = viewportDisplaySets.length === 1;
-  const showFullList = isSingleViewport || !isBottom;
+  const showFullList = isSingleViewport || !isHorizontal(position);
 
   const colorbarsToUse = showFullList
     ? colorbars

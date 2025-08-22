@@ -57,6 +57,7 @@ const xnat = {
   segmentation: '@ohif/extension-xnat.panelModule.panelSegmentationWithTools',
   sopClassHandler: '@ohif/extension-xnat.sopClassHandlerModule.xnatSopClassHandler',
   measurements: '@ohif/extension-xnat.panelModule.xnatMeasurements',
+  customForms: '@ohif/extension-xnat.panelModule.xnatCustomForms',
 };
 
 
@@ -81,13 +82,21 @@ function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: '',
-    displayName: 'XNAT Viewer',
+    displayName: ({ servicesManager }) => {
+      const isOverreadMode = servicesManager?.services?.isOverreadMode === true;
+      return isOverreadMode ? 'XNAT Overread Viewer' : 'XNAT Viewer';
+    },
     onModeInit: ({ servicesManager, extensionManager, commandsManager, appConfig, query }) => {
       
       // Get query parameters
-      const { projectId, parentProjectId, subjectId, experimentId, experimentLabel } = 
+      const { projectId, parentProjectId, subjectId, experimentId, experimentLabel, overreadMode } = 
         Object.fromEntries(query.entries());
       
+      // Store overread mode flag in services manager for use in layout
+      if (overreadMode === 'true') {
+        servicesManager.services.isOverreadMode = true;
+        console.log('XNAT Mode: Overread mode detected');
+      }
       
       // ---> ADD SESSION MAP SETTERS HERE <---
       if (projectId) {
@@ -137,6 +146,16 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      // Log the current mode state
+      const isOverreadMode = servicesManager?.services?.isOverreadMode === true;
+      console.log('XNAT Mode Enter:', isOverreadMode ? 'Overread Mode' : 'Regular Mode');
+      
+      // Add visual indicator for overread mode
+      if (isOverreadMode) {
+        console.log('🎯 OVERREAD MODE ACTIVE - Custom forms panel should be visible');
+        console.log('📋 Available panels:', servicesManager.services.panelService?.getPanels()?.map(p => p.name) || 'Not available');
+      }
+      
       const {
         measurementService,
         toolbarService,
@@ -204,6 +223,11 @@ function modeFactory({ modeConfiguration }) {
             ],
           },
         },
+        // Overread mode specific customizations
+        ...(isOverreadMode && {
+          'worklist.showStudyList': { $set: false },
+          'worklist.showPatientInfo': { $set: false },
+        }),
       });
 
       // Init Default and SR ToolGroups
@@ -372,13 +396,21 @@ function modeFactory({ modeConfiguration }) {
     routes: [
       {
         path: '/',
-        layoutTemplate: () => {
+        layoutTemplate: ({ servicesManager }) => {
+          // Check if we're in overread mode
+          const isOverreadMode = servicesManager?.services?.isOverreadMode === true;
+          
+          // Choose panels based on mode
+          const rightPanels = isOverreadMode 
+            ? [xnat.segmentation, xnat.measurements, xnat.customForms]  // Overread mode: include custom forms
+            : [xnat.segmentation, xnat.measurements];                   // Regular mode: standard panels
+          
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              rightPanels: [xnat.segmentation, xnat.measurements],
+              rightPanels: rightPanels,
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

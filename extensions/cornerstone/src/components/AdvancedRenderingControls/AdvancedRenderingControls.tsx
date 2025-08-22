@@ -1,6 +1,24 @@
 import { useToolbar, useViewportMousePosition } from '@ohif/core/src/hooks';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useViewportRendering } from '../../hooks';
+import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
+import classNames from 'classnames';
+
+const mouseNearControlsRanges = {
+  [ButtonLocation.TopLeft]: { minX: 0, minY: 0, maxX: 0.1, maxY: 0.1 },
+  [ButtonLocation.TopMiddle]: { minX: 0, minY: 0, maxX: 1, maxY: 0.1 },
+  [ButtonLocation.TopRight]: { minX: 0.9, minY: 0, maxX: 1, maxY: 0.1 },
+  [ButtonLocation.LeftMiddle]: { minX: 0, minY: 0, maxX: 0.1, maxY: 1 },
+  [ButtonLocation.RightMiddle]: { minX: 0.9, minY: 0, maxX: 1, maxY: 1 },
+  [ButtonLocation.BottomLeft]: { minX: 0, minY: 0.9, maxX: 0.1, maxY: 1 },
+  [ButtonLocation.BottomMiddle]: { minX: 0, minY: 0.9, maxX: 1, maxY: 1 },
+  [ButtonLocation.BottomRight]: { minX: 0.9, minY: 0.9, maxX: 1, maxY: 1 },
+};
+
+const getFlexDirectionClassName = (location: ButtonLocation) =>
+  location === ButtonLocation.LeftMiddle || location === ButtonLocation.RightMiddle
+    ? 'flex-col'
+    : 'flex-row';
 
 function AdvancedRenderingControls({
   viewportId,
@@ -8,7 +26,7 @@ function AdvancedRenderingControls({
   buttonSection,
 }: {
   viewportId: string;
-  location: number;
+  location: ButtonLocation;
   buttonSection: string;
 }) {
   const {
@@ -24,10 +42,11 @@ function AdvancedRenderingControls({
   });
 
   const mousePosition = useViewportMousePosition(viewportId);
-  const [isAtBottom, setIsAtBottom] = useState(false);
+  const [isMouseNearControls, setIsMouseNearControls] = useState(false);
   const [showAllIcons, setShowAllIcons] = useState(true);
   const firstMountRef = useRef(true);
   const { hasColorbar } = useViewportRendering(viewportId);
+  const [isAnItemOpen, setIsAnItemOpen] = useState(false);
 
   useEffect(() => {
     if (firstMountRef.current) {
@@ -43,13 +62,37 @@ function AdvancedRenderingControls({
 
   useEffect(() => {
     if (!showAllIcons && mousePosition.isInViewport) {
-      if (mousePosition.isInBottomPercentage(10)) {
-        setIsAtBottom(true);
+      // Ensure location is a valid ButtonLocation enum value
+      if (typeof location !== 'number' || location < 0 || location > 7) {
+        console.warn(`Invalid location value: ${location}`);
+        setIsMouseNearControls(false);
+        return;
+      }
+      
+      const mouseHoverLocation = mouseNearControlsRanges[location];
+      if (mouseHoverLocation && mousePosition.isWithinNormalizedBox(mouseHoverLocation)) {
+        setIsMouseNearControls(true);
       } else {
-        setIsAtBottom(false);
+        setIsMouseNearControls(false);
       }
     }
-  }, [mousePosition, showAllIcons]);
+  }, [location, mousePosition, showAllIcons]);
+
+  const handleOnItemOpen = useCallback(
+    (id, viewportId) => {
+      openItem(id, viewportId);
+      setIsAnItemOpen(true);
+    },
+    [openItem, setIsAnItemOpen]
+  );
+
+  const handleOnItemClose = useCallback(
+    (id, viewportId) => {
+      closeItem(id, viewportId);
+      setIsAnItemOpen(false);
+    },
+    [closeItem, setIsAnItemOpen]
+  );
 
   if (!toolbarButtons?.length) {
     return null;
@@ -60,7 +103,7 @@ function AdvancedRenderingControls({
   }
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className={classNames('flex gap-2', getFlexDirectionClassName(location))}>
       {toolbarButtons.map(toolDef => {
         if (!toolDef) {
           return null;
@@ -73,8 +116,8 @@ function AdvancedRenderingControls({
           ...componentProps,
           isOpen: isItemOpen(id, viewportId),
           isLocked: isItemLocked(id, viewportId),
-          onOpen: () => openItem(id, viewportId),
-          onClose: () => closeItem(id, viewportId),
+          onOpen: () => handleOnItemOpen(id, viewportId),
+          onClose: () => handleOnItemClose(id, viewportId),
           onToggleLock: () => toggleLock(id, viewportId),
           viewportId,
         };
@@ -97,7 +140,8 @@ function AdvancedRenderingControls({
 
         // Always show all icons on first mount for 3 seconds
         // After that, always show Colorbar, show others only when mouse is at bottom
-        const shouldBeVisible = showAllIcons || id === 'Colorbar' || isAtBottom;
+        const shouldBeVisible =
+          isAnItemOpen || showAllIcons || id === 'Colorbar' || isMouseNearControls;
 
         return (
           <div

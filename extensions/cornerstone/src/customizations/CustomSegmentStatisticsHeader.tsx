@@ -68,6 +68,12 @@ export const CustomSegmentStatisticsHeader = ({
   const max = Math.max(maxMajor, maxMinor);
   const min = Math.min(maxMajor, maxMinor);
 
+  // Check if we have a valid annotationUID before proceeding
+  if (!bidirectional.annotationUID) {
+    console.warn('CustomSegmentStatisticsHeader: Missing annotationUID for bidirectional measurement');
+    return null;
+  }
+
   const isVisible = cornerstoneTools.annotation.visibility.isAnnotationVisible(
     bidirectional.annotationUID
   );

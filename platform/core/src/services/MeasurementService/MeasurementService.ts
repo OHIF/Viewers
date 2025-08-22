@@ -74,10 +74,11 @@ const EVENTS = {
   RAW_MEASUREMENT_ADDED: 'event::raw_measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
-  // Give the viewport a chance to jump to the measurement
-  JUMP_TO_MEASUREMENT_VIEWPORT: 'event:jump_to_measurement_viewport',
-  // Give the layout a chance to jump to the measurement
-  JUMP_TO_MEASUREMENT_LAYOUT: 'event:jump_to_measurement_layout',
+  /**
+   *  Indicate some viewport should be jumped to.  This will have to be implemented
+   * by a single handler that can look at all viewports to decide who should handle it.
+   */
+  JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
 };
 
 const VALUE_TYPES = {
@@ -431,11 +432,7 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    let internalUID = data.id;
-    if (!internalUID) {
-      internalUID = guid();
-      log.warn(`Measurement ID not found. Generating UID: ${internalUID}`);
-    }
+    const internalUID = data.uid || guid();
 
     const annotationData = data.annotation.data;
 
@@ -497,7 +494,7 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source);
+        console.log('No source mapping', source.uid, annotationType, source);
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
@@ -656,19 +653,7 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * This method calls the subscriptions for JUMP_TO_MEASUREMENT_VIEWPORT
-   * and JUMP_TO_MEASUREMENT_LAYOUT.  There are two events which are
-   * fired because there are two different items which might want to handle
-   * the event.  First, there might already be a viewport which can handle
-   * the event.  If so, then the layout doesn't need to necessarily change.
-   * This is communicated by the isConsumed value on the event itself.
-   * Otherwise, the layout itself may need to be navigated to in order
-   * to provide a viewport which can show the given measurement.
-   *
-   * When a viewport decides to apply the event, it should call the consume()
-   * method on the event, so that other listeners know they do not need to
-   * navigate.  This does NOT affect whether the layout event is fired, and
-   * merely causes it to fire the event with the isConsumed set to true.
+   * This method calls the subscription for JUMP_TO_MEASUREMENT
    */
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
@@ -678,16 +663,14 @@ class MeasurementService extends PubSubService {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
-    const consumableEvent = this.createConsumableEvent({
+    const event = {
       viewportId,
       measurement,
-    });
+    };
 
-    // Important: we should broadcast the layout event first, since
-    // in the layout there might be a viewport that we can match and choose
-    // and jump in it before we decide on changing the orientation of different viewports
-    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
-    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
+    // A single handler will decide on which window to jump to, previously
+    // this was handled by a consumable event
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT, event);
   }
 
   _getSourceUID(name, version) {

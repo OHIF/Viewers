@@ -145,6 +145,7 @@ import {
   ToolContract,
   ToolExpand,
   ToolClickSegment,
+  ToolSegmentLabel,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -679,6 +680,7 @@ export const Icons = {
   'tab-4d': (props: IconProps) => Tab4D(props),
   'tab-patient-info': (props: IconProps) => TabPatientInfo(props),
   'tab-roi-threshold': (props: IconProps) => TabRoiThreshold(props),
+  'tab-custom-forms': (props: IconProps) => Clipboard(props),
   'icon-mpr': (props: IconProps) => IconMPR(props),
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
@@ -730,6 +732,7 @@ export const Icons = {
   'tool-ultrasound-bidirectional': (props: IconProps) => ToolUltrasoundBidirectional(props),
   'tool-window-level': (props: IconProps) => ToolWindowLevel(props),
   'tool-window-region': (props: IconProps) => ToolWindowRegion(props),
+  'tool-segment-label': (props: IconProps) => ToolSegmentLabel(props),
   'icon-tool-window-region': (props: IconProps) => ToolWindowRegion(props),
   'icon-tool-ultrasound-bidirectional': (props: IconProps) => ToolUltrasoundBidirectional(props),
   'icon-tool-cobb-angle': (props: IconProps) => ToolCobbAngle(props),
