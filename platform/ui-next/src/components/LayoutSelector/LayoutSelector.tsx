@@ -131,7 +131,7 @@ const Trigger = ({
       className={cn(
         'inline-flex h-10 w-10 items-center justify-center !rounded-lg',
         disabled
-          ? 'text-common-bright hover:bg-muted hover:text-highlight cursor-not-allowed opacity-40'
+          ? 'text-foreground/80 hover:bg-muted hover:text-highlight cursor-not-allowed opacity-40'
           : isOpen
             ? 'bg-background text-foreground/80'
             : 'text-foreground/80 hover:bg-background hover:text-highlight bg-transparent',

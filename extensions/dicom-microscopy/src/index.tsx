@@ -133,7 +133,7 @@ const extension: Types.Extensions.Extension = {
             disabled: false,
             className: isPrimaryActive
               ? '!text-black bg-highlight'
-              : '!text-common-bright hover:!bg-muted hover:!text-highlight',
+              : '!text-foreground/80 hover:!bg-muted hover:!text-highlight',
             // Todo: isActive right now is used for nested buttons where the primary
             // button needs to be fully rounded (vs partial rounded) when active
             // otherwise it does not have any other use
