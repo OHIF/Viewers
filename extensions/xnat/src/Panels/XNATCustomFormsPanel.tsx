@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { PanelSection, Icons } from '@ohif/ui-next';
 import sessionMap from '../utils/sessionMap';
 import {
   getExperimentCustomFormData,
@@ -328,14 +329,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
             placeholder={`Enter ${fieldName}`}
             rows={3}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: '1px solid #ced4da', 
-              borderRadius: '4px',
-              fontSize: '14px',
-              fontFamily: 'inherit'
-            }}
+            className="w-full p-2 border border-input rounded text-sm bg-background text-foreground font-inherit"
           />
         );
       case 'select':
@@ -343,14 +337,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           <select
             value={value || ''}
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: '1px solid #ced4da', 
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: '#ffffff'
-            }}
+            className="w-full p-2 border border-input rounded text-sm bg-background text-foreground"
           >
             <option value="">Select {fieldName}</option>
             {/* Use field options if available */}
@@ -385,14 +372,14 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
         );
       case 'checkbox':
         return (
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="flex items-center">
             <input
               type="checkbox"
               checked={value || false}
               onChange={(e) => handleFieldChange(fieldName, e.target.checked)}
-              style={{ marginRight: '8px' }}
+              className="mr-2"
             />
-            <span style={{ fontSize: '14px', color: '#212529' }}>{fieldName}</span>
+            <span className="text-sm">{fieldName}</span>
           </div>
         );
       case 'number':
@@ -402,13 +389,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
             value={value || ''}
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
             placeholder={`Enter ${fieldName}`}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: '1px solid #ced4da', 
-              borderRadius: '4px',
-              fontSize: '14px'
-            }}
+            className="w-full p-2 border border-input rounded text-sm bg-background text-foreground"
           />
         );
       default:
@@ -418,13 +399,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
             value={value || ''}
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
             placeholder={`Enter ${fieldName}`}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: '1px solid #ced4da', 
-              borderRadius: '4px',
-              fontSize: '14px'
-            }}
+            className="w-full p-2 border border-input rounded text-sm bg-background text-foreground"
           />
         );
     }
@@ -432,191 +407,189 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
 
   if (!projectId) {
     return (
-      <div style={{ 
-        padding: '16px', 
-        backgroundColor: '#f8f9fa', 
-        minHeight: '200px',
-        height: '100%',
-        overflowY: 'auto',
-        overflowX: 'hidden'
-      }}>
-        <div style={{ color: '#dc3545', fontSize: '14px', fontWeight: '500' }}>
-          No project selected. Please select a project to view custom forms.
-        </div>
+      <div className="h-full overflow-y-auto overflow-x-hidden p-4">
+        <PanelSection>
+          <PanelSection.Header className="text-destructive">No Project Selected</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-destructive text-sm">
+              No project selected. Please select a project to view custom forms.
+            </div>
+          </PanelSection.Content>
+        </PanelSection>
       </div>
     );
   }
 
   if (!experimentId) {
     return (
-      <div style={{ 
-        padding: '16px', 
-        backgroundColor: '#f8f9fa', 
-        minHeight: '300px',
-        height: '100%',
-        overflowY: 'auto',
-        overflowX: 'hidden'
-      }}>
-        <div style={{ color: '#dc3545', fontSize: '14px', fontWeight: '500', marginBottom: '16px' }}>
-          No experiment selected. Please select an experiment to view custom forms.
-        </div>
+      <div className="h-full overflow-y-auto overflow-x-hidden p-4 space-y-4">
+        <PanelSection>
+          <PanelSection.Header className="text-destructive">No Experiment Selected</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-destructive text-sm">
+              No experiment selected. Please select an experiment to view custom forms.
+            </div>
+          </PanelSection.Content>
+        </PanelSection>
         
         {/* Manual Experiment ID Input */}
-        <div style={{ backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#856404', marginBottom: '8px' }}>Manual Experiment ID Input</h4>
-          <p style={{ fontSize: '12px', color: '#856404', marginBottom: '8px' }}>
-            If you know the experiment ID, you can enter it manually:
-          </p>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              value={manualExperimentId}
-              onChange={(e) => setManualExperimentId(e.target.value)}
-              placeholder="Enter experiment ID (e.g., XNAT_E00019)"
-              style={{ flex: 1, padding: '8px', border: '1px solid #ffc107', borderRadius: '4px', fontSize: '12px' }}
-            />
-            <button
-              onClick={() => {
-                if (manualExperimentId.trim()) {
-                  // Force re-render by updating state
-                  setManualExperimentId(manualExperimentId.trim());
-                }
-              }}
-              disabled={!manualExperimentId.trim()}
-              style={{ 
-                padding: '8px 12px', 
-                backgroundColor: manualExperimentId.trim() ? '#ffc107' : '#6c757d', 
-                color: 'white', 
-                borderRadius: '4px', 
-                fontSize: '12px',
-                border: 'none',
-                cursor: manualExperimentId.trim() ? 'pointer' : 'not-allowed'
-              }}
-            >
-              Load
-            </button>
-          </div>
-        </div>
+        <PanelSection>
+          <PanelSection.Header>Manual Experiment ID Input</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-sm space-y-3">
+              <p>If you know the experiment ID, you can enter it manually:</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualExperimentId}
+                  onChange={(e) => setManualExperimentId(e.target.value)}
+                  placeholder="Enter experiment ID (e.g., XNAT_E00019)"
+                  className="flex-1 p-2 border border-input rounded text-sm bg-background text-foreground"
+                />
+                <button
+                  onClick={() => {
+                    if (manualExperimentId.trim()) {
+                      // Force re-render by updating state
+                      setManualExperimentId(manualExperimentId.trim());
+                    }
+                  }}
+                  disabled={!manualExperimentId.trim()}
+                  className="px-3 py-2 bg-primary text-primary-foreground rounded text-sm border-none cursor-pointer disabled:bg-muted disabled:cursor-not-allowed"
+                >
+                  Load
+                </button>
+              </div>
+            </div>
+          </PanelSection.Content>
+        </PanelSection>
         
         {/* Debug Information */}
-        <div style={{ backgroundColor: '#e9ecef', border: '1px solid #dee2e6', padding: '12px', borderRadius: '4px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Debug Information</h4>
-          <div style={{ fontSize: '12px', color: '#6c757d' }}>
-            <p><strong>URL Parameters:</strong> {window.location.search}</p>
-            <p><strong>Session Map:</strong> {JSON.stringify(sessionMap.getSession(), null, 2)}</p>
-          </div>
-        </div>
+        <PanelSection>
+          <PanelSection.Header>Debug Information</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-sm space-y-2">
+              <p><strong>URL Parameters:</strong> {window.location.search}</p>
+              <p><strong>Session Map:</strong> {JSON.stringify(sessionMap.getSession(), null, 2)}</p>
+            </div>
+          </PanelSection.Content>
+        </PanelSection>
       </div>
     );
   }
 
-  return (
-    <div style={{ 
-      padding: '16px', 
-      backgroundColor: '#ffffff', 
-      minHeight: '400px',
-      height: '100%',
-      overflowY: 'auto',
-      overflowX: 'hidden'
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#212529' }}>XNAT Custom Forms</h3>
-        <div style={{ fontSize: '12px', color: '#6c757d' }}>
-          Experiment: {experimentId}
-        </div>
-      </div>
-
+    return (
+    <div className="h-full overflow-y-auto overflow-x-hidden space-y-4 p-4">
       {/* API Information */}
-      <div style={{ backgroundColor: '#d1ecf1', border: '1px solid #bee5eb', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
-        <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#0c5460', marginBottom: '8px' }}>How it works:</h4>
-        <div style={{ fontSize: '12px', color: '#0c5460' }}>
-          <p style={{ marginBottom: '4px' }}><strong>Step 1:</strong> Load form definitions from <code>/xapi/customforms</code></p>
-          <p style={{ marginBottom: '4px' }}><strong>Step 2:</strong> Load form data from <code>/xapi/custom-fields/experiments/{experimentId}/fields</code></p>
-          <p style={{ marginBottom: '4px' }}><strong>Project:</strong> {projectId || 'Not detected'}</p>
-          <p style={{ marginBottom: '4px' }}><strong>Experiment:</strong> {experimentId || 'Not detected'}</p>
-        </div>
-      </div>
+      <PanelSection>
+        <PanelSection.Header>
+          <div className="flex items-center space-x-2 text-aqua-pale">
+            <Icons.Clipboard className="w-4 h-4" />
+            <span>How it works</span>
+          </div>
+        </PanelSection.Header>
+        <PanelSection.Content>
+          <div className="text-sm space-y-2 text-aqua-pale">
+            <p><strong>Step 1:</strong> Load form definitions from <code>/xapi/customforms</code></p>
+            <p><strong>Step 2:</strong> Load form data from <code>/xapi/custom-fields/experiments/{experimentId}/fields</code></p>
+            <p><strong>Project:</strong> {projectId || 'Not detected'}</p>
+            <p><strong>Experiment:</strong> {experimentId || 'Not detected'}</p>
+          </div>
+        </PanelSection.Content>
+      </PanelSection>
 
       {error && (
-        <div style={{ backgroundColor: '#f8d7da', border: '1px solid #f5c6cb', color: '#721c24', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
-          {error}
-        </div>
+        <PanelSection>
+          <PanelSection.Header className="text-destructive">Error</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-destructive text-sm">{error}</div>
+          </PanelSection.Content>
+        </PanelSection>
       )}
 
       {success && (
-        <div style={{ backgroundColor: '#d4edda', border: '1px solid #c3e6cb', color: '#155724', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
-          {success}
-        </div>
+        <PanelSection>
+          <PanelSection.Header className="text-green-500">Success</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-green-500 text-sm">{success}</div>
+          </PanelSection.Content>
+        </PanelSection>
       )}
 
       {/* Form Selection */}
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#212529' }}>Select Form</label>
-        <select
-          value={selectedFormUuid}
-          onChange={(e) => handleFormSelect(e.target.value)}
-          disabled={loading}
-          style={{ 
-            width: '100%', 
-            padding: '8px', 
-            border: '1px solid #ced4da', 
-            borderRadius: '4px',
-            fontSize: '14px',
-            backgroundColor: loading ? '#e9ecef' : '#ffffff'
-          }}
-        >
-          <option value="">Choose a form...</option>
-          {customForms.map(form => (
-            <option key={form.uuid} value={form.uuid}>
-              {form.title} ({form.uuid})
-            </option>
-          ))}
-        </select>
-      </div>
+      <PanelSection>
+        <PanelSection.Header>
+          <div className="flex items-center space-x-2">
+            <Icons.Clipboard className="w-4 h-4" />
+            <span>Select Form</span>
+          </div>
+        </PanelSection.Header>
+        <PanelSection.Content>
+          <select
+            value={selectedFormUuid}
+            onChange={(e) => handleFormSelect(e.target.value)}
+            disabled={loading}
+            className="w-full p-2 border border-input rounded-md text-sm bg-background text-foreground"
+          >
+            <option value="">Choose a form...</option>
+            {customForms.map(form => (
+              <option key={form.uuid} value={form.uuid}>
+                {form.title} ({form.uuid})
+              </option>
+            ))}
+          </select>
+        </PanelSection.Content>
+      </PanelSection>
 
       {/* Form Data Display */}
       {selectedFormUuid && (
-        <div style={{ marginBottom: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h4 style={{ fontSize: '16px', fontWeight: '500', color: '#212529' }}>
-              {customForms.find(f => f.uuid === selectedFormUuid)?.title || 'Form Data'}
-            </h4>
-            <button
-              onClick={handleSave}
-              disabled={loading}
-              style={{ 
-                padding: '6px 12px', 
-                backgroundColor: '#007bff', 
-                color: 'white', 
-                borderRadius: '4px', 
-                fontSize: '12px',
-                border: 'none',
-                cursor: loading ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
+        <PanelSection>
+          <PanelSection.Header>
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center space-x-2">
+                <Icons.Clipboard className="w-4 h-4" />
+                <span>{customForms.find(f => f.uuid === selectedFormUuid)?.title || 'Form Data'}</span>
+              </div>
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="px-3 py-1 bg-primary text-primary-foreground rounded text-xs border-none cursor-pointer disabled:bg-muted disabled:cursor-not-allowed"
+              >
+                {loading ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </PanelSection.Header>
+          <PanelSection.Content>
+            <div className="space-y-4">
           {/* Form Fields Editor */}
-          <div style={{ marginBottom: '16px' }}>
-            <h5 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '12px', color: '#212529' }}>Edit Form Data:</h5>
+          <div className="mb-4">
+            <h5 className="text-sm font-medium mb-3 text-foreground flex items-center space-x-2">
+              <Icons.Clipboard className="w-4 h-4" />
+              <span>Edit Form Data:</span>
+            </h5>
             
             {/* Form Template Info */}
             {formTemplates[selectedFormUuid] && formTemplates[selectedFormUuid].length > 0 && (
-              <div style={{ backgroundColor: '#d1ecf1', border: '1px solid #bee5eb', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
-                <h6 style={{ fontSize: '14px', fontWeight: '500', color: '#0c5460', marginBottom: '8px' }}>Form Template Detected:</h6>
-                <div style={{ fontSize: '12px', color: '#0c5460' }}>
-                  <p style={{ marginBottom: '4px' }}>This form typically contains these fields:</p>
-                  <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginTop: '4px' }}>
-                    {formTemplates[selectedFormUuid].map(fieldName => (
-                      <li key={fieldName} style={{ marginBottom: '2px' }}>{fieldName}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              <PanelSection>
+                <PanelSection.Header>
+                  <div className="flex items-center space-x-2">
+                    <Icons.Clipboard className="w-4 h-4" />
+                    <span>Form Template Detected</span>
+                  </div>
+                </PanelSection.Header>
+                <PanelSection.Content>
+                  <div className="text-sm space-y-2 text-aqua-pale">
+                    <p>This form typically contains these fields:</p>
+                    <ul className="list-disc pl-5 space-y-1 text-aqua-pale">
+                      {formTemplates[selectedFormUuid].map(fieldName => (
+                        <li key={fieldName}>{fieldName}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </PanelSection.Content>
+              </PanelSection>
             )}
             {Object.keys(editingData).length === 0 ? (
-              <div style={{ color: '#6c757d', fontSize: '12px', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+              <div className="text-muted-foreground text-sm p-3 bg-muted rounded">
                 No form data to edit. Use "Create New" to add data.
               </div>
             ) : (
@@ -624,7 +597,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
               (() => {
                 const selectedForm = customForms.find(f => f.uuid === selectedFormUuid);
                 if (!selectedForm) {
-                  return <div style={{ color: '#dc3545', fontSize: '12px', padding: '12px' }}>Form definition not found</div>;
+                  return <div className="text-destructive text-sm p-3">Form definition not found</div>;
                 }
 
                 return selectedForm.fields.map(fieldDef => {
@@ -643,27 +616,14 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
                   }
 
                   return (
-                    <div key={fieldName} style={{ 
-                      marginBottom: '12px', 
-                      border: '1px solid #dee2e6', 
-                      padding: '12px', 
-                      borderRadius: '4px',
-                      backgroundColor: '#ffffff'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#212529' }}>
+                    <div key={fieldName} className="mb-3 border border-border p-3 rounded bg-card">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium">
                           {fieldDef.label}
                         </label>
                         <button
                           onClick={() => handleRemoveField(fieldName)}
-                          style={{ 
-                            color: '#dc3545', 
-                            fontSize: '12px',
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: '2px 4px'
-                          }}
+                          className="text-destructive text-xs bg-none border-none cursor-pointer p-1 hover:bg-destructive/10 rounded"
                           title="Remove field"
                         >
                           ✕
@@ -675,8 +635,10 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
                 });
               })()
             )}
+            </div>
           </div>
-        </div>
+        </PanelSection.Content>
+      </PanelSection>
       )}
     </div>
   );

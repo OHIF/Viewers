@@ -1,7 +1,5 @@
 import React from 'react';
 
-import '../XNATNavigationPanel.css';
-
 interface XNATSubjectLabelProps {
   ID: string;
   label: string;
@@ -25,11 +23,13 @@ export default class XNATSubjectLabel extends React.Component<XNATSubjectLabelPr
     return (
       <div>
         {active ? (
-          <h5 className="xnat-nav-active">{label}</h5>
+          <h5 className="text-sm font-bold text-primary">{label}</h5>
         ) : (
-          <h5>{label}</h5>
+          <h5 className="text-sm text-foreground">{label}</h5>
         )}
-        {sharedLabel}
+        {shared ? (
+          <h6 className="text-xs text-muted-foreground italic">{`Shared from ${parentProjectId}`}</h6>
+        ) : null}
       </div>
     );
   }

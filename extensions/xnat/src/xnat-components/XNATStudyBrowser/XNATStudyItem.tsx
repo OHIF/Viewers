@@ -3,29 +3,11 @@ import XNATSeriesList from './XNATSeriesList';
 
 // Simple triangle icons
 const MinusIcon = () => (
-  <span style={{ 
-    color: '#5acce6',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-    width: '16px',
-    height: '16px',
-    textAlign: 'center',
-    lineHeight: '16px'
-  }}>▼</span>
+  <span className="text-primary text-xs font-bold w-4 h-4 text-center leading-4">▼</span>
 );
 
 const PlusIcon = () => (
-  <span style={{ 
-    color: '#5acce6',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    display: 'inline-block',
-    width: '16px',
-    height: '16px',
-    textAlign: 'center',
-    lineHeight: '16px'
-  }}>▶</span>
+  <span className="text-primary text-xs font-bold w-4 h-4 text-center leading-4">▶</span>
 );
 
 interface Thumbnail {
@@ -50,50 +32,7 @@ interface Study {
   [key: string]: any;
 }
 
-// Study item styles to ensure proper display
-const studyItemStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    marginBottom: '10px',
-    backgroundColor: 'var(--ui-gray-dark, #2c363f)',
-    borderRadius: '5px',
-    overflow: 'visible',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 10px',
-    cursor: 'pointer',
-    backgroundColor: 'var(--ui-gray, #3a4147)',
-    transition: 'background-color 0.2s ease',
-  },
-  expandIcon: {
-    marginRight: '10px',
-    fontSize: '12px',
-    width: '16px',
-    height: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  description: {
-    flex: 1,
-    fontWeight: 'bold' as const,
-    fontSize: '14px',
-    whiteSpace: 'nowrap' as const,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  seriesCount: {
-    fontSize: '12px',
-    color: 'var(--ui-gray-lightest, #d3d3d3)',
-    marginLeft: '10px',
-  },
-  content: {
-    overflow: 'visible',
-  }
-};
+
 
 interface XNATStudyItemProps {
   study: {
@@ -130,25 +69,24 @@ function XNATStudyItem({
   };
 
   return (
-    <div style={studyItemStyles.container} className="xnat-study-item">
+    <div className="flex flex-col mb-3 bg-card rounded overflow-visible">
       <div 
-        style={studyItemStyles.header} 
-        className="study-header" 
+        className="flex items-center p-2 cursor-pointer bg-muted hover:bg-accent/50 transition-colors duration-200 rounded-t"
         onClick={handleExpandClick}
       >
-        <div style={studyItemStyles.expandIcon} className="expand-icon">
-          {expanded ? '▼' : '►'}
+        <div className="mr-2 text-xs w-4 h-4 flex items-center justify-center">
+          {expanded ? <MinusIcon /> : <PlusIcon />}
         </div>
-        <div style={studyItemStyles.description} className="study-description">
+        <div className="flex-1 font-bold text-sm whitespace-nowrap overflow-hidden text-ellipsis">
           {StudyDescription || 'No description'}
         </div>
-        <div style={studyItemStyles.seriesCount} className="series-count">
+        <div className="text-xs text-muted-foreground ml-2">
           {thumbnails.length} series
         </div>
       </div>
       
       {expanded && (
-        <div style={studyItemStyles.content}>
+        <div className="overflow-visible">
           <XNATSeriesList
             study={study}
             onThumbnailClick={onThumbnailClick}

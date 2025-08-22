@@ -1,6 +1,5 @@
 import React from 'react';
 
-import '../XNATNavigationPanel.css';
 import { Icon } from '@ohif/ui';
 
 interface XNATSessionLabelProps {
@@ -24,22 +23,22 @@ export default class XNATSessionLabel extends React.Component<XNATSessionLabelPr
    *
    * @returns {Object} The JSX component.
    */
-  _headerLabel() {
+    _headerLabel() {
     const { label, ID, active } = this.props;
 
     if (active) {
       return (
         <React.Fragment>
-          <h5 className="xnat-nav-active">{label}</h5>
+          <h5 className="text-sm font-bold text-primary">{label}</h5>
         </React.Fragment>
       );
     }
 
     return (
       <React.Fragment>
-        <h5>{label}</h5>
+        <h5 className="text-sm text-foreground">{label}</h5>
       </React.Fragment>
-    );
+      );
   }
 
   /**
@@ -61,10 +60,10 @@ export default class XNATSessionLabel extends React.Component<XNATSessionLabelPr
 
     return (
       <React.Fragment>
-        <h6 className="xnat-navigation-tree-roi-label">
+        <h6 className="flex items-center text-xs text-muted-foreground">
           {contourCount ? (
             <React.Fragment>
-              <Icon name="circle" className="xnat-navigation-tree-roi-icon" />
+              <Icon name="circle" className="mr-1" />
               {` ${contourCount}  `}
             </React.Fragment>
           ) : null}
@@ -84,7 +83,7 @@ export default class XNATSessionLabel extends React.Component<XNATSessionLabelPr
 
     const sharedLabel = shared ? (
       <React.Fragment>
-        <h6 className="xnat-nav-shared">{`Shared from ${parentProjectId}`}</h6>
+        <h6 className="text-xs text-muted-foreground italic">{`Shared from ${parentProjectId}`}</h6>
       </React.Fragment>
     ) : null;
 

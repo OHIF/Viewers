@@ -1,6 +1,6 @@
 import React from 'react';
 
-import '../XNATNavigationPanel.css';
+
 
 interface XNATProjectLabelProps {
   ID: string;
@@ -18,7 +18,11 @@ export default class XNATProjectLabel extends React.Component<XNATProjectLabelPr
 
     return (
       <div>
-        {active ? <h5 className="xnat-nav-active">{name}</h5> : <h5>{name}</h5>}
+        {active ? (
+          <h5 className="text-sm font-bold text-primary">{name}</h5>
+        ) : (
+          <h5 className="text-sm text-foreground">{name}</h5>
+        )}
       </div>
     );
   }

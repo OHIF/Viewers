@@ -1,8 +1,6 @@
 import React from 'react';
 import XNATProject from './XNATProject';
 
-import '../XNATNavigationPanel.css';
-
 interface Project {
   ID: string;
   name: string;
@@ -27,12 +25,11 @@ export default class XNATProjectList extends React.Component<XNATProjectListProp
 
     return (
       <React.Fragment>
-        <h4>Other Projects</h4>
         {projects.map(project => {
           return (
-            <li key={project.ID}>
+            <div key={project.ID} className="mb-2">
               <XNATProject ID={project.ID} name={project.name} />
-            </li>
+            </div>
           );
         })}
       </React.Fragment>

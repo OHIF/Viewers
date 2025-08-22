@@ -26,17 +26,7 @@ interface XNATSeriesListProps {
   supportsDrag?: boolean;
 }
 
-// Styles to ensure proper display
-const seriesListStyles = {
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    padding: '10px',
-    gap: '10px',
-    overflow: 'visible',
-    maxHeight: '100%',
-  }
-};
+
 
 function XNATSeriesList({
   study,
@@ -126,7 +116,7 @@ function XNATSeriesList({
   }, [study?.thumbnails]);
   
   return (
-    <div className="xnat-series-list" style={seriesListStyles.container}>
+    <div className="flex flex-wrap p-2 gap-2 overflow-visible max-h-full">
       {sortedThumbnails.map((thumbnail) => {
         const { 
           displaySetInstanceUID, 

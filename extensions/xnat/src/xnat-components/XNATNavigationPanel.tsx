@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { PanelSection } from '@ohif/ui-next';
 import XNATProjectList from './XNATNavigation/XNATProjectList';
 import XNATProject from './XNATNavigation/XNATProject';
 import fetchJSON from '../utils/IO/fetchJSON';
 import compareOnProperty from './XNATNavigation/helpers/compareOnProperty';
 import sessionMap from '../utils/sessionMap';
-
-import './XNATNavigationPanel.css';
 
 interface Project {
   ID: string;
@@ -100,8 +99,13 @@ const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManag
   // Display loading state
   if (loading) {
     return (
-      <div className="xnat-navigation-tree">
-        <div className="loading-projects">Loading XNAT projects...</div>
+      <div className="h-full overflow-y-auto overflow-x-hidden p-4">
+        <PanelSection>
+          <PanelSection.Header>Loading</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-sm text-muted-foreground">Loading XNAT projects...</div>
+          </PanelSection.Content>
+        </PanelSection>
       </div>
     );
   }
@@ -109,27 +113,44 @@ const XNATNavigationPanel: React.FC<XNATNavigationPanelProps> = ({ servicesManag
   // Display error state
   if (error) {
     return (
-      <div className="xnat-navigation-tree">
-        <div className="error-projects">Error: {error}</div>
+      <div className="h-full overflow-y-auto overflow-x-hidden p-4">
+        <PanelSection>
+          <PanelSection.Header className="text-destructive">Error</PanelSection.Header>
+          <PanelSection.Content>
+            <div className="text-destructive text-sm">Error: {error}</div>
+          </PanelSection.Content>
+        </PanelSection>
       </div>
     );
   }
 
   return (
-    <div className="xnat-navigation-tree">
-      <ul>
-        <h4>This Project</h4>
-        {activeProjects.length > 0 ? (
-          activeProjects.map(project => (
-            <li key={project.ID}>
-              <XNATProject ID={project.ID} name={project.name} />
-            </li>
-          ))
-        ) : (
-          <li className="no-active-project">No active project selected</li>
-        )}
-        <XNATProjectList projects={otherProjects} />
-      </ul>
+    <div className="h-full overflow-y-auto overflow-x-hidden p-4 space-y-4">
+      {/* Active Project Section */}
+      <PanelSection>
+        <PanelSection.Header>This Project</PanelSection.Header>
+        <PanelSection.Content>
+          {activeProjects.length > 0 ? (
+            <div className="space-y-2">
+              {activeProjects.map(project => (
+                <div key={project.ID}>
+                  <XNATProject ID={project.ID} name={project.name} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No active project selected</div>
+          )}
+        </PanelSection.Content>
+      </PanelSection>
+
+      {/* Other Projects Section */}
+      <PanelSection>
+        <PanelSection.Header>Other Projects</PanelSection.Header>
+        <PanelSection.Content>
+          <XNATProjectList projects={otherProjects} />
+        </PanelSection.Content>
+      </PanelSection>
     </div>
   );
 };

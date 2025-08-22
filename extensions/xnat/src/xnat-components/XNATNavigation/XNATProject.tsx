@@ -6,8 +6,6 @@ import getExpandIcon from './helpers/getExpandIcon';
 import compareOnProperty from './helpers/compareOnProperty';
 import sessionMap from '../../utils/sessionMap';
 
-import '../XNATNavigationPanel.css';
-
 interface Subject {
   ID: string;
   label: string;
@@ -102,13 +100,12 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
 
     return (
       <React.Fragment>
-        <div className="xnat-nav-horizontal-box">
-          <a
-            className="btn btn-sm btn-secondary xnat-nav-button"
+        <div className="flex items-center space-x-2 p-2 hover:bg-accent/50 rounded cursor-pointer">
+          <button
+            className="flex-shrink-0 p-1 hover:bg-accent rounded"
             onClick={() => {
               this.onExpandIconClick();
             }}
-            style={{ flexShrink: 0 }}
           >
             {(() => {
               try {
@@ -118,17 +115,23 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
                 return <span>▶</span>;
               }
             })()}
-          </a>
-          <div>
-            {active ? <h5 className="xnat-nav-active">{name}</h5> : <h5>{name}</h5>}
+          </button>
+          <div className="flex-1">
+            {active ? (
+              <h5 className="text-sm font-medium text-primary">{name}</h5>
+            ) : (
+              <h5 className="text-sm">{name}</h5>
+            )}
           </div>
         </div>
         {expanded ? (
-          <XNATSubjectList
-            projectId={ID}
-            subjects={subjects}
-            fetched={fetched}
-          />
+          <div className="ml-4 border-l border-border pl-4">
+            <XNATSubjectList
+              projectId={ID}
+              subjects={subjects}
+              fetched={fetched}
+            />
+          </div>
         ) : null}
       </React.Fragment>
     );

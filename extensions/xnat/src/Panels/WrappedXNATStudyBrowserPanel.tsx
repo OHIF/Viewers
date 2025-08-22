@@ -35,18 +35,7 @@ interface StudyData {
   }>;
 }
 
-// Add styles for the panel
-const panelStyles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    height: '100%',
-    width: '100%',
-    overflow: 'auto',  // Allow scrolling
-    padding: '0',
-    margin: '0',
-  }
-};
+
 /**
  * Wraps the XNATStudyBrowser and provides services
  * 
@@ -290,16 +279,20 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
   };
 
   if (isLoading) {
-     return <div>Loading...</div>;
+     return (
+       <div className="h-full overflow-y-auto overflow-x-hidden p-4">
+         <div className="text-sm text-muted-foreground">Loading studies...</div>
+       </div>
+     );
   }
 
   // Render the XNATStudyBrowser with data containing resolved imageSrc
   return (
-    <div style={panelStyles.container}>
+    <div className="h-full">
       {/* Render conditionally based on data length AFTER loading is false */}
       {!isLoading && studyBrowserData.length === 0 ? (
-         <div className="xnat-study-browser empty-studies">
-            <div className="no-studies-message">No studies available</div>
+         <div className="h-full overflow-y-auto overflow-x-hidden p-4">
+            <div className="text-sm text-muted-foreground">No studies available</div>
         </div>
       ) : (
         <XNATStudyBrowser
