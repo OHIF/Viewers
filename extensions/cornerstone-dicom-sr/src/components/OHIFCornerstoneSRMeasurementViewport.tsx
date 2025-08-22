@@ -86,7 +86,7 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
         const { presentationIds } = viewportOptions;
         const measurement = srDisplaySet.measurements[newMeasurementSelected];
         setPositionPresentation(presentationIds.positionPresentationId, {
-          viewReference: {
+          viewReference: measurement.viewReference || {
             referencedImageId: measurement.imageId,
           },
         });

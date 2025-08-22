@@ -3,6 +3,99 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.9...v3.12.0-beta.10) (2025-08-22)
+
+
+### Features
+
+*  Jump to measurement moves the camera if it is not in the viewport ([#5023](https://github.com/OHIF/Viewers/issues/5023)) ([6fe9df6](https://github.com/OHIF/Viewers/commit/6fe9df6ec93c0f37e3bb9f8bf6425bae025e75c8))
+
+
+
+
+
+# [3.12.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.8...v3.12.0-beta.9) (2025-08-22)
+
+
+### Bug Fixes
+
+* header icon logic ([#5339](https://github.com/OHIF/Viewers/issues/5339)) ([a2133ef](https://github.com/OHIF/Viewers/commit/a2133ef6cb6e47fad22908fb1338ee57c67eb8f8))
+
+
+
+
+
+# [3.12.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.7...v3.12.0-beta.8) (2025-08-20)
+
+
+### Features
+
+* Add WSI bulk data annotations support (ANN) ([#4972](https://github.com/OHIF/Viewers/issues/4972)) ([2ed6818](https://github.com/OHIF/Viewers/commit/2ed681817142b13971bb17b3058be26bbab6b90b))
+
+
+
+
+
+# [3.12.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.6...v3.12.0-beta.7) (2025-08-15)
+
+
+### Bug Fixes
+
+* load 3dsr ([#5335](https://github.com/OHIF/Viewers/issues/5335)) ([becba78](https://github.com/OHIF/Viewers/commit/becba7861f99ae4e190caddea8b663e60a9883f5))
+
+
+
+
+
+# [3.12.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.5...v3.12.0-beta.6) (2025-08-13)
+
+
+### Features
+
+* **orientationMarkers:** improved the orientation markers with a simplified version ([#5328](https://github.com/OHIF/Viewers/issues/5328)) ([266b1f5](https://github.com/OHIF/Viewers/commit/266b1f58f01ac6742a9bb40dda28459e7cddc683))
+
+
+
+
+
+# [3.12.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.4...v3.12.0-beta.5) (2025-08-11)
+
+
+### Bug Fixes
+
+* Update Dockerfile ([#5319](https://github.com/OHIF/Viewers/issues/5319)) ([0e83f45](https://github.com/OHIF/Viewers/commit/0e83f4515c902ffa3dbab2d68ec81b93881e1768))
+
+
+
+
+
+# [3.12.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.3...v3.12.0-beta.4) (2025-08-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.2...v3.12.0-beta.3) (2025-08-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.1...v3.12.0-beta.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* Guard series.instances in DicomJSONDataSource to prevent TypeError (OHI-2114) ([#5312](https://github.com/OHIF/Viewers/issues/5312)) ([f1d158b](https://github.com/OHIF/Viewers/commit/f1d158bbe81fd9f6052ce23c8588c9c93d76360c))
+
+
+
+
+
 # [3.12.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.0...v3.12.0-beta.1) (2025-08-05)
 
 **Note:** Version bump only for package ohif-monorepo-root
