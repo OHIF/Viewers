@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.15...v3.12.0-beta.16) (2025-08-25)
+
+
+### Bug Fixes
+
+* docker deploy ([#5359](https://github.com/OHIF/Viewers/issues/5359)) ([368a176](https://github.com/OHIF/Viewers/commit/368a176c093aa2ccf4197c46543209d5ff69939a))
+
+
+
+
+
 # [3.12.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.14...v3.12.0-beta.15) (2025-08-25)
 
 **Note:** Version bump only for package @ohif/app
