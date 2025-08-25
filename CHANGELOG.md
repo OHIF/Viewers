@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.14...v3.12.0-beta.15) (2025-08-25)
+
+
+### Bug Fixes
+
+* Docker build failure due to missing lerna command ([#5357](https://github.com/OHIF/Viewers/issues/5357)) ([bedb185](https://github.com/OHIF/Viewers/commit/bedb1854f96928f6db5707dce74ea75b1445e9bd))
+
+
+
+
+
 # [3.12.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.13...v3.12.0-beta.14) (2025-08-25)
 
 
