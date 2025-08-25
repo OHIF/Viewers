@@ -8,7 +8,7 @@ import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
 
-const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
+const { sortStudyInstances, formatDate, createStudyBrowserTabs, TabsProps } = utils;
 
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
 
@@ -380,8 +380,8 @@ function PanelStudyBrowser({
     }
 
     const displaySetInstanceUID = jumpToDisplaySet;
-    // Set the activeTabName and expand the study
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs);
+    // Set the activeTabName and expand the study .... Why? See #5323. Would like an explanation if possible.
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs, activeTabName);
     if (!thumbnailLocation) {
       return;
     }
@@ -530,9 +530,15 @@ function getImageIdForThumbnail(displaySet, imageIds) {
   return imageId;
 }
 
-function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {
-  for (let t = 0; t < tabs.length; t++) {
-    const { studies } = tabs[t];
+function _findTabAndStudyOfDisplaySet(
+  displaySetInstanceUID: string,
+  tabs: TabsProps,
+  currentTabName: string
+) {
+  const biasedTabs = [_findCurrentTab(currentTabName, tabs), ...tabs];
+
+  for (let t = 0; t < biasedTabs.length; t++) {
+    const { studies } = biasedTabs[t];
 
     for (let s = 0; s < studies.length; s++) {
       const { displaySets } = studies[s];
@@ -542,11 +548,20 @@ function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {
 
         if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
           return {
-            tabName: tabs[t].name,
+            tabName: biasedTabs[t].name,
             StudyInstanceUID: studies[s].studyInstanceUid,
           };
         }
       }
     }
   }
+}
+
+function _findCurrentTab(currentTabName: string, tabs: TabsProps): TabsProps {
+  for (const tab of tabs) {
+    if (tab.name === currentTabName) {
+      return tab;
+    }
+  }
+  return tabs[0];
 }
