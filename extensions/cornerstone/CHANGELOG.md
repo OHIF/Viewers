@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.12...v3.12.0-beta.13) (2025-08-25)
+
+
+### Bug Fixes
+
+* add back clear segmentation representations ([#5336](https://github.com/OHIF/Viewers/issues/5336)) ([21d6ba2](https://github.com/OHIF/Viewers/commit/21d6ba2bb30df5b99bf5728163caff514aaa5dcd))
+
+
+
+
+
 # [3.12.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.11...v3.12.0-beta.12) (2025-08-25)
 
 
