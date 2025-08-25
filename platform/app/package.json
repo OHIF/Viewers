@@ -108,7 +108,9 @@
   "devDependencies": {
     "@babel/plugin-transform-private-methods": "^7.27.1",
     "@types/node": "^20.12.12",
+    "cross-env": "^7.0.3",
     "identity-obj-proxy": "3.0.x",
+    "shx": "^0.3.4",
     "tailwindcss": "3.2.4"
   }
 }
