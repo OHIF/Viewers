@@ -135,9 +135,13 @@ function TinyMCEEditor({ content }: { content: string }) {
   const editorRef = useRef(null);
 
   // Get studyInstanceUID from URL parameters
-  const getStudyInstanceUID = () => {
+  const getStudyInstanceUIDs = (): string[] => {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('StudyInstanceUIDs') || '';
+    const value = urlParams.get('StudyInstanceUIDs') || '';
+    return value
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
   };
 
   const log = () => {
@@ -161,9 +165,20 @@ function TinyMCEEditor({ content }: { content: string }) {
         htmlContent: htmlContent, // Changed from 'content' to 'htmlContent' to match server expectation
       });
       console.log('Report submitted successfully:', report.data);
+      await refreshReports();
     } catch (error) {
       console.error('Error submitting report:', error.response?.data || error.message);
       console.error('Status:', error.response?.status);
+    }
+  };
+
+  // Function to fetch all reports
+  const refreshReports = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/report');
+      console.log('Reports refreshed:', response.data);
+    } catch (error) {
+      console.error('Error refreshing reports:', error.response?.data || error.message);
     }
   };
 
@@ -210,11 +225,29 @@ function TinyMCEEditor({ content }: { content: string }) {
           type="button"
           className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
           onClick={() => {
-            const studyInstanceUID = getStudyInstanceUID();
+            const studyInstanceUIDs = getStudyInstanceUIDs();
             const htmlContent = editorRef.current.getContent();
-            console.log('Sending report with studyInstanceUID:', studyInstanceUID);
+            console.log('Found StudyInstanceUIDs:', studyInstanceUIDs);
             console.log('Content length:', htmlContent.length);
-            handleSubmitReport(studyInstanceUID, htmlContent);
+            (async () => {
+              for (const uid of studyInstanceUIDs) {
+                try {
+                  console.log('Validating study exists for UID:', uid);
+                  await axios.get(
+                    `http://localhost:4000/dicom/study-by-study-instance-uuid/${encodeURIComponent(uid)}`
+                  );
+                } catch (e) {
+                  console.error(
+                    `Study not found or validation failed for UID ${uid}:`,
+                    e.response?.status,
+                    e.response?.data || e.message
+                  );
+                  continue;
+                }
+                console.log('Sending report with studyInstanceUID:', uid);
+                await handleSubmitReport(uid, htmlContent);
+              }
+            })();
           }}
         >
           Submit Report
