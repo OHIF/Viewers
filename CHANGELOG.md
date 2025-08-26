@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.15...v3.12.0-beta.16) (2025-08-25)
+
+
+### Bug Fixes
+
+* docker deploy ([#5359](https://github.com/OHIF/Viewers/issues/5359)) ([368a176](https://github.com/OHIF/Viewers/commit/368a176c093aa2ccf4197c46543209d5ff69939a))
+
+
+
+
+
+# [3.12.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.14...v3.12.0-beta.15) (2025-08-25)
+
+
+### Bug Fixes
+
+* Docker build failure due to missing lerna command ([#5357](https://github.com/OHIF/Viewers/issues/5357)) ([bedb185](https://github.com/OHIF/Viewers/commit/bedb1854f96928f6db5707dce74ea75b1445e9bd))
+
+
+
+
+
+# [3.12.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.13...v3.12.0-beta.14) (2025-08-25)
+
+
+### Bug Fixes
+
+* local ModalitiesInStudy check ([#5285](https://github.com/OHIF/Viewers/issues/5285)) ([d269404](https://github.com/OHIF/Viewers/commit/d2694048a47faf9028184d0272df12e2602ae674))
+
+
+
+
+
+# [3.12.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.12...v3.12.0-beta.13) (2025-08-25)
+
+
+### Bug Fixes
+
+* add back clear segmentation representations ([#5336](https://github.com/OHIF/Viewers/issues/5336)) ([21d6ba2](https://github.com/OHIF/Viewers/commit/21d6ba2bb30df5b99bf5728163caff514aaa5dcd))
+
+
+
+
+
+# [3.12.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.11...v3.12.0-beta.12) (2025-08-25)
+
+
+### Bug Fixes
+
+* Segmentation stats customization module ([#5324](https://github.com/OHIF/Viewers/issues/5324)) ([b9d6f55](https://github.com/OHIF/Viewers/commit/b9d6f558cbe5957f83e6d92305a78662a0b186ed))
+
+
+
+
+
+# [3.12.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.10...v3.12.0-beta.11) (2025-08-25)
+
+
+### Bug Fixes
+
+* Add seriesInstanceUID fallback for callByRetrieveAETitle ([#5332](https://github.com/OHIF/Viewers/issues/5332)) ([840b5d3](https://github.com/OHIF/Viewers/commit/840b5d37d15537abc38316d636da7c144e6d9223))
+
+
+
+
+
+# [3.12.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.9...v3.12.0-beta.10) (2025-08-22)
+
+
+### Features
+
+*  Jump to measurement moves the camera if it is not in the viewport ([#5023](https://github.com/OHIF/Viewers/issues/5023)) ([6fe9df6](https://github.com/OHIF/Viewers/commit/6fe9df6ec93c0f37e3bb9f8bf6425bae025e75c8))
+
+
+
+
+
+# [3.12.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.8...v3.12.0-beta.9) (2025-08-22)
+
+
+### Bug Fixes
+
+* header icon logic ([#5339](https://github.com/OHIF/Viewers/issues/5339)) ([a2133ef](https://github.com/OHIF/Viewers/commit/a2133ef6cb6e47fad22908fb1338ee57c67eb8f8))
+
+
+
+
+
+# [3.12.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.7...v3.12.0-beta.8) (2025-08-20)
+
+
+### Features
+
+* Add WSI bulk data annotations support (ANN) ([#4972](https://github.com/OHIF/Viewers/issues/4972)) ([2ed6818](https://github.com/OHIF/Viewers/commit/2ed681817142b13971bb17b3058be26bbab6b90b))
+
+
+
+
+
 # [3.12.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.6...v3.12.0-beta.7) (2025-08-15)
 
 
