@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.15...v3.12.0-beta.16) (2025-08-25)
+
+
+### Bug Fixes
+
+* docker deploy ([#5359](https://github.com/OHIF/Viewers/issues/5359)) ([368a176](https://github.com/OHIF/Viewers/commit/368a176c093aa2ccf4197c46543209d5ff69939a))
+
+
+
+
+
+# [3.12.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.14...v3.12.0-beta.15) (2025-08-25)
+
+
+### Bug Fixes
+
+* Docker build failure due to missing lerna command ([#5357](https://github.com/OHIF/Viewers/issues/5357)) ([bedb185](https://github.com/OHIF/Viewers/commit/bedb1854f96928f6db5707dce74ea75b1445e9bd))
+
+
+
+
+
+# [3.12.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.13...v3.12.0-beta.14) (2025-08-25)
+
+
+### Bug Fixes
+
+* local ModalitiesInStudy check ([#5285](https://github.com/OHIF/Viewers/issues/5285)) ([d269404](https://github.com/OHIF/Viewers/commit/d2694048a47faf9028184d0272df12e2602ae674))
+
+
+
+
+
 # [3.12.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.12...v3.12.0-beta.13) (2025-08-25)
 
 
