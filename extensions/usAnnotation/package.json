@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-ultrasound-pleura-bline",
-  "version": "3.12.0-beta.16",
+  "version": "3.12.0-beta.20",
   "description": "",
   "author": "Rodrigo Basilio",
   "license": "MIT",
@@ -42,13 +42,13 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/core": "^3.32.12",
-    "@cornerstonejs/tools": "^3.32.12",
-    "@ohif/core": "3.12.0-beta.16",
-    "@ohif/extension-cornerstone": "3.12.0-beta.16",
-    "@ohif/extension-default": "3.12.0-beta.16",
-    "@ohif/i18n": "3.12.0-beta.16",
-    "@ohif/ui-next": "3.12.0-beta.16"
+    "@cornerstonejs/core": "^4.0.0",
+    "@cornerstonejs/tools": "^4.0.0",
+    "@ohif/core": "3.12.0-beta.20",
+    "@ohif/extension-cornerstone": "3.12.0-beta.20",
+    "@ohif/extension-default": "3.12.0-beta.20",
+    "@ohif/i18n": "3.12.0-beta.20",
+    "@ohif/ui-next": "3.12.0-beta.20"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
