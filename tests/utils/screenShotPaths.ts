@@ -187,6 +187,10 @@ const screenShotPaths = {
   workList: {
     scrollBarRenderedProperly: 'scrollBarRenderedProperly.png',
   },
+  studyBrowser: {
+    panelNoChangeOnStudyExpansion: 'panelNoChangeOnStudyExpansion.png',
+    panelNoChangeOnStudyExpansionFailure: 'panelNoChangeOnStudyExpansionFailure.png',
+  },
 };
 
 export { screenShotPaths };
