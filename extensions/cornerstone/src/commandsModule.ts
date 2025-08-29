@@ -2160,24 +2160,22 @@ function commandsModule({
     },
     // generate report
     generateReport: () => {
-      const { panelService } = servicesManager.services;
+      const { UIModalService } = servicesManager.services;
 
-      console.log('Generate Report button clicked - activating panel');
+      console.log('Generate Report button clicked - showing modal');
 
-      // Force the right panel to open by setting panels with rightPanelClosed: false
-      const currentPanels = {
-        left: panelService.getPanels('left').map(panel => panel.id),
-        right: panelService.getPanels('right').map(panel => panel.id),
-      };
-
-      // Set panels with rightPanelClosed: false to force the sidebar open
-      panelService.setPanels(currentPanels, { rightPanelClosed: false });
-
-      // Activate the template panel
-      panelService.activatePanel('@ohif/extension-cornerstone.panelModule.panelTemplate', true);
-
-      // Dispatch the event to open the dropdown
-      window.dispatchEvent(new CustomEvent('openTemplateDropdown'));
+      // Import the modal component dynamically to avoid circular dependencies
+      import('./components/ReportGenerationModal').then(({ default: ReportGenerationModal }) => {
+        UIModalService.show({
+          content: ReportGenerationModal,
+          contentProps: {
+            hide: () => UIModalService.hide(),
+          },
+          title: 'Select Templates',
+          containerClassName:
+            'max-w-6xl max-h-[95vh] w-[90vw] h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-background',
+        });
+      });
     },
     triggerCreateAnnotationMemo: ({
       annotation,
