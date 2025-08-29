@@ -16,6 +16,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
+import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -128,7 +129,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
       getAuthorizationHeader = () => {
-        const xhrRequestHeaders = {};
+        const xhrRequestHeaders: HeadersInterface = {};
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
         if (authHeaders && authHeaders.Authorization) {
           xhrRequestHeaders.Authorization = authHeaders.Authorization;
@@ -136,19 +137,24 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         return xhrRequestHeaders;
       };
 
-      generateWadoHeader = () => {
+      generateWadoHeader = (skipAccept: boolean = false): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        //Generate accept header depending on config params
-        const formattedAcceptHeader = utils.generateAcceptHeader(
-          dicomWebConfig.acceptHeader,
-          dicomWebConfig.requestTransferSyntaxUID,
-          dicomWebConfig.omitQuotationForMultipartRequest
-        );
-
-        return {
-          ...authorizationHeader,
-          Accept: formattedAcceptHeader,
-        };
+        if (!skipAccept) {
+          //Generate accept header depending on config params
+          const formattedAcceptHeader = utils.generateAcceptHeader(
+            dicomWebConfig.acceptHeader,
+            dicomWebConfig.requestTransferSyntaxUID,
+            dicomWebConfig.omitQuotationForMultipartRequest
+          );
+          return {
+            ...authorizationHeader,
+            Accept: formattedAcceptHeader,
+          };
+        } else {
+          return {
+            ...authorizationHeader
+          };
+        }
       };
 
       qidoConfig = {
@@ -410,7 +416,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
+      // See issue #5288
+      wadoDicomWebClient.headers = generateWadoHeader(true);
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -484,7 +492,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
+      // See issue #5288
+      wadoDicomWebClient.headers = generateWadoHeader(true);
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
