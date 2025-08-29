@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.20...v3.12.0-beta.21) (2025-08-29)
+
+
+### Bug Fixes
+
+* routerBasename declaration location ([#5347](https://github.com/OHIF/Viewers/issues/5347)) ([0f6f2bb](https://github.com/OHIF/Viewers/commit/0f6f2bb432d7021d3a92b38b58de51a380d9b0c9))
+
+
+
+
+
 # [3.12.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.19...v3.12.0-beta.20) (2025-08-28)
 
 **Note:** Version bump only for package ohif-monorepo-root
