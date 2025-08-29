@@ -85,7 +85,6 @@ const InvestigationalUseDialog = ({
         </div>
         <Button
           onClick={handleConfirmAndHide}
-          className="bg-primary-main"
           dataCY="confirm-and-hide-button"
         >
           {t('Confirm and hide')}
