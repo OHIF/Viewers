@@ -99,7 +99,7 @@ const ProgressDropdown = ({
       <div>
         <div className="mb-1.5 flex h-[26px]">
           <div
-            className="bg-popover border-primary-main flex grow cursor-pointer rounded border"
+            className="bg-popover border-primary/40 flex grow cursor-pointer rounded border"
             style={{ width: `${dropDownWidth}px` }}
             onClick={toggleOpen}
           >
@@ -112,8 +112,8 @@ const ProgressDropdown = ({
           </div>
           <button
             className={classnames('ml-1.5 w-[26px] rounded text-base', {
-              'bg-primary-main': canMoveNext,
-              'bg-muted pointer-events-none': !canMoveNext,
+              'bg-primary/60 hover:bg-primary/80': canMoveNext,
+              'bg-popover pointer-events-none': !canMoveNext,
             })}
           >
             <Icons.ArrowRight
@@ -128,8 +128,9 @@ const ProgressDropdown = ({
         <div
           className={classnames(
             'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top',
-            'bg-muted overflow-hidden transition-[max-height] duration-300',
-            'border-secondary-main rounded border shadow',
+            'bg-popover overflow-hidden transition-[max-height] duration-300',
+            'border-input/50 rounded border shadow',
+            'py-1',
             {
               hidden: !open,
               'max-h-[500px]': open,
