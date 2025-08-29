@@ -39,7 +39,7 @@ const RowComponent = ({
     <div
       style={{ ...style, ...rowStyle }}
       className={classNames(
-        'hover:bg-secondary-main border-input text-foreground flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
+        'hover:bg-primary/25 border-input text-foreground flex w-full flex-row items-center break-all bg-black text-base',
         lineHeightClassName
       )}
       key={keyPrefix}
