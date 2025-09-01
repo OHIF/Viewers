@@ -263,7 +263,6 @@ const ErrorBoundary = ({
     let errorTimeout: NodeJS.Timeout;
 
     const handleError = (event: ErrorEvent) => {
-      event.preventDefault();
       clearTimeout(errorTimeout);
       errorTimeout = setTimeout(() => {
         setError(event.error);
