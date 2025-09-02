@@ -73,7 +73,7 @@ const Probe = {
 
     const { points } = data.handles;
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
-    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService, points);
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
@@ -216,7 +216,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   };
 }
 
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
+function getDisplayText(mappedAnnotations, displaySet, customizationService, points) {
   const displayText = {
     primary: [],
     secondary: [],
@@ -233,8 +233,17 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     displayText.primary.push(`${roundedValue} ${getDisplayUnit(unit)}`);
 
     if (isVolumeBasedAnnotation) {
-      // For volume-based annotations, show series info only
-      displayText.secondary.push(`S: ${SeriesNumber} (Volume)`);
+      // For volume-based annotations, show world coordinates of the probe point
+      const p = points && points[0];
+      if (p && p.length === 3) {
+        const x = utils.roundNumber(p[0], 2);
+        const y = utils.roundNumber(p[1], 2);
+        const z = utils.roundNumber(p[2], 2);
+        displayText.secondary.push(`(${x}, ${y}, ${z})`);
+      } else {
+        // Fallback to series if point not available
+        displayText.secondary.push(`S: ${SeriesNumber}`);
+      }
     } else {
       // For instance-based annotations, show detailed instance info
       let InstanceNumber;
