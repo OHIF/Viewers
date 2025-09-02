@@ -1,0 +1,2 @@
+sudo docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up -d
+yarn dev:orthanc
