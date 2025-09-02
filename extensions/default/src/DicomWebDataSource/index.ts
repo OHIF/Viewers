@@ -137,9 +137,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         return xhrRequestHeaders;
       };
 
-      generateWadoHeader = (skipAccept: boolean = false): HeadersInterface => {
+      generateWadoHeader = (includeTransferSyntax: boolean = true): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        if (!skipAccept) {
+        if (includeTransferSyntax) {
           //Generate accept header depending on config params
           const formattedAcceptHeader = utils.generateAcceptHeader(
             dicomWebConfig.acceptHeader,
@@ -151,6 +151,10 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             Accept: formattedAcceptHeader,
           };
         } else {
+          // The base header will be included in the request. We simply skip customization options around
+          // transfer syntaxes and whether the request is multipart. In other words, a request in
+          // which the server expects Accept: application/dicom+json will still include that in the
+          // header.
           return {
             ...authorizationHeader
           };
@@ -418,7 +422,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       const enableStudyLazyLoad = false;
       // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
       // See issue #5288
-      wadoDicomWebClient.headers = generateWadoHeader(true);
+      wadoDicomWebClient.headers = generateWadoHeader(false);
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -494,7 +498,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       const enableStudyLazyLoad = true;
       // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
       // See issue #5288
-      wadoDicomWebClient.headers = generateWadoHeader(true);
+      wadoDicomWebClient.headers = generateWadoHeader(false);
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
