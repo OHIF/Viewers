@@ -10,22 +10,29 @@ import RetrieveMetadataLoader from './retrieveMetadataLoader';
  * I.e Retrieve metadata using all loaders possibilities.
  */
 export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
+  getOptions() {
+    const { studyInstanceUID, filters } = this;
+
+    const options = {
+      studyInstanceUID,
+    };
+
+    const { seriesInstanceUID } = filters;
+    if (seriesInstanceUID) {
+      options['seriesInstanceUID'] = seriesInstanceUID;
+    }
+
+    return options;
+  }
+
   /**
    * @returns {Array} Array of loaders. To be consumed as queue
    */
   *getLoaders() {
     const loaders = [];
-    const { studyInstanceUID, filters: { seriesInstanceUID, sopInstanceUID } = {}, client } = this;
+    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
 
-    if(seriesInstanceUID && sopInstanceUID) {
-      loaders.push(
-        client.retrieveInstanceMetadata.bind(client, {
-          studyInstanceUID,
-          seriesInstanceUID,
-          sopInstanceUID
-        })
-      );
-    }else if (seriesInstanceUID) {
+    if (seriesInstanceUID) {
       loaders.push(
         client.retrieveSeriesMetadata.bind(client, {
           studyInstanceUID,

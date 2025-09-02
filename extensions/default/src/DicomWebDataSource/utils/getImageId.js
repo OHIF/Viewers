@@ -1,6 +1,4 @@
 import getWADORSImageId from './getWADORSImageId';
-import {DicomReferenceMetadata} from './Types';
-import { DicomWebConfig } from './dicomWebConfig';
 
 function buildInstanceWadoUrl(config, instance) {
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
@@ -26,13 +24,8 @@ function buildInstanceWadoUrl(config, instance) {
  * @param thumbnail
  * @returns {string} The imageId to be used by Cornerstone
  */
-export function getImageId(
-  instance: DicomReferenceMetadata,
-  frame: number | undefined,
-  config: DicomWebConfig,
-  thumbnail: boolean = false
-): string | undefined {
-  if (!instance || !config) {
+export default function getImageId({ instance, frame, config, thumbnail = false }) {
+  if (!instance) {
     return;
   }
 
@@ -59,17 +52,3 @@ export function getImageId(
     return getWADORSImageId(instance, config, frame); // WADO-RS Retrieve Frame
   }
 }
-
-export function getImageIdsForInstance(
-  instance: DicomReferenceMetadata,
-  frame: number | undefined = undefined,
-  config: DicomWebConfig,
-): string | undefined {
-  return getImageId(
-    instance,
-    frame,
-    config,
-  );
-}
-
-export default { getImageId, getImageIdsForInstance };

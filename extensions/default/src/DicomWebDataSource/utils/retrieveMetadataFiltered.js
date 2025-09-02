@@ -21,7 +21,7 @@ function retrieveMetadataFiltered(
   sortCriteria,
   sortFunction
 ) {
-  const { seriesInstanceUID, sopInstanceUID } = filters;
+  const { seriesInstanceUID } = filters;
 
   return new Promise((resolve, reject) => {
     const promises = seriesInstanceUID.map(uid => {
