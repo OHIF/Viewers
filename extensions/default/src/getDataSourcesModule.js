@@ -3,6 +3,7 @@
 // TODO: Use existing DICOMWeb configuration (previously, appConfig, to configure instance)
 
 import { createDicomWebApi } from './DicomWebDataSource/index';
+import { createDicomWebMinimalApi } from './DicomWebMinimalDataSource/index';
 import { createDicomJSONApi } from './DicomJSONDataSource/index';
 import { createDicomLocalApi } from './DicomLocalDataSource/index';
 import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
@@ -17,6 +18,11 @@ function getDataSourcesModule() {
       name: 'dicomweb',
       type: 'webApi',
       createDataSource: createDicomWebApi,
+    },
+    {
+      name: 'dicomweb_minimal',
+      type: 'webApi',
+      createDataSource: createDicomWebMinimalApi,
     },
     {
       name: 'dicomwebproxy',
