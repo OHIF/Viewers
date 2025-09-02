@@ -42,6 +42,7 @@ import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
+import { DisplaySet } from 'platform/core/src/types';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -145,6 +146,45 @@ function commandsModule({
   }
 
   const actions = {
+    loadDerivedDisplaySetsForActiveViewport: () => {
+      const { displaySetService, userAuthenticationService } = servicesManager.services;
+
+      const getDerivedSequences = (displaySetUID: string): DisplaySet[] => {
+        const currentDs = displaySetService.getDisplaySetByUID(displaySetUID);
+        const displaySetCache = displaySetService.getDisplaySetCache();
+        return Array.from(displaySetCache.values()).filter(
+          (ds: any): ds is DisplaySet =>
+            (ds?.referencedDisplaySetInstanceUID === displaySetUID ||
+              ds.referencedSeriesInstanceUID === currentDs.SeriesInstanceUID) &&
+            !ds?.isHydrated
+        );
+      };
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      const displaySetInstanceUIDs =
+        viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+
+      const derivedDisplayInstanceUIDs = getDerivedSequences(displaySetInstanceUIDs[0]).map(
+        ds => ds.displaySetInstanceUID
+      );
+
+      derivedDisplayInstanceUIDs.forEach(async displaySetInstanceUID => {
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        if (displaySet.Modality === 'SEG' || displaySet.Modality === 'RTSTRUCT') {
+          const headers = userAuthenticationService.getAuthorizationHeader();
+          await displaySet.load({ headers }).catch(err => {
+            console.warn(`Failed to load display set ${displaySet.displaySetInstanceUID}:`, err);
+          });
+          segmentationService.addSegmentationRepresentation(activeViewportId, {
+            segmentationId: displaySet.displaySetInstanceUID,
+            type:
+              displaySet.Modality === 'SEG'
+                ? Enums.SegmentationRepresentations.Labelmap
+                : Enums.SegmentationRepresentations.Contour,
+          });
+        }
+      });
+    },
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
       const { metadata } = measurement;
@@ -2206,6 +2246,9 @@ function commandsModule({
   };
 
   const definitions = {
+    loadDerivedDisplaySetsForActiveViewport: {
+      commandFn: actions.loadDerivedDisplaySetsForActiveViewport,
+    },
     // The command here is to show the viewer context menu, as being the
     // context menu
     showCornerstoneContextMenu: {
