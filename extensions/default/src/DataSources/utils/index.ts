@@ -40,7 +40,7 @@ export {
   dicomWebToRawDicomInstances,
 } from './metadata/extractMetaData';
 
-export {getImageIdsForInstance, getImageId} from './getImageId';
+export {getImageId} from './getImageId';
 export {addRetrieveBulkData} from './wado/retrieveBulkData';
 
 import StaticWadoClient from './StaticWadoClient';

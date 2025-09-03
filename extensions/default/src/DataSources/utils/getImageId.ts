@@ -60,16 +60,4 @@ export function getImageId(
   }
 }
 
-export function getImageIdsForInstance(
-  instance: DicomReferenceMetadata,
-  frame: number | undefined = undefined,
-  config: DicomWebConfig,
-): string | undefined {
-  return getImageId(
-    instance,
-    frame,
-    config,
-  );
-}
-
-export default { getImageId, getImageIdsForInstance };
+export default { getImageId };

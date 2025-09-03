@@ -3,7 +3,7 @@
  * by the viewer.
  */
 import dcmjs from 'dcmjs';
-import { getImageIdsForInstance } from '../getImageId';
+import { getImageId } from '../getImageId';
 import { DicomWebConfig } from '../dicomWebConfig';
 import {
   DicomReferenceMetadata,
@@ -106,7 +106,7 @@ export function generateStudyMetaData(
         instancesPerSeries[seriesInstanceUID] = [];
       }
 
-      instance.imageId = getImageIdsForInstance(
+      instance.imageId = getImageId(
         instance,
         undefined,
         dicomWebConfig,

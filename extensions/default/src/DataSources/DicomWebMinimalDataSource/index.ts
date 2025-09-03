@@ -16,7 +16,7 @@ import {
   generateStudyMetaData,
   dicomWebToDicomStructure,
   dicomWebToRawDicomInstances,
-  getImageIdsForInstance,
+  getImageId,
   addRetrieveBulkData,
   StaticWadoClient,
   getDirectURL,
@@ -498,11 +498,10 @@ function createDicomWebMinimalApi(dicomWebConfig: DicomWebConfig, servicesManage
           // Process all frames consistently, whether single or multiframe
           for (let i = 0; i < numberOfFrames; i++) {
             const frameNumber = i + 1;
-            const frameImageId = getImageIdsForInstance(
+            const frameImageId = this.getImageIdsForInstance({
               instance,
               frameNumber,
-              dicomWebConfig,
-            );
+          });
             // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
             metadataProvider.addImageIdToUIDs(frameImageId, {
               StudyInstanceUID,
@@ -515,11 +514,9 @@ function createDicomWebMinimalApi(dicomWebConfig: DicomWebConfig, servicesManage
           // Adding imageId to each instance
           // Todo: This is not the best way I can think of to let external
           // metadata handlers know about the imageId that is stored in the store
-          const imageId = getImageIdsForInstance(
+          const imageId = this.getImageIdsForInstance({
             instance,
-            undefined,
-            dicomWebConfig,
-          );
+          });
           instance.imageId = imageId;
         });
 
@@ -576,19 +573,16 @@ function createDicomWebMinimalApi(dicomWebConfig: DicomWebConfig, servicesManage
 
         if (NumberOfFrames > 1) {
           for (let frame = 1; frame <= NumberOfFrames; frame++) {
-            const imageId = getImageIdsForInstance(
+            const imageId = this.getImageIdsForInstance({
               instance,
               frame,
-              dicomWebConfig,
-            );
+            });
             imageIds.push(imageId);
           }
         } else {
-          const imageId = getImageIdsForInstance(
+          const imageId = this.getImageIdsForInstance({
             instance,
-            undefined,
-            dicomWebConfig,
-          );
+          });
           imageIds.push(imageId);
         }
       });
@@ -597,6 +591,13 @@ function createDicomWebMinimalApi(dicomWebConfig: DicomWebConfig, servicesManage
     },
     getConfig() {
       return dicomWebConfigCopy;
+    },
+    getImageIdsForInstance({ instance, frame = undefined }) {
+      return getImageId(
+        instance,
+        frame,
+        dicomWebConfig,
+      );
     },
     getStudyInstanceUIDs({ params, query }) {
       const paramsStudyInstanceUIDs = params.StudyInstanceUIDs || params.studyInstanceUIDs;
