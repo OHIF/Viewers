@@ -3,11 +3,12 @@ import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } f
 
 import {
   mapParams,
-  search as qidoSearch,
+  qidoSearch,
   seriesInStudy,
   processResults,
-  processSeriesResults,
-} from './qido.js';
+  processSeriesResults
+} from '../utils';
+
 import dcm4cheeReject from './dcm4cheeReject.js';
 
 import getImageId from './utils/getImageId.js';
