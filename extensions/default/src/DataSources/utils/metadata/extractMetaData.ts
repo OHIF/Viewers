@@ -2,7 +2,6 @@
  * Tools for extracting key metadata items from QIDO and WADO queries such that it is digestible
  * by the viewer.
  */
-import dcmjs from 'dcmjs';
 import { getImageId } from '../getImageId';
 import { DicomWebConfig } from '../dicomWebConfig';
 import {
@@ -13,9 +12,7 @@ import {
   DicomStudyMetaData,
   RawDicomInstances,
 } from '../Types';
-
-const { DicomMetaDictionary } = dcmjs.data;
-const { naturalizeDataset } = DicomMetaDictionary;
+import {naturalizeDataset} from '../dicom'
 
 /**
  * Takes a list of settled promises containing fulfilled promises and returns a list of lists of
