@@ -4,9 +4,15 @@ import {
   transferDenaturalizedDataset,
 } from './cleanDenaturalizedDataset';
 
+export type {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
+
+
 export { fixMultiValueKeys } from './fixMultiValueKeys';
 
 export { fixBulkDataURI, cleanDenaturalizedDataset, transferDenaturalizedDataset };
+
+export type { DicomWebConfig, BulkDataURIConfig } from './dicomWebConfig';
+export type { RetrieveStudyMetadataInterface } from './Types';
 
 export {
   retrieveStudyMetadata,
@@ -19,12 +25,12 @@ export {
 
 export {
   mapParams,
-    search as qidoSearch,
-    seriesInStudy,
-    processResults,
-    processSeriesResults,
-    listSeries,
-    listSeriesInstances,
+  search as qidoSearch,
+  seriesInStudy,
+  processResults,
+  processSeriesResults,
+  listSeries,
+  listSeriesInstances,
 } from './qido/qido.js';
 
 export {
@@ -34,9 +40,11 @@ export {
   dicomWebToRawDicomInstances,
 } from './metadata/extractMetaData';
 
-export {getImageIdsForInstance} from './getImageId';
+export {getImageIdsForInstance, getImageId} from './getImageId';
 export {addRetrieveBulkData} from './wado/retrieveBulkData';
 
 import StaticWadoClient from './StaticWadoClient';
 import getDirectURL from '../../utils/getDirectURL';
-export {getDirectURL, StaticWadoClient}
+export {getDirectURL, StaticWadoClient};
+
+export {DicomMetaDictionary, DicomDict, naturalizeDataset, denaturalizeDataset} from './dicom'

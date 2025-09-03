@@ -19,18 +19,16 @@ import {
   getImageIdsForInstance,
   addRetrieveBulkData,
   StaticWadoClient,
-  getDirectURL
+  getDirectURL,
+  DicomWebConfig,
+  BulkDataURIConfig,
+  RetrieveStudyMetadataInterface,
+  DicomMetaDictionary,
+  DicomDict,
+  denaturalizeDataset,
+  HeadersInterface
 } from '../utils';
 import dcm4cheeReject from './dcm4cheeReject.js';
-
-import dcmjs from 'dcmjs';
-import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
-import { DicomWebConfig, BulkDataURIConfig } from './utils/dicomWebConfig';
-import { RetrieveStudyMetadataInterface } from './utils/Types';
-
-const { DicomMetaDictionary, DicomDict } = dcmjs.data;
-
-const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-3.11.0';
