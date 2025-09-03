@@ -26,12 +26,12 @@ interface ReportGenerationModalProps {
 
 export default function ReportGenerationModal({ hide }: ReportGenerationModalProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [templates, setTemplates] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<
+    Array<{ id: string; name: string; htmlContent: string }>
+  >([]);
   const [content, setContent] = useState('');
   const [templateName, setTemplateName] = useState('');
   const [isDictationMode, setIsDictationMode] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [dictationText, setDictationText] = useState('');
 
   const fetchModality = async () => {
@@ -69,7 +69,7 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
     }
   };
 
-  const handleTemplateClick = (template: any) => {
+  const handleTemplateClick = (template: { id: string; name: string; htmlContent: string }) => {
     console.log('HTML Content:', template.htmlContent);
     setContent(template.htmlContent);
     setTemplateName(template.name);
@@ -81,30 +81,7 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
 
   const handleCloseDictation = () => {
     setIsDictationMode(false);
-    setIsRecording(false);
-    setIsPaused(false);
     setDictationText('');
-  };
-
-  const handleStartRecording = () => {
-    setIsRecording(true);
-    setIsPaused(false);
-    setDictationText('Start dictating.....');
-    // TODO: Implement actual speech recognition
-    console.log('Starting dictation...');
-  };
-
-  const handlePauseRecording = () => {
-    setIsPaused(true);
-    // TODO: Implement pause functionality
-    console.log('Pausing dictation...');
-  };
-
-  const handleStopRecording = () => {
-    setIsRecording(false);
-    setIsPaused(false);
-    // TODO: Implement stop functionality
-    console.log('Stopping dictation...');
   };
 
   const handleSubmitDictation = () => {
@@ -162,7 +139,7 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
           >
             <DropdownMenuTrigger asChild>
               <button className="bg-background border-input hover:bg-accent text-foreground hover:text-accent-foreground flex w-full items-center justify-between gap-2 rounded border px-4 py-3 text-base transition-colors">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                   <span>{templateName || 'Select Template'}</span>
                 </div>
                 <Icons.ChevronDown className="h-4 w-4" />
@@ -229,12 +206,7 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
             {/* Right Panel - Dictation */}
             <div className="w-1/2">
               <DictationPanel
-                isRecording={isRecording}
-                isPaused={isPaused}
-                dictationText={dictationText}
-                onStart={handleStartRecording}
-                onPause={handlePauseRecording}
-                onStop={handleStopRecording}
+                onDictationTextChange={setDictationText}
                 onSubmit={handleSubmitDictation}
               />
             </div>
@@ -257,7 +229,7 @@ function TinyMCEEditor({
   content: string;
   onSubmit: (htmlContent: string) => void;
 }) {
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<{ getContent: () => string } | null>(null);
 
   return (
     <div className="flex h-full flex-col">
@@ -337,7 +309,6 @@ function TinyMCEEditor({
               statusbar: false,
               setup: editor => {
                 editor.on('init', () => {
-                  // Force dark mode after initialization
                   const iframe = editor.getContainer().querySelector('iframe');
                   if (iframe && iframe.contentDocument) {
                     const style = iframe.contentDocument.createElement('style');
@@ -356,7 +327,6 @@ function TinyMCEEditor({
                     iframe.contentDocument.head.appendChild(style);
                   }
 
-                  // Additional dark mode enforcement
                   setTimeout(() => {
                     const container = editor.getContainer();
                     if (container) {
@@ -374,7 +344,6 @@ function TinyMCEEditor({
         </div>
       </div>
 
-      {/* Submit Button */}
       <div className="mt-6 flex justify-center">
         <Button
           variant="default"
@@ -393,58 +362,207 @@ function TinyMCEEditor({
 }
 
 function DictationPanel({
-  isRecording,
-  isPaused,
-  dictationText,
-  onStart,
-  onPause,
-  onStop,
+  onDictationTextChange,
   onSubmit,
 }: {
-  isRecording: boolean;
-  isPaused: boolean;
-  dictationText: string;
-  onStart: () => void;
-  onPause: () => void;
-  onStop: () => void;
+  onDictationTextChange: (text: string) => void;
   onSubmit: () => void;
 }) {
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [dictationText, setDictationText] = useState('');
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const processorRef = useRef<ScriptProcessorNode | null>(null);
+  const websocketRef = useRef<WebSocket | null>(null);
+  const shouldProcessAudioRef = useRef<boolean>(false);
+
+  const cleanupAudioResources = () => {
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
+
+    if (processorRef.current) {
+      processorRef.current.disconnect();
+      processorRef.current = null;
+    }
+
+    if (websocketRef.current) {
+      websocketRef.current.close();
+      websocketRef.current = null;
+    }
+  };
+
+  const handleStartRecording = async () => {
+    try {
+      const ws = new WebSocket('ws://localhost:8000/ws/audio');
+      websocketRef.current = ws;
+
+      ws.onopen = () => {
+        console.log(' WebSocket connected successfully');
+      };
+
+      ws.onmessage = event => {
+        console.log('Received message from backend:', event.data);
+        try {
+          const response = JSON.parse(event.data);
+          console.log('Parsed transcription response:', response);
+
+          if (response.text) {
+            setDictationText(prev => {
+              const newText = prev + ' ' + response.text;
+              onDictationTextChange(newText);
+              return newText;
+            });
+          }
+        } catch (e) {
+          console.log(' Received plain text:', event.data);
+          setDictationText(prev => {
+            const newText = prev + ' ' + event.data;
+            onDictationTextChange(newText);
+            return newText;
+          });
+        }
+      };
+
+      ws.onerror = error => {
+        console.error(' WebSocket error:', error);
+      };
+
+      ws.onclose = event => {
+        console.log(' WebSocket disconnected:', event.code, event.reason);
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { sampleRate: 16000, channelCount: 1 },
+      });
+      mediaStreamRef.current = stream;
+
+      const audioCtx = new (window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)({
+        sampleRate: 16000,
+      });
+      audioContextRef.current = audioCtx;
+      console.log(' AudioContext created with sample rate:', audioCtx.sampleRate);
+
+      const source = audioCtx.createMediaStreamSource(stream);
+      const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+      processorRef.current = processor;
+
+      let audioChunkCount = 0;
+
+      processor.onaudioprocess = event => {
+        if (
+          shouldProcessAudioRef.current &&
+          websocketRef.current &&
+          websocketRef.current.readyState === WebSocket.OPEN
+        ) {
+          const inputData = event.inputBuffer.getChannelData(0);
+          const pcmData = new Int16Array(inputData.length);
+
+          for (let i = 0; i < inputData.length; i++) {
+            pcmData[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768));
+          }
+
+          audioChunkCount++;
+          console.log(`Sending audio chunk #${audioChunkCount} to backend:`, {
+            samples: pcmData.length,
+            bytes: pcmData.buffer.byteLength,
+            websocketState: websocketRef.current.readyState,
+          });
+
+          try {
+            websocketRef.current.send(pcmData.buffer);
+          } catch (error) {
+            console.error(' Error sending audio data:', error);
+          }
+        }
+      };
+
+      source.connect(processor);
+      processor.connect(audioCtx.destination);
+
+      setIsRecording(true);
+      setIsPaused(false);
+      setDictationText('');
+      onDictationTextChange('');
+      shouldProcessAudioRef.current = true;
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+    }
+  };
+
+  const handlePauseRecording = () => {
+    if (!isRecording) {
+      return;
+    }
+    setIsPaused(prev => {
+      const newPausedState = !prev;
+      console.log(newPausedState ? ' Recording paused' : 'Recording resumed');
+      return newPausedState;
+    });
+  };
+
+  const handleStopRecording = () => {
+    setIsRecording(false);
+    setIsPaused(false);
+    shouldProcessAudioRef.current = false;
+    cleanupAudioResources();
+  };
+
+  const handleSubmit = () => {
+    onSubmit();
+    setDictationText('');
+    onDictationTextChange('');
+  };
+
+  useEffect(() => {
+    return () => {
+      cleanupAudioResources();
+    };
+  }, []);
+
   return (
     <Card className="h-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold">Dictation</CardTitle>
       </CardHeader>
       <CardContent className="flex h-full flex-col space-y-4">
-        {/* Instructions */}
         <div className="muted-foreground space-y-1 text-sm">
           <p>Dictate clinical findings and describe what you observe.</p>
           <p>Voice punctuation: say &quot;period&quot;, &quot;comma&quot;, etc...</p>
         </div>
 
-        {/* Control Buttons */}
         <div className="flex gap-2">
           <Button
             variant={isRecording && !isPaused ? 'default' : 'secondary'}
             size="sm"
-            onClick={onStart}
+            onClick={handleStartRecording}
             disabled={isRecording && !isPaused}
             className="flex-1"
           >
-            Start
+            {isRecording && !isPaused ? 'Recording...' : 'Start'}
           </Button>
           <Button
             variant={isPaused ? 'default' : 'secondary'}
             size="sm"
-            onClick={onPause}
-            disabled={!isRecording || isPaused}
+            onClick={handlePauseRecording}
+            disabled={!isRecording}
             className="flex-1"
           >
-            Pause
+            {isPaused ? 'Resume' : 'Pause'}
           </Button>
           <Button
             variant="secondary"
             size="sm"
-            onClick={onStop}
+            onClick={handleStopRecording}
             disabled={!isRecording}
             className="flex-1"
           >
@@ -452,22 +570,28 @@ function DictationPanel({
           </Button>
         </div>
 
-        {/* Dictation Output Area */}
         <div className="min-h-0 flex-1">
           <div className="h-full overflow-y-auto rounded bg-black p-4 text-white">
-            <p className="muted-foreground text-center">
-              {dictationText || 'Start dictating.....'}
-            </p>
+            {dictationText ? (
+              <p className="whitespace-pre-wrap text-white">{dictationText}</p>
+            ) : (
+              <p className="muted-foreground text-center">
+                {isRecording
+                  ? isPaused
+                    ? 'Recording paused. Click Resume to continue...'
+                    : 'Listening... Speak now.'
+                  : 'Click Start to begin dictation...'}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="flex justify-end">
           <Button
             variant="default"
             size="sm"
-            onClick={onSubmit}
-            disabled={!dictationText || dictationText === 'Start dictating.....'}
+            onClick={handleSubmit}
+            disabled={!dictationText || dictationText.trim() === ''}
           >
             Submit
           </Button>
