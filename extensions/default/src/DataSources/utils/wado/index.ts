@@ -1,4 +1,4 @@
-import { listSeries, listSeriesInstances } from '../qido';
+import { listStudyInfo, listSeries, listSeriesInstances } from '../qido';
 import { retrieveInstanceMetadata } from './retrieveInstanceMetadata';
 import {
   dicomWebToDicomStructure,
@@ -15,7 +15,6 @@ import { addRetrieveBulkData } from './retrieveBulkData';
 import {DICOMwebClient} from 'dicomweb-client/types/api';
 import { generateWadoHeader } from '../headers';
 
-
 export type MetadataProvider = typeof classes.MetadataProvider;
 
 export interface APIDependencies {
@@ -26,6 +25,8 @@ export interface APIDependencies {
   userAuthenticationService?: UserAuthenticationService;
   getImageIdsForInstance?: (arg0: {}) => string;
 }
+
+const fullMetadataThreshold = 10;
 
 export async function retrieveMinimalSeriesMetadata (
   StudyInstanceUID,
@@ -44,6 +45,19 @@ export async function retrieveMinimalSeriesMetadata (
     getImageIdsForInstance
   } = api
   const enableStudyLazyLoad = false;
+
+  const studyInfo = (await listStudyInfo(qidoDicomWebClient, StudyInstanceUID)).pop();
+
+  if(studyInfo.instances <= fullMetadataThreshold) {
+    return retrieveFullSeriesMetadata(
+      StudyInstanceUID,
+      filters,
+      sortCriteria,
+      sortFunction,
+      madeInClient,
+      api
+    )
+  }
 
   // Discover list of series in study
   const seriesList = await listSeries(

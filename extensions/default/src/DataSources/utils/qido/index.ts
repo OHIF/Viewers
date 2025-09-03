@@ -57,7 +57,6 @@ function processResults(qidoStudies) {
       modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
     })
   );
-
   return studies;
 }
 
@@ -143,6 +142,25 @@ async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, query
   });
 
   return searchResult;
+}
+
+/**
+ *
+ * @param {string} studyInstanceUID - ID of study to return a list of series for
+ * @returns {Promise} - Resolves SeriesMetadata[] in study
+ */
+async function studyInfo(dicomWebClient, studyInstanceUID) {
+  // Series Description
+  // Already included?
+  const commaSeparatedFields = ['0008103E', '00080021', '0020000D'].join(',');
+  const queryParams = {
+    StudyInstanceUID: studyInstanceUID,
+    includefield: commaSeparatedFields,
+  };
+
+  return await dicomWebClient.searchForStudies({
+    queryParams: queryParams,
+  });
 }
 
 /**
@@ -262,6 +280,34 @@ function mapParams(params, options = {}) {
   return final;
 }
 
+async function StudyInfo(
+  dicomWebClient,
+  StudyInstanceUID,
+){
+  const results = await studyInfo(dicomWebClient, StudyInstanceUID);
+
+  return processResults(results);
+}
+
+async function listStudyInfo (
+  dicomWebClient,
+  StudyInstanceUID
+){
+  let promise;
+
+  // Create a promise to handle the data retrieval
+  promise = new Promise((resolve, reject) => {
+    StudyInfo(
+      dicomWebClient,
+      StudyInstanceUID
+    ).then(function(data) {
+      resolve(data);
+    }, reject);
+  });
+
+  return promise;
+}
+
 async function ListSeries(
   dicomWebClient,
   StudyInstanceUID,
@@ -329,4 +375,4 @@ function listSeriesInstances (
   return promise;
 }
 
-export { mapParams, search, processResults, listSeries, listSeriesInstances };
+export { mapParams, search, processResults, listStudyInfo, listSeries, listSeriesInstances };
