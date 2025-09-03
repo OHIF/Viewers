@@ -14,20 +14,51 @@
     "target": "ES2022",
     "outDir": "./dist",
     "paths": {
-      "@ohif/core": ["platform/core/src"],
-      "@ohif/ui": ["platform/ui/src"],
-      "@ohif/ui-next": ["platform/ui-next/src"],
-      "@ohif/i18n": ["platform/i18n/src"],
-      "@ohif/app": ["platform/app/src"],
-      "@ohif/extension-default": ["./extensions/default/src"],
-      "@ohif/extension-measurement-tracking": ["./extensions/measurement-tracking/src"],
-      "@ohif/extension-cornerstone-dicom-sr": ["./extensions/cornerstone-dicom-sr/src"],
-      "@ohif/extension-cornerstone-dicom-seg": ["./extensions/cornerstone-dicom-seg/src"],
-      "@ohif/extension-ultrasound-pleura-bline": ["./extensions/usAnnotation/src"],
-      "@ohif/mode-ultrasound-pleura-bline": ["./modes/usAnnotation/src"],
-      "@ohif/extension-cornerstone": ["./extensions/cornerstone/src"],
-      "@ohif/extension-dicom-pdf": ["./extensions/dicom-pdf/src"],
-      "@state": ["./platform/app/src/state"]
+      "@ohif/core": [
+        "platform/core/src"
+      ],
+      "@ohif/ui": [
+        "platform/ui/src"
+      ],
+      "@ohif/ui-next": [
+        "platform/ui-next/src"
+      ],
+      "@ohif/i18n": [
+        "platform/i18n/src"
+      ],
+      "@ohif/app": [
+        "platform/app/src"
+      ],
+      "@xylexa/xylexa-app": [
+        "platform/xylexa"
+      ],
+      "@ohif/extension-default": [
+        "./extensions/default/src"
+      ],
+      "@ohif/extension-measurement-tracking": [
+        "./extensions/measurement-tracking/src"
+      ],
+      "@ohif/extension-cornerstone-dicom-sr": [
+        "./extensions/cornerstone-dicom-sr/src"
+      ],
+      "@ohif/extension-cornerstone-dicom-seg": [
+        "./extensions/cornerstone-dicom-seg/src"
+      ],
+      "@ohif/extension-ultrasound-pleura-bline": [
+        "./extensions/usAnnotation/src"
+      ],
+      "@ohif/mode-ultrasound-pleura-bline": [
+        "./modes/usAnnotation/src"
+      ],
+      "@ohif/extension-cornerstone": [
+        "./extensions/cornerstone/src"
+      ],
+      "@ohif/extension-dicom-pdf": [
+        "./extensions/dicom-pdf/src"
+      ],
+      "@state": [
+        "./platform/app/src/state"
+      ]
     }
   },
   "include": [
@@ -37,5 +68,8 @@
     "modes/**/src/**/*",
     "tests/**/*"
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

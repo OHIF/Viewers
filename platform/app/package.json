@@ -103,7 +103,8 @@
     "react-shepherd": "6.1.1",
     "shepherd.js": "13.0.3",
     "url-loader": "^4.1.1",
-    "zustand": "4.5.5"
+    "zustand": "4.5.5",
+    "@xylexa/xylexa-app": "1.0.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-methods": "^7.27.1",

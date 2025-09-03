@@ -16,6 +16,7 @@ module.exports = {
     '../../node_modules/@ohif/ui/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/ui-next/src/**/*.{js,jsx,ts,tsx,css}',
     '../../node_modules/@ohif/extension-*/src/**/*.{js,jsx,css, ts,tsx}',
+    '@xylexa/xylexa-app/src/**/*.{jsx,js,ts,tsx, css}',
   ],
   theme: {
     fontFamily: {

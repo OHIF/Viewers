@@ -66,6 +66,7 @@
     "lodash.merge": "^4.6.2",
     "lodash.zip": "^4.2.0",
     "shader-loader": "^1.3.1",
-    "worker-loader": "^3.0.8"
+    "worker-loader": "^3.0.8",
+    "@xylexa/xylexa-app": "1.0.0"
   }
 }

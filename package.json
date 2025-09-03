@@ -11,7 +11,8 @@
       "platform/i18n",
       "extensions/*",
       "modes/*",
-      "addOns/externals/*"
+      "addOns/externals/*",
+      "platform/xylexa"
     ],
     "nohoist": [
       "**/html-minifier-terser"
