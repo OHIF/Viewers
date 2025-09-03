@@ -1,6 +1,6 @@
 
 import dcmjs from 'dcmjs';
-import { fixBulkDataURI } from '../utils/fixBulkDataURI';
+import { fixBulkDataURI } from '../fixBulkDataURI';
 
 const { DicomMetaDictionary } = dcmjs.data;
 const { naturalizeDataset } = DicomMetaDictionary;

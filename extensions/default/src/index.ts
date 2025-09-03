@@ -15,10 +15,10 @@ import preRegistration from './init';
 import { createReportDialogPrompt } from './Panels';
 
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
-import * as dicomWebUtils from './DicomWebDataSource/utils';
+import * as dicomWebUtils from './DataSources/utils';
 import createReportAsync from './Actions/createReportAsync';
-import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
-import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
+import StaticWadoClient from './DataSources/DicomWebDataSource/utils/StaticWadoClient';
+import { cleanDenaturalizedDataset } from './DataSources/utils';
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useViewportGridStore } from './stores/useViewportGridStore';
 import { useUIStateStore } from './stores/useUIStateStore';

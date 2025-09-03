@@ -3,8 +3,8 @@
  * by the viewer.
  */
 import dcmjs from 'dcmjs';
-import { getImageIdsForInstance } from './utils/getImageId';
-import { DicomWebConfig } from './utils/dicomWebConfig';
+import { getImageIdsForInstance } from '../getImageId';
+import { DicomWebConfig } from '../dicomWebConfig';
 import {
   DicomReferenceMetadata,
   DicomSeriesHeaderMetaData,
@@ -12,7 +12,7 @@ import {
   DicomStructureData,
   DicomStudyMetaData,
   RawDicomInstances,
-} from './utils/Types';
+} from '../Types';
 
 const { DicomMetaDictionary } = dcmjs.data;
 const { naturalizeDataset } = DicomMetaDictionary;
@@ -28,7 +28,7 @@ const { naturalizeDataset } = DicomMetaDictionary;
  *
  * @param instances list of settled promises containing fulfilled promises
  */
-export function dicomWebToRawDicomInstances(instances: any[]): RawDicomInstances {
+export function dicomWebToRawDicomInstances(instances: Promise<any[]>|any[]): RawDicomInstances {
   const rawInstances = instances.value ? instances.value : instances
   return rawInstances.map((promise) => promise.value ? promise.value : promise);
 }

@@ -2,12 +2,12 @@
 // TODO: Use constructor to create an instance of IWebClientApi
 // TODO: Use existing DICOMWeb configuration (previously, appConfig, to configure instance)
 
-import { createDicomWebApi } from './DicomWebDataSource/index';
-import { createDicomWebMinimalApi } from './DicomWebMinimalDataSource/index';
-import { createDicomJSONApi } from './DicomJSONDataSource/index';
-import { createDicomLocalApi } from './DicomLocalDataSource/index';
-import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
-import { createMergeDataSourceApi } from './MergeDataSource/index';
+import { createDicomWebApi } from './DataSources/DicomWebDataSource/index';
+import { createDicomWebMinimalApi } from './DataSources/DicomWebMinimalDataSource/index';
+import { createDicomJSONApi } from './DataSources/DicomJSONDataSource/index';
+import { createDicomLocalApi } from './DataSources/DicomLocalDataSource/index';
+import { createDicomWebProxyApi } from './DataSources/DicomWebProxyDataSource/index';
+import { createMergeDataSourceApi } from './DataSources/MergeDataSource/index';
 
 /**
  *

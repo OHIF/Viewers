@@ -1,5 +1,5 @@
-import retrieveMetadataFiltered from './utils/retrieveMetadataFiltered.js';
-import RetrieveMetadata from './wado/retrieveMetadata.js';
+import retrieveMetadataFiltered from './retrieveMetadataFiltered.js';
+import RetrieveMetadata from './retrieveMetadata.js';
 
 const moduleName = 'RetrieveStudyMetadata';
 // Cache for promises. Prevents unnecessary subsequent calls to the server

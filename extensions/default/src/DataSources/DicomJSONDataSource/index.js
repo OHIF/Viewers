@@ -3,7 +3,7 @@ import OHIF from '@ohif/core';
 import qs from 'query-string';
 
 import {getImageId, getImageIdsForInstance} from '../DicomWebDataSource/utils/getImageId';
-import getDirectURL from '../utils/getDirectURL';
+import {getDirectURL} from '../utils';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 

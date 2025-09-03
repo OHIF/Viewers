@@ -1,7 +1,7 @@
 import dcmjs from 'dcmjs';
 import { sortStudySeries } from '@ohif/core/src/utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
-import {DeferredPromise} from '../utils/Types'
+import {DeferredPromise} from '../Types'
 
 // Series Date, Series Time, Series Description and Series Number to be included
 // in the series metadata query result
