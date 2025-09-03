@@ -2,7 +2,7 @@ import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
 import qs from 'query-string';
 
-import {getImageId, getImageIdsForInstance} from '../DicomWebDataSource/utils/getImageId';
+import {getImageId} from '../DicomWebDataSource/utils/getImageId';
 import {getDirectURL} from '../utils';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
@@ -60,6 +60,7 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
+  let dicomJsonConfigCopy = JSON.parse(JSON.stringify(dicomJsonConfig));
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
@@ -299,7 +300,16 @@ function createDicomJSONApi(dicomJsonConfig) {
 
       return imageIds;
     },
-    getImageIdsForInstance: getImageIdsForInstance,
+    getImageIdsForInstance({ instance, frame = undefined }) {
+      return getImageId({
+        instance,
+        frame,
+        config: dicomJsonConfig,
+      });
+    },
+    getConfig() {
+      return dicomJsonConfigCopy;
+    },
     getStudyInstanceUIDs: ({ params, query }) => {
       const url = query.get('url');
       return _store.studyInstanceUIDMap.get(url);
