@@ -1,5 +1,5 @@
 import { api } from 'dicomweb-client';
-import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
+import { IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
 
 import {
   mapParams,
@@ -11,11 +11,11 @@ import {
   deleteStudyMetadataPromise,
   StaticWadoClient,
   getDirectURL,
-  HeadersInterface,
   denaturalizeDataset,
   DicomWebConfig,
   retrieveFullSeriesMetadata,
   retrieveSeriesMetadataAsync,
+  generateAuthorizationHeader,
 } from '../utils';
 
 import dcm4cheeReject from './dcm4cheeReject.js';
@@ -39,8 +39,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     wadoConfig,
     qidoDicomWebClient,
     wadoDicomWebClient,
-    getAuthorizationHeader,
-    generateWadoHeader;
+    getAuthorizationHeader;
   // Default to enabling bulk data retrieves, with no other customization as
   // this is part of hte base standard.
   dicomWebConfig.bulkDataURI ||= { enabled: true };
@@ -55,37 +54,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       }
 
       getAuthorizationHeader = () => {
-        const xhrRequestHeaders: HeadersInterface = {};
-        const authHeaders = userAuthenticationService.getAuthorizationHeader();
-        if (authHeaders && authHeaders.Authorization) {
-          xhrRequestHeaders.Authorization = authHeaders.Authorization;
-        }
-        return xhrRequestHeaders;
-      };
-
-      generateWadoHeader = (includeTransferSyntax: boolean = true): HeadersInterface => {
-        const authorizationHeader = getAuthorizationHeader();
-        if (includeTransferSyntax) {
-          //Generate accept header depending on config params
-          const formattedAcceptHeader = utils.generateAcceptHeader(
-            dicomWebConfig.acceptHeader,
-            dicomWebConfig.requestTransferSyntaxUID,
-            dicomWebConfig.omitQuotationForMultipartRequest
-          );
-          return {
-            ...authorizationHeader,
-            Accept: formattedAcceptHeader,
-          };
-        } else {
-          // The base header will be included in the request. We simply skip customization options around
-          // transfer syntaxes and whether the request is multipart. In other words, a request in
-          // which the server expects Accept: application/dicom+json will still include that in the
-          // header.
-          return {
-            ...authorizationHeader
-          };
-        }
-      };
+        return generateAuthorizationHeader(userAuthenticationService);
+      }
 
       qidoConfig = {
         url: dicomWebConfig.qidoRoot,

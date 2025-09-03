@@ -1,5 +1,5 @@
 import { api } from 'dicomweb-client';
-import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
+import { IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
 
 import {
   mapParams,
