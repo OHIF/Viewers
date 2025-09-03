@@ -12,6 +12,9 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
     return acc;
   }, {});
 
+  console.log('measurement', measurement);
+  console.log('imageId', imageId);
+  console.log('frameNumber', frameNumber);
   const { TrackingUniqueIdentifier } = measurement;
   const { ValueType: valueType, GraphicType: graphicType } = measurement.coords[0];
   const graphicTypePoints = renderableData[graphicType];
