@@ -206,7 +206,7 @@ export async function retrieveFullSeriesMetadata (
   wadoDicomWebClient.headers = generateWadoHeader(
     userAuthenticationService,
     dicomWebConfig,
-    true
+    false
   );
   // data is all SOPInstanceUIDs
   const data = await retrieveStudyMetadata(
@@ -310,7 +310,7 @@ export async function retrieveSeriesMetadataAsync (
   wadoDicomWebClient.headers = generateWadoHeader(
     userAuthenticationService,
     dicomWebConfig,
-    true
+    false
   );
   // Get Series
   const results: RetrieveStudyMetadataInterface =

@@ -1,3 +1,7 @@
+/**
+ * Basic imports from dcmjs.
+ */
+
 import dcmjs from 'dcmjs';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
