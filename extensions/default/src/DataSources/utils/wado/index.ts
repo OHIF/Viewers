@@ -17,6 +17,10 @@ import { generateWadoHeader } from '../headers';
 
 export type MetadataProvider = typeof classes.MetadataProvider;
 
+/**
+ * Minimum state to pass from an instance of a Dicom Data Source API instance so that we can execute
+ * metadata retrieval.
+ */
 export interface APIDependencies {
   qidoDicomWebClient: DICOMwebClient;
   wadoDicomWebClient: DICOMwebClient;
@@ -26,8 +30,26 @@ export interface APIDependencies {
   getImageIdsForInstance?: (arg0: {}) => string;
 }
 
+/**
+ * Experimental threshold used to determine if to retrieve the full metadata bundle for the study
+ * or retrieve the bare minimum required for the viewer to function. This is part of an optimization
+ * effort.
+ */
 const fullMetadataThreshold = 10;
 
+/**
+ * Attempts to retrieve the minimum amount of metadata necessary to allow the viewer to operate.
+ * Because small bundles of metadata may be retrieved faster, we check if the study has enough slices
+ * before requesting individual chunks of metadata. If the study has too few slices, we default to
+ * the old behavior of retrieving the full metadata.
+ *
+ * @param {string} StudyInstanceUID
+ * @param {Object} filters
+ * @param {???} sortCriteria
+ * @param {Function} sortFunction
+ * @param {boolean} madeInClient
+ * @param {APIDependencies} api
+ */
 export async function retrieveMinimalSeriesMetadata (
   StudyInstanceUID,
   filters,
@@ -151,6 +173,17 @@ export async function retrieveMinimalSeriesMetadata (
   return seriesSummaryMetadata;
 }
 
+/**
+ * Downloads the full set of metadata as one chunk for a given study. This can be potentially expensive
+ * even with the aid of DEFLATE. I have seen as much as 29 MB transfers for a study with several CTs.
+ *
+ * @param {string} StudyInstanceUID
+ * @param {Object} filters
+ * @param {???} sortCriteria
+ * @param {Function} sortFunction
+ * @param {boolean} madeInClient
+ * @param {APIDependencies} api
+ */
 export async function retrieveFullSeriesMetadata (
   StudyInstanceUID,
   filters,
@@ -239,6 +272,21 @@ export async function retrieveFullSeriesMetadata (
   return seriesSummaryMetadata;
 }
 
+/**
+ * Like retrieveFullSeriesMetadata, this function retrieves the metadata
+ * for the study. However, it does this asynchronously such that its effect is more like
+ * retrieveMinimalSeriesMetadata. The difference is that retrieveMinimalSeriesMetadata is synchronous
+ * (blocks), whereas this function does not block and thus gets you to the viewer UI faster.
+ * The main consideration is that the async calls started here relies on pre-flighting the request so
+ * beware of CORS conflicts if your environment is not configured correctly.
+ *
+ * @param {string} StudyInstanceUID
+ * @param {Object} filters
+ * @param {???} sortCriteria
+ * @param {Function} sortFunction
+ * @param {boolean} madeInClient
+ * @param {APIDependencies} api
+ */
 export async function retrieveSeriesMetadataAsync (
   StudyInstanceUID,
   filters,
