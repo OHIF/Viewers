@@ -107,8 +107,8 @@ export type BulkDataURIConfig = {
  */
 function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   const { userAuthenticationService } = servicesManager.services;
-  let dicomWebConfigCopy,
-    qidoConfig,
+  const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
+  let qidoConfig,
     wadoConfig,
     qidoDicomWebClient,
     wadoDicomWebClient,
@@ -126,8 +126,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           query,
         });
       }
-
-      dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
       getAuthorizationHeader = () => {
         const xhrRequestHeaders: HeadersInterface = {};

@@ -43,6 +43,7 @@ const customSort = (seriesA, seriesB) => {
 
 function createDicomLocalApi(dicomLocalConfig) {
   const { name } = dicomLocalConfig;
+  const dicomLocalConfigCopy = JSON.parse(JSON.stringify(dicomLocalConfig));
 
   const implementation = {
     initialize: ({ params, query }) => {},
@@ -233,6 +234,9 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     deleteStudyMetadataPromise() {
       console.log('deleteStudyMetadataPromise not implemented');
+    },
+    getConfig() {
+      return dicomLocalConfigCopy;
     },
     getStudyInstanceUIDs: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;

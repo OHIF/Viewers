@@ -60,7 +60,7 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
-  let dicomJsonConfigCopy = JSON.parse(JSON.stringify(dicomJsonConfig));
+  const dicomJsonConfigCopy = JSON.parse(JSON.stringify(dicomJsonConfig));
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {

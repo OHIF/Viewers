@@ -173,6 +173,7 @@ function createMergeDataSourceApi(
 ) {
   const { seriesMerge } = mergeConfig;
   const { dataSourceNames, defaultDataSourceName } = seriesMerge;
+  const mergeConfigCopy = JSON.parse(JSON.stringify(mergeConfig));
 
   const implementation = {
     initialize: (...args: unknown[]) =>
@@ -286,6 +287,9 @@ function createMergeDataSourceApi(
         dataSourceNames,
         defaultDataSourceName,
       }),
+    getConfig() {
+      return mergeConfigCopy;
+    },
   };
 
   return IWebApiDataSource.create(implementation);

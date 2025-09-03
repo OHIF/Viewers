@@ -44,8 +44,8 @@ const metadataProvider = classes.MetadataProvider;
  */
 function createDicomWebMinimalApi(dicomWebConfig: DicomWebConfig, servicesManager) {
   const { userAuthenticationService } = servicesManager.services;
-  let dicomWebConfigCopy,
-    qidoConfig,
+  const dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
+  let qidoConfig,
     wadoConfig,
     qidoDicomWebClient,
     wadoDicomWebClient,
@@ -63,8 +63,6 @@ function createDicomWebMinimalApi(dicomWebConfig: DicomWebConfig, servicesManage
           query,
         });
       }
-
-      dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
       getAuthorizationHeader = () => {
         const xhrRequestHeaders: HeadersInterface = {};
