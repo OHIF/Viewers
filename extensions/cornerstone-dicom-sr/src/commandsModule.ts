@@ -2,7 +2,7 @@ import { metaData, utilities } from '@cornerstonejs/core';
 
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import dcmjs from 'dcmjs';
-import { adaptersSR } from '@cornerstonejs/adapters';
+import { adaptersSR, NO_IMAGE_ID as ADAPTER_NO_IMAGE_ID } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
@@ -27,10 +27,13 @@ interface Options {
  *
  */
 const _generateReport = (measurementData, additionalFindingTypes, options: Options = {}) => {
+  console.log('measurementData generate reports', measurementData);
   const filteredToolState = getFilteredCornerstoneToolState(
     measurementData,
     additionalFindingTypes
   );
+  console.log('filteredToolState', filteredToolState);
+  console.log('metaData', metaData);
 
   const report = MeasurementReport.generateReport(
     filteredToolState,
@@ -38,7 +41,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     utilities.worldToImageCoords,
     options
   );
-
+  console.log('report', report);
   const { dataset } = report;
 
   // Set the default character set as UTF-8
@@ -112,24 +115,28 @@ const commandsModule = (props: withAppTypes) => {
       // Use the @cornerstonejs adapter for converting to/from DICOM
       // But it is good enough for now whilst we only have cornerstone as a datasource.
       log.info('[DICOMSR] storeMeasurements');
-
+      console.log('measurementData store measurements', measurementData);
       if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
         log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
         return Promise.reject({});
       }
 
       try {
+        console.log('measurementData', measurementData);
         const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, options);
+        console.log('naturalizedReport', naturalizedReport);
 
         const { StudyInstanceUID, ContentSequence } = naturalizedReport;
         // The content sequence has 5 or more elements, of which
         // the `[4]` element contains the annotation data, so this is
         // checking that there is some annotation data present.
+
         if (!ContentSequence?.[4].ContentSequence?.length) {
           console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
         }
 
+        console.log('customizationService', customizationService);
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
 
         let dicomDict;
@@ -137,12 +144,16 @@ const commandsModule = (props: withAppTypes) => {
           dicomDict = onBeforeDicomStore({ dicomDict, measurementData, naturalizedReport });
         }
 
+        console.log('dicomDict', dicomDict);
+
         await dataSource.store.dicom(naturalizedReport, null, dicomDict);
 
+        console.log('StudyInstanceUID', StudyInstanceUID);
         if (StudyInstanceUID) {
           dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
         }
 
+        console.log('naturalizedReport', naturalizedReport);
         // The "Mode" route listens for DicomMetadataStore changes
         // When a new instance is added, it listens and
         // automatically calls makeDisplaySets

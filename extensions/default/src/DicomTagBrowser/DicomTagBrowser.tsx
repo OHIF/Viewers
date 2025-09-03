@@ -315,6 +315,7 @@ function getRows(metadata, depth = 0) {
   for (let i = 0; i < keywords.length; i++) {
     let keyword = keywords[i];
 
+    console.log('keyword', keyword);
     if (keyword === '_vrMap') {
       continue;
     }

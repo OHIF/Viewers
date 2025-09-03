@@ -26,7 +26,6 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     measurementFilter = filterAnd(
       filterMeasurementsByStudyUID(StudyInstanceUID),
       filterMeasurementsBySeriesUID(trackedSeries),
-      filterPlanarMeasurement
     ),
     defaultSaveTitle = 'Create Report',
   } = ctx;
@@ -53,6 +52,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
 
       const { SeriesDate, SeriesTime } = referenceDisplaySet ?? getSeriesDateTime();
 
+      console.log('SeriesNumber InstanceNumber', SeriesNumber, InstanceNumber);
       const getReport = async () => {
         return commandsManager.runCommand(
           'storeMeasurements',

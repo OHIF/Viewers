@@ -50,7 +50,7 @@ export default function hydrateStructuredReport(
   const codingValues = customizationService.getCustomization('codingValues');
   const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
-  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const displaySet: any = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = measurementService.getSourceMappings(
@@ -97,10 +97,12 @@ export default function hydrateStructuredReport(
     // the measurementGroups in the instance.
     sopInstanceUIDToImageId,
     utilities.imageToWorldCoords,
-    metaData
+    metaData,
+    undefined
   );
 
-  const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
+  const onBeforeSRHydrationCustomization = customizationService.getCustomization('onBeforeSRHydration');
+  const onBeforeSRHydration = (onBeforeSRHydrationCustomization as any)?.value ?? onBeforeSRHydrationCustomization;
 
   if (typeof onBeforeSRHydration === 'function') {
     storedMeasurementByAnnotationType = onBeforeSRHydration({
@@ -183,11 +185,22 @@ export default function hydrateStructuredReport(
         // StudyInstanceUID,
       } = instance;
 
+      // Allow remapping adapter tool types back to custom app tools on hydration
+      let effectiveAnnotationType = annotationType;
+      const points = toolData?.annotation?.data?.handles?.points;
+      const is3DPoints = Array.isArray(points) && points.length > 0 && Array.isArray(points[0]) && points[0].length === 3;
+      if (
+        annotationType === 'Probe' &&
+        (toolData?.annotation?.metadata?.valueType === 'SCOORD3D' || is3DPoints)
+      ) {
+        effectiveAnnotationType = 'CustomProbe';
+      }
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
-          toolName: annotationType,
+          toolName: effectiveAnnotationType,
           referencedImageId: imageId,
           FrameOfReferenceUID,
         },
@@ -206,11 +219,11 @@ export default function hydrateStructuredReport(
         }
       });
 
-      const matchingMapping = mappings.find(m => m.annotationType === annotationType);
+      const matchingMapping = mappings.find(m => m.annotationType === effectiveAnnotationType);
 
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
-        annotationType,
+        effectiveAnnotationType,
         { annotation },
         matchingMapping.toMeasurementSchema,
         dataSource

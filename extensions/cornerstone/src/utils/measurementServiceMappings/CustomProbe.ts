@@ -4,6 +4,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
+import { metaData } from '@cornerstonejs/core';
 const Probe = {
   toAnnotation: measurement => {},
 
@@ -41,6 +42,7 @@ const Probe = {
     let volumeInfo = null;
     let displaySet = null;
 
+    console.log('FrameOfReferenceUID', FrameOfReferenceUID);
     // Check if we can get volume info from the annotation's FrameOfReferenceUID
     if (FrameOfReferenceUID) {
       // Find displaySet by FrameOfReferenceUID (volume-based)
@@ -67,11 +69,19 @@ const Probe = {
       return null;
     }
 
-    // Check if this is a volume-based annotation
-    const isVolumeBasedAnnotation = !metadata.referencedImageId ||
-                                   metadata.referencedImageId.startsWith('volumeId:');
-
     const { points } = data.handles;
+    // Resolve referencedImageId when missing by choosing closest image plane to first 3D point
+    const firstPoint = points && points[0];
+    const resolvedReferencedImageId = metadata.referencedImageId ||
+      (firstPoint && displaySet ? getClosestReferencedImageIdForPoint(displaySet, firstPoint) : undefined);
+
+
+    // add resolvedReferencedImageId to metadata
+    metadata.referencedImageId = resolvedReferencedImageId;
+
+    // Check if this is a volume-based annotation
+    const isVolumeBasedAnnotation = !resolvedReferencedImageId ||
+                                   (typeof resolvedReferencedImageId === 'string' && resolvedReferencedImageId.startsWith('volumeId:'));
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
     const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService, points);
     const getReport = () =>
@@ -81,23 +91,18 @@ const Probe = {
       uid: annotationUID,
       // For volume-based measurements, use volumeId instead of SOPInstanceUID
       SOPInstanceUID: isVolumeBasedAnnotation ? undefined : getSOPInstanceAttributes(
-        metadata.referencedImageId,
+        resolvedReferencedImageId,
         displaySetService,
         annotation
       ).SOPInstanceUID,
       FrameOfReferenceUID,
       points,
-      metadata: {
-        ...metadata,
-        // Add volume-specific metadata
-        isVolumeBasedAnnotation,
-        volumeId: isVolumeBasedAnnotation ? `cornerstoneStreamingImageVolume:${displaySet.displaySetInstanceUID}` : undefined,
-      },
+      metadata,
       isLocked,
       isVisible,
       referenceSeriesUID: displaySet.SeriesInstanceUID,
       referenceStudyUID: displaySet.StudyInstanceUID,
-      referencedImageId: metadata.referencedImageId, // Keep for compatibility
+      referencedImageId: resolvedReferencedImageId,
       frameNumber: mappedAnnotations?.[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -264,3 +269,42 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService, poi
 }
 
 export default Probe;
+
+function getClosestReferencedImageIdForPoint(displaySet, point) {
+  const imageIds = displaySet?.imageIds || [];
+  if (!imageIds.length || !point || point.length !== 3) {
+    return undefined;
+  }
+
+  let minDistance = Number.POSITIVE_INFINITY;
+  let closestImageId = undefined;
+
+  for (let i = 0; i < imageIds.length; i++) {
+    const imageId = imageIds[i];
+    const ipm = metaData.get('imagePlaneModule', imageId);
+    if (!ipm || !ipm.imagePositionPatient || !ipm.rowCosines || !ipm.columnCosines) {
+      continue;
+    }
+
+    const ipp = ipm.imagePositionPatient;
+    const row = ipm.rowCosines;
+    const col = ipm.columnCosines;
+
+    const nx = row[1] * col[2] - row[2] * col[1];
+    const ny = row[2] * col[0] - row[0] * col[2];
+    const nz = row[0] * col[1] - row[1] * col[0];
+
+    const vx = point[0] - ipp[0];
+    const vy = point[1] - ipp[1];
+    const vz = point[2] - ipp[2];
+
+    const distance = Math.abs(nx * vx + ny * vy + nz * vz);
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestImageId = imageId;
+    }
+  }
+
+  return closestImageId;
+}
