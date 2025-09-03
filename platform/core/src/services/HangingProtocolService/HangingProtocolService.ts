@@ -1463,6 +1463,8 @@ export default class HangingProtocolService extends PubSubService {
     const requiredRules = seriesMatchingRules.filter(rule => rule.required);
     if (requiredRules.length) {
       const matched = this.protocolEngine.findMatch(displaySet, requiredRules);
+      console.log('matched', matched);
+      console.log('requiredRules', requiredRules);
 
       if (!matched || matched.score === 0) {
         throw new Error(

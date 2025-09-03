@@ -58,6 +58,17 @@ function TrackedMeasurementsContextProvider(
         trackedMeasurements[0]
       );
 
+      // If the first tracked measurement is a CustomProbe, use a volume-aware jump
+      // This preserves MPR orientation and works for both volume and stack viewports
+      if (trackedMeasurements?.[0]?.toolName === 'CustomProbe' && trackedMeasurements?.[0]?.uid) {
+        try {
+          commandsManager.runCommand('jumpToCustomProbe', { uid: trackedMeasurements[0].uid });
+          return;
+        } catch (e) {
+          console.warn('Failed to jump to CustomProbe via command, falling back to stack logic', e);
+        }
+      }
+
       const referencedDisplaySetUID = trackedMeasurements[0].displaySetInstanceUID;
       const referencedDisplaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetUID);
 

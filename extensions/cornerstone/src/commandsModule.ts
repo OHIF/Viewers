@@ -564,22 +564,36 @@ function commandsModule({
         return;
       }
 
-      // Find all viewports that have the same FrameOfReferenceUID
+      // Find all viewports that are relevant to the measurement
+      // Prefer matching by the viewport's actual FrameOfReferenceUID, since
+      // volume viewports may not list matching display sets explicitly.
       const relevantViewports = [];
 
       // Get all viewport IDs
       const allViewportIds = Array.from(cornerstoneViewportService.viewportsById.keys());
 
       allViewportIds.forEach(viewportId => {
-        const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
+        const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        let matchesFoR = false;
 
-        // Check if this viewport shows the same FrameOfReferenceUID or displaySetInstanceUID
-        const hasMatchingFrame = viewportDisplaySets?.some(ds =>
-          ds.FrameOfReferenceUID === measurement.FrameOfReferenceUID ||
-          ds.displaySetInstanceUID === measurement.displaySetInstanceUID
-        );
+        try {
+          const viewportFoR = cornerstoneViewport?.getFrameOfReferenceUID?.();
+          matchesFoR = Boolean(viewportFoR && viewportFoR === measurement.FrameOfReferenceUID);
+        } catch (_) {
+          matchesFoR = false;
+        }
 
-        if (hasMatchingFrame) {
+        if (!matchesFoR) {
+          // Fallback: check display sets associated with this viewport
+          const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
+          const hasMatchingFrame = viewportDisplaySets?.some(ds =>
+            ds.FrameOfReferenceUID === measurement.FrameOfReferenceUID ||
+            ds.displaySetInstanceUID === measurement.displaySetInstanceUID
+          );
+          matchesFoR = Boolean(hasMatchingFrame);
+        }
+
+        if (matchesFoR) {
           relevantViewports.push(viewportId);
         }
       });
