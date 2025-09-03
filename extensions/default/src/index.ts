@@ -17,7 +17,7 @@ import { createReportDialogPrompt } from './Panels';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DataSources/utils';
 import createReportAsync from './Actions/createReportAsync';
-import StaticWadoClient from './DataSources/DicomWebDataSource/utils/StaticWadoClient';
+import { StaticWadoClient } from './DataSources/utils';
 import { cleanDenaturalizedDataset } from './DataSources/utils';
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useViewportGridStore } from './stores/useViewportGridStore';

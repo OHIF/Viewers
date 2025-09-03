@@ -2,8 +2,7 @@ import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
 import qs from 'query-string';
 
-import {getImageId} from '../DicomWebDataSource/utils/getImageId';
-import {getDirectURL} from '../utils';
+import {getDirectURL, getImageId} from '../utils';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
