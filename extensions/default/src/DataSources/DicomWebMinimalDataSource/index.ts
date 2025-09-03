@@ -8,33 +8,18 @@ import {
   processResults,
   processSeriesResults,
   listSeries,
-  listSeriesInstances,
-  retrieveStudyMetadata,
   deleteStudyMetadataPromise,
-  retrieveInstanceMetadata,
-  generateInstanceMetaData,
-  generateStudyMetaData,
-  dicomWebToDicomStructure,
-  dicomWebToRawDicomInstances,
   getImageId,
-  addRetrieveBulkData,
   StaticWadoClient,
   getDirectURL,
   DicomWebConfig,
-  BulkDataURIConfig,
-  RetrieveStudyMetadataInterface,
-  DicomMetaDictionary,
   DicomDict,
   denaturalizeDataset,
-  HeadersInterface,
   generateAuthorizationHeader,
-  generateWadoHeader
-} from '../utils';
-import dcm4cheeReject from './dcm4cheeReject.js';
-import {
   retrieveMinimalSeriesMetadata,
   retrieveSeriesMetadataAsync,
-} from '../utils/wado/retrieveAPI';
+} from '../utils';
+import dcm4cheeReject from './dcm4cheeReject.js';
 
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-3.11.0';

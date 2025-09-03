@@ -1,4 +1,4 @@
-import { listSeries, listSeriesInstances } from '../qido/qido';
+import { listSeries, listSeriesInstances } from '../qido';
 import { retrieveInstanceMetadata } from './retrieveInstanceMetadata';
 import {
   dicomWebToDicomStructure,
@@ -10,7 +10,7 @@ import { DicomWebConfig } from '../dicomWebConfig';
 import {naturalizeDataset } from '../dicom';
 import { DicomMetadataStore, classes, UserAuthenticationService } from '@ohif/core';
 import { RetrieveStudyMetadataInterface } from '../Types';
-import { retrieveStudyMetadata } from './retrieveStudyMetadata';
+import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata';
 import { addRetrieveBulkData } from './retrieveBulkData';
 import {DICOMwebClient} from 'dicomweb-client/types/api';
 import { generateWadoHeader } from '../headers';
@@ -344,3 +344,5 @@ export async function retrieveSeriesMetadataAsync (
 
   return seriesSummaryMetadata;
 }
+
+export { retrieveStudyMetadata, deleteStudyMetadataPromise, retrieveInstanceMetadata }

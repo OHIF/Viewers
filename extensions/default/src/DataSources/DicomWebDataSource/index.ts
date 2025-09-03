@@ -8,23 +8,17 @@ import {
   processResults,
   processSeriesResults,
   getImageId,
-  retrieveStudyMetadata,
   deleteStudyMetadataPromise,
   StaticWadoClient,
   getDirectURL,
-  fixBulkDataURI,
   HeadersInterface,
-  naturalizeDataset,
   denaturalizeDataset,
   DicomWebConfig,
-  BulkDataURIConfig
+  retrieveFullSeriesMetadata,
+  retrieveSeriesMetadataAsync,
 } from '../utils';
 
 import dcm4cheeReject from './dcm4cheeReject.js';
-import {
-  retrieveFullSeriesMetadata,
-  retrieveSeriesMetadataAsync,
-} from '../utils/wado/retrieveAPI';
 
 const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
 const ImplementationVersionName = 'OHIF-3.11.0';

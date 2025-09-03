@@ -1,28 +1,32 @@
-import { fixBulkDataURI } from './fixBulkDataURI';
-import {
-  cleanDenaturalizedDataset,
-  transferDenaturalizedDataset,
-} from './cleanDenaturalizedDataset';
-
 export type {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
-
+export { generateAuthorizationHeader, generateWadoHeader } from './headers';
+export type { HeaderOptions } from './headers';
 
 export { fixMultiValueKeys } from './fixMultiValueKeys';
-
-export { fixBulkDataURI, cleanDenaturalizedDataset, transferDenaturalizedDataset };
+export { fixBulkDataURI } from './fixBulkDataURI';
+export {
+  cleanDenaturalizedDataset,
+  transferDenaturalizedDataset
+} from './cleanDenaturalizedDataset';
 
 export type { DicomWebConfig, BulkDataURIConfig } from './dicomWebConfig';
 export type { RetrieveStudyMetadataInterface } from './Types';
 
+/**
+ * Collect the main exports for WADO
+ */
 export {
   retrieveStudyMetadata,
-  deleteStudyMetadataPromise
-} from './wado/retrieveStudyMetadata.js';
+  deleteStudyMetadataPromise,
+  retrieveInstanceMetadata,
+  retrieveMinimalSeriesMetadata,
+  retrieveFullSeriesMetadata,
+  retrieveSeriesMetadataAsync
+} from './wado';
 
-export {
-  retrieveInstanceMetadata
-} from './wado/retrieveInstanceMetadata';
-
+/**
+ * Collect the main exports for QIDO
+ */
 export {
   mapParams,
   search as qidoSearch,
@@ -31,7 +35,7 @@ export {
   processSeriesResults,
   listSeries,
   listSeriesInstances,
-} from './qido/qido.js';
+} from './qido';
 
 export {
   generateInstanceMetaData,
