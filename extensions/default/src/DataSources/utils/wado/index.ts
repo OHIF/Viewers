@@ -345,7 +345,7 @@ export async function retrieveSeriesMetadataAsync (
       // Process all frames consistently, whether single or multiframe
       for (let i = 0; i < numberOfFrames; i++) {
         const frameNumber = i + 1;
-        const frameImageId = this.getImageIdsForInstance({
+        const frameImageId = getImageIdsForInstance({
           instance,
           frameNumber,
         });
@@ -361,7 +361,7 @@ export async function retrieveSeriesMetadataAsync (
       // Adding imageId to each instance
       // Todo: This is not the best way I can think of to let external
       // metadata handlers know about the imageId that is stored in the store
-      const imageId = this.getImageIdsForInstance({
+      const imageId = getImageIdsForInstance({
         instance,
       });
       instance.imageId = imageId;

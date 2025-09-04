@@ -195,14 +195,14 @@ function createDicomLocalApi(dicomLocalConfig) {
         if (NumberOfFrames > 1) {
           // in multiframe we start at frame 1
           for (let i = 1; i <= NumberOfFrames; i++) {
-            const imageId = this.getImageIdsForInstance({
+            const imageId = implementation.getImageIdsForInstance({
               instance,
               frame: i,
             });
             imageIds.push(imageId);
           }
         } else {
-          const imageId = this.getImageIdsForInstance({ instance });
+          const imageId = implementation.getImageIdsForInstance({ instance });
           imageIds.push(imageId);
         }
       });
