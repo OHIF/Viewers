@@ -4,7 +4,9 @@ import i18n from '@ohif/i18n';
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
 
-const sopClassUids = ['1.2.840.10008.5.1.4.1.1.481.3'];
+const { sopClassDictionary } = utils;
+
+const sopClassUids = [sopClassDictionary.RTStructureSetStorage];
 
 const loadPromises = {};
 
