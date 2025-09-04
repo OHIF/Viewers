@@ -27,6 +27,9 @@ export {
   ButtonEnums,
   ContextMenu,
   InputFilterText,
+  Svg,
+  LoadingIndicatorProgress,
+  ProgressLoadingBar,
 } from './components';
 
 /** These are mostly used in the docs */

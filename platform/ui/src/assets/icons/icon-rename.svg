@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12.8339446px" height="12.73108px" viewBox="0 0 12.8339446 12.73108" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-rename</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-218.9974, -64)">
+            <g id="icon-rename" transform="translate(215, 60)">
+                <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+                <g id="Group-29" transform="translate(5, 5)" stroke="#348CFD" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7.62511295,0.871568536 L9.85691246,3.10336805 L2.82291656,10.1381292 L-0.897323283,11.6258043 L0.590351811,7.90556444 L7.62511295,0.871568536 Z" id="Path"></path>
+                    <path d="M9.75273119,-0.5 C10.1567445,-0.5 10.5607578,-0.345874112 10.8690096,-0.0376223372 C11.1772614,0.270629438 11.3313873,0.674642763 11.3313873,1.07865609 C11.3313873,1.48266941 11.1772614,1.88668274 10.8688429,2.19510116 L9.75256454,3.31032741 L7.52105985,1.07882272 L8.63645277,-0.0376223372 C8.94470454,-0.345874112 9.34871787,-0.5 9.75273119,-0.5 Z" id="Path"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

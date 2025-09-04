@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-seg-shape</title>
+    <g id="tool-seg-shape" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" cx="16" cy="15" r="6"></circle>
+        <rect id="Rectangle" stroke="currentColor" stroke-width="1.5" x="3" y="3" width="13" height="13" rx="2"></rect>
+    </g>
+</svg>

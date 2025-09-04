@@ -36,6 +36,7 @@ import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
 import { ShepherdJourneyProvider } from 'react-shepherd';
 import './App.css';
+import { XylexaAppContextProvider } from '@xylexa/xylexa-app';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
@@ -163,12 +164,14 @@ function App({
   }
 
   return (
-    <CombinedProviders>
-      <BrowserRouter basename={routerBasename}>
-        {authRoutes}
-        {appRoutes}
-      </BrowserRouter>
-    </CombinedProviders>
+    <XylexaAppContextProvider>
+      <CombinedProviders>
+        <BrowserRouter basename={routerBasename}>
+          {authRoutes}
+          {appRoutes}
+        </BrowserRouter>
+      </CombinedProviders>
+    </XylexaAppContextProvider>
   );
 }
 

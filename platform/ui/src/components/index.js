@@ -21,6 +21,9 @@ import Typography from './Typography';
 import Button, { ButtonEnums } from './Button';
 import ContextMenu from './ContextMenu';
 import InputFilterText from './InputFilterText';
+import Svg from './Svg';
+import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import ProgressLoadingBar from './ProgressLoadingBar';
 
 export {
   ContextMenu,
@@ -48,4 +51,7 @@ export {
   Button,
   ButtonEnums,
   InputFilterText,
+  Svg,
+  LoadingIndicatorProgress,
+  ProgressLoadingBar,
 };

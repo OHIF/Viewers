@@ -76,7 +76,9 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "execa": "^8.0.1"
+    "dompurify": "^3.2.6",
+    "execa": "^8.0.1",
+    "mixpanel-browser": "^2.69.1"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
@@ -84,21 +86,21 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-arrow-functions": "^7.16.7",
     "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-for-of": "^7.27.1",
     "@babel/plugin-transform-object-rest-spread": "^7.28.0",
     "@babel/plugin-transform-private-methods": "^7.27.1",
     "@babel/plugin-transform-private-property-in-object": "^7.27.1",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-arrow-functions": "^7.16.7",
-    "@babel/plugin-transform-for-of": "^7.27.1",
     "@babel/plugin-transform-regenerator": "^7.16.7",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "^7.28.0",
     "@babel/preset-env": "7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
-    "babel-plugin-istanbul": "^7.0.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "babel-plugin-istanbul": "^7.0.0",
     "cypress": "14.5.2",
     "cypress-file-upload": "^5.0.8",
     "istanbul": "0.4.5",

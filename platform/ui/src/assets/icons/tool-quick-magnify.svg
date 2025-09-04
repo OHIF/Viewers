@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-zoom-in</title>
+    <g id="tool-zoom-in" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="12.75" cy="12.7491667" r="8.33333333"></circle>
+        <line x1="23.5833333" y1="23.5825" x2="18.6425" y2="18.6416667" id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+        <line x1="8.58333333" y1="12.7491667" x2="16.9166667" y2="12.7491667" id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+        <line x1="12.75" y1="8.5825" x2="12.75" y2="16.9158333" id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+    </g>
+</svg>

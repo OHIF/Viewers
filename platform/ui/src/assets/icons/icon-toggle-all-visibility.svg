@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15.4692312px" height="13.3478261px" viewBox="0 0 15.4692312 13.3478261" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-toggle-all-visibility</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-181.8615, -62.9135)">
+            <g id="icon-toggle-all-visibility" transform="translate(180, 60)">
+                <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+                <g id="Group-15" transform="translate(2.4615, 3.5385)" stroke="#348CFD" stroke-linecap="round" stroke-linejoin="round">
+                    <g id="view-off">
+                        <g id="Group-14" opacity="0.718994867" transform="translate(0, 2.0163)" stroke-width="1.2">
+                            <path d="M11.7987926,1.72967893 C12.7139877,2.39263252 13.5437544,3.16613677 14.2692308,4.0326087 C14.2692308,4.0326087 11.0754047,8.06521739 7.13461538,8.06521739 C6.50340139,8.06171444 5.87618966,7.96470569 5.27341137,7.77735117" id="Path"></path>
+                            <path d="M2.46175251,6.32809365 C1.55002525,5.66691798 0.723215132,4.89595088 0,4.0326087 C0,4.0326087 3.19382609,0 7.13461538,0 C7.65800586,0.00220851946 8.17906018,0.0699455819 8.68561873,0.201630435" id="Path"></path>
+                            <path d="M4.65301003,4.0326087 C4.65301003,2.66205591 5.76406259,1.55100334 7.13461538,1.55100334" id="Path"></path>
+                            <path d="M9.61622074,4.0326087 C9.61622074,5.40316149 8.50516818,6.51421405 7.13461538,6.51421405" id="Path"></path>
+                        </g>
+                        <line x1="13.1835284" y1="0" x2="1.08570234" y2="12.0978261" id="Path" stroke-width="1.25"></line>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

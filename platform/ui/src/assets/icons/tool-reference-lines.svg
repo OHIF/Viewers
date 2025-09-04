@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-reference-lines</title>
+    <g id="tool-reference-lines" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <path d="M5.75,14.75 L7.75,14.75 C8.16421356,14.75 8.5,14.4142136 8.5,14 C8.5,13.5857864 8.16421356,13.25 7.75,13.25 L5.75,13.25 C5.33578644,13.25 5,13.5857864 5,14 C5,14.4142136 5.33578644,14.75 5.75,14.75 Z" id="Path" fill="currentColor" fill-rule="nonzero"></path>
+        <path d="M10.75,14.75 L12.75,14.75 C13.1642136,14.75 13.5,14.4142136 13.5,14 C13.5,13.5857864 13.1642136,13.25 12.75,13.25 L10.75,13.25 C10.3357864,13.25 10,13.5857864 10,14 C10,14.4142136 10.3357864,14.75 10.75,14.75 Z" id="Path" fill="currentColor" fill-rule="nonzero"></path>
+        <path d="M15.75,14.75 L17.75,14.75 C18.1642136,14.75 18.5,14.4142136 18.5,14 C18.5,13.5857864 18.1642136,13.25 17.75,13.25 L15.75,13.25 C15.3357864,13.25 15,13.5857864 15,14 C15,14.4142136 15.3357864,14.75 15.75,14.75 Z" id="Path" fill="currentColor" fill-rule="nonzero"></path>
+        <path d="M20.75,14.75 L22.75,14.75 C23.1642136,14.75 23.5,14.4142136 23.5,14 C23.5,13.5857864 23.1642136,13.25 22.75,13.25 L20.75,13.25 C20.3357864,13.25 20,13.5857864 20,14 C20,14.4142136 20.3357864,14.75 20.75,14.75 Z" id="Path" fill="currentColor" fill-rule="nonzero"></path>
+        <path d="M6.25,10 L6.25,7 C6.25,6.44771525 6.69771525,6 7.25,6 L12.9765472,6 L12.9765472,6 L21.25,6 C21.8022847,6 22.25,6.44771525 22.25,7 L22.25,10 L22.25,10" id="Path-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+        <path d="M6.25,22.426395 L6.25,19.426395 C6.25,18.8741103 6.69771525,18.426395 7.25,18.426395 L21.25,18.426395 C21.8022847,18.426395 22.25,18.8741103 22.25,19.426395 L22.25,22.426395 L22.25,22.426395" id="Path-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" transform="translate(14.25, 20.4264) scale(1, -1) translate(-14.25, -20.4264)"></path>
+    </g>
+</svg>
