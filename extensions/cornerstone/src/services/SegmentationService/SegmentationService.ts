@@ -580,6 +580,13 @@ class SegmentationService extends PubSubService {
       ) || null;
 
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
+
+    if (!structureSet.ROIContours?.length) {
+      throw new Error(
+        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
+      );
+    }
+
     // Map ROI contours to RT Struct Data
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
 
@@ -601,12 +608,6 @@ class SegmentationService extends PubSubService {
         label: rtDisplaySet.SeriesDescription,
       },
     };
-
-    if (!structureSet.ROIContours?.length) {
-      throw new Error(
-        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
-      );
-    }
 
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
     let segmentsCachedStats = {};
