@@ -140,11 +140,9 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
     const ContourSequenceArray = _toArray(ContourSequence);
 
     const contourPoints = [];
-    for (let c = 0; c < ContourSequenceArray.length; c++) {
+    for (const ContourSequenceItem of ContourSequenceArray) {
       const { ContourData, NumberOfContourPoints, ContourGeometricType, ContourImageSequence } =
-        ContourSequenceArray[c];
-
-      let isSupported = false;
+        ContourSequenceItem;
 
       const points = [];
       for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
@@ -155,22 +153,18 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
         });
       }
 
-      switch (ContourGeometricType) {
-        case 'CLOSED_PLANAR':
-        case 'OPEN_PLANAR':
-        case 'POINT':
-          isSupported = true;
-
-          break;
-        default:
-          continue;
-      }
+      const supportedContourTypesMap = new Map([
+        ['CLOSED_PLANAR', false],
+        ['OPEN_NONPLANAR', false],
+        ['OPEN_PLANAR', false],
+        ['POINT', true],
+      ]);
 
       contourPoints.push({
         numberOfPoints: NumberOfContourPoints,
         points,
         type: ContourGeometricType,
-        isSupported,
+        isSupported: supportedContourTypesMap.get(ContourGeometricType) ?? false,
       });
 
       if (ContourImageSequence?.ReferencedSOPInstanceUID) {
@@ -209,6 +203,7 @@ function _setROIContourMetadata(
     ROIDescription: StructureSetROI.ROIDescription,
     contourPoints,
     visible: true,
+    colorArray: [],
   };
 
   _setROIContourDataColor(ROIContour, ROIContourData);
