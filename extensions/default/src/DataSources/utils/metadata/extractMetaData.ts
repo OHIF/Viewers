@@ -125,12 +125,12 @@ export function generateStudyMetaData(
  *
  * The IPP delta between slices in a series is typically in the z direction and uniform.
  * To generate the new slice IPP, I use the first and last slices as guides to obtain the
- * magnitude and direction of the change. Only the z axis is modified.
+ * magnitude and direction of the change. All three axes are reconstructed.
  *
  * The IPP describes the general position of the slices in space relative to an orientation vector
- * and in frame of refence.
+ * and frame of refence.
  *
- * Formula is IPPz = (lastz - firstz) / total_slices.
+ * Formula is IPPc = (lastc - firstc) / total_slices.
  *
  * @param firstSlice
  * @param lastSlice
@@ -144,18 +144,42 @@ export function generateInstanceReferenceMetadata(
   totalSliceCount: number,
 ): DicomReferenceMetadata
 {
-  let reference: DicomReferenceMetadata = JSON.parse(JSON.stringify(firstSlice));
+  const reference: DicomReferenceMetadata = JSON.parse(JSON.stringify(firstSlice));
 
   // Compute slice IPP. Necessary for 3D reconstruction. We might need to account for gantry tilt
   // Someone feel free to add corrections as needed
   const firstIPP = firstSlice.ImagePositionPatient;
   const lastIPP = lastSlice.ImagePositionPatient;
   if (lastIPP) {
-    const deltaIPP = (lastIPP[2] - firstIPP[2]) / totalSliceCount;
-    reference.ImagePositionPatient[2] = firstIPP[2] + indx * deltaIPP;
+    // Make sure all three components in the IPP are reconstructed accurately.
+    // Reconstruction of the z axis only is not enough (works for most cases though).
+    for (let i = 0; i < lastIPP.length; i++) {
+      reference.ImagePositionPatient[i] = generateIPPComponent(firstIPP[i], lastIPP[i], indx, totalSliceCount)
+    }
   }
 
   return reference;
+}
+
+/**
+ * Approximates the slice position in space along the given component based on initial and final
+ * slice values.
+ *
+ * Formula is IPPc = (lastc - firstc) / total_slices.
+ *
+ * @param {number} firstIPPComponent
+ * @param {number} lastIPPComponent
+ * @param {number} indx
+ * @param {number} totalSliceCount
+ */
+function generateIPPComponent(
+  firstIPPComponent: number,
+  lastIPPComponent: number,
+  indx: number,
+  totalSliceCount: number
+) {
+  const deltaIPP = (lastIPPComponent - firstIPPComponent) / totalSliceCount;
+  return firstIPPComponent + indx * deltaIPP
 }
 
 /**
@@ -201,7 +225,7 @@ export function generateInstanceMetaData (
       newInstance.BitsAllocated = instance.bitsAllocated;
       newInstance.Columns = instance.columns;
       newInstance.Rows = instance.rows;
-      newInstance.InstanceNumber = instance.instanceNumber;
+      newInstance.InstanceNumber = i;
       newInstance.SeriesInstanceUID = instance.seriesInstanceUID;
       newInstance.SOPClassUID = instance.sopClassUID;
       newInstance.SOPInstanceUID = instance.sopInstanceUID;
