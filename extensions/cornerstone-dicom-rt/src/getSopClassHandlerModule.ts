@@ -127,27 +127,22 @@ function _load(
 
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
-  loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
-    if (!rtDisplaySet.structureSet) {
-      const structureSet = await loadRTStruct(extensionManager, rtDisplaySet, headers);
+  loadPromises[SOPInstanceUID] = new Promise<void>(async (resolve, reject) => {
+    try {
+      if (!rtDisplaySet.structureSet) {
+        const structureSet = await loadRTStruct(extensionManager, rtDisplaySet, headers);
+        rtDisplaySet.structureSet = structureSet;
+      }
 
-      rtDisplaySet.structureSet = structureSet;
-    }
+      if (createSegmentation) {
+        await segmentationService.createSegmentationForRTDisplaySet(rtDisplaySet);
+      }
 
-    if (createSegmentation) {
-      segmentationService
-        .createSegmentationForRTDisplaySet(rtDisplaySet)
-        .then(() => {
-          rtDisplaySet.loading = false;
-          resolve();
-        })
-        .catch(error => {
-          rtDisplaySet.loading = false;
-          reject(error);
-        });
-    } else {
-      rtDisplaySet.loading = false;
       resolve();
+    } catch (error) {
+      reject(error);
+    } finally {
+      rtDisplaySet.loading = false;
     }
   });
 
