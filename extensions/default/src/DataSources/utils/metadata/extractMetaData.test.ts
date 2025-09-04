@@ -10,8 +10,8 @@ import {
   expectedStudyMetadata,
   naturalizedQidoInstances,
   expectedInstanceMetadata,
-} from './utils/data.test';
-import { DicomSeriesStructureData, RawDicomInstances } from './utils/Types';
+} from '../data.test';
+import { DicomSeriesStructureData, RawDicomInstances } from '../Types';
 
 describe('extractMetaData', () => {
 

@@ -2,9 +2,9 @@
  * Repository of static data and variables to use as priori for testing.
  */
 import { api } from 'dicomweb-client';
-import { dicomWebToDicomStructure } from '../extractMetaData';
+import { dicomWebToDicomStructure } from './metadata/extractMetaData';
 import { errorHandler } from '@ohif/core';
-import { retrieveBulkData } from '../wado/retrieveBulkData';
+import { retrieveBulkData } from './wado/retrieveBulkData';
 
 export const dicomWebConfig = {
   friendlyName: 'AWS S3 Static wado server',
@@ -1511,6 +1511,7 @@ export const expectedInstanceMetadata = [
     PatientComments: 'NA',
     TimeOfSecondaryCapture: '110724',
     DigitalImageFormatAcquired: 'Image exported from tShow application',
+    InstanceNumber: 0,
     Laterality: 'NA',
     ImagesInAcquisition: 1,
     SmallestImagePixelValue: { InlineBinary: 'AAA=' },
@@ -1577,6 +1578,7 @@ export const expectedInstanceMetadata = [
     PatientComments: 'NA',
     TimeOfSecondaryCapture: '110724',
     DigitalImageFormatAcquired: 'Image exported from tShow application',
+    InstanceNumber: 1,
     Laterality: 'NA',
     ImagesInAcquisition: 1,
     SmallestImagePixelValue: { InlineBinary: 'AAA=' },

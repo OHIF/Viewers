@@ -5,8 +5,8 @@ import {
   dicomWebConfig,
   expectedNaturalizedInstances,
   bulkDataURIExample,
-} from '../utils/data.test';
-import { DicomStructure, DicomStructureData } from '../utils/Types';
+} from '../data.test';
+import { DicomStructure, DicomStructureData } from '../Types';
 
 describe('retrieveBulkData', () => {
 
