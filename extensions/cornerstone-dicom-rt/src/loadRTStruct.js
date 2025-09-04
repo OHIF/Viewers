@@ -137,8 +137,6 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
       continue;
     }
 
-    const isSupported = false;
-
     const ContourSequenceArray = _toArray(ContourSequence);
 
     const contourPoints = [];
@@ -187,8 +185,7 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
       StructureSetROISequence,
       RTROIObservationsSequence,
       ROIContour,
-      contourPoints,
-      isSupported
+      contourPoints
     );
   }
   return structureSet;
@@ -199,8 +196,7 @@ function _setROIContourMetadata(
   StructureSetROISequence,
   RTROIObservationsSequence,
   ROIContour,
-  contourPoints,
-  isSupported
+  contourPoints
 ) {
   const StructureSetROI = StructureSetROISequence.find(
     structureSetROI => structureSetROI.ROINumber === ROIContour.ReferencedROINumber
@@ -211,7 +207,6 @@ function _setROIContourMetadata(
     ROIName: StructureSetROI.ROIName,
     ROIGenerationAlgorithm: StructureSetROI.ROIGenerationAlgorithm,
     ROIDescription: StructureSetROI.ROIDescription,
-    isSupported,
     contourPoints,
     visible: true,
   };
