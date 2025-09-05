@@ -43,6 +43,7 @@ const customSort = (seriesA, seriesB) => {
 
 function createDicomLocalApi(dicomLocalConfig) {
   const { name } = dicomLocalConfig;
+  const dicomLocalConfigCopy = JSON.parse(JSON.stringify(dicomLocalConfig));
 
   const implementation = {
     initialize: ({ params, query }) => {},
@@ -194,14 +195,14 @@ function createDicomLocalApi(dicomLocalConfig) {
         if (NumberOfFrames > 1) {
           // in multiframe we start at frame 1
           for (let i = 1; i <= NumberOfFrames; i++) {
-            const imageId = this.getImageIdsForInstance({
+            const imageId = implementation.getImageIdsForInstance({
               instance,
               frame: i,
             });
             imageIds.push(imageId);
           }
         } else {
-          const imageId = this.getImageIdsForInstance({ instance });
+          const imageId = implementation.getImageIdsForInstance({ instance });
           imageIds.push(imageId);
         }
       });
@@ -233,6 +234,9 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     deleteStudyMetadataPromise() {
       console.log('deleteStudyMetadataPromise not implemented');
+    },
+    getConfig() {
+      return dicomLocalConfigCopy;
     },
     getStudyInstanceUIDs: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
