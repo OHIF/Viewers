@@ -28,6 +28,7 @@ const Probe = {
       console.warn('Probe tool: Missing metadata or data');
       return null;
     }
+    console.log('to measurments gets called probe')
 
     const { toolName, referencedImageId, FrameOfReferenceUID } = metadata;
     const validToolType = SUPPORTED_TOOLS.includes(toolName);

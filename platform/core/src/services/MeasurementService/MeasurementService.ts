@@ -347,6 +347,7 @@ class MeasurementService extends PubSubService {
     const measurement = this.getMeasurement(measurementUID);
     const mapping = this._getMappingByMeasurementSource(measurement, annotationType);
 
+
     if (mapping) {
       return mapping.toAnnotationSchema(measurement, annotationType);
     }
@@ -393,6 +394,8 @@ class MeasurementService extends PubSubService {
    * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source annotationType.
    */
   addRawMeasurement(source, annotationType, data, toMeasurementSchema, dataSource = {}) {
+    console.log('addRawMeasurement', source, annotationType, data, toMeasurementSchema, dataSource);
+
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
@@ -466,6 +469,9 @@ class MeasurementService extends PubSubService {
       });
     }
 
+    console.log('newMeasurement', newMeasurement);
+    console.log('data', data);
+    console.log('dataSource', dataSource);
     return newMeasurement.uid;
   }
 
@@ -674,22 +680,20 @@ class MeasurementService extends PubSubService {
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
     const measurement = this.measurements.get(measurementUID);
-
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
-
-    // For CustomProbe measurements, use a special event to signal multi-viewport jump
-    if (measurement.toolName === 'CustomProbe' && measurement.worldPosition && measurement.FrameOfReferenceUID) {
-      const probeJumpEvent = this.createConsumableEvent({
-        viewportId,
-        measurement,
-        isCustomProbeJump: true,
-      });
-      this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, probeJumpEvent);
-      return;
-    }
+    // // For CustomProbe measurements, use a special event to signal multi-viewport jump
+    // if (measurement.toolName === 'CustomProbe' && measurement.worldPosition && measurement.FrameOfReferenceUID) {
+    //   const probeJumpEvent = this.createConsumableEvent({
+    //     viewportId,
+    //     measurement,
+    //     isCustomProbeJump: true,
+    //   });
+    //   this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, probeJumpEvent);
+    //   return;
+    // }
 
     const consumableEvent = this.createConsumableEvent({
       viewportId,

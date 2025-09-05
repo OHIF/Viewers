@@ -30,7 +30,6 @@ export default function MeasurementAccordion(props) {
 
     const measurement = items[0];
     const command = measurement.toolName === 'CustomProbe' ? 'jumpToCustomProbe' : 'jumpToMeasurement';
-
     system.commandsManager.run(command, {
       uid: measurement.uid,
       displayMeasurements: items,

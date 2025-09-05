@@ -6,15 +6,13 @@ import toolNames from '../tools/toolNames';
 
 export default function addSRAnnotation(measurement, imageId, frameNumber) {
   let toolName = toolNames.DICOMSRDisplay;
+
   const renderableData = measurement.coords.reduce((acc, coordProps) => {
     acc[coordProps.GraphicType] = acc[coordProps.GraphicType] || [];
     acc[coordProps.GraphicType].push(getRenderableData({ ...coordProps, imageId }));
     return acc;
   }, {});
 
-  console.log('measurement', measurement);
-  console.log('imageId', imageId);
-  console.log('frameNumber', frameNumber);
   const { TrackingUniqueIdentifier } = measurement;
   const { ValueType: valueType, GraphicType: graphicType } = measurement.coords[0];
   const graphicTypePoints = renderableData[graphicType];
@@ -65,5 +63,7 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
    * const annotationManager = annotation.annotationState.getAnnotationManager();
    * was not triggering annotation_added events.
    */
+
   annotation.state.addAnnotation(SRAnnotation);
+  console.log('annotation added', SRAnnotation);
 }

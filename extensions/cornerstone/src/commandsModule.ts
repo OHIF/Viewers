@@ -130,6 +130,7 @@ function commandsModule({
 
   const actions = {
     hydrateSecondaryDisplaySet: async ({ displaySet, viewportId }) => {
+      console.log('hydrateSecondaryDisplaySet', displaySet, viewportId);
       if (!displaySet) {
         return;
       }

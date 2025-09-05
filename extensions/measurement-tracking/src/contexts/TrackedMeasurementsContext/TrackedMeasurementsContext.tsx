@@ -22,6 +22,7 @@ TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
 const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOPCLASSHANDLERID3D = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d';
 
 /**
  *
@@ -31,6 +32,7 @@ function TrackedMeasurementsContextProvider(
   { servicesManager, commandsManager, extensionManager }: withAppTypes, // Bound by consumer
   { children } // Component props
 ) {
+  console.log('TrackedMeasurementsContextProvider', servicesManager, commandsManager, extensionManager);
   const [appConfig] = useAppConfig();
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -42,9 +44,17 @@ function TrackedMeasurementsContextProvider(
     trackedMeasurementsService,
   } = servicesManager.services as AppTypes.Services;
 
+  console.log('activeViewportId', activeViewportId);
+  console.log('viewports', viewports);
+  console.log('measurementService', measurementService);
+  console.log('displaySetService', displaySetService);
+  console.log('customizationService', customizationService);
+  console.log('trackedMeasurementsService', trackedMeasurementsService);
+
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
+      console.log('jumpToFirstMeasurementInActiveViewport', evt);
       const { trackedStudy, trackedSeries } = ctx;
       const { viewportId: activeViewportId } = evt.data;
       const measurements = measurementService.getMeasurements();
@@ -76,6 +86,7 @@ function TrackedMeasurementsContextProvider(
       const isVolumeIdReferenced = referencedImages[0].imageId.startsWith('volumeId');
 
       const measurementData = trackedMeasurements[0].data;
+      console.log("is volume ID referenced", isVolumeIdReferenced)
 
       let imageIndex = 0;
       if (!isVolumeIdReferenced && measurementData) {
@@ -104,6 +115,7 @@ function TrackedMeasurementsContextProvider(
     },
 
     jumpToSameImageInActiveViewport: (ctx, evt) => {
+      console.log('jumpToSameImageInActiveViewport', evt);
       const { trackedStudy, trackedSeries } = ctx;
       const { viewportId: activeViewportId } = evt.data;
       const measurements = measurementService.getMeasurements();
@@ -139,6 +151,7 @@ function TrackedMeasurementsContextProvider(
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
+      console.log('showStructuredReportDisplaySetInActiveViewport', evt);
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
         const StructuredReportDisplaySetInstanceUID = evt.data.createdDisplaySetInstanceUIDs[0];
 
@@ -184,6 +197,7 @@ function TrackedMeasurementsContextProvider(
       });
     },
     updatedViewports: (ctx, evt) => {
+      console.log('updatedViewports', evt);
       const { hangingProtocolService } = servicesManager.services;
       const { displaySetInstanceUID, viewportId } = evt.data ?? evt;
 
@@ -305,6 +319,7 @@ function TrackedMeasurementsContextProvider(
   // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
   useEffect(() => {
     const triggerPromptHydrateFlow = async () => {
+      console.log('triggerPromptHydrateFlow', viewports);
       if (viewports.size > 0) {
         const activeViewport = viewports.get(activeViewportId);
 
@@ -336,6 +351,8 @@ function TrackedMeasurementsContextProvider(
         // The issue here is that this handler in TrackedMeasurementsContext
         // ends up occurring before the Viewport is created, so the displaySet
         // is not loaded yet, and isRehydratable is undefined unless we call load().
+        console.log('triggerPromptHydrateFlow 2', viewports);
+
         if (
           displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
           !displaySet.isLoaded &&
@@ -343,11 +360,14 @@ function TrackedMeasurementsContextProvider(
         ) {
           await displaySet.load();
         }
-
+        console.log('triggerPromptHydrateFlow 3', viewports);
         // Magic string
         // load function added by our sopClassHandler module
+        console.log('displaySet', displaySet);
+        console.log('displaySet.SOPClassHandlerId', displaySet.SOPClassHandlerId);
+        console.log('displaySet SR_SOPCLASSHANDLERID', SR_SOPCLASSHANDLERID);
         if (
-          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID || displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID3D &&
           displaySet.isRehydratable === true &&
           !displaySet.isHydrated
         ) {
@@ -356,16 +376,19 @@ function TrackedMeasurementsContextProvider(
             SeriesInstanceUID: displaySet.SeriesInstanceUID,
             viewportId: activeViewportId,
           };
-
+          console.log('triggerPromptHydrateFlow 4', viewports);
           // Check if we should bypass the confirmation prompt
           const disableConfirmationPrompts = appConfig?.disableConfirmationPrompts;
 
           if (disableConfirmationPrompts) {
+            console.log('Hydrate SR');
             sendTrackedMeasurementsEvent('HYDRATE_SR', params);
           } else {
+            console.log('Prompt Hydrate SR');
             sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', params);
           }
         }
+        console.log('triggerPromptHydrateFlow 5', viewports);
       }
     };
     triggerPromptHydrateFlow();
@@ -393,6 +416,7 @@ function TrackedMeasurementsContextProvider(
       {children}
     </TrackedMeasurementsContext.Provider>
   );
+
 }
 
 TrackedMeasurementsContextProvider.propTypes = {

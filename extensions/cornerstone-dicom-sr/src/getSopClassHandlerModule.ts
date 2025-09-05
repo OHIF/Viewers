@@ -72,8 +72,8 @@ function _getDisplaySetsFromSeries(
   instances,
   servicesManager: AppTypes.ServicesManager,
   extensionManager
-) {
-  // If the series has no instances, stop here
+) {  // If the series has no instances, stop here
+  console.log('getDisplaySetsFromSeries')
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
   }
@@ -125,9 +125,8 @@ function _getDisplaySetsFromSeries(
     addInstances,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };
-
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
-
+  console.log('displaysetfromseries displaySet', displaySet);
   return [displaySet];
 }
 
@@ -146,6 +145,9 @@ async function _load(
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
   const { ContentSequence } = srDisplaySet.instance;
+  console.log('_load')
+  console.log('ContentSequence', ContentSequence);
+  console.log('srDisplaySet', srDisplaySet);
 
   async function retrieveBulkData(obj, parentObj = null, key = null) {
     for (const prop in obj) {
@@ -178,7 +180,6 @@ async function _load(
     srDisplaySet.referencedImages = [];
     srDisplaySet.measurements = [];
   }
-
   const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
@@ -187,6 +188,11 @@ async function _load(
   srDisplaySet.isHydrated = false;
   srDisplaySet.isRehydratable = isRehydratable(srDisplaySet, mappings);
   srDisplaySet.isLoaded = true;
+
+  console.log('srDisplaySet.isHydrated', srDisplaySet.isHydrated);
+  console.log('srDisplaySet.isRehydratable', srDisplaySet.isRehydratable);
+  console.log('srDisplaySet.isLoaded', srDisplaySet.isLoaded);
+  console.log('srDisplaySet', srDisplaySet);
 
   /** Check currently added displaySets and add measurements if the sources exist */
   displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
@@ -197,7 +203,6 @@ async function _load(
       servicesManager
     );
   });
-
   /** Subscribe to new displaySets as the source may come in after */
   displaySetService.subscribe(displaySetService.EVENTS.DISPLAY_SETS_ADDED, data => {
     const { displaySetsAdded } = data;
@@ -214,6 +219,8 @@ async function _load(
       );
     });
   });
+
+  console.log('after subscribe');
 }
 
 /**
@@ -230,12 +237,12 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   dataSource,
   servicesManager: AppTypes.ServicesManager
 ) {
+  console.log('checkIfCanAddMeasurementsToDisplaySet');
   const { customizationService } = servicesManager.services;
 
   const unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
-
   if (
     unloadedMeasurements.length === 0 ||
     !(newDisplaySet instanceof ImageSet) ||
@@ -243,7 +250,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   ) {
     return;
   }
-
+  console.log('1 checkIfCanAddMeasurementsToDisplaySet, newDisplaySet', newDisplaySet);
   // const { sopClassUids } = newDisplaySet;
   // Create a Set for faster lookups
   // const sopClassUidSet = new Set(sopClassUids);
@@ -251,26 +258,24 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
   const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
-
   for (const imageId of imageIds) {
     const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
     const key = `${SOPInstanceUID}:${frameNumber || 1}`;
     imageIdMap.set(key, imageId);
   }
-
+  console.log('2 checkIfCanAddMeasurementsToDisplaySet, imageIdMap', imageIdMap);
   if (!unloadedMeasurements?.length) {
     return;
   }
-
+  console.log('3 checkIfCanAddMeasurementsToDisplaySet, unloadedMeasurements', unloadedMeasurements);
   const is3DSR = srDisplaySet.SOPClassUID === sopClassDictionary.Comprehensive3DSR;
-
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
     );
-
+    console.log('4 checkIfCanAddMeasurementsToDisplaySet, onBeforeSRAddMeasurement', onBeforeSRAddMeasurement);
     if (typeof onBeforeSRAddMeasurement === 'function') {
       measurement = onBeforeSRAddMeasurement({
         measurement,
@@ -278,37 +283,40 @@ function _checkIfCanAddMeasurementsToDisplaySet(
         SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
       });
     }
-
+    console.log('5 checkIfCanAddMeasurementsToDisplaySet, is3DSR', is3DSR);
     // if it is 3d SR we can just add the SR annotation
     if (is3DSR) {
       addSRAnnotation(measurement, null, null);
+      console.log('addSRAnnotation', measurement);
       measurement.loaded = true;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+      measurement.ReferencedSOPInstanceUID = srDisplaySet.SOPInstanceUID;
+
       continue;
     }
-
+    console.log('6 checkIfCanAddMeasurementsToDisplaySet, measurement', measurement);
     const referencedSOPSequence = measurement.coords[0].ReferencedSOPSequence;
     if (!referencedSOPSequence) {
       continue;
     }
-
+    console.log('7 checkIfCanAddMeasurementsToDisplaySet, referencedSOPSequence', referencedSOPSequence);
     const { ReferencedSOPInstanceUID } = referencedSOPSequence;
     const frame = referencedSOPSequence.ReferencedFrameNumber || 1;
     const key = `${ReferencedSOPInstanceUID}:${frame}`;
     const imageId = imageIdMap.get(key);
-
+    console.log('8 checkIfCanAddMeasurementsToDisplaySet, imageId', imageId);
     if (
       imageId &&
       _measurementReferencesSOPInstanceUID(measurement, ReferencedSOPInstanceUID, frame)
     ) {
       addSRAnnotation(measurement, imageId, frame);
-
+      console.log('9 checkIfCanAddMeasurementsToDisplaySet, addSRAnnotation', measurement);
       // Update measurement properties
       measurement.loaded = true;
       measurement.imageId = imageId;
       measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
       measurement.ReferencedSOPInstanceUID = ReferencedSOPInstanceUID;
       measurement.frameNumber = frame;
-
       unloadedMeasurements.splice(j, 1);
     }
   }
@@ -411,6 +419,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     }
   );
 
+  console.log('measurements', measurements);
   return measurements;
 }
 
@@ -422,7 +431,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
  */
 function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups) {
   const mergedContentSequencesByTrackingUniqueIdentifiers = {};
-
+  console.log('MeasurementGroups', MeasurementGroups);
   MeasurementGroups.forEach(MeasurementGroup => {
     const ContentSequence = _getSequenceAsArray(MeasurementGroup.ContentSequence);
 

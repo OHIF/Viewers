@@ -1,4 +1,4 @@
-import { eventTarget, Types } from '@cornerstonejs/core';
+import { eventTarget, Types, metaData } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
@@ -334,12 +334,15 @@ const connectToolsToMeasurementService = ({
   const updatedEvt = csToolsEvents.ANNOTATION_MODIFIED;
   const removedEvt = csToolsEvents.ANNOTATION_REMOVED;
   const selectionEvt = csToolsEvents.ANNOTATION_SELECTION_CHANGE;
+  // Custom event emitted by CustomProbeTool when cached stats are ready
+  const statsUpdatedEvt = 'StatsUpdated' as any;
 
   eventTarget.addEventListener(addedEvt, addMeasurement);
   eventTarget.addEventListener(completedEvt, addMeasurement);
   eventTarget.addEventListener(updatedEvt, updateMeasurement);
   eventTarget.addEventListener(removedEvt, removeMeasurement);
   eventTarget.addEventListener(selectionEvt, selectMeasurement);
+  eventTarget.addEventListener(statsUpdatedEvt, updateMeasurement);
 
   return csTools3DVer1MeasurementSource;
 };
@@ -434,6 +437,7 @@ const connectMeasurementServiceToTools = ({
   measurementService.subscribe(
     RAW_MEASUREMENT_ADDED,
     ({ source, measurement, data, dataSource }) => {
+
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }

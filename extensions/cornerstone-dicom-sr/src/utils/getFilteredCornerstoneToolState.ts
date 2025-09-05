@@ -1,29 +1,37 @@
 import OHIF from '@ohif/core';
 import { annotation } from '@cornerstonejs/tools';
+import { NO_IMAGE_ID } from '@cornerstonejs/adapters';
 const { log } = OHIF;
+
 
 function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes) {
   const filteredToolState = {};
 
   function addToFilteredToolState(annotation, toolType) {
-    console.log('addToFilteredToolState', annotation, toolType);
+    console.log('addToFilteredToolState annotation', annotation);
+    console.log('addToFilteredToolState toolType', toolType);
 
+    let imageId = annotation.metadata.referencedImageId;
+    console.log('imageId', imageId);
     if (!annotation.metadata?.referencedImageId) {
-      log.warn(`[DICOMSR] No referencedImageId found for ${toolType} ${annotation.id}`);
-      return;
+      log.warn(`[DICOMSR] No referencedImageId found, switching to volumeId ${annotation.metadata.volumeId}`);
+      imageId = NO_IMAGE_ID;
     }
 
-    const imageId = annotation.metadata.referencedImageId;
-    console.log('imageId', imageId);
 
+    // const imageId = NO_IMAGE_ID;
+
+    console.log('filteredToolState', filteredToolState);
     if (!filteredToolState[imageId]) {
       filteredToolState[imageId] = {};
     }
 
     const imageIdSpecificToolState = filteredToolState[imageId];
+    console.log('imageIdSpecificToolState', imageIdSpecificToolState);
 
-    // Map CustomProbe to Probe for SR compatibility
-    const srToolType = toolType === 'CustomProbe' ? 'Probe' : toolType;
+    console.log('measurementData in getFilteredCornerstoneToolState', annotation);
+    const srToolType = toolType
+    console.log('srToolType', srToolType);
 
     if (!imageIdSpecificToolState[srToolType]) {
       imageIdSpecificToolState[srToolType] = {
@@ -33,6 +41,7 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
 
     const measurementDataI = measurementData.find(md => md.uid === annotation.annotationUID);
     const toolData = imageIdSpecificToolState[srToolType].data;
+    console.log('toolData', toolData);
 
     let { finding } = measurementDataI;
     const findingSites = [];
@@ -62,24 +71,22 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
       finding,
       findingSites,
     });
+    console.log("toolData push measurement", measurement)
     toolData.push(measurement);
   }
 
+  console.log('getFilteredCornerstoneToolState measurementData', measurementData);
   const uidFilter = measurementData.map(md => md.uid);
   const uids = uidFilter.slice();
-
   console.log('uids', uids);
-  console.log('measurementData', measurementData);
-  console.log('uidFilter', uidFilter);
+
 
   const annotationManager = annotation.state.getAnnotationManager();
   const framesOfReference = annotationManager.getFramesOfReference();
-  console.log('framesOfReference', framesOfReference);
   for (let i = 0; i < framesOfReference.length; i++) {
     const frameOfReference = framesOfReference[i];
 
     const frameOfReferenceAnnotations = annotationManager.getAnnotations(frameOfReference);
-    console.log('frameOfReferenceAnnotations', frameOfReferenceAnnotations);
     const toolTypes = Object.keys(frameOfReferenceAnnotations);
     for (let j = 0; j < toolTypes.length; j++) {
       const toolType = toolTypes[j];
@@ -90,13 +97,12 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
           const annotation = annotations[k];
           const uidIndex = uids.findIndex(uid => uid === annotation.annotationUID);
           console.log('uidIndex', uidIndex);
-          console.log('annotation', annotation);
           if (uidIndex !== -1) {
             addToFilteredToolState(annotation, toolType);
-            console.log('addToFilteredToolState', annotation, toolType);
             uids.splice(uidIndex, 1);
 
             if (!uids.length) {
+              console.log('filteredToolState getFilteredCornerstoneToolState', filteredToolState);
               return filteredToolState;
             }
           }
@@ -104,7 +110,6 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
       }
     }
   }
-  console.log('filteredToolState getFilteredCornerstoneToolState', filteredToolState);
   return filteredToolState;
 }
 

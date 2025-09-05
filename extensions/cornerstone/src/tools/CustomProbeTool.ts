@@ -32,7 +32,6 @@ class CustomProbeTool extends ProbeTool {
 
     // Get all annotations for this tool across all elements (not just this element)
     let annotations = annotation.state.getAnnotations(this.getToolName(), element);
-
     if (!annotations?.length) {
       return renderStatus;
     }
@@ -61,6 +60,17 @@ class CustomProbeTool extends ProbeTool {
       const annotationUID = annotation.annotationUID;
       const data = annotation.data;
       const point = data.handles.points[0];
+
+      // Ensure volumeId is present in metadata for 3D SR export when referencedImageId is absent
+      if (!annotation.metadata) {
+        annotation.metadata = {} as any;
+      }
+      if (!annotation.metadata.volumeId && (viewport as any).getAllVolumeIds) {
+        const volumeIds = (viewport as any).getAllVolumeIds();
+        if (Array.isArray(volumeIds) && volumeIds.length > 0) {
+          annotation.metadata.volumeId = volumeIds[0];
+        }
+      }
 
       // Check if annotation should be visible in this viewport based on world coordinates
       if (!this.shouldShowAnnotationInViewport(viewport, annotation)) {
@@ -92,7 +102,6 @@ class CustomProbeTool extends ProbeTool {
       } else if (annotation.invalidated) {
         this._calculateCachedStats(annotation, renderingEngine, enabledElement);
       }
-
       if (!viewport.getRenderingEngine()) {
         console.warn('Rendering Engine has been destroyed');
         return renderStatus;
@@ -111,7 +120,7 @@ class CustomProbeTool extends ProbeTool {
       // Draw text box
       const options = this.getLinkedTextBoxStyle(styleSpecifier, annotation);
       if (!options.visibility) {
-        continue;
+        continue
       }
 
       const textLines = this.configuration.getTextLines(data, targetId);
@@ -184,6 +193,7 @@ class CustomProbeTool extends ProbeTool {
   }
 
   getTextLines(data, targetId) {
+
     const cachedVolumeStats = data.cachedStats[targetId];
     const { index, value, modalityUnit } = cachedVolumeStats;
     if (value === undefined || !index) {

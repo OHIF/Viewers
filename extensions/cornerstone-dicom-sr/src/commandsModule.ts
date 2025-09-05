@@ -1,11 +1,13 @@
 import { metaData, utilities } from '@cornerstonejs/core';
 
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import { adaptersSR, NO_IMAGE_ID as ADAPTER_NO_IMAGE_ID } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
+const { sopClassDictionary } = utils;
+
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
@@ -27,14 +29,23 @@ interface Options {
  *
  */
 const _generateReport = (measurementData, additionalFindingTypes, options: Options = {}) => {
-  console.log('measurementData generate reports', measurementData);
+  console.log('measurementData', measurementData);
   const filteredToolState = getFilteredCornerstoneToolState(
     measurementData,
     additionalFindingTypes
   );
-  console.log('filteredToolState', filteredToolState);
-  console.log('metaData', metaData);
 
+
+
+  console.log('_generatereport filteredToolState', filteredToolState);
+  console.log('metaData', metaData);
+  console.log('utilities.worldToImageCoords', utilities.worldToImageCoords);
+  console.log('options', options);
+  // log imageId
+  console.log('imageId', Object.keys(filteredToolState));
+
+
+    // After building filteredToolState, before generateReport
   const report = MeasurementReport.generateReport(
     filteredToolState,
     metaData,
@@ -43,6 +54,18 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
   );
   console.log('report', report);
   const { dataset } = report;
+  console.log('sopClassUIDsByName', dcmjs?.data?.DicomMetaDictionary?.sopClassUIDsByName);
+  // Fallback: ensure SOPClassUID is set (especially for 3D SR when NO_IMAGE_ID is present)
+  try {
+    const is3DSR = Object.keys(filteredToolState).includes(ADAPTER_NO_IMAGE_ID);
+    if (!dataset.SOPClassUID) {
+      // Use literal UIDs to avoid dependency on dcmjs dictionary presence
+      dataset.SOPClassUID = sopClassDictionary.Comprehensive3DSR;
+      console.log('Applied SOPClassUID fallback', dataset.SOPClassUID);
+    }
+  } catch (e) {
+    console.warn('Unable to set SOPClassUID fallback', e);
+  }
 
   // Set the default character set as UTF-8
   // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
@@ -52,6 +75,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
 
   dataset.InstanceNumber = options.InstanceNumber ?? 1;
 
+  console.log('dataset', dataset);
   return dataset;
 };
 
@@ -115,14 +139,13 @@ const commandsModule = (props: withAppTypes) => {
       // Use the @cornerstonejs adapter for converting to/from DICOM
       // But it is good enough for now whilst we only have cornerstone as a datasource.
       log.info('[DICOMSR] storeMeasurements');
-      console.log('measurementData store measurements', measurementData);
       if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
         log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
         return Promise.reject({});
       }
 
       try {
-        console.log('measurementData', measurementData);
+        console.log('before _generateReport', measurementData);
         const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, options);
         console.log('naturalizedReport', naturalizedReport);
 
@@ -132,33 +155,39 @@ const commandsModule = (props: withAppTypes) => {
         // checking that there is some annotation data present.
 
         if (!ContentSequence?.[4].ContentSequence?.length) {
-          console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
         }
 
-        console.log('customizationService', customizationService);
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
-
+        console.log('onBeforeDicomStore', onBeforeDicomStore);
         let dicomDict;
         if (typeof onBeforeDicomStore === 'function') {
           dicomDict = onBeforeDicomStore({ dicomDict, measurementData, naturalizedReport });
         }
 
-        console.log('dicomDict', dicomDict);
-
-        await dataSource.store.dicom(naturalizedReport, null, dicomDict);
+        // Just before: await dataSource.store.dicom(naturalizedReport, null, dicomDict);
+        console.log('SR naturalized dataset', naturalizedReport);
+        console.log('SOPClassUID', naturalizedReport.SOPClassUID, 'SpecificCharacterSet', naturalizedReport.SpecificCharacterSet);
+        try {
+          await dataSource.store.dicom(naturalizedReport, null, dicomDict);
+        } catch (e) {
+          console.error('STOW error status', e?.response?.status || e?.status);
+          console.error('STOW error body', e?.response?.data || e?.xhr?.responseText || e);
+          throw e;
+        }
 
         console.log('StudyInstanceUID', StudyInstanceUID);
         if (StudyInstanceUID) {
           dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
         }
-
-        console.log('naturalizedReport', naturalizedReport);
+        console.log('StudyInstanceUID', StudyInstanceUID);
         // The "Mode" route listens for DicomMetadataStore changes
         // When a new instance is added, it listens and
         // automatically calls makeDisplaySets
+
         DicomMetadataStore.addInstances([naturalizedReport], true);
 
+        console.log('DicomMetadataStore', DicomMetadataStore);
         return naturalizedReport;
       } catch (error) {
         console.warn(error);

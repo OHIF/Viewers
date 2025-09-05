@@ -5,6 +5,7 @@ import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
 import { metaData } from '@cornerstonejs/core';
+import { NO_IMAGE_ID } from '@cornerstonejs/adapters';
 const Probe = {
   toAnnotation: measurement => {},
 
@@ -25,12 +26,10 @@ const Probe = {
     const { metadata, data, annotationUID } = annotation;
     const isLocked = getIsLocked(annotationUID);
     const isVisible = getIsVisible(annotationUID);
-
     if (!metadata || !data) {
       console.warn('CustomProbe tool: Missing metadata or data');
       return null;
     }
-
     const { toolName, FrameOfReferenceUID } = metadata;
     const validToolType = SUPPORTED_TOOLS.includes(toolName);
 
@@ -41,8 +40,6 @@ const Probe = {
     // Try to get volume information first (volume-based approach)
     let volumeInfo = null;
     let displaySet = null;
-
-    console.log('FrameOfReferenceUID', FrameOfReferenceUID);
     // Check if we can get volume info from the annotation's FrameOfReferenceUID
     if (FrameOfReferenceUID) {
       // Find displaySet by FrameOfReferenceUID (volume-based)
@@ -53,7 +50,6 @@ const Probe = {
         return firstInstance?.FrameOfReferenceUID === FrameOfReferenceUID;
       });
     }
-
     // Fallback: Try traditional approach if volume-based didn't work
     if (!displaySet) {
       const { SeriesInstanceUID } = getSOPInstanceAttributes(
@@ -72,29 +68,31 @@ const Probe = {
     const { points } = data.handles;
     // Resolve referencedImageId when missing by choosing closest image plane to first 3D point
     const firstPoint = points && points[0];
-    const resolvedReferencedImageId = metadata.referencedImageId ||
-      (firstPoint && displaySet ? getClosestReferencedImageIdForPoint(displaySet, firstPoint) : undefined);
+    // const resolvedReferencedImageId = metadata.referencedImageId ||
+    //   (firstPoint && displaySet ? getClosestReferencedImageIdForPoint(displaySet, firstPoint) : undefined);
+    // For volumetric annotations without a specific image plane, leave undefined so SR adapter uses 3D path.
+    const resolvedReferencedImageId = undefined;
 
-
-    // add resolvedReferencedImageId to metadata
-    metadata.referencedImageId = resolvedReferencedImageId;
+    // Only set referencedImageId when we have a concrete image plane; otherwise remove it
+    if (resolvedReferencedImageId) {
+      metadata.referencedImageId = resolvedReferencedImageId as any;
+    } else {
+      delete metadata.referencedImageId;
+    }
 
     // Check if this is a volume-based annotation
-    const isVolumeBasedAnnotation = !resolvedReferencedImageId ||
-                                   (typeof resolvedReferencedImageId === 'string' && resolvedReferencedImageId.startsWith('volumeId:'));
+    const isVolumeBasedAnnotation = true;
+
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
     const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService, points);
+
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
     return {
       uid: annotationUID,
       // For volume-based measurements, use volumeId instead of SOPInstanceUID
-      SOPInstanceUID: isVolumeBasedAnnotation ? undefined : getSOPInstanceAttributes(
-        resolvedReferencedImageId,
-        displaySetService,
-        annotation
-      ).SOPInstanceUID,
+      SOPInstanceUID: undefined,
       FrameOfReferenceUID,
       points,
       metadata,
@@ -102,7 +100,7 @@ const Probe = {
       isVisible,
       referenceSeriesUID: displaySet.SeriesInstanceUID,
       referenceStudyUID: displaySet.StudyInstanceUID,
-      referencedImageId: resolvedReferencedImageId,
+      referencedImageId: metadata.referencedImageId,
       frameNumber: mappedAnnotations?.[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -133,7 +131,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     // Try volume-based approach first
     let SeriesInstanceUID, SOPInstanceUID, frameNumber;
 
-    if (metadata.referencedImageId) {
+    if (metadata.referencedImageId !== NO_IMAGE_ID) {
       const sopAttributes = getSOPInstanceAttributes(
         metadata.referencedImageId,
         displaySetService,
@@ -147,6 +145,7 @@ function getMappedAnnotations(annotation, displaySetService) {
       const displaySets = displaySetService.getActiveDisplaySets();
       const displaySet = displaySets.find(ds => {
         const firstInstance = ds.instances?.[0];
+
         return firstInstance?.FrameOfReferenceUID === metadata.FrameOfReferenceUID;
       });
 
@@ -182,7 +181,6 @@ function getMappedAnnotations(annotation, displaySetService) {
       isVolumeBasedAnnotation: true,
     });
   });
-
   return annotations;
 }
 

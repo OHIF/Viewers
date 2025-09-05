@@ -44,6 +44,7 @@ export default function hydrateStructuredReport(
   { servicesManager, extensionManager, commandsManager }: withAppTypes,
   displaySetInstanceUID
 ) {
+  console.log('hydrateStructuredReport');
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
@@ -175,7 +176,9 @@ export default function hydrateStructuredReport(
         imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
         sopInstanceUIDToImageId[toolData.sopInstanceUid];
 
+      console.log("imageID", imageId)
       toolData.uid = guid();
+      console.log("toolData", toolData)
 
       const instance = metaData.get('instance', imageId);
       const {
@@ -205,7 +208,7 @@ export default function hydrateStructuredReport(
           FrameOfReferenceUID,
         },
       };
-
+      console.log('annotation', annotation);
       const source = measurementService.getSource(
         CORNERSTONE_3D_TOOLS_SOURCE_NAME,
         CORNERSTONE_3D_TOOLS_SOURCE_VERSION
@@ -221,6 +224,7 @@ export default function hydrateStructuredReport(
 
       const matchingMapping = mappings.find(m => m.annotationType === effectiveAnnotationType);
 
+      console.log('addRawMeasurement', effectiveAnnotationType);
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
         effectiveAnnotationType,
@@ -246,6 +250,7 @@ export default function hydrateStructuredReport(
 
   displaySet.isHydrated = true;
 
+  console.log('after hydrateStructuredReport');
   return {
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,
