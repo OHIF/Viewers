@@ -182,16 +182,16 @@ module.exports = (env, argv) => {
   });
 
   if (hasProxy) {
-    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy = {
-      [PROXY_TARGET]: {
+    mergedConfig.devServer.proxy = [
+      {
+        context: [PROXY_TARGET],
         target: PROXY_DOMAIN,
         changeOrigin: true,
         pathRewrite: {
           [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
         },
       },
-    };
+    ];
   }
 
   if (isProdBuild) {
