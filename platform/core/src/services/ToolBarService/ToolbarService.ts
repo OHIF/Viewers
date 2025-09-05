@@ -39,6 +39,8 @@ export const TOOLBAR_SECTIONS = {
 
   // mode specific
   segmentationToolbox: 'segmentationToolbox',
+  labelMapSegmentationToolbox: 'labelMapSegmentationToolbox',
+  contourSegmentationToolbox: 'contourSegmentationToolbox',
   dynamicToolbox: 'dynamic-toolbox',
   roiThresholdToolbox: 'ROIThresholdToolbox',
 };
@@ -312,11 +314,21 @@ export default class ToolbarService extends PubSubService {
             : undefined;
         // Check hideWhenDisabled at both evaluateProps level and props level
         const hideWhenDisabled = evaluateProps?.hideWhenDisabled || props.hideWhenDisabled;
+
+        // Visibility is first determined by the evaluate function. If it is not returned from there,
+        // then we check hideWhenDisabled and disabled to determine visibility.
+        const visible =
+          evaluated?.visible === undefined
+            ? hideWhenDisabled && evaluated?.disabled
+              ? false
+              : true
+            : evaluated?.visible;
+
         const updatedProps = {
           ...props,
           ...evaluated,
           disabled: evaluated?.disabled || false,
-          visible: hideWhenDisabled && evaluated?.disabled ? false : true,
+          visible,
           className: evaluated?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
         };

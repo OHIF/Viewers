@@ -37,9 +37,18 @@ const SidePanelWithServices = ({
   const [closedManually, setClosedManually] = useState(false);
   const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
 
-  const handleActiveTabIndexChange = useCallback(({ activeTabIndex }) => {
-    setActiveTabIndex(activeTabIndex);
-  }, []);
+  const handleActiveTabIndexChange = useCallback(
+    ({ activeTabIndex }) => {
+      // This is likely breaking an encapsulation rule. However, the PanelService
+      // does NOT keep track of the active tab index for each side panel, so
+      // the event is broadcast here.
+      panelService._broadcastEvent(panelService.EVENTS.PANEL_ACTIVATED, {
+        panelId: tabs[activeTabIndex].id,
+      });
+      setActiveTabIndex(activeTabIndex);
+    },
+    [panelService, tabs]
+  );
 
   const handleOpen = useCallback(() => {
     setSidePanelExpanded(true);

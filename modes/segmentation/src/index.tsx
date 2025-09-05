@@ -11,7 +11,11 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
+  labelMapSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
+  contourSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
+  segmentationPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -118,18 +122,42 @@ function modeFactory({ modeConfiguration }) {
         'SegmentationUtilities',
         'SegmentationTools',
       ]);
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
+        'LabelMapUtilities',
+        'LabelMapTools',
+      ]);
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
+        'ContourUtilities',
+        'ContourTools',
+      ]);
+
       toolbarService.updateSection('SegmentationUtilities', [
         'LabelmapSlicePropagation',
         'InterpolateLabelmap',
         'SegmentBidirectional',
         'SegmentLabelTool',
       ]);
+      toolbarService.updateSection('LabelMapUtilities', [
+        'LabelmapSlicePropagation',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+        'SegmentLabelTool',
+      ]);
+      toolbarService.updateSection('ContourUtilities', ['SegmentLabelTool']);
+
       toolbarService.updateSection('SegmentationTools', [
         'BrushTools',
         'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
       ]);
+      toolbarService.updateSection('LabelMapTools', [
+        'BrushTools',
+        'MarkerLabelmap',
+        'RegionSegmentPlus',
+        'Shapes',
+      ]);
+      toolbarService.updateSection('ContourTools', []);
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -188,12 +216,18 @@ function modeFactory({ modeConfiguration }) {
       {
         path: 'template',
         layoutTemplate: ({ location, servicesManager }) => {
+          const { customizationService } = servicesManager.services;
+          const isSegmentationMultiTab: boolean = customizationService.getCustomization(
+            'panelSegmentation.isMultiTab'
+          );
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool],
+              rightPanels: isSegmentationMultiTab
+                ? [cornerstone.contourSegmentationPanel, cornerstone.labelMapSegmentationPanel]
+                : [cornerstone.segmentationPanel],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

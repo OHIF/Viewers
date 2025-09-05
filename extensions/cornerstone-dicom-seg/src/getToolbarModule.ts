@@ -1,5 +1,6 @@
 export function getToolbarModule({ servicesManager }: withAppTypes) {
-  const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
+  const { segmentationService, toolbarService, toolGroupService, customizationService } =
+    servicesManager.services;
   return [
     {
       name: 'evaluate.cornerstone.hasSegmentation',
@@ -11,8 +12,39 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
       },
     },
     {
+      name: 'evaluate.cornerstone.hasSegmentationOfType',
+      evaluate: ({ viewportId, segmentationRepresentationType }) => {
+        const segmentations = segmentationService.getSegmentationRepresentations(viewportId);
+
+        if (!segmentations?.length) {
+          return {
+            disabled: true,
+            disabledText: 'No segmentations available',
+          };
+        }
+
+        if (
+          !segmentations.some(segmentation =>
+            Boolean(segmentation.type === segmentationRepresentationType)
+          )
+        ) {
+          return {
+            disabled: true,
+            disabledText: `No ${segmentationRepresentationType} segmentations available`,
+            visible: customizationService.getCustomization('panelSegmentation.isMultiTab'),
+          };
+        }
+      },
+    },
+    {
       name: 'evaluate.cornerstone.segmentation',
-      evaluate: ({ viewportId, button, toolNames, disabledText }) => {
+      evaluate: ({
+        viewportId,
+        button,
+        toolNames,
+        disabledText,
+        segmentationRepresentationType,
+      }) => {
         // Todo: we need to pass in the button section Id since we are kind of
         // forcing the button to have black background since initially
         // it is designed for the toolbox not the toolbar on top
@@ -30,6 +62,24 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
           return {
             disabled: true,
             disabledText: 'Add segment to enable this tool',
+          };
+        }
+
+        const activeRepresentations = segmentationService.getSegmentationRepresentations(
+          viewportId,
+          {
+            segmentationId: activeSegmentation.segmentationId,
+            type: segmentationRepresentationType,
+          }
+        );
+        if (!activeRepresentations?.length) {
+          return {
+            disabled: true,
+            disabledText: `Active segmentation is not a ${segmentationRepresentationType} segmentation`,
+            // Set the visible flag to false for single tab mode so that only the tools and utilities for
+            // the active segmentation representation type are shown. This is not needed for multi-tab mode because
+            // the tools and utilities are already segregated by by type in each tab.
+            visible: customizationService.getCustomization('panelSegmentation.isMultiTab'),
           };
         }
 

@@ -5,6 +5,7 @@ import { Switch } from '@ohif/ui-next';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
+    'panelSegmentation.isMultiTab': false,
     'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,

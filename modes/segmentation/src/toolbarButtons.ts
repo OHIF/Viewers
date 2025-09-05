@@ -1,5 +1,6 @@
 import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -172,14 +173,42 @@ const toolbarButtons: Button[] = [
   // Section containers for the nested toolbox
   {
     id: 'SegmentationUtilities',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'LabelMapUtilities',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'ContourUtilities',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
     },
   },
   {
     id: 'SegmentationTools',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'LabelMapTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'ContourTools',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
     },
@@ -404,6 +433,7 @@ const toolbarButtons: Button[] = [
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircularBrush', 'SphereBrush'],
+        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
         disabledText: 'Create new segmentation to enable this tool.',
       },
       options: [
@@ -443,7 +473,10 @@ const toolbarButtons: Button[] = [
       tooltip:
         'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
       evaluate: [
-        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
         {
           name: 'evaluate.displaySetIsReconstructable',
           disabledText: 'The current viewport cannot handle interpolation.',
@@ -463,6 +496,7 @@ const toolbarButtons: Button[] = [
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         disabledText: 'Create new segmentation to enable this tool.',
+        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
       },
       commands: 'runSegmentBidirectional',
     },
@@ -479,6 +513,7 @@ const toolbarButtons: Button[] = [
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['RegionSegmentPlus'],
         disabledText: 'Create new segmentation to enable this tool.',
+        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
       },
       commands: 'setToolActiveToolbar',
     },
@@ -494,7 +529,8 @@ const toolbarButtons: Button[] = [
       evaluate: [
         'evaluate.cornerstoneTool.toggle',
         {
-          name: 'evaluate.cornerstone.hasSegmentation',
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
         },
       ],
       listeners: {
@@ -518,6 +554,7 @@ const toolbarButtons: Button[] = [
         {
           name: 'evaluate.cornerstone.segmentation',
           toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
         },
       ],
       commands: 'setToolActiveToolbar',
@@ -566,6 +603,7 @@ const toolbarButtons: Button[] = [
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircularEraser', 'SphereEraser'],
+        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
       },
       options: [
         {
@@ -609,6 +647,7 @@ const toolbarButtons: Button[] = [
           'ThresholdCircularBrushDynamic',
           'ThresholdSphereBrushDynamic',
         ],
+        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
       },
       options: [
         {
@@ -722,6 +761,7 @@ const toolbarButtons: Button[] = [
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
         disabledText: 'Create new segmentation to enable shapes tool.',
+        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
       },
       options: [
         {
