@@ -3,7 +3,6 @@
  */
 import 'regenerator-runtime/runtime';
 import { createRoot } from 'react-dom/client';
-import App from './App';
 import React from 'react';
 
 /**
@@ -17,6 +16,7 @@ import React from 'react';
  */
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
+import { XylexaApp } from './Xylexa';
 export { history } from './utils/history';
 export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
 
@@ -39,5 +39,5 @@ loadDynamicConfig(window.config).then(config_json => {
   const container = document.getElementById('root');
 
   const root = createRoot(container);
-  root.render(React.createElement(App, appProps));
+  root.render(React.createElement(XylexaApp, appProps));
 });

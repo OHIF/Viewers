@@ -133,6 +133,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         if (authHeaders && authHeaders.Authorization) {
           xhrRequestHeaders.Authorization = authHeaders.Authorization;
         }
+        xhrRequestHeaders.Authorization = `Bearer ${dicomWebConfigCopy?.requestOptions?.auth}`;
         return xhrRequestHeaders;
       };
 

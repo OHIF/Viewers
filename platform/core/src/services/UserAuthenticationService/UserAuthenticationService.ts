@@ -1,4 +1,10 @@
+import { JWT_AUTH_KEY } from '@xylexa/xylexa-app';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import secureLocalStorage from 'react-secure-storage';
+
+export type Headers = {
+  Authorization?: string;
+};
 
 class UserAuthenticationService extends PubSubService {
   public static readonly EVENTS = {};
@@ -15,7 +21,25 @@ class UserAuthenticationService extends PubSubService {
     _getState: () => console.warn('getState() NOT IMPLEMENTED'),
     _setUser: () => console.warn('_setUser() NOT IMPLEMENTED'),
     _getUser: () => console.warn('_getUser() NOT IMPLEMENTED'),
-    _getAuthorizationHeader: () => {}, // TODO: Implement this method
+    _getAuthorizationHeader: () => {
+      const headers: Headers = {};
+      const auth = secureLocalStorage.getItem(JWT_AUTH_KEY);
+
+
+      try {
+        if (auth) {
+          headers.Authorization = `Bearer ${auth}`;
+        } else {
+          headers.Authorization = '';
+        }
+      } catch (error) {
+        console.warn('Failed to parse server config:', error);
+        headers.Authorization = '';
+      }
+
+      return headers;
+
+    }, // TODO: Implement this method
     _handleUnauthenticated: () => console.warn('_handleUnauthenticated() NOT IMPLEMENTED'),
     _reset: () => console.warn('reset() NOT IMPLEMENTED'),
     _set: () => console.warn('set() NOT IMPLEMENTED'),

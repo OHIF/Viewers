@@ -72,7 +72,7 @@ function App({
     };
 
     run();
-  }, []);
+  }, [config, defaultExtensions, defaultModes]);
 
   if (!init) {
     return null;
