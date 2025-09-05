@@ -37,6 +37,9 @@ export {
   listSeriesInstances,
 } from './qido';
 
+/**
+ * Collect metadata processing imports
+ */
 export {
   generateInstanceMetaData,
   generateStudyMetaData,
@@ -44,6 +47,9 @@ export {
   dicomWebToRawDicomInstances,
 } from './metadata/extractMetaData';
 
+/**
+ * Collect other used imports.
+ */
 export {getImageId} from './getImageId';
 export {addRetrieveBulkData} from './wado/retrieveBulkData';
 
@@ -51,4 +57,7 @@ import StaticWadoClient from './StaticWadoClient';
 import getDirectURL from '../../utils/getDirectURL';
 export {getDirectURL, StaticWadoClient};
 
+/**
+ * Collect dicomjs based imports.
+ */
 export {DicomMetaDictionary, DicomDict, naturalizeDataset, denaturalizeDataset} from './dicom'
