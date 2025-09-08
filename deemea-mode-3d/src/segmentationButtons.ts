@@ -1,5 +1,12 @@
-import { ViewportGridService } from '@ohif/core/src/services';
 import type { Button } from '@ohif/core/types';
+import { ViewportGridService } from '@ohif/core';
+
+const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+  },
+};
 
 const callbacks = (toolName: string) => [
   {
@@ -11,6 +18,33 @@ const callbacks = (toolName: string) => [
 ];
 
 const toolbarButtons: Button[] = [
+  // sections
+  {
+    id: 'BrushTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      groupId: 'BrushTools',
+      buttonSection: 'brushToolsSection',
+    },
+  },
+  // Section containers for the nested toolbox
+  {
+    id: 'SegmentationUtilities',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      groupId: 'SegmentationUtilities',
+      buttonSection: 'segmentationToolboxUtilitySection',
+    },
+  },
+  {
+    id: 'SegmentationTools',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      groupId: 'SegmentationTools',
+      buttonSection: 'segmentationToolboxToolsSection',
+    },
+  },
+
   {
     id: 'Brush',
     uiType: 'ohif.toolBoxButton',
@@ -33,8 +67,7 @@ const toolbarButtons: Button[] = [
           value: 25,
           commands: {
             commandName: 'setBrushSize',
-            // commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
-            commandOptions: { toolNames: ['CircularBrush'] },
+            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
           },
         },
         {
@@ -44,13 +77,136 @@ const toolbarButtons: Button[] = [
           value: 'CircularBrush',
           values: [
             { value: 'CircularBrush', label: 'Circle' },
-            // { value: 'SphereBrush', label: 'Sphere' },
+            { value: 'SphereBrush', label: 'Sphere' },
           ],
           commands: 'setToolActiveToolbar',
         },
       ],
     },
   },
+  {
+    id: 'InterpolateLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-interpolation',
+      label: 'Interpolate Labelmap',
+      tooltip:
+        'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
+      evaluate: [
+        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.displaySetIsReconstructable',
+          disabledText: 'The current viewport cannot handle interpolation.',
+        },
+      ],
+      commands: 'interpolateLabelmap',
+    },
+  },
+  {
+    id: 'SegmentBidirectional',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-bidirectional-segment',
+      label: 'Segment Bidirectional',
+      tooltip:
+        'Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'runSegmentBidirectional',
+    },
+  },
+  // {
+  //   id: 'RegionSegmentPlus',
+  //   uiType: 'ohif.toolBoxButton',
+  //   props: {
+  //     icon: 'icon-tool-click-segment',
+  //     label: 'One Click Segment',
+  //     tooltip:
+  //       'Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.',
+  //     evaluate: {
+  //       name: 'evaluate.cornerstone.segmentation',
+  //       toolNames: ['RegionSegmentPlus'],
+  //       disabledText: 'Create new segmentation to enable this tool.',
+  //     },
+  //     commands: 'setToolActiveToolbar',
+  //   },
+  // },
+  {
+    id: 'LabelmapSlicePropagation',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-labelmap-slice-propagation',
+      label: 'Labelmap Assist',
+      tooltip:
+        'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
+      evaluate: [
+        'evaluate.cornerstoneTool.toggle',
+        {
+          name: 'evaluate.cornerstone.hasSegmentation',
+        },
+      ],
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
+          'LabelmapSlicePropagation'
+        ),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
+      },
+      commands: 'toggleEnabledDisabledToolbar',
+    },
+  },
+  // {
+  //   id: 'MarkerLabelmap',
+  //   uiType: 'ohif.toolBoxButton',
+  //   props: {
+  //     icon: 'icon-marker-labelmap',
+  //     label: 'Marker Guided Labelmap',
+  //     tooltip:
+  //       'Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.',
+  //     evaluate: [
+  //       {
+  //         name: 'evaluate.cornerstone.segmentation',
+  //         toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
+  //       },
+  //     ],
+  //     commands: 'setToolActiveToolbar',
+  //     listeners: {
+  //       [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
+  //       [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
+  //     },
+  //     options: [
+  //       {
+  //         name: 'Marker Mode',
+  //         type: 'radio',
+  //         id: 'marker-mode',
+  //         value: 'markerInclude',
+  //         values: [
+  //           { value: 'markerInclude', label: 'Include' },
+  //           { value: 'markerExclude', label: 'Exclude' },
+  //         ],
+  //         commands: ({ commandsManager, options }) => {
+  //           const markerModeOption = options.find(option => option.id === 'marker-mode');
+  //           if (markerModeOption.value === 'markerInclude') {
+  //             commandsManager.run('setToolActive', {
+  //               toolName: 'MarkerInclude',
+  //             });
+  //           } else {
+  //             commandsManager.run('setToolActive', {
+  //               toolName: 'MarkerExclude',
+  //             });
+  //           }
+  //         },
+  //       },
+  //       {
+  //         name: 'Clear Markers',
+  //         type: 'button',
+  //         id: 'clear-markers',
+  //         commands: 'clearMarkersForMarkerLabelmap',
+  //       },
+  //     ],
+  //   },
+  // },
   {
     id: 'Eraser',
     uiType: 'ohif.toolBoxButton',
@@ -59,8 +215,7 @@ const toolbarButtons: Button[] = [
       label: 'Eraser',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
-        // toolNames: ['CircularEraser', 'SphereEraser'],
-        toolNames: ['CircularEraser'],
+        toolNames: ['CircularEraser', 'SphereEraser'],
       },
       options: [
         {
@@ -73,8 +228,7 @@ const toolbarButtons: Button[] = [
           value: 25,
           commands: {
             commandName: 'setBrushSize',
-            // commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
-            commandOptions: { toolNames: ['CircularEraser'] },
+            commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
           },
         },
         {
@@ -84,7 +238,7 @@ const toolbarButtons: Button[] = [
           value: 'CircularEraser',
           values: [
             { value: 'CircularEraser', label: 'Circle' },
-            // { value: 'SphereEraser', label: 'Sphere' },
+            { value: 'SphereEraser', label: 'Sphere' },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -209,70 +363,30 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'MarkerLabelmap',
+    id: 'Shapes',
     uiType: 'ohif.toolBoxButton',
     props: {
-      icon: 'icon-marker-labelmap',
-      label: 'Marker Guided Labelmap',
-      tooltip:
-        'Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.',
-      evaluate: [
-        {
-          name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
-        },
-      ],
-      commands: 'setToolActiveToolbar',
-      listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
+      icon: 'icon-tool-shape',
+      label: 'Shapes',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+        disabledText: 'Create new segmentation to enable shapes tool.',
       },
       options: [
         {
-          name: 'Marker Mode',
+          name: 'Shape',
           type: 'radio',
-          id: 'marker-mode',
-          value: 'markerInclude',
+          value: 'CircleScissor',
+          id: 'shape-mode',
           values: [
-            { value: 'markerInclude', label: 'Include' },
-            { value: 'markerExclude', label: 'Exclude' },
+            { value: 'CircleScissor', label: 'Circle' },
+            { value: 'SphereScissor', label: 'Sphere' },
+            { value: 'RectangleScissor', label: 'Rectangle' },
           ],
-          commands: ({ commandsManager, options }) => {
-            const markerModeOption = options.find(option => option.id === 'marker-mode');
-            if (markerModeOption.value === 'markerInclude') {
-              commandsManager.run('setToolActive', {
-                toolName: 'MarkerInclude',
-              });
-            } else {
-              commandsManager.run('setToolActive', {
-                toolName: 'MarkerExclude',
-              });
-            }
-          },
-        },
-        {
-          name: 'Clear Markers',
-          type: 'button',
-          id: 'clear-markers',
-          commands: 'clearMarkersForMarkerLabelmap',
+          commands: 'setToolActiveToolbar',
         },
       ],
-    },
-  },
-  {
-    id: 'SegmentationTools',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      groupId: 'SegmentationTools',
-      buttonSection: 'segmentationToolboxToolsSection',
-    },
-  },
-  {
-    id: 'BrushTools',
-    uiType: 'ohif.toolBoxButtonGroup',
-    props: {
-      groupId: 'BrushTools',
-      buttonSection: 'brushToolsSection',
     },
   },
 ];

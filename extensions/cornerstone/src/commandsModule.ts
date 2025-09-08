@@ -267,7 +267,6 @@ function commandsModule({
     },
     updateStoredSegmentationPresentation: ({ displaySet, type }) => {
       const { addSegmentationPresentationItem } = useSegmentationPresentationStore.getState();
-
       const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
       addSegmentationPresentationItem(referencedDisplaySetInstanceUID, {
         segmentationId: displaySet.displaySetInstanceUID,
@@ -1759,6 +1758,7 @@ function commandsModule({
       const { segmentationService } = servicesManager.services;
       const { activeViewportId } = viewportGridService.getState();
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
+
       segmentationService.addSegment(activeSegmentation.segmentationId);
     },
     loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {

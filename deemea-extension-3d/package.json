@@ -28,21 +28,25 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^3.9.0-beta.76",
-    "@ohif/extension-default": "^3.9.0-beta.76",
-    "@ohif/extension-cornerstone": "^3.9.0-beta.76",
-    "@ohif/i18n": "^1.0.0",
+    "@ohif/core": "3.10.2",
+    "@ohif/extension-cornerstone": "3.10.2",
+    "@ohif/extension-default": "3.10.2",
+    "@ohif/i18n": "3.10.2",
     "prop-types": "^15.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2",
-    "react-router": "^6.8.1",
-    "react-router-dom": "^6.8.1",
+    "react-router": "^6.23.1",
+    "react-router-dom": "^6.23.1",
     "webpack": "5.89.0",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13"
+    "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/adapters": "^3.11.6",
+    "@cornerstonejs/core": "^3.11.6",
+    "@kitware/vtk.js": "32.12.0",
+    "react-color": "^2.19.3"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",

@@ -503,7 +503,6 @@ class SegmentationService extends PubSubService {
         },
       };
     });
-
     // get next color lut index
     const colorLUTIndex = getNextColorLUTIndex();
     addColorLUT(colorLUT, colorLUTIndex);
@@ -548,7 +547,6 @@ class SegmentationService extends PubSubService {
   ): Promise<string> {
     const { type } = options;
     let { segmentationId } = options;
-
     // Currently, only contour representation is supported for RT display
     if (type !== CONTOUR) {
       throw new Error('Only contour type is supported for RT display sets right now');
@@ -699,7 +697,6 @@ class SegmentationService extends PubSubService {
   ) {
     const segmentationId = data.segmentationId;
     const existingSegmentation = cstSegmentation.state.getSegmentation(segmentationId);
-
     if (existingSegmentation) {
       // Update the existing segmentation
       this.updateSegmentationInSource(segmentationId, data as Partial<cstTypes.Segmentation>);
