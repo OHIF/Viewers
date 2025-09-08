@@ -53,7 +53,6 @@ export type ButtonProps = {
   tooltip?: string;
   commands?: RunCommand;
   disabled?: boolean;
-  disabledText?: string;
   className?: string;
   evaluate?: EvaluatePublic;
   listeners?: Record<string, RunCommand>;
