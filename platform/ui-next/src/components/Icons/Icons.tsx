@@ -228,6 +228,7 @@ import ArrowRight from './Sources/ArrowRight';
 import ChevronLeft from './Sources/ChevronLeft';
 import StatusAlert from './Sources/StatusAlert';
 import Undo from './Sources/Undo';
+import TabContours from './Sources/TabContours';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -674,6 +675,7 @@ export const Icons = {
   'status-tracked': (props: IconProps) => StatusTracking(props),
   'status-untracked': (props: IconProps) => StatusUntracked(props),
   'status-locked': (props: IconProps) => StatusLocked(props),
+  'tab-contours': (props: IconProps) => TabContours(props),
   'tab-segmentation': (props: IconProps) => TabSegmentation(props),
   'tab-studies': (props: IconProps) => TabStudies(props),
   'tab-linear': (props: IconProps) => TabLinear(props),

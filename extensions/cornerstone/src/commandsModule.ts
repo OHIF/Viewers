@@ -2203,6 +2203,20 @@ function commandsModule({
         deleting,
       });
     },
+    activateSelectedSegmentationOfType: ({ segmentationRepresentationType }) => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      const segmentationId = segmentationService.getSelectedSegmentation({
+        viewportId: activeViewportId,
+        segmentationRepresentationType,
+      });
+
+      if (!segmentationId) {
+        return;
+      }
+
+      segmentationService.setActiveSegmentation(activeViewportId, segmentationId);
+    },
   };
 
   const definitions = {
@@ -2502,6 +2516,7 @@ function commandsModule({
     toggleSegmentLabel: actions.toggleSegmentLabel,
     jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
     initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
+    activateSelectedSegmentationOfType: actions.activateSelectedSegmentationOfType,
   };
 
   return {

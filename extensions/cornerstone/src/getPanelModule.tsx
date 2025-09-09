@@ -8,10 +8,9 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
-  const selectedSegmentationIdByViewportAndType: Map<string, Map<string, string>> = new Map();
   const { toolbarService } = servicesManager.services;
 
-  const toolbarMap = {
+  const toolSectionMap = {
     Segmentation: toolbarService.sections.segmentationToolbox,
     [SegmentationRepresentations.Labelmap]: toolbarService.sections.labelMapSegmentationToolbox,
     [SegmentationRepresentations.Contour]: toolbarService.sections.contourSegmentationToolbox,
@@ -27,7 +26,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
           ...props?.configuration,
         }}
         segmentationRepresentationType={props?.segmentationRepresentationType}
-        selectedSegmentationIdByViewportAndType={selectedSegmentationIdByViewportAndType}
       />
     );
   };
@@ -42,7 +40,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
           ...props?.configuration,
         }}
         segmentationRepresentationType={props?.segmentationRepresentationType}
-        selectedSegmentationIdByViewportAndType={selectedSegmentationIdByViewportAndType}
       />
     );
   };
@@ -55,7 +52,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     return (
       <>
         <Toolbox
-          buttonSectionId={toolbarMap[props.segmentationRepresentationType ?? 'Segmentation']}
+          buttonSectionId={toolSectionMap[props.segmentationRepresentationType ?? 'Segmentation']}
           title={tValue}
         />
         <PanelSegmentation
@@ -66,7 +63,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
             ...props?.configuration,
           }}
           segmentationRepresentationType={props?.segmentationRepresentationType}
-          selectedSegmentationIdByViewportAndType={selectedSegmentationIdByViewportAndType}
         />
       </>
     );
@@ -120,7 +116,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     },
     {
       name: 'panelSegmentationWithToolsContour',
-      iconName: 'tab-segmentation',
+      iconName: 'tab-contours',
       iconLabel: 'Segmentation',
       label: i18n.t('SegmentationTable:Contour'),
       component: props =>

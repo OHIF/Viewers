@@ -1,10 +1,17 @@
 import {
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
+  setupAutoTabSwitchHandler,
 } from './segmentationHandlers';
 
 export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManager }) => {
-  const { segmentationService, customizationService, displaySetService } = servicesManager.services;
+  const {
+    segmentationService,
+    customizationService,
+    displaySetService,
+    viewportGridService,
+    panelService,
+  } = servicesManager.services;
 
   const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
     setupSegmentationDataModifiedHandler({
@@ -50,10 +57,17 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
     }
   );
 
+  const { unsubscribeAutoTabSwitchEvents } = setupAutoTabSwitchHandler({
+    segmentationService,
+    viewportGridService,
+    panelService,
+  });
+
   const unsubscriptions = [
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
     unsubscribeSegmentationCreated,
+    ...unsubscribeAutoTabSwitchEvents,
   ];
 
   return { unsubscriptions };
