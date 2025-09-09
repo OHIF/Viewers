@@ -70,7 +70,7 @@ export interface SegmentationTableContextType {
 
   // The (last) selected segmentation ID for the representation type above.
   // If the type above is undefined, then it will store the last active segmentation ID.
-  selectedSegmentationIdForType: string;
+  selectedSegmentationIdForType?: string;
 
   // Function handlers
   setShowConfig?: (show: boolean) => void;
