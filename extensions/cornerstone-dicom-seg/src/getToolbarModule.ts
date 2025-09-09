@@ -68,13 +68,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
     },
     {
       name: 'evaluate.cornerstone.segmentation',
-      evaluate: ({
-        viewportId,
-        button,
-        toolNames,
-        disabledText,
-        segmentationRepresentationType,
-      }) => {
+      evaluate: ({ viewportId, button, toolNames, disabledText }) => {
         // Todo: we need to pass in the button section Id since we are kind of
         // forcing the button to have black background since initially
         // it is designed for the toolbox not the toolbar on top
