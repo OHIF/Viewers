@@ -574,10 +574,19 @@ class SegmentationService extends PubSubService {
     // find the first image id that contains a referenced SOP instance UID
     const firstSegmentedSliceImageId =
       referencedImageIds?.find(imageId =>
-        referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+        referencedImageIdsWithGeometry.some(referencedId =>
+          imageId.includes(referencedId as string)
+        )
       ) || null;
 
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
+
+    if (!structureSet.ROIContours?.length) {
+      throw new Error(
+        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
+      );
+    }
+
     // Map ROI contours to RT Struct Data
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
 
@@ -599,12 +608,6 @@ class SegmentationService extends PubSubService {
         label: rtDisplaySet.SeriesDescription,
       },
     };
-
-    if (!structureSet.ROIContours?.length) {
-      throw new Error(
-        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
-      );
-    }
 
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
     let segmentsCachedStats = {};
