@@ -20,6 +20,9 @@ window.config = {
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
   dicomUploadEnabled: true,
+  investigationalUseDialog: {
+    option: 'never',
+  },
   maxNumRequests: {
     interaction: 150,
     thumbnail: 100,
