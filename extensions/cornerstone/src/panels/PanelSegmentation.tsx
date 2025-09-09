@@ -185,12 +185,11 @@ export default function PanelSegmentation({
     selectedSegmentationIdByViewportAndType.set(activeViewportId, typeToSegmentationIdMap);
   }
 
-  const selectedSegmentationIdForType =
-    segmentationRepresentationType !== undefined
-      ? selectedSegmentationIdByViewportAndType
-          .get(activeViewportId)
-          ?.get(segmentationRepresentationType)
-      : activeSegmentationInfo?.segmentation.segmentationId;
+  const selectedSegmentationIdForType = segmentationRepresentationType
+    ? selectedSegmentationIdByViewportAndType
+        .get(activeViewportId)
+        ?.get(segmentationRepresentationType)
+    : activeSegmentationInfo?.segmentation.segmentationId;
 
   // Common props for SegmentationTable
   const tableProps = {
