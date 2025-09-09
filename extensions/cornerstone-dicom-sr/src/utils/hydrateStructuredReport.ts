@@ -44,6 +44,7 @@ export default function hydrateStructuredReport(
   { servicesManager, extensionManager, commandsManager }: withAppTypes,
   displaySetInstanceUID
 ) {
+  console.log('hydrateStructuredReport', displaySetInstanceUID);
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
@@ -229,10 +230,32 @@ export default function hydrateStructuredReport(
         dataSource
       );
 
+
       commandsManager.runCommand('updateMeasurement', {
         uid: newAnnotationUID,
         code: annotation.data.finding,
       });
+      // Jump to CustomProbe in MPR so it becomes visible and recomputes
+      try {
+        if (effectiveAnnotationType === 'CustomProbe') {
+          commandsManager.runCommand('jumpToCustomProbe', { uid: newAnnotationUID });
+        }
+      } catch (e) {
+        console.warn('[SR Hydrate] jumpToCustomProbe failed', e);
+      }
+      console.log('force recompute of text/HU in tool render');
+      // Force recompute of text/HU in tool render so the panel sees displayText immediately
+      try {
+        const am = CsAnnotation.state.getAnnotationManager();
+        const hydratedAnnotation = am.getAnnotation(newAnnotationUID);
+        if (hydratedAnnotation) {
+          hydratedAnnotation.invalidated = true;
+        }
+        const re = servicesManager.services.cornerstoneViewportService.getRenderingEngine();
+        re && re.render();
+      } catch (e) {
+        console.warn('[SR Hydrate] failed to trigger recompute/render', e);
+      }
 
       if (disableEditing) {
         locking.setAnnotationLocked(newAnnotationUID, true);
@@ -245,6 +268,7 @@ export default function hydrateStructuredReport(
   });
 
   displaySet.isHydrated = true;
+
 
   return {
     StudyInstanceUID: targetStudyInstanceUID,

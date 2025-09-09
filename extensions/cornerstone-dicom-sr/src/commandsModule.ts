@@ -165,6 +165,7 @@ const commandsModule = (props: withAppTypes) => {
 
         DicomMetadataStore.addInstances([naturalizedReport], true);
 
+        console.log('naturalizedReport', naturalizedReport);
         return naturalizedReport;
       } catch (error) {
         console.warn(error);

@@ -3,6 +3,7 @@ import debounce from 'lodash.debounce';
 import { useSystem } from '@ohif/core';
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
+  console.log('mapMeasurementToDisplay measurement', measurement);
 
   const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 

@@ -193,7 +193,7 @@ class CustomProbeTool extends ProbeTool {
   }
 
   getTextLines(data, targetId) {
-
+    console.log('getTextLines', data, targetId);
     const cachedVolumeStats = data.cachedStats[targetId];
     const { index, value, modalityUnit } = cachedVolumeStats;
     if (value === undefined || !index) {
