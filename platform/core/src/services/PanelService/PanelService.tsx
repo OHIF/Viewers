@@ -7,7 +7,6 @@ import { ExtensionManager } from '../../extensions';
 export const EVENTS = {
   PANELS_CHANGED: 'event::panelService:panelsChanged',
   ACTIVATE_PANEL: 'event::panelService:activatePanel',
-  PANEL_ACTIVATED: 'event::panelService:panelActivated',
 };
 
 type PanelData = {

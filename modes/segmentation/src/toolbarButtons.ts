@@ -430,12 +430,17 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-brush',
       label: 'Brush',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularBrush', 'SphereBrush'],
-        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-        disabledText: 'Create new segmentation to enable this tool.',
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularBrush', 'SphereBrush'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
+      ],
       options: [
         {
           name: 'Radius (mm)',
@@ -475,6 +480,9 @@ const toolbarButtons: Button[] = [
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
           segmentationRepresentationType: SegmentationRepresentations.Labelmap,
         },
         {
@@ -493,11 +501,16 @@ const toolbarButtons: Button[] = [
       label: 'Segment Bidirectional',
       tooltip:
         'Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        disabledText: 'Create new segmentation to enable this tool.',
-        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
+      ],
       commands: 'runSegmentBidirectional',
     },
   },
@@ -509,12 +522,17 @@ const toolbarButtons: Button[] = [
       label: 'One Click Segment',
       tooltip:
         'Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['RegionSegmentPlus'],
-        disabledText: 'Create new segmentation to enable this tool.',
-        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['RegionSegmentPlus'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
+      ],
       commands: 'setToolActiveToolbar',
     },
   },
@@ -554,6 +572,9 @@ const toolbarButtons: Button[] = [
         {
           name: 'evaluate.cornerstone.segmentation',
           toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
           segmentationRepresentationType: SegmentationRepresentations.Labelmap,
         },
       ],
@@ -600,11 +621,16 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-eraser',
       label: 'Eraser',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularEraser', 'SphereEraser'],
-        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularEraser', 'SphereEraser'],
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
+      ],
       options: [
         {
           name: 'Radius (mm)',
@@ -639,16 +665,21 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-threshold',
       label: 'Threshold Tool',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: [
-          'ThresholdCircularBrush',
-          'ThresholdSphereBrush',
-          'ThresholdCircularBrushDynamic',
-          'ThresholdSphereBrushDynamic',
-        ],
-        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: [
+            'ThresholdCircularBrush',
+            'ThresholdSphereBrush',
+            'ThresholdCircularBrushDynamic',
+            'ThresholdSphereBrushDynamic',
+          ],
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
+      ],
       options: [
         {
           name: 'Radius (mm)',
@@ -757,12 +788,17 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-shape',
       label: 'Shapes',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-        disabledText: 'Create new segmentation to enable shapes tool.',
-        segmentationRepresentationType: SegmentationRepresentations.Labelmap,
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+          disabledText: 'Create new segmentation to enable shapes tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+        },
+      ],
       options: [
         {
           name: 'Shape',

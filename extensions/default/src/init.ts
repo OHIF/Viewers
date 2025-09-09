@@ -17,8 +17,7 @@ export default function init({
   commandsManager,
   hotkeysManager,
 }: withAppTypes): void {
-  const { toolbarService, cineService, viewportGridService, panelService } =
-    servicesManager.services;
+  const { toolbarService, cineService, viewportGridService } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
@@ -27,9 +26,6 @@ export default function init({
   toolbarService.registerEventForToolbarUpdate(hotkeysManager, [
     HotkeysManager.EVENTS.HOTKEY_PRESSED,
   ]);
-
-  // When a panel is activated (i.e. the active panel is switched), we typically need to update the toolbar state.
-  toolbarService.registerEventForToolbarUpdate(panelService, [panelService.EVENTS.PANEL_ACTIVATED]);
 
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handleScalingModules);

@@ -28,7 +28,7 @@ const SidePanelWithServices = ({
   onClose,
   ...props
 }: SidePanelWithServicesProps) => {
-  const panelService = servicesManager?.services?.panelService;
+  const { panelService, toolbarService, viewportGridService } = servicesManager.services;
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
@@ -39,15 +39,12 @@ const SidePanelWithServices = ({
 
   const handleActiveTabIndexChange = useCallback(
     ({ activeTabIndex }) => {
-      // This is likely breaking an encapsulation rule. However, the PanelService
-      // does NOT keep track of the active tab index for each side panel, so
-      // the event is broadcast here.
-      panelService._broadcastEvent(panelService.EVENTS.PANEL_ACTIVATED, {
-        panelId: tabs[activeTabIndex].id,
-      });
+      const { activeViewportId: viewportId } = viewportGridService.getState();
+      toolbarService.refreshToolbarState({ viewportId });
+
       setActiveTabIndex(activeTabIndex);
     },
-    [panelService, tabs]
+    [toolbarService, viewportGridService]
   );
 
   const handleOpen = useCallback(() => {

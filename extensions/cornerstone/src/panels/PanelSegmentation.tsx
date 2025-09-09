@@ -185,6 +185,13 @@ export default function PanelSegmentation({
     selectedSegmentationIdByViewportAndType.set(activeViewportId, typeToSegmentationIdMap);
   }
 
+  const selectedSegmentationIdForType =
+    segmentationRepresentationType !== undefined
+      ? selectedSegmentationIdByViewportAndType
+          .get(activeViewportId)
+          ?.get(segmentationRepresentationType)
+      : activeSegmentationInfo?.segmentation.segmentationId;
+
   // Common props for SegmentationTable
   const tableProps = {
     disabled,
@@ -197,12 +204,7 @@ export default function PanelSegmentation({
     showAddSegment,
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
     segmentationRepresentationType,
-    selectedSegmentationIdForType:
-      segmentationRepresentationType !== undefined
-        ? selectedSegmentationIdByViewportAndType
-            .get(activeViewportId)
-            ?.get(segmentationRepresentationType)
-        : activeSegmentationInfo?.segmentation.segmentationId,
+    selectedSegmentationIdForType,
     ...handlers,
   };
 

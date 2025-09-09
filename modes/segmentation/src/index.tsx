@@ -118,6 +118,33 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
+      const commonSegmentationUtilities = ['SegmentLabelTool'];
+
+      // Placeholder for near future.
+      const contourUtilities = [];
+
+      // Placeholder for near future.
+      const contourTools = [];
+
+      const labelMapUtilities = [
+        'LabelmapSlicePropagation',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ];
+
+      const labelMapTools = ['BrushTools', 'MarkerLabelmap', 'RegionSegmentPlus', 'Shapes'];
+
+      const allSegmentationUtilities = [
+        ...contourUtilities,
+        ...labelMapUtilities,
+        ...commonSegmentationUtilities,
+      ];
+
+      const allSegmentationTools = [...contourTools, ...labelMapTools];
+
+      // We cannot simply create two sections - utilities and tools - that combine the utilities and tools for both
+      // segmentation types and add them to each tab because switching to a tab does not activate its selected segmentation
+      // and thus the utilities/tools of the other tab might be incorrectly displayed.
       toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
         'SegmentationUtilities',
         'SegmentationTools',
@@ -131,33 +158,20 @@ function modeFactory({ modeConfiguration }) {
         'ContourTools',
       ]);
 
-      toolbarService.updateSection('SegmentationUtilities', [
-        'LabelmapSlicePropagation',
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
-        'SegmentLabelTool',
-      ]);
+      toolbarService.updateSection('SegmentationUtilities', allSegmentationUtilities);
       toolbarService.updateSection('LabelMapUtilities', [
-        'LabelmapSlicePropagation',
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
-        'SegmentLabelTool',
+        ...labelMapUtilities,
+        ...commonSegmentationUtilities,
       ]);
-      toolbarService.updateSection('ContourUtilities', ['SegmentLabelTool']);
+      toolbarService.updateSection('ContourUtilities', [
+        ...contourUtilities,
+        ...commonSegmentationUtilities,
+      ]);
 
-      toolbarService.updateSection('SegmentationTools', [
-        'BrushTools',
-        'MarkerLabelmap',
-        'RegionSegmentPlus',
-        'Shapes',
-      ]);
-      toolbarService.updateSection('LabelMapTools', [
-        'BrushTools',
-        'MarkerLabelmap',
-        'RegionSegmentPlus',
-        'Shapes',
-      ]);
-      toolbarService.updateSection('ContourTools', []);
+      toolbarService.updateSection('SegmentationTools', allSegmentationTools);
+      toolbarService.updateSection('LabelMapTools', labelMapTools);
+      toolbarService.updateSection('ContourTools', contourTools);
+
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
