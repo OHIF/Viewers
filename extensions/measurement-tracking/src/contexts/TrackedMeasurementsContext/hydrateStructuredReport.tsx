@@ -5,11 +5,9 @@ function hydrateStructuredReport(
   ctx,
   evt
 ) {
-  console.log('hydrateStructuredReport', evt);
   const { displaySetService } = servicesManager.services;
   const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-  console.log('hydrateStructuredReport srDisplaySet', srDisplaySet);
   return new Promise((resolve, reject) => {
     const hydrationResult = baseHydrateStructuredReport(
       { servicesManager, extensionManager, commandsManager, appConfig },

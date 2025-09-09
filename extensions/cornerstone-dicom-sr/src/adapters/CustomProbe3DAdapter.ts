@@ -75,7 +75,6 @@ export default class CustomProbe3DAdapter {
 
     // Try to pass through ReferencedSOPSequence when available from 2D contexts
     const referencedSOPSequence = tool?.metadata?.ReferencedSOPSequence || tool?.metadata?.referencedImageId;
-    console.log('custom probe 3d adapter referencedSOPSequence', referencedSOPSequence);
     return {
       ReferencedSOPSequence: referencedSOPSequence,
       FrameOfReferenceUID: frameOfReferenceUID,
@@ -97,7 +96,6 @@ export default class CustomProbe3DAdapter {
     trackingIdentifier: string
   ) {
     // Extract SCOORD3D child from the group; return your runtime measurement
-    console.log('custom probe 3d adapter getMeasurementData', measurementGroup);
     const seq = [].concat(measurementGroup?.ContentSequence || []);
     const scoord3d = seq.find((g: any) => g.ValueType === 'SCOORD3D');
     if (!scoord3d) {

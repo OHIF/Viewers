@@ -10,7 +10,6 @@ import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRMeasurementViewport(props) {
-  console.log('OHIFCornerstoneSRMeasurementViewport', props);
   const { servicesManager } = useSystem();
   const { children, dataSource, displaySets, viewportOptions } = props as {
     children: React.ReactNode;
@@ -65,7 +64,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   const updateViewport = useCallback(
     newMeasurementSelected => {
       const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } = srDisplaySet;
-      console.log('updateViewport', StudyInstanceUID, displaySetInstanceUID, sopClassUids);
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
       }
@@ -173,7 +171,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
    * if it is hydrated we don't even use the SR viewport.
    */
   useEffect(() => {
-    console.log('useEffect loadSR', srDisplaySet);
     const loadSR = async () => {
       if (!srDisplaySet.isLoaded) {
         await srDisplaySet.load();
@@ -188,7 +185,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
    * the element changes
    */
   useEffect(() => {
-    console.log('useEffect updateSR', srDisplaySet);
     const updateSR = async () => {
       if (!srDisplaySet.isLoaded) {
         await srDisplaySet.load();
@@ -246,8 +242,6 @@ async function _getViewportReferencedDisplaySetData(
 ) {
   const { measurements } = displaySet;
   const measurement = measurements[measurementSelected];
-  console.log('_getViewportReferencedDisplaySetData displaySet', displaySet);
-  console.log('_getViewportReferencedDisplaySetData measurement', measurement);
 
   const { displaySetInstanceUID } = measurement;
   if (!displaySet.keyImageDisplaySet) {

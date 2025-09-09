@@ -8,11 +8,9 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
   const filteredToolState = {};
 
   function addToFilteredToolState(annotation, toolType) {
-    console.log('addToFilteredToolState annotation', annotation);
-    console.log('addToFilteredToolState toolType', toolType);
+
 
     let imageId = annotation.metadata.referencedImageId;
-    console.log('imageId', imageId);
     if (!annotation.metadata?.referencedImageId) {
       log.warn(`[DICOMSR] No referencedImageId found, switching to volumeId ${annotation.metadata.volumeId}`);
       imageId = NO_IMAGE_ID;
@@ -21,17 +19,13 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
 
     // const imageId = NO_IMAGE_ID;
 
-    console.log('filteredToolState', filteredToolState);
     if (!filteredToolState[imageId]) {
       filteredToolState[imageId] = {};
     }
 
     const imageIdSpecificToolState = filteredToolState[imageId];
-    console.log('imageIdSpecificToolState', imageIdSpecificToolState);
 
-    console.log('measurementData in getFilteredCornerstoneToolState', annotation);
     const srToolType = toolType
-    console.log('srToolType', srToolType);
 
     if (!imageIdSpecificToolState[srToolType]) {
       imageIdSpecificToolState[srToolType] = {
@@ -41,7 +35,6 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
 
     const measurementDataI = measurementData.find(md => md.uid === annotation.annotationUID);
     const toolData = imageIdSpecificToolState[srToolType].data;
-    console.log('toolData', toolData);
 
     let { finding } = measurementDataI;
     const findingSites = [];
@@ -71,14 +64,11 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
       finding,
       findingSites,
     });
-    console.log("toolData push measurement", measurement)
     toolData.push(measurement);
   }
 
-  console.log('getFilteredCornerstoneToolState measurementData', measurementData);
   const uidFilter = measurementData.map(md => md.uid);
   const uids = uidFilter.slice();
-  console.log('uids', uids);
 
 
   const annotationManager = annotation.state.getAnnotationManager();
@@ -96,13 +86,11 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
         for (let k = 0; k < annotations.length; k++) {
           const annotation = annotations[k];
           const uidIndex = uids.findIndex(uid => uid === annotation.annotationUID);
-          console.log('uidIndex', uidIndex);
           if (uidIndex !== -1) {
             addToFilteredToolState(annotation, toolType);
             uids.splice(uidIndex, 1);
 
             if (!uids.length) {
-              console.log('filteredToolState getFilteredCornerstoneToolState', filteredToolState);
               return filteredToolState;
             }
           }

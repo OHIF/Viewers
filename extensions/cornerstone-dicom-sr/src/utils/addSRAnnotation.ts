@@ -65,5 +65,4 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
    */
 
   annotation.state.addAnnotation(SRAnnotation);
-  console.log('annotation added', SRAnnotation);
 }

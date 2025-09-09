@@ -37,7 +37,6 @@ class CornerstoneCacheService {
     initialImageIndex?: number
   ): Promise<StackViewportData | VolumeViewportData> {
     const viewportType = viewportOptions.viewportType as string;
-    console.log('createViewportData', displaySets, viewportOptions, dataSource, initialImageIndex);
     const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
 
@@ -77,7 +76,6 @@ class CornerstoneCacheService {
     if (viewportData.viewportType === Enums.ViewportType.STACK) {
       const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
       const imageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
-      console.log('invalidateViewportData imageIds', imageIds);
       // remove images from the cache to be able to re-load them
       imageIds.forEach(imageId => {
         if (cs3DCache.getImageLoadObject(imageId)) {
@@ -157,7 +155,6 @@ class CornerstoneCacheService {
     initialImageIndex,
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
-    console.log('getStackViewportData');
     const { uiNotificationService } = this.servicesManager.services;
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
     for (const overlayDisplaySet of overlayDisplaySets) {
@@ -226,14 +223,10 @@ class CornerstoneCacheService {
     displaySets,
     viewportType: Enums.ViewportType
   ): Promise<VolumeViewportData> {
-    console.log('getVolumeViewportData');
     // Todo: Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
 
     const volumeData = [];
-    console.log('displaySets getVolumeViewportData', displaySets);
-    console.log('viewportType getVolumeViewportData', viewportType);
-    console.log('dataSource getVolumeViewportData', dataSource);
 
     for (const displaySet of displaySets) {
       const { Modality } = displaySet;
@@ -245,7 +238,6 @@ class CornerstoneCacheService {
       // and they take care of their own loading after they are created in their
       // getSOPClassHandler method
 
-      console.log('displaySet.load', displaySet.load);
       if (displaySet.load && displaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
@@ -261,10 +253,7 @@ class CornerstoneCacheService {
           });
           console.error(e);
         }
-        console.log('inside displaySet.load', displaySet.load);
-        console.log('inside displaySet.load isParametricMap', isParametricMap);
-        console.log('inside displaySet.load isSeg', isSeg);
-        console.log('inside displaySet.load displaySet', displaySet);
+
         // Parametric maps have a `load` method but it should not be loaded in the
         // same way as SEG and RTSTRUCT but like a normal volume
         if (!isParametricMap) {
@@ -272,20 +261,16 @@ class CornerstoneCacheService {
             studyInstanceUID: displaySet.StudyInstanceUID,
             displaySetInstanceUID: displaySet.displaySetInstanceUID,
           });
-          console.log('not a parametric map');
           // Todo: do some cache check and empty the cache if needed
           continue;
         }
       }
-      console.log('volumeData', volumeData);
-      console.log('displaySet', displaySet);
+
       const volumeLoaderSchema = displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
       const volumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
-      console.log('volumeId', volumeId);
       let volumeImageIds = this.volumeImageIds.get(displaySet.displaySetInstanceUID);
       let volume = cs3DCache.getVolume(volumeId);
-      console.log('volume', volume);
-      console.log('isParametricMap', isParametricMap);
+
       // Parametric maps do not have image ids but they already have volume data
       // therefore a new volume should not be created.
       if (!isParametricMap && !isSeg && (!volumeImageIds || !volume)) {
@@ -310,7 +295,6 @@ class CornerstoneCacheService {
       });
     }
 
-    console.log('volumeData', volumeData);
     return {
       viewportType,
       data: volumeData,

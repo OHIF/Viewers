@@ -758,7 +758,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // If you call loadStudyMetadata and it's not in the DicomMetadataStore cache, it should fire
     // a request through the data source?
     // (This call may or may not create sub-requests for series metadata)
-    console.log('setVolumeViewport', viewport, viewportData, viewportInfo, presentations);
     const { displaySetService } = this.servicesManager.services;
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
@@ -768,21 +767,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetInstanceUIDs = [];
 
     for (const [index, data] of viewportData.data.entries()) {
-      console.log('data', data);
       const { imageIds, displaySetInstanceUID } = data;
       let volume = data.volume;
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-      console.log('displaySet', displaySet);
       if (!volume && displaySet.images) {
         volume = csToolsUtils.getOrCreateImageVolume(displaySet.images.map(image => image.imageId));
-        console.log('volume', volume);
       }
 
       displaySetInstanceUIDs.push(displaySetInstanceUID);
 
       if (!volume) {
-        console.log('Volume display set not found');
         continue;
       }
 
@@ -1022,7 +1017,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
-    console.log('setDisplaySets', viewport, viewportData, viewportInfo, presentations);
     if (viewport instanceof StackViewport) {
       return this._setStackViewport(
         viewport,

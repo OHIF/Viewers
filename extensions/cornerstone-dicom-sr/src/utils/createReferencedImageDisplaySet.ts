@@ -29,7 +29,6 @@ const findReferencedInstances = (displaySetService: DisplaySetService, displaySe
 
     const instance = findInstance(measurement, displaySetService);
     if (!instance) {
-      console.log('Measurement', measurement, 'had no instances found');
       continue;
     }
 
@@ -48,7 +47,6 @@ const findReferencedInstances = (displaySetService: DisplaySetService, displaySe
  * @returns A new (registered/active) display set containing the referenced images
  */
 const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
-  console.log('createReferencedImageDisplaySet', displaySet);
   const instances = findReferencedInstances(displaySetService, displaySet);
   // This will be a  member function of the created image set
   const updateInstances = function () {

@@ -394,7 +394,6 @@ class MeasurementService extends PubSubService {
    * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source annotationType.
    */
   addRawMeasurement(source, annotationType, data, toMeasurementSchema, dataSource = {}) {
-    console.log('addRawMeasurement', source, annotationType, data, toMeasurementSchema, dataSource);
 
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
@@ -469,9 +468,6 @@ class MeasurementService extends PubSubService {
       });
     }
 
-    console.log('newMeasurement', newMeasurement);
-    console.log('data', data);
-    console.log('dataSource', dataSource);
     return newMeasurement.uid;
   }
 
@@ -504,7 +500,6 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source);
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
@@ -527,7 +522,6 @@ class MeasurementService extends PubSubService {
         },
       });
 
-      console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
       );
@@ -597,7 +591,6 @@ class MeasurementService extends PubSubService {
       this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
     if (!measurementUID || !measurement) {
-      console.debug(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
@@ -622,7 +615,6 @@ class MeasurementService extends PubSubService {
         this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
       if (!measurementUID || !measurement) {
-        console.debug(`No uid provided, or unable to find measurement by uid.`);
         continue;
       }
 
