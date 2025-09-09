@@ -42,7 +42,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
           {disabled ? <Icons.Info /> : <Icons.Add />}
         </div>
         <span className="text-[13px]">
-          {t(`${disabled ? 'Segmentation not supported' : 'Add segmentation'}`)}
+          {t(disabled ? 'Segmentation not supported' : 'Add segmentation')}
         </span>
       </div>
     </div>
