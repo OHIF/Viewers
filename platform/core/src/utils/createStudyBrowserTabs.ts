@@ -1,4 +1,5 @@
 import { useSystem } from '../contextProviders/SystemProvider';
+import i18n from '@ohif/i18n';
 
 /**
  *
@@ -83,17 +84,17 @@ export function createStudyBrowserTabs(
   const tabs = [
     {
       name: 'primary',
-      label: 'Primary',
+      label: i18n.t('StudyBrowser:Primary'),
       studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
     {
       name: 'recent',
-      label: 'Recent',
+      label: i18n.t('StudyBrowser:Recent'),
       studies: recentStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
     {
       name: 'all',
-      label: 'All',
+      label: i18n.t('StudyBrowser:All'),
       studies: allStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
   ];

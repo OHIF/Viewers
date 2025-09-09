@@ -11,5 +11,8 @@
   "Series": "序列",
   "Show": "显示",
   "Stop": "停止",
-  "StudyDate": "时间"
+  "StudyDate": "时间",
+  "localDateFormat": "YYYY-MM-DD",
+  "Yes": "是",
+  "No": "否"
 }

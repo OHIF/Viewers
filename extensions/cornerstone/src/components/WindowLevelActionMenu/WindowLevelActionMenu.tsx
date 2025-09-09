@@ -65,7 +65,7 @@ export function WindowLevelActionMenuContent({
         {colorbarProperties?.colormaps && !is3DVolume && (
           <AllInOneMenu.SubMenu
             key="colorLUTPresets"
-            itemLabel="Color LUT"
+            itemLabel={t('Color LUT')}
             itemIcon="icon-color-lut"
             className="flex h-[calc(100%-32px)] flex-col"
           >
@@ -86,7 +86,7 @@ export function WindowLevelActionMenuContent({
         {volumeRenderingPresets && is3DVolume && <VolumeRenderingPresets viewportId={viewportId} />}
 
         {volumeRenderingQualityRange && is3DVolume && (
-          <AllInOneMenu.SubMenu itemLabel="Rendering Options">
+          <AllInOneMenu.SubMenu itemLabel={t('Rendering Options')}>
             <VolumeRenderingOptions viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
