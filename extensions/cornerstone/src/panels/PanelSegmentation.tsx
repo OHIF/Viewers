@@ -3,10 +3,27 @@ import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 import { metaData, cache } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
-export default function PanelSegmentation({ children }: withAppTypes) {
+type PanelSegmentationProps = {
+  children?: React.ReactNode;
+
+  // The representation type for this segmentation panel. Undefined means all types.
+  segmentationRepresentationType?: SegmentationRepresentations;
+
+  // A map of viewportId -> (map of representation type -> segmentationId)
+  // It keeps track of the last selected segmentationId for each representation type in each viewport.
+  selectedSegmentationIdByViewportAndType: Map<string, Map<string, string>>;
+} & withAppTypes;
+
+export default function PanelSegmentation({
+  children,
+  segmentationRepresentationType,
+  selectedSegmentationIdByViewportAndType,
+}: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const { customizationService, displaySetService } = servicesManager.services;
+  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
+  const { activeViewportId } = viewportGridService.getState();
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations();
@@ -107,14 +124,20 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     // Check if any segments have anything drawn in any of the viewports
     const hasAnySegmentData = (() => {
       const imageIds = Labelmap.imageIds;
-      if (!imageIds?.length) return false;
+      if (!imageIds?.length) {
+        return false;
+      }
 
       for (const imageId of imageIds) {
         const pixelData = cache.getImage(imageId)?.getPixelData();
-        if (!pixelData) continue;
+        if (!pixelData) {
+          continue;
+        }
 
         for (let i = 0; i < pixelData.length; i++) {
-          if (pixelData[i] !== 0) return true;
+          if (pixelData[i] !== 0) {
+            return true;
+          }
         }
       }
       return false;
@@ -145,17 +168,42 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     };
   });
 
+  // Update the map of last selected segmentation IDs for the active viewport id.
+  const activeSegmentationInfo = segmentationsWithRepresentations.find(
+    info => info.representation?.active
+  );
+
+  if (activeSegmentationInfo) {
+    const typeToSegmentationIdMap =
+      selectedSegmentationIdByViewportAndType.get(activeViewportId) ?? new Map<string, string>();
+
+    typeToSegmentationIdMap.set(
+      activeSegmentationInfo.representation.type,
+      activeSegmentationInfo.segmentation.segmentationId
+    );
+
+    selectedSegmentationIdByViewportAndType.set(activeViewportId, typeToSegmentationIdMap);
+  }
+
+  const selectedSegmentationIdForType = segmentationRepresentationType
+    ? selectedSegmentationIdByViewportAndType
+        .get(activeViewportId)
+        ?.get(segmentationRepresentationType)
+    : activeSegmentationInfo?.segmentation?.segmentationId;
+
   // Common props for SegmentationTable
   const tableProps = {
     disabled,
     data: segmentationsWithRepresentations,
     mode: segmentationTableMode,
-    title: 'Segmentations',
+    title: `${segmentationRepresentationType ? `${segmentationRepresentationType} ` : ''}Segmentations`,
     exportOptions,
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
+    segmentationRepresentationType,
+    selectedSegmentationIdForType,
     ...handlers,
   };
 

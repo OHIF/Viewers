@@ -11,7 +11,11 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
+  labelMapSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
+  contourSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
+  segmentationPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -114,22 +118,60 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
+      const commonSegmentationUtilities = ['SegmentLabelTool'];
+
+      // Placeholder for near future.
+      const contourUtilities = [];
+
+      // Placeholder for near future.
+      const contourTools = [];
+
+      const labelMapUtilities = [
+        'LabelmapSlicePropagation',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ];
+
+      const labelMapTools = ['BrushTools', 'MarkerLabelmap', 'RegionSegmentPlus', 'Shapes'];
+
+      const allSegmentationUtilities = [
+        ...contourUtilities,
+        ...labelMapUtilities,
+        ...commonSegmentationUtilities,
+      ];
+
+      const allSegmentationTools = [...contourTools, ...labelMapTools];
+
+      // We cannot simply create two sections - utilities and tools - that combine the utilities and tools for both
+      // segmentation types and add them to each tab because switching to a tab does not activate its selected segmentation
+      // and thus the utilities/tools of the other tab might be incorrectly displayed.
       toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
         'SegmentationUtilities',
         'SegmentationTools',
       ]);
-      toolbarService.updateSection('SegmentationUtilities', [
-        'LabelmapSlicePropagation',
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
-        'SegmentLabelTool',
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
+        'LabelMapUtilities',
+        'LabelMapTools',
       ]);
-      toolbarService.updateSection('SegmentationTools', [
-        'BrushTools',
-        'MarkerLabelmap',
-        'RegionSegmentPlus',
-        'Shapes',
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
+        'ContourUtilities',
+        'ContourTools',
       ]);
+
+      toolbarService.updateSection('SegmentationUtilities', allSegmentationUtilities);
+      toolbarService.updateSection('LabelMapUtilities', [
+        ...labelMapUtilities,
+        ...commonSegmentationUtilities,
+      ]);
+      toolbarService.updateSection('ContourUtilities', [
+        ...contourUtilities,
+        ...commonSegmentationUtilities,
+      ]);
+
+      toolbarService.updateSection('SegmentationTools', allSegmentationTools);
+      toolbarService.updateSection('LabelMapTools', labelMapTools);
+      toolbarService.updateSection('ContourTools', contourTools);
+
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -188,12 +230,18 @@ function modeFactory({ modeConfiguration }) {
       {
         path: 'template',
         layoutTemplate: ({ location, servicesManager }) => {
+          const { customizationService } = servicesManager.services;
+          const isSegmentationMultiTab: boolean = customizationService.getCustomization(
+            'panelSegmentation.isMultiTab'
+          );
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool],
+              rightPanels: isSegmentationMultiTab
+                ? [cornerstone.contourSegmentationPanel, cornerstone.labelMapSegmentationPanel]
+                : [cornerstone.segmentationPanel],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

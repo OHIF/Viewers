@@ -1,5 +1,6 @@
 export function getToolbarModule({ servicesManager }: withAppTypes) {
-  const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
+  const { segmentationService, toolbarService, toolGroupService, customizationService } =
+    servicesManager.services;
   return [
     {
       name: 'evaluate.cornerstone.hasSegmentation',
@@ -8,6 +9,61 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         return {
           disabled: !segmentations?.length,
         };
+      },
+    },
+    {
+      name: 'evaluate.cornerstone.hasSegmentationOfType',
+      evaluate: ({ viewportId, segmentationRepresentationType }) => {
+        const segmentations = segmentationService.getSegmentationRepresentations(viewportId);
+
+        if (!segmentations?.length) {
+          return {
+            disabled: true,
+            disabledText: 'No segmentations available',
+          };
+        }
+
+        if (
+          !segmentations.some(segmentation =>
+            Boolean(segmentation.type === segmentationRepresentationType)
+          )
+        ) {
+          return {
+            disabled: true,
+            disabledText: `No ${segmentationRepresentationType} segmentations available`,
+            visible: customizationService.getCustomization('panelSegmentation.isMultiTab'),
+          };
+        }
+      },
+    },
+    {
+      name: 'evaluate.cornerstone.isActiveSegmentationOfType',
+      evaluate: ({ viewportId, segmentationRepresentationType }) => {
+        const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+        if (!activeSegmentation || !Object.keys(activeSegmentation.segments).length) {
+          return {
+            disabled: true,
+            disabledText: 'Add segment to enable this tool',
+          };
+        }
+
+        const activeRepresentations = segmentationService.getSegmentationRepresentations(
+          viewportId,
+          {
+            segmentationId: activeSegmentation.segmentationId,
+            type: segmentationRepresentationType,
+          }
+        );
+        if (!activeRepresentations?.length) {
+          return {
+            disabled: true,
+            disabledText: `Active segmentation is not a ${segmentationRepresentationType} segmentation`,
+            // Set the visible flag to false for single tab mode so that only the tools and utilities for
+            // the active segmentation representation type are shown. This is not needed for multi-tab mode because
+            // the tools and utilities are already segregated by by type in each tab.
+            visible: customizationService.getCustomization('panelSegmentation.isMultiTab'),
+          };
+        }
       },
     },
     {

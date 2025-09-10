@@ -106,7 +106,11 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
               className="bg-muted flex flex-wrap space-x-2 py-2 px-1"
             >
               {buttons.map(tool => {
-                if (!tool) {
+                // Skip over tools that are not visible. The visible flag is typically set to
+                // false as a result of the evaluator function. The evaluator might explicitly
+                // set visible to false. Alternatively, the ToolbarService will set the visible flag to
+                // false when the evaluator sets disabled to true and the tool has the hideWhenDisabled flag set to true.
+                if (!tool || !tool.componentProps.visible) {
                   return null;
                 }
                 const { id, Component, componentProps } = tool;
