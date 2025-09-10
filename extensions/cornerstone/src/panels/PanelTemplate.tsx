@@ -163,6 +163,7 @@ function TinyMCEEditor({ content }: { content: string }) {
       const report = await axios.post('http://localhost:4000/report', {
         studyInstanceUID: studyInstanceUID,
         htmlContent: htmlContent, // Changed from 'content' to 'htmlContent' to match server expectation
+        status: 'submitted',
       });
       console.log('Report submitted successfully:', report.data);
       await refreshReports();

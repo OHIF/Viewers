@@ -5,6 +5,7 @@ import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
 import PanelTemplate from './panels/PanelTemplate';
+import PanelReports from './panels/PanelReports';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const wrappedPanelSegmentation = ({ configuration }) => {
@@ -95,6 +96,13 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconLabel: 'Template',
       label: 'Report Templates',
       component: PanelTemplate,
+    },
+    {
+      name: 'panelReports',
+      iconName: 'tab-measurement',
+      iconLabel: 'Reports',
+      label: 'My Reports',
+      component: PanelReports,
     },
   ];
 };

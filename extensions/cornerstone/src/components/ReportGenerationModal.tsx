@@ -126,11 +126,35 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
       const report = await axios.post('http://localhost:4000/report', {
         studyInstanceUID: studyInstanceUID,
         htmlContent: htmlContent,
+        status: 'submitted',
       });
       console.log('Report submitted successfully:', report.data);
       hide();
     } catch (error) {
       console.error('Error submitting report:', error.response?.data || error.message);
+    }
+  };
+
+  const handleSaveAsDraft = async (htmlContent: string) => {
+    const studyInstanceUID = getStudyInstanceUID();
+
+    if (!htmlContent || htmlContent.trim() === '' || htmlContent === '<p>&nbsp;</p>') {
+      console.error('Error: Content is empty or contains only whitespace');
+      return;
+    }
+
+    try {
+      const draft = await axios.post('http://localhost:4000/report', {
+        studyInstanceUID: studyInstanceUID,
+        htmlContent: htmlContent,
+        status: 'draft',
+      });
+      console.log('Draft saved successfully:', draft.data);
+      // Show success message or notification
+      alert('Draft saved successfully!');
+    } catch (error) {
+      console.error('Error saving draft:', error.response?.data || error.message);
+      alert('Error saving draft. Please try again.');
     }
   };
 
@@ -223,6 +247,7 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
               <TinyMCEEditor
                 content={content}
                 onSubmit={handleSubmitReport}
+                onSaveAsDraft={handleSaveAsDraft}
               />
             </div>
 
@@ -243,6 +268,7 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
           <TinyMCEEditor
             content={content}
             onSubmit={handleSubmitReport}
+            onSaveAsDraft={handleSaveAsDraft}
           />
         )}
       </div>
@@ -253,11 +279,23 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
 function TinyMCEEditor({
   content,
   onSubmit,
+  onSaveAsDraft,
 }: {
   content: string;
   onSubmit: (htmlContent: string) => void;
+  onSaveAsDraft: (htmlContent: string) => void;
 }) {
   const editorRef = useRef<any>(null);
+  const [hasContent, setHasContent] = useState(false);
+
+  // Update hasContent when content prop changes
+  useEffect(() => {
+    if (content && content.trim() !== '' && content !== '<p>&nbsp;</p>') {
+      setHasContent(true);
+    } else {
+      setHasContent(false);
+    }
+  }, [content]);
 
   return (
     <div className="flex h-full flex-col">
@@ -367,6 +405,24 @@ function TinyMCEEditor({
                       }
                     }
                   }, 100);
+
+                  // Check initial content
+                  const initialContent = editor.getContent();
+                  setHasContent(
+                    initialContent &&
+                      initialContent.trim() !== '' &&
+                      initialContent !== '<p>&nbsp;</p>'
+                  );
+                });
+
+                // Listen for content changes
+                editor.on('input change keyup', () => {
+                  const currentContent = editor.getContent();
+                  const hasValidContent =
+                    currentContent &&
+                    currentContent.trim() !== '' &&
+                    currentContent !== '<p>&nbsp;</p>';
+                  setHasContent(hasValidContent);
                 });
               },
             }}
@@ -374,16 +430,29 @@ function TinyMCEEditor({
         </div>
       </div>
 
-      {/* Submit Button */}
-      <div className="mt-6 flex justify-center">
+      {/* Action Buttons */}
+      <div className="mt-6 flex justify-center gap-4">
+        <Button
+          variant="outline"
+          size="lg"
+          disabled={!hasContent}
+          onClick={() => {
+            const htmlContent = editorRef.current?.getContent();
+            onSaveAsDraft(htmlContent);
+          }}
+          className="min-w-[140px] px-8 py-3 text-lg"
+        >
+          Save as Draft
+        </Button>
         <Button
           variant="default"
           size="lg"
+          disabled={!hasContent}
           onClick={() => {
             const htmlContent = editorRef.current?.getContent();
             onSubmit(htmlContent);
           }}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-3 text-lg"
+          className="min-w-[160px] px-12 py-3 text-lg"
         >
           Submit Report
         </Button>
