@@ -13,7 +13,7 @@ import { getHeader, getFooter, getBody } from './helpers';
 import { templates, templateModalities } from './templates/templates';
 import { useXylexaAppContext, useAuthenticationContext } from './../context';
 import { useSubmitStudyReport } from '../api-client';
-import { MMGReportForm } from './forms/mmg-report-form';
+import { MrmcMmgReportForm } from './forms/MrmcMmgReportForm';
 import useGetQueryParams from '../hooks/useGetQueryParams';
 
 export const AddReport = () => {
@@ -166,7 +166,7 @@ export const AddReport = () => {
             backgroundColor: 'black',
           }}
         >
-          <MMGReportForm setChangeInReportDetected={setChangeInReportDetected} />
+          <MrmcMmgReportForm setChangeInReportDetected={setChangeInReportDetected} />
         </div>
       ) : (
         <div style={{ marginTop: '80px', width: '60%', marginLeft: 'auto', marginRight: 'auto' }}>

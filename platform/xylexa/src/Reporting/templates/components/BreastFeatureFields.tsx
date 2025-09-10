@@ -1,5 +1,5 @@
 import React from 'react';
-import { BreastFeatures } from '../../forms/mmg-report-form';
+import { BreastFeatures } from '../../forms/MMGReportForms';
 
 export type BreastSide = 'rightBreast' | 'leftBreast';
 

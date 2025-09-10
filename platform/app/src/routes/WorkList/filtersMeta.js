@@ -111,16 +111,28 @@ const filtersMeta = [
     gridCol: 3,
   },
   {
-    name: 'accession',
-    displayName: i18n.t('StudyList:AccessionNumber'),
-    inputType: 'Text',
+    name: 'referringPhysicianName', // prediction
+    displayName: 'XyCAD AI Predictions',
+    inputType: 'MultiSelect',
+    inputProps: {
+      options: [
+        { value: 'Normal', label: 'Normal' },
+        { value: 'Suspicious', label: 'Suspicious' },
+      ],
+    },
     isSortable: true,
     gridCol: 3,
   },
   {
-    name: 'instances',
-    displayName: i18n.t('StudyList:Instances'),
-    inputType: 'None',
+    name: 'report',
+    displayName: 'Report',
+    inputType: 'MultiSelect',
+    inputProps: {
+      options: [
+        { value: 'Pending', label: 'Pending' },
+        { value: 'Completed', label: 'Completed' },
+      ],
+    },
     isSortable: false,
     gridCol: 2,
   },

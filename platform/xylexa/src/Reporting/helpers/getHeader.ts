@@ -90,7 +90,6 @@ function getHeader(userInfo, logo) {
     </tr>
   </tbody>
 </table>
-<hr>
 `;
 }
 export default getHeader;

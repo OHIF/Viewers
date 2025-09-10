@@ -52,6 +52,7 @@ function processResults(qidoStudies) {
       accession: getString(qidoStudy['00080050']) || '', // short string, probably a number?
       mrn: getString(qidoStudy['00100020']) || '', // medicalRecordNumber
       patientName: utils.formatPN(getName(qidoStudy['00100010'])) || '',
+      referringPhysicianName: getName(qidoStudy['00080090']) || '', // prediction
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
       description: getString(qidoStudy['00081030']) || '',
       modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
@@ -169,6 +170,7 @@ function mapParams(params, options = {}) {
     AccessionNumber: withWildcard(params.accessionNumber),
     StudyDescription: withWildcard(params.studyDescription),
     ModalitiesInStudy: params.modalitiesInStudy,
+    ReferringPhysicianName: params.referringPhysicianName, // prediction
     // Other
     limit: params.limit || 101,
     offset: params.offset || 0,

@@ -15,7 +15,7 @@ import { useAuthenticationContext, useXylexaAppContext } from './../context';
 import { useToast } from '../hooks';
 import { useGetStudyReport, useUpdateStudyReport } from '../api-client';
 import useGetQueryParams from '../hooks/useGetQueryParams';
-import { MMGReportForm } from './forms/mmg-report-form';
+import { MrmcMmgReportForm } from './forms/MrmcMmgReportForm';
 
 export const EditReport = () => {
   const editor = useRef(null);
@@ -176,7 +176,7 @@ export const EditReport = () => {
 
           <div style={{ marginTop: '100px', marginLeft: 'auto', marginRight: 'auto' }}>
             {modalityParams === 'MG' ? (
-              <MMGReportForm setChangeInReportDetected={setChangeInReportDetected} />
+              <MrmcMmgReportForm setChangeInReportDetected={setChangeInReportDetected} />
             ) : (
               <div
                 style={{ marginTop: '80px', width: '60%', marginLeft: 'auto', marginRight: 'auto' }}

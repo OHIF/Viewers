@@ -1,2 +1,3 @@
-export * from './MrmcTemplate';
+export * from './MMGTemplate';
 export * from './components';
+export * from './MrmcTemplate';

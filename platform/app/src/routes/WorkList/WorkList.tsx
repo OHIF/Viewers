@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,6 +11,8 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '../../hooks';
 import { utils, Types as coreTypes } from '@ohif/core';
+import useSecureLocalStorage from 'secure-local-storage-hook';
+import secureLocalStorage from 'react-secure-storage';
 
 import {
   StudyListExpandedRow,
@@ -20,6 +22,7 @@ import {
   StudyListFilter,
   Button,
   ButtonEnums,
+  Icon,
 } from '@ohif/ui';
 
 import {
@@ -39,6 +42,15 @@ import {
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
+import {
+  CreateReportModal,
+  FILTER_VALUES_KEY,
+  REPORT_IDS_KEY,
+  useAuthenticationContext,
+  useGetReportIds,
+  useXylexaAppContext,
+} from '@xylexa/xylexa-app';
+import { createPortal } from 'react-dom';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -60,8 +72,23 @@ function WorkList({
   onRefresh,
   servicesManager,
 }: withAppTypes) {
+  const {
+    setSelectedStudy,
+    setSelectedModality,
+    setGetStudyReportKey,
+    setIsInsideViewer,
+    setIsChangeInAnnotationViewPort,
+    filteredList,
+    setFilteredList,
+  } = useXylexaAppContext();
+
+  const { userInfo } = useAuthenticationContext();
+
   const { show, hide } = useModal();
+
+  const [showModal, setShowModal] = useState<boolean>(false);
   const { t } = useTranslation();
+  const [isTriaged, setIsTriaged] = useState(false);
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -77,10 +104,160 @@ function WorkList({
     // in the URL, load the page and have it apply.
     clearOnUnload: true,
   });
-  const [filterValues, _setFilterValues] = useState({
+  const [filterValues, _setFilterValues] = useSecureLocalStorage(FILTER_VALUES_KEY, {
     ...defaultFilterValues,
     ...sessionQueryFilterValues,
   });
+
+  const { data: reportIds } = useGetReportIds();
+
+  useEffect(() => {
+    const isFilterFieldEmpty = value => value?.length === 0;
+    const isFilterFieldNull = value => value === null;
+
+    const isNoFilterApplied = () => {
+      return (
+        isFilterFieldEmpty(filterValues?.modalities) &&
+        isFilterFieldEmpty(filterValues?.description) &&
+        isFilterFieldNull(filterValues?.studyDate?.startDate) &&
+        isFilterFieldNull(filterValues?.studyDate?.endDate) &&
+        isFilterFieldEmpty(filterValues?.mrn) &&
+        isFilterFieldEmpty(filterValues?.patientName) &&
+        isFilterFieldEmpty(filterValues?.report) &&
+        isFilterFieldEmpty(filterValues?.referringPhysicianName)
+      );
+    };
+
+    const isAnyFilterApplied = () => {
+      return (
+        !isFilterFieldEmpty(filterValues?.modalities) ||
+        !isFilterFieldEmpty(filterValues?.description) ||
+        !isFilterFieldNull(filterValues?.studyDate?.startDate) ||
+        !isFilterFieldNull(filterValues?.studyDate?.endDate) ||
+        !isFilterFieldEmpty(filterValues?.mrn) ||
+        !isFilterFieldEmpty(filterValues?.patientName) ||
+        !isFilterFieldEmpty(filterValues?.report) ||
+        !isFilterFieldEmpty(filterValues?.referringPhysicianName)
+      );
+    };
+
+    const isOnlyOHIFFiltersApplied = () => {
+      return (
+        (!isFilterFieldEmpty(filterValues?.modalities) ||
+          !isFilterFieldEmpty(filterValues?.description) ||
+          !isFilterFieldNull(filterValues?.studyDate?.startDate) ||
+          !isFilterFieldNull(filterValues?.studyDate?.endDate) ||
+          !isFilterFieldEmpty(filterValues?.mrn) ||
+          !isFilterFieldEmpty(filterValues?.patientName)) &&
+        isFilterFieldEmpty(filterValues?.report) &&
+        isFilterFieldEmpty(filterValues?.referringPhysicianName)
+      );
+    };
+
+    const getPredictedFilteredStudies = studies => {
+      /**
+       *  Here predictionOptions is the value of referringPhysicianName property.
+       * Data is coming inconsistent from backend.
+       * For CR modality:
+       *    The format of referringPhysicianName will be "<blank space> PredictionStatus"
+       *    e.g. " Normal" or " Suspicious" etc.
+       * For MG modality:
+       *    The format for referringPhysicianName will either be "patientName#PredictionStatus"
+       *    or "#PredictionStatus"
+       *    e.g. "--redracted--#Normal" or "#Suspicious" etc.
+       * This the reason we are trimming the string using split method before filtering
+       */
+      const filteredStudies = studies.filter(study => {
+        const mmgPredictionStatusArr = study?.referringPhysicianName?.split('#');
+        const crPredictionStatusArr = study?.referringPhysicianName?.split(' ');
+
+        return (
+          filterValues?.referringPhysicianName.includes(crPredictionStatusArr[1]) ||
+          filterValues?.referringPhysicianName.includes(mmgPredictionStatusArr[1])
+        );
+      });
+
+      return filteredStudies;
+    };
+
+    const getReportFilteredStudies = studies => {
+      const completedStudyIds = new Set(reportIds?.data?.study_ids || []);
+
+      const filteredStudies = studies.filter(study => {
+        return (
+          (filterValues?.report.includes('Completed') &&
+            completedStudyIds.has(study.studyInstanceUid)) ||
+          (filterValues?.report.includes('Pending') &&
+            !completedStudyIds.has(study.studyInstanceUid))
+        );
+      });
+
+      return filteredStudies;
+    };
+
+    const getCommonStudies = (studyArr1, studyArr2) => {
+      const commonStudies = studyArr1.filter(study1 => {
+        return studyArr2.some(study2 => study1?.studyInstanceUid === study2.studyInstanceUid);
+      });
+
+      return commonStudies;
+    };
+
+    const isPredictionFilterApplied = () => {
+      const predictionStatusArr = ['Normal', 'Suspicious'];
+      const isFilterApplied = filterValues?.referringPhysicianName.some(value =>
+        predictionStatusArr.includes(value)
+      );
+      return isFilterApplied;
+    };
+    const isReportFilterApplied = () => {
+      const reportStatusArr = ['Completed', 'Pending'];
+      const isFilterApplied = filterValues?.report?.some(value => reportStatusArr.includes(value));
+      return isFilterApplied;
+    };
+
+    if (isNoFilterApplied()) {
+      setFilteredList(studies);
+    }
+
+    /**
+     * since OHIF built-in filters work with making queries to dicom-web
+     * thats why handling them separately.
+     */
+    if (isOnlyOHIFFiltersApplied()) {
+      setFilteredList(studies);
+    }
+
+    /**
+     * handling XyCAD filters and OHIF-filters in combination
+     */
+    if (isAnyFilterApplied()) {
+      if (isPredictionFilterApplied()) {
+        const predictedFilteredStudies = getPredictedFilteredStudies(studies);
+
+        setFilteredList(predictedFilteredStudies);
+      }
+
+      if (isReportFilterApplied()) {
+        const filteredStudies = getReportFilteredStudies(studies);
+
+        setFilteredList(filteredStudies);
+      }
+
+      if (isPredictionFilterApplied() && isReportFilterApplied()) {
+        const predictedFilteredStudies = getPredictedFilteredStudies(studies);
+
+        const reportFilteredStudies = getReportFilteredStudies(studies);
+
+        const commonPredictedAndReportFilteredStudies = getCommonStudies(
+          predictedFilteredStudies,
+          reportFilteredStudies
+        );
+
+        setFilteredList(commonPredictedAndReportFilteredStudies);
+      }
+    }
+  }, [filterValues, reportIds?.data?.study_ids, setFilteredList, studies]);
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -95,14 +272,13 @@ function WorkList({
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
     shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
+
   const { customizationService } = servicesManager.services;
 
-  const sortedStudies = useMemo(() => {
-    if (!canSort) {
-      return studies;
-    }
+  const sortedStudies = filteredList;
 
-    return [...studies].sort((s1, s2) => {
+  if (canSort) {
+    filteredList.sort((s1, s2) => {
       if (shouldUseDefaultSort) {
         const ascendingSortModifier = -1;
         return _sortStringDates(s1, s2, ascendingSortModifier);
@@ -125,7 +301,7 @@ function WorkList({
 
       return 0;
     });
-  }, [canSort, studies, shouldUseDefaultSort, sortBy, sortModifier]);
+  }
 
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
@@ -135,13 +311,48 @@ function WorkList({
     return isLoadingData || expandedRows.length > 0;
   }, [isLoadingData, expandedRows]);
 
-  const setFilterValues = val => {
-    if (filterValues.pageNumber === val.pageNumber) {
-      val.pageNumber = 1;
-    }
-    _setFilterValues(val);
-    updateSessionQueryFilterValues(val);
-    setExpandedRows([]);
+  const setTriageFilterValues = useCallback(
+    val => {
+      if (filterValues.pageNumber === val.pageNumber) {
+        val.pageNumber = 1;
+      }
+
+      _setFilterValues({ ...filterValues, modalities: ['CR', 'DX'] });
+      updateSessionQueryFilterValues(val);
+      setExpandedRows([]);
+    },
+    [_setFilterValues, filterValues, updateSessionQueryFilterValues]
+  );
+
+  const applyTriageFilter = useCallback(() => {
+    setTriageFilterValues(triagedFilters);
+    setIsTriaged(true);
+  }, [setTriageFilterValues]);
+
+  const setFilterValues = useCallback(
+    val => {
+      if (filterValues.pageNumber === val.pageNumber) {
+        val.pageNumber = 1;
+      }
+
+      _setFilterValues(val);
+      updateSessionQueryFilterValues(val);
+      setExpandedRows([]);
+    },
+    [_setFilterValues, filterValues.pageNumber, updateSessionQueryFilterValues]
+  );
+
+  const clearFilterValues = useCallback(() => {
+    setFilterValues(defaultFilterValues);
+    setIsTriaged(false);
+  }, [setFilterValues, setIsTriaged]);
+
+  const isReported = studyId => {
+    const response = reportIds?.data.study_ids.find(id => {
+      return id === studyId;
+    });
+
+    return response;
   };
 
   const onPageNumberChange = newPageNumber => {
@@ -195,6 +406,8 @@ function WorkList({
         }
       } else if (key === 'modalities' && currValue.length) {
         queryString.modalities = currValue.join(',');
+      } else if (key === 'referringPhysicianName' && currValue.length) {
+        queryString.referringPhysicianName = currValue.join(',');
       } else if (currValue !== defaultValue) {
         queryString[key] = currValue;
       }
@@ -230,7 +443,8 @@ function WorkList({
     // Note: expanded rows index begins at 1
     for (let z = 0; z < expandedRows.length; z++) {
       const expandedRowIndex = expandedRows[z] - 1;
-      const studyInstanceUid = sortedStudies[expandedRowIndex].studyInstanceUid;
+
+      const studyInstanceUid = sortedStudies[expandedRowIndex]?.studyInstanceUid;
 
       if (studiesWithSeriesData.includes(studyInstanceUid)) {
         continue;
@@ -246,18 +460,54 @@ function WorkList({
     return !isEqual(filterValues, defaultFilterValues);
   };
 
+  /**
+   *
+   * @param {string} predictionOption
+   * Here predictionOptions is the value of referringPhysicianName property.
+   * Data is coming inconsistent from backend.
+   * For CR modality:
+   *    The format of referringPhysicianName will be "<blank space> PredictionStatus"
+   *    e.g. " Normal" or " Suspicious" etc.
+   * For MG modality:
+   *    The format for referringPhysicianName will either be "patientName#PredictionStatus"
+   *    or "#PredictionStatus"
+   *    e.g. "--redracted--#Normal" or "#Suspicious" etc.
+   * This the reason we are trimming the string using split method
+   *
+   * @returns {string}
+   */
+
+  function getPrediction(predictionOption) {
+    const mmgPredictionStatusArr = predictionOption.split('#');
+    const crPredictionStatusArr = predictionOption.split(' ');
+    let status;
+    switch (mmgPredictionStatusArr[1] || crPredictionStatusArr[1]) {
+      case 'Normal':
+        status = 'Normal';
+        break;
+
+      case 'Suspicious':
+        status = 'Suspicious';
+        break;
+      default:
+        status = '-';
+        break;
+    }
+
+    return status;
+  }
+
   const rollingPageNumberMod = Math.floor(101 / resultsPerPage);
   const rollingPageNumber = (pageNumber - 1) % rollingPageNumberMod;
   const offset = resultsPerPage * rollingPageNumber;
   const offsetAndTake = offset + resultsPerPage;
-  const tableDataSource = sortedStudies.map((study, key) => {
+  const tableDataSource = filteredList.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
     const {
       studyInstanceUid,
-      accession,
       modalities,
-      instances,
+      referringPhysicianName, //predictions
       description,
       mrn,
       patientName,
@@ -331,24 +581,62 @@ function WorkList({
           gridCol: 3,
         },
         {
-          key: 'accession',
-          content: makeCopyTooltipCell(accession),
+          key: 'referringPhysicianName', // prediction
+          content: makeCopyTooltipCell(getPrediction(referringPhysicianName)),
           gridCol: 3,
         },
         {
-          key: 'instances',
+          key: 'report',
           content: (
-            <>
-              <Icons.GroupLayers
-                className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary': isExpanded,
-                  'text-secondary-light': !isExpanded,
-                })}
-              />
-              {instances}
-            </>
+            <div className="flex flex-row justify-between">
+              <div>
+                {isReported(studyInstanceUid) ? (
+                  <p className="text-primary-active hover:text-white">Completed</p>
+                ) : (
+                  <p>Pending</p>
+                )}
+              </div>
+              <div
+                key={key}
+                onClick={function () {
+                  const selectedStudyInstance = sortedStudies[key];
+                  setSelectedStudy(selectedStudyInstance);
+                  setSelectedModality(selectedStudyInstance?.modalities);
+                  setIsInsideViewer(false);
+
+                  if (isReported(studyInstanceUid)) {
+                    setGetStudyReportKey('outside-viewer');
+                  }
+
+                  /**
+                   * MG Modality modality has no template thats why directly redirecting to MMG Forms
+                   * if the modality is MG
+                   */
+
+                  isReported(studyInstanceUid)
+                    ? navigate(
+                        `/report/view-report/?modality=${selectedStudyInstance?.modalities}&studyInstanceId=${studyInstanceUid}`
+                      )
+                    : selectedStudyInstance?.modalities === 'MG'
+                      ? navigate(
+                          `/report/write-report/?modality=${selectedStudyInstance?.modalities}&studyInstanceId=${studyInstanceUid}`
+                        )
+                      : setShowModal(true);
+                }}
+              >
+                {
+                  <Icon
+                    name="clipboard"
+                    className={classnames('w-4', {
+                      'text-primary-active': isReported(studyInstanceUid),
+                      'text-white': !isReported(studyInstanceUid),
+                    })}
+                  />
+                }
+              </div>
+            </div>
           ),
-          title: (instances || 0).toString(),
+          title: 'Patient Report',
           gridCol: 2,
         },
       ],
@@ -444,7 +732,15 @@ function WorkList({
                           <Icons.LaunchInfo className="!h-[20px] !w-[20px] text-black" />
                         )
                       }
-                      onClick={() => {}}
+                      onClick={() => {
+                        secureLocalStorage.setItem(REPORT_IDS_KEY, reportIds);
+                        const selectedStudyInstance = sortedStudies[key];
+                        setSelectedModality(selectedStudyInstance?.modalities);
+                        setSelectedStudy(selectedStudyInstance);
+                        setGetStudyReportKey('inside-viewer');
+                        setIsInsideViewer(true);
+                        setIsChangeInAnnotationViewPort(false);
+                      }}
                       dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
                       className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
                     >
@@ -463,7 +759,7 @@ function WorkList({
     };
   });
 
-  const hasStudies = numOfStudies > 0;
+  const areStudiesAvailable = numOfStudies > 0;
 
   const AboutModal = customizationService.getCustomization(
     'ohif.aboutModal'
@@ -493,6 +789,15 @@ function WorkList({
           containerClassName:
             UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
+    },
+    {
+      title: t('Header:Logout'),
+      icon: 'logout',
+      onClick: () => {
+        useSecureLocalStorage.clear();
+        //TODO:  Implement proper re-routing to login page on logout
+        navigate(0);
+      },
     },
   ];
 
@@ -542,63 +847,79 @@ function WorkList({
   );
 
   return (
-    <div className="flex h-screen flex-col bg-black">
-      <Header
-        isSticky
-        menuOptions={menuOptions}
-        isReturnEnabled={false}
-        WhiteLabeling={appConfig.whiteLabeling}
-        showPatientInfo={PatientInfoVisibility.DISABLED}
-      />
-      <Onboarding />
-      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="flex h-full flex-col overflow-y-auto">
-        <ScrollArea>
-          <div className="flex grow flex-col">
-            <StudyListFilter
-              numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-              filtersMeta={filtersMeta}
-              filterValues={{ ...filterValues, ...defaultSortValues }}
-              onChange={setFilterValues}
-              clearFilters={() => setFilterValues(defaultFilterValues)}
-              isFiltering={isFiltering(filterValues, defaultFilterValues)}
-              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
-              getDataSourceConfigurationComponent={
-                dataSourceConfigurationComponent
-                  ? () => dataSourceConfigurationComponent()
-                  : undefined
-              }
-            />
-          </div>
-          {hasStudies ? (
+    <React.Fragment>
+      {showModal &&
+        createPortal(
+          <CreateReportModal setShowModal={setShowModal} />,
+          document.body,
+          'createReportModal'
+        )}
+
+      <div className="flex h-screen flex-col bg-black">
+        <Header
+          isSticky
+          menuOptions={menuOptions}
+          isReturnEnabled={false}
+          WhiteLabeling={appConfig.whiteLabeling}
+          showPatientInfo={PatientInfoVisibility.DISABLED}
+        />
+        <div className="flex h-full flex-col overflow-y-auto">
+          <ScrollArea>
             <div className="flex grow flex-col">
-              <StudyListTable
-                tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-                numOfStudies={numOfStudies}
-                querying={querying}
+              <StudyListFilter
+                numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
                 filtersMeta={filtersMeta}
+                filterValues={{ ...filterValues, ...defaultSortValues }}
+                onChange={setFilterValues}
+                clearFilters={clearFilterValues}
+                isTriaged={isTriaged}
+                setIsTriaged={val => setIsTriaged(val)}
+                triageFilters={applyTriageFilter}
+                isFiltering={isFiltering(filterValues, defaultFilterValues)}
+                onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+                getDataSourceConfigurationComponent={
+                  dataSourceConfigurationComponent
+                    ? () => dataSourceConfigurationComponent()
+                    : undefined
+                }
               />
-              <div className="grow">
-                <StudyListPagination
-                  onChangePage={onPageNumberChange}
-                  onChangePerPage={onResultsPerPageChange}
-                  currentPage={pageNumber}
-                  perPage={resultsPerPage}
+            </div>
+            {areStudiesAvailable ? (
+              <div className="flex grow flex-col">
+                <StudyListTable
+                  tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+                  numOfStudies={numOfStudies}
+                  querying={querying}
+                  filtersMeta={filtersMeta}
                 />
+                {filteredList.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center pt-48">
+                    <EmptyStudies />
+                  </div>
+                ) : (
+                  <div className="grow">
+                    <StudyListPagination
+                      onChangePage={onPageNumberChange}
+                      onChangePerPage={onResultsPerPageChange}
+                      currentPage={pageNumber}
+                      perPage={resultsPerPage}
+                    />
+                  </div>
+                )}
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center pt-48">
-              {appConfig.showLoadingIndicator && isLoadingData ? (
-                <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
-              ) : (
-                <EmptyStudies />
-              )}
-            </div>
-          )}
-        </ScrollArea>
+            ) : (
+              <div className="flex flex-col items-center justify-center pt-48">
+                {appConfig.showLoadingIndicator && isLoadingData ? (
+                  <LoadingIndicatorProgress />
+                ) : (
+                  <EmptyStudies />
+                )}
+              </div>
+            )}
+          </ScrollArea>
+        </div>
       </div>
-    </div>
+    </React.Fragment>
   );
 }
 
@@ -621,12 +942,34 @@ const defaultFilterValues = {
   },
   description: '',
   modalities: [],
+  referringPhysicianName: [], // prediction,
+  report: [],
   accession: '',
   sortBy: '',
   sortDirection: 'none',
   pageNumber: 1,
   resultsPerPage: 25,
   datasources: '',
+};
+
+const triagedFilters = {
+  patientName: '',
+  mrn: '',
+  studyDate: {
+    startDate: null,
+    endDate: null,
+  },
+  description: '',
+  modalities: ['CR', 'DX'],
+  referringPhysicianName: [], // prediction
+  accession: '',
+  sortBy: 'referringPhysicianName', // prediction
+  report: [], // study status
+  sortDirection: 'ascending',
+  pageNumber: 1,
+  resultsPerPage: 25,
+  datasources: '',
+  configUrl: null,
 };
 
 function _tryParseInt(str, defaultValue) {
@@ -656,6 +999,9 @@ function _getQueryFilterValues(params) {
     description: params.get('description'),
     modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
     accession: params.get('accession'),
+    referringPhysicianName: params.get('referringPhysicianName')
+      ? params.get('referringPhysicianName').split(',')
+      : [],
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),

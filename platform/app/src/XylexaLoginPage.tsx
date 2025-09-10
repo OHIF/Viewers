@@ -15,7 +15,6 @@ mixpanel.init(process.env.MIXPANEL_TOKEN || '8241e183878906c05ee355792c1eb8c5', 
 
 export const XylexaLoginPage = props => {
   const { currentServerConfigs } = useAuthenticationContext();
-  console.log('currentServerConfigs: ', currentServerConfigs);
 
   const config = {
     ...window.config,

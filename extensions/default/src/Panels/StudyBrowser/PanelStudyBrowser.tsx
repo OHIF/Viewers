@@ -460,6 +460,7 @@ function _mapDataSourceStudies(studies) {
       ModalitiesInStudy: study.modalities,
       PatientID: study.mrn,
       PatientName: study.patientName,
+      ReferringPhysicianName: study.referringPhysicianName, // prediction
       StudyInstanceUID: study.studyInstanceUid,
       StudyTime: study.time,
     };

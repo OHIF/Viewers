@@ -9,7 +9,7 @@ import { getAiReportBody, getFooter, getHeader } from './helpers';
 import { createPortal } from 'react-dom';
 import mixpanel from 'mixpanel-browser';
 import useGetQueryParams from '../hooks/useGetQueryParams';
-import { MrmcTemplate } from './templates';
+import MrmcTemplate from './templates/MrmcTemplate';
 
 export const ViewReport = () => {
   const pdfRef = useRef();

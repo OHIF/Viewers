@@ -76,7 +76,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 patientName: utils.formatPN(firstInstance.PatientName),
                 studyInstanceUid: firstInstance.StudyInstanceUID,
                 time: firstInstance.StudyTime,
-                //
+                referringPhysicianName: firstInstance.ReferringPhysicianName, // prediction
                 instances: numInstances,
                 modalities: Array.from(modalities).join('/'),
                 NumInstances: numInstances,

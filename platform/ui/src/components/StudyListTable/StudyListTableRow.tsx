@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import getGridWidthClass from '../../utils/getGridWidthClass';
-import { Icons } from '@ohif/ui-next';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
@@ -22,7 +21,7 @@ const StudyListTableRow = props => {
             className={classnames(
               'w-full transition duration-300',
               {
-                'border-primary-light hover:border-secondary-light mb-2 overflow-visible rounded border':
+                'border-primary-dark hover:border-secondary-light mb-2 overflow-visible rounded border':
                   isExpanded,
               },
               {
@@ -58,21 +57,10 @@ const StudyListTableRow = props => {
                         }}
                         title={title}
                       >
-                        <div className="flex">
-                          {index === 0 && (
-                            <div>
-                              {isExpanded ? (
-                                <Icons.ChevronOpen className="-mt-1 mr-4 inline-flex" />
-                              ) : (
-                                <Icons.ChevronClosed className="-mt-1 mr-4 inline-flex rotate-180" />
-                              )}
-                            </div>
-                          )}
-                          <div
-                            className={classnames({ 'overflow-hidden': true }, { truncate: true })}
-                          >
-                            {content}
-                          </div>
+                        <div
+                          className={classnames({ 'overflow-hidden': true }, { truncate: true })}
+                        >
+                          {content}
                         </div>
                       </td>
                     );

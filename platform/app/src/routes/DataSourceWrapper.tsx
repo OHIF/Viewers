@@ -265,7 +265,8 @@ function _getQueryFilterValues(query, queryLimit) {
     studyDescription: query.get('description'),
     modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
-    //
+    referringPhysicianName: query.get('referringPhysicianName'), // prediction
+
     startDate: query.get('startdate'),
     endDate: query.get('enddate'),
     page: _tryParseInt(query.get('page'), undefined),

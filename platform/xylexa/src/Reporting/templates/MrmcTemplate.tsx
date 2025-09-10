@@ -1,13 +1,21 @@
 import React from 'react';
-import { ReportFooter, ReportHeader, StudyInfoFields, BreastFeaturesFields } from './components';
-import { MMGReportData } from '../forms/mmg-report-form';
+import { ReportHeader } from './components';
+import { useAuthenticationContext } from '../../context';
 
-export const MrmcTemplate: React.FC<{ reportData: MMGReportData }> = ({ reportData }) => {
+export type MrmcMmgReportData = {
+  study_instance_id: string;
+  birad_assessment: '1' | '2' | '3' | '4' | '5';
+  breast_density: 'A' | 'B' | 'C' | 'D';
+  recall?: 'Yes' | 'No' | null;
+  quadrant?: 'UOQ' | 'UIQ' | 'LOQ' | 'LIQ' | null;
+  comments: string;
+};
+
+const MrmcTemplate: React.FC<{ reportData: MrmcMmgReportData }> = ({ reportData }) => {
+  const { userInfo } = useAuthenticationContext();
   return (
-    <div
-      className="jodit-wysiwyg"
-      style={{ minHeight: 139, border: '1px solid #e2e8f0', padding: '15px' }}
-    >
+    <div>
+      {/* Header Table */}
       <ReportHeader
         heading={'Xylexa Patient Report'}
         address={'Location: 9838 Townsville Circle, Suite 202, Highlands Ranch, CO, 80130, USA'}
@@ -15,88 +23,177 @@ export const MrmcTemplate: React.FC<{ reportData: MMGReportData }> = ({ reportDa
         logo={'xylexaLogo'}
       />
 
-      <StudyInfoFields reportData={reportData} />
-
+      <p>
+        <br />
+      </p>
+      <hr />
       <br />
-      <table style={{ width: '99.723%' }}>
-        <tbody>
-          <BreastFeaturesFields
-            breastFeatures={reportData?.right_breast}
-            breastSide="rightBreast"
-          />
-          <br />
 
-          <BreastFeaturesFields
-            breastFeatures={reportData?.left_breast}
-            breastSide="leftBreast"
-          />
-          <br />
+      {/* Title */}
+      <p style={{ textAlign: 'center' }}>
+        <strong>
+          <span style={{ fontSize: 30 }}>MRMC REPORT</span>
+        </strong>
+      </p>
+      <br />
 
-          <tr>
-            <td>
-              <strong>
-                <u>Breast Density (A / B / C / D ):</u>
-              </strong>
-            </td>
-            <td style={{ textAlign: 'left' }}>
-              {reportData?.breast_density}
-              <br />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table style={{ width: '99.723%', marginBottom: '30%' }}>
+      {/* Info Table */}
+      <table
+        style={{
+          borderCollapse: 'collapse',
+          width: '97.88%',
+          marginLeft: '1.2%',
+          height: 174,
+        }}
+      >
         <tbody>
           <tr>
-            <td
-              style={{ width: '99.9074%' }}
-              colSpan={2}
-            >
-              <strong>
-                <u>BIRAD Score:</u>
-              </strong>
-              <br />
+            <td style={{ width: '48.06%' }}>
+              <span style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+                <strong>Case ID</strong>
+              </span>
             </td>
-          </tr>
-          <tr>
-            <td style={{ width: '49.7222%' }}>
-              <p>Left Breast:</p>
-            </td>
-            <td style={{ width: '50.1852%', textAlign: 'left' }}>
-              {reportData?.birad_scoreLeft}
-              <br />
+            <td style={{ width: '51.76%' }}>
+              <input
+                style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0)',
+                  color: 'black',
+                  border: 'none',
+                  outline: 'none',
+                }}
+                type="text"
+                value={reportData?.study_instance_id}
+                disabled
+              />
             </td>
           </tr>
           <tr>
             <td>
-              <p>
-                Right Breast:
+              <strong>BI-RADS Assessment</strong>
+              <br />
+            </td>
+            <td>
+              <input
+                style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0)',
+                  color: 'black',
+                  border: 'none',
+                  outline: 'none',
+                }}
+                type="text"
+                value={reportData?.birad_assessment}
+                disabled
+              />
+              <br />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+                <span style={{ fontSize: 16 }}>
+                  <strong>Breast Density</strong>
+                </span>
+              </span>
+              <br />
+            </td>
+            <td>B</td>
+          </tr>
+          {reportData?.recall != null && (
+            <tr>
+              <td>
+                <span style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+                  <span style={{ fontSize: 16 }}>
+                    <strong>Recall</strong>
+                  </span>
+                </span>
+              </td>
+              <td>
+                {reportData?.recall}
                 <br />
-              </p>
-            </td>
-            <td style={{ textAlign: 'left' }}>
-              {reportData?.birad_scoreRight}
-              <br />
-            </td>
-          </tr>
-          <br />
+              </td>
+            </tr>
+          )}
+          {reportData?.quadrant !== null && (
+            <tr>
+              <td>
+                <strong>Quadrant</strong>
+              </td>
+              <td>
+                {reportData?.quadrant}
+                <br />
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <p>
+        <br />
+      </p>
+      <p>
+        &nbsp; &nbsp;
+        <strong style={{ fontSize: 18 }}>Comments:</strong>
+      </p>
+      {/* Comments Table */}
+      <table
+        style={{
+          borderCollapse: 'collapse',
+          width: '97.88%',
+          marginLeft: '1.02%',
+        }}
+      >
+        <tbody>
           <tr>
-            <td>
-              <strong>
-                <u>Patient-level Assessment (Normal / Benign / Malignant):</u>
-              </strong>
-            </td>
-            <td style={{ textAlign: 'left' }}>
-              {reportData?.patient_level_assessment}
+            <td style={{ width: '100%' }}>
+              {reportData?.comments}
               <br />
             </td>
           </tr>
         </tbody>
       </table>
-
-      <ReportFooter />
+      <br />
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p>
+        <br />
+      </p>
+      <p style={{ transform: 'translateY(16px)', fontStyle: 'italic' }}>
+        &nbsp; &nbsp; &nbsp;{userInfo?.name}
+      </p>
+      <p>&nbsp; &nbsp; &nbsp;____________________________</p>
+      <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; E-Signature</p>
+      <br />
+      <p>
+        &nbsp; &nbsp; &nbsp;I confirm that I have independently interpreted the study cases in
+        accordance with the protocol.
+        <br />
+        &nbsp; &nbsp; &nbsp;By providing my e-signature, I certify the accuracy of my evaluations
+        and their legal validity.
+      </p>
+      <p>
+        <br />
+      </p>
     </div>
   );
 };
+
 export default MrmcTemplate;

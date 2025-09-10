@@ -1,5 +1,5 @@
 import React from 'react';
-import { MMGReportData } from '../MrmcTemplate';
+import { MMGReportData } from '../../forms/MMGReportForms';
 
 export const StudyInfoFields: React.FC<{ reportData: MMGReportData }> = ({ reportData }) => {
   return (

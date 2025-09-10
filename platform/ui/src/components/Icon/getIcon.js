@@ -1,6 +1,23 @@
 import React from 'react';
 
-const ICONS = {};
+import { ReactComponent as clipboard } from './../../assets/icons/clipboard.svg';
+
+import { ReactComponent as eyeVisible } from './../../assets/icons/eye-visible.svg';
+import { ReactComponent as eyeHidden } from './../../assets/icons/eye-hidden.svg';
+import { ReactComponent as logoXylexa } from './../../../../ui/src/assets/svgs/logo-full-white.svg';
+import { ReactComponent as saveIcon } from './../../assets/icons/save-icon.svg';
+import { ReactComponent as chevronLeft } from './../../assets/icons/chevron-left.svg';
+import { ReactComponent as dottedCircle } from './../../assets/icons/dotted-circle.svg';
+
+const ICONS = {
+  clipboard: clipboard,
+  'save-icon': saveIcon,
+  'eye-visible': eyeVisible,
+  'eye-hidden': eyeHidden,
+  'logo-xylexa': logoXylexa,
+  'chevron-left': chevronLeft,
+  'dotted-circle': dottedCircle,
+};
 function addIcon(iconName, iconSVG) {
   if (ICONS[iconName]) {
     console.warn(`Icon ${iconName} already exists.`);

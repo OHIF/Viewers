@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ref, UseFormClearErrors, UseFormRegister } from 'react-hook-form';
 import { FormField } from './FormField';
-import { MMGReportData } from '../mmg-report-form';
+import { MMGReportData } from '../MMGReportForms';
 
 const LESION_TYPE_OPTIONS = [
   { value: 'mass', label: 'Mass' },

@@ -55,11 +55,11 @@ export const ReportHeader: React.FC<ReportHeaderProps> = ({ heading, address, co
     >
       <tbody>
         <tr>
-          <td style={{ width: '19.2956%', translate: '20% 10%' }}>
+          <td style={{ width: '11.73%', paddingLeft: 20 }}>
             {logosMap[logo]}
             <br />
           </td>
-          <td style={{ width: '100%', textAlign: 'center', lineHeight: 1 }}>
+          <td style={{ width: '88.18%', textAlign: 'center', lineHeight: 1 }}>
             <span style={{ fontSize: 30 }}>
               <strong>
                 <span style={{ fontSize: 30 }}>{heading}</span>
