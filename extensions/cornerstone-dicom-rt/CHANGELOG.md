@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.22...v3.12.0-beta.23) (2025-09-05)
+
+
+### Bug Fixes
+
+* **cornerstone-dicom-rt:** adding caching usage to cornerstone-dicom-rt SOP Class Handler ([#5387](https://github.com/OHIF/Viewers/issues/5387)) ([d6ea179](https://github.com/OHIF/Viewers/commit/d6ea179ac43a47d4011b8dcaf59d79d99382d6c8))
+
+
+
+
+
 # [3.12.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.21...v3.12.0-beta.22) (2025-08-29)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-rt
