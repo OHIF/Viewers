@@ -116,6 +116,7 @@ const SegmentationExpandedRoot = ({ children }) => {
         {data
           .filter(
             segmentationInfo =>
+              !segmentationRepresentationType ||
               segmentationInfo.representation.type === segmentationRepresentationType
           )
           .map(segmentationInfo => {
