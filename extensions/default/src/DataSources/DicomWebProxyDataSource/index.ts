@@ -11,6 +11,7 @@ import { createDicomWebApi } from '../DicomWebDataSource/index';
  */
 function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.ServicesManager) {
   const { name } = dicomWebProxyConfig;
+  const dicomWebProxyConfigCopy = JSON.parse(JSON.stringify(dicomWebProxyConfig));
   let dicomWebDelegate = undefined;
 
   const implementation = {
@@ -68,6 +69,9 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       }
       studyInstanceUIDs = queryStudyInstanceUIDs.split(';');
       return studyInstanceUIDs;
+    },
+    getConfig() {
+      return dicomWebProxyConfigCopy;
     },
   };
   return IWebApiDataSource.create(implementation);
