@@ -8,6 +8,9 @@ import { ReactComponent as logoXylexa } from './../../../../ui/src/assets/svgs/l
 import { ReactComponent as saveIcon } from './../../assets/icons/save-icon.svg';
 import { ReactComponent as chevronLeft } from './../../assets/icons/chevron-left.svg';
 import { ReactComponent as dottedCircle } from './../../assets/icons/dotted-circle.svg';
+import { ReactComponent as writeReport } from './../../assets/icons/write-report.svg';
+import { ReactComponent as iconChevronPatient } from './../../assets/icons/icon-chevron-patient.svg';
+import { ReactComponent as iconPatient } from './../../assets/icons/icon-patient.svg';
 
 const ICONS = {
   clipboard: clipboard,
@@ -17,6 +20,9 @@ const ICONS = {
   'logo-xylexa': logoXylexa,
   'chevron-left': chevronLeft,
   'dotted-circle': dottedCircle,
+  'write-report': writeReport,
+  'icon-chevron-patient': iconChevronPatient,
+  'icon-patient': iconPatient,
 };
 function addIcon(iconName, iconSVG) {
   if (ICONS[iconName]) {
