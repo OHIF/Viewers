@@ -1,3 +1,50 @@
+/** Core Easing Functions */
+
+/**
+ * Linear easing function - constant speed throughout the animation.
+ * Equivalent to CSS: cubic-bezier(0.0, 0.0, 1.0, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The linear eased value.
+ */
+const linearCore = cubicBezier(0.0, 0.0, 1.0, 1.0);
+
+/**
+ * Ease-in easing function - starts slow and accelerates.
+ * Equivalent to CSS: cubic-bezier(0.42, 0, 1.0, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeInCore = cubicBezier(0.42, 0, 1.0, 1.0);
+
+/**
+ * Ease-out easing function - starts fast and decelerates.
+ * Equivalent to CSS: cubic-bezier(0, 0, 0.58, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeOutCore = cubicBezier(0, 0, 0.58, 1.0);
+
+/**
+ * Ease-in-out easing function - starts slow, accelerates, then decelerates.
+ * Equivalent to CSS: cubic-bezier(0.42, 0, 0.58, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeInOutCore = cubicBezier(0.42, 0, 0.58, 1.0);
+
+/**
+ * Standard ease easing function (CSS default).
+ * Equivalent to CSS: cubic-bezier(0.25, 0.1, 0.25, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeCore = cubicBezier(0.25, 0.1, 0.25, 1.0);
+
 /** Cubic Bezier Implementation */
 
 /**
