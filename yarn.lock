@@ -1651,6 +1651,20 @@
     gl-matrix "^3.4.3"
     loglevel "^1.9.2"
 
+"@cornerstonejs/dicom-image-loader@^2.19.3":
+  version "2.19.16"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.19.16.tgz#1a764a3e401cfa90a7a14de782d305b4aeee2fbe"
+  integrity sha512-xIgunmOhMO7ljHJYEgmREA5BHXr4abe4lyCwEjkD5tJu26ya3awpg/kcZIT7eLdr58/g0Ukmag4M5AK2M9G1XQ==
+  dependencies:
+    "@cornerstonejs/codec-charls" "^1.2.3"
+    "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
+    "@cornerstonejs/codec-openjpeg" "^1.2.2"
+    "@cornerstonejs/codec-openjph" "^2.4.5"
+    comlink "^4.4.1"
+    jpeg-lossless-decoder-js "^2.1.0"
+    pako "^2.0.4"
+    uuid "^9.0.0"
+
 "@cornerstonejs/dicom-image-loader@^3.32.12":
   version "3.33.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.33.0.tgz#517fd6acb1d9e1d3b3815253aab8207eebc4b868"
@@ -19158,7 +19172,7 @@ run-parallel@^1.1.2, run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-rxjs@^6.3.3:
+rxjs@^6.3.3, rxjs@^6.4.0:
   version "6.6.7"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==

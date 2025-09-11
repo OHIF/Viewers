@@ -618,7 +618,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
                   return (
                     <div key={fieldName} className="mb-3 border border-border p-3 rounded bg-card">
                       <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-medium">
+                        <label className="block text-sm font-medium text-aqua-pale">
                           {fieldDef.label}
                         </label>
                         <button
