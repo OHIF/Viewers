@@ -280,3 +280,21 @@ export function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
     return sampleCurveY(curveParameter, y1, y2);
   };
 }
+
+/** Export interfaces */
+
+export enum EasingFunctionEnum {
+  EASE = 'ease',
+  EASE_IN = 'ease-in',
+  EASE_OUT = 'ease-out',
+  EASE_IN_OUT = 'ease-in-out',
+  LINEAR = 'linear',
+}
+
+export const EasingFunctionMap = new Map([
+  [EasingFunctionEnum.EASE, ease],
+  [EasingFunctionEnum.EASE_IN, easeIn],
+  [EasingFunctionEnum.EASE_OUT, easeOut],
+  [EasingFunctionEnum.EASE_IN_OUT, easeInOut],
+  [EasingFunctionEnum.LINEAR, linear],
+]);
