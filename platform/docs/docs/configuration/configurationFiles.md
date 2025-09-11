@@ -132,7 +132,8 @@ Here are a list of some options available:
 - `requestTransferSyntaxUID` : Request a specific Transfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
-- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, `prefetch`, and `upload`. You can specify a specific number for each type.
+  - `upload`: Maximum number of concurrent DICOM file uploads when using the DICOM upload plugin (default: 3)
 - `modesConfiguration`: Allows overriding modes configuration.
   - Example config:
   ```js

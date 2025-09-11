@@ -19,6 +19,8 @@ window.config = {
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
+    // Maximum number of concurrent DICOM uploads
+    upload: 3,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
     prefetch: 25,

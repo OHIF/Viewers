@@ -15,6 +15,8 @@ window.config = {
     interaction: 100,
     thumbnail: 75,
     prefetch: 25,
+    // Maximum number of concurrent DICOM uploads
+    upload: 3,
   },
   defaultDataSourceName: 'dicomweb',
   dataSources: [
