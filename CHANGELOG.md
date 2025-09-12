@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.23...v3.12.0-beta.24) (2025-09-10)
+
+
+### Bug Fixes
+
+* **ErrorBoundary:** Fixing console errors and Improving error logging for better developer experience ([#5378](https://github.com/OHIF/Viewers/issues/5378)) ([56c5828](https://github.com/OHIF/Viewers/commit/56c5828b02d53bfd17182bb8d0c126b7cd4f400e))
+
+
+
+
+
 # [3.12.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.22...v3.12.0-beta.23) (2025-09-05)
 
 
