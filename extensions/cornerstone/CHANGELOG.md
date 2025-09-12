@@ -3,6 +3,254 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.23...v3.12.0-beta.24) (2025-09-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.22...v3.12.0-beta.23) (2025-09-05)
+
+
+### Bug Fixes
+
+* **cornerstone-dicom-rt:** adding caching usage to cornerstone-dicom-rt SOP Class Handler ([#5387](https://github.com/OHIF/Viewers/issues/5387)) ([d6ea179](https://github.com/OHIF/Viewers/commit/d6ea179ac43a47d4011b8dcaf59d79d99382d6c8))
+
+
+
+
+
+# [3.12.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.21...v3.12.0-beta.22) (2025-08-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.20...v3.12.0-beta.21) (2025-08-29)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.19...v3.12.0-beta.20) (2025-08-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.18...v3.12.0-beta.19) (2025-08-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.17...v3.12.0-beta.18) (2025-08-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.16...v3.12.0-beta.17) (2025-08-28)
+
+
+### Bug Fixes
+
+* seg preview ([#5338](https://github.com/OHIF/Viewers/issues/5338)) ([d91cc23](https://github.com/OHIF/Viewers/commit/d91cc230e5231ca32ee28736f661a1497f7834c5))
+
+
+
+
+
+# [3.12.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.15...v3.12.0-beta.16) (2025-08-25)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.14...v3.12.0-beta.15) (2025-08-25)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.13...v3.12.0-beta.14) (2025-08-25)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.12...v3.12.0-beta.13) (2025-08-25)
+
+
+### Bug Fixes
+
+* add back clear segmentation representations ([#5336](https://github.com/OHIF/Viewers/issues/5336)) ([21d6ba2](https://github.com/OHIF/Viewers/commit/21d6ba2bb30df5b99bf5728163caff514aaa5dcd))
+
+
+
+
+
+# [3.12.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.11...v3.12.0-beta.12) (2025-08-25)
+
+
+### Bug Fixes
+
+* Segmentation stats customization module ([#5324](https://github.com/OHIF/Viewers/issues/5324)) ([b9d6f55](https://github.com/OHIF/Viewers/commit/b9d6f558cbe5957f83e6d92305a78662a0b186ed))
+
+
+
+
+
+# [3.12.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.10...v3.12.0-beta.11) (2025-08-25)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.9...v3.12.0-beta.10) (2025-08-22)
+
+
+### Features
+
+*  Jump to measurement moves the camera if it is not in the viewport ([#5023](https://github.com/OHIF/Viewers/issues/5023)) ([6fe9df6](https://github.com/OHIF/Viewers/commit/6fe9df6ec93c0f37e3bb9f8bf6425bae025e75c8))
+
+
+
+
+
+# [3.12.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.8...v3.12.0-beta.9) (2025-08-22)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.7...v3.12.0-beta.8) (2025-08-20)
+
+
+### Features
+
+* Add WSI bulk data annotations support (ANN) ([#4972](https://github.com/OHIF/Viewers/issues/4972)) ([2ed6818](https://github.com/OHIF/Viewers/commit/2ed681817142b13971bb17b3058be26bbab6b90b))
+
+
+
+
+
+# [3.12.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.6...v3.12.0-beta.7) (2025-08-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.5...v3.12.0-beta.6) (2025-08-13)
+
+
+### Features
+
+* **orientationMarkers:** improved the orientation markers with a simplified version ([#5328](https://github.com/OHIF/Viewers/issues/5328)) ([266b1f5](https://github.com/OHIF/Viewers/commit/266b1f58f01ac6742a9bb40dda28459e7cddc683))
+
+
+
+
+
+# [3.12.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.4...v3.12.0-beta.5) (2025-08-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.3...v3.12.0-beta.4) (2025-08-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.2...v3.12.0-beta.3) (2025-08-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.1...v3.12.0-beta.2) (2025-08-08)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.0...v3.12.0-beta.1) (2025-08-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.116...v3.12.0-beta.0) (2025-08-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.115...v3.11.0-beta.116) (2025-08-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.11.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.114...v3.11.0-beta.115) (2025-07-31)
+
+
+### Features
+
+* add support to scoord3d ([#5016](https://github.com/OHIF/Viewers/issues/5016)) ([735405a](https://github.com/OHIF/Viewers/commit/735405a8554c7ee6283faa83fc42ff8bb9ac34ff))
+
+
+
+
+
+# [3.11.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.113...v3.11.0-beta.114) (2025-07-30)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.11.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.112...v3.11.0-beta.113) (2025-07-30)
 
 
