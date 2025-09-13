@@ -20,5 +20,6 @@
   "StudyDate": "Study Date",
   "Yes": "Yes",
   "Cancel": "Cancel",
-  "Save": "Save"
+  "Save": "Save",
+  "localDateFormat": "DD-MMM-YYYY"
 }

@@ -16,5 +16,10 @@
   "Yes": "是",
   "No": "否",
   "Cancel": "取消",
-  "Save": "保存"
+  "Save": "保存",
+  "Back to": "Back to {{location}}",
+  "Close": "Close",
+  "LOAD": "LOAD",
+  "mm": "mm",
+  "NoStudyDate": "No Study Date"
 }

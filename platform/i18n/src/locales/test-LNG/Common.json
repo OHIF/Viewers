@@ -17,5 +17,9 @@
   "StudyDate": "Test Study Date",
   "Yes": "Test Yes",
   "Cancel": "Test Cancel",
-  "Save": "Test Save"
+  "Save": "Test Save",
+  "Back to": "Test Back to {{location}}",
+  "LOAD": "Test LOAD",
+  "NoStudyDate": "Test No Study Date",
+  "localDateFormat": "\\T\\e\\s\\t MM/DD/YYYY"
 }
