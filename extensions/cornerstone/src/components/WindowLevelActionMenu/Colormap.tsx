@@ -1,9 +1,11 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
+import { useTranslation } from 'react-i18next';
 
 export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { viewportDisplaySets } = useViewportRendering(viewportId);
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
     viewportDisplaySets?.[0]?.displaySetInstanceUID
@@ -74,7 +76,7 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
         className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
         onClick={() => setShowPreview(!showPreview)}
       >
-        <span className="flex-shrink-0">Preview in viewport</span>
+        <span className="flex-shrink-0">{t('Preview in viewport')}</span>
         <Switch
           className="ml-auto flex-shrink-0"
           checked={showPreview}

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Icons } from '@ohif/ui-next';
 import DividerItem from './DividerItem';
+import i18n from 'i18next';
 
 type BackItemProps = {
   backLabel?: string;
@@ -19,7 +20,7 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
           name="content-prev"
           className="ml-2 mr-2"
         />
-        <span>{backLabel || 'Back to Display Options'}</span>
+        <span>{backLabel || String(i18n.t('WindowLevelActionMenu:Back to Display Options'))}</span>
       </div>
       <DividerItem></DividerItem>
     </>
