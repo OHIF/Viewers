@@ -24,7 +24,7 @@ import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 import CaptureViewportModal from './CaptureViewportModal.json';
-import CommandsModule from './CommandsModule.json';
+import Tools from './Tools.json';
 
 export default {
   'test-LNG': {
@@ -54,6 +54,6 @@ export default {
     ViewportDownloadForm,
     WindowLevelActionMenu,
     CaptureViewportModal,
-    CommandsModule,
+    Tools,
   },
 };
