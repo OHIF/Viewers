@@ -23,6 +23,8 @@ import TrackedCornerstoneViewport from './TrackedCornerstoneViewport.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
+import CaptureViewportModal from './CaptureViewportModal.json';
+import CommandsModule from './CommandsModule.json';
 
 export default {
   'test-LNG': {
@@ -51,5 +53,7 @@ export default {
     UserPreferencesModal,
     ViewportDownloadForm,
     WindowLevelActionMenu,
+    CaptureViewportModal,
+    CommandsModule,
   },
 };

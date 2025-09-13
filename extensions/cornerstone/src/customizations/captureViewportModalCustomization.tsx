@@ -131,14 +131,17 @@ function ViewportDownloadFormNew({
           )}
           <FooterAction className="mt-2">
             <FooterAction.Right>
-              <FooterAction.Secondary onClick={onClose}> {t('Cancel')}</FooterAction.Secondary>
+              <FooterAction.Secondary onClick={onClose}>
+                {' '}
+                {t('Common:Cancel')}
+              </FooterAction.Secondary>
               <FooterAction.Primary
                 onClick={() => {
                   onDownload(filename || DEFAULT_FILENAME, fileType);
                   onClose();
                 }}
               >
-                {t('Save')}
+                {t('Common:Save')}
               </FooterAction.Primary>
             </FooterAction.Right>
           </FooterAction>
