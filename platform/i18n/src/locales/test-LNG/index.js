@@ -25,6 +25,8 @@ import ViewportDownloadForm from './ViewportDownloadForm.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
+import Hps from './Hps.json';
+import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 
 export default {
   'test-LNG': {
@@ -55,5 +57,7 @@ export default {
     WindowLevelActionMenu,
     CaptureViewportModal,
     Tools,
+    Hps,
+    ToolbarLayoutSelector,
   },
 };
