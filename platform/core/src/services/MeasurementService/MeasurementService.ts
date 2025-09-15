@@ -1,6 +1,9 @@
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { AnnotationData, annotationService, Measurement } from '@xylexa/xylexa-app';
+import * as cs3dTools from '@cornerstonejs/tools';
+import { eventEmitter } from '@xylexa/xylexa-app';
 
 /**
  * Measurement source schema
@@ -126,15 +129,42 @@ class MeasurementService extends PubSubService {
   public static VALUE_TYPES = VALUE_TYPES;
   public readonly VALUE_TYPES = VALUE_TYPES;
 
-  private measurements = new Map();
+  public measurements = new Map();
   private unmappedMeasurements = new Map();
   private isMeasurementDeletedIndividually: boolean;
 
   private sources = {};
   private mappings = {};
 
+  /**
+ *
+ * Declaring annotationsDataArr && annotationsDataArr as a 'MeasurementService class property'.
+ * So that it act as a state.
+ *
+ */
+
+  public annotationsDataArr: AnnotationData[] = [];
+  public annotationsMeasurementDataArr: Measurement[] = [];
+
+  public isChangeInViewPortAnnotationsDetected = false;
+
+  public annotationDataSynchronizer = latestAnnotationDataArr => {
+    this.annotationsDataArr = latestAnnotationDataArr;
+  };
+
+  public annotationMeasurementDataSynchronizer = latestAnnotationMeasurementDataArr => {
+    this.annotationsMeasurementDataArr = latestAnnotationMeasurementDataArr;
+  };
+
+  public setMeasurementDataForAnnotations(retrievedMeasurement) {
+    this.measurements.set(retrievedMeasurement.uid, retrievedMeasurement);
+  }
+
+
   constructor() {
     super(EVENTS);
+    this.sources = {};
+    this.mappings = {};
   }
 
   /**
@@ -475,6 +505,7 @@ class MeasurementService extends PubSubService {
    * @return {string} A measurement uid
    */
   annotationToMeasurement(source, annotationType, sourceAnnotationDetail, isUpdate = false) {
+    const { extractAnnotationDataFromMeasurement } = annotationService();
     if (!this._isValidSource(source)) {
       throw new Error('Invalid source.');
     }
@@ -547,6 +578,30 @@ class MeasurementService extends PubSubService {
       uid: internalUID,
     };
 
+    /**
+    *
+    * @param {string} measurementUid
+    * handleNewMeasurement takes measurement Uid and gets annotations data required
+    * to draw that annotation, remove unnecessary properties from the object and then
+    * store them in an array (annotationDataArr).
+    *
+    */
+
+    const handleNewMeasurement = measurement => {
+      this.annotationsMeasurementDataArr?.push(measurement);
+      if (!measurement) {
+        console.warn('Invalid measurement provided: ', measurement);
+        return null;
+      }
+
+      const annotationData = extractAnnotationDataFromMeasurement(measurement);
+
+      if (annotationData) {
+        eventEmitter.emit('add_annotation');
+        this.annotationsDataArr.push(annotationData);
+      }
+    };
+
     newMeasurement.isDirty =
       sourceAnnotationDetail.changeType === MeasurementChangeType.HandlesUpdated ||
       sourceAnnotationDetail.changeType === MeasurementChangeType.LabelChange ||
@@ -564,6 +619,9 @@ class MeasurementService extends PubSubService {
         });
       } else {
         log.info('Measurement added.', newMeasurement);
+        if (newMeasurement) {
+          handleNewMeasurement(newMeasurement);
+        }
         this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
           source,
           measurement: newMeasurement,
@@ -600,6 +658,36 @@ class MeasurementService extends PubSubService {
       source,
       measurement: measurementUID,
     });
+
+
+    cs3dTools.annotation.state.removeAnnotation(measurementUID);
+
+    /**
+     * updating annotations and measurement data array on deleting annotation
+     */
+
+    this.annotationsDataArr.splice(
+      this.annotationsDataArr.findIndex(
+        annotionaDataObj => annotionaDataObj.annotationUID === measurementUID
+      ),
+      1
+    );
+
+    this.annotationsMeasurementDataArr.splice(
+      this.annotationsMeasurementDataArr.findIndex(
+        annotionaMeasurementDataObj => annotionaMeasurementDataObj.uid === measurementUID
+      ),
+      1
+    );
+
+    this.isChangeInViewPortAnnotationsDetected = true;
+
+    /**
+     * emitting delete_annotation event declared in TrackedCornerstoneViewport.tsx
+     * to detect the change in viewports
+     */
+
+    eventEmitter.emit('delete_annotation');
   }
 
   /**

@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useSystem } from '@ohif/core';
 import classNames from 'classnames';
 import {
   DropdownMenu,
@@ -52,7 +52,6 @@ interface HeaderProps {
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
   UndoRedo?: ReactNode;
-  servicesManager: PropTypes.object;
 }
 
 export type ServerOption = { id: 0 | 1; value: 'local' | 'cloud'; label: 'Local' | 'Cloud' };
@@ -65,7 +64,6 @@ function Header({
   isSticky = false,
   WhiteLabeling,
   PatientInfo,
-  servicesManager,
   UndoRedo,
   Secondary,
   ...props
@@ -73,6 +71,7 @@ function Header({
   const { showToast } = useToast();
   const [showAnnotationModal, setShowAnnotationModal] = useState(false);
   const [showReportCreationModal, setShowReportCreationModal] = useState(false);
+  const { servicesManager } = useSystem();
 
   const {
     selectedStudy,
@@ -105,19 +104,23 @@ function Header({
     useUpsertAnnotationData();
 
   async function handleSaveAnnotationClick() {
-    const { measurementService } = servicesManager.services;
-    const annotationData = await getAnnotationDataArray(measurementService.annotationsDataArr);
+    const { measurementService } = servicesManager?.services;
+
+    const annotationData = await getAnnotationDataArray(measurementService?.annotationsDataArr);
+
     const body = {
       study_instance_id: studyInstanceUidFromUrl,
       annotation_data: annotationData,
-      measurement_data: measurementService.annotationsMeasurementDataArr,
+      measurement_data: measurementService?.annotationsMeasurementDataArr,
     };
+
     handleUpsertAnnotationData(body, {
       onSuccess: res => {
         showToast({
           content: 'Annotations Saved!',
           type: 'success',
         });
+
         setIsChangeInAnnotationViewPort(false);
 
         if (showAnnotationModal) {

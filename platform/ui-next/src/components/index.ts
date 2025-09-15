@@ -67,6 +67,7 @@ import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ProgressLoadingBar from './ProgressLoadingBar';
 import ViewportDialog from './ViewportDialog';
+import NavBar from './NavBar';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -269,5 +270,6 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
-  LayoutSelector
+  LayoutSelector,
+  NavBar
 };

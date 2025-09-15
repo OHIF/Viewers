@@ -63,7 +63,7 @@ export const annotationService = () => {
   const getAnnotationDataArray = async (annotationDataArray: AnnotationData[]) => {
     return new Promise(resolve => {
       const toolsNeedToBeSerialized = ['RectangleROI', 'CircleROI', 'EllipticalROI'];
-      const serializedAnnotationDataArray = annotationDataArray.map(annotationData => {
+      const serializedAnnotationDataArray = annotationDataArray?.map(annotationData => {
         if (toolsNeedToBeSerialized.includes(annotationData.metadata.toolName)) {
           return serializeAnnotationData(annotationData);
         } else {

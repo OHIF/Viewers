@@ -6,8 +6,10 @@ import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
-import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
+import { useXylexaAppContext } from '@xylexa/xylexa-app';
+import { eventEmitter } from '@xylexa/xylexa-app';
 
 function TrackedCornerstoneViewport(
   props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
@@ -19,8 +21,32 @@ function TrackedCornerstoneViewport(
     servicesManager: AppTypes.Services;
   };
 
+  const { setIsChangeInAnnotationViewPort } = useXylexaAppContext();
+
   const { measurementService, cornerstoneViewportService, viewportGridService, toolbarService } =
     servicesManager.services;
+
+  /**
+   * Detecting any change in viewport, as this component gets re-render everytime when there
+   * is a change in viewport
+   */
+  setIsChangeInAnnotationViewPort(measurementService.isChangeInViewPortAnnotationsDetected);
+
+  /**
+   * Detecting any change in viewport, as this component gets re-render everytime when there
+   * is a change in viewport
+   */
+  eventEmitter.on('add_annotation', () => {
+    setIsChangeInAnnotationViewPort(true);
+  });
+
+  /**
+   * Below event would trigger when remove annotation function would be called insde
+   * MeasurementService.ts
+   */
+  eventEmitter.on('delete_annotation', () => {
+    setIsChangeInAnnotationViewPort(true);
+  });
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];

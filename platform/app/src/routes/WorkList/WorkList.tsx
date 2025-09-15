@@ -6,7 +6,6 @@ import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
 import { useTranslation } from 'react-i18next';
-//
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '../../hooks';
@@ -26,7 +25,6 @@ import {
 } from '@ohif/ui';
 
 import {
-  Header,
   Icons,
   Tooltip,
   TooltipTrigger,
@@ -34,9 +32,8 @@ import {
   Clipboard,
   useModal,
   useSessionStorage,
-  Onboarding,
   ScrollArea,
-  InvestigationalUseDialog,
+  Header,
 } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
@@ -112,6 +109,7 @@ function WorkList({
   const { data: reportIds } = useGetReportIds();
 
   useEffect(() => {
+    measurementService.isChangeInViewPortAnnotationsDetected = false;
     const isFilterFieldEmpty = value => value?.length === 0;
     const isFilterFieldNull = value => value === null;
 
@@ -273,7 +271,7 @@ function WorkList({
   const defaultSortValues =
     shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
 
-  const { customizationService } = servicesManager.services;
+  const { customizationService, measurementService } = servicesManager.services;
 
   const sortedStudies = filteredList;
 
@@ -794,7 +792,7 @@ function WorkList({
       title: t('Header:Logout'),
       icon: 'logout',
       onClick: () => {
-        useSecureLocalStorage.clear();
+        secureLocalStorage.clear();
         //TODO:  Implement proper re-routing to login page on logout
         navigate(0);
       },

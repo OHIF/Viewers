@@ -3,6 +3,16 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 
+import {
+  annotationService,
+  API_URL,
+  AUTH_TOkEN_LOCAL_STORAGE_KEY,
+  ToastProps,
+} from '@xylexa/xylexa-app';
+import axios from 'axios';
+import secureLocalStorage from 'react-secure-storage';
+import { toast, ToastOptions } from 'react-toastify';
+
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
@@ -85,6 +95,7 @@ function modeFactory({ modeConfiguration }) {
       const { measurementService, toolbarService, toolGroupService, customizationService } =
         servicesManager.services;
 
+      const { registerRetrievedAnnotations } = annotationService();
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
@@ -169,6 +180,65 @@ function modeFactory({ modeConfiguration }) {
           $set: true,
         },
       });
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const STUDY_INSTANCE_ID = urlParams.get('StudyInstanceUIDs');
+      const AUTH_TOKEN = secureLocalStorage.getItem(AUTH_TOkEN_LOCAL_STORAGE_KEY);
+
+      const options: ToastOptions<unknown> = {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      };
+
+      const showToast = ({ content, type }: ToastProps) => toast(content, { ...options, type });
+
+      /**
+       * retrieving  annotations data and registering it in the viewport
+       */
+      const getAndSetAnnotation = async () => {
+        try {
+          const requestOptions = {
+            headers: {
+              Authorization: `Bearer ${AUTH_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+          };
+          const retrievedAnnotationData = await axios.get(
+            `${API_URL}v1/annotations/?study_instance_id=${STUDY_INSTANCE_ID}`,
+            requestOptions
+          );
+
+          registerRetrievedAnnotations(
+            measurementService,
+            retrievedAnnotationData?.data?.annotation_data,
+            retrievedAnnotationData?.data?.measurement_data
+          );
+          measurementService.annotationDataSynchronizer(
+            retrievedAnnotationData?.data?.annotation_data
+          );
+
+          measurementService.annotationMeasurementDataSynchronizer(
+            retrievedAnnotationData?.data?.measurement_data
+          );
+
+          showToast({
+            type: 'success',
+            content: 'Annotation Loaded Successfully.',
+          });
+        } catch (err) {
+          if (axios.isAxiosError(err) && err.response?.status === 404) {
+            showToast({
+              type: 'info',
+              content: 'No Annotation Exist for this Study.',
+            });
+          }
+        }
+      };
+      getAndSetAnnotation();
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.

@@ -38,6 +38,8 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
 
   const { t } = useTranslation();
   const { show } = useModal();
+  const { measurementService } = servicesManager.services;
+  measurementService.annotationsDataArr = [];
 
   const AboutModal = customizationService.getCustomization(
     'ohif.aboutModal'
