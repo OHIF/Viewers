@@ -206,7 +206,7 @@ export default function PanelSegmentation({
           className: 'w-7 h-7',
         }}
       >
-        <div className="flex gap-[3px] bg-transparent">
+        <div className="flex h-[42px] gap-[3px] bg-transparent pt-[6px] pb-[8px] pl-[8px]">
           <Toolbar
             buttonSection={utilitiesSectionMap[segmentationRepresentationType ?? 'Segmentation']}
           />
