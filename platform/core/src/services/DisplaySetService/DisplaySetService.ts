@@ -433,7 +433,7 @@ export default class DisplaySetService extends PubSubService {
    */
   public sortDisplaySets(
     sortFn: (a: DisplaySet, b: DisplaySet) => number,
-    direction: string,
+    direction = 'ascending',
     suppressEvent = false
   ): void {
     this.activeDisplaySets.sort(sortFn);
