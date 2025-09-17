@@ -77,7 +77,7 @@
     "@svgr/webpack": "^8.1.0",
     "@types/react": "^18.3.3",
     "classnames": "^2.3.2",
-    "core-js": "*",
+    "core-js": "3.45.1",
     "cornerstone-math": "^0.1.9",
     "dcmjs": "0.43.1",
     "detect-gpu": "^4.0.16",
