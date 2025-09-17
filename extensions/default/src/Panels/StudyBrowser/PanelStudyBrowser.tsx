@@ -35,7 +35,7 @@ function PanelStudyBrowser({
 
   const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState(studyMode);
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
+  const [expandedSeriesInstanceUIDs, setExpandedSeriesInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
   const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
@@ -345,20 +345,23 @@ function PanelStudyBrowser({
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
-  function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
-    const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
-      : [...expandedStudyInstanceUIDs, StudyInstanceUID];
+  const _handleStudyClick = useCallback(
+    seriesInstanceUID => {
+      const shouldCollapseStudy = expandedSeriesInstanceUIDs.includes(seriesInstanceUID);
+      const updatedExpandedSeriesInstanceUIDs = shouldCollapseStudy
+        ? // eslint-disable-next-line prettier/prettier
+          [...expandedSeriesInstanceUIDs.filter(seriesUid => seriesUid !== seriesInstanceUID)]
+        : [...expandedSeriesInstanceUIDs, seriesInstanceUID];
 
-    setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+      setExpandedSeriesInstanceUIDs(updatedExpandedSeriesInstanceUIDs);
 
-    if (!shouldCollapseStudy) {
-      const madeInClient = true;
-      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
-    }
-  }
-
+      if (!shouldCollapseStudy) {
+        const madeInClient = true;
+        requestDisplaySetCreationForStudy(displaySetService, seriesInstanceUID, madeInClient);
+      }
+    },
+    [displaySetService, expandedSeriesInstanceUIDs, requestDisplaySetCreationForStudy]
+  );
   useEffect(() => {
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
@@ -372,7 +375,7 @@ function PanelStudyBrowser({
         setJumpToDisplaySet(null);
       }
     }
-  }, [jumpToDisplaySet, expandedStudyInstanceUIDs, activeTabName]);
+  }, [jumpToDisplaySet, expandedSeriesInstanceUIDs, activeTabName]);
 
   useEffect(() => {
     if (!jumpToDisplaySet) {
@@ -387,12 +390,12 @@ function PanelStudyBrowser({
     }
     const { tabName, StudyInstanceUID } = thumbnailLocation;
     setActiveTabName(tabName);
-    const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+    const studyExpanded = expandedSeriesInstanceUIDs.includes(StudyInstanceUID);
     if (!studyExpanded) {
-      const updatedExpandedStudyInstanceUIDs = [...expandedStudyInstanceUIDs, StudyInstanceUID];
-      setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+      const updatedExpandedStudyInstanceUIDs = [...expandedSeriesInstanceUIDs, StudyInstanceUID];
+      setExpandedSeriesInstanceUIDs(updatedExpandedStudyInstanceUIDs);
     }
-  }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
+  }, [expandedSeriesInstanceUIDs, jumpToDisplaySet, tabs]);
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
@@ -416,7 +419,7 @@ function PanelStudyBrowser({
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}
-        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
+        expandedStudyInstanceUIDs={expandedSeriesInstanceUIDs}
         onClickStudy={_handleStudyClick}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
@@ -500,6 +503,7 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
           // .. Any other data to pass
         },
         isHydratedForDerivedDisplaySet: ds.isHydrated,
+        parentSeriesInstanceUID: ds.SeriesInstanceUID,
       });
     });
 
