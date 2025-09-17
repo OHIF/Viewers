@@ -35,6 +35,7 @@ module.exports = {
         '@babel/plugin-transform-typescript',
         '@babel/plugin-transform-class-static-block',
         '@babel/plugin-transform-for-of',
+        ['babel-plugin-transform-import-meta', { module: 'ES6' }],
       ],
     },
     production: {
