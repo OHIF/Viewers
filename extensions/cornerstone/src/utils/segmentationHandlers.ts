@@ -1,5 +1,7 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import { updateSegmentationStats } from './updateSegmentationStats';
+import { useSelectedSegmentationsForViewportStore } from '../stores';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 /**
  * Sets up the handler for segmentation data modification events
@@ -16,8 +18,9 @@ export function setupSegmentationDataModifiedHandler({
   const { unsubscribe: debouncedUnsubscribe } = segmentationService.subscribeDebounced(
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
     async ({ segmentationId }) => {
-
-      const disableUpdateSegmentationStats = customizationService.getCustomization('panelSegmentation.disableUpdateSegmentationStats');
+      const disableUpdateSegmentationStats = customizationService.getCustomization(
+        'panelSegmentation.disableUpdateSegmentationStats'
+      );
 
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -114,4 +117,50 @@ export function setupSegmentationModifiedHandler({ segmentationService }) {
   );
 
   return { unsubscribe };
+}
+
+/**
+ * Sets up auto tab switching for when the first segmentation is added into the viewer.
+ */
+export default function setUpSelectedSegmentationsForViewportHandler({ segmentationService }) {
+  const selectedSegmentationsForViewportEvents = [
+    segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+    segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+  ];
+
+  const unsubscribeSelectedSegmentationsForViewportEvents = selectedSegmentationsForViewportEvents
+    .map(eventName =>
+      segmentationService.subscribe(eventName, event => {
+        const { viewportId } = event;
+
+        if (!viewportId) {
+          return;
+        }
+
+        const { selectedSegmentationsForViewport, setSelectedSegmentationsForViewport } =
+          useSelectedSegmentationsForViewportStore.getState();
+
+        const representations = segmentationService.getSegmentationRepresentations(viewportId);
+
+        const activeRepresentation = representations.find(representation => representation.active);
+
+        const typeToSegmentationIdMap =
+          selectedSegmentationsForViewport[viewportId] ??
+          new Map<SegmentationRepresentations, string>();
+
+        if (activeRepresentation) {
+          typeToSegmentationIdMap.set(
+            activeRepresentation.type,
+            activeRepresentation.segmentationId
+          );
+        } else {
+          typeToSegmentationIdMap.clear();
+        }
+
+        setSelectedSegmentationsForViewport(viewportId, typeToSegmentationIdMap);
+      })
+    )
+    .map(subscription => subscription.unsubscribe);
+
+  return { unsubscribeSelectedSegmentationsForViewportEvents };
 }

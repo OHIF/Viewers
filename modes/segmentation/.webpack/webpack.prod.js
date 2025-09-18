@@ -39,12 +39,6 @@ const config = {
         amd: '@ohif/ui',
         root: '@ohif/ui',
       },
-      '@cornerstonejs/tools': {
-        commonjs2: '@cornerstonejs/tools',
-        commonjs: '@cornerstonejs/tools',
-        amd: '@cornerstonejs/tools',
-        root: '@cornerstonejs/tools',
-      },
     },
   ],
   module: {

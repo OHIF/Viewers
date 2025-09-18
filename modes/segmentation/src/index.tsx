@@ -1,7 +1,7 @@
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
-import setupAutoTabSwitchHandler from './utils/setupAutoTabSwitchHandler';
+import setUpAutoTabSwitchHandler from './utils/setUpAutoTabSwitchHandler';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -41,7 +41,7 @@ const extensionDependencies = {
 };
 
 function modeFactory({ modeConfiguration }) {
-  let _unsubscriptions = [];
+  const _unsubscriptions = [];
   return {
     /**
      * Mode ID, which should be unique among modes used by the viewer. This ID
@@ -172,13 +172,13 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
 
-      const { unsubscribeAutoTabSwitchEvents } = setupAutoTabSwitchHandler({
+      const { unsubscribeAutoTabSwitchEvents } = setUpAutoTabSwitchHandler({
         segmentationService,
         viewportGridService,
         panelService,
       });
 
-      _unsubscriptions = [...unsubscribeAutoTabSwitchEvents];
+      _unsubscriptions.push(...unsubscribeAutoTabSwitchEvents);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -191,7 +191,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       _unsubscriptions.forEach(unsubscribe => unsubscribe());
-      _unsubscriptions = [];
+      _unsubscriptions.length = 0;
 
       uiDialogService.hideAll();
       uiModalService.hide();

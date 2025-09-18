@@ -1,4 +1,4 @@
-import {
+import setUpSelectedSegmentationsForViewportHandler, {
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
 } from './segmentationHandlers';
@@ -50,10 +50,16 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
     }
   );
 
+  const { unsubscribeSelectedSegmentationsForViewportEvents } =
+    setUpSelectedSegmentationsForViewportHandler({
+      segmentationService,
+    });
+
   const unsubscriptions = [
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
     unsubscribeSegmentationCreated,
+    ...unsubscribeSelectedSegmentationsForViewportEvents,
   ];
 
   return { unsubscriptions };

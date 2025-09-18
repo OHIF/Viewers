@@ -1,6 +1,5 @@
 import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -438,13 +437,13 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       commands: {
         commandName: 'activateSelectedSegmentationOfType',
         commandOptions: {
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       },
       options: [
@@ -491,7 +490,7 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
         {
           name: 'evaluate.displaySetIsReconstructable',
@@ -502,7 +501,7 @@ const toolbarButtons: Button[] = [
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
-            segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+            segmentationRepresentationType: 'Labelmap',
           },
         },
         'interpolateLabelmap',
@@ -524,14 +523,14 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       commands: [
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
-            segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+            segmentationRepresentationType: 'Labelmap',
           },
         },
         'runSegmentBidirectional',
@@ -554,14 +553,14 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       commands: [
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
-            segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+            segmentationRepresentationType: 'Labelmap',
           },
         },
         'setToolActiveToolbar',
@@ -580,7 +579,7 @@ const toolbarButtons: Button[] = [
         'evaluate.cornerstoneTool.toggle',
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       listeners: {
@@ -593,7 +592,7 @@ const toolbarButtons: Button[] = [
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
-            segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+            segmentationRepresentationType: 'Labelmap',
           },
         },
         'toggleEnabledDisabledToolbar',
@@ -615,14 +614,14 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       commands: [
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
-            segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+            segmentationRepresentationType: 'Labelmap',
           },
         },
         'setToolActiveToolbar',
@@ -676,7 +675,7 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       options: [
@@ -708,7 +707,7 @@ const toolbarButtons: Button[] = [
       commands: {
         commandName: 'activateSelectedSegmentationOfType',
         commandOptions: {
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       },
     },
@@ -731,13 +730,13 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       commands: {
         commandName: 'activateSelectedSegmentationOfType',
         commandOptions: {
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       },
 
@@ -857,13 +856,13 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       commands: {
         commandName: 'activateSelectedSegmentationOfType',
         commandOptions: {
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       },
       options: [

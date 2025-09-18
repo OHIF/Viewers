@@ -1,9 +1,7 @@
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
-
 /**
  * Sets up auto tab switching for when the first segmentation is added into the viewer.
  */
-export default function setupAutoTabSwitchHandler({
+export default function setUpAutoTabSwitchHandler({
   segmentationService,
   viewportGridService,
   panelService,
@@ -36,13 +34,13 @@ export default function setupAutoTabSwitchHandler({
           shouldSwitchTab = false;
 
           switch (activeRepresentation.type) {
-            case SegmentationRepresentations.Labelmap:
+            case 'Labelmap':
               panelService.activatePanel(
                 '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
                 true
               );
               break;
-            case SegmentationRepresentations.Contour:
+            case 'Contour':
               panelService.activatePanel(
                 '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
                 true
