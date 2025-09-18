@@ -7,7 +7,6 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { Toolbar } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
 import { useSelectedSegmentationsForViewportStore } from '../stores';
-import SegmentationService from '../services/SegmentationService';
 
 type PanelSegmentationProps = {
   children?: React.ReactNode;
