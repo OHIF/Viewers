@@ -46,7 +46,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "i18next": "^17.0.3"
+    "i18next": "^17.0.3",
+    "@cornerstonejs/tools": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",

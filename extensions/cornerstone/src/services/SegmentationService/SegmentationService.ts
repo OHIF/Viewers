@@ -92,11 +92,6 @@ class SegmentationService extends PubSubService {
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
   private _segmentationGroupStatsMap: Map<string, any>;
-  private _selectedSegmentationIdByViewportAndType: Map<
-    string,
-    Map<SegmentationRepresentations, string>
-  >;
-
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
@@ -109,8 +104,6 @@ class SegmentationService extends PubSubService {
     this.servicesManager = servicesManager;
 
     this._segmentationGroupStatsMap = new Map();
-
-    this._selectedSegmentationIdByViewportAndType = new Map();
   }
 
   public onModeEnter(): void {
@@ -261,8 +254,6 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_ADDED,
       this._onSegmentationAddedFromSource
     );
-
-    this._selectedSegmentationIdByViewportAndType.clear();
 
     this.reset();
   };
@@ -767,31 +758,6 @@ class SegmentationService extends PubSubService {
     }
 
     return activeSegment;
-  }
-
-  /**
-   * Gets the (last) selected segmentation for a viewport and representation type
-   *
-   * @param viewportId - The ID of the viewport to get the selected segmentation for
-   * @param segmentationRepresentationType - The type of segmentation representation to get the selected segmentation for
-   * @returns The ID of the selected segmentation, or undefined if no segmentation is/was selected for the given viewport
-   * and representation type
-   *
-   * @remarks
-   * This method retrieves the (last) selected segmentation for the specified viewport and representation type.
-   * The selected segmentation is the one that was last selected for editing operations.
-   * Returns undefined if no segmentation is selected for the specified viewport and representation type.
-   */
-  public getSelectedSegmentation({
-    viewportId,
-    segmentationRepresentationType,
-  }: {
-    viewportId: string;
-    segmentationRepresentationType: SegmentationRepresentations;
-  }): string | undefined {
-    return this._selectedSegmentationIdByViewportAndType
-      .get(viewportId)
-      ?.get(segmentationRepresentationType);
   }
 
   public hasCustomStyles(specifier: {
@@ -1855,27 +1821,6 @@ class SegmentationService extends PubSubService {
     ]);
   }
 
-  private _setSelectedSegmentationIdByViewportAndType(viewportId: string) {
-    if (!viewportId) {
-      return;
-    }
-
-    const representations = this.getSegmentationRepresentations(viewportId);
-
-    const activeRepresentation = representations.find(representation => representation.active);
-
-    const typeToSegmentationIdMap =
-      this._selectedSegmentationIdByViewportAndType.get(viewportId) ??
-      new Map<SegmentationRepresentations, string>();
-
-    if (activeRepresentation) {
-      typeToSegmentationIdMap.set(activeRepresentation.type, activeRepresentation.segmentationId);
-    } else {
-      typeToSegmentationIdMap.clear();
-    }
-    this._selectedSegmentationIdByViewportAndType.set(viewportId, typeToSegmentationIdMap);
-  }
-
   private _onSegmentationDataModifiedFromSource = evt => {
     const { segmentationId } = evt.detail;
     this._broadcastEvent(this.EVENTS.SEGMENTATION_DATA_MODIFIED, {
@@ -1885,9 +1830,6 @@ class SegmentationService extends PubSubService {
 
   private _onSegmentationRepresentationModifiedFromSource = evt => {
     const { segmentationId, viewportId } = evt.detail;
-
-    this._setSelectedSegmentationIdByViewportAndType(viewportId);
-
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, {
       segmentationId,
       viewportId,

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, IconPresentationProvider, SegmentationTable, ToolButton } from '@ohif/ui-next';
+import { IconPresentationProvider, SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 import { metaData, cache } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { Toolbar } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
+import { useSelectedSegmentationsForViewportStore } from '../stores';
 
 type PanelSegmentationProps = {
   children?: React.ReactNode;
@@ -19,8 +20,7 @@ export default function PanelSegmentation({
   segmentationRepresentationType,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const { customizationService, displaySetService, viewportGridService, segmentationService } =
-    servicesManager.services;
+  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
 
   const utilitiesSectionMap = {
@@ -172,13 +172,30 @@ export default function PanelSegmentation({
     };
   });
 
+  // Update the store of last selected segmentation IDs for the active viewport id.
+  const activeSegmentationInfo = segmentationsWithRepresentations.find(
+    info => info.representation?.active
+  );
+
+  const { selectedSegmentationsForViewport, setSelectedSegmentationsForViewport } =
+    useSelectedSegmentationsForViewportStore.getState();
+
+  const representationTypeToSegmentationIdMap =
+    selectedSegmentationsForViewport[activeViewportId] ??
+    new Map<SegmentationRepresentations, string>();
+
+  if (activeSegmentationInfo) {
+    representationTypeToSegmentationIdMap.set(
+      activeSegmentationInfo.representation.type,
+      activeSegmentationInfo.segmentation.segmentationId
+    );
+
+    setSelectedSegmentationsForViewport(activeViewportId, representationTypeToSegmentationIdMap);
+  }
+
   const selectedSegmentationIdForType = segmentationRepresentationType
-    ? segmentationService.getSelectedSegmentation({
-        viewportId: activeViewportId,
-        segmentationRepresentationType,
-      })
-    : segmentationsWithRepresentations.find(info => info.representation?.active)?.segmentation
-        ?.segmentationId;
+    ? representationTypeToSegmentationIdMap.get(segmentationRepresentationType)
+    : activeSegmentationInfo?.segmentation?.segmentationId;
 
   // Common props for SegmentationTable
   const tableProps = {

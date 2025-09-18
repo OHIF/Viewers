@@ -1,6 +1,7 @@
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
+import setupAutoTabSwitchHandler from './utils/setupAutoTabSwitchHandler';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -40,6 +41,7 @@ const extensionDependencies = {
 };
 
 function modeFactory({ modeConfiguration }) {
+  let _unsubscriptions = [];
   return {
     /**
      * Mode ID, which should be unique among modes used by the viewer. This ID
@@ -57,8 +59,14 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        segmentationService,
+        viewportGridService,
+        panelService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -163,6 +171,14 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection('ContourUtilities', contourUtilities);
 
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
+
+      const { unsubscribeAutoTabSwitchEvents } = setupAutoTabSwitchHandler({
+        segmentationService,
+        viewportGridService,
+        panelService,
+      });
+
+      _unsubscriptions = [...unsubscribeAutoTabSwitchEvents];
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -173,6 +189,9 @@ function modeFactory({ modeConfiguration }) {
         uiDialogService,
         uiModalService,
       } = servicesManager.services;
+
+      _unsubscriptions.forEach(unsubscribe => unsubscribe());
+      _unsubscriptions = [];
 
       uiDialogService.hideAll();
       uiModalService.hide();
