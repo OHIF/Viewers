@@ -132,7 +132,6 @@ function ViewportDownloadFormNew({
           <FooterAction className="mt-2">
             <FooterAction.Right>
               <FooterAction.Secondary onClick={onClose}>
-                {' '}
                 {t('Common:Cancel')}
               </FooterAction.Secondary>
               <FooterAction.Primary
