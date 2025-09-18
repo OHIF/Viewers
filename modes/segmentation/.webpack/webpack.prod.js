@@ -39,6 +39,12 @@ const config = {
         amd: '@ohif/ui',
         root: '@ohif/ui',
       },
+      '@cornerstonejs/tools': {
+        commonjs2: '@cornerstonejs/tools',
+        commonjs: '@cornerstonejs/tools',
+        amd: '@cornerstonejs/tools',
+        root: '@cornerstonejs/tools',
+      },
     },
   ],
   module: {
@@ -65,11 +71,11 @@ const config = {
                         name: 'preset-default',
                         params: {
                           overrides: {
-                            removeViewBox: false
+                            removeViewBox: false,
                           },
                         },
                       },
-                    ]
+                    ],
                   },
                   prettier: false,
                   svgo: true,
