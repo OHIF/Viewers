@@ -1,6 +1,5 @@
 import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -437,10 +436,16 @@ const toolbarButtons: Button[] = [
           disabledText: 'Create new segmentation to enable this tool.',
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
       options: [
         {
           name: 'Radius (mm)',
@@ -450,10 +455,12 @@ const toolbarButtons: Button[] = [
           max: 99.5,
           step: 0.5,
           value: 25,
-          commands: {
-            commandName: 'setBrushSize',
-            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
-          },
+          commands: [
+            {
+              commandName: 'setBrushSize',
+              commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            },
+          ],
         },
         {
           name: 'Shape',
@@ -464,14 +471,14 @@ const toolbarButtons: Button[] = [
             { value: 'CircularBrush', label: 'Circle' },
             { value: 'SphereBrush', label: 'Sphere' },
           ],
-          commands: 'setToolActiveToolbar',
+          commands: ['setToolActiveToolbar'],
         },
       ],
     },
   },
   {
     id: 'InterpolateLabelmap',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-interpolation',
       label: 'Interpolate Labelmap',
@@ -482,20 +489,28 @@ const toolbarButtons: Button[] = [
           name: 'evaluate.cornerstone.segmentation',
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
         {
           name: 'evaluate.displaySetIsReconstructable',
           disabledText: 'The current viewport cannot handle interpolation.',
         },
       ],
-      commands: 'interpolateLabelmap',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'interpolateLabelmap',
+      ],
     },
   },
   {
     id: 'SegmentBidirectional',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-bidirectional-segment',
       label: 'Segment Bidirectional',
@@ -507,11 +522,19 @@ const toolbarButtons: Button[] = [
           disabledText: 'Create new segmentation to enable this tool.',
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
-      commands: 'runSegmentBidirectional',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'runSegmentBidirectional',
+      ],
     },
   },
   {
@@ -529,16 +552,24 @@ const toolbarButtons: Button[] = [
           disabledText: 'Create new segmentation to enable this tool.',
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
-      commands: 'setToolActiveToolbar',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'setToolActiveToolbar',
+      ],
     },
   },
   {
     id: 'LabelmapSlicePropagation',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-labelmap-slice-propagation',
       label: 'Labelmap Assist',
@@ -548,7 +579,7 @@ const toolbarButtons: Button[] = [
         'evaluate.cornerstoneTool.toggle',
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       listeners: {
@@ -557,7 +588,15 @@ const toolbarButtons: Button[] = [
         ),
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
       },
-      commands: 'toggleEnabledDisabledToolbar',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'toggleEnabledDisabledToolbar',
+      ],
     },
   },
   {
@@ -574,11 +613,19 @@ const toolbarButtons: Button[] = [
           toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
-      commands: 'setToolActiveToolbar',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'setToolActiveToolbar',
+      ],
       listeners: {
         [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
@@ -627,8 +674,8 @@ const toolbarButtons: Button[] = [
           toolNames: ['CircularEraser', 'SphereEraser'],
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       options: [
@@ -657,6 +704,12 @@ const toolbarButtons: Button[] = [
           commands: 'setToolActiveToolbar',
         },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
     },
   },
   {
@@ -676,10 +729,17 @@ const toolbarButtons: Button[] = [
           ],
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
+
       options: [
         {
           name: 'Radius (mm)',
@@ -795,10 +855,16 @@ const toolbarButtons: Button[] = [
           disabledText: 'Create new segmentation to enable shapes tool.',
         },
         {
-          name: 'evaluate.cornerstone.isActiveSegmentationOfType',
-          segmentationRepresentationType: SegmentationRepresentations.Labelmap,
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
       options: [
         {
           name: 'Shape',

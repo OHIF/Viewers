@@ -1,29 +1,41 @@
 import React from 'react';
-import { SegmentationTable } from '@ohif/ui-next';
+import { IconPresentationProvider, SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 import { metaData, cache } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { Toolbar } from '@ohif/extension-default';
+import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
+import { useSelectedSegmentationsForViewportStore } from '../stores';
 
 type PanelSegmentationProps = {
   children?: React.ReactNode;
 
   // The representation type for this segmentation panel. Undefined means all types.
   segmentationRepresentationType?: SegmentationRepresentations;
-
-  // A map of viewportId -> (map of representation type -> segmentationId)
-  // It keeps track of the last selected segmentationId for each representation type in each viewport.
-  selectedSegmentationIdByViewportAndType: Map<string, Map<string, string>>;
 } & withAppTypes;
 
 export default function PanelSegmentation({
   children,
   segmentationRepresentationType,
-  selectedSegmentationIdByViewportAndType,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
+
+  const selectedSegmentationsForViewportMap = useSelectedSegmentationsForViewportStore(
+    store => store.selectedSegmentationsForViewport[activeViewportId]
+  );
+
+  const selectedSegmentationIdForType = segmentationRepresentationType
+    ? selectedSegmentationsForViewportMap?.get(segmentationRepresentationType)
+    : undefined;
+
+  const utilitiesSectionMap = {
+    Segmentation: 'SegmentationUtilities',
+    [SegmentationRepresentations.Labelmap]: 'LabelMapUtilities',
+    [SegmentationRepresentations.Contour]: 'ContourUtilities',
+  };
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations();
@@ -168,29 +180,6 @@ export default function PanelSegmentation({
     };
   });
 
-  // Update the map of last selected segmentation IDs for the active viewport id.
-  const activeSegmentationInfo = segmentationsWithRepresentations.find(
-    info => info.representation?.active
-  );
-
-  if (activeSegmentationInfo) {
-    const typeToSegmentationIdMap =
-      selectedSegmentationIdByViewportAndType.get(activeViewportId) ?? new Map<string, string>();
-
-    typeToSegmentationIdMap.set(
-      activeSegmentationInfo.representation.type,
-      activeSegmentationInfo.segmentation.segmentationId
-    );
-
-    selectedSegmentationIdByViewportAndType.set(activeViewportId, typeToSegmentationIdMap);
-  }
-
-  const selectedSegmentationIdForType = segmentationRepresentationType
-    ? selectedSegmentationIdByViewportAndType
-        .get(activeViewportId)
-        ?.get(segmentationRepresentationType)
-    : activeSegmentationInfo?.segmentation?.segmentationId;
-
   // Common props for SegmentationTable
   const tableProps = {
     disabled,
@@ -205,6 +194,25 @@ export default function PanelSegmentation({
     segmentationRepresentationType,
     selectedSegmentationIdForType,
     ...handlers,
+  };
+
+  const renderUtilitiesToolbar = () => {
+    return (
+      <IconPresentationProvider
+        size="large"
+        IconContainer={SegmentationUtilityButton}
+        containerProps={{
+          variant: 'ghost',
+          className: 'w-7 h-7',
+        }}
+      >
+        <div className="flex h-[42px] gap-[3px] bg-transparent pt-[6px] pb-[8px] pl-[8px]">
+          <Toolbar
+            buttonSection={utilitiesSectionMap[segmentationRepresentationType ?? 'Segmentation']}
+          />
+        </div>
+      </IconPresentationProvider>
+    );
   };
 
   const renderSegments = () => {
@@ -223,6 +231,7 @@ export default function PanelSegmentation({
     if (tableProps.mode === 'collapsed') {
       return (
         <SegmentationTable.Collapsed>
+          {renderUtilitiesToolbar()}
           <SegmentationTable.Collapsed.Header>
             <SegmentationTable.Collapsed.DropdownMenu>
               <CustomDropdownMenuContent />
@@ -241,6 +250,7 @@ export default function PanelSegmentation({
     return (
       <>
         <SegmentationTable.Expanded>
+          {renderUtilitiesToolbar()}
           <SegmentationTable.Expanded.Header>
             <SegmentationTable.Expanded.DropdownMenu>
               <CustomDropdownMenuContent />
