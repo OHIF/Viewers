@@ -20,7 +20,7 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
           name="content-prev"
           className="ml-2 mr-2"
         />
-        <span>{backLabel || String(i18n.t('WindowLevelActionMenu:Back to Display Options'))}</span>
+        <span>{backLabel || String(i18n.t('Common:Back'))}</span>
       </div>
       <DividerItem></DividerItem>
     </>

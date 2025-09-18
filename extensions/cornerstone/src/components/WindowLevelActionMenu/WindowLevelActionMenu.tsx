@@ -7,6 +7,7 @@ import { WindowLevel } from './WindowLevel';
 import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
+import i18n from 'i18next';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -58,6 +59,7 @@ export function WindowLevelActionMenuContent({
       isVisible={true}
       align={align}
       side={side}
+      backLabel={i18n.t('WindowLevelActionMenu:Back to Display Options')}
     >
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && <Colorbar viewportId={viewportId} />}

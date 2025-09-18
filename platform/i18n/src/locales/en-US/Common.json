@@ -21,5 +21,6 @@
   "Yes": "Yes",
   "Cancel": "Cancel",
   "Save": "Save",
-  "localDateFormat": "DD-MMM-YYYY"
+  "localDateFormat": "DD-MMM-YYYY",
+  "Back": "Back"
 }

@@ -17,9 +17,10 @@
   "No": "否",
   "Cancel": "取消",
   "Save": "保存",
-  "Back to": "Back to {{location}}",
-  "Close": "Close",
-  "LOAD": "LOAD",
+  "Back to": "返回 {{location}}",
+  "Close": "关闭",
+  "LOAD": "加载",
   "mm": "mm",
-  "NoStudyDate": "No Study Date"
+  "NoStudyDate": "无时间",
+  "Back": "返回"
 }
