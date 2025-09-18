@@ -28,6 +28,7 @@ import {
   callInputDialog,
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
+import axios from 'axios';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
@@ -2203,6 +2204,88 @@ function commandsModule({
       });
     },
   };
+
+  (function autoOpenReportIfReportIdPresent() {
+    try {
+      const p = new URLSearchParams(window.location.search);
+      const reportId = p.get('reportId');
+      const userId = p.get('userId');
+      if (!reportId) {
+        return;
+      }
+
+      const token =
+        localStorage.getItem('accessToken') ||
+        localStorage.getItem('token') ||
+        sessionStorage.getItem('accessToken') ||
+        sessionStorage.getItem('token') ||
+        (document.cookie.match(/(?:^|; )(?:authToken|accessToken|token|jwt)=([^;]*)/) || [])[1];
+
+      const headers = token ? { Authorization: `Bearer ${decodeURIComponent(token)}` } : undefined;
+      const cfg = { headers, withCredentials: true } as const;
+
+      // Use listing endpoint (no doctorId) and filter client-side by reportId
+      const reportReq = axios.get('http://localhost:4000/report', cfg);
+      const userReq = userId
+        ? axios.get(`http://localhost:4000/user/${userId}`, cfg).catch(err => {
+            if (err?.response?.status === 401) {
+              return axios.get(`http://localhost:4000/user/${userId}`, { withCredentials: true });
+            }
+            throw err;
+          })
+        : Promise.resolve(null);
+
+      Promise.allSettled([reportReq, userReq])
+        .then(async ([rRes, uRes]) => {
+          if (rRes.status !== 'fulfilled') {
+            throw rRes.reason;
+          }
+          const reports = Array.isArray(rRes.value?.data) ? rRes.value.data : [];
+          const reportIdStr = String(reportId);
+          const matched = reports.find((r: any) => {
+            const candidates = [r?.id, r?.reportId, r?.uuid, r?._id];
+            return candidates.some(v => v != null && String(v) === reportIdStr);
+          });
+          const initialContent = matched?.htmlContent ?? '';
+          if (!matched) {
+            // eslint-disable-next-line no-console
+            console.warn('Auto-open: report not found in list; opening empty editor', {
+              reportId,
+              receivedCount: reports.length,
+            });
+          }
+          const doctorInfo =
+            uRes && uRes.status === 'fulfilled' && (uRes as any).value?.data
+              ? {
+                  fullName: (uRes as any).value.data.fullName,
+                  signatureURL: (uRes as any).value.data.signatureURL,
+                }
+              : null;
+
+          const { UIModalService } = servicesManager.services as any;
+          const { default: ReportGenerationModal } = await import(
+            './components/ReportGenerationModal'
+          );
+
+          UIModalService.show({
+            content: ReportGenerationModal,
+            contentProps: { hide: () => UIModalService.hide(), initialContent, doctorInfo },
+            title: 'Select Templates',
+            containerClassName:
+              'max-w-6xl max-h-[95vh] w-[90vw] h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-background',
+          });
+        })
+        .catch(err => {
+          console.error('Auto-open by reportId failed:', {
+            status: err?.response?.status,
+            data: err?.response?.data,
+            message: err?.message,
+          });
+        });
+    } catch (e) {
+      console.error('autoOpenReportIfReportIdPresent error:', (e as any)?.message || e);
+    }
+  })();
 
   const definitions = {
     // The command here is to show the viewer context menu, as being the

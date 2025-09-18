@@ -22,12 +22,16 @@ declare global {
 
 interface ReportGenerationModalProps {
   hide: () => void;
+  initialContent?: string;
 }
 
-export default function ReportGenerationModal({ hide }: ReportGenerationModalProps) {
+export default function ReportGenerationModal({
+  hide,
+  initialContent,
+}: ReportGenerationModalProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [templates, setTemplates] = useState<any[]>([]);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(initialContent ?? '');
   const [templateName, setTemplateName] = useState('');
   const [isDictationMode, setIsDictationMode] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -168,6 +172,13 @@ export default function ReportGenerationModal({ hide }: ReportGenerationModalPro
       fetchTemplates();
     }
   }, [isDropdownOpen, templates.length]);
+
+  useEffect(() => {
+    if (typeof initialContent === 'string' && initialContent !== content) {
+      setContent(initialContent);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialContent]);
 
   return (
     <div className="container-report flex h-full flex-col p-4">
