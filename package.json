@@ -19,8 +19,7 @@
   },
   "engines": {
     "node": ">=18",
-    "npm": ">=6",
-    "yarn": ">=1.20.0"
+    "npm": ">=8.0.0"
   },
   "scripts": {
     "cm": "npx git-cz",
@@ -35,7 +34,7 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
-    "dev:fast": "cd platform/app && yarn run dev:fast",
+    "dev:fast": "cd platform/app && npm run dev:fast",
     "show:config": "echo Config is $APP_CONFIG on $PUBLIC_URL",
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
@@ -45,16 +44,16 @@
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
     "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
-    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
+    "install:dev": "cp -f package-lock.json addOns/package-lock.json && cd addOns && npm install",
     "preinstall": "node preinstall.js",
-    "start": "yarn run dev",
-    "test": "yarn run test:unit",
+    "start": "npm run dev",
+    "test": "npm run test:unit",
     "test:data": "git submodule update --init -f testdata",
     "test-watch": "jest --collectCoverage --watchAll",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
-    "test:e2e:coverage": "nyc --reporter=html yarn run test:e2e:ci",
+    "test:e2e:coverage": "nyc --reporter=html npm run test:e2e:ci",
     "test:e2e:ci": "TEST_ENV=true npx playwright test",
     "test:e2e:ui": "TEST_ENV=true npx playwright test --ui",
     "test:e2e:reporter": "TEST_ENV=true npx playwright test --reporter=html",
@@ -63,11 +62,11 @@
     "test:e2e:headed": "TEST_ENV=true npx playwright test --headed",
     "test:e2e:debug": "TEST_ENV=true npx playwright test --debug",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
-    "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "test:e2e:serve": "npm run test:data && lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
-    "release": "yarn run lerna:version && yarn run lerna:publish",
+    "release": "npm run lerna:version && npm run lerna:publish",
     "lerna:clean": "lerna clean",
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
@@ -75,7 +74,11 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "execa": "^8.0.1"
+    "date-fns": "^3.6.0",
+    "decode-uri-component": "^0.4.1",
+    "execa": "^8.0.1",
+    "filter-obj": "^6.1.0",
+    "split-on-first": "^4.0.0"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
@@ -83,21 +86,23 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-arrow-functions": "^7.16.7",
     "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-for-of": "^7.27.1",
     "@babel/plugin-transform-object-rest-spread": "^7.28.0",
     "@babel/plugin-transform-private-methods": "^7.27.1",
     "@babel/plugin-transform-private-property-in-object": "^7.27.1",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-arrow-functions": "^7.16.7",
-    "@babel/plugin-transform-for-of": "^7.27.1",
     "@babel/plugin-transform-regenerator": "^7.16.7",
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/plugin-transform-typescript": "^7.28.0",
     "@babel/preset-env": "7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
-    "babel-plugin-istanbul": "^7.0.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "ajv": "^8.17.1",
+    "ajv-keywords": "^5.1.0",
+    "babel-plugin-istanbul": "^7.0.0",
     "cypress": "14.5.2",
     "cypress-file-upload": "^5.0.8",
     "istanbul": "0.4.5",
@@ -135,6 +140,5 @@
     "form-data": ">=4.0.4",
     "axios": "1.12.0",
     "core-js": "3.45.1"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  }
 }

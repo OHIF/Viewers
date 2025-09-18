@@ -352,11 +352,11 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-command: yarn install --no-save
+          install-command: npm install --no-save
       - cypress/run-tests:
           cypress-command: |
             npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
-          start-command: yarn run test:data && yarn run test:e2e:serve
+          start-command: npm run test:data && npm run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:
     <<: *defaults

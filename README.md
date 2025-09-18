@@ -134,10 +134,9 @@ Here is a schematic representation of our development workflow:
 
 ### Requirements
 
-- [Yarn 1.20.0+](https://yarnpkg.com/en/docs/install)
+- [npm 8.0.0+](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [Node 18+](https://nodejs.org/en/)
-- Yarn Workspaces should be enabled on your machine:
-  - `yarn config set workspaces-experimental true`
+- npm Workspaces are supported natively in npm 7+
 
 ### Getting Started
 
@@ -147,18 +146,15 @@ Here is a schematic representation of our development workflow:
 3. Navigate to the cloned project's directory
 4. Add this repo as a `remote` named `upstream`
    - `git remote add upstream https://github.com/OHIF/Viewers.git`
-5. `yarn install` to restore dependencies and link projects
+5. `npm install` to restore dependencies and link projects
 
 #### To Develop
 
 _From this repository's root directory:_
 
 ```bash
-# Enable Yarn Workspaces
-yarn config set workspaces-experimental true
-
 # Restore dependencies
-yarn install
+npm install
 ```
 
 ## Commands
@@ -167,7 +163,7 @@ These commands are available from the root directory. Each project directory
 also supports a number of commands that can be found in their respective
 `README.md` and `package.json` files.
 
-| Yarn Commands                | Description                                                   |
+| npm Commands                 | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |
 | **Develop**                  |                                                               |
 | `dev`              | Default development experience for Viewer                     |
