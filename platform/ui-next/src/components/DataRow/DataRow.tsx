@@ -79,6 +79,7 @@ interface DataRowProps {
   colorHex?: string;
   onColor: (e) => void;
   className?: string;
+  isUnmapped?: boolean;
 }
 
 export const DataRow: React.FC<DataRowProps> = ({
@@ -97,6 +98,7 @@ export const DataRow: React.FC<DataRowProps> = ({
   isVisible = true,
   disableEditing = false,
   className,
+  isUnmapped = false,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
@@ -280,6 +282,23 @@ export const DataRow: React.FC<DataRowProps> = ({
 
           {/* Lock Icon (if needed) */}
           {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
+
+          {/* Unmapped Measurement Warning Icon */}
+          {isUnmapped && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex h-6 w-6 items-center justify-center">
+                  <Icons.ByName
+                    name="status-alert"
+                    className="h-4 w-4 text-yellow-500"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <div>This structured report is not compatible with this application</div>
+              </TooltipContent>
+            </Tooltip>
+          )}
 
           {/* Actions Dropdown Menu */}
           {disableEditing && <div className="h-6 w-6"></div>}

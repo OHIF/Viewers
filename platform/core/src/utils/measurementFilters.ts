@@ -30,6 +30,11 @@ export function filterAny(_measurement) {
   return true;
 }
 
+/** A filter that returns true for measurements that are not invalidated */
+export function filterAnyInvalidated(_measurement) {
+  return _measurement?.annotation?.invalidated === true ? false : true;
+}
+
 /** A filter that excludes everything */
 export function filterNone(_measurement) {
   return false;

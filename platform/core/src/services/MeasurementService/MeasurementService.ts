@@ -1,6 +1,7 @@
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import { DicomMetadataStore } from '../DicomMetadataStore/DicomMetadataStore';
 
 /**
  * Measurement source schema
@@ -182,6 +183,32 @@ class MeasurementService extends PubSubService {
    */
   public getMeasurements(filter?: MeasurementFilter) {
     const measurements = [...this.measurements.values()];
+    return filter
+      ? measurements.filter(measurement => filter.call(this, measurement))
+      : measurements;
+  }
+
+  /**
+   * Gets all measurements including unmapped measurements, optionally filtered by the filter
+   * function.
+   *
+   * @return {Measurement[]} Array of measurements
+   */
+  public getAllMeasurements(filter?: MeasurementFilter) {
+    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
+    return filter
+      ? measurements.filter(measurement => filter.call(this, measurement))
+      : measurements;
+  }
+
+  /**
+   * Gets unmapped measurements, optionally filtered by the filter
+   * function.
+   *
+   * @return {Measurement[]} Array of unmapped measurements
+   */
+  public getUnmappedMeasurements(filter?: MeasurementFilter) {
+    const measurements = [...this.unmappedMeasurements.values()];
     return filter
       ? measurements.filter(measurement => filter.call(this, measurement))
       : measurements;
@@ -495,6 +522,7 @@ class MeasurementService extends PubSubService {
       );
       if (!sourceMapping) {
         console.log('No source mapping', source.uid, annotationType, source);
+        this.addUnmappedMeasurement(sourceAnnotationDetail, source);
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
@@ -507,16 +535,7 @@ class MeasurementService extends PubSubService {
 
       measurement.source = source;
     } catch (error) {
-      // Todo: handle other
-      this.unmappedMeasurements.set(sourceAnnotationDetail.uid, {
-        ...sourceAnnotationDetail,
-        source: {
-          name: source.name,
-          version: source.version,
-          uid: source.uid,
-        },
-      });
-
+      this.addUnmappedMeasurement(sourceAnnotationDetail, source);
       console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
@@ -575,6 +594,74 @@ class MeasurementService extends PubSubService {
     }
 
     return newMeasurement.uid;
+  }
+
+  /**
+   * Recursively searches for any attribute at any level in the object
+   * @param {any} obj The object to search
+   * @param {string} attributeName The name of the attribute to find
+   * @returns {any} The attribute value if found, undefined otherwise
+   */
+  private findAttributeRecursively(obj: any, attributeName: string): any {
+    if (!obj || typeof obj !== 'object') {
+      return undefined;
+    }
+    if (obj[attributeName]) {
+      return obj[attributeName];
+    }
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const result = this.findAttributeRecursively(obj[key], attributeName);
+        if (result) {
+          return result;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Adds an unmapped measurement to the measurement service.
+   *
+   * @param {any} sourceAnnotationDetail The source annotation detail
+   * @param {any} source The source
+   */
+  private addUnmappedMeasurement(sourceAnnotationDetail: any, source: any) {
+    const metadata = this.findAttributeRecursively(sourceAnnotationDetail, 'metadata');
+    const label = this.findAttributeRecursively(sourceAnnotationDetail, 'label');
+    const referencedImageId = this.findAttributeRecursively(sourceAnnotationDetail, 'referencedImageId');
+    const displaySetInstanceUID = this.findAttributeRecursively(sourceAnnotationDetail, 'displaySetInstanceUID');
+
+    const unmappedMeasurement = {
+      ...sourceAnnotationDetail,
+      isUnmapped: true,
+      source: {
+        name: source.name,
+        version: source.version,
+        uid: source.uid,
+      },
+    };
+    
+    if (metadata) {
+      unmappedMeasurement.metadata = metadata;
+    }
+    
+    if (label) {
+      unmappedMeasurement.label = label;
+    }
+
+    if (referencedImageId) {
+      unmappedMeasurement.referencedImageId = referencedImageId;
+      const instance = DicomMetadataStore.getInstanceByImageId(referencedImageId);
+      unmappedMeasurement.referenceStudyUID = instance.StudyInstanceUID;
+      unmappedMeasurement.referenceSeriesUID = instance.SeriesInstanceUID;
+    }
+
+    if (displaySetInstanceUID) {
+      unmappedMeasurement.displaySetInstanceUID = displaySetInstanceUID;
+    }
+    
+    this.unmappedMeasurements.set(sourceAnnotationDetail.uid, unmappedMeasurement);
   }
 
   /**
@@ -657,7 +744,7 @@ class MeasurementService extends PubSubService {
    */
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
-    const measurement = this.measurements.get(measurementUID);
+    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);
@@ -779,7 +866,7 @@ class MeasurementService extends PubSubService {
   };
 
   public toggleLockMeasurement(measurementUID: string): void {
-    const measurement = this.measurements.get(measurementUID);
+    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
@@ -796,7 +883,7 @@ class MeasurementService extends PubSubService {
   }
 
   public toggleVisibilityMeasurement(measurementUID: string, visibility?: boolean): void {
-    const measurement = this.measurements.get(measurementUID);
+    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
@@ -820,7 +907,7 @@ class MeasurementService extends PubSubService {
   }
 
   public updateColorMeasurement(measurementUID: string, color: number[]): void {
-    const measurement = this.measurements.get(measurementUID);
+    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
