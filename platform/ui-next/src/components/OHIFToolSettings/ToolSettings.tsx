@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import RowInputRange from './RowInputRange';
 import RowSegmentedControl from './RowSegmentedControl';
 import RowDoubleRange from './RowDoubleRange';
 import { Button } from '../Button';
+import { Checkbox } from '../Checkbox/Checkbox';
+import { Label } from '../Label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Select';
 
 const SETTING_TYPES = {
   RANGE: 'range',
@@ -10,6 +13,8 @@ const SETTING_TYPES = {
   CUSTOM: 'custom',
   DOUBLE_RANGE: 'double-range',
   BUTTON: 'button',
+  CHECKBOX: 'checkbox',
+  SELECT: 'select',
 };
 
 function ToolSettings({ options }) {
@@ -39,6 +44,10 @@ function ToolSettings({ options }) {
             return renderCustomSetting(option);
           case SETTING_TYPES.BUTTON:
             return renderButtonSetting(option);
+          case SETTING_TYPES.CHECKBOX:
+            return renderCheckboxSetting(option);
+          case SETTING_TYPES.SELECT:
+            return renderSelectSetting(option);
           default:
             return null;
         }
@@ -110,6 +119,53 @@ const renderButtonSetting = option => {
     >
       {option.name}
     </Button>
+  );
+};
+
+const renderCheckboxSetting = option => {
+  return (
+    <div
+      key={option.id}
+      className="flex items-center gap-2"
+    >
+      <Checkbox
+        id={option.id}
+        checked={option.value}
+        onCheckedChange={checked => {
+          option.onChange?.(checked);
+        }}
+      />
+      <Label
+        htmlFor={option.id}
+        className="cursor-pointer"
+      >
+        {option.name}
+      </Label>
+    </div>
+  );
+};
+
+const renderSelectSetting = option => {
+  return (
+    <Select
+      key={option.id}
+      onValueChange={value => option.onChange?.(value)}
+      value={option.value}
+    >
+      <SelectTrigger className="w-full overflow-hidden">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {option.values.map(value => (
+          <SelectItem
+            key={value.id}
+            value={value.id}
+          >
+            {value.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 

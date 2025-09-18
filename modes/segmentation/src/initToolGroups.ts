@@ -1,3 +1,7 @@
+import * as cornerstoneTools from '@cornerstonejs/tools';
+
+const { SplineContourSegmentationTool } = cornerstoneTools;
+
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -114,6 +118,42 @@ function createTools({ utilityModule, commandsManager }) {
       { toolName: toolNames.WindowLevelRegion },
 
       { toolName: toolNames.UltrasoundDirectional },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+      },
+      { toolName: toolNames.LivewireContourSegmentation },
+      { toolName: toolNames.SculptorTool },
+      { toolName: toolNames.PlanarFreehandROI },
+      {
+        toolName: 'CatmullRomSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: SplineContourSegmentationTool.SplineTypes.CatmullRom,
+            enableTwoPointPreview: true,
+          },
+        },
+      },
+      {
+        toolName: 'LinearSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: SplineContourSegmentationTool.SplineTypes.Linear,
+            enableTwoPointPreview: true,
+          },
+        },
+      },
+      {
+        toolName: 'BSplineROI',
+        parentTool: toolNames.SplineContourSegmentation,
+        configuration: {
+          spline: {
+            type: SplineContourSegmentationTool.SplineTypes.BSpline,
+            enableTwoPointPreview: true,
+          },
+        },
+      },
     ],
     disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };

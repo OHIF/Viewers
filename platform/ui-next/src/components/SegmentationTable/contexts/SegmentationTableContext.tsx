@@ -80,7 +80,13 @@ export interface SegmentationTableContextType {
   setFillAlpha?: ({ type }: { type: string }, value: number) => void;
   setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
   toggleRenderInactiveSegmentations?: () => void;
-  onSegmentationAdd?: (segmentationId: string) => void;
+  onSegmentationAdd?: ({
+    segmentationId,
+    segmentationRepresentationType,
+  }: {
+    segmentationId: string;
+    segmentationRepresentationType: string;
+  }) => void;
   onSegmentationClick?: (segmentationId: string) => void;
   onSegmentationDelete?: (segmentationId: string) => void;
   onSegmentAdd?: (segmentationId: string) => void;

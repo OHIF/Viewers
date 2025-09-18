@@ -14,13 +14,13 @@ import {
   utilities as cstUtils,
   annotation,
   Types as ToolTypes,
+  SplineContourSegmentationTool,
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
 import { ONNXSegmentationController } from '@cornerstonejs/ai';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
-import i18n from '@ohif/i18n';
 import {
   callInputDialogAutoComplete,
   createReportAsync,
@@ -46,6 +46,7 @@ import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
+import { createSegmentationForViewport } from './utils/createSegmentationForViewport';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -1444,48 +1445,24 @@ function commandsModule({
      * as a segmentation representation to the viewport.
      */
     createLabelmapForViewport: async ({ viewportId, options = {} }) => {
-      const { viewportGridService, displaySetService, segmentationService } =
-        servicesManager.services;
-      const { viewports } = viewportGridService.getState();
-      const targetViewportId = viewportId;
-
-      const viewport = viewports.get(targetViewportId);
-
-      // Todo: add support for multiple display sets
-      const displaySetInstanceUID =
-        options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
-
-      const segs = segmentationService.getSegmentations();
-
-      const label = options.label || `Segmentation ${segs.length + 1}`;
-      const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
-
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-      // This will create the segmentation and register it as a display set
-      const generatedSegmentationId = await segmentationService.createLabelmapForDisplaySet(
-        displaySet,
-        {
-          label,
-          segmentationId,
-          segments: options.createInitialSegment
-            ? {
-                1: {
-                  label: `${i18n.t('Segment')} 1`,
-                  active: true,
-                },
-              }
-            : {},
-        }
-      );
-
-      // Also add the segmentation representation to the viewport
-      await segmentationService.addSegmentationRepresentation(viewportId, {
-        segmentationId,
-        type: Enums.SegmentationRepresentations.Labelmap,
+      return createSegmentationForViewport(servicesManager, {
+        viewportId,
+        options,
+        segmentationType: SegmentationRepresentations.Labelmap,
       });
-
-      return generatedSegmentationId;
+    },
+    /**
+     * Creates a contour for the active viewport
+     *
+     * The created contour will be registered as a display set and also added
+     * as a segmentation representation to the viewport.
+     */
+    createContourForViewport: async ({ viewportId, options = {} }) => {
+      return createSegmentationForViewport(servicesManager, {
+        viewportId,
+        options,
+        segmentationType: SegmentationRepresentations.Contour,
+      });
     },
 
     /**
@@ -2222,6 +2199,30 @@ function commandsModule({
 
       segmentationService.setActiveSegmentation(activeViewportId, segmentationId);
     },
+    setDynamicCursorSizeForSculptorTool: ({ value: isDynamicCursorSize }) => {
+      const viewportId = viewportGridService.getActiveViewportId();
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+      const sculptorToolInstance = toolGroup.getToolInstance(toolNames.SculptorTool);
+      const oldConfiguration = sculptorToolInstance.configuration;
+
+      sculptorToolInstance.configuration = {
+        ...oldConfiguration,
+        updateCursorSize: isDynamicCursorSize ? 'dynamic' : '',
+      };
+    },
+    setSimplifiedSplineForSplineContourSegmentationTool: ({ value: simplifiedSpline }) => {
+      const viewportId = viewportGridService.getActiveViewportId();
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+      Object.values(toolGroup.getToolInstances()).forEach(toolInstance => {
+        if (toolInstance instanceof SplineContourSegmentationTool) {
+          const oldConfiguration = toolInstance.configuration;
+          toolInstance.configuration = {
+            ...oldConfiguration,
+            simplifiedSpline,
+          };
+        }
+      });
+    },
   };
 
   const definitions = {
@@ -2420,6 +2421,9 @@ function commandsModule({
     createLabelmapForViewport: {
       commandFn: actions.createLabelmapForViewport,
     },
+    createContourForViewport: {
+      commandFn: actions.createContourForViewport,
+    },
     setActiveSegmentation: {
       commandFn: actions.setActiveSegmentation,
     },
@@ -2522,6 +2526,9 @@ function commandsModule({
     jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
     initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
     activateSelectedSegmentationOfType: actions.activateSelectedSegmentationOfType,
+    setDynamicCursorSizeForSculptorTool: actions.setDynamicCursorSizeForSculptorTool,
+    setSimplifiedSplineForSplineContourSegmentationTool:
+      actions.setSimplifiedSplineForSplineContourSegmentationTool,
   };
 
   return {

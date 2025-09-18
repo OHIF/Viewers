@@ -131,16 +131,22 @@ function modeFactory({ modeConfiguration }) {
       // Placeholder for near future.
       const contourUtilities = [];
 
-      // Placeholder for near future.
-      const contourTools = [];
-
-      const labelMapUtilities = [
-        'LabelmapSlicePropagation',
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
+      const contourTools = [
+        'PlanarFreehandContourSegmentationTool',
+        'SculptorTool',
+        'SplineContourSegmentationTool',
+        'LivewireContourSegmentationTool',
       ];
 
-      const labelMapTools = ['BrushTools', 'MarkerLabelmap', 'RegionSegmentPlus', 'Shapes'];
+      const labelMapUtilities = ['InterpolateLabelmap', 'SegmentBidirectional'];
+
+      const labelMapTools = [
+        'LabelmapSlicePropagation',
+        'BrushTools',
+        'MarkerLabelmap',
+        'RegionSegmentPlus',
+        'Shapes',
+      ];
 
       // We cannot simply create two sections - utilities and tools - that combine the utilities and tools for both
       // segmentation types and add them to each tab because switching to a tab does not activate its selected segmentation

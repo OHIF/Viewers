@@ -337,6 +337,39 @@ class SegmentationService extends PubSubService {
       label?: string;
     }
   ): Promise<string> {
+    return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
+  }
+
+  public async createContourForDisplaySet(
+    displaySet: AppTypes.DisplaySet,
+    options?: {
+      segmentationId?: string;
+      segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
+      FrameOfReferenceUID?: string;
+      label?: string;
+    }
+  ): Promise<string> {
+    return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
+  }
+
+  /**
+   * Private method to create segmentation for a display set with the specified type
+   *
+   * @param displaySet - The display set to create the segmentation for
+   * @param segmentationType - The type of segmentation (SegmentationRepresentations enum)
+   * @param options - Optional parameters for creating the segmentation
+   * @returns A promise that resolves to the created segmentation ID
+   */
+  private async _createSegmentationForDisplaySet(
+    displaySet: AppTypes.DisplaySet,
+    segmentationType: SegmentationRepresentations,
+    options?: {
+      segmentationId?: string;
+      segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
+      FrameOfReferenceUID?: string;
+      label?: string;
+    }
+  ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
@@ -361,7 +394,7 @@ class SegmentationService extends PubSubService {
     const segmentationPublicInput: cstTypes.SegmentationPublicInput = {
       segmentationId,
       representation: {
-        type: LABELMAP,
+        type: segmentationType,
         data: {
           imageIds: segImageIds,
           // referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),

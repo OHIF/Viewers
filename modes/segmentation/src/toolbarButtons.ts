@@ -422,7 +422,161 @@ const toolbarButtons: Button[] = [
       commands: 'openDICOMTagViewer',
     },
   },
-
+  {
+    id: 'PlanarFreehandContourSegmentationTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-freehand-roi',
+      label: 'Freehand Segmentation',
+      tooltip: 'Freehand Segmentation',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['PlanarFreehandContourSegmentationTool'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'LivewireContourSegmentationTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-livewire',
+      label: 'Livewire Contour',
+      tooltip: 'Livewire Contour',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['LivewireContourSegmentationTool'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'SplineContourSegmentationTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-spline-roi',
+      label: 'Spline Contour Segmentation Tool',
+      tooltip: 'Spline Contour Segmentation Tool',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CatmullRomSplineROI', 'LinearSplineROI', 'BSplineROI'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Spline Type',
+          type: 'select',
+          id: 'splineTypeSelect',
+          value: 'CatmullRomSplineROI',
+          values: [
+            {
+              id: 'CatmullRomSplineROI',
+              value: 'CatmullRomSplineROI',
+              label: 'Catmull Rom Spline',
+            },
+            { id: 'LinearSplineROI', value: 'LinearSplineROI', label: 'Linear Spline' },
+            { id: 'BSplineROI', value: 'BSplineROI', label: 'B-Spline' },
+          ],
+          commands: {
+            commandName: 'setToolActiveToolbar',
+          },
+        },
+        {
+          name: 'Simplified Spline',
+          type: 'checkbox',
+          id: 'simplifiedSpline',
+          value: true,
+          commands: {
+            commandName: 'setSimplifiedSplineForSplineContourSegmentationTool',
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'SculptorTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-bidirectional-segment',
+      label: 'Sculptor Tool',
+      tooltip: 'Sculptor Tool',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['SculptorTool'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Dynamic Cursor Size',
+          type: 'checkbox',
+          id: 'dynamicCursorSize',
+          value: true,
+          commands: {
+            commandName: 'setDynamicCursorSizeForSculptorTool',
+          },
+        },
+      ],
+    },
+  },
   {
     id: 'Brush',
     uiType: 'ohif.toolBoxButton',
@@ -557,13 +711,13 @@ const toolbarButtons: Button[] = [
         },
       ],
       commands: [
+        'setToolActiveToolbar',
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
             segmentationRepresentationType: 'Labelmap',
           },
         },
-        'setToolActiveToolbar',
       ],
     },
   },
@@ -618,13 +772,13 @@ const toolbarButtons: Button[] = [
         },
       ],
       commands: [
+        'setToolActiveToolbar',
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
             segmentationRepresentationType: 'Labelmap',
           },
         },
-        'setToolActiveToolbar',
       ],
       listeners: {
         [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
