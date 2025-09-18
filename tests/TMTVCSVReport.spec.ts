@@ -2,6 +2,7 @@ import { test, expect } from 'playwright-test-coverage';
 import { visitStudy, simulateNormalizedClickOnElement } from './utils/index';
 import { viewportLocator } from './utils/locators';
 import { downloadAsString } from './utils/download';
+import toArray from 'extensions/dicom-microscopy/src/utils/toArray';
 
 test('should create and download the TMTV CSV report correctly', async ({ page }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
@@ -26,14 +27,22 @@ test('should create and download the TMTV CSV report correctly', async ({ page }
     '202009231_tmtv.csv'
   );
 
-  const tmtvCSVReportContent = await downloadAsString(download);
+  const tmtvCSVReportContent: string = await downloadAsString(download);
+
+  const expectedHeaders =
+    'PatientID,PatientName,SeriesInstanceUID,StudyDate,StudyInstanceUID,center,count,id,kurtosis,label,lesionGlycolysis,max,maxLPS,mean,median,min,minLPS,peakLPS,peakValue,skewness,stdDev,volume';
+
+  const tmtvCSVReportHeaders = tmtvCSVReportContent
+    .substring(0, expectedHeaders.length)
+    .split(',')
+    .sort()
+    .join(',');
 
   expect(
-    tmtvCSVReportContent,
+    tmtvCSVReportHeaders,
     'Expected the file to start with specific column/value headers'
-  ).toMatch(
-    /^id,label,min,max,mean,stdDev,median,skewness,kurtosis,count,maxLPS,minLPS,center,volume,peakValue,peakLPS,lesionGlycolysis,PatientID,PatientName,StudyInstanceUID,SeriesInstanceUID,StudyDate/
-  );
+  ).toBe(expectedHeaders);
+
   expect(tmtvCSVReportContent, 'Expected the patient name to be present').toContain(
     'Water Phantom'
   );
