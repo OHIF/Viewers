@@ -41,12 +41,12 @@
     },
     "addOns/externals/devDependencies": {
       "name": "@externals/devDependencies",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@kitware/vtk.js": "32.12.0",
         "clsx": "^2.1.1",
-        "core-js": "^3.2.1",
+        "core-js": "3.45.1",
         "moment": "^2.30.1",
       },
       "devDependencies": {
@@ -126,14 +126,14 @@
     },
     "addOns/externals/dicom-microscopy-viewer": {
       "name": "@externals/dicom-microscopy-viewer",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "dicom-microscopy-viewer": "^0.48.6",
       },
     },
     "extensions/cornerstone": {
       "name": "@ohif/extension-cornerstone",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^4.0.0",
@@ -159,8 +159,8 @@
         "@cornerstonejs/codec-openjpeg": "^1.2.4",
         "@cornerstonejs/codec-openjph": "^2.4.5",
         "@cornerstonejs/dicom-image-loader": "^4.0.0",
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.21",
         "hammerjs": "^2.0.8",
@@ -172,7 +172,7 @@
     },
     "extensions/cornerstone-dicom-pmap": {
       "name": "@ohif/extension-cornerstone-dicom-pmap",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^4.0.0",
@@ -181,10 +181,10 @@
         "react-color": "^2.19.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
         "prop-types": "^15.6.2",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -195,16 +195,16 @@
     },
     "extensions/cornerstone-dicom-rt": {
       "name": "@ohif/extension-cornerstone-dicom-rt",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "react-color": "^2.19.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
         "prop-types": "^15.6.2",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -215,7 +215,7 @@
     },
     "extensions/cornerstone-dicom-seg": {
       "name": "@ohif/extension-cornerstone-dicom-seg",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^4.0.0",
@@ -224,10 +224,10 @@
         "react-color": "^2.19.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
         "prop-types": "^15.6.2",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -238,7 +238,7 @@
     },
     "extensions/cornerstone-dicom-sr": {
       "name": "@ohif/extension-cornerstone-dicom-sr",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/adapters": "^4.0.0",
@@ -247,10 +247,10 @@
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-measurement-tracking": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-measurement-tracking": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.9",
         "hammerjs": "^2.0.8",
@@ -260,7 +260,7 @@
     },
     "extensions/cornerstone-dynamic-volume": {
       "name": "@ohif/extension-cornerstone-dynamic-volume",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/core": "^4.0.0",
@@ -268,11 +268,11 @@
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.21",
         "hammerjs": "^2.0.8",
@@ -282,7 +282,7 @@
     },
     "extensions/default": {
       "name": "@ohif/extension-default",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/calculate-suv": "^1.1.0",
@@ -290,8 +290,8 @@
         "lodash.uniqby": "^4.7.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicomweb-client": "^0.10.4",
         "prop-types": "^15.6.2",
@@ -305,7 +305,7 @@
     },
     "extensions/dicom-microscopy": {
       "name": "@ohif/extension-dicom-microscopy",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/codec-charls": "^1.2.3",
@@ -316,10 +316,10 @@
         "mathjs": "^12.4.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "prop-types": "^15.6.2",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -330,14 +330,14 @@
     },
     "extensions/dicom-pdf": {
       "name": "@ohif/extension-dicom-pdf",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.9",
         "hammerjs": "^2.0.8",
@@ -347,14 +347,14 @@
     },
     "extensions/dicom-video": {
       "name": "@ohif/extension-dicom-video",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.9",
         "hammerjs": "^2.0.8",
@@ -364,20 +364,20 @@
     },
     "extensions/measurement-tracking": {
       "name": "@ohif/extension-measurement-tracking",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/ui": "3.12.0-beta.25",
         "@xstate/react": "^3.2.2",
         "xstate": "^4.10.0",
       },
       "peerDependencies": {
         "@cornerstonejs/core": "^4.0.0",
         "@cornerstonejs/tools": "^4.0.0",
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "classnames": "^2.3.2",
         "dcmjs": "0.43.1",
         "lodash.debounce": "^4.0.8",
@@ -390,14 +390,14 @@
     },
     "extensions/test-extension": {
       "name": "@ohif/extension-test",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.9",
         "hammerjs": "^2.0.8",
@@ -407,14 +407,14 @@
     },
     "extensions/tmtv": {
       "name": "@ohif/extension-tmtv",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
-        "@ohif/core": "3.11.0-beta.114",
-        "@ohif/ui": "3.11.0-beta.114",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
         "dcmjs": "0.43.1",
         "dicom-parser": "^1.8.9",
         "hammerjs": "^2.0.8",
@@ -424,16 +424,16 @@
     },
     "extensions/usAnnotation": {
       "name": "@ohif/extension-ultrasound-pleura-bline",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/core": "^4.0.0",
         "@cornerstonejs/tools": "^4.0.0",
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
-        "@ohif/ui-next": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
+        "@ohif/ui-next": "3.12.0-beta.25",
       },
       "devDependencies": {
         "@babel/core": "7.28.0",
@@ -476,7 +476,7 @@
     },
     "modes/basic-dev-mode": {
       "name": "@ohif/mode-basic-dev-mode",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -486,17 +486,17 @@
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/extension-dicom-pdf": "3.12.0-beta.18",
-        "@ohif/extension-dicom-video": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.25",
+        "@ohif/extension-dicom-video": "3.12.0-beta.25",
       },
     },
     "modes/basic-test-mode": {
       "name": "@ohif/mode-test",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -506,19 +506,19 @@
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/extension-dicom-pdf": "3.12.0-beta.18",
-        "@ohif/extension-dicom-video": "3.12.0-beta.18",
-        "@ohif/extension-measurement-tracking": "3.12.0-beta.18",
-        "@ohif/extension-test": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.25",
+        "@ohif/extension-dicom-video": "3.12.0-beta.25",
+        "@ohif/extension-measurement-tracking": "3.12.0-beta.25",
+        "@ohif/extension-test": "3.12.0-beta.25",
       },
     },
     "modes/longitudinal": {
       "name": "@ohif/mode-longitudinal",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -528,32 +528,32 @@
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/extension-dicom-pdf": "3.12.0-beta.18",
-        "@ohif/extension-dicom-video": "3.12.0-beta.18",
-        "@ohif/extension-measurement-tracking": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.25",
+        "@ohif/extension-dicom-video": "3.12.0-beta.25",
+        "@ohif/extension-measurement-tracking": "3.12.0-beta.25",
       },
     },
     "modes/microscopy": {
       "name": "@ohif/mode-microscopy",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-dicom-microscopy": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-dicom-microscopy": "3.12.0-beta.25",
       },
     },
     "modes/preclinical-4d": {
       "name": "@ohif/mode-preclinical-4d",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
       },
@@ -562,17 +562,17 @@
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone-dicom-seg": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone-dynamic-volume": "3.11.0-beta.114",
-        "@ohif/extension-default": "3.11.0-beta.114",
-        "@ohif/extension-tmtv": "3.11.0-beta.114",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dynamic-volume": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-tmtv": "3.12.0-beta.25",
       },
     },
     "modes/segmentation": {
       "name": "@ohif/mode-segmentation",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -604,19 +604,19 @@
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone-dicom-rt": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone-dicom-seg": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.114",
-        "@ohif/extension-default": "3.11.0-beta.114",
-        "@ohif/extension-dicom-pdf": "3.11.0-beta.114",
-        "@ohif/extension-dicom-video": "3.11.0-beta.114",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.25",
+        "@ohif/extension-dicom-video": "3.12.0-beta.25",
       },
     },
     "modes/tmtv": {
       "name": "@ohif/mode-tmtv",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next": "^17.0.3",
@@ -626,25 +626,25 @@
         "webpack-merge": "^5.7.3",
       },
       "peerDependencies": {
-        "@ohif/core": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone": "3.11.0-beta.114",
-        "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.114",
-        "@ohif/extension-default": "3.11.0-beta.114",
-        "@ohif/extension-dicom-pdf": "3.11.0-beta.114",
-        "@ohif/extension-dicom-video": "3.11.0-beta.114",
-        "@ohif/extension-measurement-tracking": "3.11.0-beta.114",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.25",
+        "@ohif/extension-dicom-video": "3.12.0-beta.25",
+        "@ohif/extension-measurement-tracking": "3.12.0-beta.25",
       },
     },
     "modes/usAnnotation": {
       "name": "@ohif/mode-ultrasound-pleura-bline",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/core": "^4.0.0",
         "@cornerstonejs/tools": "^4.0.0",
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.18",
-        "@ohif/extension-ultrasound-pleura-bline": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-ultrasound-pleura-bline": "3.12.0-beta.25",
         "i18next": "^17.0.3",
       },
       "devDependencies": {
@@ -676,7 +676,7 @@
     },
     "platform/app": {
       "name": "@ohif/app",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "@cornerstonejs/codec-charls": "^1.2.3",
@@ -685,29 +685,29 @@
         "@cornerstonejs/codec-openjph": "^2.4.5",
         "@cornerstonejs/dicom-image-loader": "^4.0.0",
         "@emotion/serialize": "^1.1.3",
-        "@ohif/core": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.18",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.18",
-        "@ohif/extension-default": "3.12.0-beta.18",
-        "@ohif/extension-dicom-microscopy": "3.12.0-beta.18",
-        "@ohif/extension-dicom-pdf": "3.12.0-beta.18",
-        "@ohif/extension-dicom-video": "3.12.0-beta.18",
-        "@ohif/extension-test": "3.12.0-beta.18",
-        "@ohif/extension-ultrasound-pleura-bline": "3.12.0-beta.18",
-        "@ohif/i18n": "3.12.0-beta.18",
-        "@ohif/mode-basic-dev-mode": "3.12.0-beta.18",
-        "@ohif/mode-longitudinal": "3.12.0-beta.18",
-        "@ohif/mode-microscopy": "3.12.0-beta.18",
-        "@ohif/mode-test": "3.12.0-beta.18",
-        "@ohif/mode-ultrasound-pleura-bline": "3.12.0-beta.18",
-        "@ohif/ui": "3.12.0-beta.18",
-        "@ohif/ui-next": "3.12.0-beta.18",
+        "@ohif/core": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.25",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.25",
+        "@ohif/extension-default": "3.12.0-beta.25",
+        "@ohif/extension-dicom-microscopy": "3.12.0-beta.25",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.25",
+        "@ohif/extension-dicom-video": "3.12.0-beta.25",
+        "@ohif/extension-test": "3.12.0-beta.25",
+        "@ohif/extension-ultrasound-pleura-bline": "3.12.0-beta.25",
+        "@ohif/i18n": "3.12.0-beta.25",
+        "@ohif/mode-basic-dev-mode": "3.12.0-beta.25",
+        "@ohif/mode-longitudinal": "3.12.0-beta.25",
+        "@ohif/mode-microscopy": "3.12.0-beta.25",
+        "@ohif/mode-test": "3.12.0-beta.25",
+        "@ohif/mode-ultrasound-pleura-bline": "3.12.0-beta.25",
+        "@ohif/ui": "3.12.0-beta.25",
+        "@ohif/ui-next": "3.12.0-beta.25",
         "@svgr/webpack": "^8.1.0",
         "@types/react": "^18.3.3",
         "classnames": "^2.3.2",
-        "core-js": "*",
+        "core-js": "3.45.1",
         "cornerstone-math": "^0.1.9",
         "dcmjs": "0.43.1",
         "detect-gpu": "^4.0.16",
@@ -746,13 +746,13 @@
     },
     "platform/cli": {
       "name": "@ohif/cli",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "bin": {
         "ohif-cli": "src/index.js",
       },
       "dependencies": {
         "@babel/core": "7.28.0",
-        "axios": "^1.11.0",
+        "axios": "1.12.0",
         "chalk": "^5.0.0",
         "execa": "^8.0.1",
         "gitignore": "^0.7.0",
@@ -770,7 +770,7 @@
     },
     "platform/core": {
       "name": "@ohif/core",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "dcmjs": "0.43.1",
@@ -797,14 +797,14 @@
         "@cornerstonejs/codec-openjph": "^2.4.5",
         "@cornerstonejs/core": "^4.0.0",
         "@cornerstonejs/dicom-image-loader": "^4.0.0",
-        "@ohif/ui": "3.12.0-beta.18",
+        "@ohif/ui": "3.12.0-beta.25",
         "cornerstone-math": "0.1.9",
         "dicom-parser": "^1.8.21",
       },
     },
     "platform/i18n": {
       "name": "@ohif/i18n",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
         "i18next-locize-backend": "^2.0.0",
@@ -829,7 +829,7 @@
     },
     "platform/ui": {
       "name": "@ohif/ui",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@testing-library/react": "^13.1.0",
         "browser-detect": "^0.2.28",
@@ -889,7 +889,7 @@
     },
     "platform/ui-next": {
       "name": "@ohif/ui-next",
-      "version": "3.12.0-beta.18",
+      "version": "3.12.0-beta.25",
       "dependencies": {
         "@radix-ui/react-accordion": "^1.2.0",
         "@radix-ui/react-checkbox": "^1.1.1",
@@ -932,8 +932,10 @@
     },
   },
   "overrides": {
+    "axios": "1.12.0",
     "body-parser": "1.20.3",
     "commander": "8.3.0",
+    "core-js": "3.45.1",
     "dcmjs": "0.43.1",
     "form-data": ">=4.0.4",
     "glob-parent": "^6.0.2",
@@ -2406,7 +2408,7 @@
 
     "axe-core": ["axe-core@4.10.3", "", {}, "sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg=="],
 
-    "axios": ["axios@1.11.0", "", { "dependencies": { "follow-redirects": "^1.15.6", "form-data": "^4.0.4", "proxy-from-env": "^1.1.0" } }, "sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA=="],
+    "axios": ["axios@1.12.0", "", { "dependencies": { "follow-redirects": "^1.15.6", "form-data": "^4.0.4", "proxy-from-env": "^1.1.0" } }, "sha512-oXTDccv8PcfjZmPGlWsPSwtOJCZ/b6W5jAMCNcfwJbCzDckwG0jrYJFaWH1yvivfCXjVzV/SPDEhMB3Q+DSurg=="],
 
     "axobject-query": ["axobject-query@4.1.0", "", {}, "sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ=="],
 
@@ -2724,7 +2726,7 @@
 
     "copy-webpack-plugin": ["copy-webpack-plugin@9.1.0", "", { "dependencies": { "fast-glob": "^3.2.7", "glob-parent": "^6.0.1", "globby": "^11.0.3", "normalize-path": "^3.0.0", "schema-utils": "^3.1.1", "serialize-javascript": "^6.0.0" }, "peerDependencies": { "webpack": "^5.1.0" } }, "sha512-rxnR7PaGigJzhqETHGmAcxKnLZSR5u1Y3/bcIv/1FnqXedcL/E2ewK7ZCNrArJKCiSv8yVXhTqetJh8inDvfsA=="],
 
-    "core-js": ["core-js@3.44.0", "", {}, "sha512-aFCtd4l6GvAXwVEh3XbbVqJGHDJt0OZRa+5ePGx3LLwi12WfexqQxcsohb2wgsa/92xtl19Hd66G/L+TaAxDMw=="],
+    "core-js": ["core-js@3.45.1", "", {}, "sha512-L4NPsJlCfZsPeXukyzHFlg/i7IIVwHSItR0wg0FLNqYClJ4MQYTYLbC7EkjKYRLZF2iof2MUgN0EGy7MdQFChg=="],
 
     "core-js-compat": ["core-js-compat@3.44.0", "", { "dependencies": { "browserslist": "^4.25.1" } }, "sha512-JepmAj2zfl6ogy34qfWtcE7nHKAJnKsQFRn++scjVS2bZFllwptzw61BZcZFYBPpUznLfAvh0LGhxKppk04ClA=="],
 
@@ -5554,8 +5556,6 @@
 
     "@babel/register/make-dir": ["make-dir@2.1.0", "", { "dependencies": { "pify": "^4.0.1", "semver": "^5.6.0" } }, "sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA=="],
 
-    "@babel/runtime-corejs2/core-js": ["core-js@2.6.12", "", {}, "sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ=="],
-
     "@cornerstonejs/adapters/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
 
     "@cornerstonejs/ai/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
@@ -5756,8 +5756,6 @@
 
     "@rollup/pluginutils/@types/estree": ["@types/estree@0.0.39", "", {}, "sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw=="],
 
-    "@rsbuild/core/core-js": ["core-js@3.45.1", "", {}, "sha512-L4NPsJlCfZsPeXukyzHFlg/i7IIVwHSItR0wg0FLNqYClJ4MQYTYLbC7EkjKYRLZF2iof2MUgN0EGy7MdQFChg=="],
-
     "@rsbuild/plugin-react/react-refresh": ["react-refresh@0.17.0", "", {}, "sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ=="],
 
     "@storybook/addon-docs/fs-extra": ["fs-extra@11.3.0", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^6.0.1", "universalify": "^2.0.0" } }, "sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew=="],
@@ -5925,8 +5923,6 @@
     "boxen/string-width": ["string-width@5.1.2", "", { "dependencies": { "eastasianwidth": "^0.2.0", "emoji-regex": "^9.2.2", "strip-ansi": "^7.0.1" } }, "sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA=="],
 
     "boxen/wrap-ansi": ["wrap-ansi@8.1.0", "", { "dependencies": { "ansi-styles": "^6.1.0", "string-width": "^5.0.1", "strip-ansi": "^7.0.1" } }, "sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ=="],
-
-    "browser-detect/core-js": ["core-js@2.6.12", "", {}, "sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ=="],
 
     "browserify-sign/readable-stream": ["readable-stream@2.3.8", "", { "dependencies": { "core-util-is": "~1.0.0", "inherits": "~2.0.3", "isarray": "~1.0.0", "process-nextick-args": "~2.0.0", "safe-buffer": "~5.1.1", "string_decoder": "~1.1.1", "util-deprecate": "~1.0.1" } }, "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA=="],
 
