@@ -1,4 +1,5 @@
 import type { Button } from '@ohif/core/types';
+import i18n from 'i18next';
 
 export const setToolActiveToolbar = {
   commandName: 'setToolActive',
@@ -21,8 +22,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-length',
-      label: 'Line',
-      tooltip: 'Line',
+      label: i18n.t('Buttons:Line'),
+      tooltip: i18n.t('Buttons:Line Tool'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.microscopyTool',
     },
@@ -32,8 +33,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-point',
-      label: 'Point',
-      tooltip: 'Point Tool',
+      label: i18n.t('Buttons:Point'),
+      tooltip: i18n.t('Buttons:Point Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'point' },
@@ -46,8 +47,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-polygon',
-      label: 'Polygon',
-      tooltip: 'Polygon Tool',
+      label: i18n.t('Buttons:Polygon'),
+      tooltip: i18n.t('Buttons:Polygon Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'polygon' },
@@ -60,8 +61,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-circle',
-      label: 'Circle',
-      tooltip: 'Circle Tool',
+      label: i18n.t('Buttons:Circle'),
+      tooltip: i18n.t('Buttons:Circle Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'circle' },
@@ -74,8 +75,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-rectangle',
-      label: 'Box',
-      tooltip: 'Box Tool',
+      label: i18n.t('Buttons:Box'),
+      tooltip: i18n.t('Buttons:Box Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'box' },
@@ -88,8 +89,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-freehand-polygon',
-      label: 'Freehand Polygon',
-      tooltip: 'Freehand Polygon Tool',
+      label: i18n.t('Buttons:Freehand Polygon'),
+      tooltip: i18n.t('Buttons:Freehand Polygon Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'freehandpolygon' },
@@ -102,8 +103,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-freehand-line',
-      label: 'Freehand Line',
-      tooltip: 'Freehand Line Tool',
+      label: i18n.t('Buttons:Freehand Line'),
+      tooltip: i18n.t('Buttons:Freehand Line Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'freehandline' },
@@ -116,7 +117,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
-      label: 'Pan',
+      label: i18n.t('Buttons:Pan'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: { toolName: 'dragPan' },
@@ -129,8 +130,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'dicom-tag-browser',
-      label: 'Dicom Tag Browser',
-      tooltip: 'Dicom Tag Browser',
+      label: i18n.t('Buttons:Dicom Tag Browser'),
+      tooltip: i18n.t('Buttons:Dicom Tag Browser'),
       commands: 'openDICOMTagViewer',
       evaluate: 'evaluate.action',
     },
