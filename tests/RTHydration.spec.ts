@@ -10,9 +10,14 @@ test.beforeEach(async ({ page }) => {
 test('should hydrate RT reports correctly', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPreHydration);
+
   await page.getByTestId('yes-hydrate-btn').click();
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
+
   await page.getByText('Small Sphere').click();
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtJumpToStructure);
 });
