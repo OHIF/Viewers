@@ -248,8 +248,18 @@ class SegmentationService extends PubSubService {
     );
 
     eventTarget.removeEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_MODIFIED,
+      this._onSegmentationRepresentationModifiedFromSource
+    );
+
+    eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_ADDED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRepresentationModifiedFromSource
+    );
+
+    eventTarget.removeEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
+      this._onSegmentationRepresentationModifiedFromSource
     );
 
     eventTarget.removeEventListener(
