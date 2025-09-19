@@ -153,13 +153,11 @@ class SegmentationService extends PubSubService {
 
     const representations = this.getSegmentationRepresentations(viewportId);
     for (const representation of representations) {
-      const { segmentationId } = representation;
-
       if (!representation) {
         continue;
       }
 
-      const { type } = representation;
+      const { segmentationId, type } = representation;
 
       segmentationsMap.set(segmentationId, {
         segmentationId,
@@ -291,7 +289,7 @@ class SegmentationService extends PubSubService {
     let representationTypeToUse = type || defaultRepresentationType;
     let isConverted = false;
 
-    if (type === LABELMAP) {
+    if (representationTypeToUse === LABELMAP) {
       const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
         csViewport,
         segmentation
