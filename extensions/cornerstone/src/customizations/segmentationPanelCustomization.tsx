@@ -36,6 +36,13 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'segmentationToolbox.config': () => {
       // Get initial states based on current configuration
       const [previewEdits, setPreviewEdits] = useState(false);
+      const [segmentLabelEnabled, setSegmentLabelEnabled] = useState(() => {
+        try {
+          return !!commandsManager.run('getSegmentLabelEnabled');
+        } catch {
+          return false;
+        }
+      });
       const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
       const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
       const handlePreviewEditsChange = checked => {
@@ -53,8 +60,21 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
         commandsManager.run('toggleUseCenterSegmentIndex', { toggle: checked });
       };
 
+      const handleSegmentLabelEnabledChange = checked => {
+        setSegmentLabelEnabled(checked);
+        commandsManager.run('toggleSegmentLabel', { enabled: checked });
+      };
+
       return (
         <div className="bg-muted flex flex-col gap-4 border-b border-b-[2px] border-black px-2 py-3">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={segmentLabelEnabled}
+              onCheckedChange={handleSegmentLabelEnabledChange}
+            />
+            <span className="text-base text-white">Show segment name on hover</span>
+          </div>
+
           <div className="flex items-center gap-2">
             <Switch
               checked={previewEdits}
