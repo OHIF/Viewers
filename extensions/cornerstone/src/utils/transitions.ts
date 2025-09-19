@@ -1,141 +1,3 @@
-/** Core Easing Functions */
-
-/**
- * Linear easing function - constant speed throughout the animation.
- * Equivalent to CSS: cubic-bezier(0.0, 0.0, 1.0, 1.0)
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @returns {number} The linear eased value.
- */
-const linearCore = cubicBezier(0.0, 0.0, 1.0, 1.0);
-
-/**
- * Ease-in easing function - starts slow and accelerates.
- * Equivalent to CSS: cubic-bezier(0.42, 0, 1.0, 1.0)
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @returns {number} The eased value.
- */
-const easeInCore = cubicBezier(0.42, 0, 1.0, 1.0);
-
-/**
- * Ease-out easing function - starts fast and decelerates.
- * Equivalent to CSS: cubic-bezier(0, 0, 0.58, 1.0)
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @returns {number} The eased value.
- */
-const easeOutCore = cubicBezier(0, 0, 0.58, 1.0);
-
-/**
- * Ease-in-out easing function - starts slow, accelerates, then decelerates.
- * Equivalent to CSS: cubic-bezier(0.42, 0, 0.58, 1.0)
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @returns {number} The eased value.
- */
-const easeInOutCore = cubicBezier(0.42, 0, 0.58, 1.0);
-
-/**
- * Standard ease easing function (CSS default).
- * Equivalent to CSS: cubic-bezier(0.25, 0.1, 0.25, 1.0)
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @returns {number} The eased value.
- */
-const easeCore = cubicBezier(0.25, 0.1, 0.25, 1.0);
-
-/** Flexible Easing Function Factory */
-
-/**
- * Flexible factory function that creates easing functions with optional baseline and scale support.
- * Provides bell-curve behavior: baseline → baseline*scale → baseline
- *
- * @param {Function} coreEasingFn - The core easing function to wrap
- * @returns {Function} A function that accepts (timeProgress, baseline?, scale?) and provides flexible behavior
- */
-function flexibleEasingFunctionFactory(coreEasingFn: (timeProgress: number) => number) {
-  return function (timeProgress: number, baseline: number = 0, scale?: number): number {
-    if (baseline === 0) {
-      return coreEasingFn(timeProgress);
-    }
-
-    const easedProgress = coreEasingFn(timeProgress);
-
-    const targetValue = scale ? baseline * scale : 1;
-    const range = targetValue - baseline;
-
-    // Create bell-curve: baseline → targetValue → baseline
-    const bellMultiplier = 1 - Math.abs(2 * easedProgress - 1);
-    return baseline + bellMultiplier * range;
-  };
-}
-
-/**
- * Linear easing function with optional baseline and scale support.
- * - No params: standard linear progression [0, 1]
- * - With baseline only: bell-curve baseline → 1 → baseline
- * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
- * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
- * @returns {number} The linear eased value.
- */
-export const linear = flexibleEasingFunctionFactory(linearCore);
-
-/**
- * Standard ease easing function with optional baseline and scale support.
- * - No params: standard ease progression [0, 1]
- * - With baseline only: bell-curve baseline → 1 → baseline
- * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
- * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
- * @returns {number} The eased value.
- */
-export const ease = flexibleEasingFunctionFactory(easeCore);
-
-/**
- * Ease-in easing function with optional baseline and scale support.
- * - No params: standard ease-in progression [0, 1]
- * - With baseline only: bell-curve baseline → 1 → baseline
- * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
- * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
- * @returns {number} The eased value.
- */
-export const easeIn = flexibleEasingFunctionFactory(easeInCore);
-
-/**
- * Ease-out easing function with optional baseline and scale support.
- * - No params: standard ease-out progression [0, 1]
- * - With baseline only: bell-curve baseline → 1 → baseline
- * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
- * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
- * @returns {number} The eased value.
- */
-export const easeOut = flexibleEasingFunctionFactory(easeOutCore);
-
-/**
- * Ease-in-out easing function with optional baseline and scale support.
- * - No params: standard ease-in-out progression [0, 1]
- * - With baseline only: bell-curve baseline → 1 → baseline
- * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
- *
- * @param {number} timeProgress - The animation progress, in the range [0, 1].
- * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
- * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
- * @returns {number} The eased value.
- */
-export const easeInOut = flexibleEasingFunctionFactory(easeInOutCore);
-
 /** Cubic Bezier Implementation */
 
 /**
@@ -280,6 +142,144 @@ export function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
     return sampleCurveY(curveParameter, y1, y2);
   };
 }
+
+/** Core Easing Functions */
+
+/**
+ * Linear easing function - constant speed throughout the animation.
+ * Equivalent to CSS: cubic-bezier(0.0, 0.0, 1.0, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The linear eased value.
+ */
+const linearCore = cubicBezier(0.0, 0.0, 1.0, 1.0);
+
+/**
+ * Ease-in easing function - starts slow and accelerates.
+ * Equivalent to CSS: cubic-bezier(0.42, 0, 1.0, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeInCore = cubicBezier(0.42, 0, 1.0, 1.0);
+
+/**
+ * Ease-out easing function - starts fast and decelerates.
+ * Equivalent to CSS: cubic-bezier(0, 0, 0.58, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeOutCore = cubicBezier(0, 0, 0.58, 1.0);
+
+/**
+ * Ease-in-out easing function - starts slow, accelerates, then decelerates.
+ * Equivalent to CSS: cubic-bezier(0.42, 0, 0.58, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeInOutCore = cubicBezier(0.42, 0, 0.58, 1.0);
+
+/**
+ * Standard ease easing function (CSS default).
+ * Equivalent to CSS: cubic-bezier(0.25, 0.1, 0.25, 1.0)
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @returns {number} The eased value.
+ */
+const easeCore = cubicBezier(0.25, 0.1, 0.25, 1.0);
+
+/** Flexible Easing Function Factory */
+
+/**
+ * Flexible factory function that creates easing functions with optional baseline and scale support.
+ * Provides bell-curve behavior: baseline → baseline*scale → baseline
+ *
+ * @param {Function} coreEasingFn - The core easing function to wrap
+ * @returns {Function} A function that accepts (timeProgress, baseline?, scale?) and provides flexible behavior
+ */
+function flexibleEasingFunctionFactory(coreEasingFn: (timeProgress: number) => number) {
+  return function (timeProgress: number, baseline: number = 0, scale?: number): number {
+    if (baseline === 0) {
+      return coreEasingFn(timeProgress);
+    }
+
+    const easedProgress = coreEasingFn(timeProgress);
+
+    const targetValue = scale ? baseline * scale : 1;
+    const range = targetValue - baseline;
+
+    // Create bell-curve: baseline → targetValue → baseline
+    const bellMultiplier = 1 - Math.abs(2 * easedProgress - 1);
+    return baseline + bellMultiplier * range;
+  };
+}
+
+/**
+ * Linear easing function with optional baseline and scale support.
+ * - No params: standard linear progression [0, 1]
+ * - With baseline only: bell-curve baseline → 1 → baseline
+ * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
+ * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
+ * @returns {number} The linear eased value.
+ */
+export const linear = flexibleEasingFunctionFactory(linearCore);
+
+/**
+ * Standard ease easing function with optional baseline and scale support.
+ * - No params: standard ease progression [0, 1]
+ * - With baseline only: bell-curve baseline → 1 → baseline
+ * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
+ * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
+ * @returns {number} The eased value.
+ */
+export const ease = flexibleEasingFunctionFactory(easeCore);
+
+/**
+ * Ease-in easing function with optional baseline and scale support.
+ * - No params: standard ease-in progression [0, 1]
+ * - With baseline only: bell-curve baseline → 1 → baseline
+ * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
+ * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
+ * @returns {number} The eased value.
+ */
+export const easeIn = flexibleEasingFunctionFactory(easeInCore);
+
+/**
+ * Ease-out easing function with optional baseline and scale support.
+ * - No params: standard ease-out progression [0, 1]
+ * - With baseline only: bell-curve baseline → 1 → baseline
+ * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
+ * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
+ * @returns {number} The eased value.
+ */
+export const easeOut = flexibleEasingFunctionFactory(easeOutCore);
+
+/**
+ * Ease-in-out easing function with optional baseline and scale support.
+ * - No params: standard ease-in-out progression [0, 1]
+ * - With baseline only: bell-curve baseline → 1 → baseline
+ * - With baseline+scale: bell-curve baseline → baseline*scale → baseline
+ *
+ * @param {number} timeProgress - The animation progress, in the range [0, 1].
+ * @param {number} baseline - Optional baseline value (default: 0). Creates bell-curve effect.
+ * @param {number} scale - Optional scale multiplier (default: 1). Peak value = baseline * scale.
+ * @returns {number} The eased value.
+ */
+export const easeInOut = flexibleEasingFunctionFactory(easeInOutCore);
 
 /** Export interfaces */
 
