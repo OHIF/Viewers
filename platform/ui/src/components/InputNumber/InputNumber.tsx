@@ -106,7 +106,11 @@ const InputNumber: React.FC<{
   const handleBlur = () => {
     setIsFocused(false);
     const numValue = typeof numberValue === 'string' ? parseFloat(numberValue) : numberValue;
-    setNumberValue(numValue.toFixed(decimalPlaces));
+    if (!isNaN(numValue)) {
+      const clampedValue = handleMinMax(numValue);
+      setNumberValue(clampedValue.toFixed(decimalPlaces));
+      onChange(clampedValue);
+    }
   };
 
   const increment = () => {
