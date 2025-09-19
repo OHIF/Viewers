@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Label, Select, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
+import { Input, InputNumber, Label, Select, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -60,18 +60,23 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
       </div>
 
       {config.strategy === ROI_STAT && (
-        <Input
+        <InputNumber
           label={t('Percentage of Max SUV')}
           labelClassName="text-[13px] font-inter text-white"
-          className="border-primary-main bg-black"
-          type="text"
-          containerClassName="mr-2"
+          className="mr-2"
+          inputContainerClassName="border-primary-main bg-black rounded-[4px]"
+          inputClassName="text-white bg-black text-[14px]"
           value={config.weight}
-          onChange={e => {
+          minValue={0}
+          maxValue={1}
+          step={0.01}
+          size="lg"
+          arrowsDirection="vertical"
+          onChange={value => {
             dispatch({
               type: 'setWeight',
               payload: {
-                weight: e.target.value,
+                weight: value,
               },
             });
           }}
