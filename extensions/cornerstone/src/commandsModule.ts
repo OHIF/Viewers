@@ -1518,7 +1518,20 @@ function commandsModule({
         segmentationId
       );
       segmentationService.setActiveSegment(segmentationId, segmentIndex);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+
+      const jumpToSegmentHighlightAnimation = customizationService.getCustomization(
+        'panelSegmentation.jumpToSegmentHighlightAnimation'
+      );
+      segmentationService.jumpToSegmentCenter(
+        segmentationId,
+        segmentIndex,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        jumpToSegmentHighlightAnimation
+      );
     },
 
     /**
