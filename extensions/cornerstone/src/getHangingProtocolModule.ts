@@ -6,6 +6,7 @@ import { only3D } from './hps/only3D';
 import { primary3D } from './hps/primary3D';
 import { primaryAxial } from './hps/primaryAxial';
 import { frameView } from './hps/frameView';
+import { cpr } from './hps/cpr';
 
 function getHangingProtocolModule() {
   return [
@@ -16,6 +17,10 @@ function getHangingProtocolModule() {
     {
       name: mprAnd3DVolumeViewport.id,
       protocol: mprAnd3DVolumeViewport,
+    },
+    {
+      name: cpr.id,
+      protocol: cpr,
     },
     {
       name: fourUp.id,

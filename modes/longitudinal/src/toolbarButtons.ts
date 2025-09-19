@@ -381,6 +381,25 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'OpenSpline',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-tool-spline-roi',
+      label: 'OpenSplineTool',
+      tooltip: 'Open Spline Tool',
+      commands: {
+        commandName: 'setToolActiveToolbar',
+        commandOptions: {
+          toolGroupIds: ['mpr'],
+        },
+      },
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select an MPR viewport to enable this tool',
+      },
+    },
+  },
+  {
     id: 'CalibrationLine',
     uiType: 'ohif.toolButton',
     props: {

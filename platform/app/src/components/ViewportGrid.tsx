@@ -246,6 +246,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         return style;
       };
 
+      console.log("VIEWPORT ID", viewportId)
       viewportPanes[i] = (
         <ViewportPane
           // Note: It is highly important that the key is the viewportId here,
@@ -286,6 +287,7 @@ function ViewerViewportGrid(props: withAppTypes) {
               isHangingProtocolLayout={isHangingProtocolLayout}
               onElementEnabled={evt => {
                 viewportGridService.setViewportIsReady(viewportId, true);
+                handleElementEnabledForCPR(viewportId, evt);
               }}
             />
           </div>
@@ -315,6 +317,54 @@ function ViewerViewportGrid(props: withAppTypes) {
   );
 }
 
+function handleElementEnabledForCPR(viewportId, evt) {
+  if (viewportId !== 'cpr') return;
+
+  // Thời điểm này viewport đã mount — chèn overlay đen ngay
+  addBlackOverlay(viewportId);
+}
+
+function addBlackOverlay(viewportId) {
+  const viewportElement = document.querySelector(
+    `[data-viewportid="${viewportId}"]`
+  );
+  if (!viewportElement) return;
+
+  // chèn overlay vào wrapper của viewport, dưới toolbar
+  let overlayWrapper = viewportElement.querySelector('.cpr-black-overlay-wrapper');
+  if (!overlayWrapper) {
+    overlayWrapper = document.createElement('div');
+    overlayWrapper.className = 'cpr-black-overlay-wrapper';
+    Object.assign(overlayWrapper.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      zIndex: 1, // thấp hơn menu / toolbar
+      pointerEvents: 'none', // không chặn tương tác
+    });
+    viewportElement.appendChild(overlayWrapper);
+  }
+
+  // tạo div đen
+  let ov = overlayWrapper.querySelector('.cpr-black-overlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.className = 'cpr-black-overlay';
+    Object.assign(ov.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      background: 'black',
+      opacity: 1,
+      pointerEvents: 'none', // không chặn menu
+    });
+    overlayWrapper.appendChild(ov);
+  }
+}
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {
     return { component: EmptyViewport, isReferenceViewable: () => false };

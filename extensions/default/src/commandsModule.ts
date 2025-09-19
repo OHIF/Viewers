@@ -517,10 +517,15 @@ const commandsModule = ({
     },
 
     toggleOneUp() {
+      const { protocol } = hangingProtocolService.getActiveProtocol();
+
       const viewportGridState = viewportGridService.getState();
       const { activeViewportId, viewports, layout, isHangingProtocolLayout } = viewportGridState;
       const { displaySetInstanceUIDs, displaySetOptions, viewportOptions } =
         viewports.get(activeViewportId);
+
+      if (protocol.id === "cpr")
+        return;
 
       if (layout.numCols === 1 && layout.numRows === 1) {
         // The viewer is in one-up. Check if there is a state to restore/toggle back to.

@@ -63,6 +63,13 @@ function ToolbarLayoutSelectorWithServices({
           },
         },
         {
+          title: 'CPR',
+          icon: 'layout-four-up',
+          commandOptions: {
+            protocolId: 'mpr',
+          },
+        },
+        {
           title: '3D four up',
           icon: 'layout-four-up',
           commandOptions: {
