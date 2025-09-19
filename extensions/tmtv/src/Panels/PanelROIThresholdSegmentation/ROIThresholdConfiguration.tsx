@@ -61,6 +61,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
 
       {config.strategy === ROI_STAT && (
         <InputNumber
+          id="percentage-max-suv"
           label={t('Percentage of Max SUV')}
           labelClassName="text-[13px] font-inter text-white"
           className="mr-2"

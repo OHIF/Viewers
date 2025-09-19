@@ -24,6 +24,7 @@ const sizesClasses = {
 };
 
 const InputNumber: React.FC<{
+  id?: string;
   value: number;
   onChange: (value: number) => void;
   minValue?: number;
@@ -40,6 +41,7 @@ const InputNumber: React.FC<{
   sizeClassName?: string;
   inputContainerClassName?: string;
 }> = ({
+  id,
   value,
   onChange,
   step = 1,
@@ -56,7 +58,7 @@ const InputNumber: React.FC<{
   sizeClassName,
   inputContainerClassName = 'bg-primary-dark border-secondary-light border rounded-[4px]',
 }) => {
-  const [numberValue, setNumberValue] = useState(value);
+  const [numberValue, setNumberValue] = useState<string | number>(value);
   const [isFocused, setIsFocused] = useState(false);
 
   const maxDigits = getMaxDigits(maxValue, step);
@@ -103,17 +105,23 @@ const InputNumber: React.FC<{
 
   const handleBlur = () => {
     setIsFocused(false);
-    setNumberValue(parseFloat(numberValue).toFixed(decimalPlaces));
+    const numValue = typeof numberValue === 'string' ? parseFloat(numberValue) : numberValue;
+    setNumberValue(numValue.toFixed(decimalPlaces));
   };
 
-  const increment = () => updateValue(parseFloat(numberValue) + step);
-  const decrement = () => updateValue(parseFloat(numberValue) - step);
+  const increment = () => {
+    const numValue = typeof numberValue === 'string' ? parseFloat(numberValue) : numberValue;
+    updateValue(numValue + step);
+  };
+  const decrement = () => {
+    const numValue = typeof numberValue === 'string' ? parseFloat(numberValue) : numberValue;
+    updateValue(numValue - step);
+  };
 
   const labelElement = label && (
-    <Label
-      className={labelClassName}
-      text={label}
-    />
+    <Label className={labelClassName} text={label}>
+      {label}
+    </Label>
   );
 
   return (
@@ -135,8 +143,9 @@ const InputNumber: React.FC<{
             </div>
           )}
           <input
+            data-testid={id ? `input-${id}` : undefined}
             type="number"
-            value={isFocused ? numberValue : parseFloat(numberValue).toFixed(decimalPlaces)}
+            value={isFocused ? numberValue : (typeof numberValue === 'string' ? parseFloat(numberValue) : numberValue).toFixed(decimalPlaces)}
             step={step}
             onFocus={handleFocus}
             onBlur={handleBlur}
