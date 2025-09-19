@@ -42,6 +42,7 @@ import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
+import { EasingFunctionEnum } from './utils/transitions';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -1518,7 +1519,33 @@ function commandsModule({
         segmentationId
       );
       segmentationService.setActiveSegment(segmentationId, segmentIndex);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+
+      const { highlightAlpha, highlightSegment, animationLength, animationFunctionType } =
+        (customizationService.getCustomization(
+          'panelSegmentation.jumpToSegmentHighlightAnimationConfig'
+        ) as Object as {
+          highlightAlpha?: number;
+          highlightSegment?: boolean;
+          animationLength?: number;
+          animationFunctionType?: EasingFunctionEnum;
+        }) ?? {};
+
+      const validAnimationFunctionType = Object.values(EasingFunctionEnum).includes(
+        animationFunctionType
+      )
+        ? animationFunctionType
+        : undefined;
+
+      segmentationService.jumpToSegmentCenter(
+        segmentationId,
+        segmentIndex,
+        undefined,
+        highlightAlpha,
+        highlightSegment,
+        animationLength,
+        undefined,
+        validAnimationFunctionType
+      );
     },
 
     /**

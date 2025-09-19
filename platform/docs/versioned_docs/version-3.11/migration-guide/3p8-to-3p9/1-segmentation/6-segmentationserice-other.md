@@ -346,7 +346,7 @@ jumpToSegmentCenter(
   highlightSegment = true,
   animationLength = 750,
   highlightHideOthers = false,
-  highlightFunctionType = 'ease-in-out'
+  animationFunctionType = 'ease-in-out'
 )
 ```
 
