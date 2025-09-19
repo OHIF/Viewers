@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import { useSystem } from '@ohif/core';
+
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
 
@@ -44,6 +45,7 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     ...measurement,
     displayText,
     label,
+    isUnmapped: measurement.isUnmapped || false,
   };
 }
 
@@ -63,7 +65,7 @@ export function useMeasurements({ measurementFilter } = { measurementFilter: () 
 
   useEffect(() => {
     const updateDisplayMeasurements = () => {
-      const measurements = measurementService.getMeasurements(measurementFilter);
+      const measurements = measurementService.getAllMeasurements(measurementFilter);
       const mappedMeasurements = measurements.map(m =>
         mapMeasurementToDisplay(m, displaySetService)
       );

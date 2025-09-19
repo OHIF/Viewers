@@ -11,7 +11,7 @@ interface MeasurementTableContext {
 }
 
 const [MeasurementTableProvider, useMeasurementTableContext] =
-  createContext<MeasurementTableContext>('MeasurementTable', { data: [] });
+  createContext<MeasurementTableContext>('MeasurementTable', { data: [], isExpanded: true });
 
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
@@ -91,6 +91,7 @@ interface MeasurementItem {
   isLocked: boolean;
   toolName: string;
   isExpanded: boolean;
+  isUnmapped?: boolean;
 }
 
 interface RowProps {
@@ -117,10 +118,11 @@ const Row = ({ item, index }: RowProps) => {
       onRename={e => onAction(e, 'renameMeasurement', uid)}
       onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
       onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
+      onColor={e => onAction(e, 'changeMeasurementColor', uid)}
       disableEditing={disableEditing}
-      isExpanded={isExpanded}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
+      isUnmapped={item.isUnmapped}
     />
   );
 };
