@@ -1707,6 +1707,7 @@ class SegmentationService extends PubSubService {
         return;
       }
 
+      const OUTLINE_ANIMATION_SCALE_FACTOR = 5;
       const easingFunction = EasingFunctionMap.get(animationFunctionType);
 
       cstSegmentation.config.style.setStyle(
@@ -1716,7 +1717,7 @@ class SegmentationService extends PubSubService {
           type: CONTOUR,
         },
         {
-          outlineWidth: easingFunction(progress, prevOutlineWidth, 5),
+          outlineWidth: easingFunction(progress, prevOutlineWidth, OUTLINE_ANIMATION_SCALE_FACTOR),
         }
       );
 
