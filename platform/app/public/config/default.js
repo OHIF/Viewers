@@ -1,5 +1,6 @@
 /** @type {AppTypes.Config} */
 
+// @ts-ignore
 window.config = {
   name: 'config/default.js',
   routerBasename: null,
@@ -270,6 +271,7 @@ window.config = {
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
+    // @ts-ignore
     console.warn(error.status);
 
     // Could use services manager here to bring up a dialog/modal if needed.
@@ -283,21 +285,21 @@ window.config = {
   //     background: 'rgba(100, 100, 100, 0.5)', // can be any valid css color
   //   },
   // },
-  // whiteLabeling: {
-  //   createLogoComponentFn: function (React) {
-  //     return React.createElement(
-  //       'a',
-  //       {
-  //         target: '_self',
-  //         rel: 'noopener noreferrer',
-  //         className: 'text-purple-600 line-through',
-  //         href: '_X___IDC__LOGO__LINK___Y_',
-  //       },
-  //       React.createElement('img', {
-  //         src: './Logo.svg',
-  //         className: 'w-14 h-14',
-  //       })
-  //     );
-  //   },
-  // },
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          className: 'text-purple-600 line-through',
+          href: '_X___IDC__LOGO__LINK___Y_',
+        },
+        React.createElement('img', {
+          src: '/assets/logo.png',
+          className: 'w-10 h-10',
+        })
+      );
+    },
+  },
 };
