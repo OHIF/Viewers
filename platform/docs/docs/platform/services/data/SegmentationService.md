@@ -113,6 +113,8 @@ const segmentationId = await segmentationService.createLabelmapForDisplaySet(
   }
 );
 
+### Creating a Label Map Segmentation
+
 const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
 const segmentationId = await segmentationService.createContourForDisplaySet(
   displaySet,
