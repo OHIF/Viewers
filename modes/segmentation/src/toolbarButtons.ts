@@ -723,7 +723,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'LabelmapSlicePropagation',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-labelmap-slice-propagation',
       label: 'Labelmap Assist',
