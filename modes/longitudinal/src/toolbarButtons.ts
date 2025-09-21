@@ -203,6 +203,23 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'rotate-left',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-rotate-left',
+      label: 'Rotate Left',
+      tooltip: 'Rotate -90',
+      commands: 'rotateViewportCCW',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video'],
+        },
+      ],
+    },
+  },
+  {
     id: 'flipHorizontal',
     uiType: 'ohif.toolButton',
     props: {
@@ -210,6 +227,23 @@ const toolbarButtons: Button[] = [
       label: 'Flip Horizontal',
       tooltip: 'Flip Horizontally',
       commands: 'flipViewportHorizontal',
+      evaluate: [
+        'evaluate.viewportProperties.toggle',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'volume3d'],
+        },
+      ],
+    },
+  },
+  {
+    id: 'flipVertical',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-flip-vertical',
+      label: 'Flip Vertical',
+      tooltip: 'Flip Vertically',
+      commands: 'flipViewportVertical',
       evaluate: [
         'evaluate.viewportProperties.toggle',
         {

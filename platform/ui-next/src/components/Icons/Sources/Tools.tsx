@@ -1061,6 +1061,60 @@ export const ToolFlipHorizontal = (props: IconProps) => (
   </svg>
 );
 
+export const ToolFlipVertical = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-flip-vertical"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+      transform="rotate(90 14 14)"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      />
+      <path
+        d="M10.6315789,7.31578947 L6,7.31578947 C4.8954305,7.31578947 4,8.21121997 4,9.31578947 L4,18.5789474 C4,19.6835169 4.8954305,20.5789474 6,20.5789474 L10.6315789,20.5789474 L10.6315789,20.5789474"
+        id="Path-2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M25,7.31578947 L20.3684211,7.31578947 C19.2638516,7.31578947 18.3684211,8.21121997 18.3684211,9.31578947 L18.3684211,18.5789474 C18.3684211,19.6835169 19.2638516,20.5789474 20.3684211,20.5789474 L25,20.5789474 L25,20.5789474"
+        id="Path-2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeDasharray="1,3.1"
+        transform="translate(21.6842, 13.9474) scale(-1, 1) translate(-21.6842, -13.9474)"
+      />
+      <line
+        x1="14.5"
+        y1="4.55263158"
+        x2="14.5"
+        y2="23.3421053"
+        id="Line-3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </g>
+  </svg>
+);
+
 export const ToolFreehandPolygon = (props: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -2445,6 +2499,60 @@ export const ToolRotateRight = (props: IconProps) => (
       <g
         id="Group-11"
         transform="translate(4, 3)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <path
+          d="M8.88888889,3.33333333 L4.44444444,3.33333333 C1.98984556,3.33333333 0,5.32317889 0,7.77777778 L0,12.2222222"
+          id="Path"
+        ></path>
+        <polyline
+          id="Path"
+          points="5.55555556 0 8.88888889 3.33333333 5.55555556 6.66666667"
+        ></polyline>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolRotateLeft = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-rotate-left"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <rect
+        id="Rectangle"
+        fill="currentColor"
+        x="9.55555556"
+        y="13"
+        width="14.4444444"
+        height="11.1111111"
+        rx="2"
+      ></rect>
+
+      <g
+        id="Group-11"
+        transform="translate(4, 3) translate(4.44444444, 0) scale(-1, 1) translate(-18, 0)"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
