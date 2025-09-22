@@ -32,6 +32,7 @@ jest.mock('@cornerstonejs/tools', () => ({
   segmentation: {
     ...jest.requireActual('@cornerstonejs/tools').segmentation,
     activeSegmentation: {
+      getActiveSegmentation: jest.fn(),
       setActiveSegmentation: jest.fn(),
     },
     addSegmentations: jest.fn(),
@@ -1739,6 +1740,19 @@ describe('SegmentationService', () => {
       expect(cstSegmentation.activeSegmentation.setActiveSegmentation).toHaveBeenCalledWith(
         viewportId,
         segmentationId
+      );
+    });
+  });
+
+  describe('getActiveSegmentation', () => {
+    it('should get the active segmentation for a viewport', () => {
+      const viewportId = 'viewportId';
+
+      service.getActiveSegmentation(viewportId);
+
+      expect(cstSegmentation.activeSegmentation.getActiveSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.activeSegmentation.getActiveSegmentation).toHaveBeenCalledWith(
+        viewportId
       );
     });
   });
