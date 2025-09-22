@@ -31,6 +31,7 @@ jest.mock('@cornerstonejs/tools', () => ({
   ...jest.requireActual('@cornerstonejs/tools'),
   segmentation: {
     ...jest.requireActual('@cornerstonejs/tools').segmentation,
+    addSegmentations: jest.fn(),
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
     state: {
@@ -1676,6 +1677,51 @@ describe('SegmentationService', () => {
       expect(segmentationLoadingCompleteCallback).toHaveBeenCalledTimes(1);
 
       expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('addOrUpdateSegmentation', () => {
+    it('should add new segmentation if it does not exist', () => {
+      const segmentationId = 'segmentationId';
+      const segmentationData = {
+        segmentationId,
+        config: {
+          label: 'Segmentation 1',
+        },
+      };
+
+      jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(undefined);
+      jest.spyOn(cstSegmentation, 'addSegmentations').mockReturnValue(undefined);
+
+      service.addOrUpdateSegmentation(segmentationData);
+
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(segmentationId);
+
+      expect(cstSegmentation.addSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.addSegmentations).toHaveBeenCalledWith([segmentationData]);
+    });
+
+    it('should update existing segmentation if it exists', () => {
+      const segmentationId = 'segmentationId';
+      const segmentationData = {
+        segmentationId,
+        config: {
+          label: 'Segmentation 1',
+        },
+      };
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+      jest.spyOn(cstSegmentation, 'updateSegmentations').mockReturnValue(undefined);
+
+      service.addOrUpdateSegmentation(segmentationData);
+
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledWith([
+        { segmentationId, payload: segmentationData },
+      ]);
     });
   });
 });
