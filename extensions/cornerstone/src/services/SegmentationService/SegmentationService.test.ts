@@ -1756,4 +1756,31 @@ describe('SegmentationService', () => {
       );
     });
   });
+
+  describe('getActiveSegment', () => {
+    it('should return undefined if no active segmentation', () => {
+      const viewportId = 'viewportId';
+      jest.spyOn(cstSegmentation.activeSegmentation, 'getActiveSegmentation').mockReturnValue(null);
+
+      const activeSegment = service.getActiveSegment(viewportId);
+
+      expect(cstSegmentation.activeSegmentation.getActiveSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.activeSegmentation.getActiveSegmentation).toHaveBeenCalledWith(
+        viewportId
+      );
+
+      expect(activeSegment).toBeUndefined();
+    });
+
+    it('should find and return the active segment', () => {
+      const viewportId = 'viewportId';
+      jest
+        .spyOn(cstSegmentation.activeSegmentation, 'getActiveSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+
+      const activeSegment = service.getActiveSegment(viewportId);
+
+      expect(activeSegment).toEqual(mockCornerstoneSegmentation.segments['1']);
+    });
+  });
 });
