@@ -31,6 +31,9 @@ jest.mock('@cornerstonejs/tools', () => ({
   ...jest.requireActual('@cornerstonejs/tools'),
   segmentation: {
     ...jest.requireActual('@cornerstonejs/tools').segmentation,
+    activeSegmentation: {
+      setActiveSegmentation: jest.fn(),
+    },
     addSegmentations: jest.fn(),
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
@@ -1722,6 +1725,21 @@ describe('SegmentationService', () => {
       expect(cstSegmentation.updateSegmentations).toHaveBeenCalledWith([
         { segmentationId, payload: segmentationData },
       ]);
+    });
+  });
+
+  describe('setActiveSegmentation', () => {
+    it('should set the active segmentation for a viewport', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+
+      service.setActiveSegmentation(viewportId, segmentationId);
+
+      expect(cstSegmentation.activeSegmentation.setActiveSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.activeSegmentation.setActiveSegmentation).toHaveBeenCalledWith(
+        viewportId,
+        segmentationId
+      );
     });
   });
 });
