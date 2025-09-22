@@ -1,4 +1,11 @@
-import { cache, eventTarget, Enums as csEnums, Types as csTypes } from '@cornerstonejs/core';
+import {
+  cache,
+  eventTarget,
+  Enums as csEnums,
+  imageLoader,
+  Types as csTypes,
+  metaData,
+} from '@cornerstonejs/core';
 import { ViewportType } from '@cornerstonejs/core/enums';
 
 import {
@@ -6,6 +13,9 @@ import {
   segmentation as cstSegmentation,
   Types as cstTypes,
 } from '@cornerstonejs/tools';
+
+import SegmentationService from './SegmentationService';
+import SegmentationServiceClass from './SegmentationService';
 
 jest.mock('@cornerstonejs/core', () => ({
   ...jest.requireActual('@cornerstonejs/core'),
@@ -22,6 +32,7 @@ jest.mock('@cornerstonejs/tools', () => ({
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
     state: {
+      addColorLUT: jest.fn(),
       getSegmentation: jest.fn(),
       getSegmentations: jest.fn(),
       getSegmentationRepresentationsBySegmentationId: jest.fn(),
@@ -32,13 +43,13 @@ jest.mock('@cornerstonejs/tools', () => ({
   },
 }));
 
-import SegmentationService from './SegmentationService';
-import SegmentationServiceClass from './SegmentationService';
-
 const serviceManagerMock = {
   services: {
     cornerstoneViewportService: {
       getCornerstoneViewport: jest.fn(),
+    },
+    displaySetService: {
+      getDisplaySetByUID: jest.fn(),
     },
     viewportGridService: {
       EVENTS: {
@@ -570,7 +581,7 @@ describe('SegmentationService', () => {
         jest
           .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
           .mockReturnValue(undefined);
-        // @ts-ignore - getLabelmapImageIds is wrongly typed at cornerstone3D
+        // @ts-expect-error - getLabelmapImageIds is wrongly typed at cornerstone3D
         jest.spyOn(cstSegmentation, 'getLabelmapImageIds').mockReturnValue([imageId]);
         jest
           .spyOn(cstSegmentation, 'addSegmentationRepresentations')
@@ -929,7 +940,7 @@ describe('SegmentationService', () => {
         jest
           .spyOn(cstSegmentation, 'addSegmentationRepresentations')
           .mockReturnValueOnce(undefined);
-        // @ts-ignore - getLabelmapImageIds is wrongly typed at cornerstone3D
+        // @ts-expect-error - getLabelmapImageIds is wrongly typed at cornerstone3D
         jest.spyOn(cstSegmentation, 'getLabelmapImageIds').mockReturnValue([imageId]);
         jest
           .spyOn(cache, 'getImage')
@@ -998,5 +1009,356 @@ describe('SegmentationService', () => {
     });
   });
 
-  describe('createLabelmapForDisplaySet', () => {});
+  describe('createLabelmapForDisplaySet', () => {
+    it('should create a labelmap for a non dynamic volume display set', async () => {
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: false,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+      } as unknown as AppTypes.DisplaySet;
+
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentations')
+        .mockReturnValue([{ segmentationId: 'segmentationId' }] as cstTypes.Segmentation[]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+      const retrievedSegmentationId = await service.createLabelmapForDisplaySet(displaySet);
+
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledTimes(1);
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledWith(['imageId']);
+
+      expect(cstSegmentation.state.getSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentations).toHaveBeenCalledWith();
+
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledWith({
+        config: {
+          cachedStats: {
+            info: 'S1: Series Description',
+          },
+          label: 'Segmentation 2',
+          segments: {
+            '1': {
+              active: true,
+              label: 'Segment 1',
+            },
+          },
+        },
+        representation: {
+          data: {
+            imageIds: ['imageId'],
+            referencedImageIds: ['imageId'],
+          },
+          type: 'Labelmap',
+        },
+        segmentationId: expect.any(String),
+      });
+
+      expect(retrievedSegmentationId).toEqual(expect.any(String));
+    });
+
+    it('should create a labelmap for a dynamic volume display set', async () => {
+      const segmentationId = 'segmentationId';
+      const displaySet = {
+        imageIds: ['imageId'],
+        isDynamicVolume: true,
+        SeriesNumber: 1,
+        SeriesDescription: 'Series Description',
+        dynamicVolumeInfo: {
+          timePoints: ['timePoint1', 'timePoint2', 'timePoint3'],
+        },
+      } as unknown as AppTypes.DisplaySet;
+
+      jest
+        .spyOn(imageLoader, 'createAndCacheDerivedLabelmapImages')
+        .mockReturnValue([{ imageId: 'imageId' }] as csTypes.IImage[]);
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentations')
+        .mockReturnValue([{ segmentationId }] as cstTypes.Segmentation[]);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+      const options = {
+        segmentationId,
+        segments: {
+          1: {
+            label: 'Custom Segment 1',
+            active: true,
+          },
+        },
+        FrameOfReferenceUID: 'frameOfReferenceUID',
+        label: 'Segmentation 2',
+      };
+
+      const retrievedSegmentationId = await service.createLabelmapForDisplaySet(
+        displaySet,
+        options
+      );
+
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledTimes(1);
+      expect(imageLoader.createAndCacheDerivedLabelmapImages).toHaveBeenCalledWith('timePoint2');
+
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledWith({
+        config: {
+          cachedStats: {
+            info: 'S1: Series Description',
+          },
+          label: 'Segmentation 2',
+          segments: {
+            '1': {
+              active: true,
+              label: 'Custom Segment 1',
+            },
+          },
+        },
+        representation: {
+          data: {
+            imageIds: ['imageId'],
+            referencedImageIds: 'timePoint2',
+          },
+          type: 'Labelmap',
+        },
+        segmentationId: segmentationId,
+      });
+
+      expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+  });
+
+  describe('createSegmentationForSEGDisplaySet', () => {
+    it('should throw an error if the type is not labelmap', async () => {
+      await expect(
+        service.createSegmentationForSEGDisplaySet(
+          {},
+          {
+            type: csToolsEnums.SegmentationRepresentations.Contour,
+          }
+        )
+      ).rejects.toThrow('Only labelmap type is supported for SEG display sets right now');
+    });
+
+    it('should throw and error if the labelmap images are not found', async () => {
+      await expect(
+        service.createSegmentationForSEGDisplaySet({
+          labelMapImages: [],
+        })
+      ).rejects.toThrow('SEG reading failed');
+    });
+
+    it('should throw an error if the referenced display set is not found', async () => {
+      jest
+        .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+        .mockReturnValue({
+          instances: [],
+        });
+
+      await expect(
+        service.createSegmentationForSEGDisplaySet({
+          displaySetInstanceUID: 'display-set-uid',
+          referencedDisplaySetInstanceUID: 'non-existent-display-set-uid',
+          labelMapImages: [{}, {}],
+        })
+      ).rejects.toThrow('No instances were provided for the referenced display set of the SEG');
+    });
+
+    it('it should create a segmentation for a SEG display set', async () => {
+      const segmentationId = 'segmentationId';
+
+      const voxelManager = {
+        getScalarData: jest.fn().mockReturnValue([1, 0, 0]),
+        setScalarData: jest.fn(),
+      };
+
+      const segDisplaySet = {
+        centroids: new Map([
+          [0, { image: { x: 0, y: 0, z: 0 }, world: { x: 0, y: 0, z: 0 } }],
+          [2, { image: { x: 200, y: 200, z: 200 }, world: { x: 200, y: 200, z: 200 } }],
+        ]),
+        displaySetInstanceUID: 'display-set-uid',
+        referencedDisplaySetInstanceUID: 'existent-display-set-uid',
+        labelMapImages: [
+          { imageId: 'imageId1', referencedImageId: 'referencedImageId1', voxelManager },
+          { imageId: 'imageId2', referencedImageId: 'referencedImageId2', voxelManager },
+        ],
+        segMetadata: {
+          data: [
+            {},
+            {
+              SegmentedPropertyCategoryCodeSequence: {
+                CodeMeaning: 'Segmented Property Category Code Sequence',
+              },
+              SegmentNumber: '1',
+              SegmentLabel: 'Segment 1',
+              SegmentAlgorithmType: 'MANUAL',
+              SegmentAlgorithmName: 'OHIF Brush',
+              SegmentedPropertyTypeCodeSequence: {
+                CodeMeaning: 'Segmented Property Category Code Sequence',
+              },
+              rgba: [255, 0, 0, 255],
+            },
+            {
+              SegmentedPropertyCategoryCodeSequence: {
+                CodeMeaning: 'Segmented Property Category Code Sequence',
+              },
+              SegmentNumber: '2',
+              SegmentAlgorithmType: 'MANUAL',
+              SegmentAlgorithmName: 'OHIF Brush',
+              SegmentedPropertyTypeCodeSequence: {
+                CodeMeaning: 'Segmented Property Type Code Sequence',
+              },
+              rgba: [0, 255, 0, 255],
+            },
+          ],
+        },
+        SeriesDate: '2025-01-01',
+        SeriesDescription: 'Series Description',
+      };
+
+      const referencedDisplaySet = {
+        instances: [{ imageId: 'referencedImageId1' }, { imageId: 'referencedImageId2' }],
+      };
+
+      jest
+        .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+        .mockReturnValue(referencedDisplaySet);
+      // @ts-expect-error - flat is wrongly typed at Array.prototype
+      jest.spyOn(Array.prototype, 'flat');
+      jest.spyOn(metaData, 'get').mockReturnValue({});
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+      const callback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENTATION_LOADING_COMPLETE, callback);
+
+      const retrievedSegmentationId = await service.createSegmentationForSEGDisplaySet(
+        segDisplaySet,
+        {
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          segmentationId,
+        }
+      );
+
+      expect(
+        serviceManagerMock.services.displaySetService.getDisplaySetByUID
+      ).toHaveBeenCalledTimes(1);
+      expect(serviceManagerMock.services.displaySetService.getDisplaySetByUID).toHaveBeenCalledWith(
+        'existent-display-set-uid'
+      );
+
+      expect(Array.prototype.flat).toHaveBeenCalledTimes(1);
+
+      expect(metaData.get).toHaveBeenCalledTimes(2);
+      expect(metaData.get).toHaveBeenCalledWith('instance', 'referencedImageId1');
+      expect(metaData.get).toHaveBeenCalledWith('instance', 'referencedImageId2');
+
+      expect(voxelManager.getScalarData).toHaveBeenCalledTimes(2);
+      expect(voxelManager.getScalarData).toHaveBeenCalledWith();
+      expect(voxelManager.setScalarData).toHaveBeenCalledTimes(2);
+      expect(voxelManager.setScalarData).toHaveBeenCalledWith([1, 0, 0]);
+
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledWith([
+        [0, 0, 0, 0],
+        [255, 0, 0, 255],
+        [0, 255, 0, 255],
+      ]);
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith({
+        segmentationId,
+        segDisplaySet,
+      });
+
+      const expectedSegmentation = {
+        config: {
+          label: segDisplaySet.SeriesDescription,
+          segments: {
+            '1': {
+              active: false,
+              cachedStats: {
+                algorithmName: 'OHIF Brush',
+                algorithmType: 'MANUAL',
+                category: 'Segmented Property Category Code Sequence',
+                center: {
+                  image: [0, 0, 0],
+                  world: [0, 0, 0],
+                },
+                modifiedTime: '2025-01-01',
+                type: 'Segmented Property Category Code Sequence',
+              },
+              label: 'Segment 1',
+              locked: false,
+              segmentIndex: 1,
+            },
+            '2': {
+              active: false,
+              cachedStats: {
+                algorithmName: 'OHIF Brush',
+                algorithmType: 'MANUAL',
+                category: 'Segmented Property Category Code Sequence',
+                center: {
+                  image: [200, 200, 200],
+                  world: [200, 200, 200],
+                },
+                modifiedTime: '2025-01-01',
+                type: 'Segmented Property Type Code Sequence',
+              },
+              label: 'Segment 2',
+              locked: false,
+              segmentIndex: 2,
+            },
+          },
+        },
+        representation: {
+          data: {
+            imageIds: ['imageId1', 'imageId2'],
+            referencedImageIds: ['referencedImageId1', 'referencedImageId2'],
+          },
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        },
+        segmentationId,
+      };
+
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledWith(expectedSegmentation);
+
+      const expectedSegDisplaySet = {
+        ...segDisplaySet,
+        firstSegmentedSliceImageId: 'referencedImageId1',
+        imageIds: ['imageId1', 'imageId2'],
+        images: [
+          {
+            imageId: 'imageId1',
+            referencedImageId: 'referencedImageId1',
+            voxelManager,
+          },
+          {
+            imageId: 'imageId2',
+            referencedImageId: 'referencedImageId2',
+            voxelManager,
+          },
+        ],
+        isLoaded: true,
+        labelMapImages: [
+          {
+            imageId: 'imageId1',
+            referencedImageId: 'referencedImageId1',
+            voxelManager,
+          },
+          {
+            imageId: 'imageId2',
+            referencedImageId: 'referencedImageId2',
+            voxelManager,
+          },
+        ],
+      };
+
+      expect(segDisplaySet).toEqual(expectedSegDisplaySet);
+
+      expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+  });
 });
