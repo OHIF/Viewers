@@ -39,9 +39,11 @@ jest.mock('@cornerstonejs/tools', () => ({
     config: {
       color: {
         getSegmentIndexColor: jest.fn(),
+        setSegmentIndexColor: jest.fn(),
       },
       visibility: {
         getSegmentIndexVisibility: jest.fn(),
+        setSegmentIndexVisibility: jest.fn(),
       },
       style: {
         hasCustomStyle: jest.fn(),
@@ -52,12 +54,19 @@ jest.mock('@cornerstonejs/tools', () => ({
     },
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
+    segmentIndex: {
+      setActiveSegmentIndex: jest.fn(),
+    },
+    segmentLocking: {
+      setSegmentIndexLocked: jest.fn(),
+    },
     state: {
       addColorLUT: jest.fn(),
       getSegmentation: jest.fn(),
       getSegmentations: jest.fn(),
       getSegmentationRepresentationsBySegmentationId: jest.fn(),
       getSegmentationRepresentations: jest.fn(),
+      getViewportIdsWithSegmentation: jest.fn(),
       updateLabelmapSegmentationImageReferences: jest.fn(),
     },
     triggerSegmentationEvents: { triggerSegmentationRepresentationModified: jest.fn() },
@@ -1880,6 +1889,140 @@ describe('SegmentationService', () => {
 
       expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledTimes(1);
       expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('addSegment', () => {
+    it('should throw an error if the segment index is 0', () => {
+      const segmentationId = 'segmentationId';
+      const config = {
+        segmentIndex: 0,
+      };
+
+      expect(() => service.addSegment(segmentationId, config)).toThrow(
+        'Segment index 0 is reserved for "no label"'
+      );
+    });
+
+    it('should add a new segment with next available index if not provided', () => {
+      const segmentationId = 'segmentationId';
+      const config = {
+        label: 'New Segment 2',
+        visibility: true,
+      };
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+      jest.spyOn(cstSegmentation, 'updateSegmentations').mockReturnValue(undefined);
+      jest.spyOn(cstSegmentation.segmentIndex, 'setActiveSegmentIndex').mockReturnValue(undefined);
+      jest
+        .spyOn(cstSegmentation.state, 'getViewportIdsWithSegmentation')
+        .mockReturnValue(['viewportId']);
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'setSegmentIndexVisibility')
+        .mockReturnValue(undefined);
+
+      service.addSegment(segmentationId, config);
+
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(segmentationId);
+
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledWith([
+        {
+          segmentationId,
+          payload: {
+            segments: {
+              ...mockCornerstoneSegmentation.segments,
+              '2': {
+                label: 'New Segment 2',
+                segmentIndex: 2,
+                cachedStats: {},
+                locked: false,
+                ...config,
+              },
+            },
+          },
+        },
+      ]);
+
+      expect(cstSegmentation.segmentIndex.setActiveSegmentIndex).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.segmentIndex.setActiveSegmentIndex).toHaveBeenCalledWith(
+        segmentationId,
+        2
+      );
+
+      expect(cstSegmentation.state.getViewportIdsWithSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getViewportIdsWithSegmentation).toHaveBeenCalledWith(
+        segmentationId
+      );
+
+      expect(cstSegmentation.config.visibility.setSegmentIndexVisibility).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.visibility.setSegmentIndexVisibility).toHaveBeenCalledWith(
+        'viewportId',
+        { segmentationId, type: undefined },
+        2,
+        config.visibility
+      );
+    });
+
+    it('should set properties if segment index already exists', () => {
+      const segmentationId = 'segmentationId';
+      const config = {
+        segmentIndex: 1,
+        isLocked: false,
+        active: true,
+        color: [255, 0, 0, 255] as csTypes.Color,
+      };
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+      jest.spyOn(cstSegmentation, 'updateSegmentations').mockReturnValue(undefined);
+      jest.spyOn(cstSegmentation.segmentIndex, 'setActiveSegmentIndex').mockReturnValue(undefined);
+      jest.spyOn(service, 'getViewportIdsWithSegmentation').mockReturnValue(['viewportId']);
+      jest
+        .spyOn(cstSegmentation.segmentLocking, 'setSegmentIndexLocked')
+        .mockReturnValue(undefined);
+      jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
+
+      service.addSegment(segmentationId, config);
+
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledWith([
+        {
+          segmentationId,
+          payload: {
+            segments: {
+              ...mockCornerstoneSegmentation.segments,
+              '1': {
+                label: 'Segment 1',
+                segmentIndex: 1,
+                cachedStats: {},
+                locked: false,
+                active: true,
+                ...config,
+              },
+            },
+          },
+        },
+      ]);
+
+      expect(cstSegmentation.segmentLocking.setSegmentIndexLocked).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.segmentLocking.setSegmentIndexLocked).toHaveBeenCalledWith(
+        segmentationId,
+        1,
+        config.isLocked
+      );
+
+      expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledWith(
+        'viewportId',
+        segmentationId,
+        1,
+        config.color
+      );
     });
   });
 });
