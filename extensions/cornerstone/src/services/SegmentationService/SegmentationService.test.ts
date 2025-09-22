@@ -47,17 +47,21 @@ jest.mock('@cornerstonejs/tools', () => ({
       },
       style: {
         hasCustomStyle: jest.fn(),
+        getRenderInactiveSegmentations: jest.fn(),
         getStyle: jest.fn(),
         resetToGlobalStyle: jest.fn(),
+        setRenderInactiveSegmentations: jest.fn(),
         setStyle: jest.fn(),
       },
     },
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
+    removeSegment: jest.fn(),
     segmentIndex: {
       setActiveSegmentIndex: jest.fn(),
     },
     segmentLocking: {
+      isSegmentIndexLocked: jest.fn(),
       setSegmentIndexLocked: jest.fn(),
     },
     state: {
@@ -2023,6 +2027,344 @@ describe('SegmentationService', () => {
         1,
         config.color
       );
+    });
+  });
+
+  describe('removeSegment', () => {
+    it('should remove the segment', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      jest.spyOn(cstSegmentation, 'removeSegment').mockReturnValue(undefined);
+
+      service.removeSegment(segmentationId, segmentIndex);
+
+      expect(cstSegmentation.removeSegment).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.removeSegment).toHaveBeenCalledWith(segmentationId, segmentIndex);
+    });
+  });
+
+  describe('setSegmentVisibility', () => {
+    it('should set the visibility of the segment', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const isVisible = true;
+      const type = csToolsEnums.SegmentationRepresentations.Contour;
+
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'setSegmentIndexVisibility')
+        .mockReturnValue(undefined);
+
+      service.setSegmentVisibility(viewportId, segmentationId, segmentIndex, isVisible, type);
+
+      expect(cstSegmentation.config.visibility.setSegmentIndexVisibility).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.visibility.setSegmentIndexVisibility).toHaveBeenCalledWith(
+        viewportId,
+        { segmentationId, type },
+        segmentIndex,
+        isVisible
+      );
+    });
+  });
+
+  describe('setSegmentLocked', () => {
+    it('should set the locked status of the segment', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const isLocked = true;
+
+      jest
+        .spyOn(cstSegmentation.segmentLocking, 'setSegmentIndexLocked')
+        .mockReturnValue(undefined);
+
+      service.setSegmentLocked(segmentationId, segmentIndex, isLocked);
+
+      expect(cstSegmentation.segmentLocking.setSegmentIndexLocked).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.segmentLocking.setSegmentIndexLocked).toHaveBeenCalledWith(
+        segmentationId,
+        segmentIndex,
+        isLocked
+      );
+    });
+  });
+
+  describe('toggleSegmentLocked', () => {
+    it('should toggle the locked status of the segment', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const isLocked = true;
+
+      jest.spyOn(cstSegmentation.segmentLocking, 'isSegmentIndexLocked').mockReturnValue(isLocked);
+      jest
+        .spyOn(cstSegmentation.segmentLocking, 'setSegmentIndexLocked')
+        .mockReturnValue(undefined);
+
+      service.toggleSegmentLocked(segmentationId, segmentIndex);
+
+      expect(cstSegmentation.segmentLocking.isSegmentIndexLocked).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.segmentLocking.isSegmentIndexLocked).toHaveBeenCalledWith(
+        segmentationId,
+        segmentIndex
+      );
+
+      expect(cstSegmentation.segmentLocking.setSegmentIndexLocked).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.segmentLocking.setSegmentIndexLocked).toHaveBeenCalledWith(
+        segmentationId,
+        segmentIndex,
+        !isLocked
+      );
+    });
+  });
+
+  describe('toggleSegmentVisibility', () => {
+    it('should toggle the visibility of the segment', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const isVisible = true;
+      const type = csToolsEnums.SegmentationRepresentations.Contour;
+
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'getSegmentIndexVisibility')
+        .mockReturnValue(isVisible);
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'setSegmentIndexVisibility')
+        .mockReturnValue(undefined);
+
+      service.toggleSegmentVisibility(viewportId, segmentationId, segmentIndex, type);
+
+      expect(cstSegmentation.config.visibility.getSegmentIndexVisibility).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.visibility.getSegmentIndexVisibility).toHaveBeenCalledWith(
+        viewportId,
+        { segmentationId, type },
+        segmentIndex
+      );
+
+      expect(cstSegmentation.config.visibility.setSegmentIndexVisibility).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.visibility.setSegmentIndexVisibility).toHaveBeenCalledWith(
+        viewportId,
+        { segmentationId, type },
+        segmentIndex,
+        !isVisible
+      );
+    });
+  });
+
+  describe('setSegmentColor', () => {
+    it('should set the color of the segment', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const color = [255, 0, 0, 255] as csTypes.Color;
+
+      jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
+
+      service.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+
+      expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledWith(
+        viewportId,
+        segmentationId,
+        segmentIndex,
+        color
+      );
+    });
+  });
+
+  describe('getSegmentColor', () => {
+    it('should get the color of the segment', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const color = [255, 0, 0, 255] as csTypes.Color;
+
+      jest.spyOn(cstSegmentation.config.color, 'getSegmentIndexColor').mockReturnValue(color);
+
+      const returnedColor = service.getSegmentColor(viewportId, segmentationId, segmentIndex);
+
+      expect(cstSegmentation.config.color.getSegmentIndexColor).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.color.getSegmentIndexColor).toHaveBeenCalledWith(
+        viewportId,
+        segmentationId,
+        segmentIndex
+      );
+
+      expect(returnedColor).toEqual(color);
+    });
+  });
+
+  describe('getLabelmapVolume', () => {
+    it('should get the labelmap volume for the segmentation', () => {
+      const segmentationId = 'segmentationId';
+      const labelmapVolume = { id: 'volumeId' };
+      mockCornerstoneSegmentation.representationData.Labelmap = { volumeId: 'volumeId' };
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+      // @ts-expect-error - no need to mock every property for this test
+      jest.spyOn(cache, 'getVolume').mockReturnValue(labelmapVolume);
+
+      const returnedLabelmapVolume = service.getLabelmapVolume(segmentationId);
+
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(segmentationId);
+
+      expect(cache.getVolume).toHaveBeenCalledTimes(1);
+      expect(cache.getVolume).toHaveBeenCalledWith(labelmapVolume.id);
+
+      expect(returnedLabelmapVolume).toEqual(labelmapVolume);
+
+      mockCornerstoneSegmentation.representationData.Labelmap = {};
+    });
+
+    it('should return null if the segmentation does not have a labelmap volume', () => {
+      const segmentationId = 'segmentationId';
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+
+      const returnedLabelmapVolume = service.getLabelmapVolume(segmentationId);
+
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+
+      expect(returnedLabelmapVolume).toEqual(null);
+    });
+  });
+
+  describe('setSegmentLabel', () => {
+    it('should set the label of the segment', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const label = 'New Segment 1';
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+      jest.spyOn(cstSegmentation, 'updateSegmentations').mockReturnValue(undefined);
+
+      service.setSegmentLabel(segmentationId, segmentIndex, label);
+
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(segmentationId);
+
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.updateSegmentations).toHaveBeenCalledWith([
+        {
+          segmentationId,
+          payload: {
+            segments: {
+              ...mockCornerstoneSegmentation.segments,
+              [segmentIndex]: { ...mockCornerstoneSegmentation.segments[segmentIndex], label },
+            },
+          },
+        },
+      ]);
+    });
+  });
+
+  describe('setActiveSegment', () => {
+    it('should set the active segment for the segmentation', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+
+      jest.spyOn(cstSegmentation.segmentIndex, 'setActiveSegmentIndex').mockReturnValue(undefined);
+
+      service.setActiveSegment(segmentationId, segmentIndex);
+
+      expect(cstSegmentation.segmentIndex.setActiveSegmentIndex).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.segmentIndex.setActiveSegmentIndex).toHaveBeenCalledWith(
+        segmentationId,
+        segmentIndex
+      );
+    });
+  });
+
+  describe('setRenderInactiveSegmentations', () => {
+    it('should set the render inactive segmentations for the viewport', () => {
+      const viewportId = 'viewportId';
+      const renderInactive = true;
+
+      jest
+        .spyOn(cstSegmentation.config.style, 'setRenderInactiveSegmentations')
+        .mockReturnValue(undefined);
+
+      service.setRenderInactiveSegmentations(viewportId, renderInactive);
+
+      expect(cstSegmentation.config.style.setRenderInactiveSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.style.setRenderInactiveSegmentations).toHaveBeenCalledWith(
+        viewportId,
+        renderInactive
+      );
+    });
+  });
+
+  describe('getRenderInactiveSegmentations', () => {
+    it('should get the render inactive segmentations for the viewport', () => {
+      const viewportId = 'viewportId';
+      const renderInactive = true;
+
+      jest
+        .spyOn(cstSegmentation.config.style, 'getRenderInactiveSegmentations')
+        .mockReturnValue(renderInactive);
+
+      const returnedRenderInactive = service.getRenderInactiveSegmentations(viewportId);
+
+      expect(cstSegmentation.config.style.getRenderInactiveSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.style.getRenderInactiveSegmentations).toHaveBeenCalledWith(
+        viewportId
+      );
+
+      expect(returnedRenderInactive).toEqual(renderInactive);
+    });
+  });
+
+  describe('setSegmentationGroupStats', () => {
+    it('should set the segmentation group stats', () => {
+      const segmentationIds = ['segmentationId1', 'segmentationId2'];
+      const stats = { key: 'value' };
+
+      service.setSegmentationGroupStats(segmentationIds, stats);
+
+      const returnedStats = service.getSegmentationGroupStats(segmentationIds);
+
+      expect(returnedStats).toEqual(stats);
+    });
+  });
+
+  describe('getSegmentationGroupStats', () => {
+    it('should get the segmentation group stats', () => {
+      const segmentationIds = ['segmentationId1', 'segmentationId2'];
+      const stats = { key: 'value' };
+
+      let returnedStats = service.getSegmentationGroupStats(segmentationIds);
+
+      expect(returnedStats).toEqual(undefined);
+
+      service.setSegmentationGroupStats(segmentationIds, stats);
+
+      returnedStats = service.getSegmentationGroupStats(segmentationIds);
+
+      expect(returnedStats).toEqual(stats);
+    });
+  });
+
+  describe('getViewportIdsWithSegmentation', () => {
+    it('should get the viewport ids with the segmentation', () => {
+      const segmentationId = 'segmentationId';
+      const viewportIds = ['viewportId1', 'viewportId2'];
+
+      jest
+        .spyOn(cstSegmentation.state, 'getViewportIdsWithSegmentation')
+        .mockReturnValue(viewportIds);
+
+      const returnedViewportIds = service.getViewportIdsWithSegmentation(segmentationId);
+
+      expect(cstSegmentation.state.getViewportIdsWithSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getViewportIdsWithSegmentation).toHaveBeenCalledWith(
+        segmentationId
+      );
+
+      expect(returnedViewportIds).toEqual(viewportIds);
     });
   });
 });
