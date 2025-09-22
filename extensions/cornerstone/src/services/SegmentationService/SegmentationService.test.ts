@@ -36,6 +36,20 @@ jest.mock('@cornerstonejs/tools', () => ({
       setActiveSegmentation: jest.fn(),
     },
     addSegmentations: jest.fn(),
+    config: {
+      color: {
+        getSegmentIndexColor: jest.fn(),
+      },
+      visibility: {
+        getSegmentIndexVisibility: jest.fn(),
+      },
+      style: {
+        hasCustomStyle: jest.fn(),
+        getStyle: jest.fn(),
+        resetToGlobalStyle: jest.fn(),
+        setStyle: jest.fn(),
+      },
+    },
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
     state: {
@@ -1781,6 +1795,91 @@ describe('SegmentationService', () => {
       const activeSegment = service.getActiveSegment(viewportId);
 
       expect(activeSegment).toEqual(mockCornerstoneSegmentation.segments['1']);
+    });
+  });
+
+  describe('hasCustomStyles', () => {
+    it('should return true if the segmentation has custom styles', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const type = csToolsEnums.SegmentationRepresentations.Contour;
+
+      jest.spyOn(cstSegmentation.config.style, 'hasCustomStyle').mockReturnValue(true);
+
+      const hasCustomStyles = service.hasCustomStyles({ viewportId, segmentationId, type });
+
+      expect(cstSegmentation.config.style.hasCustomStyle).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.style.hasCustomStyle).toHaveBeenCalledWith({
+        viewportId,
+        segmentationId,
+        type,
+      });
+
+      expect(hasCustomStyles).toBe(true);
+    });
+  });
+
+  describe('getStyle', () => {
+    it('should return the style for the segmentation', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const type = csToolsEnums.SegmentationRepresentations.Contour;
+      const segmentIndex = 1;
+
+      jest.spyOn(cstSegmentation.config.style, 'getStyle').mockReturnValue({});
+
+      const style = service.getStyle({ viewportId, segmentationId, type, segmentIndex });
+
+      expect(cstSegmentation.config.style.getStyle).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.style.getStyle).toHaveBeenCalledWith({
+        viewportId,
+        segmentationId,
+        type,
+        segmentIndex,
+      });
+
+      expect(style).toEqual({});
+    });
+  });
+
+  describe('setStyle', () => {
+    it('should set the style for the segmentation', () => {
+      const viewportId = 'viewportId';
+      const segmentationId = 'segmentationId';
+      const type = csToolsEnums.SegmentationRepresentations.Contour;
+      const segmentIndex = 1;
+      const style = {
+        fillAlpha: 0.5,
+        outlineWidth: 2,
+        renderOutline: true,
+        renderFill: true,
+      };
+
+      jest.spyOn(cstSegmentation.config.style, 'setStyle').mockReturnValue(undefined);
+
+      service.setStyle({ viewportId, segmentationId, type, segmentIndex }, style);
+
+      expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+        {
+          viewportId,
+          segmentationId,
+          type,
+          segmentIndex,
+        },
+        style
+      );
+    });
+  });
+
+  describe('resetToGlobalStyle', () => {
+    it('should reset the style for the segmentation', () => {
+      jest.spyOn(cstSegmentation.config.style, 'resetToGlobalStyle').mockReturnValue(undefined);
+
+      service.resetToGlobalStyle();
+
+      expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledWith();
     });
   });
 });
