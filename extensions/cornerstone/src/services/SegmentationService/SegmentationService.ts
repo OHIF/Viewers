@@ -366,7 +366,7 @@ class SegmentationService extends PubSubService {
     const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
 
     const segs = this.getSegmentations();
-    const label = options.label || `Segmentation ${segs.length + 1}`;
+    const label = options?.label || `Segmentation ${segs.length + 1}`;
 
     const segImageIds = derivedImages.map(image => image.imageId);
 
@@ -383,7 +383,7 @@ class SegmentationService extends PubSubService {
       config: {
         label,
         segments:
-          options.segments && Object.keys(options.segments).length > 0
+          options?.segments && Object.keys(options.segments).length > 0
             ? options.segments
             : {
                 1: {
