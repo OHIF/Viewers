@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Icons } from '@ohif/ui-next';
 import DividerItem from './DividerItem';
-import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 type BackItemProps = {
   backLabel?: string;
@@ -10,6 +10,8 @@ type BackItemProps = {
 };
 
 const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
+  const { t } = useTranslation('Common');
+
   return (
     <>
       <div
@@ -20,7 +22,7 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
           name="content-prev"
           className="ml-2 mr-2"
         />
-        <span>{backLabel || String(i18n.t('Common:Back'))}</span>
+        <span>{backLabel || t('Back')}</span>
       </div>
       <DividerItem></DividerItem>
     </>
