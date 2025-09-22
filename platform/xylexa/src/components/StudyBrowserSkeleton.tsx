@@ -2,25 +2,108 @@ import React from 'react';
 
 export const StudyBrowserSkeleton = () => {
   return (
-    <div className="animate-pulse p-2">
-      <div className="bg-popover flex h-[50px] items-center justify-between rounded px-4">
-        <div className="flex flex-col space-y-1">
-          <div className="bg-muted h-4 w-24 rounded" />
-          <div className="bg-muted h-4 w-40 rounded" />
+    <div
+      style={{
+        animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        padding: '0.5rem',
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: 'var(--color-secondary-dark, #23272f)',
+          display: 'flex',
+          height: '50px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderRadius: '0.5rem',
+          paddingLeft: '1rem',
+          paddingRight: '1rem',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.25rem',
+          }}
+        >
+          <div
+            style={{
+              height: '1rem',
+              width: '6rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'black',
+            }}
+          />
+          <div
+            style={{
+              height: '1rem',
+              width: '10rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'black',
+            }}
+          />
         </div>
-        <div className="flex flex-col items-end space-y-1">
-          <div className="bg-muted h-3 w-20 rounded" />
-          <div className="bg-muted h-3 w-8 rounded" />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.25rem',
+          }}
+        >
+          <div
+            style={{
+              height: '0.75rem',
+              width: '5rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'black',
+            }}
+          />
+          <div
+            style={{
+              height: '0.75rem',
+              width: '2rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'black',
+            }}
+          />
         </div>
       </div>
-      <div className="mt-2 grid grid-cols-2 gap-2">
+      <div
+        style={{
+          zIndex: 10,
+          marginTop: '0.5rem',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: '0.5rem',
+        }}
+      >
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="bg-muted h-24 w-full rounded"
+            style={{
+              backgroundColor: 'var(--color-secondary-dark, #23272f)',
+              height: '6rem',
+              width: '100%',
+              borderRadius: '0.5rem',
+            }}
           />
         ))}
       </div>
+      {/* Add keyframes for pulse animation */}
+      <style>
+        {`
+          @keyframes pulse {
+            0%, 100% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0.5;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

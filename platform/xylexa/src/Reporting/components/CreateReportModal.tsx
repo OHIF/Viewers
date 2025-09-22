@@ -70,7 +70,7 @@ export function CreateReportModal({ setShowModal }: CreateReportModalType) {
             {/*footer*/}
             <div className="border-blueGray-200 flex items-center justify-end border-solid p-6">
               <button
-                className="background-transparent mr-1 mb-1 rounded px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear hover:bg-black focus:outline-none"
+                className="background-transparent mr-1 mb-1 rounded px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear hover:bg-black hover:text-white focus:outline-none"
                 type="button"
                 onClick={() => setShowModal(false)}
               >

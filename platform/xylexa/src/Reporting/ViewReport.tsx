@@ -157,7 +157,7 @@ export const ViewReport = () => {
             <div className="w-3/2 mx-auto flex h-screen justify-center overflow-auto !text-[black]">
               <div
                 style={{
-                  marginTop: '100px',
+                  marginTop: '65px',
                   width: '60%',
                 }}
               >

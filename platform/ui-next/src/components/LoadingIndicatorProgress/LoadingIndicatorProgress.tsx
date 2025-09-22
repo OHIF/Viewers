@@ -13,11 +13,10 @@ function LoadingIndicatorProgress({ className, textBlock, progress }) {
   return (
     <div
       className={classNames(
-        'absolute top-0 left-0 z-50 flex flex-col items-center justify-center space-y-5',
+        'top-50 left-50 absolute z-50 flex flex-col items-center justify-center space-y-5',
         className
       )}
     >
-      <Icons.LoadingOHIFMark className="h-12 w-12 text-white" />
       <div className="w-48">
         <ProgressLoadingBar progress={progress} />
       </div>

@@ -212,7 +212,7 @@ function Header({
         isSticky={isSticky}
         {...props}
       >
-        <div className="relative h-[48px] items-center">
+        <div className="relative h-[48px] items-center py-8">
           <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
             <div
               className={classNames(
@@ -223,7 +223,7 @@ function Header({
               data-cy="return-to-work-list"
             >
               {isReturnEnabled && <Icons.ArrowLeft className="text-primary ml-1 h-7 w-7" />}
-              <div className="ml-1">
+              <div className="ml-1 pt-2 pb-2">
                 {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
                   <Link to={'/'}>
                     <Svg

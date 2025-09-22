@@ -174,7 +174,7 @@ export const EditReport = () => {
             changeInReportDetected={setChangeInReportDetected}
           />
 
-          <div style={{ marginTop: '100px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <div style={{ marginTop: '65px', marginLeft: 'auto', marginRight: 'auto' }}>
             {modalityParams === 'MG' ? (
               <MrmcMmgReportForm setChangeInReportDetected={setChangeInReportDetected} />
             ) : (

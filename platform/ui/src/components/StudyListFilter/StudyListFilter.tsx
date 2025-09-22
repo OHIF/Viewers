@@ -45,28 +45,19 @@ const StudyListFilter = ({
   return (
     <React.Fragment>
       <div>
-        <div className="bg-black">
-          <div className="relative mx-auto flex flex-col pt-5">
+        <div className="bg-secondary-light">
+          <div className="relative mx-auto flex flex-col px-4 pt-5">
             <div className="mb-5 flex flex-row justify-between">
               <div className="flex min-w-[1px] shrink flex-row items-center gap-6">
                 <Typography
-                  variant="h6"
+                  variant="h4"
                   className="text-white"
                 >
                   {t('StudyList')}
                 </Typography>
                 {getDataSourceConfigurationComponent && getDataSourceConfigurationComponent()}
-                {onUploadClick && (
-                  <div
-                    className="text-primary-active flex cursor-pointer items-center gap-2 self-center text-lg font-semibold"
-                    onClick={onUploadClick}
-                  >
-                    <Icons.Upload />
-                    <span>{t('Upload')}</span>
-                  </div>
-                )}
               </div>
-              <div className="flex h-[34px] flex-row items-center">
+              <div className="flex h-[34px] flex-row items-center gap-2">
                 {/* TODO revisit the completely rounded style of button used for clearing the study list filter - for now use LegacyButton*/}
                 {isFiltering && (
                   <LegacyButton
@@ -91,9 +82,24 @@ const StudyListFilter = ({
                     {t('Triage')}
                   </LegacyButton>
                 )}
+
+                {onUploadClick && (
+                  <LegacyButton
+                    className="bg-primary-light min-w-md mr-4 inline-flex items-center justify-center gap-2 rounded-md py-2 px-2 text-center font-sans text-lg text-[13px] leading-none text-black outline-none transition duration-300 ease-in-out hover:opacity-80 focus:opacity-80 focus:outline-none active:opacity-100"
+                    startIcon={
+                      <Icon
+                        className="!h-[16px] !w-[16px] text-black"
+                        name="icon-upload-Dicom"
+                      />
+                    }
+                    onClick={onUploadClick}
+                  >
+                    {t('Upload')}
+                  </LegacyButton>
+                )}
                 <Typography
                   variant="h6"
-                  className="text-primary-light"
+                  className="text-primary-light mr-2"
                 >
                   {`${t('Number of Studies')}: `}
                 </Typography>

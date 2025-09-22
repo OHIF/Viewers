@@ -103,7 +103,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
           return (
             <div
               key={sectionId}
-              className="bg-muted flex flex-wrap space-x-2 py-2 px-1"
+              className="bg-secondary-dark flex flex-wrap space-x-2 py-2 px-1"
             >
               {buttons.map(tool => {
                 if (!tool) {

@@ -28,7 +28,10 @@ const Appbar = ({
   ]);
 
   return (
-    <div className="bg-secondary-dark fixed top-0 z-50 flex h-20 w-full items-center justify-between px-4 text-white sm:px-0 md:px-4">
+    <div
+      style={{ height: '4rem' }}
+      className="bg-secondary-dark fixed top-0 z-50 flex w-full items-center justify-between px-4 text-white sm:px-0 md:px-4"
+    >
       <div
         className={classNames('mr-3 inline-flex cursor-pointer items-center')}
         onClick={handleBack}

@@ -160,7 +160,7 @@ export const AddReport = () => {
       {modalityParams === 'MG' ? (
         <div
           style={{
-            marginTop: '100px',
+            marginTop: '65px',
             marginLeft: 'auto',
             marginRight: 'auto',
             backgroundColor: 'black',
@@ -169,7 +169,7 @@ export const AddReport = () => {
           <MrmcMmgReportForm setChangeInReportDetected={setChangeInReportDetected} />
         </div>
       ) : (
-        <div style={{ marginTop: '80px', width: '60%', marginLeft: 'auto', marginRight: 'auto' }}>
+        <div style={{ marginTop: '65px', width: '60%', marginLeft: 'auto', marginRight: 'auto' }}>
           <JoditEditor
             ref={editor}
             value={newReportContent}

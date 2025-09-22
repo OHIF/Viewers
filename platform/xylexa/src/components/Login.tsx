@@ -97,9 +97,21 @@ export const Login: React.FC = () => {
 
   return (
     <div>
-      <div className="flex h-[100vh] w-full flex-col items-center justify-center bg-black px-5">
+      <div
+        className="flex w-full flex-col items-center justify-center px-5"
+        style={{
+          height: '100vh',
+          background: 'black',
+        }}
+      >
         <div className="mb-2 flex w-full flex-col items-end justify-start overflow-hidden xl:max-w-2xl"></div>
-        <div className="w-[500px] border-2 border-blue-700 bg-black p-5 sm:p-10 xl:max-w-2xl">
+        <div
+          className="border-2 border-blue-700 p-5 sm:p-10 xl:max-w-2xl"
+          style={{
+            width: '500px',
+            background: 'black',
+          }}
+        >
           <h1 className="text-center text-xl font-semibold text-white sm:text-3xl">
             <div className="mb-2 grid place-items-center">
               <Svg
@@ -117,15 +129,26 @@ export const Login: React.FC = () => {
                 id="username"
                 name="username"
                 type="text"
-                className="w-full border-2 border-transparent bg-[#302E30] px-5 py-4 text-sm font-medium text-white placeholder-gray-500 focus:border-2 focus:border-white focus:outline-none focus:outline"
+                className="w-full border-2 border-transparent px-5 py-4 text-sm font-medium text-white placeholder-gray-500 focus:border-2 focus:border-white focus:outline-none focus:outline"
+                style={{
+                  background: '#302E30',
+                }}
                 placeholder="Username"
                 required
               />
-              <div className="flex flex-row rounded-none bg-[#302E30]">
+              <div
+                className="flex flex-row rounded-none"
+                style={{
+                  background: '#302E30',
+                }}
+              >
                 <input
                   id="password"
                   name="password"
-                  className="w-full border-2 border-transparent bg-[#302E30] px-5 py-3 text-sm font-medium text-white placeholder-gray-500 focus:border-2 focus:border-white focus:outline-none focus:outline"
+                  className="w-full border-2 border-transparent px-5 py-3 text-sm font-medium text-white placeholder-gray-500 focus:border-2 focus:border-white focus:outline-none focus:outline"
+                  style={{
+                    background: '#302E30',
+                  }}
                   placeholder="Password"
                   type={showPassword ? 'text' : 'password'}
                   required
@@ -133,7 +156,10 @@ export const Login: React.FC = () => {
 
                 <button
                   onClick={handleClickShowPassword}
-                  className="bg-[#302E30] p-4"
+                  className="p-4"
+                  style={{
+                    background: '#302E30',
+                  }}
                   type="button"
                 >
                   <Icon
@@ -147,14 +173,20 @@ export const Login: React.FC = () => {
                   id="rememberme"
                   type="checkbox"
                   name="rememberMe"
-                  className="h-4 w-4 cursor-pointer rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                  className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                  style={{
+                    background: '#f3f4f6', // gray-100
+                  }}
                 />
                 <label className="ms-2 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                   Remember Me
                 </label>
               </div>
               <button
-                className={`focus:shadow-outline mt-5 flex w-full items-center justify-center bg-[#8f1a1c] py-4 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out hover:bg-[#8f1a1c]/90 focus:outline-none`}
+                className={`focus:shadow-outline mt-5 flex w-full items-center justify-center py-4 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out focus:outline-none`}
+                style={{
+                  background: '#8f1a1c',
+                }}
                 type="submit"
               >
                 {!isPending ? (
@@ -162,7 +194,7 @@ export const Login: React.FC = () => {
                     <svg
                       className="-ml-2 h-6 w-6"
                       fill="none"
-                      stroke="currentColor"
+                      stroke="white"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -175,7 +207,7 @@ export const Login: React.FC = () => {
                       />
                       <path d="M20 8v6M23 11h-6" />
                     </svg>
-                    <span className="ml-3">LOGIN</span>
+                    <span className="ml-3 text-white">LOGIN</span>
                   </div>
                 ) : (
                   <svg
@@ -203,15 +235,25 @@ export const Login: React.FC = () => {
                   </p>
                 )}
               </div>
-              <p className="mt-6 text-center text-sm text-gray-600">
+              <p className="mt-6 text-center text-sm text-white">
                 For account setup or technical queries,{' '}
-                <span className="font-semibold text-[#2c55e9]">Contact us</span>
+                <a href="https://xylexa.ai/contact-us/">
+                  <span className="font-semibold text-white">Contact us</span>
+                </a>
               </p>
             </div>
           </form>
         </div>
       </div>
-      <p className="-mt-8 text-center text-white">XyCAD Version 3.0 | Xylexa, Inc. © 2024</p>
+      <p
+        className="-mt-8 text-center text-white"
+        style={{
+          marginTop: '-2rem',
+          textAlign: 'center',
+        }}
+      >
+        XyCAD Version 3.0 | Xylexa, Inc. © 2024
+      </p>
     </div>
   );
 };

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { StudyItem } from '../StudyItem';
 import { StudyBrowserSort } from '../StudyBrowserSort';
 import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
-import { ScrollArea } from '../ScrollArea';
 import { StudyBrowserSkeleton } from '@xylexa/xylexa-app';
 
 const noop = () => {};
@@ -70,30 +69,24 @@ const StudyBrowser = ({
   const isLoading = getTabContent().length === 0;
 
   return (
-    <ScrollArea>
-      <div
-        className="bg-bkg-low flex flex-1 flex-col gap-[4px]"
-        data-cy={'studyBrowser-panel'}
-      >
-        <div className="flex flex-col gap-[4px]">
-          {showSettings && (
-            <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
-              <>
-                <StudyBrowserViewOptions
-                  tabs={tabs}
-                  onSelectTab={onClickTab}
-                  activeTabName={activeTabName}
-                />
-                <StudyBrowserSort servicesManager={servicesManager} />
-              </>
-            </div>
-          )}
-          <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto">
-            {isLoading ? <StudyBrowserSkeleton /> : getTabContent()}
-          </div>
+    <React.Fragment>
+      {showSettings && (
+        <div
+          className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]"
+          data-cy={'studyBrowser-panel'}
+        >
+          <StudyBrowserViewOptions
+            tabs={tabs}
+            onSelectTab={onClickTab}
+            activeTabName={activeTabName}
+          />
+          <StudyBrowserSort servicesManager={servicesManager} />
         </div>
+      )}
+      <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto">
+        {isLoading ? <StudyBrowserSkeleton /> : getTabContent()}
       </div>
-    </ScrollArea>
+    </React.Fragment>
   );
 };
 

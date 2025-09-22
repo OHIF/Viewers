@@ -14,17 +14,25 @@ export type ProgressLoadingBarProps = {
 function ProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement {
   return (
     <div className="loading">
-      {progress === undefined || progress === null ? (
-        <div className="infinite-loading-bar bg-primary-light"></div>
-      ) : (
-        <div
-          className="bg-primary-light"
-          style={{
-            width: `${progress}%`,
-            height: '8px',
-          }}
-        ></div>
-      )}
+      <div className="loading">
+        {progress === undefined || progress === null ? (
+          <div className="loading-text">
+            <div className="cssload-loader">
+              <div className="cssload-inner cssload-one"></div>
+              <div className="cssload-inner cssload-two"></div>
+              <div className="cssload-inner cssload-three"></div>
+            </div>
+          </div>
+        ) : (
+          <div className="loading-text">
+            <div className="cssload-loader">
+              <div className="cssload-inner cssload-one"></div>
+              <div className="cssload-inner cssload-two"></div>
+              <div className="cssload-inner cssload-three"></div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

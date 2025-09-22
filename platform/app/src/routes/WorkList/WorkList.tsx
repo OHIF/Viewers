@@ -34,6 +34,7 @@ import {
   useSessionStorage,
   ScrollArea,
   Header,
+  LoadingIndicatorProgress,
 } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
@@ -180,7 +181,6 @@ function WorkList({
 
     const getReportFilteredStudies = studies => {
       const completedStudyIds = new Set(reportIds?.data?.study_ids || []);
-
       const filteredStudies = studies.filter(study => {
         return (
           (filterValues?.report.includes('Completed') &&
@@ -189,7 +189,6 @@ function WorkList({
             !completedStudyIds.has(study.studyInstanceUid))
         );
       });
-
       return filteredStudies;
     };
 
@@ -548,7 +547,21 @@ function WorkList({
       row: [
         {
           key: 'patientName',
-          content: patientName ? makeCopyTooltipCell(patientName) : null,
+          content: (
+            <div className="flex flex-row">
+              <div>
+                <Icon
+                  name={isExpanded ? 'chevron-down' : 'chevron-right'}
+                  className="mr-4 inline-flex"
+                />
+              </div>
+              {patientName ? (
+                makeCopyTooltipCell(patientName)
+              ) : (
+                <span className="text-gray-700">(Empty)</span>
+              )}
+            </div>
+          ),
           gridCol: 4,
         },
         {
@@ -740,7 +753,11 @@ function WorkList({
                         setIsChangeInAnnotationViewPort(false);
                       }}
                       dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
-                      className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
+                      className={
+                        isValidMode
+                          ? 'bg-primary-active hover:bg-primary-light text-[13px'
+                          : 'bg-[#222d44] text-[13px]'
+                      }
                     >
                       {mode.displayName}
                     </Button>
@@ -809,9 +826,9 @@ function WorkList({
     });
   }
 
-  const LoadingIndicatorProgress = customizationService.getCustomization(
-    'ui.loadingIndicatorProgress'
-  );
+  // const LoadingIndicatorProgress = customizationService.getCustomization(
+  //   'ui.loadingIndicatorProgress'
+  // );
   const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent');
 
   const uploadProps =
