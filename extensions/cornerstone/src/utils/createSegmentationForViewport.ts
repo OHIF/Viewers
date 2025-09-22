@@ -3,6 +3,30 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 import { ServicesManager } from '@ohif/core';
 
+function _createDefaultSegments(createInitialSegment?: boolean) {
+  return createInitialSegment
+    ? {
+        1: {
+          label: `${i18n.t('Segment')} 1`,
+          active: true,
+        },
+      }
+    : {};
+}
+
+type CreateSegmentationForViewportOptions = {
+  displaySetInstanceUID?: string;
+  label?: string;
+  segmentationId?: string;
+  createInitialSegment?: boolean;
+};
+
+type CreateSegmentationForViewportParams = {
+  viewportId: string;
+  options?: CreateSegmentationForViewportOptions;
+  segmentationType: SegmentationRepresentations;
+};
+
 /**
  * Creates a segmentation for the active viewport
  *
@@ -11,21 +35,8 @@ import { ServicesManager } from '@ohif/core';
  */
 export async function createSegmentationForViewport(
   servicesManager: ServicesManager,
-  {
-    viewportId,
-    options = {},
-    segmentationType,
-  }: {
-    viewportId: string;
-    options?: {
-      displaySetInstanceUID?: string;
-      label?: string;
-      segmentationId?: string;
-      createInitialSegment?: boolean;
-    };
-    segmentationType: SegmentationRepresentations;
-  }
-) {
+  { viewportId, options = {}, segmentationType }: CreateSegmentationForViewportParams
+): Promise<string> {
   const { viewportGridService, displaySetService, segmentationService } = servicesManager.services;
   const { viewports } = viewportGridService.getState();
   const targetViewportId = viewportId;
@@ -42,32 +53,16 @@ export async function createSegmentationForViewport(
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+  const segmentationCreationOptions = {
+    label,
+    segmentationId,
+    segments: _createDefaultSegments(options.createInitialSegment),
+  };
+
   // This will create the segmentation and register it as a display set
   const generatedSegmentationId = await (segmentationType === SegmentationRepresentations.Labelmap
-    ? segmentationService.createLabelmapForDisplaySet(displaySet, {
-        label,
-        segmentationId,
-        segments: options.createInitialSegment
-          ? {
-              1: {
-                label: `${i18n.t('Segment')} 1`,
-                active: true,
-              },
-            }
-          : {},
-      })
-    : segmentationService.createContourForDisplaySet(displaySet, {
-        label,
-        segmentationId,
-        segments: options.createInitialSegment
-          ? {
-              1: {
-                label: `${i18n.t('Segment')} 1`,
-                active: true,
-              },
-            }
-          : {},
-      }));
+    ? segmentationService.createLabelmapForDisplaySet(displaySet, segmentationCreationOptions)
+    : segmentationService.createContourForDisplaySet(displaySet, segmentationCreationOptions));
 
   // Also add the segmentation representation to the viewport
   await segmentationService.addSegmentationRepresentation(viewportId, {
