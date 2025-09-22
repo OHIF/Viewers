@@ -2,6 +2,7 @@ import { CustomDropdownMenuContent } from './CustomDropdownMenuContent';
 import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
 import React, { useState } from 'react';
 import { Switch } from '@ohif/ui-next';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
@@ -10,10 +11,16 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
-    'panelSegmentation.onSegmentationAdd': () => {
+    'panelSegmentation.onSegmentationAdd': ({
+      segmentationRepresentationType = SegmentationRepresentations.Labelmap,
+    }) => {
       const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getState().activeViewportId;
-      commandsManager.run('createLabelmapForViewport', { viewportId });
+      if (segmentationRepresentationType === SegmentationRepresentations.Labelmap) {
+        commandsManager.run('createLabelmapForViewport', { viewportId });
+      } else if (segmentationRepresentationType === SegmentationRepresentations.Contour) {
+        commandsManager.run('createContourForViewport', { viewportId });
+      }
     },
     'panelSegmentation.tableMode': 'collapsed',
     'panelSegmentation.readableText': {

@@ -34,7 +34,9 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
     <div
       data-cy="addSegmentation"
       className={`group ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
-      onClick={() => !disabled && onSegmentationAdd('')}
+      onClick={() =>
+        !disabled && onSegmentationAdd({ segmentationId: '', segmentationRepresentationType })
+      }
     >
       {children}
       <div className="text-primary group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">

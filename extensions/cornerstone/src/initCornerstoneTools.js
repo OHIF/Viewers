@@ -41,6 +41,9 @@ import {
   SegmentSelectTool,
   RegionSegmentPlusTool,
   SegmentLabelTool,
+  LivewireContourSegmentationTool,
+  SculptorTool,
+  SplineContourSegmentationTool,
 } from '@cornerstonejs/tools';
 import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
@@ -109,6 +112,9 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(LabelmapSlicePropagationTool);
   addTool(MarkerLabelmapTool);
   addTool(RegionSegmentPlusTool);
+  addTool(LivewireContourSegmentationTool);
+  addTool(SculptorTool);
+  addTool(SplineContourSegmentationTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -168,6 +174,9 @@ const toolNames = {
   LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
   MarkerLabelmap: MarkerLabelmapTool.toolName,
   RegionSegmentPlus: RegionSegmentPlusTool.toolName,
+  LivewireContourSegmentation: LivewireContourSegmentationTool.toolName,
+  SculptorTool: SculptorTool.toolName,
+  SplineContourSegmentation: SplineContourSegmentationTool.toolName,
 };
 
 export { toolNames };
