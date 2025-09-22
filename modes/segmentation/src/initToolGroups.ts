@@ -1,7 +1,3 @@
-import * as cornerstoneTools from '@cornerstonejs/tools';
-
-const { SplineContourSegmentationTool } = cornerstoneTools;
-
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -129,7 +125,7 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: toolNames.SplineContourSegmentation,
         configuration: {
           spline: {
-            type: SplineContourSegmentationTool.SplineTypes.CatmullRom,
+            type: 'CATMULLROM',
             enableTwoPointPreview: true,
           },
         },
@@ -139,7 +135,7 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: toolNames.SplineContourSegmentation,
         configuration: {
           spline: {
-            type: SplineContourSegmentationTool.SplineTypes.Linear,
+            type: 'LINEAR',
             enableTwoPointPreview: true,
           },
         },
@@ -149,7 +145,7 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: toolNames.SplineContourSegmentation,
         configuration: {
           spline: {
-            type: SplineContourSegmentationTool.SplineTypes.BSpline,
+            type: 'BSPLINE',
             enableTwoPointPreview: true,
           },
         },
