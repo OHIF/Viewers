@@ -160,8 +160,7 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
-        'WindowLevelRegion',
-        'SegmentLabelTool',
+'WindowLevelRegion',
       ]);
 
       customizationService.setCustomizations({
