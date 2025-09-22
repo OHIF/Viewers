@@ -1,7 +1,8 @@
 import {
   cache,
-  eventTarget,
   Enums as csEnums,
+  eventTarget,
+  geometryLoader,
   imageLoader,
   Types as csTypes,
   metaData,
@@ -15,6 +16,7 @@ import {
 } from '@cornerstonejs/tools';
 
 import SegmentationService from './SegmentationService';
+import * as MapROIContoursToRTStructData from './RTSTRUCT/mapROIContoursToRTStructData';
 import SegmentationServiceClass from './SegmentationService';
 
 jest.mock('@cornerstonejs/core', () => ({
@@ -1359,6 +1361,321 @@ describe('SegmentationService', () => {
       expect(segDisplaySet).toEqual(expectedSegDisplaySet);
 
       expect(retrievedSegmentationId).toEqual(segmentationId);
+    });
+  });
+
+  describe('createSegmentationForRTDisplaySet', () => {
+    it('should throw an error if the type is not contour', async () => {
+      await expect(
+        service.createSegmentationForRTDisplaySet(
+          {
+            modality: 'RTSTRUCT',
+          },
+          {
+            type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          }
+        )
+      ).rejects.toThrow('Only contour type is supported for RT display sets right now');
+    });
+
+    it('should throw an error if the structureSet is not loaded', async () => {
+      await expect(
+        service.createSegmentationForRTDisplaySet(
+          {
+            modality: 'RTSTRUCT',
+            displaySetInstanceUID: 'display-set-uid',
+          },
+          {
+            type: csToolsEnums.SegmentationRepresentations.Contour,
+          }
+        )
+      ).rejects.toThrow(
+        'To create the contours from RT displaySet, the displaySet should be loaded first. You can perform rtDisplaySet.load() before calling this method.'
+      );
+    });
+
+    it('should throw and error if structureSet does not contain any ROIContours', async () => {
+      const rtStructDisplaySet = {
+        modality: 'RTSTRUCT',
+        displaySetInstanceUID: 'display-set-uid',
+        referencedDisplaySetInstanceUID: 'existent-display-set-uid',
+        structureSet: {
+          ReferencedSOPInstanceUIDsSet: new Set(['referencedImageId1', 'referencedImageId2']),
+          ROIContours: [],
+        },
+      };
+
+      const referencedDisplaySet = {
+        instances: [{ imageId: 'referencedImageId1' }, { imageId: 'referencedImageId2' }],
+      };
+
+      jest
+        .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+        .mockReturnValue(referencedDisplaySet);
+
+      await expect(
+        service.createSegmentationForRTDisplaySet(rtStructDisplaySet, {
+          type: csToolsEnums.SegmentationRepresentations.Contour,
+        })
+      ).rejects.toThrow(
+        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
+      );
+
+      expect(
+        serviceManagerMock.services.displaySetService.getDisplaySetByUID
+      ).toHaveBeenCalledTimes(1);
+      expect(serviceManagerMock.services.displaySetService.getDisplaySetByUID).toHaveBeenCalledWith(
+        'existent-display-set-uid'
+      );
+    });
+
+    it('should create a segmentation for a RTSTRUCT display set', async () => {
+      const segmentationId = 'segmentationId';
+      const rtStructDisplaySet = {
+        modality: 'RTSTRUCT',
+        displaySetInstanceUID: 'display-set-uid',
+        referencedDisplaySetInstanceUID: 'existent-display-set-uid',
+        SeriesDate: '2025-01-01',
+        SeriesDescription: 'Series Description',
+        structureSet: {
+          ReferencedSOPInstanceUIDsSet: new Set(['referencedIsmageId1', 'referencedImageId2']),
+          ROIContours: [{}, {}, {}],
+          frameOfReferenceUID: 'frameOfReferenceUID',
+        },
+      };
+
+      const referencedDisplaySet = {
+        instances: [{ imageId: 'referencedImageId1' }, { imageId: 'referencedImageId2' }],
+      };
+
+      const allRTStructData = [
+        {
+          data: {},
+          id: 'id3',
+          color: [255, 0, 0, 255],
+          group: 'group3',
+          segmentIndex: 3,
+          geometryId: 'geometryId3',
+        },
+        {
+          data: {},
+          id: 'id2',
+          color: [0, 255, 0, 255],
+          group: 'group2',
+          segmentIndex: 2,
+          geometryId: 'geometryId2',
+        },
+        {
+          data: {},
+          id: 'id1',
+          color: [0, 0, 255, 255],
+          group: 'group1',
+          segmentIndex: 1,
+          geometryId: 'geometryId1',
+        },
+      ];
+
+      jest
+        .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+        .mockReturnValue(referencedDisplaySet);
+      jest
+        .spyOn(MapROIContoursToRTStructData, 'mapROIContoursToRTStructData')
+        .mockReturnValue(allRTStructData);
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+      jest.spyOn(geometryLoader, 'createAndCacheGeometry').mockReturnValue({
+        // @ts-expect-error - only mocking needed properties
+        data: { centroid: [0, 0, 0] },
+      });
+
+      const segmentLoadingCompleteCallback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENT_LOADING_COMPLETE, segmentLoadingCompleteCallback);
+
+      const segmentationLoadingCompleteCallback = jest.fn();
+      service.subscribe(
+        service.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+        segmentationLoadingCompleteCallback
+      );
+
+      const retrievedSegmentationId = await service.createSegmentationForRTDisplaySet(
+        rtStructDisplaySet,
+        {
+          type: csToolsEnums.SegmentationRepresentations.Contour,
+          segmentationId,
+        }
+      );
+
+      expect(MapROIContoursToRTStructData.mapROIContoursToRTStructData).toHaveBeenCalledTimes(1);
+      expect(MapROIContoursToRTStructData.mapROIContoursToRTStructData).toHaveBeenCalledWith(
+        rtStructDisplaySet.structureSet,
+        rtStructDisplaySet.displaySetInstanceUID
+      );
+
+      expect(geometryLoader.createAndCacheGeometry).toHaveBeenCalledTimes(3);
+      allRTStructData.forEach(data => {
+        expect(geometryLoader.createAndCacheGeometry).toHaveBeenCalledWith(data.geometryId, {
+          geometryData: {
+            data: data.data,
+            id: data.id,
+            color: data.color,
+            frameOfReferenceUID: rtStructDisplaySet.structureSet.frameOfReferenceUID,
+            segmentIndex: data.segmentIndex,
+          },
+          type: csEnums.GeometryType.CONTOUR,
+        });
+      });
+
+      expect(segmentLoadingCompleteCallback).toHaveBeenCalledTimes(3);
+      expect(segmentLoadingCompleteCallback).toHaveBeenCalledWith({
+        percentComplete: expect.any(Number),
+        numSegments: 3,
+      });
+
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.addColorLUT).toHaveBeenCalledWith([
+        [0, 0, 0, 0],
+        [0, 0, 255, 255],
+        [0, 255, 0, 255],
+        [255, 0, 0, 255],
+      ]);
+
+      expect(segmentationLoadingCompleteCallback).toHaveBeenCalledTimes(1);
+      expect(segmentationLoadingCompleteCallback).toHaveBeenCalledWith({
+        segmentationId,
+        rtDisplaySet: rtStructDisplaySet,
+      });
+
+      const expectedSegmentation = {
+        config: {
+          label: rtStructDisplaySet.SeriesDescription,
+          segments: {
+            '1': {
+              active: false,
+              cachedStats: {
+                center: {
+                  world: [0, 0, 0],
+                },
+                modifiedTime: rtStructDisplaySet.SeriesDate,
+              },
+              group: 'group1',
+              label: 'id1',
+              locked: false,
+              segmentIndex: 1,
+            },
+            '2': {
+              active: false,
+              cachedStats: {
+                center: {
+                  world: [0, 0, 0],
+                },
+                modifiedTime: rtStructDisplaySet.SeriesDate,
+              },
+              group: 'group2',
+              label: 'id2',
+              locked: false,
+              segmentIndex: 2,
+            },
+            '3': {
+              active: false,
+              cachedStats: {
+                center: {
+                  world: [0, 0, 0],
+                },
+                modifiedTime: rtStructDisplaySet.SeriesDate,
+              },
+              group: 'group3',
+              label: 'id3',
+              locked: false,
+              segmentIndex: 3,
+            },
+          },
+        },
+        representation: {
+          data: {
+            geometryIds: ['geometryId1', 'geometryId2', 'geometryId3'],
+          },
+          type: csToolsEnums.SegmentationRepresentations.Contour,
+        },
+        segmentationId,
+      };
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledWith(expectedSegmentation);
+
+      expect(retrievedSegmentationId).toEqual(segmentationId);
+
+      const expectedRtStructDisplaySet = {
+        ...rtStructDisplaySet,
+        isLoaded: true,
+      };
+
+      expect(rtStructDisplaySet).toEqual(expectedRtStructDisplaySet);
+    });
+
+    it.skip('should ignore when a segment fails to initialize', async () => {
+      const segmentationId = 'segmentationId';
+      const rtStructDisplaySet = {
+        modality: 'RTSTRUCT',
+        displaySetInstanceUID: 'display-set-uid',
+        referencedDisplaySetInstanceUID: 'existent-display-set-uid',
+        SeriesDate: '2025-01-01',
+        SeriesDescription: 'Series Description',
+        structureSet: {
+          ReferencedSOPInstanceUIDsSet: new Set(['referencedIsmageId1', 'referencedImageId2']),
+          ROIContours: [{}, {}, {}],
+          frameOfReferenceUID: 'frameOfReferenceUID',
+        },
+      };
+
+      const referencedDisplaySet = {
+        instances: [{ imageId: 'referencedImageId1' }, { imageId: 'referencedImageId2' }],
+      };
+
+      const allRTStructData = [
+        {
+          data: {},
+          id: 'id3',
+          color: [255, 0, 0, 255],
+          group: 'group3',
+          segmentIndex: 3,
+          geometryId: 'geometryId3',
+        },
+      ];
+
+      jest
+        .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
+        .mockReturnValue(referencedDisplaySet);
+      jest
+        .spyOn(MapROIContoursToRTStructData, 'mapROIContoursToRTStructData')
+        .mockReturnValue(allRTStructData);
+      jest.spyOn(geometryLoader, 'createAndCacheGeometry').mockImplementationOnce(() => {
+        throw new Error('Segment Initialization Error');
+      });
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
+
+      const segmentLoadingCompleteCallback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENT_LOADING_COMPLETE, segmentLoadingCompleteCallback);
+
+      const segmentationLoadingCompleteCallback = jest.fn();
+      service.subscribe(
+        service.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+        segmentationLoadingCompleteCallback
+      );
+
+      await service.createSegmentationForRTDisplaySet(rtStructDisplaySet, {
+        type: csToolsEnums.SegmentationRepresentations.Contour,
+        segmentationId,
+      });
+
+      expect(segmentLoadingCompleteCallback).not.toHaveBeenCalled();
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(
+        'Error initializing contour for segment 1: Segment Initialization Error'
+      );
+
+      expect(segmentationLoadingCompleteCallback).toHaveBeenCalledTimes(1);
+
+      expect(service.addOrUpdateSegmentation).toHaveBeenCalledTimes(1);
     });
   });
 });
