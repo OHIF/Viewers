@@ -3,6 +3,7 @@ import {
   Enums as csEnums,
   eventTarget,
   geometryLoader,
+  getEnabledElementByViewportId,
   imageLoader,
   Types as csTypes,
   metaData,
@@ -15,11 +16,13 @@ import {
   Types as cstTypes,
 } from '@cornerstonejs/tools';
 
+import { EasingFunctionEnum } from '../../utils/transitions';
 import * as MapROIContoursToRTStructData from './RTSTRUCT/mapROIContoursToRTStructData';
 import SegmentationServiceClass, { SegmentationRepresentation } from './SegmentationService';
 
 jest.mock('@cornerstonejs/core', () => ({
   ...jest.requireActual('@cornerstonejs/core'),
+  getEnabledElementByViewportId: jest.fn(),
   eventTarget: {
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
@@ -2518,4 +2521,129 @@ describe('SegmentationService', () => {
       );
     });
   });
+
+  describe('jumpToSegmentCenter', () => {
+    it('should early return if the center is not found', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+
+      jest.spyOn(console, 'warn').mockReturnValue(undefined);
+      jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(null);
+      jest.spyOn(service, 'getViewportIdsWithSegmentation');
+
+      service.jumpToSegmentCenter(segmentationId, segmentIndex);
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(
+        'No center found for segmentation',
+        segmentationId,
+        segmentIndex
+      );
+
+      expect(service.getViewportIdsWithSegmentation).not.toHaveBeenCalled();
+    });
+
+    it('should correctly handle scenario where viewportId is provided', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const viewportId = 'viewportId';
+      const viewport = { jumpToWorld: jest.fn() };
+
+      const segmentationWithCenter = {
+        ...mockCornerstoneSegmentation,
+        segments: {
+          ...mockCornerstoneSegmentation.segments,
+          [segmentIndex]: {
+            ...mockCornerstoneSegmentation.segments[segmentIndex],
+            cachedStats: { center: { image: [1, 1, 1], world: [10, 10, 10] } },
+          },
+        },
+      };
+
+      jest.spyOn(cstSegmentation.state, 'getSegmentation').mockReturnValue(segmentationWithCenter);
+      jest.spyOn(service, 'getViewportIdsWithSegmentation');
+      // @ts-expect-error - mock only needed properties
+      getEnabledElementByViewportId.mockReturnValue({ viewport });
+      jest.spyOn(service, 'highlightSegment').mockReturnValue(undefined);
+
+      service.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
+
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(segmentationId);
+
+      expect(service.getViewportIdsWithSegmentation).not.toHaveBeenCalled();
+
+      expect(viewport.jumpToWorld).toHaveBeenCalledTimes(1);
+      expect(viewport.jumpToWorld).toHaveBeenCalledWith([10, 10, 10]);
+
+      expect(service.highlightSegment).toHaveBeenCalledTimes(1);
+      expect(service.highlightSegment).toHaveBeenCalledWith(
+        segmentationId,
+        segmentIndex,
+        viewportId,
+        0.9,
+        750,
+        false,
+        EasingFunctionEnum.EASE_IN_OUT
+      );
+    });
+
+    it('should correctly handle custom animation parameters', () => {
+      const segmentationId = 'segmentationId';
+      const segmentIndex = 1;
+      const viewportId = 'viewportId';
+      const viewport = { jumpToWorld: jest.fn() };
+
+      const segmentationWithNamedStatsCenter = {
+        ...mockCornerstoneSegmentation,
+        segments: {
+          ...mockCornerstoneSegmentation.segments,
+          [segmentIndex]: {
+            ...mockCornerstoneSegmentation.segments[segmentIndex],
+            cachedStats: {
+              namedStats: { center: { value: [1, 1, 1] } },
+            },
+          },
+        },
+      };
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(segmentationWithNamedStatsCenter);
+      jest.spyOn(service, 'getViewportIdsWithSegmentation').mockReturnValue([viewportId]);
+      // @ts-expect-error - mock only needed properties
+      getEnabledElementByViewportId.mockReturnValue({ viewport });
+      jest.spyOn(service, 'highlightSegment').mockReturnValue(undefined);
+
+      service.jumpToSegmentCenter(
+        segmentationId,
+        segmentIndex,
+        undefined,
+        0.8,
+        true,
+        800,
+        false,
+        EasingFunctionEnum.LINEAR
+      );
+
+      expect(service.getViewportIdsWithSegmentation).toHaveBeenCalledTimes(1);
+      expect(service.getViewportIdsWithSegmentation).toHaveBeenCalledWith(segmentationId);
+
+      expect(viewport.jumpToWorld).toHaveBeenCalledTimes(1);
+      expect(viewport.jumpToWorld).toHaveBeenCalledWith([1, 1, 1]);
+
+      expect(service.highlightSegment).toHaveBeenCalledTimes(1);
+      expect(service.highlightSegment).toHaveBeenCalledWith(
+        segmentationId,
+        segmentIndex,
+        viewportId,
+        0.8,
+        800,
+        false,
+        EasingFunctionEnum.LINEAR
+      );
+    });
+  });
+
+  describe('highlightSegment', () => {});
 });
