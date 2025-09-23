@@ -208,6 +208,15 @@ describe('SegmentationService', () => {
     expect(service.EVENTS).toBeDefined();
   });
 
+  it('should instantiate service through registration', () => {
+    // @ts-expect-error - mock only has a subset of the properties
+    const service = SegmentationServiceClass.REGISTRATION.create({
+      servicesManager: serviceManagerMock,
+    });
+
+    expect(service).toBeDefined();
+  });
+
   describe('onModeEnter', () => {
     it('should add event listeners', () => {
       service.onModeEnter();
@@ -1506,6 +1515,7 @@ describe('SegmentationService', () => {
 
       const referencedDisplaySet = {
         instances: [{ imageId: 'referencedImageId1' }, { imageId: 'referencedImageId2' }],
+        imageIds: ['referencedImageId1', 'referencedImageId2'],
       };
 
       const allRTStructData = [
@@ -1670,7 +1680,7 @@ describe('SegmentationService', () => {
       expect(rtStructDisplaySet).toEqual(expectedRtStructDisplaySet);
     });
 
-    it.skip('should ignore when a segment fails to initialize', async () => {
+    it('should ignore when a segment fails to initialize', async () => {
       const segmentationId = 'segmentationId';
       const rtStructDisplaySet = {
         modality: 'RTSTRUCT',
@@ -1706,9 +1716,9 @@ describe('SegmentationService', () => {
       jest
         .spyOn(MapROIContoursToRTStructData, 'mapROIContoursToRTStructData')
         .mockReturnValue(allRTStructData);
-      jest.spyOn(geometryLoader, 'createAndCacheGeometry').mockImplementationOnce(() => {
-        throw new Error('Segment Initialization Error');
-      });
+      jest
+        .spyOn(geometryLoader, 'createAndCacheGeometry')
+        .mockRejectedValue(new Error('Segment Initialization Error') as never);
       jest.spyOn(console, 'warn').mockImplementation(() => {});
       jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
 
@@ -1721,16 +1731,19 @@ describe('SegmentationService', () => {
         segmentationLoadingCompleteCallback
       );
 
-      await service.createSegmentationForRTDisplaySet(rtStructDisplaySet, {
-        type: csToolsEnums.SegmentationRepresentations.Contour,
-        segmentationId,
-      });
+      await expect(
+        service.createSegmentationForRTDisplaySet(rtStructDisplaySet, {
+          type: csToolsEnums.SegmentationRepresentations.Contour,
+          segmentationId,
+        })
+      ).resolves.not.toThrow();
 
       expect(segmentLoadingCompleteCallback).not.toHaveBeenCalled();
 
       expect(console.warn).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledWith(
-        'Error initializing contour for segment 1: Segment Initialization Error'
+        `Error initializing contour for segment ${allRTStructData[0].segmentIndex}:`,
+        expect.any(Error)
       );
 
       expect(segmentationLoadingCompleteCallback).toHaveBeenCalledTimes(1);
