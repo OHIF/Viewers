@@ -2698,8 +2698,7 @@ describe('SegmentationService', () => {
         expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
         expect(window.requestAnimationFrame).toHaveBeenCalledWith(expect.any(Function));
 
-        // @ts-expect-error - typescript can't handle the spyOn window object properly
-        const animationCallback = window.requestAnimationFrame.mock.calls[0][0];
+        const animationCallback = jest.mocked(window.requestAnimationFrame).mock.calls[0][0];
 
         // during animation call
         animationCallback(0);
@@ -2819,8 +2818,7 @@ describe('SegmentationService', () => {
         expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
         expect(window.requestAnimationFrame).toHaveBeenCalledWith(expect.any(Function));
 
-        // @ts-expect-error - typescript can't handle the spyOn window object properly
-        const animationCallback = window.requestAnimationFrame.mock.calls[0][0];
+        const animationCallback = jest.mocked(window.requestAnimationFrame).mock.calls[0][0];
         const approximateStartTime = performance.now();
 
         // during animation call
@@ -2879,6 +2877,109 @@ describe('SegmentationService', () => {
 
       expect(window.clearInterval).toHaveBeenCalledTimes(1);
       expect(window.clearInterval).toHaveBeenCalledWith('intervalId');
+    });
+  });
+
+  describe('_onSegmentationDataModifiedFromSource', () => {
+    it('should broadcast the event', () => {
+      jest.spyOn(eventTarget, 'addEventListener').mockReturnValue(undefined);
+
+      const callback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENTATION_DATA_MODIFIED, callback);
+
+      service.onModeEnter();
+
+      const _onSegmentationDataModifiedFromSource = jest.mocked(eventTarget.addEventListener).mock
+        .calls[2][1];
+
+      _onSegmentationDataModifiedFromSource({
+        detail: {
+          segmentationId: 'segmentationId',
+        },
+      });
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith({
+        segmentationId: 'segmentationId',
+      });
+    });
+  });
+
+  describe('_onSegmentationRepresentationModifiedFromSource', () => {
+    it('should broadcast the event', () => {
+      jest.spyOn(eventTarget, 'addEventListener').mockReturnValue(undefined);
+
+      const callback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, callback);
+
+      service.onModeEnter();
+
+      const _onSegmentationRepresentationModifiedFromSource = jest.mocked(
+        eventTarget.addEventListener
+      ).mock.calls[3][1];
+
+      _onSegmentationRepresentationModifiedFromSource({
+        detail: {
+          segmentationId: 'segmentationId',
+          viewportId: 'viewportId',
+        },
+      });
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith({
+        segmentationId: 'segmentationId',
+        viewportId: 'viewportId',
+      });
+    });
+  });
+
+  describe('_onSegmentationModifiedFromSource', () => {
+    it('should broadcast the event', () => {
+      jest.spyOn(eventTarget, 'addEventListener').mockReturnValue(undefined);
+
+      const callback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENTATION_MODIFIED, callback);
+
+      service.onModeEnter();
+
+      const _onSegmentationModifiedFromSource = jest.mocked(eventTarget.addEventListener).mock
+        .calls[0][1];
+
+      _onSegmentationModifiedFromSource({
+        detail: {
+          segmentationId: 'segmentationId',
+        },
+      });
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith({
+        segmentationId: 'segmentationId',
+      });
+    });
+  });
+
+  describe('_onSegmentationAddedFromSource', () => {
+    it('should broadcast the event', () => {
+      jest.spyOn(eventTarget, 'addEventListener').mockReturnValue(undefined);
+
+      const callback = jest.fn();
+      service.subscribe(service.EVENTS.SEGMENTATION_ADDED, callback);
+
+      service.onModeEnter();
+
+      const _onSegmentationAddedFromSource = jest.mocked(eventTarget.addEventListener).mock
+        .calls[6][1];
+
+      _onSegmentationAddedFromSource({
+        detail: {
+          segmentationId: 'segmentationId',
+        },
+      });
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith({
+        segmentationId: 'segmentationId',
+      });
     });
   });
 });
