@@ -626,7 +626,9 @@ class SegmentationService extends PubSubService {
     const colorLUT = [[0, 0, 0, 0]]; // First entry is transparent for index 0
 
     // Process each segment similarly to the SEG function
-    for (const rtStructData of allRTStructData) {
+    for (let i = 0; i < allRTStructData.length; i++) {
+      const rtStructData = allRTStructData[i];
+
       const { data, id, color, segmentIndex, geometryId, group } = rtStructData;
 
       // Add the color to the colorLUT array
