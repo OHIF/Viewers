@@ -58,6 +58,7 @@ jest.mock('@cornerstonejs/tools', () => ({
     getLabelmapImageIds: jest.fn(),
     helpers: { convertStackToVolumeLabelmap: jest.fn() },
     removeSegment: jest.fn(),
+    removeSegmentationRepresentations: jest.fn(),
     segmentIndex: {
       setActiveSegmentIndex: jest.fn(),
     },
@@ -72,6 +73,8 @@ jest.mock('@cornerstonejs/tools', () => ({
       getSegmentationRepresentationsBySegmentationId: jest.fn(),
       getSegmentationRepresentations: jest.fn(),
       getViewportIdsWithSegmentation: jest.fn(),
+      removeAllSegmentations: jest.fn(),
+      removeSegmentation: jest.fn(),
       updateLabelmapSegmentationImageReferences: jest.fn(),
     },
     triggerSegmentationEvents: { triggerSegmentationRepresentationModified: jest.fn() },
@@ -1032,6 +1035,7 @@ describe('SegmentationService', () => {
       jest
         .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
         .mockReturnValue(null);
+      jest.spyOn(console, 'warn').mockReturnValue(undefined);
 
       const callback = jest.fn();
       service.subscribe(service.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, callback);
@@ -1039,6 +1043,9 @@ describe('SegmentationService', () => {
       service.addSegmentationRepresentation(viewportId, {
         segmentationId: mockCornerstoneSegmentation.segmentationId,
       });
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(`Viewport with id ${viewportId} not found.`);
 
       expect(callback).not.toHaveBeenCalled();
     });
@@ -2454,6 +2461,61 @@ describe('SegmentationService', () => {
       );
 
       expect(returnedViewportIds).toEqual(viewportIds);
+    });
+  });
+
+  describe('clearSegmentationRepresentations', () => {
+    it('should clear the segmentation representations', () => {
+      const viewportId = 'viewportId';
+      jest.spyOn(service, 'removeSegmentationRepresentations').mockReturnValue(undefined);
+
+      service.clearSegmentationRepresentations(viewportId);
+
+      expect(service.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      expect(service.removeSegmentationRepresentations).toHaveBeenCalledWith(viewportId);
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove the segmentation', () => {
+      const segmentationId = 'segmentationId';
+
+      jest.spyOn(cstSegmentation.state, 'removeSegmentation').mockReturnValue(undefined);
+
+      service.remove(segmentationId);
+
+      expect(cstSegmentation.state.removeSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.removeSegmentation).toHaveBeenCalledWith(segmentationId);
+    });
+  });
+
+  describe('removeAllSegmentations', () => {
+    it('should remove all segmentations', () => {
+      jest.spyOn(cstSegmentation.state, 'removeAllSegmentations').mockReturnValue(undefined);
+
+      service.removeAllSegmentations();
+
+      expect(cstSegmentation.state.removeAllSegmentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.removeAllSegmentations).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('removeSegmentationRepresentations', () => {
+    it('should remove the segmentation representations', () => {
+      const viewportId = 'viewportId';
+      const specifier = {
+        segmentationId: 'segmentationId',
+        type: csToolsEnums.SegmentationRepresentations.Labelmap,
+      };
+      jest.spyOn(cstSegmentation, 'removeSegmentationRepresentations').mockReturnValue(undefined);
+
+      service.removeSegmentationRepresentations(viewportId, specifier);
+
+      expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledWith(
+        viewportId,
+        specifier
+      );
     });
   });
 });
