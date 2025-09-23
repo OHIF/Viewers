@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icons, PanelSection, ToolSettings } from '@ohif/ui-next';
-import { useSystem, useToolbar } from '@ohif/core';
+import { useSystem, useToolbar, useActiveToolOptions } from '@ohif/core';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,8 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
     buttonSection: buttonSectionId,
   });
 
+  const { activeToolOptions } = useActiveToolOptions({ buttonSectionId });
+
   if (!toolboxSections.length) {
     return null;
   }
@@ -40,35 +42,6 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
       'Toolbox accepts only button sections at the top level, not buttons. Create at least one button section.'
     );
   }
-
-  // Helper to check a list of buttons for an active tool.
-  const findActiveOptions = (buttons: any[]): unknown => {
-    for (const tool of buttons) {
-      if (tool.componentProps.isActive) {
-        return tool.componentProps.options;
-      }
-      if (tool.componentProps.buttonSection) {
-        const nestedButtons = toolbarService.getButtonPropsInButtonSection(
-          tool.componentProps.buttonSection
-        ) as ButtonProps[];
-        const activeNested = nestedButtons.find(nested => nested.isActive);
-        if (activeNested) {
-          return activeNested.options;
-        }
-      }
-    }
-    return null;
-  };
-
-  // Look for active tool options across all sections.
-  const activeToolOptions = toolboxSections.reduce((activeOptions, section) => {
-    if (activeOptions) {
-      return activeOptions;
-    }
-    const sectionId = section.componentProps.buttonSection;
-    const buttons = toolbarService.getButtonSection(sectionId);
-    return findActiveOptions(buttons);
-  }, null);
 
   // Define the interaction handler once.
   const handleInteraction = ({ itemId }: { itemId: string }) => {
