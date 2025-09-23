@@ -16,7 +16,7 @@ import {
   Types as cstTypes,
 } from '@cornerstonejs/tools';
 
-import { EasingFunctionEnum } from '../../utils/transitions';
+import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import * as MapROIContoursToRTStructData from './RTSTRUCT/mapROIContoursToRTStructData';
 import SegmentationServiceClass, { SegmentationRepresentation } from './SegmentationService';
 
@@ -178,6 +178,23 @@ describe('SegmentationService', () => {
     setViewReference: jest.fn(),
     render: jest.fn(),
   };
+  const representations = [
+    {
+      ...mockCornerstoneRepresentations[0],
+      viewportId: 'viewportId',
+      id: 'test-id',
+      label: 'Test Segmentation',
+      styles: {},
+      segments: {
+        1: {
+          color: [255, 0, 0, 1],
+          opacity: 1,
+          segmentIndex: 1,
+          visible: true,
+        },
+      },
+    },
+  ] as SegmentationRepresentation[];
 
   beforeEach(() => {
     service = new SegmentationServiceClass({ servicesManager: serviceManagerMock });
@@ -1270,7 +1287,7 @@ describe('SegmentationService', () => {
       jest
         .spyOn(serviceManagerMock.services.displaySetService, 'getDisplaySetByUID')
         .mockReturnValue(referencedDisplaySet);
-      // @ts-expect-error - flat is wrongly typed at Array.prototype
+      // @ts-expect-error - jest can't handle Array.prototype.flat typing
       jest.spyOn(Array.prototype, 'flat');
       jest.spyOn(metaData, 'get').mockReturnValue({});
       jest.spyOn(service, 'addOrUpdateSegmentation').mockReturnValue(undefined);
@@ -2360,24 +2377,6 @@ describe('SegmentationService', () => {
   });
 
   describe('toggleSegmentationRepresentationVisibility', () => {
-    const representations = [
-      {
-        ...mockCornerstoneRepresentations[0],
-        viewportId: 'viewportId',
-        id: 'test-id',
-        label: 'Test Segmentation',
-        styles: {},
-        segments: {
-          1: {
-            color: [255, 0, 0, 1],
-            opacity: 1,
-            segmentIndex: 1,
-            visible: true,
-          },
-        },
-      },
-    ] as SegmentationRepresentation[];
-
     it('should toggle the visibility of the segmentation representation', () => {
       jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValue(representations);
       jest
@@ -2645,5 +2644,241 @@ describe('SegmentationService', () => {
     });
   });
 
-  describe('highlightSegment', () => {});
+  describe('highlightSegment', () => {
+    describe('LABELMAP Segmentation', () => {
+      it('should correctly handle scenario where viewportId is provided', () => {
+        const segmentIndex = 1;
+        const viewportId = 'viewportId';
+        const initialFillAlpha = 0.3;
+        const animationDuration = 750;
+        const animationFunctionConstant = 0.85;
+        const easingFunction = jest.fn(() => animationFunctionConstant);
+
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation);
+        jest.spyOn(service, 'getViewportIdsWithSegmentation');
+        jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValue(representations);
+        jest.spyOn(cstSegmentation.config.style, 'getStyle').mockReturnValue({
+          fillAlpha: initialFillAlpha,
+        });
+        jest.spyOn(window, 'requestAnimationFrame').mockReturnValue(undefined);
+        jest.spyOn(EasingFunctionMap, 'get').mockReturnValue(easingFunction);
+
+        service.highlightSegment(
+          representations[0].segmentationId,
+          segmentIndex,
+          viewportId,
+          0.9,
+          animationDuration,
+          false,
+          EasingFunctionEnum.EASE_IN_OUT
+        );
+
+        expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(
+          representations[0].segmentationId
+        );
+
+        expect(service.getViewportIdsWithSegmentation).not.toHaveBeenCalled();
+
+        expect(service.getSegmentationRepresentations).toHaveBeenCalledTimes(1);
+        expect(service.getSegmentationRepresentations).toHaveBeenCalledWith(viewportId, {
+          segmentationId: representations[0].segmentationId,
+        });
+
+        expect(cstSegmentation.config.style.getStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.getStyle).toHaveBeenCalledWith({
+          viewportId,
+          segmentationId: representations[0].segmentationId,
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          segmentIndex,
+        });
+
+        expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+        expect(window.requestAnimationFrame).toHaveBeenCalledWith(expect.any(Function));
+
+        // @ts-expect-error - typescript can't handle the spyOn window object properly
+        const animationCallback = window.requestAnimationFrame.mock.calls[0][0];
+
+        // during animation call
+        animationCallback(0);
+
+        expect(EasingFunctionMap.get).toHaveBeenCalledTimes(1);
+        expect(EasingFunctionMap.get).toHaveBeenCalledWith(EasingFunctionEnum.EASE_IN_OUT);
+
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          {
+            segmentationId: representations[0].segmentationId,
+            segmentIndex,
+            type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          },
+          {
+            fillAlpha: animationFunctionConstant,
+          }
+        );
+
+        expect(easingFunction).toHaveBeenCalledTimes(1);
+        expect(easingFunction).toHaveBeenCalledWith(0, initialFillAlpha);
+
+        expect(window.requestAnimationFrame).toHaveBeenCalledTimes(2);
+        expect(window.requestAnimationFrame).toHaveBeenCalledWith(expect.any(Function));
+
+        // end of animation call
+        animationCallback(animationDuration);
+
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(3);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          {
+            segmentationId: representations[0].segmentationId,
+            segmentIndex,
+            type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          },
+          {}
+        );
+
+        expect(window.requestAnimationFrame).not.toHaveBeenCalledTimes(3);
+      });
+
+      it('should throw if hideOthers is true', () => {
+        const segmentIndex = 1;
+
+        jest.spyOn(window, 'clearInterval').mockReturnValue(undefined);
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation);
+        jest.spyOn(service, 'getViewportIdsWithSegmentation').mockReturnValue([viewportId]);
+        jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValue(representations);
+
+        expect(() =>
+          service.highlightSegment(representations[0].segmentationId, segmentIndex)
+        ).toThrow('hideOthers is not working right now');
+
+        expect(window.clearInterval).not.toHaveBeenCalled();
+
+        expect(service.getViewportIdsWithSegmentation).toHaveBeenCalledTimes(1);
+        expect(service.getViewportIdsWithSegmentation).toHaveBeenCalledWith(
+          representations[0].segmentationId
+        );
+
+        expect(service.getSegmentationRepresentations).toHaveBeenCalledTimes(1);
+        expect(service.getSegmentationRepresentations).toHaveBeenCalledWith(viewportId, {
+          segmentationId: representations[0].segmentationId,
+        });
+      });
+    });
+
+    describe('CONTOUR Segmentation', () => {
+      it('should correctly handle scenario where viewportId is provided', () => {
+        const segmentIndex = 1;
+        const viewportId = 'viewportId';
+        const initialOutlineWidth = 3;
+        const animationDuration = 750;
+        const animationFunctionConstant = 5;
+        const easingFunction = jest.fn(() => animationFunctionConstant);
+
+        const contourRepresentations = [
+          {
+            ...representations[0],
+            type: csToolsEnums.SegmentationRepresentations.Contour,
+          },
+        ];
+
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation);
+        jest.spyOn(service, 'getViewportIdsWithSegmentation');
+        jest
+          .spyOn(service, 'getSegmentationRepresentations')
+          .mockReturnValue(contourRepresentations);
+        jest.spyOn(cstSegmentation.config.style, 'getStyle').mockReturnValue({
+          outlineWidth: initialOutlineWidth,
+        });
+        jest.spyOn(window, 'requestAnimationFrame').mockReturnValue(undefined);
+        jest.spyOn(EasingFunctionMap, 'get').mockReturnValue(easingFunction);
+        jest.spyOn(cstSegmentation.config.style, 'resetToGlobalStyle').mockReturnValue(undefined);
+
+        service.highlightSegment(
+          contourRepresentations[0].segmentationId,
+          segmentIndex,
+          viewportId,
+          0.9,
+          animationDuration,
+          false,
+          EasingFunctionEnum.LINEAR
+        );
+
+        expect(service.getViewportIdsWithSegmentation).not.toHaveBeenCalled();
+
+        expect(cstSegmentation.config.style.getStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.getStyle).toHaveBeenCalledWith({
+          type: csToolsEnums.SegmentationRepresentations.Contour,
+        });
+
+        expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+        expect(window.requestAnimationFrame).toHaveBeenCalledWith(expect.any(Function));
+
+        // @ts-expect-error - typescript can't handle the spyOn window object properly
+        const animationCallback = window.requestAnimationFrame.mock.calls[0][0];
+        const approximateStartTime = performance.now();
+
+        // during animation call
+        animationCallback(approximateStartTime + 200);
+
+        expect(EasingFunctionMap.get).toHaveBeenCalledTimes(1);
+        expect(EasingFunctionMap.get).toHaveBeenCalledWith(EasingFunctionEnum.LINEAR);
+
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledWith(
+          {
+            segmentationId: contourRepresentations[0].segmentationId,
+            segmentIndex,
+            type: csToolsEnums.SegmentationRepresentations.Contour,
+          },
+          {
+            outlineWidth: animationFunctionConstant,
+          }
+        );
+
+        expect(easingFunction).toHaveBeenCalledTimes(1);
+        expect(easingFunction).toHaveBeenCalledWith(expect.any(Number), initialOutlineWidth, 5);
+
+        expect(window.requestAnimationFrame).toHaveBeenCalledTimes(2);
+        expect(window.requestAnimationFrame).toHaveBeenCalledWith(expect.any(Function));
+
+        // end of animation call
+        animationCallback(approximateStartTime + animationDuration);
+
+        expect(cstSegmentation.config.style.setStyle).toHaveBeenCalledTimes(1);
+
+        expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.config.style.resetToGlobalStyle).toHaveBeenCalledWith();
+
+        expect(window.requestAnimationFrame).not.toHaveBeenCalledTimes(3);
+      });
+    });
+
+    it('should clear interval if it exists', () => {
+      expect(service.highlightIntervalId).toBe(null);
+
+      service.highlightIntervalId = 'intervalId';
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation);
+      jest.spyOn(service, 'getViewportIdsWithSegmentation');
+      jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValue(representations);
+      jest.spyOn(cstSegmentation.config.style, 'getStyle').mockReturnValue({
+        fillAlpha: 0.3,
+      });
+      jest.spyOn(window, 'requestAnimationFrame').mockReturnValue(undefined);
+      jest.spyOn(window, 'clearInterval').mockReturnValue(undefined);
+
+      service.highlightSegment(representations[0].segmentationId, 1, viewportId, 0.9, 750, false);
+
+      expect(window.clearInterval).toHaveBeenCalledTimes(1);
+      expect(window.clearInterval).toHaveBeenCalledWith('intervalId');
+    });
+  });
 });
