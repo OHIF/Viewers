@@ -15,9 +15,8 @@ import {
   Types as cstTypes,
 } from '@cornerstonejs/tools';
 
-import SegmentationService from './SegmentationService';
 import * as MapROIContoursToRTStructData from './RTSTRUCT/mapROIContoursToRTStructData';
-import SegmentationServiceClass from './SegmentationService';
+import SegmentationServiceClass, { SegmentationRepresentation } from './SegmentationService';
 
 jest.mock('@cornerstonejs/core', () => ({
   ...jest.requireActual('@cornerstonejs/core'),
@@ -42,8 +41,10 @@ jest.mock('@cornerstonejs/tools', () => ({
         setSegmentIndexColor: jest.fn(),
       },
       visibility: {
+        getHiddenSegmentIndices: jest.fn(),
         getSegmentIndexVisibility: jest.fn(),
         setSegmentIndexVisibility: jest.fn(),
+        setSegmentationRepresentationVisibility: jest.fn(),
       },
       style: {
         hasCustomStyle: jest.fn(),
@@ -97,7 +98,7 @@ const serviceManagerMock = {
 };
 
 describe('SegmentationService', () => {
-  let service: SegmentationService;
+  let service: SegmentationServiceClass;
   const viewportId = 'viewportId';
   const mockCornerstoneRepresentations = [
     {
@@ -2345,6 +2346,94 @@ describe('SegmentationService', () => {
       returnedStats = service.getSegmentationGroupStats(segmentationIds);
 
       expect(returnedStats).toEqual(stats);
+    });
+  });
+
+  describe('toggleSegmentationRepresentationVisibility', () => {
+    const representations = [
+      {
+        ...mockCornerstoneRepresentations[0],
+        viewportId: 'viewportId',
+        id: 'test-id',
+        label: 'Test Segmentation',
+        styles: {},
+        segments: {
+          1: {
+            color: [255, 0, 0, 1],
+            opacity: 1,
+            segmentIndex: 1,
+            visible: true,
+          },
+        },
+      },
+    ] as SegmentationRepresentation[];
+
+    it('should toggle the visibility of the segmentation representation', () => {
+      jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValue(representations);
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'getHiddenSegmentIndices')
+        .mockReturnValue(new Set());
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'setSegmentationRepresentationVisibility')
+        .mockReturnValue(undefined);
+
+      service.toggleSegmentationRepresentationVisibility(viewportId, {
+        segmentationId: representations[0].segmentationId,
+        type: representations[0].type,
+      });
+
+      expect(service.getSegmentationRepresentations).toHaveBeenCalledTimes(2);
+      expect(service.getSegmentationRepresentations).toHaveBeenCalledWith(viewportId, {
+        segmentationId: representations[0].segmentationId,
+        type: representations[0].type,
+      });
+
+      expect(cstSegmentation.config.visibility.getHiddenSegmentIndices).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.config.visibility.getHiddenSegmentIndices).toHaveBeenCalledWith(
+        viewportId,
+        {
+          segmentationId: representations[0].segmentationId,
+          type: representations[0].type,
+        }
+      );
+
+      expect(
+        cstSegmentation.config.visibility.setSegmentationRepresentationVisibility
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        cstSegmentation.config.visibility.setSegmentationRepresentationVisibility
+      ).toHaveBeenCalledWith(
+        viewportId,
+        {
+          segmentationId: representations[0].segmentationId,
+          type: representations[0].type,
+        },
+        false
+      );
+    });
+
+    it('should early return if the representation is not found', () => {
+      jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValueOnce(representations);
+      jest.spyOn(cstSegmentation.state, 'getSegmentationRepresentations').mockReturnValueOnce([]);
+      jest
+        .spyOn(cstSegmentation.config.visibility, 'getHiddenSegmentIndices')
+        .mockReturnValue(new Set());
+      jest.spyOn(console, 'debug').mockReturnValue(undefined);
+      jest.spyOn(cstSegmentation.config.visibility, 'setSegmentationRepresentationVisibility');
+
+      service.toggleSegmentationRepresentationVisibility(viewportId, {
+        segmentationId: representations[0].segmentationId,
+        type: representations[0].type,
+      });
+
+      expect(console.debug).toHaveBeenCalledTimes(1);
+      expect(console.debug).toHaveBeenCalledWith(
+        'No segmentation representation found for the given viewportId and segmentationId'
+      );
+
+      expect(
+        cstSegmentation.config.visibility.setSegmentationRepresentationVisibility
+      ).not.toHaveBeenCalled();
     });
   });
 
