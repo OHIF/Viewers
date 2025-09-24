@@ -1,4 +1,5 @@
 import OHIF from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
 import dcmjs from 'dcmjs';
 import { dicomWebUtils } from '@ohif/extension-default';
@@ -16,6 +17,7 @@ const SOPClassHandlerId =
   '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler';
 
 function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+  const dataSource = extensionManager.getActiveDataSource()[0];
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -30,22 +32,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     if (framesI < currentFrames) {
       singleFrameInstance = instanceI;
       currentFrames = framesI;
-    }
-  }
-  let imageIdForThumbnail = null;
-  const dataSource = extensionManager.getActiveDataSource()[0];
-  if (singleFrameInstance) {
-    if (currentFrames == 1) {
-      // Not all DICOM server implementations support thumbnail service,
-      // So if we have a single-frame image, we will prefer it.
-      imageIdForThumbnail = singleFrameInstance.imageId;
-    }
-    if (!imageIdForThumbnail) {
-      // use the thumbnail service provided by DICOM server
-      imageIdForThumbnail = dataSource.getImageIdsForInstance({
-        instance: singleFrameInstance,
-        thumbnail: true,
-      });
     }
   }
 
@@ -107,11 +93,15 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     instance,
     numImageFrames: 0,
     numInstances: 1,
-    imageIdForThumbnail, // thumbnail image
     others: instances, // all other level instances in the image Pyramid
     instances,
     othersFrameOfReferenceUID,
     imageIds: instances.map(instance => instance.imageId),
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(
+      singleFrameInstance,
+      singleFrameInstance.imageId
+    ),
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SM')}`,
   };
   // The microscopy viewer directly accesses the metadata already loaded, and
   // uses the DICOMweb client library directly for loading, so it has to be

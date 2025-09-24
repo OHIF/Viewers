@@ -10,31 +10,35 @@ const cornerstone = {
   activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
-const defaultButtons = [
-  {
-    buttonSection: 'primary',
-    buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
-  },
-  {
-    buttonSection: 'measurementSection',
-    buttons: ['Length', 'Bidirectional', 'ArrowAnnotate', 'EllipticalROI'],
-  },
-];
+function getDefaultButtons({ toolbarService }) {
+  return [
+    {
+      buttonSection: toolbarService.sections.primary,
+      buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
+    },
+    {
+      buttonSection: 'MeasurementTools',
+      buttons: ['Length', 'Bidirectional', 'ArrowAnnotate', 'EllipticalROI'],
+    },
+  ];
+}
 
-const ROIThresholdToolbox = [
-  {
-    buttonSection: 'dynamic-toolbox',
-    buttons: ['SegmentationTools'],
-  },
-  {
-    buttonSection: 'segmentationToolboxToolsSection',
-    buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
-  },
-  {
-    buttonSection: 'brushToolsSection',
-    buttons: ['Brush', 'Eraser', 'Threshold'],
-  },
-];
+function getROIThresholdToolbox({ toolbarService }) {
+  return [
+    {
+      buttonSection: toolbarService.sections.dynamicToolbox,
+      buttons: ['SegmentationTools'],
+    },
+    {
+      buttonSection: 'SegmentationTools',
+      buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
+    },
+    {
+      buttonSection: 'BrushTools',
+      buttons: ['Brush', 'Eraser', 'Threshold'],
+    },
+  ];
+}
 
 const defaultLeftPanel = [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]];
 
@@ -46,6 +50,10 @@ const defaultLayout = {
 };
 
 function getWorkflowSettings({ servicesManager }) {
+  const { toolbarService } = servicesManager.services;
+  const defaultButtons = getDefaultButtons({ toolbarService });
+  const ROIThresholdToolbox = getROIThresholdToolbox({ toolbarService });
+
   return {
     steps: [
       {

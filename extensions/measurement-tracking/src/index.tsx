@@ -1,17 +1,16 @@
-import React from 'react';
-
 import getContextModule from './getContextModule';
 import getPanelModule from './getPanelModule';
 import getViewportModule from './getViewportModule';
 import { id } from './id.js';
-import { ViewportActionButton } from '@ohif/ui-next';
-import i18n from '@ohif/i18n';
 import { measurementTrackingMode } from './contexts/TrackedMeasurementsContext/promptBeginTracking';
 import getCustomizationModule from './getCustomizationModule';
 import {
   onDoubleClickHandler,
   customOnDropHandlerCallback,
 } from './customizations/studyBrowserCustomization';
+import { TrackedMeasurementsService } from './services';
+// Import types to ensure they're included in the build
+import './types';
 
 const measurementTrackingExtension = {
   /**
@@ -23,8 +22,25 @@ const measurementTrackingExtension = {
   getPanelModule,
   getViewportModule,
 
+  /**
+   * Service configuration
+   */
+  preRegistration({ servicesManager }) {
+    servicesManager.registerService(TrackedMeasurementsService.REGISTRATION);
+  },
+
   onModeEnter({ servicesManager }) {
-    const { toolbarService, customizationService } = servicesManager.services;
+    const { customizationService, toolbarService, trackedMeasurementsService } =
+      servicesManager.services;
+
+    toolbarService.registerEventForToolbarUpdate(trackedMeasurementsService, [
+      trackedMeasurementsService.EVENTS.TRACKED_SERIES_CHANGED,
+      trackedMeasurementsService.EVENTS.SERIES_ADDED,
+      trackedMeasurementsService.EVENTS.SERIES_REMOVED,
+      trackedMeasurementsService.EVENTS.TRACKING_ENABLED,
+      trackedMeasurementsService.EVENTS.TRACKING_DISABLED,
+    ]);
+
     customizationService.setCustomizations({
       'studyBrowser.thumbnailDoubleClickCallback': {
         $set: onDoubleClickHandler,
@@ -33,23 +49,6 @@ const measurementTrackingExtension = {
         $set: customOnDropHandlerCallback,
       },
     });
-    toolbarService.addButtons(
-      [
-        {
-          // A button for loading tracked, SR measurements.
-          // Note that the command run is registered in TrackedMeasurementsContext
-          // because it must be bound to a React context's data.
-          id: 'loadSRMeasurements',
-          component: props => (
-            <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
-          ),
-          props: {
-            commands: ['loadTrackedSRMeasurements'],
-          },
-        },
-      ],
-      true // replace the button if it is already defined
-    );
   },
   getCustomizationModule,
 };

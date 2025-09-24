@@ -9,12 +9,19 @@ export function setupSegmentationDataModifiedHandler({
   customizationService,
   commandsManager,
 }) {
-  const { unsubscribe } = segmentationService.subscribeDebounced(
+  // A flag to indicate if the event is unsubscribed to. This is important because
+  // the debounced callback does an await and in that period of time the event may have
+  // been unsubscribed.
+  let isUnsubscribed = false;
+  const { unsubscribe: debouncedUnsubscribe } = segmentationService.subscribeDebounced(
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
     async ({ segmentationId }) => {
+
+      const disableUpdateSegmentationStats = customizationService.getCustomization('panelSegmentation.disableUpdateSegmentationStats');
+
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
-      if (!segmentation) {
+      if (!segmentation || disableUpdateSegmentationStats) {
         return;
       }
 
@@ -42,7 +49,7 @@ export function setupSegmentationDataModifiedHandler({
         readableText,
       });
 
-      if (updatedSegmentation) {
+      if (!isUnsubscribed && updatedSegmentation) {
         segmentationService.addOrUpdateSegmentation({
           segmentationId,
           segments: updatedSegmentation.segments,
@@ -52,6 +59,10 @@ export function setupSegmentationDataModifiedHandler({
     1000
   );
 
+  const unsubscribe = () => {
+    isUnsubscribed = true;
+    debouncedUnsubscribe();
+  };
   return { unsubscribe };
 }
 

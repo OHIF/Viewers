@@ -11,18 +11,22 @@
 .ViewportOrientationMarkers .top-mid {
   top: 0.38rem;
   left: 50%;
+  transform: translateX(-50%);
 }
 .ViewportOrientationMarkers .left-mid {
-  top: 47%;
+  top: 50%;
   left: 0.38rem;
+  transform: translateY(-50%);
 }
 .ViewportOrientationMarkers .right-mid {
-  top: 47%;
+  top: 50%;
   left: calc(100% - var(--marker-width) - var(--scrollbar-width));
+  transform: translateY(-50%);
 }
 .ViewportOrientationMarkers .bottom-mid {
   top: calc(100% - var(--marker-height) - 0.6rem);
-  left: 47%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .ViewportOrientationMarkers .right-mid .orientation-marker-value {
   display: flex;

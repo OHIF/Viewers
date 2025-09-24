@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState, ReactElement, useMemo } from '
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { PanelSection, WindowLevel } from '@ohif/ui-next';
-import { Enums, eventTarget } from '@cornerstonejs/core';
+import { BaseVolumeViewport, Enums, eventTarget } from '@cornerstonejs/core';
 import { useActiveViewportDisplaySets } from '@ohif/core';
 import {
   getNodeOpacity,
@@ -22,7 +22,7 @@ const ViewportWindowLevel = ({
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const displaySets = useActiveViewportDisplaySets({ servicesManager });
+  const displaySets = useActiveViewportDisplaySets();
 
   const getViewportsWithVolumeIds = useCallback(
     (volumeIds: string[]) => {
@@ -30,7 +30,7 @@ const ViewportWindowLevel = ({
       const viewports = renderingEngine.getVolumeViewports();
 
       return viewports.filter(vp => {
-        const viewportVolumeIds = vp.getActors().map(actor => actor.referencedId);
+        const viewportVolumeIds = vp instanceof BaseVolumeViewport ? vp.getAllVolumeIds() : [];
         return (
           volumeIds.length === viewportVolumeIds.length &&
           volumeIds.every(volumeId => viewportVolumeIds.includes(volumeId))
@@ -124,7 +124,8 @@ const ViewportWindowLevel = ({
         return;
       }
 
-      const viewportVolumeIds = viewport.getActors().map(actor => actor.referencedId);
+      const viewportVolumeIds =
+        viewport instanceof BaseVolumeViewport ? viewport.getAllVolumeIds() : [];
       const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
 
       viewports.forEach(vp => {

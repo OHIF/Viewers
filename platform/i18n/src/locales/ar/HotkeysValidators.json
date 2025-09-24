@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "لا يمكن ترك الحقل فارغًا",
+  "Hotkey is already in use": "اختصار \"{{pressedKeys}}\" مستخدم بالفعل في \"{{action}}\".",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "لا يمكن تعريف مفاتيح التعديل فقط (ctrl، alt و shift) كاختصار",
+  "Shortcut combination is not allowed": "تركيبة الاختصار {{pressedKeys}} غير مسموح بها"
+}

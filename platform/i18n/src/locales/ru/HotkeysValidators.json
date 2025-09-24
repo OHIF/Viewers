@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "Поле не может быть пустым",
+  "Hotkey is already in use": "\"{{action}}\" уже задано для комбинации клавиш \"{{pressedKeys}}\".",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "Нельзя задать для комбинации клавиш только одну модифицирующую клавишу (ctrl, alt и shift)",
+  "Shortcut combination is not allowed": "{{pressedKeys}} - эту комбинацию клавиш использовать нельзя."
+}

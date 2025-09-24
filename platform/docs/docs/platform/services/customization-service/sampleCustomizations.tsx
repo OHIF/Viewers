@@ -23,7 +23,6 @@ import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
-import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
 import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
 import captureViewportModal from '../../../assets/img/captureViewportModal.png';
 import aboutModal from '../../../assets/img/aboutModal.png';
@@ -912,56 +911,6 @@ window.config = {
         `,
   },
   {
-    id: 'viewportActionMenu.windowLevelActionMenu',
-    description:
-      'Configures the display and location of the window level action menu in the viewport.',
-    image: windowLevelActionMenu,
-    default: null,
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportActionMenu.windowLevelActionMenu': {
-              $merge: {
-               location: 0, // Set the location of the menu in the viewport.
-                            // 0: topLeft
-                            // 1: topRight
-                            // 2: bottomLeft
-                            // 3: bottomRight
-              }
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
-    id: 'viewportActionMenu.segmentationOverlay',
-    description: 'Configures the display and location of the segmentation overlay in the viewport.',
-    image: segmentationOverlay,
-    default: null,
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'viewportActionMenu.segmentationOverlay': {
-               $merge: {
-                 enabled: true,
-                 location: 1, // Set the location of the overlay in the viewport.
-                              // 0: topLeft
-                              // 1: topRight
-                              // 2: bottomLeft
-                              // 3: bottomRight
-               }
-            },
-          },
-        ],
-      };
-        `,
-  },
-  {
     id: 'viewportNotification.beginTrackingMessage',
     description: 'Define the content to be displayed in begin tracking prompt',
     default: 'Track measurements for this series?',
@@ -1358,6 +1307,53 @@ window.config = {
     {
       'panelSegmentation.disableEditing': {
         $set: true, // Disables editing of segmentations in the panel
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'panelSegmentation.disableUpdateSegmentationStats',
+    description: 'Disables the automatic update of segmentation statistics in the panel.',
+    default: false,
+    image: [],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'panelSegmentation.disableUpdateSegmentationStats': {
+        $set: true, // Disables the automatic update of segmentation statistics in the panel
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'panelSegmentation.jumpToSegmentHighlightAnimationConfig',
+    description:
+      'Customize the highlight animation when clicking on a segment at the segmentation panel and jumping to it.',
+    default: {
+      highlightAlpha: 0.9,
+      highlightSegment: true,
+      animationLength: 750,
+      animationFunctionType: 'ease-in-out',
+    },
+    image: [],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'panelSegmentation.jumpToSegmentHighlightAnimationConfig': {
+        $set: {
+          highlightAlpha: 1.0,
+          highlightSegment: true,
+          animationLength: 900,
+          animationFunctionType: 'linear', // one of 'ease-in-out', 'ease-in', 'ease-out', 'ease', 'linear'
+        },
       },
     },
   ],
@@ -1869,6 +1865,31 @@ window.config = {
                 };
         },
     }],
+};
+  `,
+  },
+  {
+    id: 'instanceSortingCriteria',
+    description: 'Defines the instance sorting criteria to sort the images',
+    default: `{
+    sortFunctions: {},
+    defaultSortFunctionName: '',
+  }`,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+   {
+      'instanceSortingCriteria': {
+        $set: {
+          sortFunctions: {
+            sort: (a, b) => {}
+          },
+          defaultSortFunctionName: 'sort',
+        },
+      },
+    }
+  ],
 };
   `,
   },

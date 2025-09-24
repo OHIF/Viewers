@@ -1,4 +1,7 @@
+import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
+import calculateScanAxisNormal from './calculateScanAxisNormal';
+import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 
 const compareSeriesDateTime = (a, b) => {
   const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
@@ -41,8 +44,23 @@ const seriesSortCriteria = {
   seriesInfoSortingCriteria,
 };
 
+const sortByInstanceNumber = (a, b) => {
+  // Sort by InstanceNumber (0020,0013)
+  const aInstance = parseInt(a.InstanceNumber) || 0;
+  const bInstance = parseInt(b.InstanceNumber) || 0;
+  if (aInstance !== bInstance) {
+    return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+  }
+  // Fallback rule to enable consistent sorting
+  if (a.SOPInstanceUID === b.SOPInstanceUID) {
+    return 0;
+  }
+  return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
+};
+
 const instancesSortCriteria = {
-  default: (a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber),
+  default: sortByInstanceNumber,
+  sortByInstanceNumber,
 };
 
 const sortingCriteria = {
@@ -116,4 +134,67 @@ export default function sortStudy(
   return study;
 }
 
-export { sortStudy, sortStudySeries, sortStudyInstances, sortingCriteria, seriesSortCriteria };
+function isValidForPositionSort(images): boolean {
+  if (images.length <= 1) {
+    return false; // No need to sort if there's only one image
+  }
+
+  // Use the first image as a reference
+  const referenceImagePositionPatient = images[0].ImagePositionPatient;
+  const imageOrientationPatient = images[0].ImageOrientationPatient;
+
+  if (!referenceImagePositionPatient || !imageOrientationPatient) {
+    return false;
+  }
+
+  if (!areAllImageOrientationsEqual(images)) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Sort by image position, calculated using imageOrientationPatient and ImagePositionPatient
+ * If imageOrientationPatient or ImagePositionPatient is not available, Images will be sorted by the provided sortingCriteria
+ * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+ *
+ * @returns images - reference to images after sorting
+ */
+const sortImagesByPatientPosition = images => {
+  const referenceImagePositionPatient = images[0].ImagePositionPatient;
+  const imageOrientationPatient = images[0].ImageOrientationPatient;
+
+  // Calculate the scan axis normal using the cross product
+  const scanAxisNormal = calculateScanAxisNormal(imageOrientationPatient);
+
+  // Compute distances from each image to the reference image
+  const distanceInstancePairs = images.map(image => {
+    const imagePositionPatient = image.ImagePositionPatient;
+    const deltaVector = vec3.create();
+    const distance = vec3.dot(
+      scanAxisNormal,
+      vec3.subtract(deltaVector, imagePositionPatient, referenceImagePositionPatient)
+    );
+    return { distance, image };
+  });
+  // Sort images based on the computed distances
+  distanceInstancePairs.sort((a, b) => b.distance - a.distance);
+  // Reorder the images in the original array
+  for (const [index, item] of distanceInstancePairs.entries()) {
+    images[index] = item.image;
+  }
+
+  return images;
+};
+
+export {
+  sortStudy,
+  sortStudySeries,
+  sortStudyInstances,
+  sortingCriteria,
+  seriesSortCriteria,
+  instancesSortCriteria,
+  isValidForPositionSort,
+  sortImagesByPatientPosition,
+};

@@ -27,7 +27,7 @@ export const EVENTS = {
             sections: [
               {
                 key: 'primary',
-                buttons: [ 'measurementSection', 'Zoom', ... ],
+                buttons: [ 'MeasurementTools', 'Zoom', ... ],
               },
             ],
           },
@@ -137,7 +137,7 @@ class WorkflowStepsService extends PubSubService {
 
     toUse.forEach(({ buttonSection, buttons }) => {
       toolbarService.clearButtonSection(buttonSection);
-      toolbarService.createButtonSection(buttonSection, buttons);
+      toolbarService.updateSection(buttonSection, buttons);
     });
   }
 

@@ -8,26 +8,29 @@
  * and geometry Id
  */
 export function mapROIContoursToRTStructData(structureSet: unknown, rtDisplaySetUID: unknown) {
-  return structureSet.ROIContours.map(({ contourPoints, ROINumber, ROIName, colorArray }) => {
-    const data = contourPoints.map(({ points, ...rest }) => {
-      const newPoints = points.map(({ x, y, z }) => {
-        return [x, y, z];
+  return structureSet.ROIContours.map(
+    ({ contourPoints, ROINumber, ROIName, colorArray, ROIGroup }) => {
+      const data = contourPoints.map(({ points, ...rest }) => {
+        const newPoints = points.map(({ x, y, z }) => {
+          return [x, y, z];
+        });
+
+        return {
+          ...rest,
+          points: newPoints,
+        };
       });
 
+      const id = ROIName || ROINumber;
+
       return {
-        ...rest,
-        points: newPoints,
+        data,
+        id,
+        segmentIndex: ROINumber,
+        color: colorArray,
+        group: ROIGroup,
+        geometryId: `${rtDisplaySetUID}:${id}:segmentIndex-${ROINumber}`,
       };
-    });
-
-    const id = ROIName || ROINumber;
-
-    return {
-      data,
-      id,
-      segmentIndex: ROINumber,
-      color: colorArray,
-      geometryId: `${rtDisplaySetUID}:${id}:segmentIndex-${ROINumber}`,
-    };
-  });
+    }
+  );
 }

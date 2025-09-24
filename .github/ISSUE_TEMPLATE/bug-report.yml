@@ -51,28 +51,29 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: os
+  - type: textarea
+    id: system_info
     attributes:
-      label: 'OS'
-      description: 'Your operating system.'
-      placeholder: 'e.g., Windows 10, macOS 10.15.4'
-    validations:
-      required: true
-  - type: input
-    id: node-version
-    attributes:
-      label: 'Node version'
-      description: 'Your Node.js version.'
-      placeholder: 'e.g., 20.18.1'
-    validations:
-      required: true
-  - type: input
-    id: browser
-    attributes:
-      label: 'Browser'
-      description: 'Your browser.'
-      placeholder: 'e.g., Chrome 83.0.4103.116, Firefox 77.0.1, Safari 13.1.1'
+      label: 'System Information'
+      description: 'Please run the following command in your terminal and paste the output:'
+      placeholder: |
+        Run: npx envinfo --system --binaries --browsers
+        
+        Then paste the output here. It should look something like:
+        
+        System:
+          OS: Windows 10 10.0.19042
+          CPU: (8) x64 Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+          Memory: 15.89 GB / 31.74 GB
+          Shell: 1.0.0 - C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+        Binaries:
+          Node: 20.18.1 - C:\Program Files\nodejs\node.EXE
+          Yarn: 1.22.22 - C:\Users\user\AppData\Roaming\npm\yarn.CMD
+          npm: 10.8.2 - C:\Program Files\nodejs\npm.CMD
+        Browsers:
+          Chrome: 83.0.4103.116
+          Edge: Spartan (44.19041.1266.0), Chromium (83.0.478.58)
+          Firefox: 77.0.1
     validations:
       required: true
 

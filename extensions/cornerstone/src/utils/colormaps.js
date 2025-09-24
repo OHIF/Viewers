@@ -15,6 +15,15 @@ const colormaps = [
   },
   {
     ColorSpace: 'RGB',
+    Name: 'Isodose',
+    NanColor: [1, 0, 0],
+    RGBPoints: [
+      0, 0, 1, 0, 0.1, 0.5, 1, 0, 0.2, 1, 1, 0, 0.3, 1, 0.66, 0, 0.4, 1, 0.33, 0, 0.5, 1, 0, 0,
+    ],
+    description: 'Isodose',
+  },
+  {
+    ColorSpace: 'RGB',
     Name: 'hsv',
     RGBPoints: [
       -1, 1, 0, 0, -0.666666, 1, 0, 1, -0.333333, 0, 0, 1, 0, 0, 1, 1, 0.33333, 0, 1, 0, 0.66666, 1,

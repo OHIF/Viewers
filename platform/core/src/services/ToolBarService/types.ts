@@ -1,6 +1,20 @@
 import type { RunCommand } from '../../types/Command';
 import React from 'react';
 
+/**
+ * Type definitions for toolbar sections
+ */
+export type ToolbarSections = {
+  primary: string;
+  secondary: string;
+  viewportActionMenu: {
+    topLeft: string;
+    topRight: string;
+    bottomLeft: string;
+    bottomRight: string;
+  };
+};
+
 export type EvaluatePublic =
   | string
   | EvaluateFunction
@@ -43,7 +57,7 @@ export type ButtonProps = {
   evaluate?: EvaluatePublic;
   listeners?: Record<string, RunCommand>;
   options?: ButtonOptions[];
-  buttonSection?: string;
+  buttonSection?: string | boolean;
 };
 
 export type Button = {

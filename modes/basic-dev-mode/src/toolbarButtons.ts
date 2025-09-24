@@ -11,19 +11,17 @@ export const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   // sections
   {
-    id: 'measurementSection',
+    id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'measurementSection',
-      groupId: 'measurementSection',
+      buttonSection: true,
     },
   },
   {
     id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'moreToolsSection',
-      groupId: 'MoreTools',
+      buttonSection: true,
     },
   },
 

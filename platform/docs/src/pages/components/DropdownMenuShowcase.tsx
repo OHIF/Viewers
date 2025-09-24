@@ -18,7 +18,7 @@ export default function DropdownMenuShowcase() {
       description="Dropdown menu provides a flexible list of options that can open from buttons or other elements"
       code={`
 <DropdownMenu>
-  <DropdownMenuTrigger>
+  <DropdownMenuTrigger asChild>
     <Button>Open Basic</Button>
   </DropdownMenuTrigger>
   <DropdownMenuContent>

@@ -17,7 +17,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'border-input text-foreground ring-offset-background placeholder:text-muted-foreground focus:ring-ring [&>span]:line-clamp-1 hover:bg-primary/10 flex h-7 w-full items-center justify-between whitespace-nowrap rounded border bg-transparent px-2 py-2 text-base shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
+      'border-input text-foreground ring-offset-background placeholder:text-muted-foreground focus:ring-ring hover:bg-primary/10 flex h-7 w-full min-w-0 items-center justify-between rounded border bg-transparent px-2 py-2 text-base shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate',
       className
     )}
     {...props}
@@ -119,7 +119,13 @@ const SelectItem = React.forwardRef<
         <CheckIcon className="h-4 w-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    {typeof children === 'string' ? (
+      <SelectPrimitive.ItemText>
+        <span className="truncate">{children}</span>
+      </SelectPrimitive.ItemText>
+    ) : (
+      children
+    )}
   </SelectPrimitive.Item>
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;

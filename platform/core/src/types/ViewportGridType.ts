@@ -45,10 +45,6 @@ export interface ViewportGridState {
   activeViewportId: string | null;
   layout: Layout;
   isHangingProtocolLayout: boolean;
-  isReferenceViewable: (props: {
-    viewportId: string;
-    reference: Record<string, unknown>;
-  }) => boolean;
   viewports: GridViewports;
 }
 

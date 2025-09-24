@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useViewportRef } from '@ohif/core';
 import './OHIFCornerstonePdfViewport.css';
 
-function OHIFCornerstonePdfViewport({ displaySets }) {
+function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }) {
   const [url, setUrl] = useState(null);
+  const viewportElementRef = useRef(null);
+  const viewportRef = useViewportRef(viewportId);
 
   useEffect(() => {
     document.body.addEventListener('drag', makePdfDropTarget);
     return function cleanup() {
       document.body.removeEventListener('drag', makePdfDropTarget);
+      viewportRef.unregister();
     };
   }, []);
 
@@ -28,20 +32,25 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
     );
   }
 
-  const { pdfUrl } = displaySets[0];
+  const { renderedUrl } = displaySets[0];
 
   useEffect(() => {
     const load = async () => {
-      setUrl(await pdfUrl);
+      setUrl(await renderedUrl);
     };
 
     load();
-  }, [pdfUrl]);
+  }, [renderedUrl]);
 
   return (
     <div
       className="bg-primary-black h-full w-full text-white"
       onClick={makePdfScrollable}
+      ref={el => {
+        viewportElementRef.current = el;
+        if (el) viewportRef.register(el);
+      }}
+      data-viewport-id={viewportId}
     >
       <object
         data={url}
@@ -56,6 +65,7 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
 
 OHIFCornerstonePdfViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  viewportId: PropTypes.string,
 };
 
 export default OHIFCornerstonePdfViewport;

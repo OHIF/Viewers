@@ -22,11 +22,7 @@ test.describe('3D main Test', async () => {
       .first()
       .click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await checkForScreenshot(
-      page,
-      page,
-      screenShotPaths.threeDMain.threeDMainDisplayedCorrectly,
-      200
-    );
+    await page.waitForTimeout(5000);
+    await checkForScreenshot(page, page, screenShotPaths.threeDMain.threeDMainDisplayedCorrectly);
   });
 });

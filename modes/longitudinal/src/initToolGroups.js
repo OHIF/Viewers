@@ -31,11 +31,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -87,9 +87,6 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     enabled: [
       { toolName: toolNames.ImageOverlayViewer },
       { toolName: toolNames.ReferenceLines },
-      {
-        toolName: SRToolNames.SRSCOORD3DPoint,
-      },
     ],
     disabled: [
       {
@@ -98,7 +95,9 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
     ],
   };
 
-  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
+  const updatedTools = commandsManager.run('initializeSegmentLabelTool', { tools });
+
+  toolGroupService.createToolGroupAndAddTools(toolGroupId, updatedTools);
 }
 
 function initSRToolGroup(extensionManager, toolGroupService) {
@@ -140,11 +139,12 @@ function initSRToolGroup(extensionManager, toolGroupService) {
           {
             mouseButton: Enums.MouseBindings.Secondary,
           },
+          { numTouchPoints: 2 },
         ],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -191,11 +191,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
-        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -293,11 +293,11 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }, { numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }, { numTouchPoints: 3 }],
       },
     ],
   };

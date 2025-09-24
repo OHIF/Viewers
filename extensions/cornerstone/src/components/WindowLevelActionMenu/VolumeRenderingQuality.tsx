@@ -1,13 +1,13 @@
 import React, { ReactElement, useCallback, useState, useEffect } from 'react';
 import { VolumeRenderingQualityProps } from '../../types/ViewportPresets';
 import { Numeric } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 
 export function VolumeRenderingQuality({
   volumeRenderingQualityRange,
-  commandsManager,
-  servicesManager,
   viewportId,
 }: VolumeRenderingQualityProps): ReactElement {
+  const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const { min, max, step } = volumeRenderingQualityRange;
   const [quality, setQuality] = useState(null);

@@ -362,7 +362,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         }
 
         const referencedVolume =
-          csTools.utilities.segmentation.getReferenceVolumeForSegmentationVolume(segmentationId);
+          csTools.utilities.segmentation.getReferenceVolumeForSegmentationVolume(
+            labelmapVolume.volumeId
+          );
 
         if (!referencedVolume) {
           report[id] = segReport;

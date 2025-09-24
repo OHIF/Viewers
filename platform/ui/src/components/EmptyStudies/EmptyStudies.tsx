@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
 import { Icons } from '@ohif/ui-next';
-// TODO: Add loading spinner to OHIF + use it here.
+
 const EmptyStudies = ({ className = '' }) => {
   const { t } = useTranslation('StudyList');
   return (

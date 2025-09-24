@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { CommandsManager } from '@ohif/core';
 
-import { LayoutSelector } from '../../../../platform/ui-next/src/components/LayoutSelector';
+import { LayoutSelector } from '@ohif/ui-next';
 
 function ToolbarLayoutSelectorWithServices({
   commandsManager,

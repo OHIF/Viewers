@@ -141,7 +141,6 @@ const ToolButtonListItem = React.forwardRef<
   ToolButtonListItemProps
 >(({ className, children, icon, disabledText, tooltip, disabled, ...props }, ref) => {
   const defaultTooltip = tooltip || (typeof children === 'string' ? children : undefined);
-  const hasTooltip = defaultTooltip || disabledText;
 
   const menuItem = (
     <DropdownMenuItem

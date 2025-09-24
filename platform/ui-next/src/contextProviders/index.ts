@@ -20,3 +20,4 @@ export { UserAuthenticationProvider, useUserAuthentication };
 export { ImageViewerContext, ImageViewerProvider, useImageViewer };
 export { DragAndDropProvider };
 export { CineProvider, useCine };
+export { IconPresentationProvider, useIconPresentation } from './IconPresentationProvider';

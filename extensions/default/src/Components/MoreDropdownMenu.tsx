@@ -7,17 +7,14 @@ import {
   Icons,
   Button,
 } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 
 /**
  * The default sub-menu appearance and setup is defined here, but this can be
  * replaced by
  */
-const getMenuItemsDefault = ({
-  commandsManager,
-  items,
-  servicesManager,
-  ...props
-}: withAppTypes) => {
+const getMenuItemsDefault = ({ commandsManager, items, ...props }: withAppTypes) => {
+  const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   // This allows replacing the default child item for menus, whereas the entire
@@ -36,7 +33,7 @@ const getMenuItemsDefault = ({
       onClick: ({ commandsManager, ...props }: withAppTypes) => () => void;
     };
   }) => (
-    <DropdownMenuItem onClick={() => item.onClick({ commandsManager, ...props })}>
+    <DropdownMenuItem onClick={() => item.onClick({ commandsManager, servicesManager, ...props })}>
       <div className="flex items-center gap-2">
         {item.iconName && <Icons.ByName name={item.iconName} />}
         <span>{item.label}</span>
@@ -44,7 +41,7 @@ const getMenuItemsDefault = ({
     </DropdownMenuItem>
   );
 
-  const MenuItemComponent = menuContent?.content || DefaultMenuItem;
+  const MenuItemComponent = menuContent ?? DefaultMenuItem;
 
   return (
     <DropdownMenuContent
@@ -76,12 +73,8 @@ const getMenuItemsDefault = ({
  * @returns Component bound to the bindProps
  */
 export default function MoreDropdownMenu(bindProps) {
-  const {
-    menuItemsKey,
-    getMenuItems = getMenuItemsDefault,
-    commandsManager,
-    servicesManager,
-  } = bindProps;
+  const { menuItemsKey, getMenuItems = getMenuItemsDefault, commandsManager } = bindProps;
+  const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   const items = customizationService.getCustomization(menuItemsKey);

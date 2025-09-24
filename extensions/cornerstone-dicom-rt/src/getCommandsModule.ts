@@ -27,7 +27,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       // it will be in the correct position zoom and pan
       commandsManager.runCommand('updateStoredPositionPresentation', {
         viewportId,
-        displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
+        displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
       });
 
       viewportGridService.setDisplaySetsForViewport({

@@ -61,6 +61,10 @@
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-ultrasound-pleura-bline",
+      "version": "3.0.0"
     }
   ],
   "modes": [
@@ -88,6 +92,10 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/mode-ultrasound-pleura-bline",
+      "version": "3.0.0"
     }
   ],
   "public": [
@@ -96,9 +104,10 @@
     },
     {
       "packageName": "dicom-microscopy-viewer",
-      "importPath": "/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
+      "importPath": "dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
       "globalName": "dicomMicroscopyViewer",
-      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import"
+      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
+      "to": "/dicom-microscopy-viewer/"
     }
   ]
 }

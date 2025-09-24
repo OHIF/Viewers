@@ -84,7 +84,7 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
  * @param options.debounceTime - Debounce time in milliseconds for updates.
  * @returns An array of segmentation data.
  */
-export function useSegmentations(options: {
+export function useSegmentations(options?: {
   subscribeToDataModified?: boolean;
   debounceTime?: number;
 }): SegmentationData[] {

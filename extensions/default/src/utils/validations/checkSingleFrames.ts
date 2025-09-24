@@ -1,9 +1,10 @@
 import areAllImageDimensionsEqual from './areAllImageDimensionsEqual';
 import areAllImageComponentsEqual from './areAllImageComponentsEqual';
-import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 import areAllImagePositionsEqual from './areAllImagePositionsEqual';
 import areAllImageSpacingEqual from './areAllImageSpacingEqual';
-import { DisplaySetMessage, DisplaySetMessageList } from '@ohif/core';
+import { DisplaySetMessage, DisplaySetMessageList, utils } from '@ohif/core';
+
+const { areAllImageOrientationsEqual } = utils;
 
 /**
  * Runs various checks in a single frame series

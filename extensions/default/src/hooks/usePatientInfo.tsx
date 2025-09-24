@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { utils } from '@ohif/core';
+import { utils, useSystem } from '@ohif/core';
 
 const { formatPN, formatDate } = utils;
 
-function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
+function usePatientInfo() {
+  const { servicesManager } = useSystem();
   const { displaySetService } = servicesManager.services;
 
   const [patientInfo, setPatientInfo] = useState({

@@ -125,6 +125,7 @@ const InputDialogInput = React.forwardRef<HTMLInputElement, InputDialogInputProp
         <InputComponent
           ref={inputRef}
           id={id}
+          data-cy={id}
           value={value}
           onChange={e => setValue(e.target.value)}
           onKeyDown={handleKeyDown}

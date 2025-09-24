@@ -48,3 +48,5 @@ export function useDynamicMaxHeight(
 
   return { ref, maxHeight };
 }
+
+export default useDynamicMaxHeight;

@@ -82,6 +82,7 @@
     "Reslices",
     "roadmap",
     "ROADMAPS",
+    "rtstruct",
     "Segmentations",
     "semibold",
     "sitk",
@@ -109,6 +110,8 @@
     "wado",
     "wadors",
     "wadouri",
-    "workerpool"
+    "workerpool",
+    "Colorbar",
+    "Colorbars"
   ]
 }

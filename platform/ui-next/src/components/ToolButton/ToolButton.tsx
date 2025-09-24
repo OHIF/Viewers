@@ -3,6 +3,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { Icons } from '../Icons';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
+import { useIconPresentation } from '../../contextProviders/IconPresentationProvider';
 
 const baseClasses = '!rounded-lg inline-flex items-center justify-center';
 const defaultClasses = 'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
@@ -19,6 +20,10 @@ const sizeClasses = {
     buttonSizeClass: 'w-8 h-8',
     iconSizeClass: 'h-6 w-6',
   },
+  tiny: {
+    buttonSizeClass: 'w-6 h-6',
+    iconSizeClass: 'h-4 w-4',
+  },
 };
 
 interface ToolButtonProps {
@@ -33,6 +38,7 @@ interface ToolButtonProps {
   commands?: Record<string, unknown>;
   onInteraction?: (details: { itemId: string; commands?: Record<string, unknown> }) => void;
   className?: string;
+  children?: React.ReactNode;
 }
 
 function ToolButton(props: ToolButtonProps) {
@@ -48,8 +54,10 @@ function ToolButton(props: ToolButtonProps) {
     commands,
     onInteraction,
     className,
+    children,
   } = props;
 
+  const { className: iconClassName } = useIconPresentation();
   const { buttonSizeClass, iconSizeClass } = sizeClasses[size] || sizeClasses.default;
 
   const buttonClasses = cn(
@@ -89,11 +97,14 @@ function ToolButton(props: ToolButtonProps) {
             size="icon"
             aria-label={defaultTooltip}
             disabled={disabled}
+            name={id}
           >
-            <Icons.ByName
-              name={icon}
-              className={iconSizeClass}
-            />
+            {children || (
+              <Icons.ByName
+                name={icon}
+                className={iconClassName || iconSizeClass}
+              />
+            )}
           </Button>
         </span>
       </TooltipTrigger>

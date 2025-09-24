@@ -1,4 +1,5 @@
-import { utils, classes, DisplaySetService, Types } from '@ohif/core';
+import { utils, classes, DisplaySetService, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -14,8 +15,12 @@ import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 
 const { sopClassDictionary } = utils;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-const { ImageSet, MetadataProvider: metadataProvider } = classes;
-const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
+const { MetadataProvider: metadataProvider } = classes;
+const {
+  TEXT_ANNOTATION_POSITION,
+  COMMENT_CODE,
+  CodeScheme: Cornerstone3DCodeScheme,
+} = adaptersSR.Cornerstone3D;
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -30,6 +35,7 @@ const sopClassUids = [
   sopClassDictionary.BasicTextSR,
   sopClassDictionary.EnhancedSR,
   sopClassDictionary.ComprehensiveSR,
+  sopClassDictionary.Comprehensive3DSR,
 ];
 
 const validateSameStudyUID = (uid: string, instances): void => {
@@ -48,7 +54,7 @@ const validateSameStudyUID = (uid: string, instances): void => {
  * @param instances is a list of instances from THIS series that are not
  *     in this DICOM SR Display Set already.
  */
-function addInstances(instances: InstanceMetadata[], displaySetService: DisplaySetService) {
+function addInstances(instances: InstanceMetadata[], _displaySetService: DisplaySetService) {
   this.instances.push(...instances);
   utils.sortStudyInstances(this.instances);
   // The last instance is the newest one, so is the one most interesting.
@@ -122,6 +128,7 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     addInstances,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };
 
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
@@ -214,6 +221,12 @@ async function _load(
   });
 }
 
+function _measurementBelongsToDisplaySet({ measurement, displaySet }) {
+  return (
+    measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.FrameOfReferenceUID
+  );
+}
+
 /**
  * Checks if measurements can be added to a display set.
  *
@@ -234,17 +247,9 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (
-    unloadedMeasurements.length === 0 ||
-    !(newDisplaySet instanceof ImageSet) ||
-    newDisplaySet.unsupported
-  ) {
+  if (!unloadedMeasurements.length || newDisplaySet.unsupported) {
     return;
   }
-
-  // const { sopClassUids } = newDisplaySet;
-  // Create a Set for faster lookups
-  // const sopClassUidSet = new Set(sopClassUids);
 
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
@@ -264,6 +269,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
+    const is3DMeasurement = measurement.coords?.[0]?.ValueType === 'SCOORD3D';
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
@@ -278,9 +284,17 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     // if it is 3d SR we can just add the SR annotation
-    if (is3DSR) {
+    if (
+      is3DSR &&
+      is3DMeasurement &&
+      _measurementBelongsToDisplaySet({ measurement, displaySet: newDisplaySet })
+    ) {
+      _measurementBelongsToDisplaySet({ measurement, displaySet: newDisplaySet })
+
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+      unloadedMeasurements.splice(j, 1);
       continue;
     }
 
@@ -354,7 +368,8 @@ function _measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frame
  * @param {Object} options.extensionManager - The extension manager.
  * @returns {Array} An array containing the SOP class handler module.
  */
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
@@ -466,11 +481,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups
  * @returns {any} - The processed measurement result.
  */
 function _processMeasurement(mergedContentSequence) {
-  if (
-    mergedContentSequence.some(
-      group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
-    )
-  ) {
+  if (mergedContentSequence.some(group => isScoordOr3d(group) && !isTextPosition(group))) {
     return _processTID1410Measurement(mergedContentSequence);
   }
 
@@ -508,12 +519,25 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
+  const { ConceptNameCodeSequence: conceptNameItem } = graphicItem;
+  const { CodeValue: graphicValue, CodingSchemeDesignator: graphicDesignator } = conceptNameItem;
+  const graphicCode = `${graphicDesignator}:${graphicValue}`;
+
+  const pointDataItem = _getCoordsFromSCOORDOrSCOORD3D(graphicItem);
+  const is3DMeasurement = pointDataItem.ValueType === 'SCOORD3D';
+  const pointLength = is3DMeasurement ? 3 : 2;
+  const pointsLength = pointDataItem.GraphicData.length / pointLength;
+
   const measurement = {
     loaded: false,
     labels: [],
-    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+    coords: [pointDataItem],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
+    graphicCode,
+    is3DMeasurement,
+    pointsLength,
+    graphicType: pointDataItem.GraphicType,
   };
 
   NUMContentItems.forEach(item => {
@@ -564,6 +588,12 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSite
   );
 
+  const commentSites = mergedContentSequence.filter(
+    item =>
+      item.ConceptNameCodeSequence.CodingSchemeDesignator === COMMENT_CODE.schemeDesignator &&
+      item.ConceptNameCodeSequence.CodeValue === COMMENT_CODE.value
+  );
+
   const measurement = {
     loaded: false,
     labels: [],
@@ -571,6 +601,14 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
+
+  if (commentSites) {
+    for (const group of commentSites) {
+      if (group.TextValue) {
+        measurement.labels.push({ label: group.TextValue, value: '' });
+      }
+    }
+  }
 
   if (
     finding &&
@@ -721,6 +759,19 @@ function _getSequenceAsArray(sequence) {
     return [];
   }
   return Array.isArray(sequence) ? sequence : [sequence];
+}
+
+function isScoordOr3d(group) {
+  return group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D';
+}
+
+function isTextPosition(group) {
+  const concept = group.ConceptNameCodeSequence[0];
+  return (
+    concept &&
+    concept.CodeValue === TEXT_ANNOTATION_POSITION.value &&
+    concept.CodingSchemeDesignator === TEXT_ANNOTATION_POSITION.schemeDesignator
+  );
 }
 
 export default getSopClassHandlerModule;

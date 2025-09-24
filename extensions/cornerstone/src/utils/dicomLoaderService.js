@@ -120,7 +120,7 @@ class DicomLoaderService {
     const imageInstance = getImageInstance(dataset);
 
     if (imageInstance) {
-      const imageId = getImageInstanceId(imageInstance);
+      let imageId = getImageInstanceId(imageInstance);
       let getDicomDataMethod = fetchIt;
       const loaderType = getImageLoaderType(imageId);
 

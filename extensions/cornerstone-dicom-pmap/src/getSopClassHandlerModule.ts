@@ -1,10 +1,9 @@
-import { utils } from '@ohif/core';
+import { utils, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { metaData, cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
 import { adaptersPMAP } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
-import { dicomLoaderService } from '@ohif/extension-cornerstone';
-
-const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
+import { dicomLoaderService, VOLUME_LOADER_SCHEME } from '@ohif/extension-cornerstone';
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.30'];
 
 function _getDisplaySetsFromSeries(
@@ -57,7 +56,8 @@ function _getDisplaySetsFromSeries(
     wadoRoot,
     wadoUriRoot,
     wadoUri,
-    isOverlayDisplaySet: true,
+    supportsWindowLevel: true,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('PMAP')}`,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -227,7 +227,8 @@ async function _loadParametricMap({ displaySet, headers }: withAppTypes) {
   return derivedVolume;
 }
 
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

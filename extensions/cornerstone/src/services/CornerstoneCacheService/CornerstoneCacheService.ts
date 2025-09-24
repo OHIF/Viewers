@@ -3,8 +3,7 @@ import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
-
-const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
+import { VOLUME_LOADER_SCHEME } from '../../constants';
 
 class CornerstoneCacheService {
   static REGISTRATION = {
@@ -108,7 +107,7 @@ class CornerstoneCacheService {
 
         volume.imageIds.forEach(imageId => {
           if (cs3DCache.getImageLoadObject(imageId)) {
-            cs3DCache.removeImageLoadObject(imageId);
+            cs3DCache.removeImageLoadObject(imageId, { force: true });
           }
         });
       }

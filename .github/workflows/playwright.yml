@@ -23,12 +23,25 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      # - name: Install Playwright browsers
-      #   run: bun x playwright install-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
           bun run test:e2e:coverage
+      - name: Create directory of test results
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p packaged-test-results
+          cp -r ./tests/test-results packaged-test-results/ || true
+          cp ./tests/playwright-report.json packaged-test-results/ || true
+      - name: Upload directory of test results artifact
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: packaged-test-results/
+          retention-days: 5
       - name: create the coverage report
         run: |
           bun nyc report --reporter=lcov --reporter=text

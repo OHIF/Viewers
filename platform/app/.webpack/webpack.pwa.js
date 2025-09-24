@@ -116,14 +116,6 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
-          // Copy Dicom Microscopy Viewer build files
-          {
-            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
-            to: DIST_DIR,
-            globOptions: {
-              ignore: ['**/*.min.js.map'],
-            },
-          },
         ],
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -160,15 +152,11 @@ module.exports = (env, argv) => {
       client: {
         overlay: { errors: true, warnings: false },
       },
-      proxy: {
-        '/dicomweb': 'http://localhost:5000',
-        '/dicom-microscopy-viewer': {
-          target: 'http://localhost:3000',
-          pathRewrite: {
-            '^/dicom-microscopy-viewer': `/${PUBLIC_URL}/dicom-microscopy-viewer`,
-          },
+      proxy: [
+        {
+          '/dicomweb': 'http://localhost:5000',
         },
-      },
+      ],
       static: [
         {
           directory: '../../testdata',

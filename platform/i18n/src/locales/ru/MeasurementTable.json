@@ -1,0 +1,18 @@
+{
+  "Criteria nonconformities": "Отклонения от критериев",
+  "Delete": "Удалить",
+  "Description": "Описание",
+  "MAX": "МАКС.",
+  "Measurements": "Измерения",
+  "No, do not ask again": "Нет, больше не спрашивать",
+  "NonTargets": "Нецелевые объекты",
+  "Relabel": "Изменить метку",
+  "Targets": "Целевые объекты",
+  "Track measurements for this series?": "Отслеживать измерения для этой серии?",
+  "Do you want to add this measurement to the existing report?": "Добавить это измерение в текущий отчёт?",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "У вас есть отслеживаемые измерения. Что бы вы хотели с ними сделать?",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "Измерения не могут быть распределены между несколькими исследованиями. Сохранить текущие измерения?",
+  "Do you want to continue tracking measurements for this study?": "Продолжить отслеживание измерений для этого исследования?",
+  "Do you want to open this Segmentation?": "Открыть эту сегментацию?",
+  "There are unsaved measurements. Do you want to save it?": "Есть несохранённые измерения. Сохранить их?"
+}

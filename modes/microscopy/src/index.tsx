@@ -47,10 +47,10 @@ function modeFactory({ modeConfiguration }) {
     onModeEnter: ({ servicesManager }: withAppTypes) => {
       const { toolbarService } = servicesManager.services;
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
+      toolbarService.register(toolbarButtons);
+      toolbarService.updateSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
 
-      toolbarService.createButtonSection('measurementSection', [
+      toolbarService.updateSection('MeasurementTools', [
         'line',
         'point',
         'polygon',
@@ -103,6 +103,7 @@ function modeFactory({ modeConfiguration }) {
                     // Share the sop class handler with cornerstone version of it
                     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
+                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler',
                   ],
                 },
                 {
@@ -124,6 +125,7 @@ function modeFactory({ modeConfiguration }) {
     sopClassHandlers: [
       '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
       '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
+      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler',
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,
     ],
