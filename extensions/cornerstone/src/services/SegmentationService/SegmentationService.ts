@@ -16,7 +16,7 @@ import {
 } from '@cornerstonejs/tools';
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
-import { easeInOutBell, easeInOutBellRelative } from '../../utils/transitions';
+import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { addColorLUT } from '@cornerstonejs/tools/segmentation/addColorLUT';
@@ -574,10 +574,19 @@ class SegmentationService extends PubSubService {
     // find the first image id that contains a referenced SOP instance UID
     const firstSegmentedSliceImageId =
       referencedImageIds?.find(imageId =>
-        referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+        referencedImageIdsWithGeometry.some(referencedId =>
+          imageId.includes(referencedId as string)
+        )
       ) || null;
 
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
+
+    if (!structureSet.ROIContours?.length) {
+      throw new Error(
+        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
+      );
+    }
+
     // Map ROI contours to RT Struct Data
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
 
@@ -599,12 +608,6 @@ class SegmentationService extends PubSubService {
         label: rtDisplaySet.SeriesDescription,
       },
     };
-
-    if (!structureSet.ROIContours?.length) {
-      throw new Error(
-        'The structureSet does not contain any ROIContours. Please ensure the structureSet is loaded first.'
-      );
-    }
 
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
     let segmentsCachedStats = {};
@@ -1175,7 +1178,7 @@ class SegmentationService extends PubSubService {
     highlightSegment = true,
     animationLength = 750,
     highlightHideOthers = false,
-    highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
+    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT
   ): void {
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
     if (!center) {
@@ -1201,7 +1204,8 @@ class SegmentationService extends PubSubService {
           viewportId,
           highlightAlpha,
           animationLength,
-          highlightHideOthers
+          highlightHideOthers,
+          animationFunctionType
         );
     });
   }
@@ -1213,7 +1217,7 @@ class SegmentationService extends PubSubService {
     alpha = 0.9,
     animationLength = 750,
     hideOthers = true,
-    highlightFunctionType = 'ease-in-out'
+    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT
   ): void {
     if (this.highlightIntervalId) {
       clearInterval(this.highlightIntervalId);
@@ -1246,7 +1250,8 @@ class SegmentationService extends PubSubService {
         segments,
         viewportId,
         animationLength,
-        representation
+        representation,
+        animationFunctionType
       );
     });
   }
@@ -1611,7 +1616,8 @@ class SegmentationService extends PubSubService {
     segments: Segment[],
     viewportId: string,
     animationLength: number,
-    representation: cstTypes.SegmentationRepresentation
+    representation: cstTypes.SegmentationRepresentation,
+    animationFunctionType: EasingFunctionEnum
   ) {
     const { segmentationId } = representation;
     const newSegmentSpecificConfig = {
@@ -1645,6 +1651,8 @@ class SegmentationService extends PubSubService {
       const elapsed = timestamp - startTime;
       const progress = Math.min(elapsed / animationLength, 1);
 
+      const easingFunction = EasingFunctionMap.get(animationFunctionType);
+
       cstSegmentation.config.style.setStyle(
         {
           segmentationId,
@@ -1652,7 +1660,7 @@ class SegmentationService extends PubSubService {
           type: LABELMAP,
         },
         {
-          fillAlpha: easeInOutBell(progress, fillAlpha),
+          fillAlpha: easingFunction(progress, fillAlpha),
         }
       );
 
@@ -1680,7 +1688,8 @@ class SegmentationService extends PubSubService {
     segments: Segment[],
     viewportId: string,
     animationLength: number,
-    representation: cstTypes.SegmentationRepresentation
+    representation: cstTypes.SegmentationRepresentation,
+    animationFunctionType: EasingFunctionEnum
   ) {
     const { segmentationId } = representation;
     const startTime = performance.now();
@@ -1690,8 +1699,6 @@ class SegmentationService extends PubSubService {
     }) as ContourStyle;
 
     const prevOutlineWidth = prevStyle.outlineWidth;
-    // make this configurable
-    const baseline = Math.max(prevOutlineWidth * 3.5, 5);
 
     const animate = (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
@@ -1700,7 +1707,8 @@ class SegmentationService extends PubSubService {
         return;
       }
 
-      const reversedProgress = easeInOutBellRelative(progress, baseline, prevOutlineWidth);
+      const OUTLINE_ANIMATION_SCALE_FACTOR = 5;
+      const easingFunction = EasingFunctionMap.get(animationFunctionType);
 
       cstSegmentation.config.style.setStyle(
         {
@@ -1709,7 +1717,7 @@ class SegmentationService extends PubSubService {
           type: CONTOUR,
         },
         {
-          outlineWidth: reversedProgress,
+          outlineWidth: easingFunction(progress, prevOutlineWidth, OUTLINE_ANIMATION_SCALE_FACTOR),
         }
       );
 
@@ -1754,7 +1762,10 @@ class SegmentationService extends PubSubService {
     return `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
   }
 
-  private _getSegmentCenter(segmentationId, segmentIndex) {
+  private _getSegmentCenter(
+    segmentationId: string,
+    segmentIndex: number
+  ): { image?: csTypes.Point3; world: csTypes.Point3 } | undefined {
     const segmentation = this.getSegmentation(segmentationId);
 
     if (!segmentation) {
@@ -1765,19 +1776,17 @@ class SegmentationService extends PubSubService {
 
     const { cachedStats } = segments[segmentIndex];
 
-    if (!cachedStats || !cachedStats?.center || !cachedStats?.namedStats?.center) {
-      return;
+    if (cachedStats?.center) {
+      const { center } = cachedStats;
+
+      return center as { image: csTypes.Point3; world: csTypes.Point3 };
     }
 
-    const { center } = cachedStats;
-
-    if (!center) {
+    if (cachedStats?.namedStats?.center) {
       return {
         world: cachedStats.namedStats.center.value,
       };
     }
-
-    return center;
   }
 
   private _setSegmentLockedStatus(segmentationId: string, segmentIndex: number, isLocked: boolean) {
