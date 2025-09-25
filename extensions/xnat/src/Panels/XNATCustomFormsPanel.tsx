@@ -33,17 +33,17 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     // Try session map first
     const sessionExperimentId = sessionMap.getSession()?.experimentId;
     if (sessionExperimentId) return sessionExperimentId;
-    
+
     // Try URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const urlExperimentId = urlParams.get('experimentId') || urlParams.get('sessionId');
     if (urlExperimentId) return urlExperimentId;
-    
+
     // Try getting from session map with different methods
     const session = sessionMap.getSession();
     if (session?.experimentId) return session.experimentId;
     if (session?.sessionId) return session.sessionId;
-    
+
     // Try getting from services manager if available
     try {
       const { sessionRouter } = servicesManager.services;
@@ -53,7 +53,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     } catch (e) {
       console.log('Could not get experiment ID from session router');
     }
-    
+
     // Return manual experiment ID if set
     return manualExperimentId || null;
   };
@@ -62,12 +62,12 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     // Try session map first
     const sessionProjectId = sessionMap.getProject();
     if (sessionProjectId) return sessionProjectId;
-    
+
     // Try URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const urlProjectId = urlParams.get('projectId');
     if (urlProjectId) return urlProjectId;
-    
+
     return null;
   };
 
@@ -75,7 +75,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     // Try session map first
     const sessionSubjectId = sessionMap.getSubject();
     if (sessionSubjectId) return sessionSubjectId;
-    
+
     return null;
   };
 
@@ -108,7 +108,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       const forms = await fetchCustomForms(projectId);
       console.log('Loaded custom forms:', forms);
       setCustomForms(forms);
-      
+
       // Automatically select the first form if available
       if (forms.length > 0) {
         const firstFormUuid = forms[0].uuid;
@@ -142,11 +142,11 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       const data = await getExperimentCustomFormData(experimentId);
       console.log('Loaded form data:', data);
       setFormData(data);
-      
+
       // Detect form structures from existing data
       const templates = detectFormStructure(data);
       setFormTemplates(templates);
-      
+
       // If we have a selected form, load its data for editing
       if (selectedFormUuid) {
         if (data[selectedFormUuid]) {
@@ -180,10 +180,10 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
   // Handle form selection
   const handleFormSelect = useCallback((formUuid: string) => {
     setSelectedFormUuid(formUuid);
-    
+
     // Find the selected form definition
     const selectedForm = customForms.find(f => f.uuid === formUuid);
-    
+
     if (formData[formUuid]) {
       // Use existing data
       setEditingData(formData[formUuid]);
@@ -230,14 +230,14 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
   // Auto-detect form structure from existing data and form definitions
   const detectFormStructure = useCallback((formData: CustomFormData) => {
     const templates: { [formUuid: string]: string[] } = {};
-    
+
     // First, get field keys from existing data
     Object.entries(formData).forEach(([formUuid, fields]) => {
       if (fields && typeof fields === 'object') {
         templates[formUuid] = Object.keys(fields);
       }
     });
-    
+
     // Then, add field keys from form definitions
     customForms.forEach(form => {
       if (!templates[form.uuid]) {
@@ -249,9 +249,51 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
         }
       });
     });
-    
+
     return templates;
   }, [customForms]);
+
+  // Send overread completion notification
+  const sendOverreadCompletionNotification = useCallback(async (experimentId: string, projectId: string, formData: any) => {
+    try {
+      const { xnatRootUrl } = sessionMap;
+      const url = `${xnatRootUrl}xapi/overread/completion/notify`;
+
+      const requestBody = {
+        projectId: projectId,
+        experimentId: experimentId,
+        overreadDetails: formData
+      };
+
+      console.log('Sending notification to URL:', url);
+      console.log('Request body:', requestBody);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+        credentials: 'include', // Include cookies for authentication
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response body:', errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Overread completion notification sent:', result);
+      return result;
+    } catch (error) {
+      console.error('Failed to send overread completion notification:', error);
+      throw error;
+    }
+  }, []);
 
   // Save form data
   const handleSave = useCallback(async () => {
@@ -273,12 +315,58 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
 
       setFormData(updatedData);
       setSuccess('Form data saved successfully');
-      
-      uiNotificationService.show({
-        title: 'Success',
-        message: 'Form data saved successfully',
-        type: 'success',
-      });
+      console.log('Editing data:', editingData);
+      console.log('Project ID:', projectId);
+      console.log('Experiment ID:', experimentId);
+      console.log('Selected form UUID:', selectedFormUuid);
+
+      // Always send overread completion notification since this is always an overread form
+      if (projectId) {
+        try {
+          const notificationResult = await sendOverreadCompletionNotification(
+            experimentId,
+            projectId,
+            editingData
+          );
+
+          console.log('Overread completion notification sent:', notificationResult);
+
+          // Update success message to include notification info
+          if (notificationResult.success) {
+            const totalEmails = notificationResult.totalEmailsSent || 0;
+            const urgentEmails = notificationResult.urgentEmailsSent || 0;
+            const completionEmails = notificationResult.completionEmailsSent || 0;
+
+            setSuccess(`Form data saved successfully. Sent ${totalEmails} notifications (${completionEmails} completion, ${urgentEmails} urgent)`);
+
+            uiNotificationService.show({
+              title: 'Success',
+              message: `Form saved and ${totalEmails} notifications sent`,
+              type: 'success',
+            });
+          } else {
+            uiNotificationService.show({
+              title: 'Warning',
+              message: 'Form saved but notifications failed',
+              type: 'warning',
+            });
+          }
+        } catch (notificationError) {
+          console.warn('Failed to send overread completion notification:', notificationError);
+          // Don't fail the save operation if notification fails
+          uiNotificationService.show({
+            title: 'Warning',
+            message: 'Form saved but notification failed',
+            type: 'warning',
+          });
+        }
+      } else {
+        uiNotificationService.show({
+          title: 'Success',
+          message: 'Form data saved successfully',
+          type: 'success',
+        });
+      }
     } catch (err) {
       console.error('Failed to save form data:', err);
       setError('Failed to save form data');
@@ -290,7 +378,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     } finally {
       setLoading(false);
     }
-  }, [experimentId, selectedFormUuid, editingData, uiNotificationService]);
+  }, [experimentId, selectedFormUuid, editingData, uiNotificationService, projectId, sendOverreadCompletionNotification]);
 
 
 
@@ -318,7 +406,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     // Use field definition if available, otherwise fall back to auto-detection
     let fieldType = 'text';
     let fieldOptions: Array<{ label: string; value: string }> = [];
-    
+
     if (fieldDef) {
       fieldType = fieldDef.type;
       if (fieldDef.data?.values) {
@@ -469,7 +557,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
             </div>
           </PanelSection.Content>
         </PanelSection>
-        
+
         {/* Manual Experiment ID Input */}
         <PanelSection>
           <PanelSection.Header>Manual Experiment ID Input</PanelSection.Header>
@@ -500,7 +588,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
             </div>
           </PanelSection.Content>
         </PanelSection>
-        
+
         {/* Debug Information */}
         <PanelSection>
           <PanelSection.Header>Debug Information</PanelSection.Header>
@@ -515,7 +603,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     );
   }
 
-    return (
+  return (
     <div className="h-full overflow-y-auto overflow-x-hidden space-y-4 p-4">
       {/* API Information */}
       <PanelSection>
@@ -527,7 +615,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
         </PanelSection.Header>
         <PanelSection.Content>
           <div className="text-sm space-y-2 text-aqua-pale">
-            
+
             <p><strong>Project:</strong> {projectId || 'Not detected'}</p>
             <p><strong>Project:</strong> {subjectId || 'Not detected'}</p>
             <p><strong>Experiment:</strong> {experimentId || 'Not detected'}</p>
@@ -572,88 +660,88 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           </PanelSection.Header>
           <PanelSection.Content>
             <div className="space-y-4">
-          {/* Form Fields Editor */}
-          <div className="mb-4">
-            <h5 className="text-sm font-medium mb-3 text-foreground flex items-center space-x-2">
-              <Icons.Clipboard className="w-4 h-4" />
-              <span>Edit Form Data:</span>
-            </h5>
-            
-            {/* Form Template Info */}
-            {formTemplates[selectedFormUuid] && formTemplates[selectedFormUuid].length > 0 && (
-              <PanelSection>
-                <PanelSection.Header>
-                  <div className="flex items-center space-x-2">
-                    <Icons.Clipboard className="w-4 h-4" />
-                    <span>Form Template Detected</span>
-                  </div>
-                </PanelSection.Header>
-                <PanelSection.Content>
-                  <div className="text-sm space-y-2 text-aqua-pale">
-                    <p>This form typically contains these fields:</p>
-                    <ul className="list-disc pl-5 space-y-1 text-aqua-pale">
-                      {formTemplates[selectedFormUuid].map(fieldName => (
-                        <li key={fieldName}>{fieldName}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </PanelSection.Content>
-              </PanelSection>
-            )}
-            {Object.keys(editingData).length === 0 ? (
-              <div className="text-muted-foreground text-sm p-3 bg-muted rounded">
-                No form data to edit. Use "Create New" to add data.
-              </div>
-            ) : (
-              // Render form using field definitions from the selected form
-              (() => {
-                const selectedForm = customForms.find(f => f.uuid === selectedFormUuid);
-                if (!selectedForm) {
-                  return <div className="text-destructive text-sm p-3">Form definition not found</div>;
-                }
+              {/* Form Fields Editor */}
+              <div className="mb-4">
+                <h5 className="text-sm font-medium mb-3 text-foreground flex items-center space-x-2">
+                  <Icons.Clipboard className="w-4 h-4" />
+                  <span>Edit Form Data:</span>
+                </h5>
 
-                return selectedForm.fields.map(fieldDef => {
-                  const fieldName = fieldDef.key;
-                  const value = editingData[fieldName] || '';
-                  
-                  // Check conditional logic
-                  if (fieldDef.conditional) {
-                    const conditionalField = fieldDef.conditional.when;
-                    const conditionalValue = editingData[conditionalField];
-                    const shouldShow = conditionalValue === fieldDef.conditional.eq;
-                    
-                    if (!shouldShow) {
-                      return null; // Don't render this field
-                    }
-                  }
-
-                  return (
-                    <div key={fieldName} className="mb-3 border border-border p-3 rounded bg-card">
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-medium text-aqua-pale">
-                          {fieldDef.label}
-                        </label>
-                        <button
-                          onClick={() => handleRemoveField(fieldName)}
-                          className="text-destructive text-xs bg-none border-none cursor-pointer p-1 hover:bg-destructive/10 rounded"
-                          title="Remove field"
-                        >
-                          ✕
-                        </button>
+                {/* Form Template Info */}
+                {formTemplates[selectedFormUuid] && formTemplates[selectedFormUuid].length > 0 && (
+                  <PanelSection>
+                    <PanelSection.Header>
+                      <div className="flex items-center space-x-2">
+                        <Icons.Clipboard className="w-4 h-4" />
+                        <span>Form Template Detected</span>
                       </div>
-                      {renderFormField(fieldName, value, fieldDef)}
-                    </div>
-                  );
-                });
-              })()
-            )}
+                    </PanelSection.Header>
+                    <PanelSection.Content>
+                      <div className="text-sm space-y-2 text-aqua-pale">
+                        <p>This form typically contains these fields:</p>
+                        <ul className="list-disc pl-5 space-y-1 text-aqua-pale">
+                          {formTemplates[selectedFormUuid].map(fieldName => (
+                            <li key={fieldName}>{fieldName}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </PanelSection.Content>
+                  </PanelSection>
+                )}
+                {Object.keys(editingData).length === 0 ? (
+                  <div className="text-muted-foreground text-sm p-3 bg-muted rounded">
+                    No form data to edit. Use "Create New" to add data.
+                  </div>
+                ) : (
+                  // Render form using field definitions from the selected form
+                  (() => {
+                    const selectedForm = customForms.find(f => f.uuid === selectedFormUuid);
+                    if (!selectedForm) {
+                      return <div className="text-destructive text-sm p-3">Form definition not found</div>;
+                    }
+
+                    return selectedForm.fields.map(fieldDef => {
+                      const fieldName = fieldDef.key;
+                      const value = editingData[fieldName] || '';
+
+                      // Check conditional logic
+                      if (fieldDef.conditional) {
+                        const conditionalField = fieldDef.conditional.when;
+                        const conditionalValue = editingData[conditionalField];
+                        const shouldShow = conditionalValue === fieldDef.conditional.eq;
+
+                        if (!shouldShow) {
+                          return null; // Don't render this field
+                        }
+                      }
+
+                      return (
+                        <div key={fieldName} className="mb-3 border border-border p-3 rounded bg-card">
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-medium text-aqua-pale">
+                              {fieldDef.label}
+                            </label>
+                            <button
+                              onClick={() => handleRemoveField(fieldName)}
+                              className="text-destructive text-xs bg-none border-none cursor-pointer p-1 hover:bg-destructive/10 rounded"
+                              title="Remove field"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          {renderFormField(fieldName, value, fieldDef)}
+                        </div>
+                      );
+                    });
+                  })()
+                )}
+              </div>
             </div>
-          </div>
-        </PanelSection.Content>
-      </PanelSection>
+          </PanelSection.Content>
+        </PanelSection>
       )}
     </div>
   );
 };
 
-export default XNATCustomFormsPanel; 
+export default XNATCustomFormsPanel;
