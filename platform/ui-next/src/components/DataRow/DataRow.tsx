@@ -18,6 +18,7 @@ import { cn } from '../../lib/utils';
  * @component
  * @example
  * ```tsx
+ * // Basic usage without status slot
  * <DataRow
  *   number={1}
  *   title="My Item"
@@ -32,6 +33,33 @@ import { cn } from '../../lib/utils';
  *   onRename={() => {}}
  *   onDelete={() => {}}
  *   onColor={() => {}}
+ * />
+ * 
+ * // With warning status
+ * <DataRow
+ *   // ... other props
+ *   statusSlot={
+ *     <Tooltip>
+ *       <TooltipTrigger asChild>
+ *         <div className="flex h-6 w-6 items-center justify-center">
+ *           <Icons.ByName name="status-alert" className="h-4 w-4 text-yellow-500" />
+ *         </div>
+ *       </TooltipTrigger>
+ *       <TooltipContent side="bottom">
+ *         <div>This structured report is not compatible with this application</div>
+ *       </TooltipContent>
+ *     </Tooltip>
+ *   }
+ * />
+ * 
+ * // With success status
+ * <DataRow
+ *   // ... other props
+ *   statusSlot={
+ *     <div className="flex h-6 w-6 items-center justify-center">
+ *       <Icons.Check className="h-4 w-4 text-green-500" />
+ *     </div>
+ *   }
  * />
  * ```
  */
@@ -55,6 +83,7 @@ import { cn } from '../../lib/utils';
  * @property {() => void} onRename - Callback when rename is requested
  * @property {() => void} onDelete - Callback when delete is requested
  * @property {() => void} onColor - Callback when color change is requested
+ * @property {React.ReactNode} [statusSlot] - Optional slot for status indicators, warnings, or other UI elements
  */
 interface DataRowProps {
   number: number | null;
@@ -79,7 +108,7 @@ interface DataRowProps {
   colorHex?: string;
   onColor: (e) => void;
   className?: string;
-  isUnmapped?: boolean;
+  statusSlot?: React.ReactNode;
 }
 
 export const DataRow: React.FC<DataRowProps> = ({
@@ -98,7 +127,7 @@ export const DataRow: React.FC<DataRowProps> = ({
   isVisible = true,
   disableEditing = false,
   className,
-  isUnmapped = false,
+  statusSlot,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
@@ -283,22 +312,8 @@ export const DataRow: React.FC<DataRowProps> = ({
           {/* Lock Icon (if needed) */}
           {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
-          {/* Unmapped Measurement Warning Icon */}
-          {isUnmapped && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex h-6 w-6 items-center justify-center">
-                  <Icons.ByName
-                    name="status-alert"
-                    className="h-4 w-4 text-yellow-500"
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <div>This structured report is not compatible with this application</div>
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {/* Status Slot */}
+          {statusSlot}
 
           {/* Actions Dropdown Menu */}
           {disableEditing && <div className="h-6 w-6"></div>}

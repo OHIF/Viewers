@@ -45,7 +45,6 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     ...measurement,
     displayText,
     label,
-    isUnmapped: measurement.isUnmapped || false,
   };
 }
 
@@ -65,7 +64,7 @@ export function useMeasurements({ measurementFilter } = { measurementFilter: () 
 
   useEffect(() => {
     const updateDisplayMeasurements = () => {
-      const measurements = measurementService.getAllMeasurements(measurementFilter);
+      const measurements = measurementService.getMeasurements(measurementFilter);
       const mappedMeasurements = measurements.map(m =>
         mapMeasurementToDisplay(m, displaySetService)
       );

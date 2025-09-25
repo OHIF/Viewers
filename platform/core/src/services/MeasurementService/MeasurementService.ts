@@ -128,7 +128,6 @@ class MeasurementService extends PubSubService {
   public readonly VALUE_TYPES = VALUE_TYPES;
 
   private measurements = new Map();
-  private unmappedMeasurements = new Map();
   private isMeasurementDeletedIndividually: boolean;
 
   private sources = {};
@@ -183,32 +182,6 @@ class MeasurementService extends PubSubService {
    */
   public getMeasurements(filter?: MeasurementFilter) {
     const measurements = [...this.measurements.values()];
-    return filter
-      ? measurements.filter(measurement => filter.call(this, measurement))
-      : measurements;
-  }
-
-  /**
-   * Gets all measurements including unmapped measurements, optionally filtered by the filter
-   * function.
-   *
-   * @return {Measurement[]} Array of measurements
-   */
-  public getAllMeasurements(filter?: MeasurementFilter) {
-    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
-    return filter
-      ? measurements.filter(measurement => filter.call(this, measurement))
-      : measurements;
-  }
-
-  /**
-   * Gets unmapped measurements, optionally filtered by the filter
-   * function.
-   *
-   * @return {Measurement[]} Array of unmapped measurements
-   */
-  public getUnmappedMeasurements(filter?: MeasurementFilter) {
-    const measurements = [...this.unmappedMeasurements.values()];
     return filter
       ? measurements.filter(measurement => filter.call(this, measurement))
       : measurements;
@@ -629,10 +602,16 @@ class MeasurementService extends PubSubService {
   private addUnmappedMeasurement(sourceAnnotationDetail: any, source: any) {
     const metadata = this.findAttributeRecursively(sourceAnnotationDetail, 'metadata');
     const label = this.findAttributeRecursively(sourceAnnotationDetail, 'label');
-    const referencedImageId = this.findAttributeRecursively(sourceAnnotationDetail, 'referencedImageId');
-    const displaySetInstanceUID = this.findAttributeRecursively(sourceAnnotationDetail, 'displaySetInstanceUID');
+    const referencedImageId = this.findAttributeRecursively(
+      sourceAnnotationDetail,
+      'referencedImageId'
+    );
+    const displaySetInstanceUID = this.findAttributeRecursively(
+      sourceAnnotationDetail,
+      'displaySetInstanceUID'
+    );
 
-    const unmappedMeasurement = {
+    const measurement = {
       ...sourceAnnotationDetail,
       isUnmapped: true,
       source: {
@@ -641,27 +620,27 @@ class MeasurementService extends PubSubService {
         uid: source.uid,
       },
     };
-    
+
     if (metadata) {
-      unmappedMeasurement.metadata = metadata;
+      measurement.metadata = metadata;
     }
-    
+
     if (label) {
-      unmappedMeasurement.label = label;
+      measurement.label = label;
     }
 
     if (referencedImageId) {
-      unmappedMeasurement.referencedImageId = referencedImageId;
+      measurement.referencedImageId = referencedImageId;
       const instance = DicomMetadataStore.getInstanceByImageId(referencedImageId);
-      unmappedMeasurement.referenceStudyUID = instance.StudyInstanceUID;
-      unmappedMeasurement.referenceSeriesUID = instance.SeriesInstanceUID;
+      measurement.referenceStudyUID = instance.StudyInstanceUID;
+      measurement.referenceSeriesUID = instance.SeriesInstanceUID;
     }
 
     if (displaySetInstanceUID) {
-      unmappedMeasurement.displaySetInstanceUID = displaySetInstanceUID;
+      measurement.displaySetInstanceUID = displaySetInstanceUID;
     }
-    
-    this.unmappedMeasurements.set(sourceAnnotationDetail.uid, unmappedMeasurement);
+
+    this.measurements.set(sourceAnnotationDetail.uid, measurement);
   }
 
   /**
@@ -670,8 +649,7 @@ class MeasurementService extends PubSubService {
    * @param {string} measurementUID The measurement uid
    */
   remove(measurementUID: string): void {
-    const measurement =
-      this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurementUID || !measurement) {
       console.debug(`No uid provided, or unable to find measurement by uid.`);
@@ -680,7 +658,6 @@ class MeasurementService extends PubSubService {
 
     const source = measurement.source;
 
-    this.unmappedMeasurements.delete(measurementUID);
     this.measurements.delete(measurementUID);
     this.isMeasurementDeletedIndividually = true;
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
@@ -696,14 +673,13 @@ class MeasurementService extends PubSubService {
     const measurements = [];
     for (const measurementUID of measurementUIDs) {
       const measurement =
-        this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+        this.measurements.get(measurementUID)
 
       if (!measurementUID || !measurement) {
         console.debug(`No uid provided, or unable to find measurement by uid.`);
         continue;
       }
 
-      this.unmappedMeasurements.delete(measurementUID);
       this.measurements.delete(measurementUID);
       measurements.push(measurement);
     }
@@ -721,11 +697,7 @@ class MeasurementService extends PubSubService {
   public clearMeasurements(filter?: MeasurementFilter) {
     // Make a copy of the measurements
     const toClear = this.getMeasurements(filter);
-    const unmappedClear = filter
-      ? [...this.unmappedMeasurements.values()].filter(filter)
-      : this.unmappedMeasurements;
-    const measurements = [...toClear, ...unmappedClear];
-    unmappedClear.forEach(measurement => this.unmappedMeasurements.delete(measurement.uid));
+    const measurements = [...toClear];
     toClear.forEach(measurement => this.measurements.delete(measurement.uid));
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
@@ -744,7 +716,8 @@ class MeasurementService extends PubSubService {
    */
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
-    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+    const measurement =
+      this.measurements.get(measurementUID)
 
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);
@@ -866,7 +839,8 @@ class MeasurementService extends PubSubService {
   };
 
   public toggleLockMeasurement(measurementUID: string): void {
-    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+    const measurement =
+      this.measurements.get(measurementUID)
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
@@ -883,7 +857,8 @@ class MeasurementService extends PubSubService {
   }
 
   public toggleVisibilityMeasurement(measurementUID: string, visibility?: boolean): void {
-    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+    const measurement =
+      this.measurements.get(measurementUID)
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
@@ -907,7 +882,8 @@ class MeasurementService extends PubSubService {
   }
 
   public updateColorMeasurement(measurementUID: string, color: number[]): void {
-    const measurement = this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+    const measurement =
+      this.measurements.get(measurementUID)
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);

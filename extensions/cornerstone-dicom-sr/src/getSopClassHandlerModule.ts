@@ -22,7 +22,7 @@ const {
   CodeScheme: Cornerstone3DCodeScheme,
 } = adaptersSR.Cornerstone3D;
 
-type InstanceMetadata = Types.InstanceMetadata;
+type InstanceMetadata = OhifTypes.InstanceMetadata;
 
 /**
  * TODO
@@ -144,9 +144,9 @@ function _getDisplaySetsFromSeries(
  * @param extensionManager - The extension manager containing data sources.
  */
 async function _load(
-  srDisplaySet: Types.DisplaySet,
-  servicesManager: AppTypes.ServicesManager,
-  extensionManager: AppTypes.ExtensionManager
+  srDisplaySet: SRDisplaySet,
+  servicesManager: any,
+  extensionManager: any
 ) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
@@ -231,16 +231,23 @@ function _measurementBelongsToDisplaySet({ measurement, displaySet }) {
 /**
  * Checks if measurements can be added to a display set.
  *
- * @param {Types.DisplaySet} srDisplaySet - The source display set containing measurements.
- * @param {Types.DisplaySet} newDisplaySet - The new display set to check if measurements can be added.
- * @param {any} dataSource - The data source used to retrieve image IDs.
- * @param {AppTypes.ServicesManager} servicesManager - The services manager.
+ * @param srDisplaySet - The source display set containing measurements.
+ * @param newDisplaySet - The new display set to check if measurements can be added.
+ * @param dataSource - The data source used to retrieve image IDs.
+ * @param servicesManager - The services manager.
  */
+interface SRDisplaySet extends OhifTypes.DisplaySet {
+  measurements?: any[];
+  isImagingMeasurementReport?: boolean;
+  referencedImages?: any[];
+  isLoaded?: boolean;
+}
+
 function _checkIfCanAddMeasurementsToDisplaySet(
-  srDisplaySet,
-  newDisplaySet,
-  dataSource,
-  servicesManager: AppTypes.ServicesManager
+  srDisplaySet: SRDisplaySet,
+  newDisplaySet: OhifTypes.DisplaySet,
+  dataSource: any,
+  servicesManager: any
 ) {
   const { customizationService } = servicesManager.services;
 
