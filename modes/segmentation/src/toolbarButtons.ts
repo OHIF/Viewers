@@ -210,7 +210,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
-      label: 'Pan',
+      label: 'Buttons:Pan',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -221,7 +221,7 @@ const toolbarButtons: Button[] = [
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
-      label: '3D Rotate',
+      label: 'Buttons:3D Rotate',
       commands: setToolActiveToolbar,
       evaluate: {
         name: 'evaluate.cornerstoneTool',
@@ -339,7 +339,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-stack-scroll',
-      label: 'Stack Scroll',
+      label: 'Buttons:Stack Scroll',
       tooltip: 'Stack Scroll',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -350,7 +350,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-invert',
-      label: 'Invert',
+      label: 'Buttons:Invert',
       tooltip: 'Invert Colors',
       commands: 'invertViewport',
       evaluate: 'evaluate.viewportProperties.toggle',
@@ -361,7 +361,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-cine',
-      label: 'Cine',
+      label: 'Buttons:Cine',
       tooltip: 'Cine',
       commands: 'toggleCine',
       evaluate: [
@@ -378,7 +378,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-magnify',
-      label: 'Zoom-in',
+      label: 'Buttons:Zoom-in',
       tooltip: 'Zoom-in',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',

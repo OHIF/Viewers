@@ -8,6 +8,7 @@ import {
   ToolButtonListDivider,
 } from '@ohif/ui-next';
 import { useToolbar } from '@ohif/core/src';
+import { useTranslation } from 'react-i18next';
 
 interface ToolButtonListWrapperProps {
   buttonSection: string;
@@ -22,6 +23,7 @@ interface ToolButtonListWrapperProps {
  * // test
  */
 export default function ToolButtonListWrapper({ buttonSection, id }: ToolButtonListWrapperProps) {
+  const { t } = useTranslation();
   const { onInteraction, toolbarButtons } = useToolbar({
     buttonSection,
   });
@@ -46,6 +48,7 @@ export default function ToolButtonListWrapper({ buttonSection, id }: ToolButtonL
         >
           <ToolButton
             {...primary}
+            tooltip={primary.tooltip ? t(primary.tooltip) : primary.tooltip}
             onInteraction={({ itemId }) =>
               onInteraction?.({ id, itemId, commands: primary.commands })
             }
@@ -66,7 +69,7 @@ export default function ToolButtonListWrapper({ buttonSection, id }: ToolButtonL
                 data-active={item.isActive}
                 onSelect={() => onInteraction?.({ id, itemId: item.id, commands: item.commands })}
               >
-                <span className="pl-1">{item.label || item.tooltip || item.id}</span>
+                <span className="pl-1">{item.label ? t(item.label) : item.tooltip || item.id}</span>
               </ToolButtonListItem>
             );
           })}
