@@ -503,7 +503,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-cine',
-      label: 'Cine',
+      label: 'Buttons:Cine',
       tooltip: 'Cine',
       commands: 'toggleCine',
       evaluate: 'evaluate.cine',
@@ -514,7 +514,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-angle',
-      label: 'Angle',
+      label: 'Buttons:Angle',
       tooltip: 'Angle',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
