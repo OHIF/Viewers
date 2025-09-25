@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.28...v3.12.0-beta.29) (2025-09-22)
+
+
+### Features
+
+* **Segmentation:** Segmentation highlight animation function selection ([#5401](https://github.com/OHIF/Viewers/issues/5401)) ([69dbe27](https://github.com/OHIF/Viewers/commit/69dbe2778493cdfc7a8da5e757c95217bb31edc2))
+
+
+
+
+
+# [3.12.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.27...v3.12.0-beta.28) (2025-09-19)
+
+
+### Bug Fixes
+
+* **SegmentationService:** _getSegmentCenter wrongly handling seg center availability ([#5396](https://github.com/OHIF/Viewers/issues/5396)) ([74b82bd](https://github.com/OHIF/Viewers/commit/74b82bd93442411ad68f4872992126c40321eb9e))
+
+
+
+
+
 # [3.12.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.26...v3.12.0-beta.27) (2025-09-17)
 
 **Note:** Version bump only for package ohif-monorepo-root
