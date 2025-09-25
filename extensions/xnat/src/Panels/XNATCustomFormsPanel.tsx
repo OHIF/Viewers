@@ -71,22 +71,32 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     return null;
   };
 
+  const getSubjectId = () => {
+    // Try session map first
+    const sessionSubjectId = sessionMap.getSubject();
+    if (sessionSubjectId) return sessionSubjectId;
+    
+    return null;
+  };
+
   const experimentId = getExperimentId();
   const projectId = getProjectId();
+  const subjectId = getSubjectId();
 
   // Debug logging
   useEffect(() => {
     console.log('XNAT Custom Forms Panel - Debug Info:', {
       experimentId,
       projectId,
+      subjectId,
       sessionMap: sessionMap.getSession(),
       urlParams: Object.fromEntries(new URLSearchParams(window.location.search)),
     });
-  }, [experimentId, projectId]);
+  }, [experimentId, projectId, subjectId]);
 
   // Load custom forms for the project (form definitions)
   const loadCustomForms = useCallback(async () => {
-    if (!projectId) {
+    if (!projectId || !subjectId) {
       setError('No project selected');
       return;
     }
@@ -94,10 +104,17 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     try {
       setLoading(true);
       setError('');
-      console.log('Loading custom forms for project:', projectId);
+      console.log('Loading custom forms for project:', projectId, subjectId, experimentId || 'Not detected');
       const forms = await fetchCustomForms(projectId);
       console.log('Loaded custom forms:', forms);
       setCustomForms(forms);
+      
+      // Automatically select the first form if available
+      if (forms.length > 0) {
+        const firstFormUuid = forms[0].uuid;
+        setSelectedFormUuid(firstFormUuid);
+        console.log('Auto-selected first form:', firstFormUuid);
+      }
     } catch (err) {
       console.error('Failed to load custom forms:', err);
       setError('Failed to load custom forms from XNAT');
@@ -109,11 +126,11 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     } finally {
       setLoading(false);
     }
-  }, [projectId, uiNotificationService]);
+  }, [projectId, subjectId, experimentId, uiNotificationService]);
 
   // Load form data for the current experiment (form data)
   const loadFormData = useCallback(async () => {
-    if (!experimentId) {
+    if (!experimentId || !subjectId || !projectId) {
       setError('No experiment selected');
       return;
     }
@@ -121,7 +138,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     try {
       setLoading(true);
       setError('');
-      console.log('Loading form data for experiment:', experimentId);
+      console.log('Loading form data for experiment:', experimentId, subjectId, projectId);
       const data = await getExperimentCustomFormData(experimentId);
       console.log('Loaded form data:', data);
       setFormData(data);
@@ -131,8 +148,21 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       setFormTemplates(templates);
       
       // If we have a selected form, load its data for editing
-      if (selectedFormUuid && data[selectedFormUuid]) {
-        setEditingData(data[selectedFormUuid]);
+      if (selectedFormUuid) {
+        if (data[selectedFormUuid]) {
+          // Use existing data
+          setEditingData(data[selectedFormUuid]);
+        } else {
+          // Initialize form with field definitions from the selected form
+          const selectedForm = customForms.find(f => f.uuid === selectedFormUuid);
+          if (selectedForm) {
+            const initialData: { [fieldName: string]: any } = {};
+            selectedForm.fields.forEach(field => {
+              initialData[field.key] = '';
+            });
+            setEditingData(initialData);
+          }
+        }
       }
     } catch (err) {
       console.error('Failed to load form data:', err);
@@ -274,6 +304,14 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       loadFormData();
     }
   }, [experimentId, loadFormData]);
+
+  // Load form data when a form is auto-selected
+  useEffect(() => {
+    if (selectedFormUuid && experimentId && customForms.length > 0) {
+      // Trigger form data loading when a form is selected
+      loadFormData();
+    }
+  }, [selectedFormUuid, experimentId, customForms.length, loadFormData]);
 
   // Render form field based on field definition and value
   const renderFormField = (fieldName: string, value: any, fieldDef?: CustomFormField) => {
@@ -484,14 +522,14 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
         <PanelSection.Header>
           <div className="flex items-center space-x-2 text-aqua-pale">
             <Icons.Clipboard className="w-4 h-4" />
-            <span>How it works</span>
+            <span>Scan Information</span>
           </div>
         </PanelSection.Header>
         <PanelSection.Content>
           <div className="text-sm space-y-2 text-aqua-pale">
-            <p><strong>Step 1:</strong> Load form definitions from <code>/xapi/customforms</code></p>
-            <p><strong>Step 2:</strong> Load form data from <code>/xapi/custom-fields/experiments/{experimentId}/fields</code></p>
+            
             <p><strong>Project:</strong> {projectId || 'Not detected'}</p>
+            <p><strong>Project:</strong> {subjectId || 'Not detected'}</p>
             <p><strong>Experiment:</strong> {experimentId || 'Not detected'}</p>
           </div>
         </PanelSection.Content>
@@ -514,32 +552,6 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           </PanelSection.Content>
         </PanelSection>
       )}
-
-      {/* Form Selection */}
-      <PanelSection>
-        <PanelSection.Header>
-          <div className="flex items-center space-x-2">
-            <Icons.Clipboard className="w-4 h-4" />
-            <span>Select Form</span>
-          </div>
-        </PanelSection.Header>
-        <PanelSection.Content>
-          <select
-            value={selectedFormUuid}
-            onChange={(e) => handleFormSelect(e.target.value)}
-            disabled={loading}
-            className="w-full p-2 border border-input rounded-md text-sm bg-background text-foreground"
-          >
-            <option value="">Choose a form...</option>
-            {customForms.map(form => (
-              <option key={form.uuid} value={form.uuid}>
-                {form.title} ({form.uuid})
-              </option>
-            ))}
-          </select>
-        </PanelSection.Content>
-      </PanelSection>
-
       {/* Form Data Display */}
       {selectedFormUuid && (
         <PanelSection>
