@@ -518,8 +518,8 @@ function commandsModule({
       if (!labelConfig) {
         const label = await callInputDialog({
           uiDialogService,
-          title: 'Edit Measurement Label',
-          placeholder: measurement.label || 'Enter new label',
+          title: i18n.t('Tools:Edit Measurement Label'),
+          placeholder: measurement.label || i18n.t('Tools:Enter new label'),
           defaultValue: measurement.label,
         });
 
@@ -733,8 +733,8 @@ function commandsModule({
       if (!labelConfig) {
         const label = await callInputDialog({
           uiDialogService,
-          title: 'Edit Arrow Text',
-          placeholder: data?.data?.label || 'Enter new text',
+          title: i18n.t('Tools:Edit Arrow Text'),
+          placeholder: data?.data?.label || i18n.t('Tools:Enter new text'),
           defaultValue: data?.data?.label || '',
         });
 
@@ -978,8 +978,8 @@ function commandsModule({
       if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
-          title: 'Download Image',
-          message: 'Image cannot be downloaded',
+          title: i18n.t('Tools:Download Image'),
+          message: i18n.t('Tools:Image cannot be downloaded'),
           type: 'error',
         });
         return;
@@ -990,7 +990,7 @@ function commandsModule({
       if (uiModalService) {
         uiModalService.show({
           content: CornerstoneViewportDownloadForm,
-          title: 'Download High Quality Image',
+          title: i18n.t('Tools:Download High Quality Image'),
           contentProps: {
             activeViewportId,
             cornerstoneViewportService,
@@ -1454,7 +1454,7 @@ function commandsModule({
 
       const segs = segmentationService.getSegmentations();
 
-      const label = options.label || `Segmentation ${segs.length + 1}`;
+      const label = options.label || `${i18n.t('Tools:Segmentation')} ${segs.length + 1}`;
       const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
@@ -1468,7 +1468,7 @@ function commandsModule({
           segments: options.createInitialSegment
             ? {
                 1: {
-                  label: `${i18n.t('Segment')} 1`,
+                  label: `${i18n.t('Tools:Segment')} 1`,
                   active: true,
                 },
               }
@@ -1745,8 +1745,8 @@ function commandsModule({
 
       callInputDialog({
         uiDialogService,
-        title: 'Edit Segment Label',
-        placeholder: 'Enter new label',
+        title: i18n.t('Tools:Edit Segment Label'),
+        placeholder: i18n.t('Tools:Enter new label'),
         defaultValue: segment.label,
       }).then(label => {
         segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
@@ -1765,8 +1765,8 @@ function commandsModule({
 
       callInputDialog({
         uiDialogService,
-        title: 'Edit Segmentation Label',
-        placeholder: 'Enter new label',
+        title: i18n.t('Tools:Edit Segmentation Label'),
+        placeholder: i18n.t('Tools:Enter new label'),
         defaultValue: label,
       }).then(label => {
         segmentationService.addOrUpdateSegmentation({ segmentationId, label });
@@ -1788,7 +1788,7 @@ function commandsModule({
 
       uiDialogService.show({
         content: colorPickerDialog,
-        title: 'Segment Color',
+        title: i18n.t('Tools:Segment Color'),
         contentProps: {
           value: rgbaColor,
           onSave: newRgbaColor => {
