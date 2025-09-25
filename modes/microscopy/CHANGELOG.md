@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.29...v3.12.0-beta.30) (2025-09-25)
+
+
+### Bug Fixes
+
+* **i18n:** Add and update i18n Translation for Toolbar Tool Names ([#5392](https://github.com/OHIF/Viewers/issues/5392)) ([7783d0f](https://github.com/OHIF/Viewers/commit/7783d0f558bbb7016c29513b6fe76ed069dbd75c))
+
+
+
+
+
 # [3.12.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.28...v3.12.0-beta.29) (2025-09-22)
 
 **Note:** Version bump only for package @ohif/mode-microscopy
