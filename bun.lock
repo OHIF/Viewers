@@ -737,12 +737,19 @@
       },
       "devDependencies": {
         "@babel/plugin-transform-private-methods": "^7.27.1",
+        "@pmmmwh/react-refresh-webpack-plugin": "0.5.17",
         "@types/node": "^20.12.12",
+        "clean-webpack-plugin": "4.0.0",
+        "copy-webpack-plugin": "10.2.4",
         "cross-env": "^7.0.3",
+        "extract-css-chunks-webpack-plugin": "4.10.0",
+        "html-webpack-plugin": "^5.5.0",
         "identity-obj-proxy": "3.0.x",
         "mini-css-extract-plugin": "2.1.0",
         "shx": "^0.3.4",
         "tailwindcss": "3.2.4",
+        "terser-webpack-plugin": "5.3.14",
+        "workbox-webpack-plugin": "6.6.1",
       },
     },
     "platform/cli": {
@@ -5327,6 +5334,10 @@
 
     "@octokit/request/node-fetch": ["node-fetch@2.6.7", "", { "dependencies": { "whatwg-url": "^5.0.0" }, "peerDependencies": { "encoding": "^0.1.0" }, "optionalPeers": ["encoding"] }, "sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ=="],
 
+    "@ohif/app/clean-webpack-plugin": ["clean-webpack-plugin@4.0.0", "", { "dependencies": { "del": "^4.1.1" }, "peerDependencies": { "webpack": ">=4.0.0 <6.0.0" } }, "sha512-WuWE1nyTNAyW5T7oNyys2EN0cfP2fdRxhxnIQWiAp0bMabPdHhoGxM8A6YL2GhqwgrPnnaemVE7nv5XJ2Fhh2w=="],
+
+    "@ohif/app/copy-webpack-plugin": ["copy-webpack-plugin@10.2.4", "", { "dependencies": { "fast-glob": "^3.2.7", "glob-parent": "^6.0.1", "globby": "^12.0.2", "normalize-path": "^3.0.0", "schema-utils": "^4.0.0", "serialize-javascript": "^6.0.0" }, "peerDependencies": { "webpack": "^5.1.0" } }, "sha512-xFVltahqlsRcyyJqQbDY6EYTtyQZF9rf+JPjwHObLdPFMEISqkFkr7mFoVOC6BfYS/dNThyoQKvziugm+OnwBg=="],
+
     "@ohif/app/cross-env": ["cross-env@7.0.3", "", { "dependencies": { "cross-spawn": "^7.0.1" }, "bin": { "cross-env": "src/bin/cross-env.js", "cross-env-shell": "src/bin/cross-env-shell.js" } }, "sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw=="],
 
     "@ohif/extension-ultrasound-pleura-bline/clean-webpack-plugin": ["clean-webpack-plugin@4.0.0", "", { "dependencies": { "del": "^4.1.1" }, "peerDependencies": { "webpack": ">=4.0.0 <6.0.0" } }, "sha512-WuWE1nyTNAyW5T7oNyys2EN0cfP2fdRxhxnIQWiAp0bMabPdHhoGxM8A6YL2GhqwgrPnnaemVE7nv5XJ2Fhh2w=="],
@@ -6423,6 +6434,8 @@
 
     "@octokit/request/node-fetch/whatwg-url": ["whatwg-url@5.0.0", "", { "dependencies": { "tr46": "~0.0.3", "webidl-conversions": "^3.0.0" } }, "sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw=="],
 
+    "@ohif/app/copy-webpack-plugin/globby": ["globby@12.2.0", "", { "dependencies": { "array-union": "^3.0.1", "dir-glob": "^3.0.1", "fast-glob": "^3.2.7", "ignore": "^5.1.9", "merge2": "^1.4.1", "slash": "^4.0.0" } }, "sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA=="],
+
     "@ohif/extension-ultrasound-pleura-bline/copy-webpack-plugin/globby": ["globby@12.2.0", "", { "dependencies": { "array-union": "^3.0.1", "dir-glob": "^3.0.1", "fast-glob": "^3.2.7", "ignore": "^5.1.9", "merge2": "^1.4.1", "slash": "^4.0.0" } }, "sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA=="],
 
     "@ohif/extension-ultrasound-pleura-bline/webpack/eslint-scope": ["eslint-scope@5.1.1", "", { "dependencies": { "esrecurse": "^4.3.0", "estraverse": "^4.1.1" } }, "sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw=="],
@@ -7098,6 +7111,10 @@
     "@octokit/request/node-fetch/whatwg-url/tr46": ["tr46@0.0.3", "", {}, "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw=="],
 
     "@octokit/request/node-fetch/whatwg-url/webidl-conversions": ["webidl-conversions@3.0.1", "", {}, "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ=="],
+
+    "@ohif/app/copy-webpack-plugin/globby/array-union": ["array-union@3.0.1", "", {}, "sha512-1OvF9IbWwaeiM9VhzYXVQacMibxpXOMYVNIvMtKRyX9SImBXpKcFr8XvFDeEslCyuH/t6KRt7HEO94AlP8Iatw=="],
+
+    "@ohif/app/copy-webpack-plugin/globby/slash": ["slash@4.0.0", "", {}, "sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew=="],
 
     "@ohif/extension-ultrasound-pleura-bline/copy-webpack-plugin/globby/array-union": ["array-union@3.0.1", "", {}, "sha512-1OvF9IbWwaeiM9VhzYXVQacMibxpXOMYVNIvMtKRyX9SImBXpKcFr8XvFDeEslCyuH/t6KRt7HEO94AlP8Iatw=="],
 
