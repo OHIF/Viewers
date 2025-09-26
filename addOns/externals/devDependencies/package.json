@@ -62,7 +62,7 @@
     "jest-junit": "^6.4.0",
     "lerna": "^7.2.0",
     "lint-staged": "^9.0.2",
-    "mini-css-extract-plugin": "^2.1.0",
+    "mini-css-extract-plugin": "2.1.0",
     "optimize-css-assets-webpack-plugin": "^6.0.1",
     "postcss": "^8.3.5",
     "postcss-import": "^14.0.2",

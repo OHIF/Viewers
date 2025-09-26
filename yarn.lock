@@ -13281,13 +13281,12 @@ min-indent@^1.0.0:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
-mini-css-extract-plugin@^2.1.0:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.9.2.tgz#966031b468917a5446f4c24a80854b2947503c5b"
-  integrity sha512-GJuACcS//jtq4kCtd5ii/M0SZf7OZRH+BxdqXZHaJfb8TJiVl+NgQRPwiYt2EuqeSkNydn/7vP+bcE27C5mb9w==
+mini-css-extract-plugin@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.1.0.tgz#4aa6558b527ad4c168fee4a20b6092ebe9f98309"
+  integrity sha512-SV1GgjMcfqy6hW07rAniUbQE4qS3inh3v4rZEUySkPRWy3vMbS3jUCjMOvNI4lUnDlQYJEmuUqKktTCNY5koFQ==
   dependencies:
-    schema-utils "^4.0.0"
-    tapable "^2.2.1"
+    schema-utils "^3.0.0"
 
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
@@ -17858,7 +17857,7 @@ tailwindcss@3.2.4:
     quick-lru "^5.1.1"
     resolve "^1.22.1"
 
-tapable@^2.0.0, tapable@^2.1.1, tapable@^2.2.0, tapable@^2.2.1:
+tapable@^2.0.0, tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.2.tgz#ab4984340d30cb9989a490032f086dbb8b56d872"
   integrity sha512-Re10+NauLTMCudc7T5WLFLAwDhQ0JWdrMK+9B2M8zR5hRExKmsRDCBA7/aV/pNJFltmBFO5BAMlQFi/vq3nKOg==
