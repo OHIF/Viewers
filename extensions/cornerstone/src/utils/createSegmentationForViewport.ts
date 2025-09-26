@@ -7,7 +7,7 @@ function _createDefaultSegments(createInitialSegment?: boolean) {
   return createInitialSegment
     ? {
         1: {
-          label: `${i18n.t('Segment')} 1`,
+          label: `${i18n.t('Tools:Segment')} 1`,
           active: true,
         },
       }
@@ -48,7 +48,7 @@ export async function createSegmentationForViewport(
 
   const segs = segmentationService.getSegmentations();
 
-  const label = options.label || `Segmentation ${segs.length + 1}`;
+  const label = options.label || `${i18n.t('Tools:Segmentation')} ${segs.length + 1}`;
   const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);

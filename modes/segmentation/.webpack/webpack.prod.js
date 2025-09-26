@@ -39,6 +39,12 @@ const config = {
         amd: '@ohif/ui',
         root: '@ohif/ui',
       },
+      i18next: {
+        commonjs2: 'i18next',
+        commonjs: 'i18next',
+        amd: 'i18next',
+        root: 'i18next',
+      },
     },
   ],
   module: {
