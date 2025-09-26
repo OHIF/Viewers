@@ -1,6 +1,5 @@
 import React from 'react';
-import { useActiveViewportDisplaySets, useSystem, utils } from '@ohif/core';
-// import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
+import { useActiveViewportDisplaySets, utils } from '@ohif/core';
 
 import { AccordionGroup } from './AccordionGroup';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
@@ -63,8 +62,7 @@ export const groupByStudy = (items, grouping, childProps) => {
 export function StudyMeasurements(props): React.ReactNode {
   const { items, grouping = {}, children } = props;
 
-  const system = useSystem();
-  const activeDisplaySets = useActiveViewportDisplaySets(system);
+  const activeDisplaySets = useActiveViewportDisplaySets();
   const activeStudyUID = activeDisplaySets?.[0]?.StudyInstanceUID;
 
   return (

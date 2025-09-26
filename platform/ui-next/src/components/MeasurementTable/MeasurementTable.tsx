@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataRow, PanelSection } from '../../index';
+import { DataRow, Icons, PanelSection, Tooltip, TooltipContent, TooltipTrigger } from '../../index';
 import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
@@ -11,7 +11,7 @@ interface MeasurementTableContext {
 }
 
 const [MeasurementTableProvider, useMeasurementTableContext] =
-  createContext<MeasurementTableContext>('MeasurementTable', { data: [] });
+  createContext<MeasurementTableContext>('MeasurementTable', { data: [], isExpanded: true });
 
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
@@ -91,6 +91,7 @@ interface MeasurementItem {
   isLocked: boolean;
   toolName: string;
   isExpanded: boolean;
+  isUnmapped?: boolean;
 }
 
 interface RowProps {
@@ -117,10 +118,27 @@ const Row = ({ item, index }: RowProps) => {
       onRename={e => onAction(e, 'renameMeasurement', uid)}
       onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
       onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
+      onColor={e => onAction(e, 'changeMeasurementColor', uid)}
       disableEditing={disableEditing}
-      isExpanded={isExpanded}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
+      statusSlot={
+        item.isUnmapped ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex h-6 w-6 items-center justify-center">
+                <Icons.ByName
+                  name="status-alert"
+                  className="h-4 w-4 text-yellow-500"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <div>This structured report is not compatible with this application</div>
+            </TooltipContent>
+          </Tooltip>
+        ) : null
+      }
     />
   );
 };
