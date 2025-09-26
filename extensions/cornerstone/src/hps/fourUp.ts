@@ -1,9 +1,9 @@
 import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
-
+import i18n from 'i18next';
 export const fourUp = {
   id: 'fourUp',
   locked: true,
-  name: '3D four up',
+  name: i18n.t('Hps:3D four up'),
   icon: 'layout-advanced-3d-four-up',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',

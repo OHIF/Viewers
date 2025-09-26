@@ -1,4 +1,5 @@
 import type { Button } from '@ohif/core/types';
+import i18n from 'i18next';
 
 export const setToolActiveToolbar = {
   commandName: 'setToolActive',
@@ -31,8 +32,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-length',
-      label: 'Length',
-      tooltip: 'Length Tool',
+      label: i18n.t('Buttons:Length'),
+      tooltip: i18n.t('Buttons:Length Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -48,8 +49,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-bidirectional',
-      label: 'Bidirectional',
-      tooltip: 'Bidirectional Tool',
+      label: i18n.t('Buttons:Bidirectional'),
+      tooltip: i18n.t('Buttons:Bidirectional Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -65,8 +66,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-ellipse',
-      label: 'Ellipse',
-      tooltip: 'Ellipse ROI',
+      label: i18n.t('Buttons:Ellipse'),
+      tooltip: i18n.t('Buttons:Ellipse ROI'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -82,8 +83,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-circle',
-      label: 'Circle',
-      tooltip: 'Circle Tool',
+      label: i18n.t('Buttons:Circle'),
+      tooltip: i18n.t('Buttons:Circle Tool'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -99,8 +100,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
-      label: 'Zoom',
-      tooltip: 'Zoom',
+      label: i18n.t('Buttons:Zoom'),
+      tooltip: i18n.t('Buttons:Zoom'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -116,8 +117,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
-      label: 'Pan',
-      tooltip: 'Pan',
+      label: i18n.t('Buttons:Pan'),
+      tooltip: i18n.t('Buttons:Pan'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -133,8 +134,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
-      label: 'Capture',
-      tooltip: 'Capture',
+      label: i18n.t('Buttons:Capture'),
+      tooltip: i18n.t('Buttons:Capture'),
       commands: 'showDownloadViewportModal',
       evaluate: [
         'evaluate.action',
@@ -161,8 +162,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-reset',
-      label: 'Reset View',
-      tooltip: 'Reset View',
+      label: i18n.t('Buttons:Reset View'),
+      tooltip: i18n.t('Buttons:Reset View'),
       commands: 'resetViewport',
       evaluate: 'evaluate.action',
     },
@@ -172,8 +173,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-rotate-right',
-      label: 'Rotate Right',
-      tooltip: 'Rotate Right +90',
+      label: i18n.t('Buttons:Rotate Right'),
+      tooltip: i18n.t('Buttons:Rotate Right +90'),
       commands: 'rotateViewportCW',
       evaluate: 'evaluate.action',
     },
@@ -183,8 +184,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-flip-horizontal',
-      label: 'Flip Horizontally',
-      tooltip: 'Flip Horizontally',
+      label: i18n.t('Buttons:Flip Horizontally'),
+      tooltip: i18n.t('Buttons:Flip Horizontally'),
       commands: 'flipViewportHorizontal',
       evaluate: 'evaluate.action',
     },
@@ -194,8 +195,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-stack-scroll',
-      label: 'Stack Scroll',
-      tooltip: 'Stack Scroll',
+      label: i18n.t('Buttons:Stack Scroll'),
+      tooltip: i18n.t('Buttons:Stack Scroll'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {
@@ -211,8 +212,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-invert',
-      label: 'Invert Colors',
-      tooltip: 'Invert Colors',
+      label: i18n.t('Buttons:Invert Colors'),
+      tooltip: i18n.t('Buttons:Invert Colors'),
       commands: 'invertViewport',
       evaluate: 'evaluate.action',
     },
@@ -222,8 +223,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-calibration',
-      label: 'Calibration Line',
-      tooltip: 'Calibration Line',
+      label: i18n.t('Buttons:Calibration Line'),
+      tooltip: i18n.t('Buttons:Calibration Line'),
       commands: {
         ...setToolActiveToolbar,
         commandOptions: {

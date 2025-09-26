@@ -21,6 +21,10 @@ import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import Messages from './Messages.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
+import CaptureViewportModal from './CaptureViewportModal.json';
+import Hps from './Hps.json';
+import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import Tools from './Tools.json';
 
 export default {
   'en-US': {
@@ -47,5 +51,9 @@ export default {
     ViewportDownloadForm,
     Messages,
     WindowLevelActionMenu,
+    CaptureViewportModal,
+    Hps,
+    ToolbarLayoutSelector,
+    Tools,
   },
 };
