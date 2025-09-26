@@ -97,4 +97,5 @@ export default {
         },
     ],
   },
+  'studyBrowser.thumbnailClickCallback': {},
 };
