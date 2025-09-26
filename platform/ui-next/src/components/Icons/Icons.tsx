@@ -146,6 +146,7 @@ import {
   ToolExpand,
   ToolClickSegment,
   ToolSegmentLabel,
+  ToolSculptor,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -723,6 +724,7 @@ export const Icons = {
   'tool-referenceLines': (props: IconProps) => ToolReferenceLines(props),
   'tool-reset': (props: IconProps) => ToolReset(props),
   'tool-rotate-right': (props: IconProps) => ToolRotateRight(props),
+  'icon-tool-sculptor': (props: IconProps) => ToolSculptor(props),
   'tool-seg-brush': (props: IconProps) => ToolSegBrush(props),
   'tool-seg-eraser': (props: IconProps) => ToolSegEraser(props),
   'tool-seg-shape': (props: IconProps) => ToolSegShape(props),

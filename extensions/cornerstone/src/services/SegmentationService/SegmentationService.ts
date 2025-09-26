@@ -828,6 +828,15 @@ class SegmentationService extends PubSubService {
     cstSegmentation.config.style.resetToGlobalStyle();
   };
 
+  public getNextAvailableSegmentIndex(segmentationId: string): number {
+    const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
+    // grab the next available segment index based on the object keys,
+    // so basically get the highest segment index value + 1
+
+    const segmentKeys = Object.keys(csSegmentation.segments);
+    return segmentKeys.length === 0 ? 1 : Math.max(...segmentKeys.map(Number)) + 1;
+  }
+
   /**
    * Adds a new segment to the specified segmentation.
    * @param segmentationId - The ID of the segmentation to add the segment to.
@@ -861,10 +870,7 @@ class SegmentationService extends PubSubService {
 
     let segmentIndex = config.segmentIndex;
     if (!segmentIndex) {
-      // grab the next available segment index based on the object keys,
-      // so basically get the highest segment index value + 1
-      const segmentKeys = Object.keys(csSegmentation.segments);
-      segmentIndex = segmentKeys.length === 0 ? 1 : Math.max(...segmentKeys.map(Number)) + 1;
+      segmentIndex = this.getNextAvailableSegmentIndex(segmentationId);
     }
 
     // update the segmentation

@@ -1,7 +1,32 @@
+import { useUIStateStore } from '@ohif/extension-default';
+import LogicalContourOperationsOptions from './components/LogicalContourOperationsOptions';
+import SimplifyContourOptions from './components/SimplifyContourOptions';
+import SmoothContoursOptions from './components/SmoothContoursOptions';
+
 export function getToolbarModule({ servicesManager }: withAppTypes) {
-  const { segmentationService, toolbarService, toolGroupService, customizationService } =
-    servicesManager.services;
+  const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
   return [
+    {
+      name: 'cornerstone.SimplifyContourOptions',
+      defaultComponent: SimplifyContourOptions,
+    },
+    {
+      name: 'cornerstone.LogicalContourOperationsOptions',
+      defaultComponent: LogicalContourOperationsOptions,
+    },
+    {
+      name: 'cornerstone.SmoothContoursOptions',
+      defaultComponent: SmoothContoursOptions,
+    },
+    {
+      name: 'cornerstone.isActiveSegmentationUtility',
+      evaluate: ({ button }) => {
+        const { uiState } = useUIStateStore.getState();
+        return {
+          isActive: uiState[`activeSegmentationUtility`] === button.id,
+        };
+      },
+    },
     {
       name: 'evaluate.cornerstone.hasSegmentation',
       evaluate: ({ viewportId }) => {

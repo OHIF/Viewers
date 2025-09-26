@@ -23,7 +23,8 @@ function ToolSettings({ options }) {
   }
 
   if (typeof options === 'function') {
-    return options();
+    const OptionsComponent = options;
+    return <OptionsComponent />;
   }
 
   return (

@@ -78,6 +78,7 @@ interface DataRowProps {
   //
   colorHex?: string;
   onColor: (e) => void;
+  onCopy?: (e) => void;
   className?: string;
 }
 
@@ -93,6 +94,7 @@ export const DataRow: React.FC<DataRowProps> = ({
   onRename,
   onDelete,
   onColor,
+  onCopy,
   isSelected = false,
   isVisible = true,
   disableEditing = false,
@@ -115,6 +117,9 @@ export const DataRow: React.FC<DataRowProps> = ({
     switch (action) {
       case 'Rename':
         onRename(e);
+        break;
+      case 'Copy':
+        onCopy?.(e);
         break;
       case 'Lock':
         onToggleLocked(e);
@@ -316,6 +321,17 @@ export const DataRow: React.FC<DataRowProps> = ({
                       Rename
                     </span>
                   </DropdownMenuItem>
+                  {onCopy && (
+                    <DropdownMenuItem onClick={e => handleAction('Copy', e)}>
+                      <Icons.Copy className="text-foreground" />
+                      <span
+                        className="pl-2"
+                        data-cy="Duplicate"
+                      >
+                        Duplicate
+                      </span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
                     <Icons.Delete className="text-foreground" />
                     <span

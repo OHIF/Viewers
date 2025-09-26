@@ -139,7 +139,8 @@ export default async function init({
   cornerstoneTools.segmentation.config.style.setStyle(
     { type: SegmentationRepresentations.Contour },
     {
-      renderFill: false,
+      renderFill: true,
+      fillAlpha: 0.6,
     }
   );
 

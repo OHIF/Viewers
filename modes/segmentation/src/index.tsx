@@ -128,8 +128,7 @@ function modeFactory({ modeConfiguration }) {
 
       const commonSegmentationTools = ['SegmentLabelTool'];
 
-      // Placeholder for near future.
-      const contourUtilities = [];
+      const contourUtilities = ['LogicalContourOperations', 'SimplifyContours', 'SmoothContours'];
 
       const contourTools = [
         'PlanarFreehandContourSegmentationTool',
