@@ -5,9 +5,14 @@ import { ToolbarService } from '@ohif/core';
 
 const { TOOLBAR_SECTIONS } = ToolbarService;
 
-// Allow this mode by excluding non-imaging modalities such as SR, SEG
-// Also, SM is not a simple imaging modalities, so exclude it.
-export const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
+/**
+ * Define non-imaging modalities.
+ * This can be used to exclude modes which have only these modalities,
+ * or it can be used to not display thumbnails for some of these.
+ * This list used to include SM, for whole slide imaging, but this is now supported
+ * by cornerstone.  Others of these may get added.
+ */
+export const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR', 'SR', 'DOC'];
 
 export const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -78,15 +83,31 @@ export const sopClassHandlers = [
       dicomRT.sopClassHandler,
     ];
 
+/**
+ * Indicate this is a valid mode if:
+ *   - it contains at least one of the modeModalities
+ *   - it contains all of the array value in modeModalities
+ * Otherwise, if modeModalities is not defined:
+ *   - it contains at least one modality other than the nonModeMOdalities.
+ */
 export function isValidMode({ modalities }) {
       const modalities_list = modalities.split('\\');
 
-      // Exclude non-image modalities
+      if( this.modeModalities?.length ) {
+        for(const modeModality of this.modeModalities) {
+          if (Array.isArray(modeModality) && modeModality.every(m => modalities.indexOf(m)!==-1)) {
+            return { valid: true, description: `Matches ${modeModality.join(', ')}`};
+          } else if (modalities.indexOf(modeModality) ) {
+            return { valid: true, description: `Matches ${modeModality}`};
+          }
+        }
+        return { valid: false, description: `None of the mode modalities match: ${JSON.stringify(this.modeModalities)}`}
+      }
+
       return {
-        valid: !!modalities_list.filter(modality => this.nonModeModalities.indexOf(modality) === -1)
-          .length,
+        valid: !!modalities_list.find(modality => this.nonModeModalities.indexOf(modality) === -1),
         description:
-          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SEG, RTSTRUCT',
+          `The mode does not support studies that ONLY include the following modalities: ${this.nonModeModalities.join(', ')}`,
       };
     }
 
