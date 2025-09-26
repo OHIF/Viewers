@@ -52,9 +52,12 @@ The mode configuration specifies which `extensions` the mode requires, which
 template this defines which `side panels` will be available, as well as what
 `viewports` and which `displaySets` they may hang.
 
-Mode's config is composed of three elements:
+Mode's config is composed of these elements:
 - `id`: the mode `id`
 - `modeFactory`: the function that returns the mode specific configuration
+- `modeInstance`: An optional configuration used by the default modeFactory
+      exported by the basic mode.  This allows specifying or updating the
+      default mode values.
 - `extensionDependencies`: the list of extensions that the mode requires
 
 
@@ -62,10 +65,18 @@ that return a config object with certain
 properties, the high-level view of this config object is:
 
 ```js title="modes/example/src/index.js"
-function modeFactory() {
-  return {
+function modeFactory({modeConfiguration}) {
+  return { ...this.modeInstance, ...modeConfiguration };
+
+}
+
+const mode = {
+  id,
+  modeFactory,
+  modeInstance: {
     id: '',
     version: '',
+    hide: true,
     displayName: '',
     onModeEnter: () => {},
     onModeExit: () => {},
@@ -75,19 +86,27 @@ function modeFactory() {
       {
         path: '',
         init: () => {},
-        layoutTemplate: () => {},
+        layoutInstance: {
+          id,
+          props: {
+            leftPanels: [],
+            leftPanelResizable: true,
+            rightPanels: [],
+            rightPanelClosed: true,
+            rightPanelResizable: true,
+            viewports: [],
+          },
+        },
+        layoutTemplate: function() { return this.layoutInstance },
       },
     ],
     extensions: extensionDependencies,
     hangingProtocol: [],
     sopClassHandlers: [],
-    hotkeys: []
-  };
-}
-
-const mode = {
-  id,
-  modeFactory,
+    hotkeys: [],
+    nonModeModalities: [],
+    modeModalities: [],
+  },
   extensionDependencies,
 };
 
@@ -107,6 +126,12 @@ export default mode;
           id
       </td>
       <td align="left">unique mode id used to refer to the mode</td>
+    </tr>
+    <tr>
+      <td align="left">
+          hide
+      </td>
+      <td align="left">Set to true to hide this mode on the worklist, but allow it in the path</td>
     </tr>
     <tr>
       <td align="left">
@@ -168,7 +193,7 @@ export default mode;
           hanging protocol
         </a>
       </td>
-      <td align="left">list of hanging protocols that the mode should have access to</td>
+      <td align="left">list of hanging protocols that the mode applies initially, choosing the highest scoring match</td>
     </tr>
     <tr>
       <td align="left">
@@ -186,9 +211,42 @@ export default mode;
       </td>
       <td align="left">hotkeys</td>
     </tr>
+    <tr>
+      <td align="left">
+          modeModalities
+      </td>
+      <td align="left">If non-empty, then the default isValidMode will only return true when the modalities list has all of the elements of one of the mode modalities.  Eg `[` [CT,PT], [MR,PT] ]` would mean that the mode supports a CT AND a PT,  OR an MR and a PT</td>
+    </tr>
+    <tr>
+      <td align="left">
+          nonModeModalities
+      </td>
+      <td align="left">Enable the mode if the modalities list contains a modality OTHER than those in the array</td>
+    </tr>
+    <tr>
+      <td align="left">
+          enableSegmentationEdit
+      </td>
+      <td align="left">Boolean to skip the segmentation edit capabilities</td>
+    </tr>
+    <tr>
+      <td align="left">
+          toolbarSections
+      </td>
+      <td align="left">An object containing toolbar section definitions to register</td>
+    </tr>
+
 
   </tbody>
 </table>
+
+### Extending Modes
+The `basic` mode provides support for creating mode extensions without having
+to redeclare the entire mode.  See `longitudinal/src/index.ts` for an example
+mode that builds on top of the basic mode.  Also see `basic/src/index.tsx` for
+some default functions which can be used to create your own modes.  Doing a mode
+this way makes the definition of new modes based on your existing mode much easier,
+and the upgrade to new versions of modes tends to be more consistent.
 
 ### Consuming Extensions
 
@@ -345,7 +403,6 @@ const myHotkeys = [
 
 function modeFactory() {
   return {
-    id: '',
     id: '',
     displayName: '',
     /*

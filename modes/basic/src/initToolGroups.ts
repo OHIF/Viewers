@@ -1,5 +1,3 @@
-import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
-
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',

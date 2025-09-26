@@ -11,6 +11,8 @@ summary: Documentation for OHIF Mode validity checks, which determine when speci
 There are two mechanism for checking the validity of a mode for a study.
 
 - `isValidMode`: which is called on a selected study in the workList.
+   - There is an example function in modes/basic which returns true if there
+     is at least one modality OTHER than those in the list.
 - `validTags`
 
 

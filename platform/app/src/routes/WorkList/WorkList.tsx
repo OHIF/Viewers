@@ -377,7 +377,7 @@ function WorkList({
         >
           <div className="flex flex-row gap-2">
             {(appConfig.groupEnabledModesFirst
-              ? appConfig.loadedModes.sort((a, b) => {
+              ? appConfig.loadedModes.filter(m => m.hide!==true).sort((a, b) => {
                   const isValidA = a.isValidMode({
                     modalities: modalities.replaceAll('/', '\\'),
                     study,
