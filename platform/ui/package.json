@@ -19,14 +19,11 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules/.cache/storybook && shx rm -rf dist",
+    "clean": "shx rm -rf dist",
     "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "yarn run build --watch",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "storybook": "storybook dev -p 6006",
-    "dev": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build:package": "yarn run build"
   },
   "peerDependencies": {
     "react": "^18.3.1",
@@ -66,14 +63,6 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
-    "@storybook/addon-actions": "^7.6.10",
-    "@storybook/addon-docs": "^7.6.10",
-    "@storybook/addon-essentials": "^7.6.10",
-    "@storybook/addon-links": "^7.6.10",
-    "@storybook/cli": "^7.6.10",
-    "@storybook/react": "^7.6.10",
-    "@storybook/react-webpack5": "^7.6.10",
-    "@storybook/source-loader": "^7.6.10",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^9.1.2",
     "dotenv-webpack": "^8.0.1",
@@ -81,7 +70,6 @@
     "postcss-loader": "^7.2.4",
     "prop-types": "^15.8.1",
     "remark-gfm": "^3.0.1",
-    "storybook": "^7.6.10",
     "tailwindcss": "3.2.4"
   }
 }
