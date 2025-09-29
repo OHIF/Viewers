@@ -14,6 +14,7 @@ import {
 
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from './Table';
 import { Button } from '../Button';
+import { ScrollArea } from '../ScrollArea';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -31,6 +32,7 @@ export interface DataTableProps<TData, TValue> {
   showColumnVisibilityControls?: boolean; // default: true
   tableClassName?: string;
   onRowSelectionChange?: (selectedRows: TData[], rowSelection: RowSelectionState) => void;
+  title?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +45,7 @@ export function DataTable<TData, TValue>({
   showColumnVisibilityControls = true,
   tableClassName,
   onRowSelectionChange,
+  title,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
   const [columnVisibility, setColumnVisibility] =
@@ -70,10 +73,11 @@ export function DataTable<TData, TValue>({
   }, [rowSelection, table, onRowSelectionChange]);
 
   return (
-    <div className="border-input flex h-full flex-col overflow-hidden rounded-md border">
-      {showColumnVisibilityControls && (
-        <div className="flex items-center">
-          <div className="ml-auto">
+    <div className="flex h-full flex-col">
+      {(showColumnVisibilityControls || title) && (
+        <div className="flex items-center justify-between gap-2 py-2">
+<div className="text-xl text-foreground">{title}</div>
+          {showColumnVisibilityControls && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -99,59 +103,62 @@ export function DataTable<TData, TValue>({
                   ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          )}
         </div>
       )}
-      <div className="min-h-0 flex-1">
-        <Table
-          className={tableClassName}
-          containerClassName="h-full"
-        >
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead
-                    key={header.id}
-                    className="bg-background sticky top-0 z-10"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() ? 'selected' : undefined}
-                  onClick={() => row.toggleSelected()}
-                  aria-selected={row.getIsSelected()}
-                  className="cursor-pointer"
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+      <div className="border-input min-h-0 flex-1 overflow-hidden rounded-md border">
+        <ScrollArea className="h-full">
+          <Table
+            className={tableClassName}
+            containerClassName="h-full"
+            noScroll
+          >
+            <TableHeader>
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <TableHead
+                      key={header.id}
+                      className="bg-muted sticky top-0 z-10"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={table.getAllLeafColumns().length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() ? 'selected' : undefined}
+                    onClick={() => row.toggleSelected()}
+                    aria-selected={row.getIsSelected()}
+                    className="cursor-pointer"
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={table.getAllLeafColumns().length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </div>
     </div>
   );

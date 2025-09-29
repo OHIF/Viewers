@@ -26,7 +26,6 @@ const App = () => {
           {/* Main Area */}
           <ResizablePanel defaultSize={70}>
             <div className="flex h-full w-full flex-col p-3">
-              <h1 className="text-foreground mb-4 text-2xl font-medium">Study List</h1>
               <div className="min-h-0 flex-1">
                 <div className="bg-background h-full rounded-md p-2">
                   {/* Data Table */}
@@ -36,6 +35,7 @@ const App = () => {
                     getRowId={row => row.accession}
                     singleRowSelection={true}
                     showColumnVisibilityControls={true}
+                    title="Study List"
                     tableClassName="min-w-[1000px]"
                     onRowSelectionChange={rows => setSelected(rows[0] ?? null)}
                   />
