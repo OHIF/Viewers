@@ -98,6 +98,16 @@ import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from './Table';
+import {
   ViewportActionButton,
   PatientInfo,
   ViewportActionBar,
@@ -184,6 +194,14 @@ export {
   ToggleGroup,
   ToggleGroupItem,
   ScrollBar,
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
   Accordion,
   AccordionContent,
   AccordionItem,
