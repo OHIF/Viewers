@@ -1,6 +1,6 @@
 [
   {
-    "patient": "John Doe",
+    "patient": "Doe, John",
     "mrn": "MRN001234",
     "studyDateTime": "2025-06-14 09:32",
     "modalities": "CT",
@@ -9,7 +9,7 @@
     "instances": 324
   },
   {
-    "patient": "Jane Smith",
+    "patient": "Smith, Jane",
     "mrn": "MRN007891",
     "studyDateTime": "2025-06-13 14:05",
     "modalities": "MR",
@@ -18,7 +18,7 @@
     "instances": 210
   },
   {
-    "patient": "Carlos Ruiz",
+    "patient": "Ruiz, Carlos",
     "mrn": "MRN003456",
     "studyDateTime": "2025-06-12 11:48",
     "modalities": "US",
@@ -27,12 +27,462 @@
     "instances": 58
   },
   {
-    "patient": "Amina Khan",
+    "patient": "Khan, Amina",
     "mrn": "MRN005432",
     "studyDateTime": "2025-06-11 08:21",
     "modalities": "PET/CT",
     "description": "Whole Body PET/CT",
     "accession": "ACC-998877",
     "instances": 512
+  },
+  {
+    "patient": "Johnson, Michael",
+    "mrn": "MRN010001",
+    "studyDateTime": "2025-06-15 10:12",
+    "modalities": "CT",
+    "description": "CT Abdomen/Pelvis w/ Contrast",
+    "accession": "ACC-300001",
+    "instances": 512
+  },
+  {
+    "patient": "Patel, Priya",
+    "mrn": "MRN010002",
+    "studyDateTime": "2025-06-15 12:45",
+    "modalities": "MR",
+    "description": "MR Brain w/ and w/o Contrast",
+    "accession": "ACC-300002",
+    "instances": 240
+  },
+  {
+    "patient": "Lee, David",
+    "mrn": "MRN010003",
+    "studyDateTime": "2025-06-15 08:05",
+    "modalities": "US",
+    "description": "US Carotid Duplex",
+    "accession": "ACC-300003",
+    "instances": 76
+  },
+  {
+    "patient": "Ahmed, Fatima",
+    "mrn": "MRN010004",
+    "studyDateTime": "2025-06-14 16:20",
+    "modalities": "XR",
+    "description": "XR Chest PA & Lateral",
+    "accession": "ACC-300004",
+    "instances": 4
+  },
+  {
+    "patient": "Thompson, Robert",
+    "mrn": "MRN010005",
+    "studyDateTime": "2025-06-14 21:50",
+    "modalities": "CT",
+    "description": "CT Head w/o Contrast",
+    "accession": "ACC-300005",
+    "instances": 220
+  },
+  {
+    "patient": "Chen, Emily",
+    "mrn": "MRN010006",
+    "studyDateTime": "2025-06-14 09:10",
+    "modalities": "MG",
+    "description": "MG Screening Tomosynthesis",
+    "accession": "ACC-300006",
+    "instances": 132
+  },
+  {
+    "patient": "Zhang, Wei",
+    "mrn": "MRN010007",
+    "studyDateTime": "2025-06-13 15:35",
+    "modalities": "DEXA",
+    "description": "DEXA Bone Density Axial",
+    "accession": "ACC-300007",
+    "instances": 28
+  },
+  {
+    "patient": "Rossi, Sofia",
+    "mrn": "MRN010008",
+    "studyDateTime": "2025-06-13 11:22",
+    "modalities": "MR",
+    "description": "MR Knee Left",
+    "accession": "ACC-300008",
+    "instances": 180
+  },
+  {
+    "patient": "O'Connor, Liam",
+    "mrn": "MRN010009",
+    "studyDateTime": "2025-06-13 13:58",
+    "modalities": "US",
+    "description": "US Venous Doppler Lower Extremity Right",
+    "accession": "ACC-300009",
+    "instances": 64
+  },
+  {
+    "patient": "Garcia, Maria",
+    "mrn": "MRN010010",
+    "studyDateTime": "2025-06-13 18:42",
+    "modalities": "CT",
+    "description": "CT Pulmonary Angiography",
+    "accession": "ACC-300010",
+    "instances": 650
+  },
+  {
+    "patient": "Al-Sayed, Ahmed",
+    "mrn": "MRN010011",
+    "studyDateTime": "2025-06-12 09:30",
+    "modalities": "US",
+    "description": "US Abdomen RUQ",
+    "accession": "ACC-300011",
+    "instances": 54
+  },
+  {
+    "patient": "Kim, Hannah",
+    "mrn": "MRN010012",
+    "studyDateTime": "2025-06-12 14:17",
+    "modalities": "MR",
+    "description": "MR Lumbar Spine w/o Contrast",
+    "accession": "ACC-300012",
+    "instances": 156
+  },
+  {
+    "patient": "Brown, Ethan",
+    "mrn": "MRN010013",
+    "studyDateTime": "2025-06-12 16:05",
+    "modalities": "XR",
+    "description": "XR Ankle Right",
+    "accession": "ACC-300013",
+    "instances": 3
+  },
+  {
+    "patient": "Martinez, Olivia",
+    "mrn": "MRN010014",
+    "studyDateTime": "2025-06-12 08:02",
+    "modalities": "CT",
+    "description": "CT Chest Low-Dose Screening",
+    "accession": "ACC-300014",
+    "instances": 420
+  },
+  {
+    "patient": "Wilson, Noah",
+    "mrn": "MRN010015",
+    "studyDateTime": "2025-06-11 15:26",
+    "modalities": "MR",
+    "description": "MR Shoulder Right",
+    "accession": "ACC-300015",
+    "instances": 168
+  },
+  {
+    "patient": "Nguyen, Chloe",
+    "mrn": "MRN010016",
+    "studyDateTime": "2025-06-11 10:40",
+    "modalities": "XR",
+    "description": "XR Abdomen (KUB)",
+    "accession": "ACC-300016",
+    "instances": 2
+  },
+  {
+    "patient": "Silva, Lucas",
+    "mrn": "MRN010017",
+    "studyDateTime": "2025-06-11 12:55",
+    "modalities": "US",
+    "description": "US Renal",
+    "accession": "ACC-300017",
+    "instances": 48
+  },
+  {
+    "patient": "Costa, Isabella",
+    "mrn": "MRN010018",
+    "studyDateTime": "2025-06-11 13:20",
+    "modalities": "MG",
+    "description": "MG Diagnostic Unilateral Right",
+    "accession": "ACC-300018",
+    "instances": 96
+  },
+  {
+    "patient": "Alvarez, Mateo",
+    "mrn": "MRN010019",
+    "studyDateTime": "2025-06-11 17:45",
+    "modalities": "PET/CT",
+    "description": "PET/CT FDG Skull Base to Mid-Thigh",
+    "accession": "ACC-300019",
+    "instances": 582
+  },
+  {
+    "patient": "Tanaka, Yuki",
+    "mrn": "MRN010020",
+    "studyDateTime": "2025-06-10 09:12",
+    "modalities": "MR",
+    "description": "MR Angiography Brain w/ and w/o Contrast",
+    "accession": "ACC-300020",
+    "instances": 212
+  },
+  {
+    "patient": "Cohen, Sara",
+    "mrn": "MRN010021",
+    "studyDateTime": "2025-06-10 11:31",
+    "modalities": "CT",
+    "description": "CT Sinuses w/o Contrast",
+    "accession": "ACC-300021",
+    "instances": 190
+  },
+  {
+    "patient": "Ivanov, Pavel",
+    "mrn": "MRN010022",
+    "studyDateTime": "2025-06-10 13:03",
+    "modalities": "US",
+    "description": "US Thyroid",
+    "accession": "ACC-300022",
+    "instances": 44
+  },
+  {
+    "patient": "El-Sayed, Amira",
+    "mrn": "MRN010023",
+    "studyDateTime": "2025-06-10 15:18",
+    "modalities": "XR",
+    "description": "XR Shoulder Left",
+    "accession": "ACC-300023",
+    "instances": 4
+  },
+  {
+    "patient": "Papadopoulos, George",
+    "mrn": "MRN010024",
+    "studyDateTime": "2025-06-10 19:05",
+    "modalities": "CT",
+    "description": "CT Urogram",
+    "accession": "ACC-300024",
+    "instances": 780
+  },
+  {
+    "patient": "Bergstrom, Hanna",
+    "mrn": "MRN010025",
+    "studyDateTime": "2025-06-09 10:15",
+    "modalities": "DEXA",
+    "description": "DEXA Bone Density Axial",
+    "accession": "ACC-300025",
+    "instances": 30
+  },
+  {
+    "patient": "Johansson, Marcus",
+    "mrn": "MRN010026",
+    "studyDateTime": "2025-06-09 12:47",
+    "modalities": "MR",
+    "description": "MR Brain w/o Contrast",
+    "accession": "ACC-300026",
+    "instances": 132
+  },
+  {
+    "patient": "Bello, Aisha",
+    "mrn": "MRN010027",
+    "studyDateTime": "2025-06-09 08:55",
+    "modalities": "US",
+    "description": "US Pelvis TA/TV",
+    "accession": "ACC-300027",
+    "instances": 66
+  },
+  {
+    "patient": "Adeyemi, Seun",
+    "mrn": "MRN010028",
+    "studyDateTime": "2025-06-09 14:33",
+    "modalities": "XR",
+    "description": "XR Hand Left",
+    "accession": "ACC-300028",
+    "instances": 2
+  },
+  {
+    "patient": "Dubois, Lea",
+    "mrn": "MRN010029",
+    "studyDateTime": "2025-06-09 16:02",
+    "modalities": "MR",
+    "description": "MR Abdomen w/ and w/o Contrast",
+    "accession": "ACC-300029",
+    "instances": 228
+  },
+  {
+    "patient": "Novak, Tomas",
+    "mrn": "MRN010030",
+    "studyDateTime": "2025-06-08 09:42",
+    "modalities": "CT",
+    "description": "CT Cervical Spine w/o Contrast",
+    "accession": "ACC-300030",
+    "instances": 360
+  },
+  {
+    "patient": "Ortiz, Daniel",
+    "mrn": "MRN010031",
+    "studyDateTime": "2025-06-08 07:20",
+    "modalities": "XR",
+    "description": "XR Chest Portable AP",
+    "accession": "ACC-300031",
+    "instances": 1
+  },
+  {
+    "patient": "Petrova, Nadia",
+    "mrn": "MRN010032",
+    "studyDateTime": "2025-06-08 13:11",
+    "modalities": "NM",
+    "description": "NM Bone Scan Whole Body",
+    "accession": "ACC-300032",
+    "instances": 240
+  },
+  {
+    "patient": "Mehta, Arjun",
+    "mrn": "MRN010033",
+    "studyDateTime": "2025-06-08 15:37",
+    "modalities": "MR",
+    "description": "MR Prostate w/ and w/o Contrast",
+    "accession": "ACC-300033",
+    "instances": 200
+  },
+  {
+    "patient": "Lin, Mei",
+    "mrn": "MRN010034",
+    "studyDateTime": "2025-06-08 10:58",
+    "modalities": "US",
+    "description": "US Obstetric 2nd Trimester",
+    "accession": "ACC-300034",
+    "instances": 92
+  },
+  {
+    "patient": "O'Brien, Kevin",
+    "mrn": "MRN010035",
+    "studyDateTime": "2025-06-07 18:25",
+    "modalities": "CT",
+    "description": "CT Angiography Head/Neck",
+    "accession": "ACC-300035",
+    "instances": 700
+  },
+  {
+    "patient": "Hussain, Zahra",
+    "mrn": "MRN010036",
+    "studyDateTime": "2025-06-07 11:06",
+    "modalities": "MR",
+    "description": "MR Enterography",
+    "accession": "ACC-300036",
+    "instances": 216
+  },
+  {
+    "patient": "Nasser, Omar",
+    "mrn": "MRN010037",
+    "studyDateTime": "2025-06-07 09:30",
+    "modalities": "US",
+    "description": "US Aorta Screening",
+    "accession": "ACC-300037",
+    "instances": 42
+  },
+  {
+    "patient": "Walker, Jade",
+    "mrn": "MRN010038",
+    "studyDateTime": "2025-06-07 14:48",
+    "modalities": "XR",
+    "description": "XR Lumbar Spine 2-3 Views",
+    "accession": "ACC-300038",
+    "instances": 5
+  },
+  {
+    "patient": "Muller, Peter",
+    "mrn": "MRN010039",
+    "studyDateTime": "2025-06-07 08:12",
+    "modalities": "CT",
+    "description": "CT Coronary Calcium Score",
+    "accession": "ACC-300039",
+    "instances": 180
+  },
+  {
+    "patient": "Mendes, Carla",
+    "mrn": "MRN010040",
+    "studyDateTime": "2025-06-06 10:20",
+    "modalities": "MG",
+    "description": "MG Screening Tomosynthesis",
+    "accession": "ACC-300040",
+    "instances": 140
+  },
+  {
+    "patient": "Pereira, Joao",
+    "mrn": "MRN010041",
+    "studyDateTime": "2025-06-06 17:40",
+    "modalities": "PET/CT",
+    "description": "PET/CT FDG Whole Body",
+    "accession": "ACC-300041",
+    "instances": 620
+  },
+  {
+    "patient": "Krishnan, Rajiv",
+    "mrn": "MRN010042",
+    "studyDateTime": "2025-06-06 12:18",
+    "modalities": "MR",
+    "description": "MR Shoulder Left",
+    "accession": "ACC-300042",
+    "instances": 160
+  },
+  {
+    "patient": "Bianchi, Giulia",
+    "mrn": "MRN010043",
+    "studyDateTime": "2025-06-06 15:29",
+    "modalities": "CT",
+    "description": "CT Abdomen/Pelvis w/o Contrast",
+    "accession": "ACC-300043",
+    "instances": 480
+  },
+  {
+    "patient": "Svensson, Nora",
+    "mrn": "MRN010044",
+    "studyDateTime": "2025-06-05 08:44",
+    "modalities": "US",
+    "description": "US Gallbladder RUQ",
+    "accession": "ACC-300044",
+    "instances": 50
+  },
+  {
+    "patient": "Svensson, Nora",
+    "mrn": "MRN010045",
+    "studyDateTime": "2025-06-05 13:27",
+    "modalities": "XR",
+    "description": "XR Hip Left",
+    "accession": "ACC-300045",
+    "instances": 3
+  },
+  {
+    "patient": "Wei, Jing",
+    "mrn": "MRN010046",
+    "studyDateTime": "2025-06-05 11:05",
+    "modalities": "US",
+    "description": "US Doppler Carotid Bilateral",
+    "accession": "ACC-300046",
+    "instances": 70
+  },
+  {
+    "patient": "Mensah, Kofi",
+    "mrn": "MRN010047",
+    "studyDateTime": "2025-06-04 09:55",
+    "modalities": "NM",
+    "description": "NM HIDA w/ Ejection Fraction",
+    "accession": "ACC-300047",
+    "instances": 180
+  },
+  {
+    "patient": "Shah, Lila",
+    "mrn": "MRN010048",
+    "studyDateTime": "2025-06-04 14:12",
+    "modalities": "MR",
+    "description": "MR Cervical Spine w/o Contrast",
+    "accession": "ACC-300048",
+    "instances": 150
+  },
+  {
+    "patient": "Laurent, Antoine",
+    "mrn": "MRN010049",
+    "studyDateTime": "2025-06-04 16:50",
+    "modalities": "CT",
+    "description": "CT Head w/ and w/o Contrast",
+    "accession": "ACC-300049",
+    "instances": 540
+  },
+  {
+    "patient": "Park, Grace",
+    "mrn": "MRN010050",
+    "studyDateTime": "2025-06-04 12:40",
+    "modalities": "XR",
+    "description": "XR Foot Left",
+    "accession": "ACC-300050",
+    "instances": 2
   }
 ]
