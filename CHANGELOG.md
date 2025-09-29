@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.34...v3.12.0-beta.35) (2025-09-29)
+
+
+### Bug Fixes
+
+* **segmentation:** Restored segment label tool in longitudinal mode. ([#5443](https://github.com/OHIF/Viewers/issues/5443)) ([dd86a8e](https://github.com/OHIF/Viewers/commit/dd86a8eabd0712d25e7652a242377fe09597e8d5))
+
+
+
+
+
 # [3.12.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.33...v3.12.0-beta.34) (2025-09-29)
 
 **Note:** Version bump only for package ohif-monorepo-root
