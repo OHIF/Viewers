@@ -29,67 +29,36 @@ const App = () => {
           <ResizablePanel defaultSize={70}>
             <div className="flex h-full w-full flex-col p-3">
               <h1 className="text-foreground mb-4 text-2xl font-medium">Study List</h1>
-              {layout === 'bottom' ? (
-                <ScrollArea className="flex-1">
-                  <div className="bg-background rounded-md p-2">
-                    <Table className="min-w-[1000px]">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Patient</TableHead>
-                          <TableHead>MRN</TableHead>
-                          <TableHead>Study Date and Time</TableHead>
-                          <TableHead>Modalities</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Accession Number</TableHead>
-                          <TableHead className="text-right">Instances</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {data.map((row, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className="whitespace-nowrap">{row.patient}</TableCell>
-                            <TableCell className="whitespace-nowrap">{row.mrn}</TableCell>
-                            <TableCell className="whitespace-nowrap">{row.studyDateTime}</TableCell>
-                            <TableCell className="whitespace-nowrap">{row.modalities}</TableCell>
-                            <TableCell>{row.description}</TableCell>
-                            <TableCell className="whitespace-nowrap">{row.accession}</TableCell>
-                            <TableCell className="text-right">{row.instances}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </ScrollArea>
-              ) : (
-                <div className="bg-background rounded-md p-2">
-                  <Table className="min-w-[1000px]">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Patient</TableHead>
-                        <TableHead>MRN</TableHead>
-                        <TableHead>Study Date and Time</TableHead>
-                        <TableHead>Modalities</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Accession Number</TableHead>
-                        <TableHead className="text-right">Instances</TableHead>
+<ScrollArea className="flex-1">
+              <div className="bg-background rounded-md p-2">
+                <Table className="min-w-[1000px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Patient</TableHead>
+                      <TableHead>MRN</TableHead>
+                      <TableHead>Study Date and Time</TableHead>
+                      <TableHead>Modalities</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Accession Number</TableHead>
+                      <TableHead className="text-right">Instances</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.map((row, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="whitespace-nowrap">{row.patient}</TableCell>
+                        <TableCell className="whitespace-nowrap">{row.mrn}</TableCell>
+                        <TableCell className="whitespace-nowrap">{row.studyDateTime}</TableCell>
+                        <TableCell className="whitespace-nowrap">{row.modalities}</TableCell>
+                        <TableCell>{row.description}</TableCell>
+                        <TableCell className="whitespace-nowrap">{row.accession}</TableCell>
+                        <TableCell className="text-right">{row.instances}</TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.map((row, idx) => (
-                        <TableRow key={idx}>
-                          <TableCell className="whitespace-nowrap">{row.patient}</TableCell>
-                          <TableCell className="whitespace-nowrap">{row.mrn}</TableCell>
-                          <TableCell className="whitespace-nowrap">{row.studyDateTime}</TableCell>
-                          <TableCell className="whitespace-nowrap">{row.modalities}</TableCell>
-                          <TableCell>{row.description}</TableCell>
-                          <TableCell className="whitespace-nowrap">{row.accession}</TableCell>
-                          <TableCell className="text-right">{row.instances}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </ScrollArea>
             </div>
           </ResizablePanel>
 
