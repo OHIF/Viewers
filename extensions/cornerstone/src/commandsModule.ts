@@ -1858,37 +1858,17 @@ function commandsModule({
         }
       });
     },
-    toggleSegmentLabel: ({ enabled } = {}) => {
+    toggleSegmentLabel: ({ enabled }) => {
       const toolName = cornerstoneTools.SegmentLabelTool.toolName;
       const toolGroupIds = toolGroupService.getToolGroupIds();
 
-      const isOn = toolGroupIds.some(toolGroupId => {
-        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        const mode = toolGroup.getToolInstance(toolName)?.mode;
-        return mode === 'Active';
-      });
-
-      const targetState = typeof enabled === 'boolean' ? enabled : !isOn;
-
       toolGroupIds.forEach(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        if (targetState) {
+        if (enabled) {
           toolGroup.setToolActive(toolName);
         } else {
           toolGroup.setToolDisabled(toolName);
         }
-      });
-    },
-    /**
-     * Returns whether the SegmentLabel tool is active in any tool group
-     */
-    getSegmentLabelEnabled: () => {
-      const toolName = cornerstoneTools.SegmentLabelTool.toolName;
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-      return toolGroupIds.some(toolGroupId => {
-        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        const mode = toolGroup.getToolInstance(toolName)?.mode;
-        return mode === 'Active';
       });
     },
     /**
@@ -2543,7 +2523,6 @@ function commandsModule({
     toggleSegmentLabel: actions.toggleSegmentLabel,
     jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
     initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
-    getSegmentLabelEnabled: actions.getSegmentLabelEnabled,
   };
 
   return {

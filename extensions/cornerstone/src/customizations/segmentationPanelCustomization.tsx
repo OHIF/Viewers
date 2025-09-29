@@ -36,13 +36,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'segmentationToolbox.config': () => {
       // Get initial states based on current configuration
       const [previewEdits, setPreviewEdits] = useState(false);
-      const [segmentLabelEnabled, setSegmentLabelEnabled] = useState(() => {
-        try {
-          return !!commandsManager.run('getSegmentLabelEnabled');
-        } catch {
-          return false;
-        }
-      });
+      const [segmentLabelEnabled, setSegmentLabelEnabled] = useState(false);
       const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
       const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
       const handlePreviewEditsChange = checked => {
