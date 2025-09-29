@@ -126,8 +126,6 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      const commonSegmentationTools = ['SegmentLabelTool'];
-
       const contourUtilities = ['LogicalContourOperations', 'SimplifyContours', 'SmoothContours'];
 
       const contourTools = [
@@ -161,13 +159,9 @@ function modeFactory({ modeConfiguration }) {
         'ContourTools',
       ]);
 
-      toolbarService.updateSection('SegmentationTools', [
-        ...contourTools,
-        ...labelMapTools,
-        ...commonSegmentationTools,
-      ]);
-      toolbarService.updateSection('LabelMapTools', [...labelMapTools, ...commonSegmentationTools]);
-      toolbarService.updateSection('ContourTools', [...contourTools, ...commonSegmentationTools]);
+      toolbarService.updateSection('SegmentationTools', [...contourTools, ...labelMapTools]);
+      toolbarService.updateSection('LabelMapTools', [...labelMapTools]);
+      toolbarService.updateSection('ContourTools', [...contourTools]);
 
       toolbarService.updateSection('SegmentationUtilities', [
         ...contourUtilities,

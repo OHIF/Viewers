@@ -709,7 +709,7 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'actions-interpolate',
       label: i18n.t('Buttons:Interpolate Labelmap'),
-      tooltip:i18n.t(
+      tooltip: i18n.t(
         'Buttons:Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.'
       ),
       evaluate: [
@@ -1084,7 +1084,7 @@ const toolbarButtons: Button[] = [
         {
           name: 'evaluate.cornerstone.segmentation',
           toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-          disabledText: 'Create new segmentation to enable shapes tool.',
+          disabledText: i18n.t('Buttons:Create new segmentation to enable shapes tool.'),
         },
         {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
@@ -1159,24 +1159,6 @@ const toolbarButtons: Button[] = [
         },
       ],
       options: 'cornerstone.LogicalContourOperationsOptions',
-    },
-  },
-  {
-    id: 'SegmentLabelTool',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'tool-segment-label',
-      label: i18n.t('Buttons:Segment Label Display'),
-      tooltip: i18n.t(
-        'Buttons:Click to show or hide segment labels when hovering with your mouse.'
-      ),
-      commands: { commandName: 'toggleSegmentLabel' },
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle',
-        {
-          name: 'evaluate.cornerstone.hasSegmentation',
-        },
-      ],
     },
   },
   {
