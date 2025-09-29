@@ -3,6 +3,7 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import { UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
+import { showPercentage } from '../../../extensions/usAnnotation/src/PleuraBlinePercentage';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -237,7 +238,8 @@ function modeFactory({ modeConfiguration }) {
               inheritsFrom: 'ohif.overlayItem',
               label: '',
               title: 'BLinePleuraPercentage',
-              condition: ({ referenceInstance }) => referenceInstance?.Modality.includes('US'),
+              condition: ({ referenceInstance }) =>
+                referenceInstance?.Modality.includes('US') && showPercentage,
               contentF: () => {
                 const { viewportGridService, toolGroupService, cornerstoneViewportService } =
                   servicesManager.services;

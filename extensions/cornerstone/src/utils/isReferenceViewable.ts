@@ -3,20 +3,17 @@ import { Enums } from '@cornerstonejs/core';
 
 import OrientationAxis = Enums.OrientationAxis;
 
-export const isReferenceViewable = ({
-  viewportId,
-  reference,
-  viewportOptions,
-  servicesManager,
-}) => {
+export const isReferenceViewable = (servicesManager, viewportId, reference, viewportOptions?) => {
   const { cornerstoneViewportService, displaySetService } = servicesManager.services;
 
   if (!viewportOptions) {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-    // we can make a customization for this to allow
+    // we can make a customization for this to allow specific settings
+    // The annotation can be seen either via navigation or by changing to a volume
     const isViewable = viewport.isReferenceViewable(reference, {
       withNavigation: true,
+      asVolume: true,
     });
 
     return isViewable;

@@ -1,6 +1,7 @@
 import { vec3 } from 'gl-matrix';
 import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
+import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 
 const compare = (a, b) => {
   if (a === b) return 0;
@@ -160,6 +161,11 @@ function isValidForPositionSort(images): boolean {
   if (!referenceImagePositionPatient || !imageOrientationPatient) {
     return false;
   }
+
+  if (!areAllImageOrientationsEqual(images)) {
+    return false;
+  }
+
   return true;
 }
 

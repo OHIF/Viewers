@@ -87,7 +87,7 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'dicomweb',
+  defaultDataSourceName: 'ohif',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -101,7 +101,7 @@ window.config = {
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb',
+      sourceName: 'ohif',
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
@@ -275,6 +275,14 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
+  // segmentation: {
+  //   segmentLabel: {
+  //     enabledByDefault: true,
+  //     labelColor: [255, 255, 0, 1], // must be an array
+  //     hoverTimeout: 1,
+  //     background: 'rgba(100, 100, 100, 0.5)', // can be any valid css color
+  //   },
+  // },
   // whiteLabeling: {
   //   createLogoComponentFn: function (React) {
   //     return React.createElement(

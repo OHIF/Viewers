@@ -2,6 +2,11 @@
  * Paths to the screenshots of the tests.
  */
 const screenShotPaths = {
+  arrowAnnotate: {
+    arrowAnnotateDisplayedCorrectly0: 'arrowAnnotateDisplayedCorrectly0.png',
+    arrowAnnotateDisplayedCorrectly1: 'arrowAnnotateDisplayedCorrectly1.png',
+    arrowAnnotateDisplayedCorrectly2: 'arrowAnnotateDisplayedCorrectly2.png',
+  },
   angle: {
     angleDisplayedCorrectly: 'angleDisplayedCorrectly.png',
   },

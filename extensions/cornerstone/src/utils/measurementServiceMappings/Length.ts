@@ -3,7 +3,6 @@ import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-import { config } from '@cornerstonejs/tools/annotation';
 
 const Length = {
   toAnnotation: measurement => {},
@@ -78,7 +77,6 @@ const Length = {
       isLocked,
       isVisible,
       metadata,
-      // color,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,
