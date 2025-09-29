@@ -106,6 +106,9 @@ function createTools({ utilityModule, commandsManager }) {
           },
         },
       },
+      {
+        toolName: toolNames.LabelMapEditWithContourTool,
+      },
       { toolName: toolNames.CircleScissors },
       { toolName: toolNames.RectangleScissors },
       { toolName: toolNames.SphereScissors },

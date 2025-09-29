@@ -1063,6 +1063,33 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
+  {
+    id: 'LabelMapEditWithContour',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-bidirectional-segment', // ToDo Use the correct icon
+      label: 'Labelmap Edit with Contour Tool',
+      tooltip: 'Labelmap Edit with Contour Tool',
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: { segmentationRepresentationType: 'Labelmap' },
+        },
+      ],
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['LabelMapEditWithContour'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
+      ],
+    },
+  },
 ];
 
 export default toolbarButtons;
