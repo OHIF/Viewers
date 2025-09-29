@@ -92,6 +92,7 @@ export interface SegmentationTableContextType {
   onSegmentAdd?: (segmentationId: string) => void;
   onSegmentClick?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentEdit?: (segmentationId: string, segmentIndex: number) => void;
+  onSegmentCopy?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentationEdit?: (segmentationId: string) => void;
   onSegmentColorClick?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentDelete?: (segmentationId: string, segmentIndex: number) => void;

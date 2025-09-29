@@ -15,6 +15,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     onSegmentClick,
     onSegmentEdit,
     onSegmentDelete,
+    onSegmentCopy,
     data,
     showSegmentIndex = true,
   } = useSegmentationTableContext('SegmentationSegments');
@@ -100,6 +101,11 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
               onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
               onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
+              onCopy={
+                onSegmentCopy
+                  ? () => onSegmentCopy(segmentation.segmentationId, segmentIndex)
+                  : undefined
+              }
             />
           );
 

@@ -446,11 +446,35 @@ const toolbarButtons: Button[] = [
         },
       ],
       commands: [
-        'setToolActiveToolbar',
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            bindings: [
+              {
+                mouseButton: 1, // Left Click
+              },
+              {
+                mouseButton: 1, // Left Click+Shift to create a hole
+                modifierKey: 16, // Shift
+              },
+            ],
+          },
+        },
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
             segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Interpolate Contours',
+          type: 'checkbox',
+          id: 'planarFreehandInterpolateContours',
+          value: false,
+          commands: {
+            commandName: 'setInterpolationToolConfiguration',
           },
         },
       ],
@@ -475,11 +499,35 @@ const toolbarButtons: Button[] = [
         },
       ],
       commands: [
-        'setToolActiveToolbar',
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            bindings: [
+              {
+                mouseButton: 1, // Left Click
+              },
+              {
+                mouseButton: 1, // Left Click+Shift to create a hole
+                modifierKey: 16, // Shift
+              },
+            ],
+          },
+        },
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
             segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Interpolate Contours',
+          type: 'checkbox',
+          id: 'livewireInterpolateContours',
+          value: false,
+          commands: {
+            commandName: 'setInterpolationToolConfiguration',
           },
         },
       ],
@@ -528,6 +576,17 @@ const toolbarButtons: Button[] = [
           ],
           commands: {
             commandName: 'setToolActiveToolbar',
+            commandOptions: {
+              bindings: [
+                {
+                  mouseButton: 1, // Left Click
+                },
+                {
+                  mouseButton: 1, // Left Click+Shift to create a hole
+                  modifierKey: 16, // Shift
+                },
+              ],
+            },
           },
         },
         {
@@ -539,6 +598,15 @@ const toolbarButtons: Button[] = [
             commandName: 'setSimplifiedSplineForSplineContourSegmentationTool',
           },
         },
+        {
+          name: 'Interpolate Contours',
+          type: 'checkbox',
+          id: 'splineInterpolateContours',
+          value: false,
+          commands: {
+            commandName: 'setInterpolationToolConfiguration',
+          },
+        },
       ],
     },
   },
@@ -546,7 +614,7 @@ const toolbarButtons: Button[] = [
     id: 'SculptorTool',
     uiType: 'ohif.toolBoxButton',
     props: {
-      icon: 'icon-tool-bidirectional-segment',
+      icon: 'icon-tool-sculptor',
       label: 'Sculptor Tool',
       tooltip: 'Sculptor Tool',
       evaluate: [
@@ -639,9 +707,9 @@ const toolbarButtons: Button[] = [
     id: 'InterpolateLabelmap',
     uiType: 'ohif.toolButton',
     props: {
-      icon: 'icon-tool-interpolation',
+      icon: 'actions-interpolate',
       label: i18n.t('Buttons:Interpolate Labelmap'),
-      tooltip: i18n.t(
+      tooltip:i18n.t(
         'Buttons:Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.'
       ),
       evaluate: [
@@ -672,7 +740,7 @@ const toolbarButtons: Button[] = [
     id: 'SegmentBidirectional',
     uiType: 'ohif.toolButton',
     props: {
-      icon: 'icon-tool-bidirectional-segment',
+      icon: 'actions-bidirectional',
       label: i18n.t('Buttons:Segment Bidirectional'),
       tooltip: i18n.t(
         'Buttons:Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.'
@@ -1043,6 +1111,54 @@ const toolbarButtons: Button[] = [
           commands: 'setToolActiveToolbar',
         },
       ],
+    },
+  },
+  {
+    id: 'SimplifyContours',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-simplify',
+      label: 'Simplify Contours',
+      tooltip: 'Simplify Contours',
+      commands: ['toggleActiveSegmentationUtility'],
+      evaluate: [
+        {
+          name: 'cornerstone.isActiveSegmentationUtility',
+        },
+      ],
+      options: 'cornerstone.SimplifyContourOptions',
+    },
+  },
+  {
+    id: 'SmoothContours',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-smooth',
+      label: 'Smooth Contours',
+      tooltip: 'Smooth Contours',
+      commands: ['toggleActiveSegmentationUtility'],
+      evaluate: [
+        {
+          name: 'cornerstone.isActiveSegmentationUtility',
+        },
+      ],
+      options: 'cornerstone.SmoothContoursOptions',
+    },
+  },
+  {
+    id: 'LogicalContourOperations',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-combine',
+      label: 'Combine Contours',
+      tooltip: 'Combine Contours',
+      commands: ['toggleActiveSegmentationUtility'],
+      evaluate: [
+        {
+          name: 'cornerstone.isActiveSegmentationUtility',
+        },
+      ],
+      options: 'cornerstone.LogicalContourOperationsOptions',
     },
   },
   {
