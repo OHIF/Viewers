@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ImageModal, FooterAction } from '@ohif/ui-next';
-
+import { useTranslation } from 'react-i18next';
 const MAX_TEXTURE_SIZE = 10000;
 const DEFAULT_FILENAME = 'image';
 
@@ -37,6 +37,7 @@ function ViewportDownloadFormNew({
   const [showWarningMessage, setShowWarningMessage] = useState(true);
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
   const [fileType, setFileType] = useState('jpg');
+  const { t } = useTranslation('CaptureViewportModal');
 
   useEffect(() => {
     if (!viewportElement) {
@@ -82,7 +83,7 @@ function ViewportDownloadFormNew({
               value={filename}
               onChange={e => setFilename(e.target.value)}
             >
-              File name
+              {t('File name')}
             </ImageModal.Filename>
             <ImageModal.Filetype
               selected={fileType}
@@ -109,7 +110,7 @@ function ViewportDownloadFormNew({
             maxWidth={MAX_TEXTURE_SIZE.toString()}
             maxHeight={MAX_TEXTURE_SIZE.toString()}
           >
-            Image size <span className="text-muted-foreground">px</span>
+            {t('Image size')} <span className="text-muted-foreground">px</span>
           </ImageModal.ImageSize>
 
           <ImageModal.SwitchOption
@@ -117,7 +118,7 @@ function ViewportDownloadFormNew({
             checked={showAnnotations}
             onCheckedChange={onAnnotationsChange}
           >
-            Include annotations
+            {t('Include annotations')}
           </ImageModal.SwitchOption>
           {warningState.enabled && (
             <ImageModal.SwitchOption
@@ -125,19 +126,21 @@ function ViewportDownloadFormNew({
               checked={showWarningMessage}
               onCheckedChange={setShowWarningMessage}
             >
-              Include warning message
+              {t('Include warning message')}
             </ImageModal.SwitchOption>
           )}
           <FooterAction className="mt-2">
             <FooterAction.Right>
-              <FooterAction.Secondary onClick={onClose}>Cancel</FooterAction.Secondary>
+              <FooterAction.Secondary onClick={onClose}>
+                {t('Common:Cancel')}
+              </FooterAction.Secondary>
               <FooterAction.Primary
                 onClick={() => {
                   onDownload(filename || DEFAULT_FILENAME, fileType);
                   onClose();
                 }}
               >
-                Save
+                {t('Common:Save')}
               </FooterAction.Primary>
             </FooterAction.Right>
           </FooterAction>

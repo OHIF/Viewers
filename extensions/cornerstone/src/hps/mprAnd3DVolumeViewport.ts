@@ -1,9 +1,9 @@
 import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
-
+import i18n from 'i18next';
 export const mprAnd3DVolumeViewport = {
   id: 'mprAnd3DVolumeViewport',
   locked: true,
-  name: 'mpr',
+  name: i18n.t('Hps:mpr'),
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},
