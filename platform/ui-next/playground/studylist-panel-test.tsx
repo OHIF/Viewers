@@ -24,19 +24,19 @@ const App = () => {
           <ResizablePanel defaultSize={70}>
             <div className="flex h-full w-full flex-col p-3">
               <h1 className="text-foreground mb-4 text-2xl font-medium">Study List</h1>
-<ScrollArea className="flex-1">
-              <div className="bg-background rounded-md p-2">
-                {/* Data Table */}
-                <DataTable<StudyRow, unknown>
-                  columns={columns}
-                  data={data as StudyRow[]}
-                  getRowId={row => row.accession}
-                  singleRowSelection={true}
-                  showColumnVisibilityControls={true}
-                  tableClassName="min-w-[1000px]"
-                />
+              <div className="flex-1 min-h-0">
+                <div className="bg-background rounded-md p-2 h-full">
+                  {/* Data Table */}
+                  <DataTable<StudyRow, unknown>
+                    columns={columns}
+                    data={data as StudyRow[]}
+                    getRowId={row => row.accession}
+                    singleRowSelection={true}
+                    showColumnVisibilityControls={true}
+                    tableClassName="min-w-[1000px]"
+                  />
+                </div>
               </div>
-            </ScrollArea>
             </div>
           </ResizablePanel>
 
