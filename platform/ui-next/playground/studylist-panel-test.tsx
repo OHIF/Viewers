@@ -4,16 +4,11 @@ import { ThemeWrapper } from '../src/components/ThemeWrapper';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../src/components/Resizable';
 import { ScrollArea } from '../src/components/ScrollArea';
 import { Button } from '../src/components/Button';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from '../src/components/Table';
+import type { ColumnDef } from '@tanstack/react-table';
+import { DataTable, DataTableColumnHeader } from '../src/components/Table';
 import data from './patient-studies.json';
+
+// (moved columns/type to the top of the file)
 
 const App = () => {
   const [layout, setLayout] = React.useState<'right' | 'bottom'>('right');
@@ -31,32 +26,15 @@ const App = () => {
               <h1 className="text-foreground mb-4 text-2xl font-medium">Study List</h1>
 <ScrollArea className="flex-1">
               <div className="bg-background rounded-md p-2">
-                <Table className="min-w-[1000px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Patient</TableHead>
-                      <TableHead>MRN</TableHead>
-                      <TableHead>Study Date and Time</TableHead>
-                      <TableHead>Modalities</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Accession Number</TableHead>
-                      <TableHead className="text-right">Instances</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.map((row, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell className="whitespace-nowrap">{row.patient}</TableCell>
-                        <TableCell className="whitespace-nowrap">{row.mrn}</TableCell>
-                        <TableCell className="whitespace-nowrap">{row.studyDateTime}</TableCell>
-                        <TableCell className="whitespace-nowrap">{row.modalities}</TableCell>
-                        <TableCell>{row.description}</TableCell>
-                        <TableCell className="whitespace-nowrap">{row.accession}</TableCell>
-                        <TableCell className="text-right">{row.instances}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                {/* Data Table */}
+                <DataTable<StudyRow, unknown>
+                  columns={columns}
+                  data={data as StudyRow[]}
+                  getRowId={row => row.accession}
+                  singleRowSelection={true}
+                  showColumnVisibilityControls={true}
+                  tableClassName="min-w-[1000px]"
+                />
               </div>
             </ScrollArea>
             </div>
@@ -97,3 +75,63 @@ if (!container) {
 
 const root = createRoot(container);
 root.render(<App />);
+
+// Types and column definitions for the study list
+type StudyRow = {
+  patient: string;
+  mrn: string;
+  studyDateTime: string;
+  modalities: string;
+  description: string;
+  accession: string;
+  instances: number;
+};
+
+const columns: ColumnDef<StudyRow, unknown>[] = [
+  {
+    accessorKey: 'patient',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Patient" />,
+    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('patient')}</div>,
+  },
+  {
+    accessorKey: 'mrn',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="MRN" />,
+    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('mrn')}</div>,
+  },
+  {
+    accessorKey: 'studyDateTime',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Study Date and Time" />
+    ),
+    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('studyDateTime')}</div>,
+    sortingFn: (a, b, colId) =>
+      new Date(a.getValue(colId) as string).getTime() -
+      new Date(b.getValue(colId) as string).getTime(),
+  },
+  {
+    accessorKey: 'modalities',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Modalities" />,
+    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('modalities')}</div>,
+  },
+  {
+    accessorKey: 'description',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
+    cell: ({ row }) => <div>{row.getValue('description')}</div>,
+  },
+  {
+    accessorKey: 'accession',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Accession Number" />
+    ),
+    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('accession')}</div>,
+  },
+  {
+    accessorKey: 'instances',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Instances" align="right" />
+    ),
+    cell: ({ row }) => <div className="text-right">{row.getValue('instances')}</div>,
+    sortingFn: (a, b, colId) =>
+      (a.getValue(colId) as number) - (b.getValue(colId) as number),
+  },
+];
