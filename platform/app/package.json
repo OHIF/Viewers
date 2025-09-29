@@ -107,10 +107,19 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-private-methods": "^7.27.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.5.17",
     "@types/node": "^20.12.12",
+    "clean-webpack-plugin": "4.0.0",
+    "copy-webpack-plugin": "10.2.4",
     "cross-env": "^7.0.3",
+    "extract-css-chunks-webpack-plugin": "4.10.0",
+    "html-webpack-plugin": "5.6.3",
     "identity-obj-proxy": "3.0.x",
+    "mini-css-extract-plugin": "2.9.2",
     "shx": "^0.3.4",
-    "tailwindcss": "3.2.4"
+    "tailwindcss": "3.2.4",
+    "terser-webpack-plugin": "5.3.14",
+    "webpack-dev-server": "5.2.2",
+    "workbox-webpack-plugin": "6.6.1"
   }
 }
