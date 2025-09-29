@@ -4,11 +4,12 @@ import { cn } from '../../lib/utils';
 
 type TableProps = React.HTMLAttributes<HTMLTableElement> & {
   containerClassName?: string;
+  noScroll?: boolean;
 };
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, containerClassName, ...props }, ref) => (
-    <div className={cn('relative w-full overflow-auto', containerClassName)}>
+  ({ className, containerClassName, noScroll = false, ...props }, ref) => (
+    <div className={cn('relative w-full', !noScroll && 'overflow-auto', containerClassName)}>
       <table
         ref={ref}
         className={cn('caption-bottom text-muted-foreground w-full text-base', className)}
@@ -60,7 +61,11 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'hover:bg-muted text-muted-foreground hover:text-highlight hover:[&>td]:text-highlight hover:[&>th]:text-highlight data-[state=selected]:bg-muted border-input/50 border-b transition-colors',
+        'hover:bg-muted text-muted-foreground hover:text-highlight hover:[&>td]:text-highlight hover:[&>th]:text-highlight',
+        'data-[state=selected]:bg-popover data-[state=selected]:hover:bg-popover',
+        'data-[state=selected]:text-foreground data-[state=selected]:[&>td]:text-foreground data-[state=selected]:[&>th]:text-foreground',
+        'data-[state=selected]:hover:text-foreground data-[state=selected]:hover:[&>td]:text-foreground data-[state=selected]:hover:[&>th]:text-foreground',
+        'border-input/50 border-b transition-colors',
         className
       )}
       {...props}
