@@ -127,83 +127,86 @@ function DataTable<TData, TValue>({
       )}
       <div className="border-input/50 min-h-0 flex-1 overflow-hidden rounded-md border">
         <ScrollArea className="h-full">
-          <Table
-            className={tableClassName}
-            containerClassName="h-full overflow-x-auto overflow-y-visible"
-          >
-            <TableHeader>
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <TableHead
-                      key={header.id}
-                      className="bg-muted sticky top-0 z-10"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              <TableRow
-                data-filter-row
-                className="hover:bg-transparent"
-              >
-                {table.getVisibleLeafColumns().map(col => (
-                  <TableCell
-                    key={col.id}
-                    className={col.id === 'instances' ? 'text-right' : undefined}
-                  >
-                    {col.id === 'instances' ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setColumnFilters([])}
-                        aria-label="Reset filters"
+          <div className="h-full overflow-x-auto">
+            <Table
+              className={tableClassName}
+              containerClassName="h-full"
+              noScroll
+            >
+              <TableHeader>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <TableHead
+                        key={header.id}
+                        className="bg-muted sticky top-0 z-10"
                       >
-                        Reset
-                      </Button>
-                    ) : (
-                      <Input
-                        value={(table.getColumn(col.id)?.getFilterValue() as string) ?? ''}
-                        onChange={e => table.getColumn(col.id)?.setFilterValue(e.target.value)}
-                        className="h-7 w-full"
-                      />
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map(row => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() ? 'selected' : undefined}
-                    onClick={() => row.toggleSelected()}
-                    aria-selected={row.getIsSelected()}
-                    className="cursor-pointer"
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllLeafColumns().length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
+                ))}
+              </TableHeader>
+              <TableBody>
+                <TableRow
+                  data-filter-row
+                  className="hover:bg-transparent"
+                >
+                  {table.getVisibleLeafColumns().map(col => (
+                    <TableCell
+                      key={col.id}
+                      className={col.id === 'instances' ? 'text-right' : undefined}
+                    >
+                      {col.id === 'instances' ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setColumnFilters([])}
+                          aria-label="Reset filters"
+                        >
+                          Reset
+                        </Button>
+                      ) : (
+                        <Input
+                          value={(table.getColumn(col.id)?.getFilterValue() as string) ?? ''}
+                          onChange={e => table.getColumn(col.id)?.setFilterValue(e.target.value)}
+                          className="h-7 w-full"
+                        />
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map(row => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() ? 'selected' : undefined}
+                      onClick={() => row.toggleSelected()}
+                      aria-selected={row.getIsSelected()}
+                      className="cursor-pointer"
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={table.getAllLeafColumns().length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </ScrollArea>
       </div>
     </div>
@@ -325,7 +328,7 @@ function SidePanel({
         </Button>
       </div>
       <ScrollArea className="flex-1">
-        <div className="p-3 text-sm text-white/80">
+        <div className="p-3">
           {selected ? (
             <PanelContent
               key={selected.accession}
@@ -367,7 +370,7 @@ const columns: ColumnDef<StudyRow, unknown>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Study Date and Time"
+        title="Study Date"
       />
     ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('studyDateTime')}</div>,
@@ -400,7 +403,7 @@ const columns: ColumnDef<StudyRow, unknown>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Accession Number"
+        title="Accession"
       />
     ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('accession')}</div>,
