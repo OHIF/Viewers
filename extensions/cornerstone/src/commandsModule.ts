@@ -1858,22 +1858,24 @@ function commandsModule({
         }
       });
     },
-    toggleSegmentLabel: () => {
+    toggleSegmentLabel: ({ enabled }: { enabled?: boolean }) => {
       const toolName = cornerstoneTools.SegmentLabelTool.toolName;
       const toolGroupIds = toolGroupService.getToolGroupIds();
 
-      const isOn = toolGroupIds.some(toolGroupId => {
+      const isToolOn = toolGroupIds.some(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
         const mode = toolGroup.getToolInstance(toolName)?.mode;
         return mode === 'Active';
       });
 
+      const enableTool = enabled !== undefined ? enabled : !isToolOn;
+
       toolGroupIds.forEach(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        if (isOn) {
-          toolGroup.setToolDisabled(toolName);
-        } else {
+        if (enableTool) {
           toolGroup.setToolActive(toolName);
+        } else {
+          toolGroup.setToolDisabled(toolName);
         }
       });
     },
