@@ -22,7 +22,8 @@ export function PanelContent({
   layout: 'right' | 'bottom';
 }) {
   // Prototype eight series thumbnails; no image data provided on purpose.
-  const thumbnails = Array.from({ length: 8 }, (_, i) => ({
+  const seriesCount = React.useMemo(() => Math.floor(Math.random() * 7) + 3, []); // 3–9
+  const thumbnails = Array.from({ length: seriesCount }, (_, i) => ({
     id: `preview-${study.accession}-${i}`,
     description: `Series ${i + 1}`,
     seriesNumber: i + 1,
