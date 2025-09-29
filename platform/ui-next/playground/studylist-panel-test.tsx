@@ -4,17 +4,39 @@ import { ThemeWrapper } from '../src/components/ThemeWrapper';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../src/components/Resizable';
 import { ScrollArea } from '../src/components/ScrollArea';
 import { Button } from '../src/components/Button';
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../src/components/Table';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '../src/components/DropdownMenu';
-import type { ColumnDef, SortingState, VisibilityState, RowSelectionState, Column } from '@tanstack/react-table';
-import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '../src/components/Table';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '../src/components/DropdownMenu';
+import { Input } from '../src/components/Input';
+import type {
+  ColumnDef,
+  SortingState,
+  VisibilityState,
+  RowSelectionState,
+  Column,
+  ColumnFiltersState,
+} from '@tanstack/react-table';
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import data from './patient-studies.json';
 import { PanelDefault } from './panel-default';
 import { PanelContent, type StudyRow } from './panel-content';
-
-// (moved columns/type to the top of the file)
-
-// Inline versions of DataTable and DataTableColumnHeader for this prototype
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -22,8 +44,8 @@ interface DataTableProps<TData, TValue> {
   getRowId?: (originalRow: TData, index: number) => string;
   initialSorting?: SortingState;
   initialColumnVisibility?: VisibilityState;
-  singleRowSelection?: boolean; // default: true
-  showColumnVisibilityControls?: boolean; // default: true
+  singleRowSelection?: boolean;
+  showColumnVisibilityControls?: boolean;
   tableClassName?: string;
   onRowSelectionChange?: (selectedRows: TData[], rowSelection: RowSelectionState) => void;
   title?: React.ReactNode;
@@ -42,18 +64,22 @@ function DataTable<TData, TValue>({
   title,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(initialColumnVisibility);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>(initialColumnVisibility);
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnVisibility, rowSelection },
+    state: { sorting, columnVisibility, rowSelection, columnFilters },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     enableRowSelection: true,
     enableMultiRowSelection: singleRowSelection ? false : true,
     getRowId,
@@ -69,11 +95,14 @@ function DataTable<TData, TValue>({
     <div className="flex h-full flex-col">
       {(showColumnVisibilityControls || title) && (
         <div className="flex items-center justify-between gap-2 py-2">
-          <div className="text-xl text-foreground">{title}</div>
+          <div className="text-foreground text-xl">{title}</div>
           {showColumnVisibilityControls && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                >
                   Columns
                 </Button>
               </DropdownMenuTrigger>
@@ -96,14 +125,20 @@ function DataTable<TData, TValue>({
           )}
         </div>
       )}
-      <div className="border-input min-h-0 flex-1 overflow-hidden rounded-md border">
+      <div className="border-input/50 min-h-0 flex-1 overflow-hidden rounded-md border">
         <ScrollArea className="h-full">
-          <Table className={tableClassName} containerClassName="h-full" noScroll>
+          <Table
+            className={tableClassName}
+            containerClassName="h-full overflow-x-auto overflow-y-visible"
+          >
             <TableHeader>
               {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
-                    <TableHead key={header.id} className="bg-muted sticky top-0 z-10">
+                    <TableHead
+                      key={header.id}
+                      className="bg-muted sticky top-0 z-10"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -113,6 +148,34 @@ function DataTable<TData, TValue>({
               ))}
             </TableHeader>
             <TableBody>
+              <TableRow
+                data-filter-row
+                className="hover:bg-transparent"
+              >
+                {table.getVisibleLeafColumns().map(col => (
+                  <TableCell
+                    key={col.id}
+                    className={col.id === 'instances' ? 'text-right' : undefined}
+                  >
+                    {col.id === 'instances' ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setColumnFilters([])}
+                        aria-label="Reset filters"
+                      >
+                        Reset
+                      </Button>
+                    ) : (
+                      <Input
+                        value={(table.getColumn(col.id)?.getFilterValue() as string) ?? ''}
+                        onChange={e => table.getColumn(col.id)?.setFilterValue(e.target.value)}
+                        className="h-7 w-full"
+                      />
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map(row => (
                   <TableRow
@@ -131,7 +194,10 @@ function DataTable<TData, TValue>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={table.getAllLeafColumns().length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={table.getAllLeafColumns().length}
+                    className="h-24 text-center"
+                  >
                     No results.
                   </TableCell>
                 </TableRow>
@@ -162,7 +228,7 @@ function DataTableColumnHeader<TData, TValue>({
     align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start';
 
   return (
-    <div className={`flex items-center ${justifyClass} gap-1 w-full`}>
+    <div className={`flex items-center ${justifyClass} w-full gap-1`}>
       <span>{title}</span>
       <Button
         variant="ghost"
@@ -188,12 +254,10 @@ const App = () => {
           direction={layout === 'right' ? 'horizontal' : 'vertical'}
           className="h-full w-full"
         >
-          {/* Main Area */}
           <ResizablePanel defaultSize={70}>
             <div className="flex h-full w-full flex-col p-3">
               <div className="min-h-0 flex-1">
                 <div className="bg-background h-full rounded-md p-2">
-                  {/* Data Table */}
                   <DataTable<StudyRow, unknown>
                     columns={columns}
                     data={data as StudyRow[]}
@@ -209,10 +273,8 @@ const App = () => {
             </div>
           </ResizablePanel>
 
-          {/* Drag Handle */}
           <ResizableHandle />
 
-          {/* Secondary Panel (Right or Bottom) */}
           <ResizablePanel
             defaultSize={30}
             minSize={15}
@@ -238,7 +300,6 @@ if (!container) {
 const root = createRoot(container);
 root.render(<App />);
 
-// Panel scaffolding to support distinct layouts for empty vs. selected states
 function SidePanel({
   layout,
   selected,
@@ -266,7 +327,11 @@ function SidePanel({
       <ScrollArea className="flex-1">
         <div className="p-3 text-sm text-white/80">
           {selected ? (
-            <PanelContent key={selected.accession} study={selected} layout={layout} />
+            <PanelContent
+              key={selected.accession}
+              study={selected}
+              layout={layout}
+            />
           ) : (
             <PanelDefault layout={layout} />
           )}
@@ -275,7 +340,6 @@ function SidePanel({
     </div>
   );
 }
-// Types and column definitions for the study list
 
 const columns: ColumnDef<StudyRow, unknown>[] = [
   {
