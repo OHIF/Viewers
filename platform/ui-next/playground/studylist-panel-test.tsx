@@ -12,60 +12,15 @@ import {
   TableCell,
   TableCaption,
 } from '../src/components/Table';
-
-type PatientStudy = {
-  patient: string;
-  mrn: string;
-  studyDateTime: string;
-  modalities: string;
-  description: string;
-  accession: string;
-  instances: number;
-};
-
-const data: PatientStudy[] = [
-  {
-    patient: 'John Doe',
-    mrn: 'MRN001234',
-    studyDateTime: '2025-06-14 09:32',
-    modalities: 'CT',
-    description: 'Chest CT w/ Contrast',
-    accession: 'ACC-102938',
-    instances: 324,
-  },
-  {
-    patient: 'Jane Smith',
-    mrn: 'MRN007891',
-    studyDateTime: '2025-06-13 14:05',
-    modalities: 'MR',
-    description: 'Brain MRI',
-    accession: 'ACC-564738',
-    instances: 210,
-  },
-  {
-    patient: 'Carlos Ruiz',
-    mrn: 'MRN003456',
-    studyDateTime: '2025-06-12 11:48',
-    modalities: 'US',
-    description: 'Abdominal Ultrasound',
-    accession: 'ACC-223344',
-    instances: 58,
-  },
-  {
-    patient: 'Amina Khan',
-    mrn: 'MRN005432',
-    studyDateTime: '2025-06-11 08:21',
-    modalities: 'PET/CT',
-    description: 'Whole Body PET/CT',
-    accession: 'ACC-998877',
-    instances: 512,
-  },
-];
+import data from './patient-studies.json';
 
 const App = () => (
   <ThemeWrapper>
     <div className="h-screen w-screen overflow-hidden bg-black">
-      <ResizablePanelGroup direction="horizontal" className="h-full w-full">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="h-full w-full"
+      >
         {/* Main Area */}
         <ResizablePanel defaultSize={70}>
           <div className="h-full w-full p-3">
@@ -105,9 +60,12 @@ const App = () => (
         <ResizableHandle />
 
         {/* Right Resizable Panel */}
-        <ResizablePanel defaultSize={30} minSize={15}>
-          <div className="bg-bkg-low flex h-full w-full flex-col">
-            <div className="bg-bkg-med text-primary flex h-10 items-center px-3 text-sm">
+        <ResizablePanel
+          defaultSize={30}
+          minSize={15}
+        >
+          <div className="bg-background flex h-full w-full flex-col">
+            <div className="bg-background text-primary flex h-10 items-center px-3 text-sm">
               Right Panel
             </div>
             <ScrollArea className="flex-1">
