@@ -146,6 +146,7 @@ function modeFactory({ modeConfiguration }) {
         'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
+        'LabelMapEditWithContour',
       ];
 
       // We cannot simply create two sections - utilities and tools - that combine the utilities and tools for both
