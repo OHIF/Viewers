@@ -30,6 +30,7 @@ export interface DataTableProps<TData, TValue> {
   singleRowSelection?: boolean; // default: true
   showColumnVisibilityControls?: boolean; // default: true
   tableClassName?: string;
+  onRowSelectionChange?: (selectedRows: TData[], rowSelection: RowSelectionState) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -41,6 +42,7 @@ export function DataTable<TData, TValue>({
   singleRowSelection = true,
   showColumnVisibilityControls = true,
   tableClassName,
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
   const [columnVisibility, setColumnVisibility] =
@@ -61,8 +63,14 @@ export function DataTable<TData, TValue>({
     getRowId,
   });
 
+  React.useEffect(() => {
+    if (!onRowSelectionChange) return;
+    const selected = table.getSelectedRowModel().rows.map(r => r.original as TData);
+    onRowSelectionChange(selected, rowSelection);
+  }, [rowSelection, table, onRowSelectionChange]);
+
   return (
-    <div className="border-input h-full overflow-hidden rounded-md border flex flex-col">
+    <div className="border-input flex h-full flex-col overflow-hidden rounded-md border">
       {showColumnVisibilityControls && (
         <div className="flex items-center">
           <div className="ml-auto">
@@ -94,13 +102,19 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       )}
-      <div className="flex-1 min-h-0">
-        <Table className={tableClassName} containerClassName="h-full">
+      <div className="min-h-0 flex-1">
+        <Table
+          className={tableClassName}
+          containerClassName="h-full"
+        >
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <TableHead key={header.id} className="sticky top-0 z-10 bg-background">
+                  <TableHead
+                    key={header.id}
+                    className="bg-background sticky top-0 z-10"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
