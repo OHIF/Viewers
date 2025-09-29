@@ -66,7 +66,7 @@ const App = () => (
   <div className="h-screen w-screen bg-black">
     <div className="mx-auto h-full max-w-7xl p-6">
       <h1 className="mb-4 text-xl font-medium">Study List</h1>
-      <div className="rounded-md border p-2">
+      <div className="border-input/50 rounded-md border p-2">
         <Table className="min-w-[1000px]">
           <TableHeader>
             <TableRow>
