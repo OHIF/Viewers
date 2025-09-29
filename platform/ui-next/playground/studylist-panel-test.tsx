@@ -7,11 +7,14 @@ import { Button } from '../src/components/Button';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable, DataTableColumnHeader } from '../src/components/Table';
 import data from './patient-studies.json';
+import { PanelDefault } from './panel-default';
+import { PanelContent, type StudyRow } from './panel-content';
 
 // (moved columns/type to the top of the file)
 
 const App = () => {
   const [layout, setLayout] = React.useState<'right' | 'bottom'>('right');
+  const [selected, setSelected] = React.useState<StudyRow | null>(null);
 
   return (
     <ThemeWrapper>
@@ -24,8 +27,8 @@ const App = () => {
           <ResizablePanel defaultSize={70}>
             <div className="flex h-full w-full flex-col p-3">
               <h1 className="text-foreground mb-4 text-2xl font-medium">Study List</h1>
-              <div className="flex-1 min-h-0">
-                <div className="bg-background rounded-md p-2 h-full">
+              <div className="min-h-0 flex-1">
+                <div className="bg-background h-full rounded-md p-2">
                   {/* Data Table */}
                   <DataTable<StudyRow, unknown>
                     columns={columns}
@@ -34,6 +37,7 @@ const App = () => {
                     singleRowSelection={true}
                     showColumnVisibilityControls={true}
                     tableClassName="min-w-[1000px]"
+                    onRowSelectionChange={rows => setSelected(rows[0] ?? null)}
                   />
                 </div>
               </div>
@@ -44,22 +48,15 @@ const App = () => {
           <ResizableHandle />
 
           {/* Secondary Panel (Right or Bottom) */}
-          <ResizablePanel defaultSize={30} minSize={15}>
-            <div className="bg-background flex h-full w-full flex-col">
-              <div className="bg-background text-primary flex h-10 items-center justify-between px-3 text-sm">
-                <span>{layout === 'right' ? 'Right Panel' : 'Bottom Panel'}</span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setLayout(layout === 'right' ? 'bottom' : 'right')}
-                >
-                  {layout === 'right' ? 'Move to Bottom' : 'Move to Right'}
-                </Button>
-              </div>
-              <ScrollArea className="flex-1">
-                <div className="p-3 text-sm text-white/80">Placeholder content</div>
-              </ScrollArea>
-            </div>
+          <ResizablePanel
+            defaultSize={30}
+            minSize={15}
+          >
+            <SidePanel
+              layout={layout}
+              selected={selected}
+              onToggleLayout={() => setLayout(layout === 'right' ? 'bottom' : 'right')}
+            />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
@@ -76,32 +73,73 @@ if (!container) {
 const root = createRoot(container);
 root.render(<App />);
 
+// Panel scaffolding to support distinct layouts for empty vs. selected states
+function SidePanel({
+  layout,
+  selected,
+  onToggleLayout,
+}: {
+  layout: 'right' | 'bottom';
+  selected: StudyRow | null;
+  onToggleLayout: () => void;
+}) {
+  const isRight = layout === 'right';
+  const headerTitle = isRight ? 'Right Panel' : 'Bottom Panel';
+
+  return (
+    <div className="bg-background flex h-full w-full flex-col">
+      <div className="bg-background text-primary flex h-10 items-center justify-between px-3 text-sm">
+        <span>{headerTitle}</span>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onToggleLayout}
+        >
+          {isRight ? 'Move to Bottom' : 'Move to Right'}
+        </Button>
+      </div>
+      <ScrollArea className="flex-1">
+        <div className="p-3 text-sm text-white/80">
+          {selected ? (
+            <PanelContent key={selected.accession} study={selected} layout={layout} />
+          ) : (
+            <PanelDefault layout={layout} />
+          )}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}
 // Types and column definitions for the study list
-type StudyRow = {
-  patient: string;
-  mrn: string;
-  studyDateTime: string;
-  modalities: string;
-  description: string;
-  accession: string;
-  instances: number;
-};
 
 const columns: ColumnDef<StudyRow, unknown>[] = [
   {
     accessorKey: 'patient',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Patient" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Patient"
+      />
+    ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('patient')}</div>,
   },
   {
     accessorKey: 'mrn',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="MRN" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="MRN"
+      />
+    ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('mrn')}</div>,
   },
   {
     accessorKey: 'studyDateTime',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Study Date and Time" />
+      <DataTableColumnHeader
+        column={column}
+        title="Study Date and Time"
+      />
     ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('studyDateTime')}</div>,
     sortingFn: (a, b, colId) =>
@@ -110,28 +148,44 @@ const columns: ColumnDef<StudyRow, unknown>[] = [
   },
   {
     accessorKey: 'modalities',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Modalities" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Modalities"
+      />
+    ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('modalities')}</div>,
   },
   {
     accessorKey: 'description',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Description"
+      />
+    ),
     cell: ({ row }) => <div>{row.getValue('description')}</div>,
   },
   {
     accessorKey: 'accession',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Accession Number" />
+      <DataTableColumnHeader
+        column={column}
+        title="Accession Number"
+      />
     ),
     cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('accession')}</div>,
   },
   {
     accessorKey: 'instances',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Instances" align="right" />
+      <DataTableColumnHeader
+        column={column}
+        title="Instances"
+        align="right"
+      />
     ),
     cell: ({ row }) => <div className="text-right">{row.getValue('instances')}</div>,
-    sortingFn: (a, b, colId) =>
-      (a.getValue(colId) as number) - (b.getValue(colId) as number),
+    sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
   },
 ];
