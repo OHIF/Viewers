@@ -93,6 +93,7 @@ interface MeasurementItem {
   toolName: string;
   isExpanded: boolean;
   isUnmapped?: boolean;
+  statusTooltip?: string;
 }
 
 interface RowProps {
@@ -125,7 +126,7 @@ const Row = ({ item, index }: RowProps) => {
       isLocked={item.isLocked}
     >
       {item.isUnmapped && (
-        <DataRow.Status.Warning tooltip="This structured report is not compatible with this application" />
+        <DataRow.Status.Warning tooltip={item.statusTooltip} />
       )}
     </DataRow>
   );

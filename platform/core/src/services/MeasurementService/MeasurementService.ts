@@ -614,6 +614,7 @@ class MeasurementService extends PubSubService {
     const measurement = {
       ...sourceAnnotationDetail,
       isUnmapped: true,
+      statusTooltip: 'This measurement is not compatible with this application',
       source: {
         name: source.name,
         version: source.version,
