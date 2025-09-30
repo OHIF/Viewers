@@ -144,9 +144,9 @@ function _getDisplaySetsFromSeries(
  * @param extensionManager - The extension manager containing data sources.
  */
 async function _load(
-  srDisplaySet: SRDisplaySet,
-  servicesManager: any,
-  extensionManager: any
+  srDisplaySet: OhifTypes.DisplaySet,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager: AppTypes.ExtensionManager
 ) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
@@ -228,26 +228,11 @@ function _measurementBelongsToDisplaySet({ measurement, displaySet }) {
   );
 }
 
-/**
- * Checks if measurements can be added to a display set.
- *
- * @param srDisplaySet - The source display set containing measurements.
- * @param newDisplaySet - The new display set to check if measurements can be added.
- * @param dataSource - The data source used to retrieve image IDs.
- * @param servicesManager - The services manager.
- */
-interface SRDisplaySet extends OhifTypes.DisplaySet {
-  measurements?: any[];
-  isImagingMeasurementReport?: boolean;
-  referencedImages?: any[];
-  isLoaded?: boolean;
-}
-
 function _checkIfCanAddMeasurementsToDisplaySet(
-  srDisplaySet: SRDisplaySet,
+  srDisplaySet: OhifTypes.DisplaySet,
   newDisplaySet: OhifTypes.DisplaySet,
-  dataSource: any,
-  servicesManager: any
+  dataSource,
+  servicesManager: AppTypes.ServicesManager
 ) {
   const { customizationService } = servicesManager.services;
 

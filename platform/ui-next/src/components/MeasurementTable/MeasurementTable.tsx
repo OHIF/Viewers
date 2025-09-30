@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataRow, Icons, PanelSection, Tooltip, TooltipContent, TooltipTrigger } from '../../index';
+import { Icons, PanelSection, Tooltip, TooltipContent, TooltipTrigger } from '../../index';
+import DataRow from '../DataRow/DataRow';
 import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
@@ -122,24 +123,11 @@ const Row = ({ item, index }: RowProps) => {
       disableEditing={disableEditing}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
-      statusSlot={
-        item.isUnmapped ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex h-6 w-6 items-center justify-center">
-                <Icons.ByName
-                  name="status-alert"
-                  className="h-4 w-4 text-yellow-500"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <div>This structured report is not compatible with this application</div>
-            </TooltipContent>
-          </Tooltip>
-        ) : null
-      }
-    />
+    >
+      {item.isUnmapped && (
+        <DataRow.Status.Warning tooltip="This structured report is not compatible with this application" />
+      )}
+    </DataRow>
   );
 };
 
