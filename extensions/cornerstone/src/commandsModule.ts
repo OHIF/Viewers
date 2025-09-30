@@ -54,6 +54,7 @@ import { getCenterExtent } from './utils/getCenterExtent';
 import { EasingFunctionEnum } from './utils/transitions';
 import { createSegmentationForViewport } from './utils/createSegmentationForViewport';
 import { utilities as segmentationUtilities } from '@cornerstonejs/tools/segmentation';
+import i18n from '@ohif/i18n';
 
 const { add, intersect, subtract, copy } = cstUtils.contourSegmentation;
 

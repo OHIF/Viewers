@@ -470,7 +470,7 @@ const toolbarButtons: Button[] = [
       options: [
         {
           name: 'Interpolate Contours',
-          type: 'checkbox',
+          type: 'switch',
           id: 'planarFreehandInterpolateContours',
           value: false,
           commands: {
@@ -523,7 +523,7 @@ const toolbarButtons: Button[] = [
       options: [
         {
           name: 'Interpolate Contours',
-          type: 'checkbox',
+          type: 'switch',
           id: 'livewireInterpolateContours',
           value: false,
           commands: {
@@ -591,7 +591,7 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'Simplified Spline',
-          type: 'checkbox',
+          type: 'switch',
           id: 'simplifiedSpline',
           value: true,
           commands: {
@@ -600,7 +600,7 @@ const toolbarButtons: Button[] = [
         },
         {
           name: 'Interpolate Contours',
-          type: 'checkbox',
+          type: 'switch',
           id: 'splineInterpolateContours',
           value: false,
           commands: {
@@ -640,7 +640,7 @@ const toolbarButtons: Button[] = [
       options: [
         {
           name: 'Dynamic Cursor Size',
-          type: 'checkbox',
+          type: 'switch',
           id: 'dynamicCursorSize',
           value: true,
           commands: {
