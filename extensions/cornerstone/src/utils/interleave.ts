@@ -13,18 +13,20 @@ export default function interleave<T>(lists: T[][]): T[] {
   if (lists.length === 1) {
     return lists[0];
   }
-  console.time('interleave');
+
   const useLists = [...lists];
   const ret = [];
   for (let i = 0; useLists.length > 0; i++) {
-    for (const list of useLists) {
+    for (let j = 0; j < useLists.length; j++) {
+      const list = useLists[j];
       if (i >= list.length) {
-        useLists.splice(useLists.indexOf(list), 1);
+        useLists.splice(j, 1);
+        j--; // Adjust index after removal to avoid iterator skipping
         continue;
       }
       ret.push(list[i]);
     }
   }
-  console.timeEnd('interleave');
+
   return ret;
 }
