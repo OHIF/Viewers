@@ -18,5 +18,9 @@
   "Show": "Show",
   "Stop": "Stop",
   "StudyDate": "Study Date",
-  "Yes": "Yes"
+  "Yes": "Yes",
+  "Cancel": "Cancel",
+  "Save": "Save",
+  "localDateFormat": "DD-MMM-YYYY",
+  "Back": "Back"
 }
