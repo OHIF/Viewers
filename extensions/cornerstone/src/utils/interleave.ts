@@ -3,10 +3,10 @@
  * in the returned list, the second items are next etc.
  * Does this in a O(n) fashion, and return lists[0] if there is only one list.
  *
- * @param {[]} lists
- * @returns [] reordered to be breadth first traversal of lists
+ * @param lists - Array of arrays to interleave
+ * @returns Array reordered to be breadth first traversal of lists
  */
-export default function interleave(lists) {
+export default function interleave<T>(lists: T[][]): T[] {
   if (!lists || !lists.length) {
     return [];
   }
