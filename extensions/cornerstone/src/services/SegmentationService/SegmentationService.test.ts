@@ -1970,7 +1970,7 @@ describe('SegmentationService', () => {
 
       service.addSegment(segmentationId, config);
 
-      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledTimes(2);
       expect(cstSegmentation.state.getSegmentation).toHaveBeenCalledWith(segmentationId);
 
       expect(cstSegmentation.updateSegmentations).toHaveBeenCalledTimes(1);
