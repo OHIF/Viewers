@@ -241,6 +241,7 @@ export default mode;
 </table>
 
 ### Extending Modes
+
 The `basic` mode provides support for creating mode extensions without having
 to redeclare the entire mode.  See `longitudinal/src/index.ts` for an example
 mode that builds on top of the basic mode.  Also see `basic/src/index.tsx` for
@@ -470,3 +471,50 @@ rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.m
 This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
 
 :::
+
+## APP Configuration of Modes
+
+Modes based on the `basic` mode allow for customization using the `immutability-helper`
+api within the `app-config.js` file as specified by the build process.  For example,
+to list the `basic` mode by default, and hide the `longitudinal` mode, the following
+configuration from `config/kheops.js` can be used:
+
+```
+... app config file
+  modesConfiguration: {
+    '@ohif/mode-basic': {
+      hide: { $set: false },
+      displayName: { $set: 'Basic' },
+    },
+    '@ohif/mode-longitudinal': {
+      hide: { $set: true },
+    },
+  },
+```
+
+## Default Modes
+
+There are a number of modes provided in a default OHIF installation.  These
+are described here, along with some amount of information about extending/configuration
+of those modes.
+
+Modes which are loaded by default, but which are hidden can be activated by
+using a direct URL launch.  For example, to show a study in the `basic` mode,
+use the URL for the `longitudinal` mode, and replace the `/viewer` with `/basic`
+
+### Basic (NOT `Basic Viewer`, which got assigned to `longitudinal`)
+
+The basic mode is a mode that demonstrates the base capabilities of the OHIF
+system, without including features such as longitudinal tracking, segmentation editing
+or other custom capabilities. The left hand panel uses the study browser thumbnails
+without tracking, and the right hand panel uses the basic segmentation panel and the
+measurements without tracking (longitudinal) layouts.  This makes it a good overall
+base for using when the tracking behaviour of longitudinal mode is not desired.
+
+It can be used in a default install by direct URL launch to the `/basic` endpoint
+instead of the `/viewer` endpoint.
+
+### Longitudinal (The `Basic Viewer` label in OHIF)
+
+The longitudinal mode adds the tracking for measurements in the study browser
+and in the measurements panel, and is otherwise identical to the `basic` mode.
