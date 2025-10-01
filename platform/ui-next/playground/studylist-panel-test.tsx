@@ -16,6 +16,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../src/components/DropdownMenu';
 import { Input } from '../src/components/Input';
@@ -94,34 +95,35 @@ function DataTable<TData, TValue>({
   return (
     <div className="flex h-full flex-col">
       {(showColumnVisibilityControls || title) && (
-        <div className="flex items-center justify-between gap-2 py-2">
-          <div className="text-foreground text-xl">{title}</div>
+        <div className="relative flex items-center justify-center py-4">
+          <div className="text-primary text-[20px] font-medium">{title}</div>
           {showColumnVisibilityControls && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                >
-                  Columns
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter(col => col.getCanHide())
-                  .map(column => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      checked={column.getIsVisible()}
-                      onCheckedChange={v => column.toggleVisibility(!!v)}
-                      className="capitalize"
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="absolute right-0">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                  >
+                    Show
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    .getAllColumns()
+                    .filter(col => col.getCanHide())
+                    .map(column => (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        checked={column.getIsVisible()}
+                        onCheckedChange={v => column.toggleVisibility(!!v)}
+                        className="capitalize"
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       )}
@@ -185,7 +187,7 @@ function DataTable<TData, TValue>({
                       data-state={row.getIsSelected() ? 'selected' : undefined}
                       onClick={() => row.toggleSelected()}
                       aria-selected={row.getIsSelected()}
-                      className="cursor-pointer"
+                      className="group cursor-pointer"
                     >
                       {row.getVisibleCells().map(cell => (
                         <TableCell key={cell.id}>
@@ -258,9 +260,9 @@ const App = () => {
           className="h-full w-full"
         >
           <ResizablePanel defaultSize={70}>
-            <div className="flex h-full w-full flex-col p-3">
+            <div className="flex h-full w-full flex-col px-3 pb-3 pt-0">
               <div className="min-h-0 flex-1">
-                <div className="bg-background h-full rounded-md p-2">
+                <div className="bg-background h-full rounded-md px-2 pb-2 pt-0">
                   <DataTable<StudyRow, unknown>
                     columns={columns}
                     data={data as StudyRow[]}
@@ -411,7 +413,81 @@ const columns: ColumnDef<StudyRow, unknown>[] = [
         align="right"
       />
     ),
-    cell: ({ row }) => <div className="text-right">{row.getValue('instances')}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue('instances') as number;
+      const isActive = row.getIsSelected();
+      return (
+        <div className="relative">
+          <div
+            className={`text-right transition-opacity ${
+              isActive
+                ? 'invisible opacity-0'
+                : 'group-hover:invisible group-hover:opacity-0 group-hover:text-transparent'
+            }`}
+          >
+            {value}
+          </div>
+          <div
+            className={`absolute inset-y-0 right-0 z-10 flex items-center px-2 ${
+              isActive
+                ? 'bg-popover opacity-100'
+                : 'opacity-0 group-hover:bg-muted group-hover:opacity-100'
+            }`}
+            onClick={e => e.stopPropagation()}
+            onMouseDown={e => {
+              e.stopPropagation();
+              if (!row.getIsSelected()) {
+                row.toggleSelected(true);
+              }
+            }}
+            onPointerDown={e => {
+              e.stopPropagation();
+              if (!row.getIsSelected()) {
+                row.toggleSelected(true);
+              }
+            }}
+          >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="sm"
+                  onClick={e => {
+                    e.stopPropagation();
+                  }}
+                  onMouseDown={e => {
+                    e.stopPropagation();
+                    if (!row.getIsSelected()) {
+                      row.toggleSelected(true);
+                    }
+                  }}
+                  onPointerDown={e => {
+                    e.stopPropagation();
+                    if (!row.getIsSelected()) {
+                      row.toggleSelected(true);
+                    }
+                  }}
+                >
+                  Open in...
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                onClick={e => e.stopPropagation()}
+                onMouseDown={e => e.stopPropagation()}
+                onPointerDown={e => e.stopPropagation()}
+              >
+                <DropdownMenuItem onSelect={e => e.preventDefault()}>Basic Viewer</DropdownMenuItem>
+                <DropdownMenuItem onSelect={e => e.preventDefault()}>Segmentation</DropdownMenuItem>
+                <DropdownMenuItem disabled>US Pleura B-line Annotations</DropdownMenuItem>
+                <DropdownMenuItem disabled>Total Metabolic Tumor Volume</DropdownMenuItem>
+                <DropdownMenuItem disabled>Microscopy</DropdownMenuItem>
+                <DropdownMenuItem disabled>Preclinical 4D</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      );
+    },
     sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
   },
 ];
