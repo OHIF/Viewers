@@ -109,6 +109,7 @@ function DataTable<TData, TValue>({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  {table
                     .getAllColumns()
                     .filter(col => col.getCanHide())
                     .map(column => (
