@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-segmentation",
-  "version": "3.12.0-beta.35",
+  "version": "3.12.0-beta.38",
   "description": "OHIF segmentation mode which enables labelmap segmentation read/edit/export",
   "author": "@ohif",
   "license": "MIT",
@@ -35,14 +35,14 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "workspace:*",
-    "@ohif/extension-cornerstone": "workspace:*",
-    "@ohif/extension-cornerstone-dicom-rt": "workspace:*",
-    "@ohif/extension-cornerstone-dicom-seg": "workspace:*",
-    "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
-    "@ohif/extension-default": "workspace:*",
-    "@ohif/extension-dicom-pdf": "workspace:*",
-    "@ohif/extension-dicom-video": "workspace:*"
+    "@ohif/core": "3.12.0-beta.38",
+    "@ohif/extension-cornerstone": "3.12.0-beta.38",
+    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.38",
+    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.38",
+    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.38",
+    "@ohif/extension-default": "3.12.0-beta.38",
+    "@ohif/extension-dicom-pdf": "3.12.0-beta.38",
+    "@ohif/extension-dicom-video": "3.12.0-beta.38"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
@@ -66,7 +66,7 @@
     "babel-loader": "^8.0.0-beta.4",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^10.2.0",
-    "cross-env": "7.0.3",
+    "cross-env": "^7.0.3",
     "dotenv": "^14.1.0",
     "eslint": "^8.39.0",
     "eslint-loader": "^2.0.0",
