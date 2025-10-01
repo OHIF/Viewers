@@ -12,8 +12,11 @@ This guide provides information about migrating from OHIF version 3.11 to versio
 There is a lot of support for the basic mode definition contained in the
 `modes/basic` module.  Using this framework will allow your mode to avoid
 creating a lot of boilerplate code that may not upgrade very well.
-However, the existing mode definitions can just be re-used without be based
-on the modes import.
+
+This is an OPTIONAL change - your existing mode definitions will continue to work,
+but using the new basic mode as a basis will reduce the amount of effort when
+there are changes unrelated to your custom mode.
+
 
 ## ui button with text size
 
