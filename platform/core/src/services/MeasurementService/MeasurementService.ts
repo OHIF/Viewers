@@ -600,6 +600,16 @@ class MeasurementService extends PubSubService {
    * @param {any} source The source
    */
   private addUnmappedMeasurement(sourceAnnotationDetail: any, source: any) {
+    if (sourceAnnotationDetail.annotation?.invalidated === true) {
+      console.log('Measurement is invalidated, skipping...', sourceAnnotationDetail);
+      return;
+    }
+
+    if (sourceAnnotationDetail.annotation?.isPreview === true) {
+      console.log('Measurement is preview, skipping...', sourceAnnotationDetail);
+      return;
+    }
+
     const metadata = this.findAttributeRecursively(sourceAnnotationDetail, 'metadata');
     const label = this.findAttributeRecursively(sourceAnnotationDetail, 'label');
     const referencedImageId = this.findAttributeRecursively(

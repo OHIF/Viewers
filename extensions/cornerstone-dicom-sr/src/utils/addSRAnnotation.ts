@@ -105,6 +105,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
     annotationUID: TrackingUniqueIdentifier,
     highlighted: false,
     isLocked: false,
+    isPreview: toolName === toolNames.DICOMSRDisplay,
     invalidated: false,
     metadata: {
       toolName,

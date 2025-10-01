@@ -10,6 +10,7 @@ export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
 }
 
+/** A filter that filters for measurements belonging to the study */
 export function filterMeasurementsByStudyUID(studyUID) {
   return measurement => measurement.referenceStudyUID == studyUID;
 }
@@ -28,11 +29,6 @@ export function filterTool(toolName: string) {
 /** A filter that always returns true */
 export function filterAny(_measurement) {
   return true;
-}
-
-/** A filter that returns true for measurements that are not invalidated */
-export function filterAnyInvalidated(_measurement) {
-  return _measurement?.annotation?.invalidated === true ? false : true;
 }
 
 /** A filter that excludes everything */
