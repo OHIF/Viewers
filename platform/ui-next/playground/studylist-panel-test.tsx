@@ -247,7 +247,7 @@ function DataTableColumnHeader<TData, TValue>({
 }
 
 const App = () => {
-  const [layout, setLayout] = React.useState<'right' | 'bottom'>('right');
+  const [layout, setLayout] = React.useState<'right' | 'bottom'>('bottom');
   const [selected, setSelected] = React.useState<StudyRow | null>(null);
 
   return (
@@ -312,31 +312,25 @@ function SidePanel({
   selected: StudyRow | null;
   onToggleLayout: () => void;
 }) {
-  const isRight = layout === 'right';
-  const headerTitle = isRight ? 'Right Panel' : 'Bottom Panel';
-
   return (
     <div className="bg-background flex h-full w-full flex-col">
-      <div className="bg-background text-primary flex h-10 items-center justify-between px-3 text-sm">
-        <span>{headerTitle}</span>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onToggleLayout}
-        >
-          {isRight ? 'Move to Bottom' : 'Move to Right'}
-        </Button>
-      </div>
       <ScrollArea className="flex-1">
-        <div className="p-3">
+        <div
+          className="px-3 pb-3"
+          style={{ paddingTop: layout === 'right' ? 'var(--panel-right-top-pad, 59px)' : 0 }}
+        >
           {selected ? (
             <PanelContent
               key={selected.accession}
               study={selected}
               layout={layout}
+              onToggleLayout={onToggleLayout}
             />
           ) : (
-            <PanelDefault layout={layout} />
+            <PanelDefault
+              layout={layout}
+              onToggleLayout={onToggleLayout}
+            />
           )}
         </div>
       </ScrollArea>
