@@ -20,7 +20,8 @@ const App = () => (
     <div className="mx-auto h-full max-w-7xl p-6">
       <h1 className="text-foreground mb-4 text-2xl font-medium">Study List</h1>
       <div className="bg-background rounded-md p-2">
-        <Table className="min-w-[1000px]">
+        <div className="overflow-x-auto">
+          <Table className="min-w-[1000px]" noScroll>
           <TableHeader>
             <TableRow>
               <TableHead>Patient</TableHead>
@@ -45,7 +46,8 @@ const App = () => (
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
     </div>
   </div>

@@ -5,16 +5,7 @@ import { Table, TableHeader, TableRow, TableHead } from '../src/components/Table
 import { Button } from '../src/components/Button';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-
-export type StudyRow = {
-  patient: string;
-  mrn: string;
-  studyDateTime: string;
-  modalities: string;
-  description: string;
-  accession: string;
-  instances: number;
-};
+import type { StudyRow } from './studylist/types';
 
 export function PanelContent({
   study,
