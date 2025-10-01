@@ -29,6 +29,7 @@ import {
   TableRow,
   TableCell,
 } from '../../src/components/Table'
+import { ScrollArea } from '../../src/components/ScrollArea'
 import type { StudyRow } from './types'
 
 type Props = {
@@ -116,8 +117,8 @@ export function StudyListTable({
           )}
         </div>
       )}
-      <div className="border-input/50 min-h-0 flex-1 overflow-hidden rounded-md border">
-        <div className="h-full overflow-x-auto">
+      <div className="border-input/50 min-h-0 flex-1 rounded-md border">
+        <ScrollArea className="h-full">
           <Table className={tableClassName} containerClassName="h-full" noScroll>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
@@ -173,9 +174,8 @@ export function StudyListTable({
               )}
             </TableBody>
           </Table>
-        </div>
+        </ScrollArea>
       </div>
     </div>
   )
 }
-

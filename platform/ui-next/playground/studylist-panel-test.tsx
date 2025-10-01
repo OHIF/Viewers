@@ -25,18 +25,16 @@ const App = () => {
             <div className="flex h-full w-full flex-col px-3 pb-3 pt-0">
               <div className="min-h-0 flex-1">
                 <div className="bg-background h-full rounded-md px-2 pb-2 pt-0">
-                  <ScrollArea className="h-full">
-                    <StudyListTable
-                      columns={studyListColumns}
-                      data={data as StudyRow[]}
-                      getRowId={(row) => row.accession}
-                      enforceSingleSelection={true}
-                      showColumnVisibility={true}
-                      title="Study List"
-                      tableClassName="min-w-[1000px]"
-                      onSelectionChange={(rows) => setSelected(rows[0] ?? null)}
-                    />
-                  </ScrollArea>
+                  <StudyListTable
+                    columns={studyListColumns}
+                    data={data as StudyRow[]}
+                    getRowId={(row) => row.accession}
+                    enforceSingleSelection={true}
+                    showColumnVisibility={true}
+                    title="Study List"
+                    tableClassName="min-w-[1000px]"
+                    onSelectionChange={(rows) => setSelected(rows[0] ?? null)}
+                  />
                 </div>
               </div>
             </div>
