@@ -45,6 +45,7 @@ import * as MeasurementFilters from './measurementFilters';
 import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
+import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -71,6 +72,7 @@ const utils = {
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
+  structuredCloneWithFunctions,
   hotkeys,
   Queue,
   isDicomUid,
@@ -109,6 +111,7 @@ export {
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
+  structuredCloneWithFunctions,
   hotkeys,
   Queue,
   isDicomUid,

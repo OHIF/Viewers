@@ -17,7 +17,6 @@ import React from 'react';
  */
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
-import { publicUrl } from './utils/publicUrl';
 export { history } from './utils/history';
 export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
 
@@ -26,7 +25,6 @@ loadDynamicConfig(window.config).then(config_json => {
   if (config_json !== null) {
     window.config = config_json;
   }
-  window.config.routerBasename ||= publicUrl;
 
   /**
    * Combine our appConfiguration with installed extensions and modes.
