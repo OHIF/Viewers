@@ -18,7 +18,7 @@ type Props<TData> = {
 export function DataTableViewOptions<TData>({
   getLabel = (id) => id,
   canHide = () => true,
-  buttonText = 'Columns',
+  buttonText = 'View',
 }: Props<TData>) {
   const { table } = useDataTable<TData>()
   const columns = table.getAllColumns().filter((c) => c.getCanHide() && canHide(c.id))
