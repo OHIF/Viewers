@@ -1,23 +1,27 @@
-import React from 'react'
-import { Table, TableHeader, TableRow, TableHead } from '../../../src/components/Table'
-import { Button } from '../../../src/components/Button'
+import React from 'react';
+import { Table, TableHeader, TableRow, TableHead } from '../../../src/components/Table';
+import { Button } from '../../../src/components/Button';
 
 export function PanelDefault({
   layout,
   onToggleLayout,
 }: {
-  layout: 'right' | 'bottom'
-  onToggleLayout: () => void
+  layout: 'right' | 'bottom';
+  onToggleLayout: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       <Table noScroll>
-        <TableHeader>
-          <TableRow>
+        <TableHeader className="border-0 [&_tr]:border-b-0">
+          <TableRow className="border-b-0">
             <TableHead className="bg-background sticky top-0 z-10 rounded-t-md">
               <div className="flex items-center justify-between">
-                <span>Studies</span>
-                <Button size="sm" variant="outline" onClick={onToggleLayout}>
+                <span className="text-foreground text-xl font-medium">Studies</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={onToggleLayout}
+                >
                   {layout === 'right' ? 'Move to Bottom' : 'Move to Right'}
                 </Button>
               </div>
@@ -26,8 +30,7 @@ export function PanelDefault({
         </TableHeader>
       </Table>
 
-      <div className="text-muted-foreground text-sm">Select a study</div>
+      <div className="text-muted-foreground p-1 text-lg">Select a study to preview</div>
     </div>
-  )
+  );
 }
-
