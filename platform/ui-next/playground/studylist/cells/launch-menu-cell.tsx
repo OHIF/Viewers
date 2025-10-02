@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { Row } from '@tanstack/react-table'
 import { Button } from '../../../src/components/Button'
+import { DataTableActionOverlayCell } from '../../../src/components/DataTable'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,55 +10,22 @@ import {
 } from '../../../src/components/DropdownMenu'
 
 export function LaunchMenuCell<TData>({ row, value }: { row: Row<TData>; value: number }) {
-  const isActive = row.getIsSelected()
+  const [open, setOpen] = React.useState(false)
   return (
-    <div className="relative">
-      <div
-        className={`text-right transition-opacity ${
-          isActive
-            ? 'invisible opacity-0'
-            : 'group-hover:invisible group-hover:opacity-0 group-hover:text-transparent'
-        }`}
-      >
-        {value}
-      </div>
-      <div
-        className={`absolute inset-y-0 right-0 z-10 flex items-center px-2 ${
-          isActive ? 'bg-popover opacity-100' : 'opacity-0 group-hover:bg-muted group-hover:opacity-100'
-        }`}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => {
-          e.stopPropagation()
-          if (!row.getIsSelected()) row.toggleSelected(true)
-        }}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          if (!row.getIsSelected()) row.toggleSelected(true)
-        }}
-      >
-        <DropdownMenu>
+    <DataTableActionOverlayCell
+      isActive={row.getIsSelected()}
+      value={<div className="text-right">{value}</div>}
+      onActivate={() => {
+        if (!row.getIsSelected()) row.toggleSelected(true)
+      }}
+      overlay={
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <Button
-              size="sm"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => {
-                e.stopPropagation()
-                if (!row.getIsSelected()) row.toggleSelected(true)
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation()
-                if (!row.getIsSelected()) row.toggleSelected(true)
-              }}
-            >
+            <Button size="sm" aria-expanded={open}>
               Open in...
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-          >
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Basic Viewer</DropdownMenuItem>
             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Segmentation</DropdownMenuItem>
             <DropdownMenuItem disabled>US Pleura B-line Annotations</DropdownMenuItem>
@@ -66,8 +34,7 @@ export function LaunchMenuCell<TData>({ row, value }: { row: Row<TData>; value: 
             <DropdownMenuItem disabled>Preclinical 4D</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-    </div>
+      }
+    />
   )
 }
-

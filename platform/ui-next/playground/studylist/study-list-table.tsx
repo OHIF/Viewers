@@ -13,14 +13,7 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Button } from '../../src/components/Button'
-import { Input } from '../../src/components/Input'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-} from '../../src/components/DropdownMenu'
+import { DataTableFilterRow, DataTableViewOptions } from '../../src/components/DataTable'
 import {
   Table,
   TableHeader,
@@ -91,28 +84,13 @@ export function StudyListTable({
           {title ? <div className="text-primary text-[20px] font-medium">{title}</div> : null}
           {showColumnVisibility && (
             <div className="absolute right-0">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    Columns
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {table
-                    .getAllColumns()
-                    .filter((c) => c.getCanHide())
-                    .map((column) => (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(v) => column.toggleVisibility(!!v)}
-                        className="capitalize"
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <DataTableViewOptions
+                table={table}
+                getLabel={(id) => {
+                  const label = (table.getColumn(id)?.columnDef.meta as { label?: string } | undefined)?.label
+                  return label ?? id
+                }}
+              />
             </div>
           )}
         </div>
@@ -124,7 +102,14 @@ export function StudyListTable({
               {table.getHeaderGroups().map((hg) => (
                 <TableRow key={hg.id}>
                   {hg.headers.map((header) => (
-                    <TableHead key={header.id} className="bg-muted sticky top-0 z-10">
+                    <TableHead
+                      key={header.id}
+                      className="bg-muted sticky top-0 z-10"
+                      aria-sort={(() => {
+                        const s = header.column.getIsSorted() as false | 'asc' | 'desc'
+                        return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none'
+                      })()}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -134,23 +119,12 @@ export function StudyListTable({
               ))}
             </TableHeader>
             <TableBody>
-              <TableRow data-filter-row className="hover:bg-transparent">
-                {table.getVisibleLeafColumns().map((col) => (
-                  <TableCell key={col.id} className={col.id === 'instances' ? 'text-right' : undefined}>
-                    {col.id === 'instances' ? (
-                      <Button variant="ghost" size="sm" onClick={() => setColumnFilters([])} aria-label="Reset filters">
-                        Reset
-                      </Button>
-                    ) : (
-                      <Input
-                        value={(table.getColumn(col.id)?.getFilterValue() as string) ?? ''}
-                        onChange={(e) => table.getColumn(col.id)?.setFilterValue(e.target.value)}
-                        className="h-7 w-full"
-                      />
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
+              <DataTableFilterRow
+                table={table}
+                resetCellId="instances"
+                onReset={() => setColumnFilters([])}
+                excludeColumnIds={[]}
+              />
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
