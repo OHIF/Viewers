@@ -6,7 +6,7 @@
 
 const trimSlashes = (s: string) => s.replace(/^\/+|\/+$/g, '');
 const route = trimSlashes(window.location.pathname);
-const slug = route || 'patient-table-prototype';
+const slug = route || 'studylist';
 
 // Attempt to import `<slug>.tsx` from this directory.
 // Webpack will create a context for `./*.tsx` due to the dynamic import below.

@@ -1,19 +1,14 @@
 import * as React from 'react'
-import type {
-  ColumnDef,
-  SortingState,
-  VisibilityState,
-  RowSelectionState,
-  ColumnFiltersState,
-} from '@tanstack/react-table'
+import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table'
+import { flexRender } from '@tanstack/react-table'
 import {
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-import { DataTableFilterRow, DataTableViewOptions } from '../../src/components/DataTable'
+  DataTable,
+  DataTableToolbar,
+  DataTableTitle,
+  DataTableFilterRow,
+  DataTableViewOptions,
+  useDataTable,
+} from '../../src/components/DataTable'
 import {
   Table,
   TableHeader,
@@ -50,42 +45,39 @@ export function StudyListTable({
   tableClassName,
   onSelectionChange,
 }: Props) {
-  const [sorting, setSorting] = React.useState<SortingState>(initialSorting)
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(initialVisibility)
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  return (
+    <DataTable<StudyRow>
+      data={data}
+      columns={columns}
+      getRowId={getRowId}
+      initialSorting={initialSorting}
+      initialVisibility={initialVisibility}
+      enforceSingleSelection={enforceSingleSelection}
+      onSelectionChange={onSelectionChange}
+    >
+      <Content title={title} showColumnVisibility={showColumnVisibility} tableClassName={tableClassName} />
+    </DataTable>
+  )
+}
 
-  const table = useReactTable({
-    data,
-    columns,
-    state: { sorting, columnVisibility, rowSelection, columnFilters },
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    enableRowSelection: true,
-    enableMultiRowSelection: !enforceSingleSelection,
-    getRowId,
-  })
-
-  React.useEffect(() => {
-    if (!onSelectionChange) return
-    const selected = table.getSelectedRowModel().rows.map((r) => r.original as StudyRow)
-    onSelectionChange(selected)
-  }, [rowSelection, onSelectionChange, table])
-
+function Content({
+  title,
+  showColumnVisibility,
+  tableClassName,
+}: {
+  title?: React.ReactNode
+  showColumnVisibility?: boolean
+  tableClassName?: string
+}) {
+  const { table, setColumnFilters } = useDataTable<StudyRow>()
   return (
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
-        <div className="relative flex items-center justify-center py-4">
-          {title ? <div className="text-primary text-[20px] font-medium">{title}</div> : null}
+        <DataTableToolbar>
+          {title ? <DataTableTitle>{title}</DataTableTitle> : null}
           {showColumnVisibility && (
             <div className="absolute right-0">
               <DataTableViewOptions
-                table={table}
                 getLabel={(id) => {
                   const label = (table.getColumn(id)?.columnDef.meta as { label?: string } | undefined)?.label
                   return label ?? id
@@ -93,7 +85,7 @@ export function StudyListTable({
               />
             </div>
           )}
-        </div>
+        </DataTableToolbar>
       )}
       <div className="border-input/50 min-h-0 flex-1 rounded-md border">
         <ScrollArea className="h-full">
@@ -119,12 +111,7 @@ export function StudyListTable({
               ))}
             </TableHeader>
             <TableBody>
-              <DataTableFilterRow
-                table={table}
-                resetCellId="instances"
-                onReset={() => setColumnFilters([])}
-                excludeColumnIds={[]}
-              />
+              <DataTableFilterRow resetCellId="instances" onReset={() => setColumnFilters([])} excludeColumnIds={[]} />
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
