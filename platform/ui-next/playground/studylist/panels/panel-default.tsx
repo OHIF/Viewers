@@ -30,7 +30,7 @@ export function PanelDefault({
         </TableHeader>
       </Table>
 
-      <div className="text-muted-foreground p-1 text-lg">Select a study to preview</div>
+      <div className="text-muted-foreground pl-2 text-lg">Select a study to preview</div>
     </div>
   );
 }
