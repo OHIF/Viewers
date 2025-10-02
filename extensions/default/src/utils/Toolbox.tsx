@@ -19,7 +19,17 @@ interface ButtonProps {
  * role in enhancing the app with a toolbox by providing a way to integrate
  * and display various tools and their corresponding options
  */
-export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; title: string }) {
+export function Toolbox({
+  buttonSectionId,
+  title,
+  visibleSubsectionIds,
+}: {
+  buttonSectionId: string;
+  title: string;
+  // Optional array of subsection IDs that should be visible in the toolbox.
+  // If not provided, all subsections will be shown.
+  visibleSubsectionIds?: string[];
+}) {
   const { servicesManager } = useSystem();
   const { t } = useTranslation();
 
@@ -42,6 +52,12 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
       'Toolbox accepts only button sections at the top level, not buttons. Create at least one button section.'
     );
   }
+
+  const visibleToolboxSections = visibleSubsectionIds
+    ? toolboxSections.filter(section =>
+        visibleSubsectionIds.includes(section.componentProps.buttonSection)
+      )
+    : toolboxSections;
 
   // Define the interaction handler once.
   const handleInteraction = ({ itemId }: { itemId: string }) => {
@@ -69,7 +85,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
 
       <PanelSection.Content className="bg-muted flex-shrink-0 border-none">
         {showConfig && <CustomConfigComponent />}
-        {toolboxSections.map(section => {
+        {visibleToolboxSections.map(section => {
           const sectionId = section.componentProps.buttonSection;
           const buttons = toolbarService.getButtonSection(sectionId) as any[];
 

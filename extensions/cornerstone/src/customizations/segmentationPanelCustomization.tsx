@@ -44,11 +44,5 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'segmentationToolbox.config': () => {
       return <SegmentationToolConfig />;
     },
-    'labelMapSegmentationToolbox.config': () => {
-      return <SegmentationToolConfig />;
-    },
-    'contourSegmentationToolbox.config': () => {
-      return <SegmentationToolConfig />;
-    },
   };
 }

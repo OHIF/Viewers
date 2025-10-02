@@ -15,8 +15,7 @@ import { Toolbar, useUIStateStore } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
 import { useSelectedSegmentationsForViewportStore } from '../stores';
 
-const utilitiesSectionMap = {
-  Segmentation: 'SegmentationUtilities',
+const visibleSubsectionIdsMap = {
   [SegmentationRepresentations.Labelmap]: 'LabelMapUtilities',
   [SegmentationRepresentations.Contour]: 'ContourUtilities',
 };
@@ -45,10 +44,8 @@ export default function PanelSegmentation({
     ? selectedSegmentationsForViewportMap?.get(segmentationRepresentationType)
     : undefined;
 
-  const buttonSection = utilitiesSectionMap[segmentationRepresentationType ?? 'Segmentation'];
-
   const { activeToolOptions: activeUtilityOptions } = useActiveToolOptions({
-    buttonSectionId: buttonSection,
+    buttonSectionId: 'SegmentationUtilities',
   });
 
   const { segmentationsWithRepresentations, disabled } =
@@ -104,6 +101,7 @@ export default function PanelSegmentation({
     },
     onSegmentAdd: segmentationId => {
       commandsManager.run('addSegment', { segmentationId });
+      commandsManager.run('setActiveSegmentation', { segmentationId });
     },
     onSegmentClick: (segmentationId, segmentIndex) => {
       commandsManager.run('setActiveSegmentAndCenter', { segmentationId, segmentIndex });
@@ -245,13 +243,20 @@ export default function PanelSegmentation({
   };
 
   const renderUtilitiesToolbar = () => {
+    const visibleSubsectionIds = segmentationRepresentationType
+      ? visibleSubsectionIdsMap[segmentationRepresentationType]
+      : undefined;
+
     return (
       <IconPresentationProvider
         size="large"
         IconContainer={SegmentationUtilityButton}
       >
         <div className="flex h-[42px] gap-[3px] bg-transparent pt-[6px] pb-[8px] pl-[8px]">
-          <Toolbar buttonSection={buttonSection} />
+          <Toolbar
+            buttonSection={'SegmentationUtilities'}
+            visibleButtonIds={visibleSubsectionIds}
+          />
         </div>
       </IconPresentationProvider>
     );

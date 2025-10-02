@@ -8,12 +8,9 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
-  const { toolbarService } = servicesManager.services;
-
-  const toolSectionMap = {
-    Segmentation: toolbarService.sections.segmentationToolbox,
-    [SegmentationRepresentations.Labelmap]: toolbarService.sections.labelMapSegmentationToolbox,
-    [SegmentationRepresentations.Contour]: toolbarService.sections.contourSegmentationToolbox,
+  const visibleSubsectionIdsMap = {
+    [SegmentationRepresentations.Labelmap]: ['LabelMapTools'],
+    [SegmentationRepresentations.Contour]: ['ContourTools'],
   };
 
   const wrappedPanelSegmentation = props => {
@@ -49,11 +46,16 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     const tKey = `${props.segmentationRepresentationType ?? 'Segmentation'} tools`;
     const tValue = t(tKey);
 
+    const visibleToolboxSubsectionIds = props.segmentationRepresentationType
+      ? visibleSubsectionIdsMap[props.segmentationRepresentationType]
+      : undefined;
+
     return (
       <>
         <Toolbox
-          buttonSectionId={toolSectionMap[props.segmentationRepresentationType ?? 'Segmentation']}
+          buttonSectionId={'segmentationToolbox'}
           title={tValue}
+          visibleSubsectionIds={visibleToolboxSubsectionIds}
         />
         <PanelSegmentation
           commandsManager={commandsManager}

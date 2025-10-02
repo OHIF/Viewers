@@ -1,6 +1,7 @@
 import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
 import i18n from 'i18next';
+import { Toolbar } from '@ohif/extension-default';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -177,21 +178,21 @@ const toolbarButtons: Button[] = [
   // Section containers for the nested toolbox
   {
     id: 'SegmentationUtilities',
-    uiType: 'ohif.toolBoxButtonGroup',
+    component: Toolbar,
     props: {
       buttonSection: true,
     },
   },
   {
     id: 'LabelMapUtilities',
-    uiType: 'ohif.toolBoxButtonGroup',
+    component: Toolbar,
     props: {
       buttonSection: true,
     },
   },
   {
     id: 'ContourUtilities',
-    uiType: 'ohif.toolBoxButtonGroup',
+    component: Toolbar,
     props: {
       buttonSection: true,
     },
