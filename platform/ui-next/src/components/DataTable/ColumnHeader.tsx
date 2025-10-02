@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { Button } from '../../src/components/Button'
 import type { Column } from '@tanstack/react-table'
+import { Button } from '../Button'
 
-export function ColumnHeader<TData, TValue>({
+export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   align = 'left',
@@ -13,11 +13,10 @@ export function ColumnHeader<TData, TValue>({
 }) {
   const sorted = column.getIsSorted() as false | 'asc' | 'desc'
   const indicator = sorted === 'asc' ? '▲' : sorted === 'desc' ? '▼' : '↕'
-  const justifyClass =
-    align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start'
+  const justify = align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start'
 
   return (
-    <div className={`flex items-center ${justifyClass} w-full gap-1`}>
+    <div className={`flex w-full items-center gap-1 ${justify}`}>
       <span>{title}</span>
       <Button
         variant="ghost"
