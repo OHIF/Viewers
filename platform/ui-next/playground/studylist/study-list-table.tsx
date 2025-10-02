@@ -19,6 +19,7 @@ import {
 } from '../../src/components/Table'
 import { ScrollArea } from '../../src/components/ScrollArea'
 import type { StudyRow } from './types'
+import ohifLogo from './assets/ohif-logo.svg'
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[]
@@ -74,6 +75,9 @@ function Content({
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
         <DataTableToolbar>
+          <div className="absolute left-0">
+            <img src={ohifLogo} alt="OHIF Logo" width={232} height={22} className="h-[22px] w-[232px]" />
+          </div>
           {title ? <DataTableTitle>{title}</DataTableTitle> : null}
           {showColumnVisibility && (
             <div className="absolute right-0">

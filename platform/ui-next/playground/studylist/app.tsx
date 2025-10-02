@@ -74,4 +74,3 @@ function SidePanel({
     </div>
   )
 }
-
