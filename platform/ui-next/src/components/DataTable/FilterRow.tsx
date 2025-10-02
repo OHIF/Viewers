@@ -1,11 +1,11 @@
 import * as React from 'react'
-import type { Table } from '@tanstack/react-table'
 import { TableRow, TableCell } from '../Table'
 import { Input } from '../Input'
 import { Button } from '../Button'
 
+import { useDataTable } from './context'
+
 type Props<TData> = {
-  table: Table<TData>
   excludeColumnIds?: string[]
   resetCellId?: string
   onReset?: () => void
@@ -14,13 +14,13 @@ type Props<TData> = {
 }
 
 export function DataTableFilterRow<TData>({
-  table,
   excludeColumnIds = [],
   resetCellId,
   onReset,
   renderCell,
   inputClassName = 'h-7 w-full',
 }: Props<TData>) {
+  const { table } = useDataTable<TData>()
   const cols = table.getVisibleLeafColumns()
   return (
     <TableRow data-filter-row className="hover:bg-transparent">
@@ -56,4 +56,3 @@ export function DataTableFilterRow<TData>({
     </TableRow>
   )
 }
-
