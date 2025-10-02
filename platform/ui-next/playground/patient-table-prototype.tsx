@@ -13,7 +13,7 @@ import {
   TableCaption,
 } from '../src/components/Table';
 
-import data from './patient-studies.json';
+import data from './studylist/patient-studies.json';
 
 const App = () => (
   <div className="h-screen w-screen bg-black">
