@@ -39,8 +39,7 @@ export const TOOLBAR_SECTIONS = {
 
   // mode specific
   segmentationToolbox: 'segmentationToolbox',
-  labelMapSegmentationToolbox: 'labelMapSegmentationToolbox',
-  contourSegmentationToolbox: 'contourSegmentationToolbox',
+  segmentationUtilities: 'segmentationUtilities',
   dynamicToolbox: 'dynamic-toolbox',
   roiThresholdToolbox: 'ROIThresholdToolbox',
 };
@@ -331,7 +330,7 @@ export default class ToolbarService extends PubSubService {
           ...evaluated,
           disabled: evaluated?.disabled || false,
           visible,
-          className: evaluated?.className || '',
+          className: evaluated?.className || props?.className || '',
           isActive: evaluated?.isActive, // isActive will be undefined for buttons without this prop
         };
         evaluationResults.set(button.id, updatedProps);
@@ -582,7 +581,7 @@ export default class ToolbarService extends PubSubService {
       btn.component = buttonType.defaultComponent;
     }
 
-    if (!buttonType) {
+    if (!buttonType && !btn.component) {
       return;
     }
 

@@ -126,49 +126,42 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      const contourUtilities = ['LogicalContourOperations', 'SimplifyContours', 'SmoothContours'];
+      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
+        'ContourTools',
+        'LabelMapTools',
+      ]);
 
-      const contourTools = [
+      toolbarService.updateSection('ContourTools', [
         'PlanarFreehandContourSegmentationTool',
         'SculptorTool',
         'SplineContourSegmentationTool',
         'LivewireContourSegmentationTool',
-      ];
+      ]);
 
-      const labelMapUtilities = ['InterpolateLabelmap', 'SegmentBidirectional'];
-
-      const labelMapTools = [
+      toolbarService.updateSection('LabelMapTools', [
         'LabelmapSlicePropagation',
         'BrushTools',
         'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
         'LabelMapEditWithContour',
-      ];
-
-      // We cannot simply create two sections - utilities and tools - that combine the utilities and tools for both
-      // segmentation types and add them to each tab because switching to a tab does not activate its selected segmentation
-      // and thus the utilities/tools of the other tab might be incorrectly displayed.
-      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
-        'SegmentationTools',
-      ]);
-      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
-        'LabelMapTools',
-      ]);
-      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
-        'ContourTools',
       ]);
 
-      toolbarService.updateSection('SegmentationTools', [...contourTools, ...labelMapTools]);
-      toolbarService.updateSection('LabelMapTools', [...labelMapTools]);
-      toolbarService.updateSection('ContourTools', [...contourTools]);
-
-      toolbarService.updateSection('SegmentationUtilities', [
-        ...contourUtilities,
-        ...labelMapUtilities,
+      toolbarService.updateSection(toolbarService.sections.segmentationUtilities, [
+        'ContourUtilities',
+        'LabelMapUtilities',
       ]);
-      toolbarService.updateSection('LabelMapUtilities', labelMapUtilities);
-      toolbarService.updateSection('ContourUtilities', contourUtilities);
+
+      toolbarService.updateSection('ContourUtilities', [
+        'LogicalContourOperations',
+        'SimplifyContours',
+        'SmoothContours',
+      ]);
+
+      toolbarService.updateSection('LabelMapUtilities', [
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ]);
 
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
 

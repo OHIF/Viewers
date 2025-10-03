@@ -1,13 +1,46 @@
 import React from 'react';
 import { useToolbar } from '@ohif/core';
 
+/**
+ * Props for the Toolbar component that renders a collection of toolbar buttons and/or button sections.
+ *
+ * @interface ToolbarProps
+ */
 interface ToolbarProps {
+  /**
+   * The section of buttons to display in the toolbar.
+   * Common values include 'primary', 'secondary', 'tertiary', etc.
+   * Defaults to 'primary' if not specified.
+   *
+   * @default 'primary'
+   */
   buttonSection?: string;
+
+  /**
+   * The unique identifier of the viewport this toolbar is associated with.
+   */
   viewportId?: string;
+
+  /**
+   * The numeric position or location of the toolbar.
+   * Used for ordering and layout purposes in the UI.
+   */
   location?: number;
+
+  /**
+   * Props object passed to the isSectionVisible function of toolbar subsections
+   * to determine their visibility. Each subsection component can define its own visibility
+   * logic based on these props.
+   */
+  subSectionVisibilityProps?: Record<string, unknown>;
 }
 
-export function Toolbar({ buttonSection = 'primary', viewportId, location }: ToolbarProps) {
+export function Toolbar({
+  buttonSection = 'primary',
+  viewportId,
+  location,
+  subSectionVisibilityProps,
+}: ToolbarProps) {
   const {
     toolbarButtons,
     onInteraction,
@@ -32,6 +65,17 @@ export function Toolbar({ buttonSection = 'primary', viewportId, location }: Too
         }
 
         const { id, Component, componentProps } = toolDef;
+
+        // This sub tool/component is visible if it is NOT a button section or
+        // it is a button section and has an isSectionVisible function that returns true.
+        const isSubComponentVisible =
+          !componentProps.buttonSection ||
+          typeof componentProps.isSectionVisible !== 'function' ||
+          componentProps.isSectionVisible(subSectionVisibilityProps);
+
+        if (!isSubComponentVisible) {
+          return null;
+        }
 
         // Enhanced props with state and actions - respecting viewport specificity
         const enhancedProps = {
@@ -60,7 +104,17 @@ export function Toolbar({ buttonSection = 'primary', viewportId, location }: Too
           />
         );
 
-        return <div key={id}>{tool}</div>;
+        return (
+          <div
+            key={id}
+            // This wrapper div exists solely for React's key prop requirement during reconciliation.
+            // We use display:contents to make it transparent to the layout engine (children appear
+            // as direct children of the parent) while keeping it in the DOM for React's virtual DOM.
+            className="contents"
+          >
+            {tool}
+          </div>
+        );
       })}
     </>
   );
