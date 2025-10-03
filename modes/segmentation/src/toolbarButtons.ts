@@ -1163,7 +1163,7 @@ const toolbarButtons: Button[] = [
     id: 'LabelMapEditWithContour',
     uiType: 'ohif.toolBoxButton',
     props: {
-      icon: 'icon-tool-bidirectional-segment', // ToDo Use the correct icon
+      icon: 'tool-labelmap-edit-with-contour',
       label: 'Labelmap Edit with Contour Tool',
       tooltip: 'Labelmap Edit with Contour Tool',
       commands: [
