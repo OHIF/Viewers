@@ -9,7 +9,7 @@ import errorHandler from './errorHandler.js';
 import log from './log.js';
 import object from './object.js';
 import string from './string.js';
-import user from './user.js';
+import user from './user';
 import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
