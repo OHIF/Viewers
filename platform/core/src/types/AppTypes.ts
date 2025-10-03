@@ -103,6 +103,7 @@ declare global {
       maxNumRequests?: {
         interaction?: number;
         prefetch?: number;
+        upload?: number;
         thumbnail?: number;
         compute?: number;
       };
