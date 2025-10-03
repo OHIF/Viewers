@@ -1336,9 +1336,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { segmentationId, type, hydrated } = presentationItem;
 
       if (hydrated) {
+        // Check if we need to convert the representation type based on viewport type
+        // Surface representations are only supported on VOLUME_3D viewports
+        // For Stack and Orthographic viewports, we need to use Labelmap instead
+        let representationType = type;
+        if (
+          type === csToolsEnums.SegmentationRepresentations.Surface &&
+          !(viewport instanceof VolumeViewport3D)
+        ) {
+          // Convert Surface to Labelmap for non-3D viewports
+          representationType = csToolsEnums.SegmentationRepresentations.Labelmap;
+        }
+
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
-          type,
+          type: representationType,
         });
       }
     });
