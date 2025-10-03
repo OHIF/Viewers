@@ -58,6 +58,7 @@ const xnat = {
   sopClassHandler: '@ohif/extension-xnat.sopClassHandlerModule.xnatSopClassHandler',
   measurements: '@ohif/extension-xnat.panelModule.xnatMeasurements',
   customForms: '@ohif/extension-xnat.panelModule.xnatCustomForms',
+  overreadNavList: '@ohif/extension-xnat.panelModule.overreadNavigation',
 };
 
 
@@ -405,10 +406,13 @@ function modeFactory({ modeConfiguration }) {
             ? [xnat.segmentation, xnat.measurements, xnat.customForms]  // Overread mode: include custom forms
             : [xnat.segmentation, xnat.measurements];                   // Regular mode: standard panels
           
+            const leftPanels = isOverreadMode
+              ? [ xnat.studyBrowser, xnat.overreadNavList]
+              : [ xnat.studyBrowser, xnat.xnatNavList];
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
+              leftPanels: leftPanels,
               leftPanelResizable: true,
               rightPanels: rightPanels,
               rightPanelResizable: true,

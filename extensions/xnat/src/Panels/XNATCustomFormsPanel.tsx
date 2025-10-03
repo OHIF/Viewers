@@ -4,6 +4,9 @@ import sessionMap from '../utils/sessionMap';
 import {
   getExperimentCustomFormData,
   updateExperimentFormData,
+  getOverreadFormData,
+  updateOverreadFormData,
+  hasUserOverreadData,
   CustomFormData,
   ParsedCustomForm,
   CustomFormField,
@@ -25,24 +28,26 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
   const [formTemplates, setFormTemplates] = useState<{ [formUuid: string]: string[] }>({});
   const [newFieldName, setNewFieldName] = useState<string>('');
   const [manualExperimentId, setManualExperimentId] = useState<string>('');
+  const [isOverreadMode, setIsOverreadMode] = useState<boolean>(false);
+  const [userHasOverreadData, setUserHasOverreadData] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<{ userId: number; username: string } | null>(null);
 
   const { uiNotificationService } = servicesManager.services;
 
   // Get current experiment and project from multiple sources
   const getExperimentId = () => {
-    // Try session map first
-    const sessionExperimentId = sessionMap.getSession()?.experimentId;
-    if (sessionExperimentId) return sessionExperimentId;
-
-    // Try URL parameters
+    // Try URL parameters first
     const urlParams = new URLSearchParams(window.location.search);
     const urlExperimentId = urlParams.get('experimentId') || urlParams.get('sessionId');
     if (urlExperimentId) return urlExperimentId;
 
-    // Try getting from session map with different methods
-    const session = sessionMap.getSession();
-    if (session?.experimentId) return session.experimentId;
-    if (session?.sessionId) return session.sessionId;
+    // Try session map with different methods
+    // @ts-ignore - getSession() without parameters returns all sessions
+    const sessions = sessionMap.getSession();
+    if (Array.isArray(sessions) && sessions.length > 0) {
+      const latestSession = sessions[sessions.length - 1];
+      if (latestSession?.experimentId) return latestSession.experimentId;
+    }
 
     // Try getting from services manager if available
     try {
@@ -83,16 +88,54 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
   const projectId = getProjectId();
   const subjectId = getSubjectId();
 
+  // Get current user information
+  const getCurrentUser = useCallback(async () => {
+    if (!experimentId) {
+      console.log('No experiment ID available to get user info');
+      return null;
+    }
+
+    try {
+      const userData = await hasUserOverreadData(experimentId);
+      console.log('Current user data:', userData);
+      return {
+        userId: userData.userId,
+        username: userData.username
+      };
+    } catch (error) {
+      console.error('Failed to get current user information:', error);
+      return null;
+    }
+  }, [experimentId]);
+
+  // Detect if we're in overread mode
+  const detectOverreadMode = useCallback(() => {
+    // Check URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const isOverreadUrl = mode === 'overread' || window.location.pathname.includes('/overreads');
+
+    // Check if we're in overread mode based on services manager
+    const isOverreadService = servicesManager?.services?.isOverreadMode === true;
+
+    return isOverreadUrl || isOverreadService;
+  }, [servicesManager]);
+
   // Debug logging
   useEffect(() => {
+    const overreadMode = detectOverreadMode();
+    setIsOverreadMode(overreadMode);
+
     console.log('XNAT Custom Forms Panel - Debug Info:', {
       experimentId,
       projectId,
       subjectId,
-      sessionMap: sessionMap.getSession(),
+      isOverreadMode: overreadMode,
+      // @ts-ignore - getSession() without parameters returns all sessions
+      sessionMap: sessionMap.getSession() || [],
       urlParams: Object.fromEntries(new URLSearchParams(window.location.search)),
     });
-  }, [experimentId, projectId, subjectId]);
+  }, [experimentId, projectId, subjectId, detectOverreadMode]);
 
   // Load custom forms for the project (form definitions)
   const loadCustomForms = useCallback(async () => {
@@ -138,8 +181,13 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     try {
       setLoading(true);
       setError('');
-      console.log('Loading form data for experiment:', experimentId, subjectId, projectId);
-      const data = await getExperimentCustomFormData(experimentId);
+      console.log('Loading form data for experiment:', experimentId, subjectId, projectId, 'overread mode:', isOverreadMode);
+
+      // Use overread API if in overread mode, otherwise use regular API
+      const data = isOverreadMode
+        ? await getOverreadFormData(experimentId, selectedFormUuid)
+        : await getExperimentCustomFormData(experimentId);
+
       console.log('Loaded form data:', data);
       setFormData(data);
 
@@ -164,6 +212,18 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           }
         }
       }
+
+      // Check if user has overread data (only in overread mode)
+      if (isOverreadMode) {
+        try {
+          const overreadDataCheck = await hasUserOverreadData(experimentId);
+          setUserHasOverreadData(overreadDataCheck.hasData);
+          console.log('User has overread data:', overreadDataCheck);
+        } catch (overreadCheckError) {
+          console.warn('Failed to check user overread data:', overreadCheckError);
+          setUserHasOverreadData(false);
+        }
+      }
     } catch (err) {
       console.error('Failed to load form data:', err);
       setError('Failed to load form data from XNAT');
@@ -175,7 +235,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     } finally {
       setLoading(false);
     }
-  }, [experimentId, selectedFormUuid, uiNotificationService]);
+  }, [experimentId, selectedFormUuid, uiNotificationService, isOverreadMode]);
 
   // Handle form selection
   const handleFormSelect = useCallback((formUuid: string) => {
@@ -307,11 +367,31 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       setError('');
       setSuccess('');
 
-      const updatedData = await updateExperimentFormData(
-        experimentId,
-        selectedFormUuid,
-        editingData
-      );
+      // Get current user information if not already loaded
+      let userInfo = currentUser;
+      if (!userInfo) {
+        userInfo = await getCurrentUser();
+        if (userInfo) {
+          setCurrentUser(userInfo);
+        }
+      }
+
+      // Prepare form data with user information
+      const formDataWithUser = {
+        ...editingData,
+        ...(userInfo && {
+          completedByUserId: userInfo.userId,
+          completedByUsername: userInfo.username,
+          completedAt: new Date().toISOString()
+        })
+      };
+
+      console.log('Saving form data with user info:', formDataWithUser);
+
+      // Use overread API if in overread mode, otherwise use regular API
+      const updatedData = isOverreadMode
+        ? await updateOverreadFormData(experimentId, selectedFormUuid, formDataWithUser)
+        : await updateExperimentFormData(experimentId, selectedFormUuid, formDataWithUser);
 
       setFormData(updatedData);
       setSuccess('Form data saved successfully');
@@ -319,6 +399,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       console.log('Project ID:', projectId);
       console.log('Experiment ID:', experimentId);
       console.log('Selected form UUID:', selectedFormUuid);
+      console.log('Overread mode:', isOverreadMode);
 
       // Always send overread completion notification since this is always an overread form
       if (projectId) {
@@ -326,7 +407,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           const notificationResult = await sendOverreadCompletionNotification(
             experimentId,
             projectId,
-            editingData
+            formDataWithUser
           );
 
           console.log('Overread completion notification sent:', notificationResult);
@@ -367,6 +448,11 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           type: 'success',
         });
       }
+
+      // Update user has overread data flag
+      if (isOverreadMode) {
+        setUserHasOverreadData(true);
+      }
     } catch (err) {
       console.error('Failed to save form data:', err);
       setError('Failed to save form data');
@@ -378,7 +464,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     } finally {
       setLoading(false);
     }
-  }, [experimentId, selectedFormUuid, editingData, uiNotificationService, projectId, sendOverreadCompletionNotification]);
+  }, [experimentId, selectedFormUuid, editingData, uiNotificationService, projectId, sendOverreadCompletionNotification, isOverreadMode, currentUser, getCurrentUser]);
 
 
 
@@ -392,6 +478,18 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       loadFormData();
     }
   }, [experimentId, loadFormData]);
+
+  // Load current user information
+  useEffect(() => {
+    if (experimentId) {
+      getCurrentUser().then(userInfo => {
+        if (userInfo) {
+          setCurrentUser(userInfo);
+          console.log('Current user loaded:', userInfo);
+        }
+      });
+    }
+  }, [experimentId, getCurrentUser]);
 
   // Load form data when a form is auto-selected
   useEffect(() => {
@@ -595,7 +693,8 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           <PanelSection.Content>
             <div className="text-sm space-y-2">
               <p><strong>URL Parameters:</strong> {window.location.search}</p>
-              <p><strong>Session Map:</strong> {JSON.stringify(sessionMap.getSession(), null, 2)}</p>
+              {/* @ts-ignore - getSession() without parameters returns all sessions */}
+              <p><strong>Session Map:</strong> {JSON.stringify(sessionMap.getSession() || [], null, 2)}</p>
             </div>
           </PanelSection.Content>
         </PanelSection>
@@ -611,14 +710,34 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           <div className="flex items-center space-x-2 text-aqua-pale">
             <Icons.Clipboard className="w-4 h-4" />
             <span>Scan Information</span>
+            {isOverreadMode && (
+              <span className="ml-2 px-2 py-1 bg-orange-500 text-white text-xs rounded">
+                OVERREAD MODE
+              </span>
+            )}
           </div>
         </PanelSection.Header>
         <PanelSection.Content>
           <div className="text-sm space-y-2 text-aqua-pale">
-
             <p><strong>Project:</strong> {projectId || 'Not detected'}</p>
-            <p><strong>Project:</strong> {subjectId || 'Not detected'}</p>
+            <p><strong>Subject:</strong> {subjectId || 'Not detected'}</p>
             <p><strong>Experiment:</strong> {experimentId || 'Not detected'}</p>
+            {currentUser && (
+              <p><strong>Current User:</strong> {currentUser.username} (ID: {currentUser.userId})</p>
+            )}
+            {isOverreadMode && (
+              <div className="mt-3 p-2 bg-orange-100 dark:bg-orange-900 rounded border border-orange-300 dark:border-orange-700">
+                <p className="text-orange-800 dark:text-orange-200 text-sm">
+                  <strong>Overread Mode:</strong> You can only see and edit your own overread results.
+                  Other radiologists' data is not visible to you.
+                </p>
+                {userHasOverreadData && (
+                  <p className="text-green-700 dark:text-green-300 text-sm mt-1">
+                    ✓ You have existing overread data for this experiment.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </PanelSection.Content>
       </PanelSection>
