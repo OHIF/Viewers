@@ -65,6 +65,8 @@ export default class ToolbarService extends PubSubService {
     },
   };
 
+  public static TOOLBAR_SECTIONS = TOOLBAR_SECTIONS;
+
   /**
    * Access to predefined toolbar sections for autocomplete support
    */
