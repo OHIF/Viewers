@@ -1,92 +1,110 @@
-# Bug Fix: Duplicate Segmentation Entries When Switching Layouts
+# Bug Fix Summary: Segmentation Display Issue When Switching Viewports
 
-## Issue Description
-**Linear Issue:** OHI-2076  
-**Title:** [Bug] Duplicate entries for same segmentation when switching between Common and advanced layout
+## Issue: OHI-2216
+**Title:** [Bug] Segmentation not displayed and unable to draw segments when switching back to volume/stack viewport from 3D viewport
 
-When switching from a Common layout to an advanced layout (e.g., 3D Four-Up) in the OHIF Viewer, duplicate entries for the same segmentation appear in the Segmentation Panel.
+## Problem Description
+When switching from a 3D viewport back to a volume/stack viewport, previously drawn segmentations disappeared and users were unable to draw new segments with the brush tool. This occurred because:
+
+1. Segmentations are stored as **Surface** representation type when displayed in 3D viewports
+2. When switching back to volume/stack viewports, the system attempted to restore the segmentation using the stored Surface representation type
+3. Surface representations are only compatible with 3D viewports, not with volume/stack viewports which require **Labelmap** representation
 
 ## Root Cause
-The issue was in the `useViewportSegmentations` hook located at:
-```
-extensions/cornerstone/src/hooks/useViewportSegmentations.ts
-```
-
-When a viewport contains multiple representations of the same segmentation (e.g., both a LABELMAP and SURFACE representation), the hook was creating separate entries for each representation, even though they belong to the same segmentation. This resulted in duplicate entries in the Segmentation Panel.
-
-The problem occurred because:
-1. When switching layouts, new viewports are created
-2. The synchronizer may add the same segmentation with different representation types to these viewports
-3. The `getSegmentationRepresentations(viewportId)` call returns ALL representations for that viewport
-4. Each representation was mapped to a separate entry, creating duplicates
+The `_setSegmentationPresentation` method in `CornerstoneViewportService.ts` was directly using the stored representation type from the presentation state without checking viewport compatibility. When restoring a segmentation presentation that was saved from a 3D viewport (with Surface type), it would try to apply the incompatible Surface representation to a volume/stack viewport.
 
 ## Solution
-Added deduplication logic in the `useViewportSegmentations` hook to ensure only one entry per unique `segmentationId` is shown in the panel, regardless of how many representation types exist.
+Modified the `_setSegmentationPresentation` method to intelligently convert representation types based on the target viewport type:
 
-### Code Changes
+**File Modified:** `extensions/cornerstone/src/services/ViewportService/CornerstoneViewportService.ts`
 
-**File:** `extensions/cornerstone/src/hooks/useViewportSegmentations.ts`
+**Change:** Added viewport type checking logic that:
+- Detects when the stored representation type is Surface
+- Checks if the target viewport is NOT a `VolumeViewport3D` instance
+- Automatically converts Surface representation to Labelmap representation for volume/stack viewports
 
-**Before:**
+## Code Changes
+
 ```typescript
-const representations = segmentationService.getSegmentationRepresentations(viewportId);
+private _setSegmentationPresentation(
+  viewport: Types.IStackViewport | Types.IVolumeViewport,
+  segmentationPresentation: SegmentationPresentation
+): void {
+  if (!segmentationPresentation) {
+    return;
+  }
 
-const newSegmentationsWithRepresentations = representations.map(representation => {
-  const segmentation = segmentationService.getSegmentation(representation.segmentationId);
-  const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-  return {
-    representation,
-    segmentation: mappedSegmentation,
-  };
-});
+  const { segmentationService } = this.servicesManager.services;
+
+  segmentationPresentation.forEach((presentationItem: SegmentationPresentationItem) => {
+    const { segmentationId, type, hydrated } = presentationItem;
+
+    if (hydrated) {
+      // Check if we need to convert the representation type based on viewport type
+      // Surface representations are only supported on VOLUME_3D viewports
+      // For Stack and Orthographic viewports, we need to use Labelmap instead
+      let representationType = type;
+      if (
+        type === csToolsEnums.SegmentationRepresentations.Surface &&
+        !(viewport instanceof VolumeViewport3D)
+      ) {
+        // Convert Surface to Labelmap for non-3D viewports
+        representationType = csToolsEnums.SegmentationRepresentations.Labelmap;
+      }
+
+      segmentationService.addSegmentationRepresentation(viewport.id, {
+        segmentationId,
+        type: representationType,
+      });
+    }
+  });
+}
 ```
 
-**After:**
-```typescript
-const representations = segmentationService.getSegmentationRepresentations(viewportId);
+## Technical Details
 
-// Deduplicate representations by segmentationId to prevent showing
-// the same segmentation multiple times in the panel when it has
-// multiple representation types (e.g., labelmap and surface)
-const uniqueSegmentationMap = new Map();
-representations.forEach(representation => {
-  if (!uniqueSegmentationMap.has(representation.segmentationId)) {
-    uniqueSegmentationMap.set(representation.segmentationId, representation);
-  }
-});
+### Representation Types
+- **Labelmap**: Used for volume/stack viewports - stores segmentation as a voxel-based mask
+- **Surface**: Used for 3D viewports - stores segmentation as a 3D mesh/surface
+- **Contour**: Used for RT structure display - stores segmentation as contours
 
-const newSegmentationsWithRepresentations = Array.from(uniqueSegmentationMap.values()).map(
-  representation => {
-    const segmentation = segmentationService.getSegmentation(representation.segmentationId);
-    const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-    return {
-      representation,
-      segmentation: mappedSegmentation,
-    };
-  }
-);
-```
+### Viewport Types
+- **StackViewport**: 2D image stack viewer
+- **VolumeViewport** (Orthographic): 3D volume with orthographic views (MPR layouts)
+- **VolumeViewport3D**: 3D surface rendering viewport
 
-## How It Works
-1. After retrieving all representations for a viewport, we create a `Map` keyed by `segmentationId`
-2. We iterate through all representations and only add the first occurrence of each unique `segmentationId`
-3. This ensures that even if a segmentation has multiple representation types (labelmap, surface, etc.), only one entry appears in the panel
-4. The fix is applied at the data source level, ensuring consistency across all panel views
+### The Fix
+The `SegmentationService.addSegmentationRepresentation` method already has built-in conversion logic to handle representation type conversions when needed. By changing the type from Surface to Labelmap before calling this method for non-3D viewports, we ensure the proper representation is used and the underlying conversion mechanisms are triggered if necessary.
 
-## Testing
+## Expected Behavior After Fix
+1. ✅ Draw segmentation in volume/stack viewport using brush tool
+2. ✅ Switch to 3D viewport - segmentation is converted to Surface representation and displayed correctly
+3. ✅ Switch back to volume/stack viewport - segmentation is automatically converted from Surface to Labelmap and displayed correctly
+4. ✅ Continue drawing/editing segmentation in volume/stack viewport with brush tool
+
+## Testing Steps
 To verify the fix:
-1. Launch OHIF Viewer with segmentation data (e.g., https://viewer-dev.ohif.org/segmentation?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785)
-2. Drag and drop a segmentation into the Common layout viewport
-3. Switch to an advanced layout (e.g., 3D Four-Up)
-4. Verify that only one entry per segmentation appears in the Segmentation Panel (no duplicates)
+1. Launch the OHIF viewer with the test data: https://viewer.ohif.org/segmentation?StudyInstanceUIDs=1.2.826.0.1.3680043.2.1125.1.11608962641993666019702920539307840
+2. Switch to MPR layout (volume viewport)
+3. Draw a segmentation using the brush tool
+4. Switch to "3D only" layout (3D viewport)
+5. Verify the segmentation is visible in 3D
+6. Switch back to MPR layout (volume viewport)
+7. Verify the segmentation is now visible (this was broken before the fix)
+8. Try drawing more segments with the brush tool - should work correctly
 
 ## Impact
-- **Scope:** Minimal - only affects the display logic in the Segmentation Panel
-- **Breaking Changes:** None
-- **Performance:** Negligible - adds a simple Map-based deduplication step
-- **User Experience:** Significantly improved - eliminates confusion from duplicate entries
+- **Low Risk**: The change is minimal and only affects the presentation restoration logic
+- **Backward Compatible**: Existing functionality for same-type viewport switches remains unchanged
+- **No Performance Impact**: The type check is a simple instanceof check performed only during viewport switches
 
-## Related Files
-- `/workspace/extensions/cornerstone/src/hooks/useViewportSegmentations.ts` (modified)
-- `/workspace/extensions/cornerstone/src/hooks/useActiveViewportSegmentationRepresentations.ts` (uses the fixed hook)
-- `/workspace/extensions/cornerstone/src/panels/PanelSegmentation.tsx` (consumes the data)
+## Related Code Areas
+The `SegmentationService.addSegmentationRepresentation` method in `SegmentationService.ts` already handles various conversion scenarios between representation types, including:
+- Stack to Volume conversion
+- Volume to Stack conversion
+- The fix leverages this existing conversion infrastructure
+
+## Notes
+- The fix assumes that segmentations always have Labelmap representation data available, which is true since all segmentations start as Labelmap and can be converted to other types
+- The Surface-to-Labelmap conversion is handled internally by the SegmentationService
+- No changes were needed to the SegmentationService itself as it already has the conversion logic in place
