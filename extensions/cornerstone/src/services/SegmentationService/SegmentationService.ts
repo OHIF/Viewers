@@ -1335,26 +1335,76 @@ class SegmentationService extends PubSubService {
     let representationTypeToUse = representationType;
     let isConverted = false;
 
-    const handler = isVolumeViewport ? this.handleVolumeViewportCase : this.handleStackViewportCase;
-
-    ({ representationTypeToUse, isConverted } = await handler.apply(this, [
-      csViewport,
-      segmentation,
-      isVolumeSegmentation,
-      viewportId,
-      segmentationId,
-    ]));
+    if (isVolumeViewport) {
+      ({ representationTypeToUse, isConverted } = await this.handleVolumeViewportCase(
+        csViewport,
+        segmentation,
+        isVolumeSegmentation,
+        viewportId,
+        segmentationId
+      ));
+    } else {
+      ({ representationTypeToUse, isConverted } = await this.handleStackViewportCase(
+        csViewport,
+        segmentation,
+        isVolumeSegmentation,
+        viewportId,
+        segmentationId
+      ));
+    }
 
     return { representationTypeToUse, isConverted };
   }
 
-  private async handleVolumeViewportCase(csViewport, segmentation, isVolumeSegmentation) {
+  private async handleVolumeViewportCase(
+    csViewport,
+    segmentation,
+    isVolumeSegmentation,
+    viewportId?: string,
+    segmentationId?: string
+  ) {
     if (csViewport.type === ViewportType.VOLUME_3D) {
+      // When switching to 3D viewport (VOLUME_3D),
+      // remove any existing LABELMAP representation before adding SURFACE
+      if (viewportId && segmentationId) {
+        const existingRepresentations = (cstSegmentation.state.getSegmentationRepresentations(
+          viewportId,
+          { segmentationId }
+        ) || []) as cstTypes.SegmentationRepresentation[];
+        const labelmapRepresentation = existingRepresentations.find(
+          repr => repr.type === LABELMAP
+        );
+        if (labelmapRepresentation) {
+          cstSegmentation.removeSegmentationRepresentations(viewportId, {
+            segmentationId,
+            type: LABELMAP,
+          });
+        }
+      }
+
       return {
         representationTypeToUse: SURFACE,
         isConverted: false,
       };
     } else {
+      // When switching back from 3D viewport to volume viewport (ORTHOGRAPHIC),
+      // remove any existing SURFACE representation before adding LABELMAP
+      if (viewportId && segmentationId) {
+        const existingRepresentations = (cstSegmentation.state.getSegmentationRepresentations(
+          viewportId,
+          { segmentationId }
+        ) || []) as cstTypes.SegmentationRepresentation[];
+        const surfaceRepresentation = existingRepresentations.find(
+          repr => repr.type === SURFACE
+        );
+        if (surfaceRepresentation) {
+          cstSegmentation.removeSegmentationRepresentations(viewportId, {
+            segmentationId,
+            type: SURFACE,
+          });
+        }
+      }
+
       await this.handleVolumeViewport(
         csViewport as csTypes.IVolumeViewport,
         segmentation,
@@ -1374,6 +1424,20 @@ class SegmentationService extends PubSubService {
     representationTypeToUse: csToolsEnums.SegmentationRepresentations;
     isConverted: boolean;
   }> {
+    // When switching to stack viewport from 3D viewport,
+    // remove any existing SURFACE representation before adding LABELMAP
+    const existingRepresentations = (cstSegmentation.state.getSegmentationRepresentations(
+      viewportId,
+      { segmentationId }
+    ) || []) as cstTypes.SegmentationRepresentation[];
+    const surfaceRepresentation = existingRepresentations.find(repr => repr.type === SURFACE);
+    if (surfaceRepresentation) {
+      cstSegmentation.removeSegmentationRepresentations(viewportId, {
+        segmentationId,
+        type: SURFACE,
+      });
+    }
+
     if (isVolumeSegmentation) {
       const isConverted = await this.convertStackToVolumeViewport(csViewport);
       return { representationTypeToUse: LABELMAP, isConverted };
