@@ -95,7 +95,11 @@ export function Toolbox({ buttonSectionId, title, subSectionVisibilityProps }: T
           const sectionId = section.componentProps.buttonSection;
           const buttons = toolbarService.getButtonSection(sectionId) as any[];
 
-          if (!section.componentProps?.isSectionVisible?.(subSectionVisibilityProps)) {
+          const isSectionVisible =
+            typeof section.componentProps?.isSectionVisible !== 'function' ||
+            section.componentProps.isSectionVisible(subSectionVisibilityProps);
+
+          if (!isSectionVisible) {
             return null;
           }
 

@@ -66,10 +66,14 @@ export function Toolbar({
 
         const { id, Component, componentProps } = toolDef;
 
-        if (
-          componentProps.buttonSection &&
-          !componentProps?.isSectionVisible?.(subSectionVisibilityProps)
-        ) {
+        // This sub tool/component is visible if it is NOT a button section or
+        // it is a button section and has an isSectionVisible function that returns true.
+        const isSubComponentVisible =
+          !componentProps.buttonSection ||
+          typeof componentProps.isSectionVisible !== 'function' ||
+          componentProps.isSectionVisible(subSectionVisibilityProps);
+
+        if (!isSubComponentVisible) {
           return null;
         }
 
