@@ -147,6 +147,7 @@ import {
   ToolClickSegment,
   ToolSegmentLabel,
   ToolSculptor,
+  ToolLabelmapEditWithContour,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -780,6 +781,7 @@ export const Icons = {
   'old-trash': (props: IconProps) => Trash(props),
   'tool-point': (props: IconProps) => ToolCircle(props),
   'tool-freehand-line': (props: IconProps) => ToolFreehand(props),
+  'tool-labelmap-edit-with-contour': (props: IconProps) => ToolLabelmapEditWithContour(props),
   'actions-smooth': (props: IconProps) => ActionsSmooth(props),
   'actions-simplify': (props: IconProps) => ActionsSimplify(props),
   'actions-combine': (props: IconProps) => ActionsCombine(props),
