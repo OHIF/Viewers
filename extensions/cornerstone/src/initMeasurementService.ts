@@ -450,7 +450,7 @@ const connectMeasurementServiceToTools = ({
       if (measurement?.metadata?.referencedImageId) {
         imageId = measurement.metadata.referencedImageId;
         frameNumber = getSOPInstanceAttributes(measurement.metadata.referencedImageId).frameNumber;
-      } else {
+      } else if (instance) {
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
 

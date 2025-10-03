@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataRow, PanelSection } from '../../index';
+import { Icons, PanelSection, Tooltip, TooltipContent, TooltipTrigger } from '../../index';
+import DataRow from '../DataRow/DataRow';
 import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
@@ -11,7 +12,7 @@ interface MeasurementTableContext {
 }
 
 const [MeasurementTableProvider, useMeasurementTableContext] =
-  createContext<MeasurementTableContext>('MeasurementTable', { data: [] });
+  createContext<MeasurementTableContext>('MeasurementTable', { data: [], isExpanded: true });
 
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
@@ -91,6 +92,8 @@ interface MeasurementItem {
   isLocked: boolean;
   toolName: string;
   isExpanded: boolean;
+  isUnmapped?: boolean;
+  statusTooltip?: string;
 }
 
 interface RowProps {
@@ -117,11 +120,15 @@ const Row = ({ item, index }: RowProps) => {
       onRename={e => onAction(e, 'renameMeasurement', uid)}
       onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
       onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
+      onColor={e => onAction(e, 'changeMeasurementColor', uid)}
       disableEditing={disableEditing}
-      isExpanded={isExpanded}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
-    />
+    >
+      {item.isUnmapped && (
+        <DataRow.Status.Warning tooltip={item.statusTooltip} />
+      )}
+    </DataRow>
   );
 };
 

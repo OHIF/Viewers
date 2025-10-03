@@ -18,6 +18,7 @@ import { cn } from '../../lib/utils';
  * @component
  * @example
  * ```tsx
+ * // Basic usage without status
  * <DataRow
  *   number={1}
  *   title="My Item"
@@ -33,6 +34,29 @@ import { cn } from '../../lib/utils';
  *   onDelete={() => {}}
  *   onColor={() => {}}
  * />
+ *
+ * // With warning status using composite pattern
+ * <DataRow
+ *   // ... other props
+ * >
+ *   <DataRow.Status.Warning tooltip="This structured report is not compatible with this application" />
+ * </DataRow>
+ *
+ * // With success status using composite pattern
+ * <DataRow
+ *   // ... other props
+ * >
+ *   <DataRow.Status.Success tooltip="Measurement completed successfully" />
+ * </DataRow>
+ *
+ * // Multiple status indicators
+ * <DataRow
+ *   // ... other props
+ * >
+ *   <DataRow.Status.Warning tooltip="Warning message" />
+ *   <DataRow.Status.Info tooltip="Additional info" />
+ * </DataRow>
+ *
  * ```
  */
 
@@ -55,6 +79,7 @@ import { cn } from '../../lib/utils';
  * @property {() => void} onRename - Callback when rename is requested
  * @property {() => void} onDelete - Callback when delete is requested
  * @property {() => void} onColor - Callback when color change is requested
+ * @property {React.ReactNode} children - Optional children, including Status components
  */
 interface DataRowProps {
   number: number | null;
@@ -79,9 +104,10 @@ interface DataRowProps {
   colorHex?: string;
   onColor: (e) => void;
   className?: string;
+  children?: React.ReactNode;
 }
 
-export const DataRow: React.FC<DataRowProps> = ({
+const DataRowComponent: React.FC<DataRowProps> = ({
   number,
   title,
   colorHex,
@@ -97,10 +123,19 @@ export const DataRow: React.FC<DataRowProps> = ({
   isVisible = true,
   disableEditing = false,
   className,
+  children,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
   const rowRef = useRef<HTMLDivElement>(null);
+
+  // Extract Status components from children
+  const statusComponents = React.Children.toArray(children).filter(
+    child =>
+      React.isValidElement(child) &&
+      child.type &&
+      (child.type as any).displayName?.startsWith('DataRow.Status')
+  );
 
   // useEffect(() => {
   //   if (isSelected && rowRef.current) {
@@ -281,6 +316,9 @@ export const DataRow: React.FC<DataRowProps> = ({
           {/* Lock Icon (if needed) */}
           {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
+          {/* Status Components */}
+          {statusComponents}
+
           {/* Actions Dropdown Menu */}
           {disableEditing && <div className="h-6 w-6"></div>}
           {!disableEditing && (
@@ -369,4 +407,94 @@ export const DataRow: React.FC<DataRowProps> = ({
   );
 };
 
+interface StatusProps {
+  children: React.ReactNode;
+}
+
+interface StatusIndicatorProps {
+  tooltip?: string;
+  icon: React.ReactNode;
+  defaultTooltip: string;
+}
+
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ tooltip, icon, defaultTooltip }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <div className="flex h-6 w-6 items-center justify-center">{icon}</div>
+    </TooltipTrigger>
+    <TooltipContent side="bottom">
+      <div>{tooltip || defaultTooltip}</div>
+    </TooltipContent>
+  </Tooltip>
+);
+
+const Status: React.FC<StatusProps> & {
+  Warning: React.FC<{ tooltip?: string }>;
+  Success: React.FC<{ tooltip?: string }>;
+  Error: React.FC<{ tooltip?: string }>;
+  Info: React.FC<{ tooltip?: string }>;
+} = ({ children }) => {
+  return <>{children}</>;
+};
+
+const StatusWarning: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
+  <StatusIndicator
+    tooltip={tooltip}
+    icon={
+      <Icons.ByName
+        name="status-alert"
+        className="h-4 w-4 text-yellow-500"
+      />
+    }
+    defaultTooltip="Warning"
+  />
+);
+
+const StatusSuccess: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
+  <StatusIndicator
+    tooltip={tooltip}
+    icon={<Icons.Checked className="h-4 w-4 text-green-500" />}
+    defaultTooltip="Success"
+  />
+);
+
+const StatusError: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
+  <StatusIndicator
+    tooltip={tooltip}
+    icon={
+      <Icons.ByName
+        name="status-error"
+        className="h-4 w-4 text-red-500"
+      />
+    }
+    defaultTooltip="Error"
+  />
+);
+
+const StatusInfo: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
+  <StatusIndicator
+    tooltip={tooltip}
+    icon={<Icons.Info className="h-4 w-4 text-blue-500" />}
+    defaultTooltip="Info"
+  />
+);
+
+Status.displayName = 'DataRow.Status';
+StatusWarning.displayName = 'DataRow.Status.Warning';
+StatusSuccess.displayName = 'DataRow.Status.Success';
+StatusError.displayName = 'DataRow.Status.Error';
+StatusInfo.displayName = 'DataRow.Status.Info';
+
+Status.Warning = StatusWarning;
+Status.Success = StatusSuccess;
+Status.Error = StatusError;
+Status.Info = StatusInfo;
+
+const DataRow = DataRowComponent as React.FC<DataRowProps> & {
+  Status: typeof Status;
+};
+
+DataRow.Status = Status;
+
 export default DataRow;
+export { DataRow };

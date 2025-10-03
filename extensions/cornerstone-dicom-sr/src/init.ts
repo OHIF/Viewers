@@ -9,10 +9,10 @@ import {
   LengthTool,
   PlanarFreehandROITool,
   RectangleROITool,
-  utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
-import { Types, MeasurementService } from '@ohif/core';
+import { Types } from '@ohif/core';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
+
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import SCOORD3DPointTool from './tools/SCOORD3DPointTool';
 import SRSCOOR3DProbeMapper from './utils/SRSCOOR3DProbeMapper';
@@ -28,7 +28,7 @@ export default function init({
   configuration = {},
   servicesManager,
 }: Types.Extensions.ExtensionParams): void {
-  const { measurementService, cornerstoneViewportService } = servicesManager.services;
+  const { measurementService } = servicesManager.services;
 
   addToolInstance(toolNames.DICOMSRDisplay, DICOMSRDisplayTool);
   addToolInstance(toolNames.SRLength, LengthTool);
