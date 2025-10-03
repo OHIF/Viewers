@@ -15,11 +15,6 @@ import { Toolbar, useUIStateStore } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
 import { useSelectedSegmentationsForViewportStore } from '../stores';
 
-const visibleSubsectionIdsMap = {
-  [SegmentationRepresentations.Labelmap]: 'LabelMapUtilities',
-  [SegmentationRepresentations.Contour]: 'ContourUtilities',
-};
-
 type PanelSegmentationProps = {
   children?: React.ReactNode;
 
@@ -45,7 +40,7 @@ export default function PanelSegmentation({
     : undefined;
 
   const { activeToolOptions: activeUtilityOptions } = useActiveToolOptions({
-    buttonSectionId: 'SegmentationUtilities',
+    buttonSectionId: toolbarService.sections.segmentationUtilities,
   });
 
   const { segmentationsWithRepresentations, disabled } =
@@ -243,10 +238,6 @@ export default function PanelSegmentation({
   };
 
   const renderUtilitiesToolbar = () => {
-    const visibleSubsectionIds = segmentationRepresentationType
-      ? visibleSubsectionIdsMap[segmentationRepresentationType]
-      : undefined;
-
     return (
       <IconPresentationProvider
         size="large"
@@ -254,8 +245,8 @@ export default function PanelSegmentation({
       >
         <div className="flex h-[42px] gap-[3px] bg-transparent pt-[6px] pb-[8px] pl-[8px]">
           <Toolbar
-            buttonSection={'SegmentationUtilities'}
-            visibleButtonIds={visibleSubsectionIds}
+            buttonSection={toolbarService.sections.segmentationUtilities}
+            subSectionVisibilityProps={{ segmentationRepresentationType }}
           />
         </div>
       </IconPresentationProvider>

@@ -39,6 +39,7 @@ export const TOOLBAR_SECTIONS = {
 
   // mode specific
   segmentationToolbox: 'segmentationToolbox',
+  segmentationUtilities: 'segmentationUtilities',
   dynamicToolbox: 'dynamic-toolbox',
   roiThresholdToolbox: 'ROIThresholdToolbox',
 };

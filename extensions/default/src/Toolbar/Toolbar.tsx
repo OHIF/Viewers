@@ -2,7 +2,7 @@ import React from 'react';
 import { useToolbar } from '@ohif/core';
 
 /**
- * Props for the Toolbar component that renders a collection of toolbar buttons.
+ * Props for the Toolbar component that renders a collection of toolbar buttons and/or button sections.
  *
  * @interface ToolbarProps
  */
@@ -28,20 +28,18 @@ interface ToolbarProps {
   location?: number;
 
   /**
-   * Array of button IDs that should be visible in the toolbar.
-   * If provided, only buttons whose IDs are in this array will be rendered.
-   * If not provided, all buttons for the specified buttonSection will be shown.
-   * Note that although the name of this prop refers to button ids, it
-   * applies to any subcomponent of the toolbar.
+   * Props object passed to the isSectionVisible function of toolbar subsections
+   * to determine their visibility. Each subsection component can define its own visibility
+   * logic based on these props.
    */
-  visibleButtonIds?: string[];
+  subSectionVisibilityProps?: Record<string, unknown>;
 }
 
 export function Toolbar({
   buttonSection = 'primary',
   viewportId,
   location,
-  visibleButtonIds,
+  subSectionVisibilityProps,
 }: ToolbarProps) {
   const {
     toolbarButtons,
@@ -59,20 +57,21 @@ export function Toolbar({
     return null;
   }
 
-  const visibleToolbarButtons = visibleButtonIds
-    ? toolbarButtons?.filter(button =>
-        visibleButtonIds.includes(button.componentProps.buttonSection)
-      )
-    : toolbarButtons;
-
   return (
     <>
-      {visibleToolbarButtons?.map(toolDef => {
+      {toolbarButtons?.map(toolDef => {
         if (!toolDef) {
           return null;
         }
 
         const { id, Component, componentProps } = toolDef;
+
+        if (
+          componentProps.buttonSection &&
+          !componentProps?.isSectionVisible?.(subSectionVisibilityProps)
+        ) {
+          return null;
+        }
 
         // Enhanced props with state and actions - respecting viewport specificity
         const enhancedProps = {

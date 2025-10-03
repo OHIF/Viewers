@@ -131,6 +131,13 @@ function modeFactory({ modeConfiguration }) {
         'LabelMapTools',
       ]);
 
+      toolbarService.updateSection('ContourTools', [
+        'PlanarFreehandContourSegmentationTool',
+        'SculptorTool',
+        'SplineContourSegmentationTool',
+        'LivewireContourSegmentationTool',
+      ]);
+
       toolbarService.updateSection('LabelMapTools', [
         'LabelmapSlicePropagation',
         'BrushTools',
@@ -140,14 +147,7 @@ function modeFactory({ modeConfiguration }) {
         'LabelMapEditWithContour',
       ]);
 
-      toolbarService.updateSection('ContourTools', [
-        'PlanarFreehandContourSegmentationTool',
-        'SculptorTool',
-        'SplineContourSegmentationTool',
-        'LivewireContourSegmentationTool',
-      ]);
-
-      toolbarService.updateSection('SegmentationUtilities', [
+      toolbarService.updateSection(toolbarService.sections.segmentationUtilities, [
         'ContourUtilities',
         'LabelMapUtilities',
       ]);

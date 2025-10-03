@@ -175,19 +175,14 @@ const toolbarButtons: Button[] = [
       buttonSection: true,
     },
   },
-  // Section containers for the nested toolbox
-  {
-    id: 'SegmentationUtilities',
-    component: Toolbar,
-    props: {
-      buttonSection: true,
-    },
-  },
   {
     id: 'LabelMapUtilities',
     component: Toolbar,
     props: {
       buttonSection: true,
+      isSectionVisible: ({ segmentationRepresentationType }) => {
+        return !segmentationRepresentationType || segmentationRepresentationType === 'Labelmap';
+      },
     },
   },
   {
@@ -195,13 +190,9 @@ const toolbarButtons: Button[] = [
     component: Toolbar,
     props: {
       buttonSection: true,
-    },
-  },
-  {
-    id: 'SegmentationTools',
-    uiType: 'ohif.toolBoxButtonGroup',
-    props: {
-      buttonSection: true,
+      isSectionVisible: ({ segmentationRepresentationType }) => {
+        return !segmentationRepresentationType || segmentationRepresentationType === 'Contour';
+      },
     },
   },
   {
@@ -209,6 +200,9 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
+      isSectionVisible: ({ segmentationRepresentationType }) => {
+        return !segmentationRepresentationType || segmentationRepresentationType === 'Labelmap';
+      },
     },
   },
   {
@@ -216,6 +210,9 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
+      isSectionVisible: ({ segmentationRepresentationType }) => {
+        return !segmentationRepresentationType || segmentationRepresentationType === 'Contour';
+      },
     },
   },
   // tool defs
