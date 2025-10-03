@@ -152,7 +152,20 @@ export function useViewportSegmentations({
 
       const representations = segmentationService.getSegmentationRepresentations(viewportId);
 
-      const newSegmentationsWithRepresentations = representations.map(representation => {
+      // Create a map to deduplicate representations by segmentationId and type
+      // This prevents duplicate entries in the UI if somehow duplicates exist
+      const representationMap = new Map<string, typeof representations[0]>();
+
+      representations.forEach(representation => {
+        const key = `${representation.segmentationId}-${representation.type}`;
+        if (!representationMap.has(key)) {
+          representationMap.set(key, representation);
+        }
+      });
+
+      const uniqueRepresentations = Array.from(representationMap.values());
+
+      const newSegmentationsWithRepresentations = uniqueRepresentations.map(representation => {
         const segmentation = segmentationService.getSegmentation(representation.segmentationId);
         const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
         return {

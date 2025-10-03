@@ -316,6 +316,18 @@ class SegmentationService extends PubSubService {
       ));
     }
 
+    // Check if a representation with the same segmentationId and type already exists for this viewport
+    // This check is done after type conversion to ensure we check with the final representation type
+    const existingRepresentations = this.getSegmentationRepresentations(viewportId, {
+      segmentationId,
+      type: representationTypeToUse,
+    });
+
+    if (existingRepresentations.length > 0) {
+      // Representation already exists, skip adding it
+      return;
+    }
+
     await this._addSegmentationRepresentation(
       viewportId,
       segmentationId,
