@@ -49,7 +49,7 @@ function getCustomizationMessageKey(type: string): string {
 
 function getDialogId(type: string): string {
   switch (type) {
-    case HydrationType.RTSS:
+    case HydrationType.RTSTRUCT:
       return 'promptHydrateRT';
     case HydrationType.SEG:
       return 'promptHydrateSEG';
