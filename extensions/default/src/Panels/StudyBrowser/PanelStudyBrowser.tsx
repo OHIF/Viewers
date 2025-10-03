@@ -35,9 +35,20 @@ function PanelStudyBrowser({
 
   const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState(studyMode);
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
-    ...StudyInstanceUIDs,
-  ]);
+
+  // Initialize expanded studies based on studyMode
+  const getInitialExpandedStudies = () => {
+    if (studyMode === 'primary') {
+      // Only expand the first (primary) study
+      return StudyInstanceUIDs.length > 0 ? [StudyInstanceUIDs[0]] : [];
+    }
+    // For 'all' and 'recent' modes, expand all studies from URL
+    return [...StudyInstanceUIDs];
+  };
+
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
+    getInitialExpandedStudies()
+  );
   const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
