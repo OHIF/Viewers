@@ -1,7 +1,6 @@
 import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
 import i18n from 'i18next';
-import { Toolbar } from '@ohif/extension-default';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -177,7 +176,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'LabelMapUtilities',
-    component: Toolbar,
+    uiType: 'ohif.Toolbar',
     props: {
       buttonSection: true,
       isSectionVisible: ({ segmentationRepresentationType }) => {
@@ -187,7 +186,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'ContourUtilities',
-    component: Toolbar,
+    uiType: 'ohif.Toolbar',
     props: {
       buttonSection: true,
       isSectionVisible: ({ segmentationRepresentationType }) => {
