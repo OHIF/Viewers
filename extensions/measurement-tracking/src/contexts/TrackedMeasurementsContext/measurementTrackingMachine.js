@@ -37,9 +37,6 @@ const machineConfiguration = {
             target: 'promptLabelAnnotation',
             actions: ['setPreviousState'],
           },
-          {
-            target: 'off',
-          },
         ],
       },
     },
@@ -138,9 +135,6 @@ const machineConfiguration = {
               'clearDisplaySetHydratedState',
               'clearAllMeasurements',
             ],
-          },
-          {
-            target: 'idle',
           },
         ],
         SET_TRACKED_SERIES: [
