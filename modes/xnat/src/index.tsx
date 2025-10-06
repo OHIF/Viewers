@@ -254,6 +254,7 @@ function modeFactory({ modeConfiguration }) {
       _activatePanelTriggersSubscriptions.push(toolGroupServiceSubscription);
 
       toolbarService.updateSection(toolbarService.sections.primary, [
+        'returnToXNAT',
         'MeasurementTools',
         'Zoom',
         'Pan',
