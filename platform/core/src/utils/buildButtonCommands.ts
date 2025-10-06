@@ -9,13 +9,9 @@ export const buildButtonCommands = (
   { servicesManager, commandsManager }: AppTypes.Managers
 ): Array<() => unknown> => {
   const allCommands: Array<() => unknown> = [];
-  const seenCommands = new Set<string>();
 
   // 1) normalize item-level commands
   for (const command of toArray(buttonProps.commands as RunCommand)) {
-    const key = JSON.stringify({ cmd: command, v: (baseArgs as any)?.value ?? null, src: 'item' });
-    if (seenCommands.has(key)) continue;
-    seenCommands.add(key);
     allCommands.push(() => commandsManager.run(command, baseArgs));
   }
 
@@ -35,11 +31,7 @@ export const buildButtonCommands = (
         servicesManager,
         commandsManager,
       };
-      const key = JSON.stringify({ cmd: command, v: valueToUse, src: 'option' });
 
-      if (seenCommands.has(key)) continue;
-
-      seenCommands.add(key);
       allCommands.push(() => commandsManager.run(command, commandOptions));
     }
   }
