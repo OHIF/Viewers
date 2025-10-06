@@ -21,7 +21,10 @@ export const buildButtonCommands = (
 
   // 2) normalize option-level commands
   for (const option of toArray(buttonProps.options)) {
-    if (!option || option.ignoreOnToolbarInteraction || !option.commands) continue;
+    const shouldSkip = !option?.commands || option.ignoreOnToolbarInteraction;
+    if (shouldSkip) {
+      continue;
+    }
 
     const valueToUse = option.value;
     for (const command of toArray(option.commands)) {
