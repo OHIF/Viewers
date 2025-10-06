@@ -406,7 +406,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
     const { viewports } = viewportGridState;
     // Filter viewports that have display sets (i.e., have content to display)
     const viewportsWithContent = Array.from(viewports.values()).filter(
-      viewport => viewport.displaySetInstanceUIDs && viewport.displaySetInstanceUIDs.length > 0
+      viewport => viewport.displaySetInstanceUIDs?.length > 0
     );
     // If there are no viewports with content, return false
     if (viewportsWithContent.length === 0) {
