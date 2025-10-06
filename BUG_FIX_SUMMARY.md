@@ -1,92 +1,58 @@
-# Bug Fix: Duplicate Segmentation Entries When Switching Layouts
+# Bug Fix Summary: OHI-2065
 
-## Issue Description
-**Linear Issue:** OHI-2076  
-**Title:** [Bug] Duplicate entries for same segmentation when switching between Common and advanced layout
-
-When switching from a Common layout to an advanced layout (e.g., 3D Four-Up) in the OHIF Viewer, duplicate entries for the same segmentation appear in the Segmentation Panel.
+## Issue
+The `viewportGridService.EVENTS.VIEWPORTS_READY` event was not firing when:
+1. A layout (e.g., 2x2) had more viewport slots than available series (e.g., only 3 series for 4 viewports)
+2. The layout was changed to add new empty viewports (e.g., from 2x2 to 3x2)
 
 ## Root Cause
-The issue was in the `useViewportSegmentations` hook located at:
-```
-extensions/cornerstone/src/hooks/useViewportSegmentations.ts
-```
-
-When a viewport contains multiple representations of the same segmentation (e.g., both a LABELMAP and SURFACE representation), the hook was creating separate entries for each representation, even though they belong to the same segmentation. This resulted in duplicate entries in the Segmentation Panel.
-
-The problem occurred because:
-1. When switching layouts, new viewports are created
-2. The synchronizer may add the same segmentation with different representation types to these viewports
-3. The `getSegmentationRepresentations(viewportId)` call returns ALL representations for that viewport
-4. Each representation was mapped to a separate entry, creating duplicates
+The `getGridViewportsReady()` function in `ViewportGridProvider.tsx` was checking if **all** viewports were ready by comparing `readyViewports.length === viewports.size`. This meant that empty viewports (without display sets) would prevent the event from firing, since they would never become "ready".
 
 ## Solution
-Added deduplication logic in the `useViewportSegmentations` hook to ensure only one entry per unique `segmentationId` is shown in the panel, regardless of how many representation types exist.
+Modified the `getGridViewportsReady()` function to only check if viewports **with content** are ready:
+
+### Changed File
+- `platform/ui-next/src/contextProviders/ViewportGridProvider.tsx`
 
 ### Code Changes
-
-**File:** `extensions/cornerstone/src/hooks/useViewportSegmentations.ts`
-
-**Before:**
+**Before (lines 405-409):**
 ```typescript
-const representations = segmentationService.getSegmentationRepresentations(viewportId);
-
-const newSegmentationsWithRepresentations = representations.map(representation => {
-  const segmentation = segmentationService.getSegmentation(representation.segmentationId);
-  const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-  return {
-    representation,
-    segmentation: mappedSegmentation,
-  };
-});
+const getGridViewportsReady = useCallback(() => {
+  const { viewports } = viewportGridState;
+  const readyViewports = Array.from(viewports.values()).filter(viewport => viewport.isReady);
+  return readyViewports.length === viewports.size;
+}, [viewportGridState]);
 ```
 
-**After:**
+**After (lines 405-418):**
 ```typescript
-const representations = segmentationService.getSegmentationRepresentations(viewportId);
-
-// Deduplicate representations by segmentationId to prevent showing
-// the same segmentation multiple times in the panel when it has
-// multiple representation types (e.g., labelmap and surface)
-const uniqueSegmentationMap = new Map();
-representations.forEach(representation => {
-  if (!uniqueSegmentationMap.has(representation.segmentationId)) {
-    uniqueSegmentationMap.set(representation.segmentationId, representation);
+const getGridViewportsReady = useCallback(() => {
+  const { viewports } = viewportGridState;
+  // Filter viewports that have display sets (i.e., have content to display)
+  const viewportsWithContent = Array.from(viewports.values()).filter(
+    viewport => viewport.displaySetInstanceUIDs && viewport.displaySetInstanceUIDs.length > 0
+  );
+  // If there are no viewports with content, return false
+  if (viewportsWithContent.length === 0) {
+    return false;
   }
-});
-
-const newSegmentationsWithRepresentations = Array.from(uniqueSegmentationMap.values()).map(
-  representation => {
-    const segmentation = segmentationService.getSegmentation(representation.segmentationId);
-    const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-    return {
-      representation,
-      segmentation: mappedSegmentation,
-    };
-  }
-);
+  // Check if all viewports with content are ready
+  const readyViewports = viewportsWithContent.filter(viewport => viewport.isReady);
+  return readyViewports.length === viewportsWithContent.length;
+}, [viewportGridState]);
 ```
 
-## How It Works
-1. After retrieving all representations for a viewport, we create a `Map` keyed by `segmentationId`
-2. We iterate through all representations and only add the first occurrence of each unique `segmentationId`
-3. This ensures that even if a segmentation has multiple representation types (labelmap, surface, etc.), only one entry appears in the panel
-4. The fix is applied at the data source level, ensuring consistency across all panel views
+## Expected Behavior After Fix
+1. **2x2 layout with 3 series**: The `VIEWPORTS_READY` event will fire once all 3 series are loaded, even though the 4th viewport is empty.
+2. **Layout change from 2x2 to 3x2**: When new viewports are added, the event will fire based on the loaded series in those viewports, not requiring all 6 viewports to have content.
+3. **Drag and drop to newly added viewports**: When series are dragged to new empty viewports, the event logic will correctly evaluate readiness.
 
 ## Testing
-To verify the fix:
-1. Launch OHIF Viewer with segmentation data (e.g., https://viewer-dev.ohif.org/segmentation?StudyInstanceUIDs=1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785)
-2. Drag and drop a segmentation into the Common layout viewport
-3. Switch to an advanced layout (e.g., 3D Four-Up)
-4. Verify that only one entry per segmentation appears in the Segmentation Panel (no duplicates)
+- TypeScript compilation verified with no errors
+- Logic validated to ensure:
+  - Only viewports with `displaySetInstanceUIDs.length > 0` are considered
+  - Event fires when all content-bearing viewports are ready
+  - Empty viewports don't block the event from firing
 
 ## Impact
-- **Scope:** Minimal - only affects the display logic in the Segmentation Panel
-- **Breaking Changes:** None
-- **Performance:** Negligible - adds a simple Map-based deduplication step
-- **User Experience:** Significantly improved - eliminates confusion from duplicate entries
-
-## Related Files
-- `/workspace/extensions/cornerstone/src/hooks/useViewportSegmentations.ts` (modified)
-- `/workspace/extensions/cornerstone/src/hooks/useActiveViewportSegmentationRepresentations.ts` (uses the fixed hook)
-- `/workspace/extensions/cornerstone/src/panels/PanelSegmentation.tsx` (consumes the data)
+This fix ensures that the `VIEWPORTS_READY` event fires when all **available series** are loaded into viewports, rather than requiring all viewport slots to be filled. This aligns with the expected behavior described in the Linear issue.
