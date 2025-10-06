@@ -983,6 +983,10 @@ class SegmentationService extends PubSubService {
     segmentIndex: number,
     color: csTypes.Color
   ): void {
+    const segmentationRepresentations = this.getRepresentationsForSegmentation(segmentationId);
+    const { colorLUTIndex } = segmentationRepresentations[0];
+    this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
+
     cstSegmentation.config.color.setSegmentIndexColor(
       viewportId,
       segmentationId,
