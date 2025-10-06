@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.45...v3.12.0-beta.46) (2025-10-06)
+
+
+### Bug Fixes
+
+* viewport ready event firing logic ([#5462](https://github.com/OHIF/Viewers/issues/5462)) ([d2ae13b](https://github.com/OHIF/Viewers/commit/d2ae13b03f21e3ab9545d50d7403ec52004bfbfc))
+
+
+
+
+
 # [3.12.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.44...v3.12.0-beta.45) (2025-10-06)
 
 **Note:** Version bump only for package @ohif/ui-next
