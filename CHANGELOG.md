@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.44...v3.12.0-beta.45) (2025-10-06)
+
+
+### Bug Fixes
+
+* **router:** opt in to React Router v7 future flags ([#5461](https://github.com/OHIF/Viewers/issues/5461)) ([e2964bf](https://github.com/OHIF/Viewers/commit/e2964bf66947d18af06f292d9395b465545fdf9d))
+
+
+
+
+
 # [3.12.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.43...v3.12.0-beta.44) (2025-10-06)
 
 
