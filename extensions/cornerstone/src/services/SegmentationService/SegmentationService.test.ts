@@ -2032,7 +2032,7 @@ describe('SegmentationService', () => {
         .mockReturnValue(undefined);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
       jest
-        .spyOn(cstSegmentation.state, 'getSegmentationRepresentationsBySegmentationId')
+        .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
         .mockReturnValue([{ colorLUTIndex: 1 }]);
 
       service.addSegment(segmentationId, config);
@@ -2202,18 +2202,17 @@ describe('SegmentationService', () => {
 
     it('should set the color of the segment', () => {
       jest
-        .spyOn(cstSegmentation.state, 'getSegmentationRepresentationsBySegmentationId')
+        .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
         .mockReturnValue([{ colorLUTIndex: 1 }]);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
 
       service.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
 
-      expect(
-        cstSegmentation.state.getSegmentationRepresentationsBySegmentationId
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        cstSegmentation.state.getSegmentationRepresentationsBySegmentationId
-      ).toHaveBeenCalledWith(segmentationId);
+      expect(cstSegmentation.state.getSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentationRepresentations).toHaveBeenCalledWith(
+        viewportId,
+        { segmentationId }
+      );
 
       expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledTimes(1);
       expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledWith(
@@ -2226,7 +2225,7 @@ describe('SegmentationService', () => {
 
     it('should set the color of the segment with the colorLUTIndex', async () => {
       jest
-        .spyOn(cstSegmentation.state, 'getSegmentationRepresentationsBySegmentationId')
+        .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
         .mockReturnValue([{ colorLUTIndex: 1 }]);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
 
