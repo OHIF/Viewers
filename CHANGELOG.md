@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.49...v3.12.0-beta.50) (2025-10-07)
+
+
+### Bug Fixes
+
+* **Segmentation:** [Bug [#5420](https://github.com/OHIF/Viewers/issues/5420)] Segmentation color resets after using toggleOneUp ([#5465](https://github.com/OHIF/Viewers/issues/5465)) ([2c6ce21](https://github.com/OHIF/Viewers/commit/2c6ce21c8f79f8b3e6dc47b5aa6f717b6b5cbd2a))
+
+
+
+
+
 # [3.12.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.48...v3.12.0-beta.49) (2025-10-07)
 
 **Note:** Version bump only for package ohif-monorepo-root
