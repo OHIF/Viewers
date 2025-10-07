@@ -949,6 +949,37 @@ describe('SegmentationService', () => {
         });
       });
 
+      it('should add a surface segmentation representation to volume viewport without need for handling', async () => {
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+        jest
+          .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+          // only needed interfaces for the addSegmentationRepresentation call
+          .mockReturnValue({
+            ...mockCornerstoneVolumeViewport,
+            type: ViewportType.VOLUME_3D,
+          } as unknown as csTypes.IVolumeViewport);
+        jest
+          .spyOn(cstSegmentation, 'addSegmentationRepresentations')
+          .mockReturnValueOnce(undefined);
+
+        await service.addSegmentationRepresentation(viewportId, {
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+        });
+
+        expect(serviceManagerMock.services.viewportGridService.getState).not.toHaveBeenCalled();
+
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledWith(viewportId, [
+          {
+            type: csToolsEnums.SegmentationRepresentations.Surface,
+            segmentationId: mockCornerstoneSegmentation.segmentationId,
+            config: { colorLUTOrIndex: undefined },
+          },
+        ]);
+      });
+
       it('should add a volume segmentation representation to volume viewport through SegmentationService handling', async () => {
         mockCornerstoneVolumeViewport.type = ViewportType.ORTHOGRAPHIC;
         jest
