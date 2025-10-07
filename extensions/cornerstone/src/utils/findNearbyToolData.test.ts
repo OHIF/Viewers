@@ -73,7 +73,7 @@ describe('findNearbyToolData', () => {
       },
     };
 
-    const result = findNearbyToolData(mockCommandsManager, event);
+    findNearbyToolData(mockCommandsManager, event);
 
     expect(mockCommandsManager.runCommand).toHaveBeenCalledWith(
       'getNearbyAnnotation',
