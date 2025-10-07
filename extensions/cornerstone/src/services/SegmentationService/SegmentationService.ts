@@ -298,10 +298,8 @@ class SegmentationService extends PubSubService {
     let isConverted = false;
 
     // Ensure segmentation representation matches the active viewport type.
-    let representationTypeToUse: SegmentationRepresentations =
-      csViewport.type === ViewportType.VOLUME_3D
-        ? SegmentationRepresentations.Surface
-        : SegmentationRepresentations.Labelmap;
+    let representationTypeToUse: csToolsEnums.SegmentationRepresentations =
+      csViewport.type === ViewportType.VOLUME_3D ? SURFACE : LABELMAP;
 
     if (representationTypeToUse === LABELMAP) {
       const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
