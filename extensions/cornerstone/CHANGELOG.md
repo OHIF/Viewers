@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.51...v3.12.0-beta.52) (2025-10-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Segmentation not displayed and unable to draw segments when switching back to volume/stack viewport from 3D viewport ([#5430](https://github.com/OHIF/Viewers/issues/5430)) ([78df8ff](https://github.com/OHIF/Viewers/commit/78df8ff03a371904a390c63a95628d5511dad136))
+
+
+
+
+
 # [3.12.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.50...v3.12.0-beta.51) (2025-10-07)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
