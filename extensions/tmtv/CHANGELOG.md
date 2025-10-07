@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.50...v3.12.0-beta.51) (2025-10-07)
+
+
+### Bug Fixes
+
+* validation for Percentage of Max SUV input field in TMTV module ([#5417](https://github.com/OHIF/Viewers/issues/5417)) ([5040c94](https://github.com/OHIF/Viewers/commit/5040c947d2f47e5ec66285fa353e3e0ffd127ba7))
+
+
+
+
+
 # [3.12.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.49...v3.12.0-beta.50) (2025-10-07)
 
 **Note:** Version bump only for package @ohif/extension-tmtv
