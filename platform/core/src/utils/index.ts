@@ -46,6 +46,8 @@ import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
+import { buildButtonCommands } from './buildButtonCommands';
+
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -134,6 +136,7 @@ export {
   createStudyBrowserTabs,
   MeasurementFilters,
   getClosestOrientationFromIOP,
+  buildButtonCommands,
 };
 
 export default utils;
