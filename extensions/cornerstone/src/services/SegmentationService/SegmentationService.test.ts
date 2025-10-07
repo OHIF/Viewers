@@ -648,7 +648,6 @@ describe('SegmentationService', () => {
         jest
           .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
           .mockReturnValue(undefined);
-        // @ts-expect-error - getLabelmapImageIds is wrongly typed at cornerstone3D
         jest.spyOn(cstSegmentation, 'getLabelmapImageIds').mockReturnValue([imageId]);
         jest
           .spyOn(cstSegmentation, 'addSegmentationRepresentations')
@@ -1038,7 +1037,6 @@ describe('SegmentationService', () => {
         jest
           .spyOn(cstSegmentation, 'addSegmentationRepresentations')
           .mockReturnValueOnce(undefined);
-        // @ts-expect-error - getLabelmapImageIds is wrongly typed at cornerstone3D
         jest.spyOn(cstSegmentation, 'getLabelmapImageIds').mockReturnValue([imageId]);
         jest
           .spyOn(cache, 'getImage')
@@ -2064,7 +2062,7 @@ describe('SegmentationService', () => {
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
       jest
         .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
-        .mockReturnValue([{ colorLUTIndex: 1 }]);
+        .mockReturnValue([{ colorLUTIndex: 1 }] as cstTypes.SegmentationRepresentation[]);
 
       service.addSegment(segmentationId, config);
 
@@ -2234,7 +2232,7 @@ describe('SegmentationService', () => {
     it('should set the color of the segment', () => {
       jest
         .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
-        .mockReturnValue([{ colorLUTIndex: 1 }]);
+        .mockReturnValue([{ colorLUTIndex: 1 }] as cstTypes.SegmentationRepresentation[]);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
 
       service.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
@@ -2257,7 +2255,7 @@ describe('SegmentationService', () => {
     it('should set the color of the segment with the colorLUTIndex', async () => {
       jest
         .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
-        .mockReturnValue([{ colorLUTIndex: 1 }]);
+        .mockReturnValue([{ colorLUTIndex: 1 }] as cstTypes.SegmentationRepresentation[]);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
 
       service.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
@@ -2277,7 +2275,7 @@ describe('SegmentationService', () => {
       await service.addSegmentationRepresentation(viewportId, {
         segmentationId: segmentationId,
         type: csToolsEnums.SegmentationRepresentations.Labelmap,
-        config: { active: true },
+        config: { blendMode: csEnums.BlendModes.COMPOSITE },
         suppressEvents: true,
       });
 
