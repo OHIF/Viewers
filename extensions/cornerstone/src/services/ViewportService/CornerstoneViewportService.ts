@@ -1335,10 +1335,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     segmentationPresentation.forEach((presentationItem: SegmentationPresentationItem) => {
       const { segmentationId, type, hydrated } = presentationItem;
 
+      const { Labelmap, Surface } = csToolsEnums.SegmentationRepresentations;
+      const representationType = (() => {
+        if (type === Surface) {
+          if (viewport.type === csEnums.ViewportType.VOLUME_3D) {
+            return Surface;
+          } else {
+            return Labelmap;
+          }
+        }
+
+        return type;
+      })();
+
       if (hydrated) {
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
-          type,
+          type: representationType,
         });
       }
     });
