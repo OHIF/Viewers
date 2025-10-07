@@ -61,8 +61,8 @@ describe('getInterleavedFrames', () => {
 
     expect(result).toHaveLength(10);
     expect(result[0]).toEqual({ imageId: 'image-6', imageIdIndex: 5 });
-    expect(result).toContainEqual({ imageId: 'image-1', imageIdIndex: 0 });
-    expect(result).toContainEqual({ imageId: 'image-10', imageIdIndex: 9 });
+    expect(result[8]).toEqual({ imageId: 'image-10', imageIdIndex: 9 });
+    expect(result[9]).toEqual({ imageId: 'image-1', imageIdIndex: 0 });
   });
 
   it('should handle empty array', () => {
