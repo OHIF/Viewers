@@ -44,7 +44,7 @@ export type ButtonOptions = {
   condition?: (props: Record<string, unknown>) => boolean;
   children?: React.ReactNode | (() => React.ReactNode);
   options?: Array<{ value: string; label: string }>;
-  ignoreOnToolbarInteraction?: boolean;
+  explicitRunOnly?: boolean;
 };
 
 export type ButtonProps = {

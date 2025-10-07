@@ -89,7 +89,7 @@ describe('useToolbar', () => {
     const ignoredOption = {
       id: 'option-ignored',
       value: 'ignored',
-      ignoreOnToolbarInteraction: true,
+      explicitRunOnly: true,
       commands: ['ignoredCommand'],
     };
 
@@ -153,7 +153,7 @@ describe('useToolbar', () => {
     const ignoredOption = {
       id: 'option-ignored',
       value: 'ignored',
-      ignoreOnToolbarInteraction: true,
+      explicitRunOnly: true,
       commands: ['ignoredCommand'],
     };
     const buttonProps = {
