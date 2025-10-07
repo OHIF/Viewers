@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { Icons, PanelSection, ToolSettings } from '@ohif/ui-next';
 import { useSystem, useToolbar, useActiveToolOptions } from '@ohif/core';
-import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
-
-interface ButtonProps {
-  isActive?: boolean;
-  options?: unknown;
-}
 
 /**
  * Props for the Toolbox component that renders a collection of toolbar button sections.
@@ -106,7 +100,7 @@ export function Toolbox({ buttonSectionId, title, subSectionVisibilityProps }: T
           return (
             <div
               key={sectionId}
-              className="bg-muted flex flex-wrap space-x-2 py-2 px-1"
+              className="bg-muted flex flex-wrap gap-2 py-2 px-1"
             >
               {buttons.map(tool => {
                 // Skip over tools that are not visible. The visible flag is typically set to
@@ -119,10 +113,7 @@ export function Toolbox({ buttonSectionId, title, subSectionVisibilityProps }: T
                 const { id, Component, componentProps } = tool;
 
                 return (
-                  <div
-                    key={id}
-                    className={classnames('ml-1')}
-                  >
+                  <div key={id}>
                     <Component
                       {...componentProps}
                       id={id}

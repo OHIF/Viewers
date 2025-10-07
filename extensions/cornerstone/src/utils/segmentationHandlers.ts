@@ -116,7 +116,7 @@ export function setupSegmentationModifiedHandler({ segmentationService }) {
 /**
  * Sets up auto tab switching for when the first segmentation is added into the viewer.
  */
-export default function setUpSelectedSegmentationsForViewportHandler({ segmentationService }) {
+export function setUpSelectedSegmentationsForViewportHandler({ segmentationService }) {
   const selectedSegmentationsForViewportEvents = [
     segmentationService.EVENTS.SEGMENTATION_MODIFIED,
     segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,

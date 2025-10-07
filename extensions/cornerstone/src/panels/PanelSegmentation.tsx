@@ -243,7 +243,7 @@ export default function PanelSegmentation({
         size="large"
         IconContainer={SegmentationUtilityButton}
       >
-        <div className="flex h-[42px] gap-[3px] bg-transparent pt-[6px] pb-[8px] pl-[8px]">
+        <div className="flex flex-wrap gap-[3px] bg-transparent pt-[6px] pb-[2px] pl-[8px]">
           <Toolbar
             buttonSection={toolbarService.sections.segmentationUtilities}
             subSectionVisibilityProps={{ segmentationRepresentationType }}
