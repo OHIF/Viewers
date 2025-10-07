@@ -1,4 +1,5 @@
-import setUpSelectedSegmentationsForViewportHandler, {
+import {
+  setUpSelectedSegmentationsForViewportHandler,
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
 } from './segmentationHandlers';
