@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import { useSystem } from '@ohif/core';
+
 function mapMeasurementToDisplay(measurement, displaySetService) {
   const { referenceSeriesUID } = measurement;
 

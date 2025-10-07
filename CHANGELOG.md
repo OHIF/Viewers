@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.47...v3.12.0-beta.48) (2025-10-07)
+
+
+### Bug Fixes
+
+* **measurementTrackingMachine:** remove unreachable states ([#5460](https://github.com/OHIF/Viewers/issues/5460)) ([7f12f39](https://github.com/OHIF/Viewers/commit/7f12f398fb145a31e5557dbee51c0a9b0f40a35b))
+
+
+
+
+
+# [3.12.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.46...v3.12.0-beta.47) (2025-10-07)
+
+
+### Bug Fixes
+
+* **toolbar:** prevent duplicate command execution on repeated interactions ([#5456](https://github.com/OHIF/Viewers/issues/5456)) ([4d04dd5](https://github.com/OHIF/Viewers/commit/4d04dd5651f4cf8dcaf4732baee5e218e92bd3c1))
+
+
+
+
+
+# [3.12.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.45...v3.12.0-beta.46) (2025-10-06)
+
+
+### Bug Fixes
+
+* viewport ready event firing logic ([#5462](https://github.com/OHIF/Viewers/issues/5462)) ([d2ae13b](https://github.com/OHIF/Viewers/commit/d2ae13b03f21e3ab9545d50d7403ec52004bfbfc))
+
+
+
+
+
+# [3.12.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.44...v3.12.0-beta.45) (2025-10-06)
+
+
+### Bug Fixes
+
+* **router:** opt in to React Router v7 future flags ([#5461](https://github.com/OHIF/Viewers/issues/5461)) ([e2964bf](https://github.com/OHIF/Viewers/commit/e2964bf66947d18af06f292d9395b465545fdf9d))
+
+
+
+
+
+# [3.12.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.43...v3.12.0-beta.44) (2025-10-06)
+
+
+### Bug Fixes
+
+* Safely handle missing active viewport ([#5448](https://github.com/OHIF/Viewers/issues/5448)) ([792db26](https://github.com/OHIF/Viewers/commit/792db26ff1591f9e054486f1bee01c422e774101))
+
+
+
+
+
+# [3.12.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.42...v3.12.0-beta.43) (2025-10-06)
+
+
+### Features
+
+* **MeasurementService:** add rendering of unmapped measurements  ([#5416](https://github.com/OHIF/Viewers/issues/5416)) ([851e74d](https://github.com/OHIF/Viewers/commit/851e74d7b867a806befb5d85fd71ff9a75e9f2d2))
+
+
+
+
+
+# [3.12.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.41...v3.12.0-beta.42) (2025-10-03)
+
+
+### Bug Fixes
+
+* duplicate segmentation entries on layout switch ([#5458](https://github.com/OHIF/Viewers/issues/5458)) ([9e951e8](https://github.com/OHIF/Viewers/commit/9e951e88005af505ae0c07fbcd3366de12b773dd))
+
+
+
+
+
+# [3.12.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.40...v3.12.0-beta.41) (2025-10-03)
+
+
+### Bug Fixes
+
+* study browser mode for multiple studies ([#5457](https://github.com/OHIF/Viewers/issues/5457)) ([6a1df9d](https://github.com/OHIF/Viewers/commit/6a1df9de4ad3c10a4653f18e03aff6bda4962fd1))
+
+
+
+
+
+# [3.12.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.39...v3.12.0-beta.40) (2025-10-02)
+
+
+### Bug Fixes
+
+* **studyBrowserCustomization:** fix thumbnail menu item actions in study browser ([#5283](https://github.com/OHIF/Viewers/issues/5283)) ([2f28a0d](https://github.com/OHIF/Viewers/commit/2f28a0deab5e43f432bbd9b5989928c9b0450278))
+
+
+
+
+
 # [3.12.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.38...v3.12.0-beta.39) (2025-10-01)
 
 
