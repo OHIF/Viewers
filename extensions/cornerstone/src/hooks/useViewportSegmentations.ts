@@ -152,14 +152,26 @@ export function useViewportSegmentations({
 
       const representations = segmentationService.getSegmentationRepresentations(viewportId);
 
-      const newSegmentationsWithRepresentations = representations.map(representation => {
-        const segmentation = segmentationService.getSegmentation(representation.segmentationId);
-        const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-        return {
-          representation,
-          segmentation: mappedSegmentation,
-        };
+      // Deduplicate representations by segmentationId to prevent showing
+      // the same segmentation multiple times in the panel when it has
+      // multiple representation types (e.g., labelmap and surface)
+      const uniqueSegmentationMap = new Map();
+      representations.forEach(representation => {
+        if (!uniqueSegmentationMap.has(representation.segmentationId)) {
+          uniqueSegmentationMap.set(representation.segmentationId, representation);
+        }
       });
+
+      const newSegmentationsWithRepresentations = Array.from(uniqueSegmentationMap.values()).map(
+        representation => {
+          const segmentation = segmentationService.getSegmentation(representation.segmentationId);
+          const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
+          return {
+            representation,
+            segmentation: mappedSegmentation,
+          };
+        }
+      );
 
       setSegmentationsWithRepresentations({
         segmentationsWithRepresentations: newSegmentationsWithRepresentations,

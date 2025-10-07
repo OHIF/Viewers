@@ -40,10 +40,11 @@ export type ButtonOptions = {
   max?: number;
   step?: number;
   value?: number | number[] | string;
-  commands?: (value: unknown) => void;
+  commands?: RunCommand;
   condition?: (props: Record<string, unknown>) => boolean;
   children?: React.ReactNode | (() => React.ReactNode);
   options?: Array<{ value: string; label: string }>;
+  explicitRunOnly?: boolean;
 };
 
 export type ButtonProps = {
