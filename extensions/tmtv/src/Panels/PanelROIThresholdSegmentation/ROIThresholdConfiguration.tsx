@@ -8,6 +8,7 @@ import {
   Label,
   Input,
   Button,
+  Numeric,
 } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 
@@ -80,19 +81,24 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
           <div className="mb-2">
             <Label>{t('Percentage of Max SUV')}</Label>
           </div>
-          <Input
-            className="w-full"
-            type="text"
-            value={config.weight}
-            onChange={e => {
+          <Numeric.Container
+            mode="number"
+            value={parseFloat(config.weight) || 0}
+            onChange={value => {
               dispatch({
                 type: 'setWeight',
                 payload: {
-                  weight: e.target.value,
+                  weight: value,
                 },
               });
             }}
-          />
+            min={0}
+            max={1}
+            step={0.01}
+            className="w-full"
+          >
+            <Numeric.NumberInput />
+          </Numeric.Container>
         </div>
       )}
       {config.strategy !== ROI_STAT && (
