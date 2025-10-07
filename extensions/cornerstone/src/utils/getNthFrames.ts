@@ -9,12 +9,9 @@
  * What this does is return the first/center/start objects, as those
  * are often used first, then a selection of objects scattered over the
  * instances in order to allow making requests over a set of image instances.
- *
- * @param {[]} imageIds
- * @returns [] reordered to be an nth selection
  */
-export default function getNthFrames(imageIds) {
-  const frames = [[], [], [], [], []];
+export default function getNthFrames<T>(imageIds: T[]): T[] {
+  const frames: T[][] = [[], [], [], [], []];
   const centerStart = imageIds.length / 2 - 3;
   const centerEnd = centerStart + 6;
 

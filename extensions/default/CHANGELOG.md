@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.48...v3.12.0-beta.49) (2025-10-07)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.47...v3.12.0-beta.48) (2025-10-07)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.46...v3.12.0-beta.47) (2025-10-07)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.45...v3.12.0-beta.46) (2025-10-06)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.44...v3.12.0-beta.45) (2025-10-06)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.43...v3.12.0-beta.44) (2025-10-06)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.42...v3.12.0-beta.43) (2025-10-06)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.41...v3.12.0-beta.42) (2025-10-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.12.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.40...v3.12.0-beta.41) (2025-10-03)
+
+
+### Bug Fixes
+
+* study browser mode for multiple studies ([#5457](https://github.com/OHIF/Viewers/issues/5457)) ([6a1df9d](https://github.com/OHIF/Viewers/commit/6a1df9de4ad3c10a4653f18e03aff6bda4962fd1))
+
+
+
+
+
 # [3.12.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.39...v3.12.0-beta.40) (2025-10-02)
 
 

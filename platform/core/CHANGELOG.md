@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.48...v3.12.0-beta.49) (2025-10-07)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.47...v3.12.0-beta.48) (2025-10-07)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.46...v3.12.0-beta.47) (2025-10-07)
+
+
+### Bug Fixes
+
+* **toolbar:** prevent duplicate command execution on repeated interactions ([#5456](https://github.com/OHIF/Viewers/issues/5456)) ([4d04dd5](https://github.com/OHIF/Viewers/commit/4d04dd5651f4cf8dcaf4732baee5e218e92bd3c1))
+
+
+
+
+
+# [3.12.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.45...v3.12.0-beta.46) (2025-10-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.44...v3.12.0-beta.45) (2025-10-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.43...v3.12.0-beta.44) (2025-10-06)
+
+
+### Bug Fixes
+
+* Safely handle missing active viewport ([#5448](https://github.com/OHIF/Viewers/issues/5448)) ([792db26](https://github.com/OHIF/Viewers/commit/792db26ff1591f9e054486f1bee01c422e774101))
+
+
+
+
+
+# [3.12.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.42...v3.12.0-beta.43) (2025-10-06)
+
+
+### Features
+
+* **MeasurementService:** add rendering of unmapped measurements  ([#5416](https://github.com/OHIF/Viewers/issues/5416)) ([851e74d](https://github.com/OHIF/Viewers/commit/851e74d7b867a806befb5d85fd71ff9a75e9f2d2))
+
+
+
+
+
+# [3.12.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.41...v3.12.0-beta.42) (2025-10-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.40...v3.12.0-beta.41) (2025-10-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.12.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.39...v3.12.0-beta.40) (2025-10-02)
 
 **Note:** Version bump only for package @ohif/core

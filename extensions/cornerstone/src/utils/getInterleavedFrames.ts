@@ -1,4 +1,17 @@
-export default function getInterleavedFrames(imageIds) {
+interface ImageIdToPrefetch {
+  imageId: string;
+  imageIdIndex: number;
+}
+
+export default function getInterleavedFrames(imageIds: string[]): ImageIdToPrefetch[] {
+  if (imageIds.length === 0) {
+    return [];
+  }
+
+  if (imageIds.length === 1) {
+    return [{ imageId: imageIds[0], imageIdIndex: 0 }];
+  }
+
   const minImageIdIndex = 0;
   const maxImageIdIndex = imageIds.length - 1;
 
@@ -8,7 +21,7 @@ export default function getInterleavedFrames(imageIds) {
   let upperImageIdIndex = middleImageIdIndex;
 
   // Build up an array of images to prefetch, starting with the current image.
-  const imageIdsToPrefetch = [
+  const imageIdsToPrefetch: ImageIdToPrefetch[] = [
     { imageId: imageIds[middleImageIdIndex], imageIdIndex: middleImageIdIndex },
   ];
 

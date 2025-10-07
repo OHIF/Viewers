@@ -88,27 +88,21 @@ export function setupSegmentationModifiedHandler({ segmentationService }) {
           annotation.metadata.toolName === cornerstoneTools.SegmentBidirectionalTool.toolName
       );
 
-      let toRemoveUIDs = [];
-      if (!segmentation) {
-        toRemoveUIDs = bidirectionalAnnotations.map(
-          annotation => annotation.metadata.segmentationId === segmentationId
-        );
-        return;
-      } else {
-        const segmentIndices = Object.keys(segmentation.segments)
-          .map(index => parseInt(index))
-          .filter(index => index > 0);
+      const segmentIndices = Object.keys(segmentation.segments)
+        .map(index => parseInt(index))
+        .filter(index => index > 0);
 
-        // check if there is a bidirectional data that exists but the segment
-        // does not exists anymore we need to remove the bidirectional data
-        const bidirectionalAnnotationsToRemove = bidirectionalAnnotations.filter(
-          annotation =>
-            annotation.metadata.segmentationId === segmentationId &&
-            !segmentIndices.includes(annotation.metadata.segmentIndex)
-        );
+      // check if there is a bidirectional data that exists but the segment
+      // does not exists anymore we need to remove the bidirectional data
+      const bidirectionalAnnotationsToRemove = bidirectionalAnnotations.filter(
+        annotation =>
+          annotation.metadata.segmentationId === segmentationId &&
+          !segmentIndices.includes(annotation.metadata.segmentIndex)
+      );
 
-        toRemoveUIDs = bidirectionalAnnotationsToRemove.map(annotation => annotation.annotationUID);
-      }
+      const toRemoveUIDs = bidirectionalAnnotationsToRemove.map(
+        annotation => annotation.annotationUID
+      );
 
       toRemoveUIDs.forEach(uid => {
         cornerstoneTools.annotation.state.removeAnnotation(uid);
