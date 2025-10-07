@@ -2284,7 +2284,7 @@ describe('SegmentationService', () => {
         {
           type: csToolsEnums.SegmentationRepresentations.Labelmap,
           segmentationId: segmentationId,
-          config: { colorLUTOrIndex: 1, active: true },
+          config: { colorLUTOrIndex: 1, blendMode: csEnums.BlendModes.COMPOSITE },
         },
       ]);
     });
