@@ -13,6 +13,8 @@ import {
   Enums,
   utilities as cstUtils,
   annotation,
+  segmentation,
+  PlanarFreehandContourSegmentationTool,
   Types as ToolTypes,
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
@@ -1572,6 +1574,23 @@ function commandsModule({
     toggleSegmentLockCommand: ({ segmentationId, segmentIndex }) => {
       const { segmentationService } = servicesManager.services;
       segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
+
+      /** Handle the locking of the contour annotations */
+      const seg = segmentation.state.getSegmentation(segmentationId);
+      if (!!seg.representationData[Enums.SegmentationRepresentations.Contour]) {
+        const { viewport } = _getActiveViewportEnabledElement();
+        const annotations = annotation.state.getAnnotations(
+          PlanarFreehandContourSegmentationTool.toolName,
+          viewport.element
+        );
+        const filteredAnnotations = annotations.filter(
+          a => a.data.segmentation.segmentationId === segmentationId
+        );
+        const ann = filteredAnnotations.find(
+          a => a.data.segmentation.segmentIndex === segmentIndex
+        );
+        actions.toggleLockMeasurement({ uid: ann.annotationUID });
+      }
     },
 
     /**
