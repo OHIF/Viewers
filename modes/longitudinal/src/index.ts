@@ -3,6 +3,7 @@ import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
+import { HangingProtocol } from 'platform/core/src/types';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -69,6 +70,9 @@ const tmtv = {
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
   tmtv: '@ohif/extension-tmtv.panelModule.tmtv',
 };
+const testmip = {
+  hangingProtocol: 'test-mip.hangingProtocolModule.ctMipProtocol',
+};
 
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
@@ -82,6 +86,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-tmtv': '^3.0.0',
+  'test-mip': '^0.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -103,11 +108,16 @@ function modeFactory({ modeConfiguration }) {
         customizationService,
         hangingProtocolService,
       } = servicesManager.services;
+      const utilityModule = extensionManager.getModuleEntry(
+        '@ohif/extension-cornerstone.utilityModule.tools'
+      );
+
+      const { toolNames, Enums } = utilityModule.exports;
 
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      initToolGroups(toolNames, Enums, extensionManager, toolGroupService, commandsManager);
 
       toolbarService.register(toolbarButtons);
       toolbarService.updateSection(toolbarService.sections.primary, [
@@ -120,6 +130,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        'mipToggle',
       ]);
 
       toolbarService.updateSection(toolbarService.sections.viewportActionMenu.topLeft, [
@@ -190,16 +201,16 @@ function modeFactory({ modeConfiguration }) {
       });
 
       hangingProtocolService.addCustomAttribute(
-        'getPTVOIRange',
-        'get PT VOI based on corrected or not',
+        'getCTVOIRange',
+        'get CT VOI based on corrected or not',
         props => {
-          const ptDisplaySet = props.find(imageSet => imageSet.Modality === 'PT');
+          const ctDisplaySet = props.find(imageSet => imageSet.Modality === 'CT');
 
-          if (!ptDisplaySet) {
+          if (!ctDisplaySet) {
             return;
           }
 
-          const { imageId } = ptDisplaySet.images[0];
+          const { imageId } = ctDisplaySet.images[0];
           const imageIdScalingFactor = MetadataProvider.get('scalingModule', imageId);
 
           const isSUVAvailable = imageIdScalingFactor && imageIdScalingFactor.suvbw;
@@ -324,6 +335,10 @@ function modeFactory({ modeConfiguration }) {
                   namespace: dicomRT.viewport,
                   displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
+                {
+                  namespace: cs3d.viewport,
+                  displaySetsToDisplay: [ohif.sopClassHandler],
+                },
               ],
             },
           };
@@ -332,7 +347,7 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: tmtv.hangingProtocol,
+    hangingProtocol: 'default',
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

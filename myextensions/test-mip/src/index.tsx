@@ -1,6 +1,7 @@
 import { id } from './id';
-import MathSidePanelComponent from './MathSidePanelComponent';
-
+import toolbarModule from './toolbarModule';
+import commandsModule from './commandsModule';
+import getHangingProtocolModule from './getHangingProtocolModule';
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -39,13 +40,7 @@ export default {
    * splitButton toolButton that the default extension is providing.
    */
   getToolbarModule: ({ servicesManager, commandsManager, extensionManager }) => {
-    return [
-      {
-        name: 'mipButton',
-        defaultComponent: MathSidePanelComponent,
-        clickHandler: () => {},
-      },
-    ];
+    return [toolbarModule({ servicesManager, commandsManager })];
   },
   /**
    * LayoutTemplateMOdule should provide a list of layout templates that will be
@@ -70,7 +65,7 @@ export default {
    * { name, protocols}. Examples include the default hanging protocol provided by
    * the default extension that shows 2x2 viewports.
    */
-  getHangingProtocolModule: ({ servicesManager, commandsManager, extensionManager }) => {},
+  getHangingProtocolModule,
   /**
    * CommandsModule should provide a list of commands that will be available in OHIF
    * for Modes to consume and use in the viewports. Each command is defined by
@@ -78,7 +73,9 @@ export default {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({ servicesManager, commandsManager, extensionManager }) => {},
+  getCommandsModule: ({ servicesManager, commandsManager, extensionManager }) => {
+    return commandsModule({ servicesManager, commandsManager, extensionManager });
+  },
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.

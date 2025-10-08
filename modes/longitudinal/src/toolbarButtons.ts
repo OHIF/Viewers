@@ -2,7 +2,7 @@ import type { Button } from '@ohif/core/types';
 
 import { EVENTS } from '@cornerstonejs/core';
 import { ViewportGridService } from '@ohif/core';
-
+import { id as mipext } from '../../../myextensions/test-mip/src/id';
 const callbacks = (toolName: string) => [
   {
     commandName: 'setViewportForToolConfiguration',
@@ -21,6 +21,23 @@ export const setToolActiveToolbar = {
 
 const toolbarButtons: Button[] = [
   // sections
+  {
+    id: 'mipToggle',
+    uiType: 'ohif.mipButton',
+    props: {
+      label: 'MIP',
+      tooltip: 'Toggle Maximum Intensity Projection',
+      // Attach the command(s) to run
+      commands: {
+        commandName: 'mip.setMIPLayoutAndToggle', // 'mip.toggle',
+        // optional commandOptions: slabThickness: 20
+        commandOptions: { slabThickness: 60 },
+      },
+      // if you have evaluate logic (disable when no volume), register evaluate name
+      evaluate: 'evaluate.action',
+    },
+  },
+
   {
     id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
