@@ -119,7 +119,7 @@ class MeasurementService extends PubSubService {
     name: 'measurementService',
     altName: 'MeasurementService',
     create: _options => {
-      return new MeasurementService();
+      return new MeasurementService(_options);
     },
   };
 
@@ -129,12 +129,14 @@ class MeasurementService extends PubSubService {
 
   private measurements = new Map();
   private isMeasurementDeletedIndividually: boolean;
+  private appConfig: AppTypes.Config;
 
   private sources = {};
   private mappings = {};
 
-  constructor() {
+  constructor(_options) {
     super(EVENTS);
+    this.appConfig = _options.extensionManager.appConfig;
   }
 
   /**
@@ -535,6 +537,7 @@ class MeasurementService extends PubSubService {
     const newMeasurement = {
       ...oldMeasurement,
       ...measurement,
+      isLocked: this.appConfig.disableEditing === true,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
     };
@@ -624,6 +627,7 @@ class MeasurementService extends PubSubService {
     const measurement = {
       ...sourceAnnotationDetail,
       isUnmapped: true,
+      isLocked: this.appConfig.disableEditing === true,
       statusTooltip: 'This measurement is not compatible with this application',
       source: {
         name: source.name,

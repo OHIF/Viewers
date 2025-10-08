@@ -89,8 +89,8 @@ class SegmentationService extends PubSubService {
   static REGISTRATION = {
     name: 'segmentationService',
     altName: 'SegmentationService',
-    create: ({ servicesManager }: OHIFTypes.Extensions.ExtensionParams): SegmentationService => {
-      return new SegmentationService({ servicesManager });
+    create: ({ servicesManager, extensionManager }: OHIFTypes.Extensions.ExtensionParams): SegmentationService => {
+      return new SegmentationService({ servicesManager, extensionManager });
     },
   };
 
@@ -99,14 +99,13 @@ class SegmentationService extends PubSubService {
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
+  private appConfig: AppTypes.Config;
 
-  constructor({ servicesManager }) {
+  constructor({ servicesManager, extensionManager }) {
     super(EVENTS);
-
     this._segmentationIdToColorLUTIndexMap = new Map();
-
     this.servicesManager = servicesManager;
-
+    this.appConfig = extensionManager.appConfig;
     this._segmentationGroupStatsMap = new Map();
   }
 
@@ -497,7 +496,7 @@ class SegmentationService extends PubSubService {
       segments[segmentIndex] = {
         segmentIndex,
         label: SegmentLabel || `Segment ${SegmentNumber}`,
-        locked: false,
+        locked: this.appConfig.disableEditing === true,
         active: false,
         cachedStats: {
           center: {
@@ -660,7 +659,7 @@ class SegmentationService extends PubSubService {
           label: id,
           segmentIndex,
           cachedStats: segmentsCachedStats,
-          locked: false,
+          locked: this.appConfig.disableEditing === true,
           active: false,
           group,
         };
@@ -864,7 +863,7 @@ class SegmentationService extends PubSubService {
               ...currentSegments[segmentIndex],
               segmentIndex,
               cachedStats: {},
-              locked: false,
+              locked: this.appConfig.disableEditing === true,
               ...config,
             },
           },
