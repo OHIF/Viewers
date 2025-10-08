@@ -79,31 +79,6 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
-        path.resolve(
-          __dirname,
-          '/home/megatron/Documents/codez/pacsmed/ohif/customized/Viewers-experimenta/custom-extensions/MIPFeature/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          '/home/megatron/Documents/codez/pacsmed/ohif/customized/Viewers-experimenta/custom-extensions/training-mode/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          '/home/megatron/Documents/codez/pacsmed/ohif/customized/Viewers-experimenta/custom-extensions/MIPFeature/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          '/home/megatron/Documents/codez/pacsmed/ohif/customized/Viewers-experimenta/custom-extensions/MIPFeature/node_modules'
-        ),
-
-        path.resolve(
-          __dirname,
-          '/home/megatron/Documents/codez/pacsmed/ohif/customized/Viewers-experimenta/myextensions/test-ext/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          '/home/megatron/Documents/codez/pacsmed/ohif/customized/Viewers-experimenta/myextensions/test-ext/node_modules'
-        ),
 
         path.resolve(
           __dirname,
