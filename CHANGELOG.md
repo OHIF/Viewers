@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.52...v3.12.0-beta.53) (2025-10-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.51...v3.12.0-beta.52) (2025-10-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Segmentation not displayed and unable to draw segments when switching back to volume/stack viewport from 3D viewport ([#5430](https://github.com/OHIF/Viewers/issues/5430)) ([78df8ff](https://github.com/OHIF/Viewers/commit/78df8ff03a371904a390c63a95628d5511dad136))
+
+
+
+
+
+# [3.12.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.50...v3.12.0-beta.51) (2025-10-07)
+
+
+### Bug Fixes
+
+* validation for Percentage of Max SUV input field in TMTV module ([#5417](https://github.com/OHIF/Viewers/issues/5417)) ([5040c94](https://github.com/OHIF/Viewers/commit/5040c947d2f47e5ec66285fa353e3e0ffd127ba7))
+
+
+
+
+
+# [3.12.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.49...v3.12.0-beta.50) (2025-10-07)
+
+
+### Bug Fixes
+
+* **Segmentation:** [Bug [#5420](https://github.com/OHIF/Viewers/issues/5420)] Segmentation color resets after using toggleOneUp ([#5465](https://github.com/OHIF/Viewers/issues/5465)) ([2c6ce21](https://github.com/OHIF/Viewers/commit/2c6ce21c8f79f8b3e6dc47b5aa6f717b6b5cbd2a))
+
+
+
+
+
 # [3.12.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.48...v3.12.0-beta.49) (2025-10-07)
 
 **Note:** Version bump only for package ohif-monorepo-root

@@ -648,7 +648,6 @@ describe('SegmentationService', () => {
         jest
           .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
           .mockReturnValue(undefined);
-        // @ts-expect-error - getLabelmapImageIds is wrongly typed at cornerstone3D
         jest.spyOn(cstSegmentation, 'getLabelmapImageIds').mockReturnValue([imageId]);
         jest
           .spyOn(cstSegmentation, 'addSegmentationRepresentations')
@@ -949,6 +948,37 @@ describe('SegmentationService', () => {
         });
       });
 
+      it('should add a surface segmentation representation to volume viewport without need for handling', async () => {
+        jest
+          .spyOn(cstSegmentation.state, 'getSegmentation')
+          .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+        jest
+          .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+          // only needed interfaces for the addSegmentationRepresentation call
+          .mockReturnValue({
+            ...mockCornerstoneVolumeViewport,
+            type: ViewportType.VOLUME_3D,
+          } as unknown as csTypes.IVolumeViewport);
+        jest
+          .spyOn(cstSegmentation, 'addSegmentationRepresentations')
+          .mockReturnValueOnce(undefined);
+
+        await service.addSegmentationRepresentation(viewportId, {
+          segmentationId: mockCornerstoneSegmentation.segmentationId,
+        });
+
+        expect(serviceManagerMock.services.viewportGridService.getState).not.toHaveBeenCalled();
+
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+        expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledWith(viewportId, [
+          {
+            type: csToolsEnums.SegmentationRepresentations.Surface,
+            segmentationId: mockCornerstoneSegmentation.segmentationId,
+            config: { colorLUTOrIndex: undefined },
+          },
+        ]);
+      });
+
       it('should add a volume segmentation representation to volume viewport through SegmentationService handling', async () => {
         mockCornerstoneVolumeViewport.type = ViewportType.ORTHOGRAPHIC;
         jest
@@ -1007,7 +1037,6 @@ describe('SegmentationService', () => {
         jest
           .spyOn(cstSegmentation, 'addSegmentationRepresentations')
           .mockReturnValueOnce(undefined);
-        // @ts-expect-error - getLabelmapImageIds is wrongly typed at cornerstone3D
         jest.spyOn(cstSegmentation, 'getLabelmapImageIds').mockReturnValue([imageId]);
         jest
           .spyOn(cache, 'getImage')
@@ -2031,6 +2060,9 @@ describe('SegmentationService', () => {
         .spyOn(cstSegmentation.segmentLocking, 'setSegmentIndexLocked')
         .mockReturnValue(undefined);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
+        .mockReturnValue([{ colorLUTIndex: 1 }] as cstTypes.SegmentationRepresentation[]);
 
       service.addSegment(segmentationId, config);
 
@@ -2192,15 +2224,24 @@ describe('SegmentationService', () => {
   });
 
   describe('setSegmentColor', () => {
-    it('should set the color of the segment', () => {
-      const viewportId = 'viewportId';
-      const segmentationId = 'segmentationId';
-      const segmentIndex = 1;
-      const color = [255, 0, 0, 255] as csTypes.Color;
+    const viewportId = 'viewportId';
+    const segmentationId = 'segmentationId';
+    const segmentIndex = 1;
+    const color = [255, 0, 0, 255] as csTypes.Color;
 
+    it('should set the color of the segment', () => {
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
+        .mockReturnValue([{ colorLUTIndex: 1 }] as cstTypes.SegmentationRepresentation[]);
       jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
 
       service.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+
+      expect(cstSegmentation.state.getSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.state.getSegmentationRepresentations).toHaveBeenCalledWith(
+        viewportId,
+        { segmentationId }
+      );
 
       expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledTimes(1);
       expect(cstSegmentation.config.color.setSegmentIndexColor).toHaveBeenCalledWith(
@@ -2209,6 +2250,43 @@ describe('SegmentationService', () => {
         segmentIndex,
         color
       );
+    });
+
+    it('should set the color of the segment with the colorLUTIndex', async () => {
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentationRepresentations')
+        .mockReturnValue([{ colorLUTIndex: 1 }] as cstTypes.SegmentationRepresentation[]);
+      jest.spyOn(cstSegmentation.config.color, 'setSegmentIndexColor').mockReturnValue(undefined);
+
+      service.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+
+      jest
+        .spyOn(cstSegmentation.state, 'getSegmentation')
+        .mockReturnValue(mockCornerstoneSegmentation as cstTypes.Segmentation);
+      jest
+        .spyOn(serviceManagerMock.services.cornerstoneViewportService, 'getCornerstoneViewport')
+        // only needed interfaces for the addSegmentationRepresentation call
+        .mockReturnValue(mockCornerstoneStackViewport as unknown as csTypes.IStackViewport);
+      jest
+        .spyOn(cstSegmentation.state, 'updateLabelmapSegmentationImageReferences')
+        .mockReturnValue('labelmapImageId');
+      jest.spyOn(cstSegmentation, 'addSegmentationRepresentations').mockReturnValueOnce(undefined);
+
+      await service.addSegmentationRepresentation(viewportId, {
+        segmentationId: segmentationId,
+        type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        config: { blendMode: csEnums.BlendModes.COMPOSITE },
+        suppressEvents: true,
+      });
+
+      expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledTimes(1);
+      expect(cstSegmentation.addSegmentationRepresentations).toHaveBeenCalledWith(viewportId, [
+        {
+          type: csToolsEnums.SegmentationRepresentations.Labelmap,
+          segmentationId: segmentationId,
+          config: { colorLUTOrIndex: 1, blendMode: csEnums.BlendModes.COMPOSITE },
+        },
+      ]);
     });
   });
 

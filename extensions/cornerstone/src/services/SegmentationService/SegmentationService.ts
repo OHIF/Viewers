@@ -295,9 +295,11 @@ class SegmentationService extends PubSubService {
 
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
-    const defaultRepresentationType = LABELMAP;
-    let representationTypeToUse = type || defaultRepresentationType;
     let isConverted = false;
+
+    const defaultRepresentationType: csToolsEnums.SegmentationRepresentations =
+      csViewport.type === ViewportType.VOLUME_3D ? SURFACE : LABELMAP;
+    let representationTypeToUse = type || defaultRepresentationType;
 
     if (representationTypeToUse === LABELMAP) {
       const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
@@ -1022,6 +1024,12 @@ class SegmentationService extends PubSubService {
     segmentIndex: number,
     color: csTypes.Color
   ): void {
+    const segmentationRepresentations = this.getSegmentationRepresentations(viewportId, {
+      segmentationId,
+    });
+    const { colorLUTIndex } = segmentationRepresentations[0];
+    this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
+
     cstSegmentation.config.color.setSegmentIndexColor(
       viewportId,
       segmentationId,
