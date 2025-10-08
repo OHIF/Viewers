@@ -1,3 +1,4 @@
+import { classes } from '@ohif/core';
 import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
@@ -6,7 +7,7 @@ import toolbarButtons from './toolbarButtons';
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
 const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
-
+const { MetadataProvider } = classes;
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -57,6 +58,18 @@ const dicomRT = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
 
+const cs3d = {
+  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  segPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationNoHeader',
+  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
+};
+
+const tmtv = {
+  hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
+  petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
+  tmtv: '@ohif/extension-tmtv.panelModule.tmtv',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -68,6 +81,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
+  '@ohif/extension-tmtv': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -82,8 +96,13 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        customizationService,
+        hangingProtocolService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -169,6 +188,32 @@ function modeFactory({ modeConfiguration }) {
           $set: true,
         },
       });
+
+      hangingProtocolService.addCustomAttribute(
+        'getPTVOIRange',
+        'get PT VOI based on corrected or not',
+        props => {
+          const ptDisplaySet = props.find(imageSet => imageSet.Modality === 'PT');
+
+          if (!ptDisplaySet) {
+            return;
+          }
+
+          const { imageId } = ptDisplaySet.images[0];
+          const imageIdScalingFactor = MetadataProvider.get('scalingModule', imageId);
+
+          const isSUVAvailable = imageIdScalingFactor && imageIdScalingFactor.suvbw;
+
+          if (isSUVAvailable) {
+            return {
+              windowWidth: 5,
+              windowCenter: 2.5,
+            };
+          }
+
+          return;
+        }
+      );
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
@@ -287,7 +332,7 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: 'default',
+    hangingProtocol: tmtv.hangingProtocol,
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

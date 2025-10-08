@@ -237,9 +237,14 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [
+                tracked.thumbnailList,
+                cornerstone.panel,
+                tracked.measurements,
+                testExtension.measurements,
+              ],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panel, tracked.measurements, testExtension.measurements],
+              rightPanels: [],
               rightPanelResizable: true,
               viewports: [
                 {

@@ -2,7 +2,6 @@ import toolbarButtons from './toolbarButtons';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import i18n from 'i18next';
-
 const configs = {
   Length: {},
   //
@@ -41,6 +40,9 @@ const extensionDependencies = {
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
 };
+
+// add MIPFeature: '^0.0.1', to extensionDependencies
+// extensionDependencies['MIPFeature'] = '^0.0.1';
 
 function modeFactory({ modeConfiguration }) {
   return {
