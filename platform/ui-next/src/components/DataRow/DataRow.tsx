@@ -245,14 +245,17 @@ const DataRowComponent: React.FC<DataRowProps> = ({
         className={cn(
           'group relative flex cursor-pointer items-center',
           // Primary selection when selected and active
-          isSelected && isActive ? 'bg-popover' : 'bg-muted',
-          // Secondary selection: selected but not active → red background only
-          isSelected && !isActive && 'bg-input'
+          isSelected && isActive ? 'bg-popover' : 'bg-muted'
         )}
         onClick={onSelect}
         data-cy="data-row"
         aria-label={isSelected && !isActive ? 'Active item in inactive group' : undefined}
       >
+        {/* Secondary selection overlay (overlay only, keep base state) */}
+        {isSelected && !isActive && (
+          <div className="bg-primary/20 pointer-events-none absolute inset-0"></div>
+        )}
+
         {/* Hover Overlay */}
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
