@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   IconPresentationProvider,
   Popover,
@@ -8,12 +8,15 @@ import {
   ToolSettings,
 } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
-import { metaData, cache } from '@cornerstonejs/core';
 import { useActiveToolOptions, useSystem } from '@ohif/core/src';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { Toolbar, useUIStateStore } from '@ohif/extension-default';
 import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
 import { useSelectedSegmentationsForViewportStore } from '../stores';
+import {
+  hasExportableLabelMapData,
+  hasExportableContourData,
+} from '../utils/segmentationExportUtils';
 
 type PanelSegmentationProps = {
   children?: React.ReactNode;
@@ -183,73 +186,10 @@ export default function PanelSegmentation({
       return { segmentationId, isExportable: true };
     }
 
-    // A label map is exportable if it has any pixel data and
-    // it is referenced by a display set that is reconstructable.
-    const hasExportableLabelMapData = () => {
-      if (!Labelmap) {
-        return false;
-      }
-
-      const imageIds = Labelmap?.imageIds;
-      if (!imageIds?.length) {
-        return false;
-      }
-
-      const hasPixelData = imageIds.some(imageId => {
-        const pixelData = cache.getImage(imageId)?.getPixelData();
-        if (!pixelData) {
-          return false;
-        }
-
-        for (let i = 0; i < pixelData.length; i++) {
-          if (pixelData[i] !== 0) {
-            return true;
-          }
-        }
-      });
-
-      if (!hasPixelData) {
-        return false;
-      }
-
-      const referencedImageIds = Labelmap?.referencedImageIds;
-
-      if (!referencedImageIds) {
-        return false;
-      }
-      const firstImageId = referencedImageIds[0];
-      const instance = metaData.get('instance', firstImageId);
-
-      if (!instance) {
-        return false;
-      }
-
-      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
-      const SeriesInstanceUID = instance.SeriesInstanceUID;
-      const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-        SOPInstanceUID,
-        SeriesInstanceUID
-      );
-
-      return displaySet?.isReconstructable;
-    };
-
-    // A contour is exportable if it has any contour annotation/geometry data.
-    const hasExportableContourData = () => {
-      if (!Contour) {
-        return false;
-      }
-
-      const contourAnnotationUIDsMap = Contour?.annotationUIDsMap;
-
-      if (!contourAnnotationUIDsMap) {
-        return false;
-      }
-
-      return contourAnnotationUIDsMap.size > 0;
-    };
-
-    if (!hasExportableLabelMapData() && !hasExportableContourData()) {
+    if (
+      !hasExportableLabelMapData(Labelmap, displaySetService) &&
+      !hasExportableContourData(Contour)
+    ) {
       return { segmentationId, isExportable: false };
     }
 
