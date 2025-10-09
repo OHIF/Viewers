@@ -37,7 +37,7 @@ const commandsModule = ({
   servicesManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const { segmentationService, displaySetService, viewportGridService, toolGroupService } =
+  const { segmentationService, displaySetService, viewportGridService } =
     servicesManager.services as AppTypes.Services;
 
   const actions = {

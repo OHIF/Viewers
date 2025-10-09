@@ -221,7 +221,7 @@ describe('SegmentationService', () => {
     it('should add event listeners', () => {
       service.onModeEnter();
 
-      expect(eventTarget.addEventListener).toHaveBeenCalledTimes(7);
+      expect(eventTarget.addEventListener).toHaveBeenCalledTimes(8);
 
       expect(eventTarget.addEventListener).toHaveBeenCalledWith(
         csToolsEnums.Events.SEGMENTATION_MODIFIED,
@@ -249,6 +249,10 @@ describe('SegmentationService', () => {
       );
       expect(eventTarget.addEventListener).toHaveBeenCalledWith(
         csToolsEnums.Events.SEGMENTATION_ADDED,
+        expect.any(Function)
+      );
+      expect(eventTarget.addEventListener).toHaveBeenCalledWith(
+        csToolsEnums.Events.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
         expect.any(Function)
       );
     });
