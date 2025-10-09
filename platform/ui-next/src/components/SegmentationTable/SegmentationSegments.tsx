@@ -83,8 +83,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               // details={displayText}
               description={displayText}
               colorHex={cssColor}
-              // Only show the segment as selected if it's part of the active segmentation
-              isSelected={active && isActiveSegmentation}
+              // Two flags: isActive (belongs to active segmentation), isSelected (selected segment in its own segmentation)
+              isActive={isActiveSegmentation}
+              isSelected={active}
               isVisible={visible}
               isLocked={locked}
               disableEditing={disableEditing}

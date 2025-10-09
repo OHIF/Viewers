@@ -87,7 +87,10 @@ interface DataRowProps {
   description: string;
   details?: { primary: string[]; secondary: string[] };
   //
+  // Whether this row is the selected item within its own group (e.g., selected segment in its segmentation)
   isSelected?: boolean;
+  // Whether this row belongs to the currently active group/context (e.g., part of the active segmentation)
+  isActive?: boolean;
   onSelect?: (e) => void;
   //
   isVisible: boolean;
@@ -122,6 +125,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
   onColor,
   onCopy,
   isSelected = false,
+  isActive = true,
   isVisible = true,
   disableEditing = false,
   className,
@@ -238,11 +242,16 @@ const DataRowComponent: React.FC<DataRowProps> = ({
       className={cn('flex flex-col', !isVisible && 'opacity-60', className)}
     >
       <div
-        className={`flex items-center ${
-          isSelected ? 'bg-popover' : 'bg-muted'
-        } group relative cursor-pointer`}
+        className={cn(
+          'group relative flex cursor-pointer items-center',
+          // Primary selection when selected and active
+          isSelected && isActive ? 'bg-popover' : 'bg-muted',
+          // Secondary selection: selected but not active → red background only
+          isSelected && !isActive && 'bg-input'
+        )}
         onClick={onSelect}
         data-cy="data-row"
+        aria-label={isSelected && !isActive ? 'Active item in inactive group' : undefined}
       >
         {/* Hover Overlay */}
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
@@ -250,9 +259,10 @@ const DataRowComponent: React.FC<DataRowProps> = ({
         {/* Number Box */}
         {number !== null && (
           <div
-            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
-              isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
-            } overflow-hidden`}
+            className={cn(
+              'flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-l border-r border-black text-base',
+              isSelected && isActive ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
+            )}
           >
             {number}
           </div>
@@ -275,9 +285,10 @@ const DataRowComponent: React.FC<DataRowProps> = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  className={`cursor-default text-base ${
-                    isSelected ? 'text-highlight' : 'text-muted-foreground'
-                  } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
+                  className={cn(
+                    'cursor-default text-base [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]',
+                    isSelected && isActive ? 'text-highlight' : 'text-muted-foreground'
+                  )}
                 >
                   {title}
                 </span>
@@ -291,9 +302,10 @@ const DataRowComponent: React.FC<DataRowProps> = ({
             </Tooltip>
           ) : (
             <span
-              className={`text-base ${
-                isSelected ? 'text-highlight' : 'text-muted-foreground'
-              } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
+              className={cn(
+                'text-base [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]',
+                isSelected && isActive ? 'text-highlight' : 'text-muted-foreground'
+              )}
             >
               {title}
             </span>
@@ -306,9 +318,12 @@ const DataRowComponent: React.FC<DataRowProps> = ({
           <Button
             size="icon"
             variant="ghost"
-            className={`h-6 w-6 transition-opacity ${
-              isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-            }`}
+            className={cn(
+              'h-6 w-6 transition-opacity',
+              (isSelected && isActive) || !isVisible
+                ? 'opacity-100'
+                : 'opacity-0 group-hover:opacity-100'
+            )}
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
@@ -332,11 +347,12 @@ const DataRowComponent: React.FC<DataRowProps> = ({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className={`h-6 w-6 transition-opacity ${
-                    isSelected || isDropdownOpen
+                  className={cn(
+                    'h-6 w-6 transition-opacity',
+                    (isSelected && isActive) || isDropdownOpen
                       ? 'opacity-100'
                       : 'opacity-0 group-hover:opacity-100'
-                  }`}
+                  )}
                   aria-label="Actions"
                   dataCY="actionsMenuTrigger"
                   onClick={e => e.stopPropagation()} // Prevent row selection on button click
