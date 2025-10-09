@@ -2248,16 +2248,28 @@ function commandsModule({
         updateCursorSize: isDynamicCursorSize ? 'dynamic' : '',
       };
     },
-    setInterpolationToolConfiguration: ({ value: interpolateContours }) => {
+    setInterpolationToolConfiguration: ({ value: interpolateContours, toolNames }) => {
       const viewportId = viewportGridService.getActiveViewportId();
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+      // Set the interpolation configuration for the active tool.
       const activeTool = toolGroupService.getActiveToolForViewport(viewportId);
-      toolGroup.setToolConfiguration(activeTool, {
+      const interpolationConfig = {
         interpolation: {
           enabled: interpolateContours,
           showInterpolationPolyline: true,
         },
-      });
+      };
+      toolGroup.setToolConfiguration(activeTool, interpolationConfig);
+
+      // Now set the interpolation configuration for the other tools specified.
+      if (toolNames) {
+        Object.values(toolGroup.getToolInstances()).forEach(toolInstance => {
+          if (toolNames?.includes(toolInstance.toolName)) {
+            toolGroup.setToolConfiguration(toolInstance.toolName, interpolationConfig);
+          }
+        });
+      }
     },
     setSimplifiedSplineForSplineContourSegmentationTool: ({ value: simplifiedSpline }) => {
       const viewportId = viewportGridService.getActiveViewportId();
