@@ -6,7 +6,6 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
-    'panelSegmentation.isMultiTab': false,
     'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
@@ -41,7 +40,10 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       lesionGlycolysis: 'Lesion Glycolysis',
       center: 'Center',
     },
-    'segmentationToolbox.config': () => {
+    'labelMapSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
+    },
+    'contourSegmentationToolbox.config': () => {
       return <SegmentationToolConfig />;
     },
   };

@@ -16,13 +16,6 @@ interface ToolboxProps {
    * The display title for the toolbox.
    */
   title: string;
-
-  /**
-   * Props object passed to the isSectionVisible function of Toolbox subsection components
-   * to determine their visibility. Each subsection component can define its own visibility
-   * logic based on these props.
-   */
-  subSectionVisibilityProps?: Record<string, unknown>;
 }
 
 /**
@@ -35,7 +28,7 @@ interface ToolboxProps {
  * role in enhancing the app with a toolbox by providing a way to integrate
  * and display various tools and their corresponding options
  */
-export function Toolbox({ buttonSectionId, title, subSectionVisibilityProps }: ToolboxProps) {
+export function Toolbox({ buttonSectionId, title }: ToolboxProps) {
   const { servicesManager } = useSystem();
   const { t } = useTranslation();
 
@@ -88,14 +81,6 @@ export function Toolbox({ buttonSectionId, title, subSectionVisibilityProps }: T
         {toolboxSections.map(section => {
           const sectionId = section.componentProps.buttonSection;
           const buttons = toolbarService.getButtonSection(sectionId) as any[];
-
-          const isSectionVisible =
-            typeof section.componentProps?.isSectionVisible !== 'function' ||
-            section.componentProps.isSectionVisible(subSectionVisibilityProps);
-
-          if (!isSectionVisible) {
-            return null;
-          }
 
           return (
             <div

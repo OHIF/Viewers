@@ -31,6 +31,11 @@ export default function PanelSegmentation({
     servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
 
+  const utilitiesSectionMap = {
+    [SegmentationRepresentations.Labelmap]: toolbarService.sections.labelMapSegmentationUtilities,
+    [SegmentationRepresentations.Contour]: toolbarService.sections.contourSegmentationUtilities,
+  };
+
   const selectedSegmentationsForViewportMap = useSelectedSegmentationsForViewportStore(
     store => store.selectedSegmentationsForViewport[activeViewportId]
   );
@@ -39,8 +44,10 @@ export default function PanelSegmentation({
     ? selectedSegmentationsForViewportMap?.get(segmentationRepresentationType)
     : undefined;
 
+  const buttonSection = utilitiesSectionMap[segmentationRepresentationType];
+
   const { activeToolOptions: activeUtilityOptions } = useActiveToolOptions({
-    buttonSectionId: toolbarService.sections.segmentationUtilities,
+    buttonSectionId: buttonSection,
   });
 
   const { segmentationsWithRepresentations, disabled } =
@@ -238,16 +245,17 @@ export default function PanelSegmentation({
   };
 
   const renderUtilitiesToolbar = () => {
+    if (!buttonSection) {
+      return null;
+    }
+
     return (
       <IconPresentationProvider
         size="large"
         IconContainer={SegmentationUtilityButton}
       >
-        <div className="flex flex-wrap gap-[3px] bg-transparent pt-[6px] pb-[2px] pl-[8px]">
-          <Toolbar
-            buttonSection={toolbarService.sections.segmentationUtilities}
-            subSectionVisibilityProps={{ segmentationRepresentationType }}
-          />
+        <div className="flex flex-wrap gap-[3px] bg-transparent pb-[2px] pl-[8px] pt-[6px]">
+          <Toolbar buttonSection={buttonSection} />
         </div>
       </IconPresentationProvider>
     );
