@@ -173,25 +173,32 @@ export default function PanelSegmentation({
   };
 
   // Generate export options
+  // Map each segmentation to an export option for it.
+  // A segmentation is exportable if it has any labelmap or contour data.
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;
-    const { Labelmap } = representationData;
+    const { Labelmap, Contour } = representationData;
 
-    if (!Labelmap) {
+    if (!Labelmap && !Contour) {
       return { segmentationId, isExportable: true };
     }
 
-    // Check if any segments have anything drawn in any of the viewports
-    const hasAnySegmentData = (() => {
-      const imageIds = Labelmap.imageIds;
+    // A label map is exportable if it has any pixel data and
+    // it is referenced by a display set that is reconstructable.
+    const hasExportableLabelMapData = () => {
+      if (!Labelmap) {
+        return false;
+      }
+
+      const imageIds = Labelmap?.imageIds;
       if (!imageIds?.length) {
         return false;
       }
 
-      for (const imageId of imageIds) {
+      const hasPixelData = imageIds.some(imageId => {
         const pixelData = cache.getImage(imageId)?.getPixelData();
         if (!pixelData) {
-          continue;
+          return false;
         }
 
         for (let i = 0; i < pixelData.length; i++) {
@@ -199,32 +206,56 @@ export default function PanelSegmentation({
             return true;
           }
         }
+      });
+
+      if (!hasPixelData) {
+        return false;
       }
-      return false;
-    })();
 
-    if (!hasAnySegmentData) {
+      const referencedImageIds = Labelmap?.referencedImageIds;
+
+      if (!referencedImageIds) {
+        return false;
+      }
+      const firstImageId = referencedImageIds[0];
+      const instance = metaData.get('instance', firstImageId);
+
+      if (!instance) {
+        return false;
+      }
+
+      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
+      const SeriesInstanceUID = instance.SeriesInstanceUID;
+      const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
+        SOPInstanceUID,
+        SeriesInstanceUID
+      );
+
+      return displaySet?.isReconstructable;
+    };
+
+    // A contour is exportable if it has any contour annotation/geometry data.
+    const hasExportableContourData = () => {
+      if (!Contour) {
+        return false;
+      }
+
+      const contourAnnotationUIDsMap = Contour?.annotationUIDsMap;
+
+      if (!contourAnnotationUIDsMap) {
+        return false;
+      }
+
+      return contourAnnotationUIDsMap.size > 0;
+    };
+
+    if (!hasExportableLabelMapData() && !hasExportableContourData()) {
       return { segmentationId, isExportable: false };
     }
-
-    const referencedImageIds = Labelmap.referencedImageIds;
-    const firstImageId = referencedImageIds[0];
-    const instance = metaData.get('instance', firstImageId);
-
-    if (!instance) {
-      return { segmentationId, isExportable: false };
-    }
-
-    const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
-    const SeriesInstanceUID = instance.SeriesInstanceUID;
-    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID
-    );
 
     return {
       segmentationId,
-      isExportable: displaySet?.isReconstructable,
+      isExportable: true,
     };
   });
 
