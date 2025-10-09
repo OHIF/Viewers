@@ -591,6 +591,9 @@ const toolbarButtons: Button[] = [
           value: false,
           commands: {
             commandName: 'setInterpolationToolConfiguration',
+            commandOptions: {
+              toolNames: ['CatmullRomSplineROI', 'LinearSplineROI', 'BSplineROI'],
+            },
           },
         },
       ],
