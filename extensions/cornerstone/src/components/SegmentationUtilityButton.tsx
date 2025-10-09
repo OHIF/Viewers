@@ -9,7 +9,6 @@ interface SegmentationUtilityButtonProps {
 }
 
 /**
- * hello
  * A button that represents a segmentation utility.
  * It is implicitly the PopoverTrigger for the options Popover panel that is
  * opened in the PanelSegmentation component. It in essence is the PopoverTrigger
