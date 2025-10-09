@@ -249,7 +249,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
         )}
         onClick={onSelect}
         data-cy="data-row"
-        aria-label={isSelected && !isActive ? 'Active item in inactive group' : undefined}
+        aria-label={isSelected && !isActive ? 'Selected (segmentation inactive)' : undefined}
       >
         {/* Secondary selection overlay (overlay only, keep base state) */}
         {isSelected && !isActive && (
