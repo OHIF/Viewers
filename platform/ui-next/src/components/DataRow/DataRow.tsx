@@ -11,8 +11,30 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Toolti
 import { cn } from '../../lib/utils';
 
 /**
+ * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
+ * It's designed to show a numbered item with a title, optional color indicator, and expandable details.
+ * The row supports various interactive features like visibility toggling, locking, and contextual actions.
  * DataRow displays a selectable, interactive row with hierarchical data.
  *
+ * @component
+ * @example
+ * ```tsx
+ * // Basic usage without status
+ * <DataRow
+ *   number={1}
+ *   title="My Item"
+ *   details={{
+ *     primary: ["Main detail", "  Sub detail"],
+ *     secondary: []
+ *   }}
+ *   isVisible={true}
+ *   isLocked={false}
+ *   onToggleVisibility={() => {}}
+ *   onToggleLocked={() => {}}
+ *   onRename={() => {}}
+ *   onDelete={() => {}}
+ *   onColor={() => {}}
+ * />
  * IMPORTANT IMPLEMENTATION NOTE:
  * - This component intentionally has **no `isActive` prop**.
  * - The "activeness" of the parent context (e.g., an active Segmentation) is
@@ -22,6 +44,12 @@ import { cn } from '../../lib/utils';
  *     group-data-[active=true]/seg:...
  *     group-data-[active=false]/seg:...
  *
+ * // With warning status using composite pattern
+ * <DataRow
+ *   // ... other props
+ * >
+ *   <DataRow.Status.Warning tooltip="This structured report is not compatible with this application" />
+ * </DataRow>
  * Visual behaviors preserved:
  * 1) Segmentation ACTIVE + segment isSelected  => primary selection UI
  *    - row bg changes to bg-popover
@@ -29,11 +57,26 @@ import { cn } from '../../lib/utils';
  *    - title text-highlight
  *    - action icons visible
  *
+ * // With success status using composite pattern
+ * <DataRow
+ *   // ... other props
+ * >
+ *   <DataRow.Status.Success tooltip="Measurement completed successfully" />
+ * </DataRow>
  * 2) Segmentation INACTIVE + segment isSelected => "will become active" UI
  *    - base row remains bg-muted
  *    - a subtle overlay bg-primary/20 is shown over the row
  *    - icons do NOT become persistently visible (hover still reveals)
  *
+ * // Multiple status indicators
+ * <DataRow
+ *   // ... other props
+ * >
+ *   <DataRow.Status.Warning tooltip="Warning message" />
+ *   <DataRow.Status.Info tooltip="Additional info" />
+ * </DataRow>
+ *
+ * ```
  * Other details (hover overlay, visibility/lock controls, details tooltip) remain unchanged.
  */
 
@@ -227,13 +270,15 @@ const DataRowComponent: React.FC<DataRowProps> = ({
       >
         {/* Secondary selection overlay (shows ONLY when selected AND parent segmentation is inactive) */}
         {isSelected && (
-          <div className={cn(
-            'pointer-events-none absolute inset-0',
-            // Hidden by default; appears when parent segmentation is inactive
-            'hidden group-data-[active=false]/seg:block',
-            // The "will become active" tint
-            'bg-primary/20'
-          )}></div>
+          <div
+            className={cn(
+              'pointer-events-none absolute inset-0',
+              // Hidden by default; appears when parent segmentation is inactive
+              'hidden group-data-[active=false]/seg:block',
+              // The "will become active" tint
+              'bg-primary/20'
+            )}
+          ></div>
         )}
 
         {/* Hover Overlay (row-level hover) */}
@@ -247,7 +292,8 @@ const DataRowComponent: React.FC<DataRowProps> = ({
               // Default cap styling
               'bg-muted text-muted-foreground',
               // Highlight the cap ONLY when selected and the parent segmentation is active
-              isSelected && 'group-data-[active=true]/seg:bg-highlight group-data-[active=true]/seg:text-black'
+              isSelected &&
+                'group-data-[active=true]/seg:bg-highlight group-data-[active=true]/seg:text-black'
             )}
           >
             {number}
