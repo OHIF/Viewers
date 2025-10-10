@@ -14,6 +14,7 @@ import { cn } from '../../lib/utils';
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
  * It's designed to show a numbered item with a title, optional color indicator, and expandable details.
  * The row supports various interactive features like visibility toggling, locking, and contextual actions.
+ * DataRow displays a selectable, interactive row with hierarchical data.
  *
  * @component
  * @example
@@ -34,6 +35,14 @@ import { cn } from '../../lib/utils';
  *   onDelete={() => {}}
  *   onColor={() => {}}
  * />
+ * IMPORTANT IMPLEMENTATION NOTE:
+ * - This component intentionally has **no `isActive` prop**.
+ * - The "activeness" of the parent context (e.g., an active Segmentation) is
+ *   communicated via a **named Tailwind group** on an ancestor element:
+ *     className="group/segments" data-active={true|false}
+ * - Styles in this component react to the parent using Tailwind's arbitrary variants:
+ *     group-data-[active=true]/segments:...
+ *     group-data-[active=false]/segments:...
  *
  * // With warning status using composite pattern
  * <DataRow
@@ -41,6 +50,12 @@ import { cn } from '../../lib/utils';
  * >
  *   <DataRow.Status.Warning tooltip="This structured report is not compatible with this application" />
  * </DataRow>
+ * Visual behaviors preserved:
+ * 1) Segmentation ACTIVE + segment isSelected  => primary selection UI
+ *    - row bg changes to bg-popover
+ *    - number cap bg-highlight
+ *    - title text-highlight
+ *    - action icons visible
  *
  * // With success status using composite pattern
  * <DataRow
@@ -48,6 +63,10 @@ import { cn } from '../../lib/utils';
  * >
  *   <DataRow.Status.Success tooltip="Measurement completed successfully" />
  * </DataRow>
+ * 2) Segmentation INACTIVE + segment isSelected => "will become active" UI
+ *    - base row remains bg-muted
+ *    - a subtle overlay bg-primary/20 is shown over the row
+ *    - icons do NOT become persistently visible (hover still reveals)
  *
  * // Multiple status indicators
  * <DataRow
@@ -58,6 +77,7 @@ import { cn } from '../../lib/utils';
  * </DataRow>
  *
  * ```
+ * Other details (hover overlay, visibility/lock controls, details tooltip) remain unchanged.
  */
 
 /**
@@ -66,11 +86,11 @@ import { cn } from '../../lib/utils';
  * @property {number} number - The display number/index of the row
  * @property {string} title - The main text label for the row
  * @property {boolean} disableEditing - When true, prevents rename and delete operations
- * @property {string} [colorHex] - Optional hex color code to display a color indicator
+ * @property {string} [colorHex] - Optional hex/rgb color to display a color indicator
  * @property {Object} [details] - Optional hierarchical details to display below the row
  * @property {string[]} details.primary - Primary details shown immediately below the row
  * @property {string[]} details.secondary - Secondary details (currently unused)
- * @property {boolean} [isSelected] - Whether the row is currently selected
+ * @property {boolean} [isSelected] - Whether the row is currently selected (active within its segmentation)
  * @property {() => void} [onSelect] - Callback when the row is clicked/selected
  * @property {boolean} isVisible - Controls the row's visibility state
  * @property {() => void} onToggleVisibility - Callback to toggle visibility
@@ -87,6 +107,7 @@ interface DataRowProps {
   description: string;
   details?: { primary: string[]; secondary: string[] };
   //
+  // Whether this row is the selected item within its own group (e.g., selected segment within a segmentation)
   isSelected?: boolean;
   onSelect?: (e) => void;
   //
@@ -138,14 +159,6 @@ const DataRowComponent: React.FC<DataRowProps> = ({
       child.type &&
       (child.type as any).displayName?.startsWith('DataRow.Status')
   );
-
-  // useEffect(() => {
-  //   if (isSelected && rowRef.current) {
-  //     setTimeout(() => {
-  //       rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  //     }, 200);
-  //   }
-  // }, [isSelected]);
 
   const handleAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -235,24 +248,53 @@ const DataRowComponent: React.FC<DataRowProps> = ({
   return (
     <div
       ref={rowRef}
-      className={cn('flex flex-col', !isVisible && 'opacity-60', className)}
+      className={cn(
+        'flex flex-col',
+        // Slight dim when the parent segmentation is inactive
+        'group-data-[active=false]/segments:opacity-80',
+        !isVisible && 'opacity-60',
+        className
+      )}
     >
       <div
-        className={`flex items-center ${
-          isSelected ? 'bg-popover' : 'bg-muted'
-        } group relative cursor-pointer`}
+        className={cn(
+          // This "group" is for row-level hover effects (not to be confused with the parent named group/segments)
+          'group relative flex cursor-pointer items-center',
+          // Base row background
+          'bg-muted',
+          // Primary selection background only when parent segmentation is active
+          isSelected && 'group-data-[active=true]/segments:bg-popover'
+        )}
         onClick={onSelect}
         data-cy="data-row"
       >
-        {/* Hover Overlay */}
+        {/* Secondary selection overlay (shows ONLY when selected AND parent segmentation is inactive) */}
+        {isSelected && (
+          <div
+            className={cn(
+              'pointer-events-none absolute inset-0',
+              // Hidden by default; appears when parent segmentation is inactive
+              'hidden group-data-[active=false]/segments:block',
+              // The "will become active" tint
+              'bg-primary/20'
+            )}
+          ></div>
+        )}
+
+        {/* Hover Overlay (row-level hover) */}
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
         {/* Number Box */}
         {number !== null && (
           <div
-            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
-              isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
-            } overflow-hidden`}
+            className={cn(
+              'flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-l border-r border-black text-base',
+              // Default cap styling
+              'bg-muted text-muted-foreground',
+              // Highlight the cap ONLY when selected and the parent segmentation is active
+              isSelected &&
+                'group-data-[active=true]/segments:bg-highlight group-data-[active=true]/segments:text-black'
+            )}
           >
             {number}
           </div>
@@ -260,6 +302,8 @@ const DataRowComponent: React.FC<DataRowProps> = ({
 
         {/* add some space if there is not segment index */}
         {number === null && <div className="ml-1 h-7"></div>}
+
+        {/* Color dot */}
         {colorHex && (
           <div className="flex h-7 w-5 items-center justify-center">
             <span
@@ -275,9 +319,13 @@ const DataRowComponent: React.FC<DataRowProps> = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  className={`cursor-default text-base ${
-                    isSelected ? 'text-highlight' : 'text-muted-foreground'
-                  } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
+                  className={cn(
+                    'cursor-default text-base [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]',
+                    // Default label color
+                    'text-muted-foreground',
+                    // When selected and parent segmentation is active, use highlight color
+                    isSelected && 'group-data-[active=true]/segments:text-highlight'
+                  )}
                 >
                   {title}
                 </span>
@@ -291,9 +339,11 @@ const DataRowComponent: React.FC<DataRowProps> = ({
             </Tooltip>
           ) : (
             <span
-              className={`text-base ${
-                isSelected ? 'text-highlight' : 'text-muted-foreground'
-              } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
+              className={cn(
+                'text-base [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]',
+                'text-muted-foreground',
+                isSelected && 'group-data-[active=true]/segments:text-highlight'
+              )}
             >
               {title}
             </span>
@@ -306,9 +356,13 @@ const DataRowComponent: React.FC<DataRowProps> = ({
           <Button
             size="icon"
             variant="ghost"
-            className={`h-6 w-6 transition-opacity ${
-              isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-            }`}
+            className={cn(
+              'h-6 w-6 transition-opacity',
+              // Always show when hidden (so user can reveal)
+              !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+              // Show persistently if selected AND parent segmentation is active
+              isSelected && 'group-data-[active=true]/segments:opacity-100'
+            )}
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
@@ -332,11 +386,12 @@ const DataRowComponent: React.FC<DataRowProps> = ({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className={`h-6 w-6 transition-opacity ${
-                    isSelected || isDropdownOpen
-                      ? 'opacity-100'
-                      : 'opacity-0 group-hover:opacity-100'
-                  }`}
+                  className={cn(
+                    'h-6 w-6 transition-opacity',
+                    isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                    // When selected and the parent segmentation is active, keep the actions visible
+                    isSelected && 'group-data-[active=true]/segments:opacity-100'
+                  )}
                   aria-label="Actions"
                   dataCY="actionsMenuTrigger"
                   onClick={e => e.stopPropagation()} // Prevent row selection on button click

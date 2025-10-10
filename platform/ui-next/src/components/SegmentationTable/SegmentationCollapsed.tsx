@@ -159,8 +159,6 @@ const SegmentationCollapsedRoot: React.FC<{ children?: React.ReactNode }> = ({
         <SegmentationExpandedProvider
           segmentation={selectedSegmentationInfo.segmentation}
           representation={selectedSegmentationInfo.representation}
-          isActive={true}
-          onSegmentationClick={() => {}} // No-op since it's already the active one
         >
           {children}
         </SegmentationExpandedProvider>

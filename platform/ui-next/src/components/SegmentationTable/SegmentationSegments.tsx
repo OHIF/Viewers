@@ -21,8 +21,8 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   } = useSegmentationTableContext('SegmentationSegments');
 
   // Try to get segmentation data from expanded context first, then fall back to table context
-  let segmentation;
-  let representation;
+  let segmentation: any;
+  let representation: any;
 
   try {
     // Try to use the SegmentationExpanded context if available
@@ -38,14 +38,14 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     representation = segmentationInfo?.representation;
   }
 
-  const segments = Object.values(representation.segments);
-  const isActiveSegmentation = segmentation.segmentationId === activeSegmentationId;
-
-  const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
-
   if (!representation || !segmentation) {
     return null;
   }
+
+  const segments = Object.values(representation.segments);
+  const isActiveSegmentation = segmentation?.segmentationId === activeSegmentationId;
+
+  const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
 
   return (
     <ScrollArea
@@ -55,6 +55,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
       <div
         ref={scrollableContainerRef}
         style={{ maxHeight: maxHeight }}
+        // Named group for segmentation activeness; children rows react via group-data variants.
+        className="group/segments"
+        data-active={isActiveSegmentation}
       >
         {segments.map(segment => {
           if (!segment) {
@@ -83,12 +86,11 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               // details={displayText}
               description={displayText}
               colorHex={cssColor}
-              // Only show the segment as selected if it's part of the active segmentation
-              isSelected={active && isActiveSegmentation}
+              // Only isSelected remains; parent group/segments controls active/inactive styling.
+              isSelected={active}
               isVisible={visible}
               isLocked={locked}
               disableEditing={disableEditing}
-              className={!isActiveSegmentation ? 'opacity-80' : ''}
               onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
               onToggleVisibility={() =>
                 onToggleSegmentVisibility(
