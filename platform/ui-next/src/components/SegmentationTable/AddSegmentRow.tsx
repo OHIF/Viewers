@@ -19,10 +19,8 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
 
   try {
     const expandedContext = useSegmentationExpanded('AddSegmentRow');
-    if (expandedContext.isActive) {
-      segmentationId = expandedContext.segmentation.segmentationId;
-      representation = expandedContext.representation;
-    }
+    segmentationId = expandedContext.segmentation.segmentationId;
+    representation = expandedContext.representation;
   } catch (e) {
     // Use the default values from table context
   }

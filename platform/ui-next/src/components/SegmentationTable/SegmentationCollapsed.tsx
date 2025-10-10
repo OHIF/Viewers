@@ -132,7 +132,7 @@ const SegmentationCollapsedContent = ({ children }: { children: React.ReactNode 
 const SegmentationCollapsedRoot: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
 }) => {
-  const { mode, data, segmentationRepresentationType, selectedSegmentationIdForType, activeSegmentationId } =
+  const { mode, data, segmentationRepresentationType, selectedSegmentationIdForType } =
     useSegmentationTableContext('SegmentationCollapsed');
 
   // Find the segmentations for the representation type for this collapsed view.
@@ -159,9 +159,6 @@ const SegmentationCollapsedRoot: React.FC<{ children?: React.ReactNode }> = ({
         <SegmentationExpandedProvider
           segmentation={selectedSegmentationInfo.segmentation}
           representation={selectedSegmentationInfo.representation}
-          isActive={
-            selectedSegmentationInfo.segmentation.segmentationId === activeSegmentationId
-          }
         >
           {children}
         </SegmentationExpandedProvider>
