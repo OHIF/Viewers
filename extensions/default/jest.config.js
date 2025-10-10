@@ -5,6 +5,7 @@ module.exports = {
   moduleNameMapper: {
     ...base.moduleNameMapper,
     '@ohif/(.*)': '<rootDir>/../../platform/$1/src',
+    'dicomweb-client': '<rootDir>/../../node_modules/dicomweb-client',
     '^@cornerstonejs/(.*)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm',
   },
   // rootDir: "../.."

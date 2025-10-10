@@ -97,7 +97,7 @@ export default class ExtensionManager extends PubSubService {
     appConfig = {},
   }: ExtensionConstructor) {
     super(ExtensionManager.EVENTS);
-    this.modules = {};
+    this.modules = {}; // initializes the module map to an empty object
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
@@ -107,6 +107,7 @@ export default class ExtensionManager extends PubSubService {
     this._hotkeysManager = hotkeysManager;
     this._appConfig = appConfig;
 
+    // Somehow this.modules is populated here...
     this.modulesMap = {};
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
@@ -594,6 +595,14 @@ export default class ExtensionManager extends PubSubService {
     this.dataSourceMap[dataSourceDef.sourceName] = [dataSourceInstance];
   }
 
+  /**
+   * Initializes the requested DataSource module.
+   * If the namespace key matches any of the extension namespace keys in dataSources, that module
+   * instance gets added.
+   * @param extensionModule
+   * @param extensionId
+   * @param dataSources
+   */
   _initDataSourcesModule(
     extensionModule,
     extensionId,
