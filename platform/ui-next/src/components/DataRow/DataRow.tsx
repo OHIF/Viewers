@@ -39,10 +39,10 @@ import { cn } from '../../lib/utils';
  * - This component intentionally has **no `isActive` prop**.
  * - The "activeness" of the parent context (e.g., an active Segmentation) is
  *   communicated via a **named Tailwind group** on an ancestor element:
- *     className="group/seg" data-active={true|false}
+ *     className="group/segments" data-active={true|false}
  * - Styles in this component react to the parent using Tailwind's arbitrary variants:
- *     group-data-[active=true]/seg:...
- *     group-data-[active=false]/seg:...
+ *     group-data-[active=true]/segments:...
+ *     group-data-[active=false]/segments:...
  *
  * // With warning status using composite pattern
  * <DataRow
@@ -251,19 +251,19 @@ const DataRowComponent: React.FC<DataRowProps> = ({
       className={cn(
         'flex flex-col',
         // Slight dim when the parent segmentation is inactive
-        'group-data-[active=false]/seg:opacity-80',
+        'group-data-[active=false]/segments:opacity-80',
         !isVisible && 'opacity-60',
         className
       )}
     >
       <div
         className={cn(
-          // This "group" is for row-level hover effects (not to be confused with the parent named group/seg)
+          // This "group" is for row-level hover effects (not to be confused with the parent named group/segments)
           'group relative flex cursor-pointer items-center',
           // Base row background
           'bg-muted',
           // Primary selection background only when parent segmentation is active
-          isSelected && 'group-data-[active=true]/seg:bg-popover'
+          isSelected && 'group-data-[active=true]/segments:bg-popover'
         )}
         onClick={onSelect}
         data-cy="data-row"
@@ -274,7 +274,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
             className={cn(
               'pointer-events-none absolute inset-0',
               // Hidden by default; appears when parent segmentation is inactive
-              'hidden group-data-[active=false]/seg:block',
+              'hidden group-data-[active=false]/segments:block',
               // The "will become active" tint
               'bg-primary/20'
             )}
@@ -293,7 +293,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
               'bg-muted text-muted-foreground',
               // Highlight the cap ONLY when selected and the parent segmentation is active
               isSelected &&
-                'group-data-[active=true]/seg:bg-highlight group-data-[active=true]/seg:text-black'
+                'group-data-[active=true]/segments:bg-highlight group-data-[active=true]/segments:text-black'
             )}
           >
             {number}
@@ -324,7 +324,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
                     // Default label color
                     'text-muted-foreground',
                     // When selected and parent segmentation is active, use highlight color
-                    isSelected && 'group-data-[active=true]/seg:text-highlight'
+                    isSelected && 'group-data-[active=true]/segments:text-highlight'
                   )}
                 >
                   {title}
@@ -342,7 +342,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
               className={cn(
                 'text-base [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]',
                 'text-muted-foreground',
-                isSelected && 'group-data-[active=true]/seg:text-highlight'
+                isSelected && 'group-data-[active=true]/segments:text-highlight'
               )}
             >
               {title}
@@ -361,7 +361,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
               // Always show when hidden (so user can reveal)
               !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
               // Show persistently if selected AND parent segmentation is active
-              isSelected && 'group-data-[active=true]/seg:opacity-100'
+              isSelected && 'group-data-[active=true]/segments:opacity-100'
             )}
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
@@ -390,7 +390,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
                     'h-6 w-6 transition-opacity',
                     isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
                     // When selected and the parent segmentation is active, keep the actions visible
-                    isSelected && 'group-data-[active=true]/seg:opacity-100'
+                    isSelected && 'group-data-[active=true]/segments:opacity-100'
                   )}
                   aria-label="Actions"
                   dataCY="actionsMenuTrigger"

@@ -23,14 +23,12 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   // Try to get segmentation data from expanded context first, then fall back to table context
   let segmentation: any;
   let representation: any;
-  let isActiveFromContext = false;
 
   try {
     // Try to use the SegmentationExpanded context if available
     const segmentationInfo = useSegmentationExpanded('SegmentationSegments');
     segmentation = segmentationInfo.segmentation;
     representation = segmentationInfo.representation;
-    isActiveFromContext = !!(segmentationInfo as any).isActive;
   } catch (e) {
     // Not within SegmentationExpanded context, get from active segmentation
     const segmentationInfo = data.find(
@@ -38,19 +36,16 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     );
     segmentation = segmentationInfo?.segmentation;
     representation = segmentationInfo?.representation;
-    isActiveFromContext = true; // if we fell back to the active segmentation, it is necessarily active
   }
-
-  const segments = Object.values(representation.segments);
-  // Compute activeness robustly even if we have the 'isActive' on the expanded context
-  const isActiveSegmentation =
-    isActiveFromContext || segmentation?.segmentationId === activeSegmentationId;
-
-  const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
 
   if (!representation || !segmentation) {
     return null;
   }
+
+  const segments = Object.values(representation.segments);
+  const isActiveSegmentation = segmentation?.segmentationId === activeSegmentationId;
+
+  const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
 
   return (
     <ScrollArea
@@ -61,7 +56,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
         ref={scrollableContainerRef}
         style={{ maxHeight: maxHeight }}
         // Named group for segmentation activeness; children rows react via group-data variants.
-        className="group/seg"
+        className="group/segments"
         data-active={isActiveSegmentation}
       >
         {segments.map(segment => {
@@ -91,7 +86,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               // details={displayText}
               description={displayText}
               colorHex={cssColor}
-              // Only isSelected remains; parent group/seg controls active/inactive styling.
+              // Only isSelected remains; parent group/segments controls active/inactive styling.
               isSelected={active}
               isVisible={visible}
               isLocked={locked}
