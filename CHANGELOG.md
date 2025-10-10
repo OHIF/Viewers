@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.55...v3.12.0-beta.56) (2025-10-10)
+
+
+### Bug Fixes
+
+* Update Dockerfile ([#5484](https://github.com/OHIF/Viewers/issues/5484)) ([41c0287](https://github.com/OHIF/Viewers/commit/41c028781b80f0ca80f4d6cde3ca8e7958f1baed))
+
+
+
+
+
 # [3.12.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.54...v3.12.0-beta.55) (2025-10-09)
 
 **Note:** Version bump only for package ohif-monorepo-root
