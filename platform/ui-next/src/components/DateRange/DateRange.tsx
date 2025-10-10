@@ -5,6 +5,8 @@ import { cn } from '../../lib/utils';
 import { Calendar } from '../Calendar';
 import * as Popover from '../Popover';
 
+import { useTranslation } from 'react-i18next';
+
 export type DatePickerWithRangeProps = {
   id: string;
   /** YYYYMMDD (19921022) */
@@ -23,6 +25,7 @@ export function DatePickerWithRange({
   onChange,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & DatePickerWithRangeProps) {
+  const { t } = useTranslation('DatePicker');
   const [start, setStart] = React.useState<string>(
     startDate ? format(parse(startDate, 'yyyyMMdd', new Date()), 'yyyy-MM-dd') : ''
   );
@@ -85,7 +88,7 @@ export function DatePickerWithRange({
             <input
               id={`${id}-start`}
               type="text"
-              placeholder="Start date"
+              placeholder={t('Start Date')}
               autoComplete="off"
               value={start}
               onChange={e => handleInputChange(e, 'start')}
@@ -122,7 +125,7 @@ export function DatePickerWithRange({
             <input
               id={`${id}-end`}
               type="text"
-              placeholder="End date"
+              placeholder={t('End Date')}
               autoComplete="off"
               value={end}
               onChange={e => handleInputChange(e, 'end')}
