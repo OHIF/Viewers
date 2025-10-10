@@ -89,7 +89,10 @@ class SegmentationService extends PubSubService {
   static REGISTRATION = {
     name: 'segmentationService',
     altName: 'SegmentationService',
-    create: ({ servicesManager, extensionManager }: OHIFTypes.Extensions.ExtensionParams): SegmentationService => {
+    create: ({
+      servicesManager,
+      extensionManager,
+    }: OHIFTypes.Extensions.ExtensionParams): SegmentationService => {
       return new SegmentationService({ servicesManager, extensionManager });
     },
   };
