@@ -22,7 +22,7 @@ commands:
           name: Install Bun
           command: |
             if [ ! -d "$HOME/.bun" ]; then
-              curl -fsSL https://bun.sh/install | bash
+              curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.23"
             fi
             echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
             echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV

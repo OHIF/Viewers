@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
       - uses: actions/setup-node@v4
         with:
           node-version: 20 # Or your desired Node version
