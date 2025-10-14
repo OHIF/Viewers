@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.56...v3.12.0-beta.57) (2025-10-14)
+
+
+### Bug Fixes
+
+* **bun:** Use fixed bun version ([#5493](https://github.com/OHIF/Viewers/issues/5493)) ([3fe67d5](https://github.com/OHIF/Viewers/commit/3fe67d5c98a22edc32cb0d3de5edc05b722dd68e))
+
+
+
+
+
 # [3.12.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.55...v3.12.0-beta.56) (2025-10-10)
 
 
