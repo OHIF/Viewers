@@ -15,9 +15,6 @@ defaults: &defaults
 commands:
   install_bun:
     steps:
-      - restore_cache:
-          keys:
-            - bun-cache-v2-{{ arch }}-latest
       - run:
           name: Install Bun
           command: |
@@ -32,10 +29,6 @@ commands:
             echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
             echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
             source $BASH_ENV
-      - save_cache:
-          key: bun-cache-v2-{{ arch }}-latest
-          paths:
-            - ~/.bun
 
 jobs:
   UNIT_TESTS:
