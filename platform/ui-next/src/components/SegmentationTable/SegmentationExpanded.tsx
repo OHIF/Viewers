@@ -131,6 +131,7 @@ const SegmentationExpandedRoot = ({ children }) => {
                   segmentation={segmentationInfo.segmentation}
                   representation={segmentationInfo.representation}
                   isActive={isActive}
+                  onSegmentationClick={onSegmentationClick}
                 >
                   {children}
                 </SegmentationExpandedProvider>

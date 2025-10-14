@@ -29,9 +29,9 @@ export const useSegmentationExpanded = (componentName?: string) => {
 export const SegmentationExpandedProvider: React.FC<{
   segmentation: any;
   representation: any;
-  isActive?: boolean;
+  isActive: boolean;
   children: React.ReactNode;
-}> = ({ segmentation, representation, isActive = false, children }) => {
+}> = ({ segmentation, representation, isActive, children }) => {
   return (
     <SegmentationExpandedContext.Provider value={{ segmentation, representation, isActive }}>
       {children}

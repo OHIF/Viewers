@@ -18,11 +18,12 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     onSegmentCopy,
     data,
     showSegmentIndex = true,
+    onSegmentationClick,
   } = useSegmentationTableContext('SegmentationSegments');
 
   // Try to get segmentation data from expanded context first, then fall back to table context
-  let segmentation: any;
-  let representation: any;
+  let segmentation;
+  let representation;
 
   try {
     // Try to use the SegmentationExpanded context if available
@@ -38,14 +39,14 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     representation = segmentationInfo?.representation;
   }
 
+  const segments = Object.values(representation.segments);
+  const isActiveSegmentation = segmentation.segmentationId === activeSegmentationId;
+
+  const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
+
   if (!representation || !segmentation) {
     return null;
   }
-
-  const segments = Object.values(representation.segments);
-  const isActiveSegmentation = segmentation?.segmentationId === activeSegmentationId;
-
-  const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
 
   return (
     <ScrollArea
@@ -55,9 +56,6 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
       <div
         ref={scrollableContainerRef}
         style={{ maxHeight: maxHeight }}
-        // Named group for segmentation activeness; children rows react via group-data variants.
-        className="group/segments"
-        data-active={isActiveSegmentation}
       >
         {segments.map(segment => {
           if (!segment) {
@@ -77,6 +75,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
           const { locked, active, label, displayText } = segmentFromSegmentation;
           const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
+          // Secondary selection: segment is active, but its parent segmentation is inactive
+          const isSecondarySelected = active && !isActiveSegmentation;
+
           const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
           const DataRowComponent = (
             <DataRow
@@ -86,11 +87,14 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               // details={displayText}
               description={displayText}
               colorHex={cssColor}
-              // Only isSelected remains; parent group/segments controls active/inactive styling.
-              isSelected={active}
+              // Primary selection only when part of the active segmentation
+              isSelected={active && isActiveSegmentation}
+              // Secondary selection tint when selected in an inactive segmentation
+              isSecondarySelected={isSecondarySelected}
               isVisible={visible}
               isLocked={locked}
               disableEditing={disableEditing}
+              className={!isActiveSegmentation ? 'opacity-80' : ''}
               onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
               onToggleVisibility={() =>
                 onToggleSegmentVisibility(
@@ -100,7 +104,13 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 )
               }
               onToggleLocked={() => onToggleSegmentLock(segmentation.segmentationId, segmentIndex)}
-              onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
+              onSelect={() => {
+                // If clicking a tinted (secondary-selected) row, activate its parent segmentation first
+                if (!isActiveSegmentation) {
+                  onSegmentationClick?.(segmentation.segmentationId);
+                }
+                onSegmentClick(segmentation.segmentationId, segmentIndex);
+              }}
               onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
               onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
               onCopy={
