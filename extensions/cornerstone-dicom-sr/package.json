@@ -39,16 +39,16 @@
     "@ohif/extension-measurement-tracking": "3.12.0-beta.58",
     "@ohif/ui": "3.12.0-beta.58",
     "dcmjs": "0.43.1",
-    "dicom-parser": "^1.8.9",
-    "hammerjs": "^2.0.8",
-    "prop-types": "^15.6.2",
-    "react": "^18.3.1"
+    "dicom-parser": "1.8.21",
+    "hammerjs": "2.0.8",
+    "prop-types": "15.8.1",
+    "react": "18.3.1"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
+    "@babel/runtime": "7.28.2",
     "@cornerstonejs/adapters": "4.5.5",
     "@cornerstonejs/core": "4.5.5",
     "@cornerstonejs/tools": "4.5.5",
-    "classnames": "^2.3.2"
+    "classnames": "2.5.1"
   }
 }
