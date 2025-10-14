@@ -10,6 +10,6 @@
     "deploy": "netlify deploy --prod --dir ./../platform/app/dist"
   },
   "devDependencies": {
-    "netlify-cli": "^2.21.0"
+    "netlify-cli": "2.21.0"
   }
 }
