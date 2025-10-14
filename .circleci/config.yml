@@ -18,13 +18,6 @@ commands:
       - run:
           name: Install Bun
           command: |
-            # Uninstall existing Bun if present
-            if [ -d "$HOME/.bun" ]; then
-              echo "Removing existing Bun installation..."
-              rm -rf "$HOME/.bun"
-            fi
-
-            # Install Bun
             curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.23"
             echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
             echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
