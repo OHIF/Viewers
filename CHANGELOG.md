@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.61...v3.12.0-beta.62) (2025-10-15)
+
+
+### Bug Fixes
+
+* **segmentationService:** prevent no representation crash ([#5495](https://github.com/OHIF/Viewers/issues/5495)) ([3137aed](https://github.com/OHIF/Viewers/commit/3137aed0170196a61e16c6dac0c15bcc41691919))
+
+
+
+
+
 # [3.12.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.60...v3.12.0-beta.61) (2025-10-15)
 
 
