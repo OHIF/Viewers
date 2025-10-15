@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.62...v3.12.0-beta.63) (2025-10-15)
+
+
+### Bug Fixes
+
+* Segmentation not displayed and unable to draw segments in volume viewport after converting Labelmap to Surface ([#5488](https://github.com/OHIF/Viewers/issues/5488)) ([faea09e](https://github.com/OHIF/Viewers/commit/faea09e7ef2667aad5cef1efc2a6516677ca2915))
+
+
+
+
+
 # [3.12.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.61...v3.12.0-beta.62) (2025-10-15)
 
 
