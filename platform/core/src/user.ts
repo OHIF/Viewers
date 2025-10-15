@@ -1,5 +1,8 @@
-// These should be overridden by the implementation
-let user = {
+/**
+ * Global user information, to be replaced with a  specific version which
+ * applies the methods.
+ */
+export let user = {
   userLoggedIn: (): boolean => false,
   getUserId: () => null,
   getName: () => null,

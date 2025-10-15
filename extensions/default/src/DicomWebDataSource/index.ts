@@ -99,6 +99,20 @@ export type BulkDataURIConfig = {
 };
 
 /**
+ * The header options are the options passed into the generateWadoHeader
+ * command.  This takes an extensible set of attributes to allow future enhancements.
+ */
+export interface HeaderOptions {
+  includeTransferSyntax?: boolean;
+}
+
+/**
+ * Metadata and some other requests don't permit the transfer syntax to be included,
+ * so pass in the excludeTransferSyntax parameter.
+ */
+export const excludeTransferSyntax: HeaderOptions = { includeTransferSyntax: false };
+
+/**
  * Creates a DICOM Web API based on the provided configuration.
  *
  * @param dicomWebConfig - Configuration for the DICOM Web API
@@ -137,9 +151,14 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         return xhrRequestHeaders;
       };
 
-      generateWadoHeader = (includeTransferSyntax: boolean = true): HeadersInterface => {
+      /**
+       * Generates the wado header for requesting resources from DICOMweb.
+       * These are classified into those that are dependent on the transfer syntax
+       * and those that aren't, as defined by the include transfer syntax attribute.
+       */
+      generateWadoHeader = (options: HeaderOptions): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        if (includeTransferSyntax) {
+        if (options?.includeTransferSyntax!==false) {
           //Generate accept header depending on config params
           const formattedAcceptHeader = utils.generateAcceptHeader(
             dicomWebConfig.acceptHeader,
@@ -420,9 +439,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
-      // See issue #5288
-      wadoDicomWebClient.headers = generateWadoHeader(false);
+      wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -496,9 +513,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
-      // Skip inclusion of Accept Header options other than the request type of `application/dicom+json`
-      // See issue #5288
-      wadoDicomWebClient.headers = generateWadoHeader(false);
+      wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
