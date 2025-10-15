@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install -y build-essential python3
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
-RUN npm install -g bun
+RUN npm install -g bun@1.2.23
 RUN npm install -g lerna@7.4.2
 ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
