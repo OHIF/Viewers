@@ -65,7 +65,7 @@ const segmentationRepresentationModifiedCallback = async (
     return;
   }
 
-  // Ensure segmentation representation matches the target viewport type.
+  // Ensure the segmentation representation aligns with the target viewport type.
   const type: Enums.SegmentationRepresentations =
     viewport.type === CoreEnums.ViewportType.VOLUME_3D
       ? Enums.SegmentationRepresentations.Surface
