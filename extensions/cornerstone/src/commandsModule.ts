@@ -266,6 +266,36 @@ function commandsModule({
           referencedDisplaySetInstanceUID
         );
         storePositionPresentation(referencedDisplaySet);
+
+        const disableEditing = customizationService.getCustomization(
+          'panelSegmentation.disableEditing'
+        );
+        if (disableEditing) {
+          // The segmentations are hydrated asynchronously, so we need to subscribe
+          // to the grid state changed event to ensure the segmentations are first
+          // hydrated before we lock the segments.
+          const { unsubscribe } = viewportGridService.subscribe(
+            viewportGridService.EVENTS.GRID_STATE_CHANGED,
+            () => {
+              const segmentationRepresentations =
+                segmentationService.getSegmentationRepresentations(viewportId, {
+                  segmentationId: displaySet.displaySetInstanceUID,
+                });
+
+              segmentationRepresentations.forEach(representation => {
+                const segmentIndices = Object.keys(representation.segments);
+                segmentIndices.forEach(segmentIndex => {
+                  segmentationService.setSegmentLocked(
+                    representation.segmentationId,
+                    parseInt(segmentIndex),
+                    true
+                  );
+                });
+              });
+              unsubscribe();
+            }
+          );
+        }
         return commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
