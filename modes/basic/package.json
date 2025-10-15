@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-basic",
-  "version": "3.12.0-beta.54",
+  "version": "3.12.0-beta.63",
   "description": "A basic mode used to build other modes on top of",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -21,21 +21,21 @@
     "yarn": ">=1.16.0"
   },
   "peerDependencies": {
-    "@ohif/core": "3.12.0-beta.54",
-    "@ohif/extension-cornerstone": "3.12.0-beta.54",
-    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.54",
-    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.54",
-    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.54",
-    "@ohif/extension-default": "3.12.0-beta.54",
-    "@ohif/extension-dicom-pdf": "3.12.0-beta.54",
-    "@ohif/extension-dicom-video": "3.12.0-beta.54"
+    "@ohif/core": "3.12.0-beta.63",
+    "@ohif/extension-cornerstone": "3.12.0-beta.63",
+    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.63",
+    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.63",
+    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.63",
+    "@ohif/extension-default": "3.12.0-beta.63",
+    "@ohif/extension-dicom-pdf": "3.12.0-beta.63",
+    "@ohif/extension-dicom-video": "3.12.0-beta.63"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13"
+    "@babel/runtime": "7.28.2"
   },
   "devDependencies": {
     "webpack": "5.95.0",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "5.10.0"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",

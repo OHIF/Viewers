@@ -1802,22 +1802,16 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     type: csToolsEnums.SegmentationRepresentations
   ): void => {
-    const representations = this.getSegmentationRepresentations(viewportId, {
-      segmentationId,
-      type,
-    });
-    const representation = representations[0];
-
     const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(viewportId, {
       segmentationId,
-      type: representation.type,
+      type,
     });
 
     const currentVisibility = segmentsHidden.size === 0;
     this._setSegmentationRepresentationVisibility(
       viewportId,
       segmentationId,
-      representation.type,
+      type,
       !currentVisibility
     );
   };
