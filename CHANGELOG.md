@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.60...v3.12.0-beta.61) (2025-10-15)
+
+
+### Bug Fixes
+
+* **docs:** Set exact version for glob. ([#5497](https://github.com/OHIF/Viewers/issues/5497)) ([0d2f4e7](https://github.com/OHIF/Viewers/commit/0d2f4e715a941fa458ebf8e64972088580a04952))
+
+
+
+
+
+# [3.12.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.59...v3.12.0-beta.60) (2025-10-15)
+
+
+### Bug Fixes
+
+* **security:** Run bun audit before bun install. ([#5496](https://github.com/OHIF/Viewers/issues/5496)) ([fbd9371](https://github.com/OHIF/Viewers/commit/fbd9371884d0e87376d67eb98c17a4d62e4e6dd1))
+
+
+
+
+
 # [3.12.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.58...v3.12.0-beta.59) (2025-10-14)
 
 
