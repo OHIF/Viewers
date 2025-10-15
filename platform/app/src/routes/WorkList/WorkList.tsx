@@ -391,12 +391,21 @@ function WorkList({
                 })
               : appConfig.loadedModes
             ).map((mode, i) => {
+              if (mode.hide) {
+                // Hide this mode from display
+                return null;
+              }
               const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
               const { valid: isValidMode, description: invalidModeDescription } = mode.isValidMode({
                 modalities: modalitiesToCheck,
                 study,
               });
+              if (isValidMode === null) {
+                // Hide this as a computed result.
+                return null;
+              }
+
               // TODO: Modes need a default/target route? We mostly support a single one for now.
               // We should also be using the route path, but currently are not
               // mode.routeName
@@ -428,7 +437,7 @@ function WorkList({
                     {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later */}
                     <Button
                       type={ButtonEnums.type.primary}
-                      size={ButtonEnums.size.medium}
+                      size={ButtonEnums.size.smallTall}
                       disabled={!isValidMode}
                       startIconTooltip={
                         !isValidMode ? (
@@ -446,7 +455,7 @@ function WorkList({
                       }
                       onClick={() => {}}
                       dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
-                      className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
+                      className={!isValidMode && 'bg-[#222d44]'}
                     >
                       {mode.displayName}
                     </Button>

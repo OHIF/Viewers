@@ -1313,6 +1313,53 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'panelSegmentation.disableUpdateSegmentationStats',
+    description: 'Disables the automatic update of segmentation statistics in the panel.',
+    default: false,
+    image: [],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'panelSegmentation.disableUpdateSegmentationStats': {
+        $set: true, // Disables the automatic update of segmentation statistics in the panel
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'panelSegmentation.jumpToSegmentHighlightAnimationConfig',
+    description:
+      'Customize the highlight animation when clicking on a segment at the segmentation panel and jumping to it.',
+    default: {
+      highlightAlpha: 0.9,
+      highlightSegment: true,
+      animationLength: 750,
+      animationFunctionType: 'ease-in-out',
+    },
+    image: [],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'panelSegmentation.jumpToSegmentHighlightAnimationConfig': {
+        $set: {
+          highlightAlpha: 1.0,
+          highlightSegment: true,
+          animationLength: 900,
+          animationFunctionType: 'linear', // one of 'ease-in-out', 'ease-in', 'ease-out', 'ease', 'linear'
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const measurementsCustomizations = [

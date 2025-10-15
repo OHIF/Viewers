@@ -18,9 +18,14 @@ import Dialog from './Dialog.json';
 import Modals from './Modals.json';
 import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
+import WindowLevelActionMenu from './WindowLevelActionMenu.json';
+import CaptureViewportModal from './CaptureViewportModal.json';
+import Hps from './Hps.json';
+import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import Tools from './Tools.json';
 
 export default {
-  'zh': {
+  zh: {
     AboutModal,
     Buttons,
     CineDialog,
@@ -41,5 +46,10 @@ export default {
     Modals,
     Local,
     ErrorBoundary,
+    WindowLevelActionMenu,
+    CaptureViewportModal,
+    Hps,
+    ToolbarLayoutSelector,
+    Tools,
   },
 };
