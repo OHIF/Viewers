@@ -984,7 +984,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           const backgroundDisplaySet = displaySetService.getDisplaySetsBy(
             displaySet =>
               !displaySet.isOverlayDisplaySet &&
-              displaySet.images.some(image => image.imageId === sampleImageId)
+              displaySet.images?.some(image => image.imageId === sampleImageId)
           );
 
           if (backgroundDisplaySet.length !== 1) {
@@ -1014,7 +1014,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }, 0);
     });
 
-    this.setPresentations(viewport.id, presentations, viewportInfo);
+    // needs updated segmentation presentation
+    this.setPresentations(viewport.id, presentations);
 
     if (!presentations.positionPresentation) {
       const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
