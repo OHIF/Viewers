@@ -79,6 +79,14 @@ const screenShotPaths = {
   reset: {
     resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
   },
+  rtDataOverlayForReferencedDisplaySetNoHydration: {
+    overlayRefFirstImage: 'overlayRefFirstImage.png',
+    overlayRefMiddleImage: 'overlayRefMiddleImage.png',
+    overlayDupeRefFirstImage: 'overlayDupeRefFirstImage.png',
+    overlayDupeRefMiddleImage: 'overlayDupeRefMiddleImage.png',
+    overlayRefUnrefFirstImage: 'overlayRefUnrefFirstImage.png',
+    overlayRefUnrefMiddleImage: 'overlayRefUnrefMiddleImage.png',
+  },
   rtDataOverlayForUnreferencedDisplaySetNoHydration: {
     overlayFirstImage: 'overlayFirstImage.png',
     overlayMiddleImage: 'overlayMiddleImage.png',
