@@ -112,9 +112,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      - run:
-          name: Install Dependencies
-          command: bun install --frozen-lockfile
       # SECURITY AUDIT
       - run:
           name: 'Security Audit - High Risk Vulnerabilities'
@@ -143,6 +140,9 @@ jobs:
               echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
               exit 1
             fi
+      - run:
+          name: Install Dependencies
+          command: bun install --frozen-lockfile
       - run:
           name: Avoid hosts unknown for github
           command: |
