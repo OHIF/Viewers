@@ -1,5 +1,5 @@
-import retrieveMetadataFiltered from './utils/retrieveMetadataFiltered.js';
-import RetrieveMetadata from './wado/retrieveMetadata.js';
+import retrieveMetadataFiltered from './retrieveMetadataFiltered.js';
+import RetrieveMetadata from './retrieveMetadata.js';
 
 const moduleName = 'RetrieveStudyMetadata';
 // Cache for promises. Prevents unnecessary subsequent calls to the server
@@ -38,7 +38,9 @@ export function retrieveStudyMetadata(
     throw new Error(`${moduleName}: Required 'StudyInstanceUID' parameter not provided.`);
   }
 
-  const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}`;
+  const seriesInstanceUID = filters && filters.seriesInstanceUID ? filters.seriesInstanceUID : undefined;
+  const sopInstanceUID = filters && filters.sopInstanceUID ? filters.sopInstanceUID : undefined;
+  const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}:${seriesInstanceUID}:${sopInstanceUID}`;
 
   // Already waiting on result? Return cached promise
   if (StudyMetaDataPromises.has(promiseId)) {

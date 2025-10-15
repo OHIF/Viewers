@@ -23,7 +23,7 @@
  * | offset           | {number}           |
  */
 import { DICOMWeb, utils } from '@ohif/core';
-import { sortStudySeries } from '@ohif/core/src/utils/sortStudy';
+import { sortStudySeries, sortStudyInstances } from '@ohif/core/src/utils/sortStudy';
 
 const { getString, getName, getModalities } = DICOMWeb;
 
@@ -57,7 +57,6 @@ function processResults(qidoStudies) {
       modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
     })
   );
-
   return studies;
 }
 
@@ -71,14 +70,14 @@ function processResults(qidoStudies) {
  * @param {string[]} qidoSeries[0].qidoSeries[dicomTag].Value - Optional string array representation of the DICOM Tag's value
  * @returns {Array} An array of Study MetaData objects
  */
-export function processSeriesResults(qidoSeries) {
+export function processSeriesResults(qidoSeries, studyInstanceUid) {
   const series = [];
 
   if (qidoSeries && qidoSeries.length) {
     qidoSeries.forEach(qidoSeries =>
       series.push({
-        studyInstanceUid: getString(qidoSeries['0020000D']),
-        seriesInstanceUid: getString(qidoSeries['0020000E']),
+        studyInstanceUID: studyInstanceUid,
+        seriesInstanceUID: getString(qidoSeries['0020000E']),
         modality: getString(qidoSeries['00080060']),
         seriesNumber: getString(qidoSeries['00200011']),
         seriesDate: utils.formatDate(getString(qidoSeries['00080021'])),
@@ -91,6 +90,40 @@ export function processSeriesResults(qidoSeries) {
   sortStudySeries(series);
 
   return series;
+}
+
+/**
+ * Parses resulting data from a QIDO call into a set of Study MetaData
+ *
+ * @param {Array} qidoSeries - An array of study objects. Each object contains a keys for DICOM tags.
+ * @param {object} qidoSeries[0].qidoSeries - An object where each key is the DICOM Tag group+element
+ * @param {object} qidoSeries[0].qidoSeries[dicomTag] - Optional object that represents DICOM Tag
+ * @param {string} qidoSeries[0].qidoSeries[dicomTag].vr - Value Representation
+ * @param {string[]} qidoSeries[0].qidoSeries[dicomTag].Value - Optional string array representation of the DICOM Tag's value
+ * @returns {Array} An array of Study MetaData objects
+ */
+export function processInstancesResults(qidoInstances, studyInstanceUid, seriesInstanceUid) {
+  const instances = [];
+
+  if (qidoInstances && qidoInstances.length) {
+    qidoInstances.forEach(qidoInstance =>
+      instances.push({
+        studyInstanceUID: studyInstanceUid,
+        seriesInstanceUID: seriesInstanceUid,
+        sopClassUID: getString(qidoInstance['00080016']),
+        sopInstanceUID: getString(qidoInstance['00080018']),
+        retrieveURL: getString(qidoInstance['00081190']),
+        instanceNumber: Number(getString(qidoInstance['00200013'])),
+        rows: Number(getString(qidoInstance['00280010'])),
+        columns: Number(getString(qidoInstance['00280011'])),
+        bitsAllocated: Number(getString(qidoInstance['00280100'])),
+      })
+    );
+  }
+
+  sortStudyInstances(instances);
+
+  return instances;
 }
 
 /**
@@ -116,15 +149,50 @@ async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, query
  * @param {string} studyInstanceUID - ID of study to return a list of series for
  * @returns {Promise} - Resolves SeriesMetadata[] in study
  */
+async function studyInfo(dicomWebClient, studyInstanceUID) {
+  // Series Description
+  // Already included?
+  const commaSeparatedFields = ['0008103E', '00080021', '0020000D'].join(',');
+  const queryParams = {
+    StudyInstanceUID: studyInstanceUID,
+    includefield: commaSeparatedFields,
+  };
+
+  return await dicomWebClient.searchForStudies({
+    queryParams: queryParams,
+  });
+}
+
+/**
+ *
+ * @param {string} studyInstanceUID - ID of study to return a list of series for
+ * @returns {Promise} - Resolves SeriesMetadata[] in study
+ */
 export function seriesInStudy(dicomWebClient, studyInstanceUID) {
   // Series Description
   // Already included?
-  const commaSeparatedFields = ['0008103E', '00080021'].join(',');
+  const commaSeparatedFields = ['0008103E', '00080021', '0020000D'].join(',');
   const queryParams = {
     includefield: commaSeparatedFields,
   };
 
   return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
+}
+
+/**
+ *
+ * @param {string} studyInstanceUID - ID of study to return a list of series for
+ * @returns {Promise} - Resolves SeriesMetadata[] in study
+ */
+export function instancesInSeries(dicomWebClient, studyInstanceUID, seriesInstanceUID) {
+  // Series Description
+  // Already included?
+  const commaSeparatedFields = ['0008103E', '00080021', '0020000E', '0020000D'].join(',');
+  const queryParams = {
+    includefield: commaSeparatedFields,
+  };
+
+  return dicomWebClient.searchForInstances({ studyInstanceUID, queryParams, seriesInstanceUID });
 }
 
 export default function searchStudies(server, filter) {
@@ -212,4 +280,99 @@ function mapParams(params, options = {}) {
   return final;
 }
 
-export { mapParams, search, processResults };
+async function StudyInfo(
+  dicomWebClient,
+  StudyInstanceUID,
+){
+  const results = await studyInfo(dicomWebClient, StudyInstanceUID);
+
+  return processResults(results);
+}
+
+async function listStudyInfo (
+  dicomWebClient,
+  StudyInstanceUID
+){
+  let promise;
+
+  // Create a promise to handle the data retrieval
+  promise = new Promise((resolve, reject) => {
+    StudyInfo(
+      dicomWebClient,
+      StudyInstanceUID
+    ).then(function(data) {
+      resolve(data);
+    }, reject);
+  });
+
+  return promise;
+}
+
+async function ListSeries(
+  dicomWebClient,
+  StudyInstanceUID,
+){
+  const results = await seriesInStudy(dicomWebClient, StudyInstanceUID);
+
+  return processSeriesResults(results, StudyInstanceUID)
+}
+
+function listSeries (
+  dicomWebClient,
+  StudyInstanceUID,
+  filters,
+){
+  let promise;
+
+  if (filters && filters.seriesInstanceUID && Array.isArray(filters.seriesInstanceUID)) {
+    promise = ListSeries(
+      dicomWebClient,
+      StudyInstanceUID,
+    );
+  } else {
+    // Create a promise to handle the data retrieval
+    promise = new Promise((resolve, reject) => {
+      ListSeries(
+        dicomWebClient,
+        StudyInstanceUID,
+      ).then(function(data) {
+        resolve(data);
+      }, reject);
+    });
+  }
+
+  return promise;
+}
+
+async function ListSeriesInstances(
+  dicomWebClient,
+  StudyInstanceUID,
+  SeriesInstanceUID
+){
+  const results = await instancesInSeries(dicomWebClient, StudyInstanceUID, SeriesInstanceUID);
+
+  return processInstancesResults(results, StudyInstanceUID, SeriesInstanceUID)
+}
+
+function listSeriesInstances (
+  dicomWebClient,
+  StudyInstanceUID,
+  SeriesInstanceUID,
+){
+  let promise;
+
+  // Create a promise to handle the data retrieval
+  promise = new Promise((resolve, reject) => {
+    ListSeriesInstances(
+      dicomWebClient,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+    ).then(function(data) {
+      resolve(data);
+      }, reject);
+    });
+
+  return promise;
+}
+
+export { mapParams, search, processResults, listStudyInfo, listSeries, listSeriesInstances };
