@@ -31,3 +31,6 @@ A React hook that calculates the maximum height for an element based on its posi
 
 ## [useSessionStorage](./useSessionStorage.md)
 A React hook that provides sessionStorage access with automatic JSON parsing/stringifying and an option to clear data when the page unloads.
+
+## [useCustomization](./useCustomization.md)
+A React hook that provides access to customization values and updates from the customization service, allowing components to reactively consume configuration changes.

@@ -9,6 +9,8 @@ export interface BaseCustomization extends Obj {
   description?: string;
   label?: string;
   commands?: Command[];
+  classnames?: string;
+  styles?: React.CSSProperties;
 }
 
 export interface LabelCustomization extends BaseCustomization {
@@ -25,6 +27,14 @@ export interface CommandCustomization extends BaseCustomization {
 
 export interface ComponentCustomization extends BaseCustomization {
   content: (...props: any) => React.JSX.Element;
+}
+
+export interface CSSClassnamesCustomization extends BaseCustomization {
+  classnames: string;
+}
+
+export interface CSSStylesCustomization extends BaseCustomization {
+  styles: React.CSSProperties;
 }
 
 export interface CallbackCustomization extends BaseCustomization {
@@ -45,6 +55,7 @@ export type Customization =
   | CommandCustomization
   | CodeCustomization
   | ComponentCustomization
+  | CSSClassnamesCustomization
   | CallbackCustomization;
 
 export default Customization;
