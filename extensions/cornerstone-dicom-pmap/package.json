@@ -37,18 +37,18 @@
     "@ohif/extension-cornerstone": "3.11.0",
     "@ohif/extension-default": "3.11.0",
     "@ohif/i18n": "3.11.0",
-    "prop-types": "^15.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
-    "react-router": "^6.8.1",
-    "react-router-dom": "^6.8.1"
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "12.3.1",
+    "react-router": "6.30.1",
+    "react-router-dom": "6.30.1"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^3.32.5",
-    "@cornerstonejs/core": "^3.32.5",
+    "@babel/runtime": "7.28.2",
+    "@cornerstonejs/adapters": "4.5.5",
+    "@cornerstonejs/core": "4.5.5",
     "@kitware/vtk.js": "32.12.0",
-    "react-color": "^2.19.3"
+    "react-color": "2.19.3"
   }
 }
