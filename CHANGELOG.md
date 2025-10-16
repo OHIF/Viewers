@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.63...v3.12.0-beta.64) (2025-10-15)
+
+
+### Bug Fixes
+
+* **docker:** Use bun version 1.2.23 for docker build. ([#5501](https://github.com/OHIF/Viewers/issues/5501)) ([86e924f](https://github.com/OHIF/Viewers/commit/86e924fb88cc146f91c7d826ee071e451de47942))
+
+
+
+
+
 # [3.12.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.62...v3.12.0-beta.63) (2025-10-15)
 
 
