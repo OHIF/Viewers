@@ -1337,17 +1337,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { segmentationId, type, hydrated } = presentationItem;
 
       const { Labelmap, Surface } = csToolsEnums.SegmentationRepresentations;
-      const representationType = (() => {
-        if (type === Surface) {
-          if (viewport.type === csEnums.ViewportType.VOLUME_3D) {
-            return Surface;
-          } else {
-            return Labelmap;
-          }
-        }
+      const isVolume3D = viewport.type === csEnums.ViewportType.VOLUME_3D;
 
-        return type;
-      })();
+      // Determine the appropriate segmentation representation for the viewport.
+      // If the current type is Surface but the viewport is not 3D, fallback to Labelmap.
+      // Otherwise, use the existing type.
+      const representationType = type === Surface && !isVolume3D ? Labelmap : type;
 
       if (hydrated) {
         segmentationService.addSegmentationRepresentation(viewport.id, {
