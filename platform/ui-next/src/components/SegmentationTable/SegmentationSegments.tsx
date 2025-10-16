@@ -18,6 +18,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     onSegmentCopy,
     data,
     showSegmentIndex = true,
+    onSegmentationClick,
   } = useSegmentationTableContext('SegmentationSegments');
 
   // Try to get segmentation data from expanded context first, then fall back to table context
@@ -74,6 +75,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
           const { locked, active, label, displayText } = segmentFromSegmentation;
           const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
+          // Secondary selection: segment is active, but its parent segmentation is inactive
+          const isSecondarySelected = active && !isActiveSegmentation;
+
           const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
           const DataRowComponent = (
             <DataRow
@@ -83,8 +87,10 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               // details={displayText}
               description={displayText}
               colorHex={cssColor}
-              // Only show the segment as selected if it's part of the active segmentation
+              // Primary selection only when part of the active segmentation
               isSelected={active && isActiveSegmentation}
+              // Secondary selection tint when selected in an inactive segmentation
+              isSecondarySelected={isSecondarySelected}
               isVisible={visible}
               isLocked={locked}
               disableEditing={disableEditing}
@@ -98,7 +104,13 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 )
               }
               onToggleLocked={() => onToggleSegmentLock(segmentation.segmentationId, segmentIndex)}
-              onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
+              onSelect={() => {
+                // If clicking a tinted (secondary-selected) row, activate its parent segmentation first
+                if (!isActiveSegmentation) {
+                  onSegmentationClick?.(segmentation.segmentationId);
+                }
+                onSegmentClick(segmentation.segmentationId, segmentIndex);
+              }}
               onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
               onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
               onCopy={
