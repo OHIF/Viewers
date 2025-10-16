@@ -38,8 +38,10 @@ export const TOOLBAR_SECTIONS = {
   },
 
   // mode specific
-  segmentationToolbox: 'segmentationToolbox',
-  segmentationUtilities: 'segmentationUtilities',
+  labelMapSegmentationToolbox: 'labelMapSegmentationToolbox',
+  contourSegmentationToolbox: 'contourSegmentationToolbox',
+  labelMapSegmentationUtilities: 'labelMapSegmentationUtilities',
+  contourSegmentationUtilities: 'contourSegmentationUtilities',
   dynamicToolbox: 'dynamic-toolbox',
   roiThresholdToolbox: 'ROIThresholdToolbox',
 };
@@ -582,6 +584,7 @@ export default class ToolbarService extends PubSubService {
     }
 
     if (!buttonType && !btn.component) {
+      console.warn(`Neither button type nor a component found for button: ${id}`);
       return;
     }
 

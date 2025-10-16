@@ -221,7 +221,7 @@ describe('SegmentationService', () => {
     it('should add event listeners', () => {
       service.onModeEnter();
 
-      expect(eventTarget.addEventListener).toHaveBeenCalledTimes(7);
+      expect(eventTarget.addEventListener).toHaveBeenCalledTimes(8);
 
       expect(eventTarget.addEventListener).toHaveBeenCalledWith(
         csToolsEnums.Events.SEGMENTATION_MODIFIED,
@@ -249,6 +249,10 @@ describe('SegmentationService', () => {
       );
       expect(eventTarget.addEventListener).toHaveBeenCalledWith(
         csToolsEnums.Events.SEGMENTATION_ADDED,
+        expect.any(Function)
+      );
+      expect(eventTarget.addEventListener).toHaveBeenCalledWith(
+        csToolsEnums.Events.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
         expect.any(Function)
       );
     });
@@ -2482,7 +2486,7 @@ describe('SegmentationService', () => {
         type: representations[0].type,
       });
 
-      expect(service.getSegmentationRepresentations).toHaveBeenCalledTimes(2);
+      expect(service.getSegmentationRepresentations).toHaveBeenCalledTimes(1);
       expect(service.getSegmentationRepresentations).toHaveBeenCalledWith(viewportId, {
         segmentationId: representations[0].segmentationId,
         type: representations[0].type,
@@ -2511,20 +2515,20 @@ describe('SegmentationService', () => {
         false
       );
     });
+  });
 
+  describe('setSegmentationRepresentationVisibility', () => {
     it('should early return if the representation is not found', () => {
-      jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValueOnce(representations);
-      jest.spyOn(cstSegmentation.state, 'getSegmentationRepresentations').mockReturnValueOnce([]);
-      jest
-        .spyOn(cstSegmentation.config.visibility, 'getHiddenSegmentIndices')
-        .mockReturnValue(new Set());
+      jest.spyOn(service, 'getSegmentationRepresentations').mockReturnValueOnce([]);
       jest.spyOn(console, 'debug').mockReturnValue(undefined);
       jest.spyOn(cstSegmentation.config.visibility, 'setSegmentationRepresentationVisibility');
 
-      service.toggleSegmentationRepresentationVisibility(viewportId, {
-        segmentationId: representations[0].segmentationId,
-        type: representations[0].type,
-      });
+      service['_setSegmentationRepresentationVisibility'](
+        viewportId,
+        representations[0].segmentationId,
+        representations[0].type,
+        true
+      );
 
       expect(console.debug).toHaveBeenCalledTimes(1);
       expect(console.debug).toHaveBeenCalledWith(

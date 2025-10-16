@@ -26,21 +26,9 @@ interface ToolbarProps {
    * Used for ordering and layout purposes in the UI.
    */
   location?: number;
-
-  /**
-   * Props object passed to the isSectionVisible function of toolbar subsections
-   * to determine their visibility. Each subsection component can define its own visibility
-   * logic based on these props.
-   */
-  subSectionVisibilityProps?: Record<string, unknown>;
 }
 
-export function Toolbar({
-  buttonSection = 'primary',
-  viewportId,
-  location,
-  subSectionVisibilityProps,
-}: ToolbarProps) {
+export function Toolbar({ buttonSection = 'primary', viewportId, location }: ToolbarProps) {
   const {
     toolbarButtons,
     onInteraction,
@@ -65,17 +53,6 @@ export function Toolbar({
         }
 
         const { id, Component, componentProps } = toolDef;
-
-        // This sub tool/component is visible if it is NOT a button section or
-        // it is a button section and has an isSectionVisible function that returns true.
-        const isSubComponentVisible =
-          !componentProps.buttonSection ||
-          typeof componentProps.isSectionVisible !== 'function' ||
-          componentProps.isSectionVisible(subSectionVisibilityProps);
-
-        if (!isSubComponentVisible) {
-          return null;
-        }
 
         // Enhanced props with state and actions - respecting viewport specificity
         const enhancedProps = {

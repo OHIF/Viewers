@@ -81,6 +81,8 @@ const EVENTS = {
   SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // loading completed for all segments
   SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
+  // fired when a contour annotation cut merge process is completed
+  ANNOTATION_CUT_MERGE_PROCESS_COMPLETED: 'event::annotation_cut_merge_process_completed',
 };
 
 const VALUE_TYPES = {};
@@ -1666,6 +1668,11 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_ADDED,
       this._onSegmentationAddedFromSource
     );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
+      this._onAnnotationCutMergeProcessCompletedFromSource
+    );
   }
 
   private getCornerstoneSegmentation(segmentationId: string) {
@@ -1795,22 +1802,16 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     type: csToolsEnums.SegmentationRepresentations
   ): void => {
-    const representations = this.getSegmentationRepresentations(viewportId, {
-      segmentationId,
-      type,
-    });
-    const representation = representations[0];
-
     const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(viewportId, {
       segmentationId,
-      type: representation.type,
+      type,
     });
 
     const currentVisibility = segmentsHidden.size === 0;
     this._setSegmentationRepresentationVisibility(
       viewportId,
       segmentationId,
-      representation.type,
+      type,
       !currentVisibility
     );
   };
@@ -1921,6 +1922,13 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = evt.detail;
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      segmentationId,
+    });
+  };
+
+  private _onAnnotationCutMergeProcessCompletedFromSource = evt => {
+    const { segmentationId } = evt.detail;
+    this._broadcastEvent(this.EVENTS.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED, {
       segmentationId,
     });
   };

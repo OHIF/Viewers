@@ -10,6 +10,11 @@ import i18n from '@ohif/i18n';
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const { toolbarService } = servicesManager.services;
 
+  const toolSectionMap = {
+    [SegmentationRepresentations.Labelmap]: toolbarService.sections.labelMapSegmentationToolbox,
+    [SegmentationRepresentations.Contour]: toolbarService.sections.contourSegmentationToolbox,
+  };
+
   const wrappedPanelSegmentation = props => {
     return (
       <PanelSegmentation
@@ -46,11 +51,8 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     return (
       <>
         <Toolbox
-          buttonSectionId={toolbarService.sections.segmentationToolbox}
+          buttonSectionId={toolSectionMap[props.segmentationRepresentationType]}
           title={tValue}
-          subSectionVisibilityProps={{
-            segmentationRepresentationType: props?.segmentationRepresentationType,
-          }}
         />
         <PanelSegmentation
           commandsManager={commandsManager}
@@ -92,13 +94,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentationNoHeader,
-    },
-    {
-      name: 'panelSegmentationWithTools',
-      iconName: 'tab-segmentation',
-      iconLabel: 'Segmentation',
-      label: i18n.t('SegmentationTable:Segmentation'),
-      component: wrappedPanelSegmentationWithTools,
     },
     {
       name: 'panelSegmentationWithToolsLabelMap',

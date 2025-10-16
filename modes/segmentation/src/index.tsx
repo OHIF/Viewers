@@ -16,7 +16,6 @@ const cornerstone = {
     '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
   contourSegmentationPanel:
     '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
-  segmentationPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -126,16 +125,11 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
-        'ContourTools',
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
         'LabelMapTools',
       ]);
-
-      toolbarService.updateSection('ContourTools', [
-        'PlanarFreehandContourSegmentationTool',
-        'SculptorTool',
-        'SplineContourSegmentationTool',
-        'LivewireContourSegmentationTool',
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
+        'ContourTools',
       ]);
 
       toolbarService.updateSection('LabelMapTools', [
@@ -146,21 +140,28 @@ function modeFactory({ modeConfiguration }) {
         'Shapes',
         'LabelMapEditWithContour',
       ]);
-
-      toolbarService.updateSection(toolbarService.sections.segmentationUtilities, [
-        'ContourUtilities',
-        'LabelMapUtilities',
+      toolbarService.updateSection('ContourTools', [
+        'PlanarFreehandContourSegmentationTool',
+        'SculptorTool',
+        'SplineContourSegmentationTool',
+        'LivewireContourSegmentationTool',
       ]);
 
-      toolbarService.updateSection('ContourUtilities', [
-        'LogicalContourOperations',
-        'SimplifyContours',
-        'SmoothContours',
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationUtilities, [
+        'LabelMapUtilities',
+      ]);
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationUtilities, [
+        'ContourUtilities',
       ]);
 
       toolbarService.updateSection('LabelMapUtilities', [
         'InterpolateLabelmap',
         'SegmentBidirectional',
+      ]);
+      toolbarService.updateSection('ContourUtilities', [
+        'LogicalContourOperations',
+        'SimplifyContours',
+        'SmoothContours',
       ]);
 
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
@@ -232,18 +233,15 @@ function modeFactory({ modeConfiguration }) {
       {
         path: 'template',
         layoutTemplate: ({ location, servicesManager }) => {
-          const { customizationService } = servicesManager.services;
-          const isSegmentationMultiTab: boolean = customizationService.getCustomization(
-            'panelSegmentation.isMultiTab'
-          );
           return {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: isSegmentationMultiTab
-                ? [cornerstone.contourSegmentationPanel, cornerstone.labelMapSegmentationPanel]
-                : [cornerstone.segmentationPanel],
+              rightPanels: [
+                cornerstone.contourSegmentationPanel,
+                cornerstone.labelMapSegmentationPanel,
+              ],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

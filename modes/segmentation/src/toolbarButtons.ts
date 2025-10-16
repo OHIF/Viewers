@@ -174,14 +174,12 @@ const toolbarButtons: Button[] = [
       buttonSection: true,
     },
   },
+  // Section containers for the nested toolboxes and toolbars.
   {
     id: 'LabelMapUtilities',
     uiType: 'ohif.Toolbar',
     props: {
       buttonSection: true,
-      isSectionVisible: ({ segmentationRepresentationType }) => {
-        return !segmentationRepresentationType || segmentationRepresentationType === 'Labelmap';
-      },
     },
   },
   {
@@ -189,9 +187,6 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.Toolbar',
     props: {
       buttonSection: true,
-      isSectionVisible: ({ segmentationRepresentationType }) => {
-        return !segmentationRepresentationType || segmentationRepresentationType === 'Contour';
-      },
     },
   },
   {
@@ -199,9 +194,6 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
-      isSectionVisible: ({ segmentationRepresentationType }) => {
-        return !segmentationRepresentationType || segmentationRepresentationType === 'Labelmap';
-      },
     },
   },
   {
@@ -209,9 +201,6 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
-      isSectionVisible: ({ segmentationRepresentationType }) => {
-        return !segmentationRepresentationType || segmentationRepresentationType === 'Contour';
-      },
     },
   },
   // tool defs
@@ -602,6 +591,9 @@ const toolbarButtons: Button[] = [
           value: false,
           commands: {
             commandName: 'setInterpolationToolConfiguration',
+            commandOptions: {
+              toolNames: ['CatmullRomSplineROI', 'LinearSplineROI', 'BSplineROI'],
+            },
           },
         },
       ],
