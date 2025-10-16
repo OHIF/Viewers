@@ -14,7 +14,7 @@ import { HeadersInterface, RequestOptions } from '../types/RequestHeaders';
  * @returns {Object} { Authorization }
  */
 export default function getAuthorizationHeader(
-  {requestOptions}: RequestOptions,
+  {requestOptions}: RequestOptions = {},
   user: UserAccountInterface = {}): HeadersInterface
 {
   const headers: HeadersInterface = {};
@@ -23,7 +23,7 @@ export default function getAuthorizationHeader(
   const accessToken = user && user.getAccessToken && user.getAccessToken();
 
   // Auth for a specific server
-  if (requestOptions && requestOptions.auth) {
+  if (requestOptions?.auth) {
     if (typeof requestOptions.auth === 'function') {
       // Custom Auth Header
       headers.Authorization = requestOptions.auth(requestOptions);
@@ -31,9 +31,8 @@ export default function getAuthorizationHeader(
       // HTTP Basic Auth (user:password)
       headers.Authorization = `Basic ${btoa(requestOptions.auth)}`;
     }
-  }
-  // Auth for the user's default
-  else if (accessToken) {
+  } else if (accessToken) {
+    // Auth for the user's default
     headers.Authorization = `Bearer ${accessToken}`;
   }
 
