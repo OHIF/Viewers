@@ -172,10 +172,6 @@ const DefaultFallback = ({
     });
   }, [error, errorTitle, subtitle, t, title, show]);
 
-  if (isProduction) {
-    return null;
-  }
-
   return (
     <Dialog
       open={showDetails}
