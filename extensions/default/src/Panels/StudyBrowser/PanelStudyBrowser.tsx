@@ -7,6 +7,7 @@ import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
+import { type TabsProps } from '@ohif/core/src/utils/createStudyBrowserTabs';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -27,7 +28,7 @@ function PanelStudyBrowser({
   const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
-  const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
+  const studyMode = (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
 
   const internalImageViewer = useImageViewer();
   const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
@@ -35,9 +36,11 @@ function PanelStudyBrowser({
 
   const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState(studyMode);
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
-    ...StudyInstanceUIDs,
-  ]);
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
+    studyMode === 'primary' && StudyInstanceUIDs.length > 0
+      ? [StudyInstanceUIDs[0]]
+      : [...StudyInstanceUIDs]
+  );
   const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
@@ -380,8 +383,8 @@ function PanelStudyBrowser({
     }
 
     const displaySetInstanceUID = jumpToDisplaySet;
-    // Set the activeTabName and expand the study
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs);
+    // It is possible to navigate to a study not currently in view
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs, activeTabName);
     if (!thumbnailLocation) {
       return;
     }
@@ -530,23 +533,21 @@ function getImageIdForThumbnail(displaySet, imageIds) {
   return imageId;
 }
 
-function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {
-  for (let t = 0; t < tabs.length; t++) {
-    const { studies } = tabs[t];
+function _findTabAndStudyOfDisplaySet(
+  displaySetInstanceUID: string,
+  tabs: TabsProps,
+  currentTabName: string
+) {
+  const current = tabs.find(tab => tab.name===currentTabName) || tabs[0];
+  const biasedTabs = [current, ...tabs];
 
-    for (let s = 0; s < studies.length; s++) {
-      const { displaySets } = studies[s];
-
-      for (let d = 0; d < displaySets.length; d++) {
-        const displaySet = displaySets[d];
-
-        if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
-          return {
-            tabName: tabs[t].name,
-            StudyInstanceUID: studies[s].studyInstanceUid,
-          };
-        }
-      }
+  for (let t = 0; t < biasedTabs.length; t++) {
+    const study = biasedTabs[t].studies.find(study => study.displaySets.find(ds => ds.displaySetInstanceUID ===displaySetInstanceUID));
+    if (study) {
+      return {
+        tabName: biasedTabs[t].name,
+        StudyInstanceUID: study.studyInstanceUid,
+      };
     }
   }
 }

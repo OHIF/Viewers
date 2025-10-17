@@ -25,6 +25,7 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
+  showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
   // Defines multi-monitor layouts
   multimonitor: [
@@ -87,7 +88,7 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'dicomweb',
+  defaultDataSourceName: 'ohif',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -101,7 +102,7 @@ window.config = {
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'dicomweb',
+      sourceName: 'ohif',
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',

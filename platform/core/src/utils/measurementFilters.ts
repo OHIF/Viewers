@@ -10,6 +10,7 @@ export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
 }
 
+/** A filter that filters for measurements belonging to the study */
 export function filterMeasurementsByStudyUID(studyUID) {
   return measurement => measurement.referenceStudyUID == studyUID;
 }

@@ -417,6 +417,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // and we would lose the presentation.
     this.storePresentation({ viewportId: viewportInfo.getViewportId() });
 
+    // Todo: i don't like this here, move it
+    this.servicesManager.services.segmentationService.clearSegmentationRepresentations(
+      viewportInfo.getViewportId()
+    );
+
     if (!viewportInfo) {
       throw new Error('element is not enabled for the given viewportId');
     }
@@ -1330,10 +1335,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     segmentationPresentation.forEach((presentationItem: SegmentationPresentationItem) => {
       const { segmentationId, type, hydrated } = presentationItem;
 
+      const { Labelmap, Surface } = csToolsEnums.SegmentationRepresentations;
+      const isVolume3D = viewport.type === csEnums.ViewportType.VOLUME_3D;
+
+      // Determine the appropriate segmentation representation for the viewport.
+      // If the current type is Surface but the viewport is not 3D, fallback to Labelmap.
+      // Otherwise, use the existing type.
+      const representationType = type === Surface && !isVolume3D ? Labelmap : type;
+
       if (hydrated) {
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
-          type,
+          type: representationType,
         });
       }
     });

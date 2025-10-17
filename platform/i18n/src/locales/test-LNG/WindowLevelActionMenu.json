@@ -1,5 +1,10 @@
 {
   "Back to Display Options": "Test Back to Display Options",
-  "Modality Presets": "Test {{modality}} Presets",
-  "Modality Window Presets": "Test {{modality}} Window Presets"
+  "Modality Presets": "Test Modality Presets",
+  "Modality Window Presets": "Test Modality Window Presets",
+  "Display Color bar": "Test Display Color bar",
+  "Color LUT": "Test Color LUT",
+  "Preview in viewport": "Test Preview in viewport",
+  "Grayscale": "Test Grayscale",
+  "Rendering Options": "Test Rendering Options"
 }

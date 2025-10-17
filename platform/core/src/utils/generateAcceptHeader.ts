@@ -1,5 +1,5 @@
 const generateAcceptHeader = (
-  configAcceptHeader = [],
+  configAcceptHeader: string[] = [],
   requestTransferSyntaxUID = '*', //default to accept all transfer syntax
   omitQuotationForMultipartRequest = false
 ): string[] => {

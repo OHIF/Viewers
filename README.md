@@ -76,7 +76,7 @@ contributions of individuals, research groups, and commercial organizations.
 After more than 8-years of integrating with many companies and organizations,
 The OHIF Viewer has been rebuilt from the ground up to better address the
 varying workflow and configuration needs of its many users. All of the Viewer's
-core features are built using it's own extension system. The same extensibility
+core features are built using its own extension system. The same extensibility
 that allows us to offer:
 
 - 2D and 3D medical image viewing
