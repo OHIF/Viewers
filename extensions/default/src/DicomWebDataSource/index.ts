@@ -16,6 +16,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
+import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -98,6 +99,20 @@ export type BulkDataURIConfig = {
 };
 
 /**
+ * The header options are the options passed into the generateWadoHeader
+ * command.  This takes an extensible set of attributes to allow future enhancements.
+ */
+export interface HeaderOptions {
+  includeTransferSyntax?: boolean;
+}
+
+/**
+ * Metadata and some other requests don't permit the transfer syntax to be included,
+ * so pass in the excludeTransferSyntax parameter.
+ */
+export const excludeTransferSyntax: HeaderOptions = { includeTransferSyntax: false };
+
+/**
  * Creates a DICOM Web API based on the provided configuration.
  *
  * @param dicomWebConfig - Configuration for the DICOM Web API
@@ -128,7 +143,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
       getAuthorizationHeader = () => {
-        const xhrRequestHeaders = {};
+        const xhrRequestHeaders: HeadersInterface = {};
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
         if (authHeaders && authHeaders.Authorization) {
           xhrRequestHeaders.Authorization = authHeaders.Authorization;
@@ -136,19 +151,33 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         return xhrRequestHeaders;
       };
 
-      generateWadoHeader = () => {
+      /**
+       * Generates the wado header for requesting resources from DICOMweb.
+       * These are classified into those that are dependent on the transfer syntax
+       * and those that aren't, as defined by the include transfer syntax attribute.
+       */
+      generateWadoHeader = (options: HeaderOptions): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        //Generate accept header depending on config params
-        const formattedAcceptHeader = utils.generateAcceptHeader(
-          dicomWebConfig.acceptHeader,
-          dicomWebConfig.requestTransferSyntaxUID,
-          dicomWebConfig.omitQuotationForMultipartRequest
-        );
-
-        return {
-          ...authorizationHeader,
-          Accept: formattedAcceptHeader,
-        };
+        if (options?.includeTransferSyntax!==false) {
+          //Generate accept header depending on config params
+          const formattedAcceptHeader = utils.generateAcceptHeader(
+            dicomWebConfig.acceptHeader,
+            dicomWebConfig.requestTransferSyntaxUID,
+            dicomWebConfig.omitQuotationForMultipartRequest
+          );
+          return {
+            ...authorizationHeader,
+            Accept: formattedAcceptHeader,
+          };
+        } else {
+          // The base header will be included in the request. We simply skip customization options around
+          // transfer syntaxes and whether the request is multipart. In other words, a request in
+          // which the server expects Accept: application/dicom+json will still include that in the
+          // header.
+          return {
+            ...authorizationHeader
+          };
+        }
       };
 
       qidoConfig = {
@@ -410,7 +439,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       madeInClient
     ) => {
       const enableStudyLazyLoad = false;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -484,7 +513,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       returnPromises = false
     ) => {
       const enableStudyLazyLoad = true;
-      wadoDicomWebClient.headers = generateWadoHeader();
+      wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
