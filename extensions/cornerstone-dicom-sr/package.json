@@ -49,6 +49,9 @@
     "@cornerstonejs/adapters": "4.5.5",
     "@cornerstonejs/core": "4.5.5",
     "@cornerstonejs/tools": "4.5.5",
-    "classnames": "2.5.1"
+    "@types/sanitize-html": "^2.16.0",
+    "classnames": "2.5.1",
+    "marked-react": "^3.0.1",
+    "sanitize-html": "^2.17.0"
   }
 }

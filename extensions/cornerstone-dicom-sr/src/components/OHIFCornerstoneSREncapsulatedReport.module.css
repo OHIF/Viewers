@@ -1,0 +1,12 @@
+.noteBody {
+    font-size: var(--mantine-font-size-sm);
+}
+
+.noteCite {
+    font-size: var(--mantine-font-size-xs);
+    margin-block-start: 3;
+}
+
+.noteRoot {
+    padding: 5px;
+}
