@@ -7,8 +7,9 @@ import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
+import { type TabsProps } from '@ohif/core/src/utils/createStudyBrowserTabs';
 
-const { sortStudyInstances, formatDate, createStudyBrowserTabs, TabsProps } = utils;
+const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
 
@@ -537,33 +538,16 @@ function _findTabAndStudyOfDisplaySet(
   tabs: TabsProps,
   currentTabName: string
 ) {
-  const biasedTabs = [_findCurrentTab(currentTabName, tabs), ...tabs];
+  const current = tabs.find(tab => tab.name===currentTabName) || tabs[0];
+  const biasedTabs = [current, ...tabs];
 
   for (let t = 0; t < biasedTabs.length; t++) {
-    const { studies } = biasedTabs[t];
-
-    for (let s = 0; s < studies.length; s++) {
-      const { displaySets } = studies[s];
-
-      for (let d = 0; d < displaySets.length; d++) {
-        const displaySet = displaySets[d];
-
-        if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
-          return {
-            tabName: biasedTabs[t].name,
-            StudyInstanceUID: studies[s].studyInstanceUid,
-          };
-        }
-      }
+    const study = biasedTabs[t].studies.find(study => study.displaySets.find(ds => ds.displaySetInstanceUID ===displaySetInstanceUID));
+    if (study) {
+      return {
+        tabName: biasedTabs[t].name,
+        StudyInstanceUID: study.studyInstanceUid,
+      };
     }
   }
-}
-
-function _findCurrentTab(currentTabName: string, tabs: TabsProps): TabsProps {
-  for (const tab of tabs) {
-    if (tab.name === currentTabName) {
-      return tab;
-    }
-  }
-  return tabs[0];
 }
