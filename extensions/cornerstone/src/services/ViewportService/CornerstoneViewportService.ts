@@ -933,6 +933,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
     const displaySetModality = displaySet?.Modality;
 
+    // seems like a hack but we need the actor to be ready first before
+    // we set the properties
+    const debounceViewportCallback = (callback: () => void) => setTimeout(callback, 0);
+
     // filter overlay display sets (e.g. segmentation) since they will get handled below via the segmentation service
     const filteredVolumeInputArray = volumeInputArray
       .map((volumeInput, index) => {
@@ -990,6 +994,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           if (backgroundDisplaySet.length !== 1) {
             throw new Error('Background display set not found');
           }
+
+          debounceViewportCallback(() => {
+            viewportGridService.setDisplaySetsForViewport({
+              viewportId: viewport.id,
+              displaySetInstanceUIDs: [backgroundDisplaySet[0].displaySetInstanceUID],
+            });
+          });
         }
       });
     }
@@ -1006,15 +1017,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewport.render();
 
     volumesProperties.forEach(({ properties, volumeId }) => {
-      setTimeout(() => {
-        // seems like a hack but we need the actor to be ready first before
-        // we set the properties
+      debounceViewportCallback(() => {
         viewport.setProperties(properties, volumeId);
         viewport.render();
-      }, 0);
+      });
     });
 
-    // needs updated segmentation presentation
     this.setPresentations(viewport.id, presentations);
 
     if (!presentations.positionPresentation) {
