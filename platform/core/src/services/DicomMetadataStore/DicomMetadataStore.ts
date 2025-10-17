@@ -2,7 +2,7 @@ import dcmjs from 'dcmjs';
 
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import createStudyMetadata from './createStudyMetadata';
-import wrapWithMetadataProxy from '../../utils/wrapWithMetadataProxy';
+import addProxyFields from '../../utils/addProxyFields';
 
 const EVENTS = {
   STUDY_ADDED: 'event::dicomMetadataStore:studyAdded',
@@ -177,7 +177,7 @@ const BaseImplementation = {
       naturalizedDataset = dicomJSONDataset;
     }
 
-    const { StudyInstanceUID } = naturalizedDataset;
+    const { StudyInstanceUID, NumberOfFrames: numberOfFrames } = naturalizedDataset;
 
     let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
@@ -185,6 +185,8 @@ const BaseImplementation = {
       _model.studies.push(createStudyMetadata(StudyInstanceUID));
       study = _model.studies[_model.studies.length - 1];
     }
+
+    naturalizedDataset = numberOfFrames > 1 ? addProxyFields(naturalizedDataset) : naturalizedDataset;
 
     study.addInstanceToSeries(naturalizedDataset);
   },
@@ -195,7 +197,7 @@ const BaseImplementation = {
     // ImagePositionPatient, ImageOrientationPatient, and PixelSpacing to be transparently
     // resolved from parent or shared metadata if they are not directly present on the instance directly
     if (NumberOfFrames > 1) {
-      instances = instances.map(instance => wrapWithMetadataProxy(instance));
+      instances = instances.map(instance => addProxyFields(instance));
     }
 
     let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
