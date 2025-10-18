@@ -54,7 +54,10 @@ const renderRangeSetting = option => {
       key={option.id}
     >
       <div className="w-1/3 text-[13px]">{option.name}</div>
-      <div className="w-2/3">
+      <div
+        className="w-2/3"
+        data-cy={option.id}
+      >
         <RowInputRange
           minValue={option.min}
           maxValue={option.max}
