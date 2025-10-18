@@ -74,17 +74,13 @@ export default function hydrateStructuredReport(
   );
 
   const sopInstanceUIDToImageId = {};
-  const imageIdsForToolState = {};
 
   displaySet.measurements.forEach(measurement => {
-    const { ReferencedSOPInstanceUID, imageId, frameNumber } = measurement;
+    const { ReferencedSOPInstanceUID, imageId, frameNumber=1 } = measurement;
+    const key = `${ReferencedSOPInstanceUID}:${frameNumber}`;
 
-    if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
-      sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
-      imageIdsForToolState[ReferencedSOPInstanceUID] = [];
-    }
-    if (!imageIdsForToolState[ReferencedSOPInstanceUID][frameNumber]) {
-      imageIdsForToolState[ReferencedSOPInstanceUID][frameNumber] = imageId;
+    if (!sopInstanceUIDToImageId[key]) {
+      sopInstanceUIDToImageId[key] = imageId;
     }
   });
 
@@ -133,10 +129,8 @@ export default function hydrateStructuredReport(
       // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
-      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      const frameNumber = toolData.annotation.data?.frameNumber || 1;
+      const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
 
       if (!imageIds.includes(imageId)) {
         imageIds.push(imageId);
@@ -175,9 +169,7 @@ export default function hydrateStructuredReport(
     // files, and looking up the imageId from sopInstanceUIDToImageId results
     // in the wrong value.
     const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-    const imageId =
-      imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-      sopInstanceUIDToImageId[toolData.sopInstanceUid];
+    const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
 
     if (!imageId) {
       return getReferenceData3D(toolData, servicesManager);
