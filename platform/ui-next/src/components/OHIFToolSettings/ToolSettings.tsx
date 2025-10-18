@@ -108,7 +108,8 @@ const renderButtonSetting = option => {
   return (
     <Button
       key={option.id}
-      variant="ghost"
+      variant={option.variant || 'ghost'}
+      className={option.className || ''}
       onClick={() => option.onChange()}
     >
       {option.name}
