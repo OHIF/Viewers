@@ -80,11 +80,17 @@ following commands:
 
 ```bash
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Start local development server
 yarn run dev
 ```
+:::warning
+In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
+supply chain attacks by enforcing reproducible dependencies. That is, if the
+`yarn.lock` file is clean and does NOT reference compromised packages, then
+no compromised packages should land on your machine by using this flag.
+:::
 
 You should see the following output:
 
