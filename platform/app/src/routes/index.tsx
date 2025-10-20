@@ -61,12 +61,19 @@ NotFoundStudy.propTypes = {
 const Home = () => {
   return (
     <div className="flex h-screen items-center justify-center bg-black text-white">
-      <Link
-        className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
-        to="/viewer?StudyInstanceUIDs=1.2.276.0.7230010.3.1.2.2155604110.4180.1021041295.21"
-      >
-        Go to Viewer
-      </Link>
+      <div className="flex flex-col items-center gap-8">
+        <div className="border-secondary-light bg-secondary-dark/50 flex h-48 w-[500px] items-center justify-center rounded border-2 border-dashed">
+          <p className="px-8 text-center text-lg">
+            Drop a DICOM file or folder of DICOM files here
+          </p>
+        </div>
+        <Link
+          className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
+          to="/viewer?StudyInstanceUIDs=1.2.276.0.7230010.3.1.2.2155604110.4180.1021041295.21"
+        >
+          Go to Viewer
+        </Link>
+      </div>
     </div>
   );
 };
