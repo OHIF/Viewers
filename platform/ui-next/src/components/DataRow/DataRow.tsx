@@ -244,7 +244,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
-        } group relative cursor-pointer overflow-hidden`}
+        } group relative cursor-pointer`}
         onClick={onSelect}
         data-cy="data-row"
       >
@@ -254,7 +254,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
         )}
 
         {/* Hover Overlay (above tint) */}
-        <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100 z-10"></div>
+        <div className="bg-primary/20 pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
         {/* Number Box */}
         {number !== null && (

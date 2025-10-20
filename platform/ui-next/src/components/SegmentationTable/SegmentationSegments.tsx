@@ -18,7 +18,6 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     onSegmentCopy,
     data,
     showSegmentIndex = true,
-    onSegmentationClick,
   } = useSegmentationTableContext('SegmentationSegments');
 
   // Try to get segmentation data from expanded context first, then fall back to table context
