@@ -253,8 +253,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
           <div className="bg-primary/20 pointer-events-none absolute inset-0 z-0"></div>
         )}
 
-        {/* Hover Overlay (above tint) */}
-        <div className="bg-primary/20 pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+        <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
         {/* Number Box */}
         {number !== null && (
