@@ -3,8 +3,6 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
-import DataSourceWrapper from './DataSourceWrapper';
-import WorkList from './WorkList';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
@@ -38,12 +36,17 @@ const NotFoundStudy = () => {
   return (
     <div className="absolute flex h-full w-full items-center justify-center text-white">
       <div>
-        <h4>
-          One or more of the requested studies are not available at this time.
-        </h4>
+        <h4>One or more of the requested studies are not available at this time.</h4>
         {showStudyList && (
           <p className="mt-2">
-            Return to the <Link className="text-primary-light" to="/">study list</Link> to select a different study to view.
+            Return to the{' '}
+            <Link
+              className="text-primary-light"
+              to="/"
+            >
+              study list
+            </Link>{' '}
+            to select a different study to view.
           </p>
         )}
       </div>
@@ -53,6 +56,19 @@ const NotFoundStudy = () => {
 
 NotFoundStudy.propTypes = {
   message: PropTypes.string,
+};
+
+const Home = () => {
+  return (
+    <div className="flex h-screen items-center justify-center bg-black text-white">
+      <Link
+        className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
+        to="/viewer?StudyInstanceUIDs=1.2.276.0.7230010.3.1.2.2155604110.4180.1021041295.21"
+      >
+        Go to Viewer
+      </Link>
+    </div>
+  );
 };
 
 // TODO: Include "routes" debug route if dev build
@@ -89,7 +105,6 @@ const createRoutes = ({
   servicesManager,
   commandsManager,
   hotkeysManager,
-  showStudyList,
 }: withAppTypes) => {
   const routes =
     buildModeRoutes({
@@ -110,18 +125,17 @@ const createRoutes = ({
 
   console.log('Registering worklist route', routerBasename, path);
 
-  const WorkListRoute = {
+  const HomeRoute = {
     path: '/',
-    children: DataSourceWrapper,
-    private: true,
-    props: { children: WorkList, servicesManager, extensionManager },
+    children: Home,
+    private: false,
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');
 
   const allRoutes = [
+    HomeRoute,
     ...routes,
-    ...(showStudyList ? [WorkListRoute] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,
