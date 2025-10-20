@@ -995,12 +995,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
             throw new Error('Background display set not found');
           }
 
-          debounceViewportCallback(() => {
-            viewportGridService.setDisplaySetsForViewport({
-              viewportId: viewport.id,
-              displaySetInstanceUIDs: [backgroundDisplaySet[0].displaySetInstanceUID],
+          if (viewport.type === csEnums.ViewportType.VOLUME_3D) {
+            debounceViewportCallback(() => {
+              viewportGridService.setDisplaySetsForViewport({
+                viewportId: viewport.id,
+                displaySetInstanceUIDs: [backgroundDisplaySet[0].displaySetInstanceUID],
+              });
             });
-          });
+          }
         }
       });
     }
