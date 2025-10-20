@@ -104,13 +104,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 )
               }
               onToggleLocked={() => onToggleSegmentLock(segmentation.segmentationId, segmentIndex)}
-              onSelect={() => {
-                // If clicking a tinted (secondary-selected) row, activate its parent segmentation first
-                if (!isActiveSegmentation) {
-                  onSegmentationClick?.(segmentation.segmentationId);
-                }
-                onSegmentClick(segmentation.segmentationId, segmentIndex);
-              }}
+              onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
               onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
               onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
               onCopy={
