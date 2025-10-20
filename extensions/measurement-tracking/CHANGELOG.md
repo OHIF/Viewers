@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.67...v3.12.0-beta.68) (2025-10-18)
+
+
+### Bug Fixes
+
+* **segmentation:** Lock all rehydrated segmentation segments when panelSegmentation.disableEditing is true. ([#5503](https://github.com/OHIF/Viewers/issues/5503)) ([170e860](https://github.com/OHIF/Viewers/commit/170e860aa1b786ab6056cf31076804302a2bc462))
+
+
+
+
+
 # [3.12.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.66...v3.12.0-beta.67) (2025-10-17)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking
