@@ -250,7 +250,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
       >
         {/* Secondary Selection Tint (below hover, always visible when secondary-selected) */}
         {isSecondarySelected && (
-          <div className="bg-primary/20 pointer-events-none absolute inset-0 z-0"></div>
+          <div className="bg-primary/20 pointer-events-none absolute inset-0"></div>
         )}
 
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
