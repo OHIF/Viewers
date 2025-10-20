@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
+import Dropzone from 'react-dropzone';
 
 // Route Components
 import Local from './Local';
@@ -12,6 +13,9 @@ import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
+import { DicomMetadataStore } from '@ohif/core';
+import filesToStudies from './Local/filesToStudies';
+import { extensionManager } from '../App';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -59,20 +63,197 @@ NotFoundStudy.propTypes = {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [queuedStudyInstanceUIDs, setQueuedStudyInstanceUIDs] = useState([]);
+  const [queuedFilesCount, setQueuedFilesCount] = useState(0);
+  const [queuedFiles, setQueuedFiles] = useState([]);
+  const folderInputRef = useRef(null);
+
+  useEffect(() => {
+    if (folderInputRef.current) {
+      folderInputRef.current.setAttribute('webkitdirectory', 'true');
+      folderInputRef.current.setAttribute('mozdirectory', 'true');
+      folderInputRef.current.setAttribute('directory', 'true');
+    }
+  }, []);
+
+  const microscopyExtensionLoaded = useMemo(() => {
+    return (
+      extensionManager?.registeredExtensionIds?.includes('@ohif/extension-dicom-microscopy') ??
+      false
+    );
+  }, []);
+
+  const handleDrop = useCallback(
+    async acceptedFiles => {
+      if (!acceptedFiles.length || isProcessing) {
+        return;
+      }
+
+      setErrorMessage('');
+      setIsProcessing(true);
+
+      try {
+        const studies = await filesToStudies(acceptedFiles);
+
+        if (!studies?.length) {
+          setErrorMessage('Nie udało się wczytać plików DICOM.');
+          setIsProcessing(false);
+          return;
+        }
+
+        const uniqueStudies = Array.from(new Set(studies));
+        setQueuedStudyInstanceUIDs(uniqueStudies);
+        setQueuedFilesCount(prev => prev + acceptedFiles.length);
+        setQueuedFiles(prev => [...prev, ...acceptedFiles]);
+        setIsProcessing(false);
+      } catch (error) {
+        console.error('Failed to process dropped DICOM files', error);
+        setErrorMessage('Wystąpił problem podczas przetwarzania plików.');
+        setIsProcessing(false);
+      }
+    },
+    [isProcessing]
+  );
+
+  const handleFolderSelect = useCallback(
+    event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const files = Array.from(event.target.files || []);
+      if (files.length) {
+        handleDrop(files);
+      }
+      event.target.value = '';
+    },
+    [handleDrop]
+  );
+
+  const handleGoToViewer = useCallback(async () => {
+    if (isProcessing) {
+      return;
+    }
+
+    const studyInstanceUIDs = queuedStudyInstanceUIDs.length
+      ? [...queuedStudyInstanceUIDs]
+      : DicomMetadataStore.getStudyInstanceUIDs();
+
+    if (!studyInstanceUIDs.length) {
+      return;
+    }
+
+    const query = new URLSearchParams();
+    studyInstanceUIDs.forEach(id => query.append('StudyInstanceUIDs', id));
+    query.append('datasources', 'dicomlocal');
+
+    setErrorMessage('');
+    setQueuedFiles([]);
+    setQueuedFilesCount(0);
+    setQueuedStudyInstanceUIDs([]);
+
+    navigate(`/viewer/dicomlocal?${query.toString()}`);
+  }, [queuedStudyInstanceUIDs, navigate]);
+
+  const handleClearQueue = useCallback(() => {
+    setQueuedFiles([]);
+    setQueuedFilesCount(0);
+    setQueuedStudyInstanceUIDs([]);
+  }, []);
+
   return (
     <div className="flex h-screen items-center justify-center bg-black text-white">
-      <div className="flex flex-col items-center gap-8">
-        <div className="border-secondary-light bg-secondary-dark/50 flex h-48 w-[500px] items-center justify-center rounded border-2 border-dashed">
-          <p className="px-8 text-center text-lg">
-            Drop a DICOM file or folder of DICOM files here
-          </p>
-        </div>
-        <Link
+      <div className="flex flex-col items-center gap-6">
+        <Dropzone
+          onDrop={handleDrop}
+          multiple
+        >
+          {({ getRootProps, getInputProps, isDragActive, open }) => (
+            <div
+              {...getRootProps()}
+              className={`flex h-48 w-[500px] cursor-pointer items-center justify-center rounded border-2 border-dashed transition-colors duration-200 ${
+                isDragActive
+                  ? 'border-primary bg-secondary-dark/70'
+                  : 'border-secondary-light bg-secondary-dark/50'
+              }`}
+            >
+              <input
+                {...getInputProps()}
+                multiple
+              />
+              {isProcessing ? (
+                <p className="px-8 text-center text-lg">Loading files...</p>
+              ) : (
+                <div className="px-8 text-center">
+                  <p className="text-lg">Drop a DICOM file or folder of DICOM files here</p>
+                  <p className="text-secondary-light mt-2 text-sm">
+                    or choose files from your computer
+                  </p>
+                  <div className="mt-4 flex justify-center gap-3 text-base">
+                    <button
+                      type="button"
+                      onClick={event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        open();
+                      }}
+                      className="border-secondary-light text-secondary-light hover:border-primary hover:text-primary rounded border px-3 py-1 transition"
+                      disabled={isProcessing}
+                    >
+                      Choose files
+                    </button>
+                    <button
+                      type="button"
+                      onClick={event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (folderInputRef.current) {
+                          folderInputRef.current.click();
+                        }
+                      }}
+                      className="border-secondary-light text-secondary-light hover:border-primary hover:text-primary rounded border px-3 py-1 transition"
+                      disabled={isProcessing}
+                    >
+                      Choose folder
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </Dropzone>
+        <input
+          ref={folderInputRef}
+          type="file"
+          className="hidden"
+          multiple
+          onChange={handleFolderSelect}
+        />
+        {queuedFilesCount > 0 && (
+          <div className="text-secondary-light flex items-center gap-3 text-sm">
+            <p>
+              Ready to load {queuedStudyInstanceUIDs.length} study(ies) from {queuedFilesCount}{' '}
+              file(s)
+            </p>
+            <button
+              type="button"
+              onClick={handleClearQueue}
+              className="text-secondary-light hover:text-primary transition"
+              disabled={isProcessing}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
+        <button
           className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
-          to="/viewer?StudyInstanceUIDs=1.2.276.0.7230010.3.1.2.2155604110.4180.1021041295.21"
+          onClick={handleGoToViewer}
+          disabled={isProcessing}
         >
           Go to Viewer
-        </Link>
+        </button>
       </div>
     </div>
   );
