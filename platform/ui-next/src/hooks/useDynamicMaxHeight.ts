@@ -38,10 +38,19 @@ export function useDynamicMaxHeight(
     // Recalculate on window resize
     window.addEventListener('resize', calculateMaxHeight);
 
+    const observer = new ResizeObserver(() => {
+      calculateMaxHeight();
+    });
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
     // Cleanup listener and requestAnimationFrame on component unmount
     return () => {
       window.removeEventListener('resize', calculateMaxHeight);
       cancelAnimationFrame(rafId);
+      observer.disconnect();
     };
     // Dependencies: buffer, minHeight, and data.
   }, [data, buffer, minHeight]);
