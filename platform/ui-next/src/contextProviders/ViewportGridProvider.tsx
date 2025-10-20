@@ -404,8 +404,17 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
 
   const getGridViewportsReady = useCallback(() => {
     const { viewports } = viewportGridState;
-    const readyViewports = Array.from(viewports.values()).filter(viewport => viewport.isReady);
-    return readyViewports.length === viewports.size;
+    // Filter viewports that have display sets (i.e., have content to display)
+    const viewportsWithContent = Array.from(viewports.values()).filter(
+      viewport => viewport.displaySetInstanceUIDs?.length > 0
+    );
+    // If there are no viewports with content, return false
+    if (viewportsWithContent.length === 0) {
+      return false;
+    }
+    // Check if all viewports with content are ready
+    const readyViewports = viewportsWithContent.filter(viewport => viewport.isReady);
+    return readyViewports.length === viewportsWithContent.length;
   }, [viewportGridState]);
 
   const setLayout = useCallback(

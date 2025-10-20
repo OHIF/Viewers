@@ -1,5 +1,5 @@
 import { Types } from '@ohif/core';
-
+import i18n from 'i18next';
 export const VOI_SYNC_GROUP = {
   type: 'voi',
   id: 'mpr',
@@ -22,7 +22,7 @@ export const HYDRATE_SEG_SYNC_GROUP = {
 
 export const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
-  name: 'MPR',
+  name: i18n.t('Hps:MPR'),
   locked: true,
   icon: 'layout-advanced-mpr',
   isPreset: true,

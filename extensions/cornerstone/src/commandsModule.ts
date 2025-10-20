@@ -42,6 +42,7 @@ import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
+import { EasingFunctionEnum } from './utils/transitions';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -265,10 +266,35 @@ function commandsModule({
           referencedDisplaySetInstanceUID
         );
         storePositionPresentation(referencedDisplaySet);
-        return commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+
+        const results = commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
         });
+
+        const disableEditing = customizationService.getCustomization(
+          'panelSegmentation.disableEditing'
+        );
+        if (disableEditing) {
+          const segmentationRepresentations = segmentationService.getSegmentationRepresentations(
+            viewportId,
+            {
+              segmentationId: displaySet.displaySetInstanceUID,
+            }
+          );
+
+          segmentationRepresentations.forEach(representation => {
+            const segmentIndices = Object.keys(representation.segments);
+            segmentIndices.forEach(segmentIndex => {
+              segmentationService.setSegmentLocked(
+                representation.segmentationId,
+                parseInt(segmentIndex),
+                true
+              );
+            });
+          });
+        }
+        return results;
       } else if (displaySet.Modality === 'SR') {
         const results = commandsManager.runCommand('hydrateStructuredReport', {
           displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -517,8 +543,8 @@ function commandsModule({
       if (!labelConfig) {
         const label = await callInputDialog({
           uiDialogService,
-          title: 'Edit Measurement Label',
-          placeholder: measurement.label || 'Enter new label',
+          title: i18n.t('Tools:Edit Measurement Label'),
+          placeholder: measurement.label || i18n.t('Tools:Enter new label'),
           defaultValue: measurement.label,
         });
 
@@ -732,8 +758,8 @@ function commandsModule({
       if (!labelConfig) {
         const label = await callInputDialog({
           uiDialogService,
-          title: 'Edit Arrow Text',
-          placeholder: data?.data?.label || 'Enter new text',
+          title: i18n.t('Tools:Edit Arrow Text'),
+          placeholder: data?.data?.label || i18n.t('Tools:Enter new text'),
           defaultValue: data?.data?.label || '',
         });
 
@@ -977,8 +1003,8 @@ function commandsModule({
       if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
-          title: 'Download Image',
-          message: 'Image cannot be downloaded',
+          title: i18n.t('Tools:Download Image'),
+          message: i18n.t('Tools:Image cannot be downloaded'),
           type: 'error',
         });
         return;
@@ -989,7 +1015,7 @@ function commandsModule({
       if (uiModalService) {
         uiModalService.show({
           content: CornerstoneViewportDownloadForm,
-          title: 'Download High Quality Image',
+          title: i18n.t('Tools:Download High Quality Image'),
           contentProps: {
             activeViewportId,
             cornerstoneViewportService,
@@ -1453,7 +1479,7 @@ function commandsModule({
 
       const segs = segmentationService.getSegmentations();
 
-      const label = options.label || `Segmentation ${segs.length + 1}`;
+      const label = options.label || `${i18n.t('Tools:Segmentation')} ${segs.length + 1}`;
       const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
@@ -1467,7 +1493,7 @@ function commandsModule({
           segments: options.createInitialSegment
             ? {
                 1: {
-                  label: `${i18n.t('Segment')} 1`,
+                  label: `${i18n.t('Tools:Segment')} 1`,
                   active: true,
                 },
               }
@@ -1518,7 +1544,33 @@ function commandsModule({
         segmentationId
       );
       segmentationService.setActiveSegment(segmentationId, segmentIndex);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+
+      const { highlightAlpha, highlightSegment, animationLength, animationFunctionType } =
+        (customizationService.getCustomization(
+          'panelSegmentation.jumpToSegmentHighlightAnimationConfig'
+        ) as Object as {
+          highlightAlpha?: number;
+          highlightSegment?: boolean;
+          animationLength?: number;
+          animationFunctionType?: EasingFunctionEnum;
+        }) ?? {};
+
+      const validAnimationFunctionType = Object.values(EasingFunctionEnum).includes(
+        animationFunctionType
+      )
+        ? animationFunctionType
+        : undefined;
+
+      segmentationService.jumpToSegmentCenter(
+        segmentationId,
+        segmentIndex,
+        undefined,
+        highlightAlpha,
+        highlightSegment,
+        animationLength,
+        undefined,
+        validAnimationFunctionType
+      );
     },
 
     /**
@@ -1718,8 +1770,8 @@ function commandsModule({
 
       callInputDialog({
         uiDialogService,
-        title: 'Edit Segment Label',
-        placeholder: 'Enter new label',
+        title: i18n.t('Tools:Edit Segment Label'),
+        placeholder: i18n.t('Tools:Enter new label'),
         defaultValue: segment.label,
       }).then(label => {
         segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
@@ -1738,8 +1790,8 @@ function commandsModule({
 
       callInputDialog({
         uiDialogService,
-        title: 'Edit Segmentation Label',
-        placeholder: 'Enter new label',
+        title: i18n.t('Tools:Edit Segmentation Label'),
+        placeholder: i18n.t('Tools:Enter new label'),
         defaultValue: label,
       }).then(label => {
         segmentationService.addOrUpdateSegmentation({ segmentationId, label });
@@ -1761,7 +1813,7 @@ function commandsModule({
 
       uiDialogService.show({
         content: colorPickerDialog,
-        title: 'Segment Color',
+        title: i18n.t('Tools:Segment Color'),
         contentProps: {
           value: rgbaColor,
           onSave: newRgbaColor => {
@@ -1831,22 +1883,24 @@ function commandsModule({
         }
       });
     },
-    toggleSegmentLabel: () => {
+    toggleSegmentLabel: ({ enabled }: { enabled?: boolean }) => {
       const toolName = cornerstoneTools.SegmentLabelTool.toolName;
       const toolGroupIds = toolGroupService.getToolGroupIds();
 
-      const isOn = toolGroupIds.some(toolGroupId => {
+      const isToolOn = toolGroupIds.some(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
         const mode = toolGroup.getToolInstance(toolName)?.mode;
         return mode === 'Active';
       });
 
+      const enableTool = enabled !== undefined ? enabled : !isToolOn;
+
       toolGroupIds.forEach(toolGroupId => {
         const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-        if (isOn) {
-          toolGroup.setToolDisabled(toolName);
-        } else {
+        if (enableTool) {
           toolGroup.setToolActive(toolName);
+        } else {
+          toolGroup.setToolDisabled(toolName);
         }
       });
     },
