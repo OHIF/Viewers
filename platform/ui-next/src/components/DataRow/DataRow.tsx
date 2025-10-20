@@ -87,7 +87,10 @@ interface DataRowProps {
   description: string;
   details?: { primary: string[]; secondary: string[] };
   //
+  /** Primary selection: selected and in the active segmentation */
   isSelected?: boolean;
+  /** Secondary selection: selected but in an inactive segmentation */
+  isSecondarySelected?: boolean;
   onSelect?: (e) => void;
   //
   isVisible: boolean;
@@ -122,6 +125,7 @@ const DataRowComponent: React.FC<DataRowProps> = ({
   onColor,
   onCopy,
   isSelected = false,
+  isSecondarySelected = false,
   isVisible = true,
   disableEditing = false,
   className,
@@ -244,7 +248,11 @@ const DataRowComponent: React.FC<DataRowProps> = ({
         onClick={onSelect}
         data-cy="data-row"
       >
-        {/* Hover Overlay */}
+        {/* Secondary Selection Tint (below hover, always visible when secondary-selected) */}
+        {isSecondarySelected && (
+          <div className="bg-primary/20 pointer-events-none absolute inset-0"></div>
+        )}
+
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
         {/* Number Box */}
