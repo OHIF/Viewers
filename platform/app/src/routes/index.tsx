@@ -141,6 +141,7 @@ const Home = () => {
       : DicomMetadataStore.getStudyInstanceUIDs();
 
     if (!studyInstanceUIDs.length) {
+      setErrorMessage('No files loaded.');
       return;
     }
 

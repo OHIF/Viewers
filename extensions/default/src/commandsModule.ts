@@ -66,8 +66,8 @@ const commandsModule = ({
      */
     addDisplaySetAsLayer: ({ viewportId, displaySetInstanceUID, removeFirst = false }) => {
       if (!viewportId) {
-          const { activeViewportId } = servicesManager.services.viewportGridService.getState();
-          viewportId = activeViewportId;
+        const { activeViewportId } = servicesManager.services.viewportGridService.getState();
+        viewportId = activeViewportId;
       }
 
       if (!viewportId || !displaySetInstanceUID) {
