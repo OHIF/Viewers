@@ -23,7 +23,10 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   let segmentation;
   let representation;
 
-  const segmentElementMap = React.useRef<Map<number, HTMLElement>>(new Map());
+  const activeSegmentRef = React.useRef<{
+    element: HTMLElement | null;
+    index: number | null;
+  }>({ element: null, index: null });
 
   try {
     // Try to use the SegmentationExpanded context if available
@@ -55,24 +58,29 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
 
   useEffect(() => {
-    const activeSegmentRef = segmentElementMap.current.get(activeSegment?.segmentIndex);
+    const activeSegmentIndex = activeSegmentRef.current.index;
+    if (!activeSegmentIndex || activeSegmentIndex !== activeSegment?.segmentIndex) {
+      return;
+    }
 
-    if (!activeSegmentRef) {
+    const activeSegmentElement = activeSegmentRef.current.element;
+
+    if (!activeSegmentElement) {
       return;
     }
 
     // Check if the active segment is already visible.
-    const activeSegmentRect = activeSegmentRef.getBoundingClientRect();
+    const activeSegmentElementBounds = activeSegmentElement.getBoundingClientRect();
     const scrollableContainerRect = scrollableContainerRef.current.getBoundingClientRect();
     if (
-      activeSegmentRect.top > scrollableContainerRect.top &&
-      activeSegmentRect.bottom < scrollableContainerRect.bottom
+      activeSegmentElementBounds.top > scrollableContainerRect.top &&
+      activeSegmentElementBounds.bottom < scrollableContainerRect.bottom
     ) {
       // The active segment is already visible, so we don't need to scroll.
       return;
     }
 
-    activeSegmentRef.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    activeSegmentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [activeSegment?.segmentIndex, scrollableContainerRef]);
 
   if (!representation || !segmentation) {
@@ -83,7 +91,11 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     <div ref={scrollableContainerRef}>
       <ScrollArea
         className={`bg-bkg-low space-y-px`}
-        showArrows={true}
+        showArrows={
+          scrollableContainerRef?.current
+            ? scrollableContainerRef?.current?.offsetHeight >= parseFloat(maxHeight)
+            : false
+        }
       >
         <div style={{ maxHeight: maxHeight }}>
           {segments.map(segment => {
@@ -107,8 +119,14 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
             const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
 
             const segmentRowRef = (element: HTMLElement) => {
+              if (!active) {
+                return;
+              }
+
               if (element) {
-                segmentElementMap.current.set(segmentIndex, element);
+                activeSegmentRef.current = { element, index: segmentIndex };
+              } else {
+                activeSegmentRef.current = { element: null, index: null };
               }
             };
 
