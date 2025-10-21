@@ -1,9 +1,9 @@
 import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
-
+import i18n from 'i18next';
 export const primaryAxial = {
   id: 'primaryAxial',
   locked: true,
-  name: 'Axial Primary',
+  name: i18n.t('Hps:Axial Primary'),
   icon: 'layout-advanced-axial-primary',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',

@@ -52,9 +52,12 @@ The mode configuration specifies which `extensions` the mode requires, which
 template this defines which `side panels` will be available, as well as what
 `viewports` and which `displaySets` they may hang.
 
-Mode's config is composed of three elements:
+Mode's config is composed of these elements:
 - `id`: the mode `id`
 - `modeFactory`: the function that returns the mode specific configuration
+- `modeInstance`: An optional configuration used by the default modeFactory
+      exported by the basic mode.  This allows specifying or updating the
+      default mode values.
 - `extensionDependencies`: the list of extensions that the mode requires
 
 
@@ -62,10 +65,18 @@ that return a config object with certain
 properties, the high-level view of this config object is:
 
 ```js title="modes/example/src/index.js"
-function modeFactory() {
-  return {
+function modeFactory({modeConfiguration}) {
+  return { ...this.modeInstance, ...modeConfiguration };
+
+}
+
+const mode = {
+  id,
+  modeFactory,
+  modeInstance: {
     id: '',
     version: '',
+    hide: true,
     displayName: '',
     onModeEnter: () => {},
     onModeExit: () => {},
@@ -75,19 +86,27 @@ function modeFactory() {
       {
         path: '',
         init: () => {},
-        layoutTemplate: () => {},
+        layoutInstance: {
+          id,
+          props: {
+            leftPanels: [],
+            leftPanelResizable: true,
+            rightPanels: [],
+            rightPanelClosed: true,
+            rightPanelResizable: true,
+            viewports: [],
+          },
+        },
+        layoutTemplate: function() { return this.layoutInstance },
       },
     ],
     extensions: extensionDependencies,
     hangingProtocol: [],
     sopClassHandlers: [],
-    hotkeys: []
-  };
-}
-
-const mode = {
-  id,
-  modeFactory,
+    hotkeys: [],
+    nonModeModalities: [],
+    modeModalities: [],
+  },
   extensionDependencies,
 };
 
@@ -107,6 +126,12 @@ export default mode;
           id
       </td>
       <td align="left">unique mode id used to refer to the mode</td>
+    </tr>
+    <tr>
+      <td align="left">
+          hide
+      </td>
+      <td align="left">Set to true to hide this mode on the worklist, but allow it in the path</td>
     </tr>
     <tr>
       <td align="left">
@@ -168,7 +193,7 @@ export default mode;
           hanging protocol
         </a>
       </td>
-      <td align="left">list of hanging protocols that the mode should have access to</td>
+      <td align="left">list of hanging protocols that the mode applies initially, choosing the highest scoring match</td>
     </tr>
     <tr>
       <td align="left">
@@ -186,9 +211,43 @@ export default mode;
       </td>
       <td align="left">hotkeys</td>
     </tr>
+    <tr>
+      <td align="left">
+          modeModalities
+      </td>
+      <td align="left">If non-empty, then the default isValidMode will only return true when the modalities list has all of the elements of one of the mode modalities.  Eg `[` [CT,PT], [MR,PT] ]` would mean that the mode supports a CT AND a PT,  OR an MR and a PT</td>
+    </tr>
+    <tr>
+      <td align="left">
+          nonModeModalities
+      </td>
+      <td align="left">Enable the mode if the modalities list contains a modality OTHER than those in the array</td>
+    </tr>
+    <tr>
+      <td align="left">
+          enableSegmentationEdit
+      </td>
+      <td align="left">Boolean to skip the segmentation edit capabilities</td>
+    </tr>
+    <tr>
+      <td align="left">
+          toolbarSections
+      </td>
+      <td align="left">An object containing toolbar section definitions to register</td>
+    </tr>
+
 
   </tbody>
 </table>
+
+### Extending Modes
+
+The `basic` mode provides support for creating mode extensions without having
+to redeclare the entire mode.  See `longitudinal/src/index.ts` for an example
+mode that builds on top of the basic mode.  Also see `basic/src/index.tsx` for
+some default functions which can be used to create your own modes.  Doing a mode
+this way makes the definition of new modes based on your existing mode much easier,
+and the upgrade to new versions of modes tends to be more consistent.
 
 ### Consuming Extensions
 
@@ -346,7 +405,6 @@ const myHotkeys = [
 function modeFactory() {
   return {
     id: '',
-    id: '',
     displayName: '',
     /*
     ...
@@ -413,3 +471,50 @@ rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.m
 This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
 
 :::
+
+## APP Configuration of Modes
+
+Modes based on the `basic` mode allow for customization using the `immutability-helper`
+api within the `app-config.js` file as specified by the build process.  For example,
+to list the `basic` mode by default, and hide the `longitudinal` mode, the following
+configuration from `config/kheops.js` can be used:
+
+```
+... app config file
+  modesConfiguration: {
+    '@ohif/mode-basic': {
+      hide: { $set: false },
+      displayName: { $set: 'Basic' },
+    },
+    '@ohif/mode-longitudinal': {
+      hide: { $set: true },
+    },
+  },
+```
+
+## Default Modes
+
+There are a number of modes provided in a default OHIF installation.  These
+are described here, along with some amount of information about extending/configuration
+of those modes.
+
+Modes which are loaded by default, but which are hidden can be activated by
+using a direct URL launch.  For example, to show a study in the `basic` mode,
+use the URL for the `longitudinal` mode, and replace the `/viewer` with `/basic`
+
+### Basic (NOT `Basic Viewer`, which got assigned to `longitudinal`)
+
+The basic mode is a mode that demonstrates the base capabilities of the OHIF
+system, without including features such as longitudinal tracking, segmentation editing
+or other custom capabilities. The left hand panel uses the study browser thumbnails
+without tracking, and the right hand panel uses the basic segmentation panel and the
+measurements without tracking (longitudinal) layouts.  This makes it a good overall
+base for using when the tracking behaviour of longitudinal mode is not desired.
+
+It can be used in a default install by direct URL launch to the `/basic` endpoint
+instead of the `/viewer` endpoint.
+
+### Longitudinal (The `Basic Viewer` label in OHIF)
+
+The longitudinal mode adds the tracking for measurements in the study browser
+and in the measurements panel, and is otherwise identical to the `basic` mode.

@@ -1,9 +1,11 @@
 import React, { ReactElement, useCallback } from 'react';
 import { Switch } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
+import { useTranslation } from 'react-i18next';
 
 export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { hasColorbar, toggleColorbar } = useViewportRendering(viewportId);
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   const handleToggle = useCallback(() => {
     toggleColorbar();
@@ -16,7 +18,7 @@ export function Colorbar({ viewportId }: { viewportId?: string } = {}): ReactEle
         className="flex-grow"
         onClick={handleToggle}
       >
-        Display Color bar
+        {t('Display Color bar')}
       </span>
       <Switch
         className="ml-2 flex-shrink-0"
