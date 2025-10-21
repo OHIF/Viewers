@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.70...v3.12.0-beta.71) (2025-10-21)
+
+
+### Bug Fixes
+
+* **segmentation:** Fixed the manual scrolling of the segments list and implemented automatic scrolling to the active segment. ([#5510](https://github.com/OHIF/Viewers/issues/5510)) ([1df4f84](https://github.com/OHIF/Viewers/commit/1df4f843fe3c377643938563ff9e2e4f930d8537))
+
+
+
+
+
+# [3.12.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.69...v3.12.0-beta.70) (2025-10-20)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.68...v3.12.0-beta.69) (2025-10-20)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
 # [3.12.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.67...v3.12.0-beta.68) (2025-10-18)
 
 

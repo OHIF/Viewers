@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.70...v3.12.0-beta.71) (2025-10-21)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.69...v3.12.0-beta.70) (2025-10-20)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.68...v3.12.0-beta.69) (2025-10-20)
+
+
+### Bug Fixes
+
+* Pass the correct sop uid + frame for rehydration to prevent associating rehydrated measurements with the wrong data ([#5506](https://github.com/OHIF/Viewers/issues/5506)) ([5037802](https://github.com/OHIF/Viewers/commit/503780247ce7228c602a539fd88ea374e7d0d42f)), closes [#2404](https://github.com/OHIF/Viewers/issues/2404)
+
+
+
+
+
 # [3.12.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.67...v3.12.0-beta.68) (2025-10-18)
 
 
