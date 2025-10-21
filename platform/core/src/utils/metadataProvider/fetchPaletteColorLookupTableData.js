@@ -30,18 +30,15 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   }
 
   const arrayBufferToPaletteColorLUT = arraybuffer => {
+    // Handle both ArrayBuffer and TypedArray inputs
+    const buffer = arraybuffer.buffer || arraybuffer;
+    const data = bits === 16 ? new Uint16Array(buffer) : new Uint8Array(buffer);
     const lut = [];
 
-    if (bits === 16) {
-      let j = 0;
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = (arraybuffer[j++] + arraybuffer[j++]) << 8;
-      }
-    } else {
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = arraybuffer[i];
-      }
+    for (let i = 0; i < numLutEntries; i++) {
+      lut[i] = data[i];
     }
+
     return lut;
   };
 
@@ -51,10 +48,10 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
 
   if (paletteColorLookupTableData.InlineBinary) {
     try {
-      const arraybuffer = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), c =>
+      const uint8Array = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), c =>
         c.charCodeAt(0)
       );
-      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(arraybuffer));
+      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(uint8Array));
     } catch (e) {
       console.log("Couldn't decode", paletteColorLookupTableData.InlineBinary, e);
       return undefined;
