@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useImageViewer } from '@ohif/ui-next';
+import { Button, useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
@@ -73,6 +73,17 @@ function PanelStudyBrowser({
   };
 
   const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
+
+  const goToSegmentation = useCallback(() => {
+    const { StudyInstanceUID } = displaySetService.activeDisplaySets[0] || {};
+    if (!StudyInstanceUID) {
+      return;
+    }
+    const query = new URLSearchParams();
+    query.append('StudyInstanceUIDs', StudyInstanceUID);
+    query.append('datasources', 'dicomlocal');
+    navigate(`/segmentation?${query.toString()}`);
+  }, [displaySetService, navigate]);
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -412,6 +423,16 @@ function PanelStudyBrowser({
           className="bg-black"
           thickness="2px"
         />
+        <div className="flex justify-end px-4 py-3">
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={goToSegmentation}
+            disabled={!displaySetService.activeDisplaySets.length}
+          >
+            Segmentation
+          </Button>
+        </div>
       </>
 
       <StudyBrowser

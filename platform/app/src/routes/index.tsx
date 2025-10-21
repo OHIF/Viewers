@@ -131,31 +131,36 @@ const Home = () => {
     [handleDrop]
   );
 
-  const handleGoToViewer = useCallback(async () => {
-    if (isProcessing) {
-      return;
-    }
+  const handleGoToViewer = useCallback(
+    async target => {
+      if (isProcessing) {
+        return;
+      }
 
-    const studyInstanceUIDs = queuedStudyInstanceUIDs.length
-      ? [...queuedStudyInstanceUIDs]
-      : DicomMetadataStore.getStudyInstanceUIDs();
+      const studyInstanceUIDs = queuedStudyInstanceUIDs.length
+        ? [...queuedStudyInstanceUIDs]
+        : DicomMetadataStore.getStudyInstanceUIDs();
 
-    if (!studyInstanceUIDs.length) {
-      setErrorMessage('No files loaded.');
-      return;
-    }
+      if (!studyInstanceUIDs.length) {
+        setErrorMessage('No files loaded.');
+        return;
+      }
 
-    const query = new URLSearchParams();
-    studyInstanceUIDs.forEach(id => query.append('StudyInstanceUIDs', id));
-    query.append('datasources', 'dicomlocal');
+      const query = new URLSearchParams();
+      studyInstanceUIDs.forEach(id => query.append('StudyInstanceUIDs', id));
+      query.append('datasources', 'dicomlocal');
 
-    setErrorMessage('');
-    setQueuedFiles([]);
-    setQueuedFilesCount(0);
-    setQueuedStudyInstanceUIDs([]);
+      setErrorMessage('');
+      setQueuedFiles([]);
+      setQueuedFilesCount(0);
+      setQueuedStudyInstanceUIDs([]);
 
-    navigate(`/viewer/dicomlocal?${query.toString()}`);
-  }, [queuedStudyInstanceUIDs, navigate]);
+      const path = target === 'segmentation' ? '/segmentation' : '/viewer/dicomlocal';
+
+      navigate(`${path}?${query.toString()}`);
+    },
+    [queuedStudyInstanceUIDs, navigate]
+  );
 
   const handleClearQueue = useCallback(() => {
     setQueuedFiles([]);
@@ -248,13 +253,22 @@ const Home = () => {
           </div>
         )}
         {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
-        <button
-          className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
-          onClick={handleGoToViewer}
-          disabled={isProcessing}
-        >
-          Go to Viewer
-        </button>
+        <div className="flex gap-4">
+          <button
+            className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
+            onClick={handleGoToViewer}
+            disabled={isProcessing}
+          >
+            Go to Viewer
+          </button>
+          <button
+            className="bg-secondary-light rounded px-6 py-3 text-lg font-semibold text-black"
+            onClick={() => handleGoToViewer('segmentation')}
+            disabled={isProcessing}
+          >
+            Segmentation
+          </button>
+        </div>
       </div>
     </div>
   );
