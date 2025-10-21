@@ -118,6 +118,7 @@ function commandsModule({
     hangingProtocolService,
     syncGroupService,
     segmentationService,
+    userAuthenticationService,
     displaySetService,
   } = servicesManager.services as AppTypes.Services;
 
@@ -146,45 +147,85 @@ function commandsModule({
     };
   }
 
+  /**
+   * Retrieves derived segmentations (SEG/RTSTRUCT) that are not yet hydrated
+   * for the given display set UID.
+   */
+  function _getDerivedSegmentations(displaySetUID: string): DisplaySet[] {
+    const currentDisplaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+    if (!currentDisplaySet) {
+      return [];
+    }
+
+    const displaySetCache = displaySetService.getDisplaySetCache();
+    const allDisplaySets = Array.from(displaySetCache.values());
+
+    return allDisplaySets.filter((ds): ds is DisplaySet => {
+      if (!ds?.isOverlayDisplaySet || ds?.isHydrated) {
+        return false;
+      }
+
+      /** Check if this is a SEG or RTSTRUCT modality */
+      const isSegmentationModality = ds.Modality === 'SEG' || ds.Modality === 'RTSTRUCT';
+      if (!isSegmentationModality) {
+        return false;
+      }
+
+      /** Check if this derived display set references the current display set */
+      const referencesDisplaySet =
+        ds.referencedDisplaySetInstanceUID === displaySetUID ||
+        ds.SeriesInstanceUID === currentDisplaySet.SeriesInstanceUID;
+
+      return referencesDisplaySet;
+    });
+  }
+
   const actions = {
-    loadSegmentationsForActiveViewport: () => {
-      const { displaySetService, userAuthenticationService } = servicesManager.services;
-
-      const getDerivedSequences = (displaySetUID: string): DisplaySet[] => {
-        const currentDs = displaySetService.getDisplaySetByUID(displaySetUID);
-        const displaySetCache = displaySetService.getDisplaySetCache();
-        return Array.from(displaySetCache.values()).filter(
-          (ds: any): ds is DisplaySet =>
-            (ds?.referencedDisplaySetInstanceUID === displaySetUID ||
-              ds.referencedSeriesInstanceUID === currentDs.SeriesInstanceUID) &&
-            !ds?.isHydrated
-        );
-      };
-
+    loadSegmentationsForActiveViewport: async () => {
       const activeViewportId = viewportGridService.getActiveViewportId();
+      if (!activeViewportId) {
+        console.warn('No active viewport found');
+        return;
+      }
+
       const displaySetInstanceUIDs =
         viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+      if (!displaySetInstanceUIDs?.length) {
+        console.warn('No display sets found for active viewport');
+        return;
+      }
 
-      const derivedDisplayInstanceUIDs = getDerivedSequences(displaySetInstanceUIDs[0]).map(
-        ds => ds.displaySetInstanceUID
-      );
+      const primaryDisplaySetUID = displaySetInstanceUIDs[0];
+      const derivedDisplaySets = _getDerivedSegmentations(primaryDisplaySetUID);
+      if (!derivedDisplaySets.length) {
+        return;
+      }
 
-      derivedDisplayInstanceUIDs.forEach(async displaySetInstanceUID => {
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-        if (displaySet.Modality === 'SEG' || displaySet.Modality === 'RTSTRUCT') {
-          const headers = userAuthenticationService.getAuthorizationHeader();
-          await displaySet.load({ headers }).catch(err => {
-            console.warn(`Failed to load display set ${displaySet.displaySetInstanceUID}:`, err);
-          });
+      const headers = userAuthenticationService.getAuthorizationHeader();
+
+      /** Load all segmentations in parallel for better performance */
+      const loadPromises = derivedDisplaySets.map(async displaySet => {
+        try {
+          /** Load the display set */
+          await displaySet.load({ headers });
+
+          /** Get the representation type */
+          const representationType =
+            displaySet.Modality === 'SEG'
+              ? Enums.SegmentationRepresentations.Labelmap
+              : Enums.SegmentationRepresentations.Contour;
+
           segmentationService.addSegmentationRepresentation(activeViewportId, {
             segmentationId: displaySet.displaySetInstanceUID,
-            type:
-              displaySet.Modality === 'SEG'
-                ? Enums.SegmentationRepresentations.Labelmap
-                : Enums.SegmentationRepresentations.Contour,
+            type: representationType,
           });
+        } catch (error) {
+          console.error(`Failed to load segmentation ${displaySet.displaySetInstanceUID}:`, error);
+          /** Continue with other segmentations even if one fails */
         }
       });
+
+      await Promise.all(loadPromises);
     },
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
