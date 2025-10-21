@@ -1,5 +1,29 @@
 import { useRef, useState, useEffect, RefObject } from 'react';
 
+const _getMovementIntersectionObserver = ({
+  callback,
+  rootMargin,
+  threshold,
+}: {
+  callback: () => void;
+  rootMargin: string;
+  threshold: number[];
+}): IntersectionObserver => {
+  return new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          callback();
+        }
+      });
+    },
+    {
+      threshold,
+      rootMargin,
+    }
+  );
+};
+
 /**
  * Calculates the maximum height for an element based on its position
  * relative to the bottom of the viewport.
@@ -31,20 +55,49 @@ export function useDynamicMaxHeight(
       }
     };
 
-    // Calculate initially
-    // Use requestAnimationFrame to ensure layout is stable after initial render
-    const rafId = requestAnimationFrame(calculateMaxHeight);
+    // Two intersection observers to trigger a recalculation when the target element
+    // moves up or down. One for moving up and one for moving down.
+    // Note that with this approach we don't need to use a resize observer nor
+    // a window resize listener.
 
-    // Recalculate on window resize
-    window.addEventListener('resize', calculateMaxHeight);
+    // The trick is to use a margin for the IntersectionObserver to detect movement.
+    // See more below.
+    const rootMarginHeight = maxHeight === '100vh' ? `${window.innerHeight}px` : `${maxHeight}`;
+
+    // Note that we use a fine grained threshold because we don't know how
+    // much it will move and we want any movement to trigger the intersection observer.
+    const threshold = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+
+    // The trick here is to use the calculated maxHeight as the root margin height
+    // so that any movement of the target element down (i.e. "out of the" viewport)
+    // will trigger the intersection observer.
+    const moveDownIntersectionObserver = _getMovementIntersectionObserver({
+      callback: calculateMaxHeight,
+      rootMargin: `0px 0px ${rootMarginHeight} 0px`,
+      threshold,
+    });
+
+    // The trick here is to use the calculated maxHeight as the negative
+    // root margin height so that any movement of the target element up
+    // (i.e. "into the" viewport) will trigger the intersection observer.
+    const moveUpIntersectionObserver = _getMovementIntersectionObserver({
+      callback: calculateMaxHeight,
+      rootMargin: `0px 0px -${rootMarginHeight} 0px`,
+      threshold,
+    });
+
+    if (ref.current) {
+      moveUpIntersectionObserver.observe(ref.current);
+      moveDownIntersectionObserver.observe(ref.current);
+    }
 
     // Cleanup listener and requestAnimationFrame on component unmount
     return () => {
-      window.removeEventListener('resize', calculateMaxHeight);
-      cancelAnimationFrame(rafId);
+      moveUpIntersectionObserver.disconnect();
+      moveDownIntersectionObserver.disconnect();
     };
     // Dependencies: buffer, minHeight, and data.
-  }, [data, buffer, minHeight]);
+  }, [data, buffer, minHeight, maxHeight]);
 
   return { ref, maxHeight };
 }
