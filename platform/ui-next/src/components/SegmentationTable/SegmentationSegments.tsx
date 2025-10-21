@@ -55,25 +55,25 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(segments);
 
   useEffect(() => {
-    if (activeSegment) {
-      const activeSegmentRef = segmentElementMap.current.get(activeSegment.segmentIndex);
+    const activeSegmentRef = segmentElementMap.current.get(activeSegment?.segmentIndex);
 
-      if (!activeSegmentRef) {
-        return;
-      }
-
-      const activeSegmentRect = activeSegmentRef.getBoundingClientRect();
-      const scrollableContainerRect = scrollableContainerRef.current.getBoundingClientRect();
-      if (
-        activeSegmentRect.top > scrollableContainerRect.top &&
-        activeSegmentRect.bottom < scrollableContainerRect.bottom
-      ) {
-        return;
-      }
-
-      activeSegmentRef.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!activeSegmentRef) {
+      return;
     }
-  }, [activeSegment, scrollableContainerRef]);
+
+    // Check if the active segment is already visible.
+    const activeSegmentRect = activeSegmentRef.getBoundingClientRect();
+    const scrollableContainerRect = scrollableContainerRef.current.getBoundingClientRect();
+    if (
+      activeSegmentRect.top > scrollableContainerRect.top &&
+      activeSegmentRect.bottom < scrollableContainerRect.bottom
+    ) {
+      // The active segment is already visible, so we don't need to scroll.
+      return;
+    }
+
+    activeSegmentRef.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [activeSegment?.segmentIndex, scrollableContainerRef]);
 
   if (!representation || !segmentation) {
     return null;

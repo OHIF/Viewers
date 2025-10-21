@@ -35,25 +35,66 @@ export function useDynamicMaxHeight(
     // Use requestAnimationFrame to ensure layout is stable after initial render
     const rafId = requestAnimationFrame(calculateMaxHeight);
 
-    // Recalculate on window resize
-    window.addEventListener('resize', calculateMaxHeight);
+    // Two intersection observers to trigger a recalculation when the target element
+    // moves up or down. One for moving up and one for moving down.
+    // Note that with this approach we don't need to use a resize observer nor
+    // a window resize listener.
 
-    const observer = new ResizeObserver(() => {
-      calculateMaxHeight();
-    });
+    // The trick is to use a margin for the IntersectionObserver to detect movement.
+    // See more below.
+    const rootMarginHeight = maxHeight === '100vh' ? `${window.innerHeight}px` : `${maxHeight}`;
+
+    // Note that we use a fine grained threshold because we don't know how
+    // much it will move and we want any movement to trigger the intersection observer.
+    const threshold = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+
+    // The trick here is to use the calculated maxHeight as the root margin height
+    // so that any movement of the target element down (i.e. "out of the" viewport)
+    // will trigger the intersection observer.
+    const moveDownIntersectionObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            calculateMaxHeight();
+          }
+        });
+      },
+      {
+        threshold,
+        rootMargin: `0px 0px ${rootMarginHeight} 0px`,
+      }
+    );
+
+    // The trick here is to use the calculated maxHeight as the negative
+    // root margin height so that any movement of the target element up
+    // (i.e. "into the" viewport) will trigger the intersection observer.
+    const moveUpIntersectionObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            calculateMaxHeight();
+          }
+        });
+      },
+      {
+        threshold,
+        rootMargin: `0px 0px -${rootMarginHeight} 0px`,
+      }
+    );
 
     if (ref.current) {
-      observer.observe(ref.current);
+      moveUpIntersectionObserver.observe(ref.current);
+      moveDownIntersectionObserver.observe(ref.current);
     }
 
     // Cleanup listener and requestAnimationFrame on component unmount
     return () => {
-      window.removeEventListener('resize', calculateMaxHeight);
       cancelAnimationFrame(rafId);
-      observer.disconnect();
+      moveUpIntersectionObserver.disconnect();
+      moveDownIntersectionObserver.disconnect();
     };
     // Dependencies: buffer, minHeight, and data.
-  }, [data, buffer, minHeight]);
+  }, [data, buffer, minHeight, maxHeight]);
 
   return { ref, maxHeight };
 }
