@@ -2,20 +2,11 @@ import React from 'react';
 import { Thumbnail } from '../../../src/components/Thumbnail';
 import { TooltipProvider } from '../../../src/components/Tooltip';
 import { Table, TableHeader, TableRow, TableHead } from '../../../src/components/Table';
-import { Button } from '../../../src/components/Button';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import type { StudyRow } from '../types';
 
-export function PanelContent({
-  study,
-  layout,
-  onToggleLayout,
-}: {
-  study: StudyRow;
-  layout: 'right' | 'bottom';
-  onToggleLayout: () => void;
-}) {
+export function PanelContent({ study }: { study: StudyRow }) {
   const seriesCount = React.useMemo(() => Math.floor(Math.random() * 7) + 3, []);
   const thumbnails = Array.from({ length: seriesCount }, (_, i) => ({
     id: `preview-${study.accession}-${i}`,
@@ -32,15 +23,8 @@ export function PanelContent({
             <TableHeader className="border-0 [&_tr]:border-b-0">
               <TableRow className="border-b-0">
                 <TableHead className="bg-background sticky top-0 z-10 rounded-t-md">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center">
                     <span className="text-foreground text-xl font-medium">Studies</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={onToggleLayout}
-                    >
-                      {layout === 'right' ? 'Move to Bottom' : 'Move to Right'}
-                    </Button>
                   </div>
                 </TableHead>
               </TableRow>
