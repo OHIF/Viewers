@@ -23,6 +23,7 @@ export function useMeasurementTracking({ viewportId }: { viewportId: string }) {
   const [trackedMeasurementUIDs, setTrackedMeasurementUIDs] = useState<string[]>([]);
 
   const updateTrackedMeasurements = useCallback(() => {
+
     if (!measurementService || !backgroundDisplaySet?.SeriesInstanceUID || !isTracked) {
       setTrackedMeasurementUIDs([]);
       return;
@@ -33,7 +34,6 @@ export function useMeasurementTracking({ viewportId }: { viewportId: string }) {
     const seriesMeasurements = measurementService.getMeasurements(
       measurement => measurement.referenceSeriesUID === seriesInstanceUID
     );
-
     const uids = seriesMeasurements.map(measurement => measurement.uid);
     setTrackedMeasurementUIDs(uids);
   }, [measurementService, backgroundDisplaySet, isTracked]);
@@ -54,14 +54,14 @@ export function useMeasurementTracking({ viewportId }: { viewportId: string }) {
     const viewport = cornerstoneViewportService?.getCornerstoneViewport(viewportId);
     const SeriesInstanceUID = backgroundDisplaySet.SeriesInstanceUID;
 
-    if (viewport instanceof BaseVolumeViewport) {
-      const currentImageId = viewport?.getCurrentImageId();
-
-      if (!currentImageId) {
-        setIsTracked(false);
-        return;
-      }
-    }
+    // if (viewport instanceof BaseVolumeViewport) {
+    //   const currentImageId = viewport?.getCurrentImageId();
+    //   console.log('currentImageId', currentImageId);
+    //   if (!currentImageId) {
+    //     setIsTracked(false);
+    //     return;
+    //   }
+    // }
 
     const seriesIsTracked = trackedSeries.includes(SeriesInstanceUID);
     setIsTracked(seriesIsTracked);

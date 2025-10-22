@@ -29,7 +29,6 @@ const findReferencedInstances = (displaySetService: DisplaySetService, displaySe
 
     const instance = findInstance(measurement, displaySetService);
     if (!instance) {
-      console.log('Measurement', measurement, 'had no instances found');
       continue;
     }
 

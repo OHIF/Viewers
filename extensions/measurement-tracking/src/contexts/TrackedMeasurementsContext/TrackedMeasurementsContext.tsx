@@ -22,6 +22,7 @@ TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
 const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOPCLASSHANDLERID3D = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d';
 
 /**
  *
@@ -42,6 +43,8 @@ function TrackedMeasurementsContextProvider(
     trackedMeasurementsService,
   } = servicesManager.services as AppTypes.Services;
 
+
+
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
@@ -57,6 +60,17 @@ function TrackedMeasurementsContextProvider(
         activeViewportId,
         trackedMeasurements[0]
       );
+
+      // If the first tracked measurement is a CustomProbe, use a volume-aware jump
+      // This preserves MPR orientation and works for both volume and stack viewports
+      if (trackedMeasurements?.[0]?.toolName === 'CustomProbe' && trackedMeasurements?.[0]?.uid) {
+        try {
+          commandsManager.runCommand('jumpToCustomProbe', { uid: trackedMeasurements[0].uid });
+          return;
+        } catch (e) {
+          console.warn('Failed to jump to CustomProbe via command, falling back to stack logic', e);
+        }
+      }
 
       const referencedDisplaySetUID = trackedMeasurements[0].displaySetInstanceUID;
       const referencedDisplaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetUID);
@@ -325,6 +339,7 @@ function TrackedMeasurementsContextProvider(
         // The issue here is that this handler in TrackedMeasurementsContext
         // ends up occurring before the Viewport is created, so the displaySet
         // is not loaded yet, and isRehydratable is undefined unless we call load().
+
         if (
           displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
           !displaySet.isLoaded &&
@@ -335,8 +350,9 @@ function TrackedMeasurementsContextProvider(
 
         // Magic string
         // load function added by our sopClassHandler module
+
         if (
-          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID || displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID3D &&
           displaySet.isRehydratable === true &&
           !displaySet.isHydrated
         ) {
@@ -382,6 +398,7 @@ function TrackedMeasurementsContextProvider(
       {children}
     </TrackedMeasurementsContext.Provider>
   );
+
 }
 
 TrackedMeasurementsContextProvider.propTypes = {

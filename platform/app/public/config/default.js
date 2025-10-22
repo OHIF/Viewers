@@ -25,6 +25,10 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
+
+  investigationalUseDialog: {
+    option: 'never',
+  },
   // filterQueryParam: false,
   // Defines multi-monitor layouts
   multimonitor: [
@@ -275,21 +279,21 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
-  // whiteLabeling: {
-  //   createLogoComponentFn: function (React) {
-  //     return React.createElement(
-  //       'a',
-  //       {
-  //         target: '_self',
-  //         rel: 'noopener noreferrer',
-  //         className: 'text-purple-600 line-through',
-  //         href: '_X___IDC__LOGO__LINK___Y_',
-  //       },
-  //       React.createElement('img', {
-  //         src: './Logo.svg',
-  //         className: 'w-14 h-14',
-  //       })
-  //     );
-  //   },
-  // },
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          href: '/', // or your preferred link
+        },
+        React.createElement('img', {
+          src: '/logo.png', // <-- PNG file is fine here!
+          className: 'w-10 h-10', // adjust size as needed
+          alt: 'My Custom Logo',
+        })
+      );
+    },
+  },
 };

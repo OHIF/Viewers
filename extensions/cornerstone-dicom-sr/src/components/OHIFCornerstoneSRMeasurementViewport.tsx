@@ -64,7 +64,6 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   const updateViewport = useCallback(
     newMeasurementSelected => {
       const { StudyInstanceUID, displaySetInstanceUID, sopClassUids } = srDisplaySet;
-
       if (!StudyInstanceUID || !displaySetInstanceUID) {
         return;
       }

@@ -54,7 +54,6 @@ export const groupByStudy = (items, grouping, childProps) => {
     const group = groups.get(studyUID);
     group.items.push(item);
   });
-
   return groups;
 };
 

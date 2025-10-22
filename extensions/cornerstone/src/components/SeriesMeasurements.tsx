@@ -59,8 +59,12 @@ export function SeriesMeasurements(props): React.ReactNode {
   const activeDisplaySetInstanceUID = activeDisplaySets?.[0]?.displaySetInstanceUID;
   const onClick = (_e, group) => {
     const { items } = group;
-    system.commandsManager.run('jumpToMeasurement', {
-      uid: items[0].uid,
+
+    const measurement = items[0];
+    const command = measurement.toolName === 'CustomProbe' ? 'jumpToCustomProbe' : 'jumpToMeasurement';
+
+    system.commandsManager.run(command, {
+      uid: measurement.uid,
       displayMeasurements: items,
       group,
     });

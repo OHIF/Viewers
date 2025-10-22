@@ -65,6 +65,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'textBox',
   'referencedImageId',
   'isDirty',
+  'worldPosition',
 ];
 
 const EVENTS = {
@@ -346,6 +347,7 @@ class MeasurementService extends PubSubService {
     const measurement = this.getMeasurement(measurementUID);
     const mapping = this._getMappingByMeasurementSource(measurement, annotationType);
 
+
     if (mapping) {
       return mapping.toAnnotationSchema(measurement, annotationType);
     }
@@ -392,6 +394,7 @@ class MeasurementService extends PubSubService {
    * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source annotationType.
    */
   addRawMeasurement(source, annotationType, data, toMeasurementSchema, dataSource = {}) {
+
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
@@ -497,7 +500,6 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source);
         return;
       }
       const { toMeasurementSchema } = sourceMapping;
@@ -520,7 +522,6 @@ class MeasurementService extends PubSubService {
         },
       });
 
-      console.log('Failed to map', error);
       throw new Error(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}: ${error.message}`
       );
@@ -590,7 +591,6 @@ class MeasurementService extends PubSubService {
       this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
     if (!measurementUID || !measurement) {
-      console.debug(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
 
@@ -615,7 +615,6 @@ class MeasurementService extends PubSubService {
         this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
       if (!measurementUID || !measurement) {
-        console.debug(`No uid provided, or unable to find measurement by uid.`);
         continue;
       }
 
@@ -673,11 +672,21 @@ class MeasurementService extends PubSubService {
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
     const measurement = this.measurements.get(measurementUID);
-
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);
       return;
     }
+    // // For CustomProbe measurements, use a special event to signal multi-viewport jump
+    // if (measurement.toolName === 'CustomProbe' && measurement.worldPosition && measurement.FrameOfReferenceUID) {
+    //   const probeJumpEvent = this.createConsumableEvent({
+    //     viewportId,
+    //     measurement,
+    //     isCustomProbeJump: true,
+    //   });
+    //   this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, probeJumpEvent);
+    //   return;
+    // }
+
     const consumableEvent = this.createConsumableEvent({
       viewportId,
       measurement,
@@ -689,6 +698,8 @@ class MeasurementService extends PubSubService {
     this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
     this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
   }
+
+
 
   _getSourceUID(name, version) {
     const { sources } = this;

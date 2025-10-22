@@ -346,6 +346,7 @@ function PanelStudyBrowser({
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
+    console.log('_handleStudyClick', StudyInstanceUID);
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]

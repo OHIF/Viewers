@@ -24,8 +24,9 @@ function PanelMeasurementTableTracking(props) {
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy
-    ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
-    : filterPlanarMeasurement;
+    ? filterMeasurementsBySeriesUID(trackedSeries)
+    : filterMeasurementsBySeriesUID(trackedSeries);
+
 
   const onUntrackConfirm = () => {
     sendTrackedMeasurementsEvent('UNTRACK_ALL', {});

@@ -2,11 +2,29 @@ import { cache, Types } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 function _getVolumeFromViewport(viewport: Types.IBaseVolumeViewport) {
-  const volumeIds = viewport.getAllVolumeIds();
-  const volumes = volumeIds.map(id => cache.getVolume(id));
-  const dynamicVolume = volumes.find(volume => volume.isDynamicVolume());
+  // Guard for different CS3D versions and non-volume viewports
+  let volumeIds: string[] = [];
 
-  return dynamicVolume ?? volumes[0];
+  try {
+    const ids = (viewport as any).getAllVolumeIds?.() ?? (viewport as any).getVolumeIds?.() ?? [];
+    volumeIds = Array.isArray(ids) ? ids : [];
+  } catch (_) {
+    volumeIds = [];
+  }
+
+  const volumes = volumeIds
+    .map(id => {
+      try {
+        return cache.getVolume(id);
+      } catch (_) {
+        return undefined;
+      }
+    })
+    .filter(Boolean) as any[];
+
+  const dynamicVolume = volumes.find(v => v?.isDynamicVolume?.());
+
+  return (dynamicVolume as any) ?? (volumes[0] as any) ?? null;
 }
 
 /**

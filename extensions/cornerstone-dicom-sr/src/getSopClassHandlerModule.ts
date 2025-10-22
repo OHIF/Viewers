@@ -72,8 +72,7 @@ function _getDisplaySetsFromSeries(
   instances,
   servicesManager: AppTypes.ServicesManager,
   extensionManager
-) {
-  // If the series has no instances, stop here
+) {  // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
   }
@@ -125,9 +124,7 @@ function _getDisplaySetsFromSeries(
     addInstances,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };
-
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
-
   return [displaySet];
 }
 
@@ -146,6 +143,7 @@ async function _load(
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
   const { ContentSequence } = srDisplaySet.instance;
+
 
   async function retrieveBulkData(obj, parentObj = null, key = null) {
     for (const prop in obj) {
@@ -178,7 +176,6 @@ async function _load(
     srDisplaySet.referencedImages = [];
     srDisplaySet.measurements = [];
   }
-
   const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
@@ -197,7 +194,6 @@ async function _load(
       servicesManager
     );
   });
-
   /** Subscribe to new displaySets as the source may come in after */
   displaySetService.subscribe(displaySetService.EVENTS.DISPLAY_SETS_ADDED, data => {
     const { displaySetsAdded } = data;
@@ -214,6 +210,7 @@ async function _load(
       );
     });
   });
+
 }
 
 /**
@@ -235,7 +232,6 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   const unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
-
   if (
     unloadedMeasurements.length === 0 ||
     !(newDisplaySet instanceof ImageSet) ||
@@ -243,7 +239,6 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   ) {
     return;
   }
-
   // const { sopClassUids } = newDisplaySet;
   // Create a Set for faster lookups
   // const sopClassUidSet = new Set(sopClassUids);
@@ -251,26 +246,21 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
   const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
-
   for (const imageId of imageIds) {
     const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
     const key = `${SOPInstanceUID}:${frameNumber || 1}`;
     imageIdMap.set(key, imageId);
   }
-
   if (!unloadedMeasurements?.length) {
     return;
   }
-
   const is3DSR = srDisplaySet.SOPClassUID === sopClassDictionary.Comprehensive3DSR;
-
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
     );
-
     if (typeof onBeforeSRAddMeasurement === 'function') {
       measurement = onBeforeSRAddMeasurement({
         measurement,
@@ -278,37 +268,34 @@ function _checkIfCanAddMeasurementsToDisplaySet(
         SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
       });
     }
-
     // if it is 3d SR we can just add the SR annotation
     if (is3DSR) {
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+      measurement.ReferencedSOPInstanceUID = srDisplaySet.SOPInstanceUID;
+
       continue;
     }
-
     const referencedSOPSequence = measurement.coords[0].ReferencedSOPSequence;
     if (!referencedSOPSequence) {
       continue;
     }
-
     const { ReferencedSOPInstanceUID } = referencedSOPSequence;
     const frame = referencedSOPSequence.ReferencedFrameNumber || 1;
     const key = `${ReferencedSOPInstanceUID}:${frame}`;
     const imageId = imageIdMap.get(key);
-
     if (
       imageId &&
       _measurementReferencesSOPInstanceUID(measurement, ReferencedSOPInstanceUID, frame)
     ) {
       addSRAnnotation(measurement, imageId, frame);
-
       // Update measurement properties
       measurement.loaded = true;
       measurement.imageId = imageId;
       measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
       measurement.ReferencedSOPInstanceUID = ReferencedSOPInstanceUID;
       measurement.frameNumber = frame;
-
       unloadedMeasurements.splice(j, 1);
     }
   }
@@ -422,7 +409,6 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
  */
 function _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups) {
   const mergedContentSequencesByTrackingUniqueIdentifiers = {};
-
   MeasurementGroups.forEach(MeasurementGroup => {
     const ContentSequence = _getSequenceAsArray(MeasurementGroup.ContentSequence);
 

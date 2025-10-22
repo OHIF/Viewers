@@ -19,6 +19,7 @@ import SCOORD3DPointTool from './tools/SCOORD3DPointTool';
 import SRSCOOR3DProbeMapper from './utils/SRSCOOR3DProbeMapper';
 import addToolInstance from './utils/addToolInstance';
 import toolNames from './tools/toolNames';
+import { adaptersSR } from '@cornerstonejs/adapters';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 
@@ -30,6 +31,11 @@ export default function init({
   servicesManager,
 }: Types.Extensions.ExtensionParams): void {
   const { measurementService, cornerstoneViewportService } = servicesManager.services;
+
+  // Register CustomProbe as a subtype of the built-in Probe adapter (SR <-> UI)
+  const { MeasurementReport, Probe, BaseAdapter3D } = adaptersSR.Cornerstone3D;
+  const customProbeAdapter = BaseAdapter3D.registerSubType(Probe, 'CustomProbe', true);
+  MeasurementReport.registerTrackingIdentifier(customProbeAdapter, 'CORNERSTONE:CustomProbe');
 
   addToolInstance(toolNames.DICOMSRDisplay, DICOMSRDisplayTool);
   addToolInstance(toolNames.SRLength, LengthTool);

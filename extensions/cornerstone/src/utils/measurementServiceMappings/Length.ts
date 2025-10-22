@@ -128,7 +128,6 @@ function getMappedAnnotations(annotation, displaySetService) {
       length,
     });
   });
-
   return annotations;
 }
 

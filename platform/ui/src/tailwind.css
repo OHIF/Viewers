@@ -31,48 +31,45 @@
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
-    --neutral: 213 22% 59%;
-    --background: 236 62% 5%;
-    --foreground: 0 0% 98%;
-    --card: 236 62% 5%;
-    --card-foreground: 0 0% 98%;
-    --popover: 219 90% 15%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 214 66% 48%;
-    --secondary-foreground: 200 50% 84%;
-    --muted: 234 64% 10%;
-    --muted-foreground: 200 46% 65%;
-    --accent: 217 79% 24%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 236 52% 30%;
-    --ring: 214 98% 60%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --highlight: 200 10% 80%;
+    --neutral: 220 5% 70%;
+    --background: 0 0% 100%;
+    --foreground: 220 10% 10%;
+    --card: 0 0% 98%;
+    --card-foreground: 220 10% 10%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 220 10% 10%;
+    --primary: 210 10% 85%;
+    --primary-foreground: 220 10% 10%;
+    --secondary: 220 5% 90%;
+    --secondary-foreground: 220 10% 20%;
+    --muted: 220 5% 95%;
+    --muted-foreground: 220 5% 60%;
+    --accent: 210 10% 92%;
+    --accent-foreground: 220 10% 10%;
+    --destructive: 0 70% 80%;
+    --destructive-foreground: 0 70% 30%;
+    --border: 220 5% 90%;
+    --input: 220 5% 95%;
+    --ring: 210 10% 85%;
+    --chart-1: 210 10% 85%;
+    --chart-2: 220 5% 70%;
+    --chart-3: 0 0% 80%;
+    --chart-4: 220 10% 92%;
+    --chart-5: 220 5% 60%;
     --radius: 0.5rem;
-    --success-bg: hsl(143, 85%, 96%);
-    --success-border: hsl(145, 92%, 91%);
-    --success-text: hsl(140, 100%, 27%);
-
-    --info-bg: hsl(208, 100%, 97%);
-    --info-border: hsl(221, 91%, 91%);
-    --info-text: hsl(210, 92%, 45%);
-
-    --warning-bg: hsl(49, 100%, 97%);
-    --warning-border: hsl(49, 91%, 91%);
-    --warning-text: hsl(31, 92%, 45%);
-
-    --error-bg: hsl(359, 100%, 97%);
-    --error-border: hsl(359, 100%, 94%);
-    --error-text: hsl(360, 100%, 45%);
+    --success-bg: hsl(143, 20%, 95%);
+    --success-border: hsl(145, 15%, 90%);
+    --success-text: hsl(140, 20%, 30%);
+    --info-bg: hsl(208, 20%, 97%);
+    --info-border: hsl(221, 15%, 91%);
+    --info-text: hsl(210, 20%, 40%);
+    --warning-bg: hsl(49, 20%, 97%);
+    --warning-border: hsl(49, 15%, 91%);
+    --warning-text: hsl(31, 20%, 40%);
+    --error-bg: hsl(359, 20%, 97%);
+    --error-border: hsl(359, 20%, 94%);
+    --error-text: hsl(360, 20%, 40%);
   }
 
   .dark {

@@ -8,7 +8,6 @@ function hydrateStructuredReport(
   const { displaySetService } = servicesManager.services;
   const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
   return new Promise((resolve, reject) => {
     const hydrationResult = baseHydrateStructuredReport(
       { servicesManager, extensionManager, commandsManager, appConfig },

@@ -778,7 +778,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       displaySetInstanceUIDs.push(displaySetInstanceUID);
 
       if (!volume) {
-        console.log('Volume display set not found');
         continue;
       }
 

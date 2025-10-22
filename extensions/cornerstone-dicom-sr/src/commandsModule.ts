@@ -1,11 +1,13 @@
 import { metaData, utilities } from '@cornerstonejs/core';
 
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import dcmjs from 'dcmjs';
-import { adaptersSR } from '@cornerstonejs/adapters';
+import { adaptersSR, NO_IMAGE_ID as ADAPTER_NO_IMAGE_ID } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
+const { sopClassDictionary } = utils;
+
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
@@ -32,14 +34,24 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     additionalFindingTypes
   );
 
+    // After building filteredToolState, before generateReport
   const report = MeasurementReport.generateReport(
     filteredToolState,
     metaData,
     utilities.worldToImageCoords,
     options
   );
-
   const { dataset } = report;
+  // Fallback: ensure SOPClassUID is set (especially for 3D SR when NO_IMAGE_ID is present)
+  try {
+    const is3DSR = Object.keys(filteredToolState).includes(ADAPTER_NO_IMAGE_ID);
+    if (!dataset.SOPClassUID) {
+      // Use literal UIDs to avoid dependency on dcmjs dictionary presence
+      dataset.SOPClassUID = sopClassDictionary.Comprehensive3DSR;
+    }
+  } catch (e) {
+    console.warn('Unable to set SOPClassUID fallback', e);
+  }
 
   // Set the default character set as UTF-8
   // https://dicom.innolitics.com/ciods/nm-image/sop-common/00080005
@@ -112,7 +124,6 @@ const commandsModule = (props: withAppTypes) => {
       // Use the @cornerstonejs adapter for converting to/from DICOM
       // But it is good enough for now whilst we only have cornerstone as a datasource.
       log.info('[DICOMSR] storeMeasurements');
-
       if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
         log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
         return Promise.reject({});
@@ -125,29 +136,36 @@ const commandsModule = (props: withAppTypes) => {
         // The content sequence has 5 or more elements, of which
         // the `[4]` element contains the annotation data, so this is
         // checking that there is some annotation data present.
+
         if (!ContentSequence?.[4].ContentSequence?.length) {
-          console.log('naturalizedReport missing imaging content', naturalizedReport);
           throw new Error('Invalid report, no content');
         }
 
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
-
         let dicomDict;
         if (typeof onBeforeDicomStore === 'function') {
           dicomDict = onBeforeDicomStore({ dicomDict, measurementData, naturalizedReport });
         }
 
-        await dataSource.store.dicom(naturalizedReport, null, dicomDict);
+        // Just before: await dataSource.store.dicom(naturalizedReport, null, dicomDict);
+        try {
+          await dataSource.store.dicom(naturalizedReport, null, dicomDict);
+        } catch (e) {
+          console.error('STOW error status', e?.response?.status || e?.status);
+          console.error('STOW error body', e?.response?.data || e?.xhr?.responseText || e);
+          throw e;
+        }
 
         if (StudyInstanceUID) {
           dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
         }
-
         // The "Mode" route listens for DicomMetadataStore changes
         // When a new instance is added, it listens and
         // automatically calls makeDisplaySets
+
         DicomMetadataStore.addInstances([naturalizedReport], true);
 
+        console.log('naturalizedReport', naturalizedReport);
         return naturalizedReport;
       } catch (error) {
         console.warn(error);

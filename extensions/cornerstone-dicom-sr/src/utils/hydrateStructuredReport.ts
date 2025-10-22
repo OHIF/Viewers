@@ -44,13 +44,14 @@ export default function hydrateStructuredReport(
   { servicesManager, extensionManager, commandsManager }: withAppTypes,
   displaySetInstanceUID
 ) {
+  console.log('hydrateStructuredReport', displaySetInstanceUID);
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues');
   const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
-  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const displaySet: any = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = measurementService.getSourceMappings(
@@ -97,10 +98,12 @@ export default function hydrateStructuredReport(
     // the measurementGroups in the instance.
     sopInstanceUIDToImageId,
     utilities.imageToWorldCoords,
-    metaData
+    metaData,
+    undefined
   );
 
-  const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
+  const onBeforeSRHydrationCustomization = customizationService.getCustomization('onBeforeSRHydration');
+  const onBeforeSRHydration = (onBeforeSRHydrationCustomization as any)?.value ?? onBeforeSRHydrationCustomization;
 
   if (typeof onBeforeSRHydration === 'function') {
     storedMeasurementByAnnotationType = onBeforeSRHydration({
@@ -183,11 +186,22 @@ export default function hydrateStructuredReport(
         // StudyInstanceUID,
       } = instance;
 
+      // Allow remapping adapter tool types back to custom app tools on hydration
+      let effectiveAnnotationType = annotationType;
+      const points = toolData?.annotation?.data?.handles?.points;
+      const is3DPoints = Array.isArray(points) && points.length > 0 && Array.isArray(points[0]) && points[0].length === 3;
+      if (
+        annotationType === 'Probe' &&
+        (toolData?.annotation?.metadata?.valueType === 'SCOORD3D' || is3DPoints)
+      ) {
+        effectiveAnnotationType = 'CustomProbe';
+      }
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
-          toolName: annotationType,
+          toolName: effectiveAnnotationType,
           referencedImageId: imageId,
           FrameOfReferenceUID,
         },
@@ -206,20 +220,42 @@ export default function hydrateStructuredReport(
         }
       });
 
-      const matchingMapping = mappings.find(m => m.annotationType === annotationType);
+      const matchingMapping = mappings.find(m => m.annotationType === effectiveAnnotationType);
 
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
-        annotationType,
+        effectiveAnnotationType,
         { annotation },
         matchingMapping.toMeasurementSchema,
         dataSource
       );
 
+
       commandsManager.runCommand('updateMeasurement', {
         uid: newAnnotationUID,
         code: annotation.data.finding,
       });
+      // Jump to CustomProbe in MPR so it becomes visible and recomputes
+      try {
+        if (effectiveAnnotationType === 'CustomProbe') {
+          commandsManager.runCommand('jumpToCustomProbe', { uid: newAnnotationUID });
+        }
+      } catch (e) {
+        console.warn('[SR Hydrate] jumpToCustomProbe failed', e);
+      }
+      console.log('force recompute of text/HU in tool render');
+      // Force recompute of text/HU in tool render so the panel sees displayText immediately
+      try {
+        const am = CsAnnotation.state.getAnnotationManager();
+        const hydratedAnnotation = am.getAnnotation(newAnnotationUID);
+        if (hydratedAnnotation) {
+          hydratedAnnotation.invalidated = true;
+        }
+        const re = servicesManager.services.cornerstoneViewportService.getRenderingEngine();
+        re && re.render();
+      } catch (e) {
+        console.warn('[SR Hydrate] failed to trigger recompute/render', e);
+      }
 
       if (disableEditing) {
         locking.setAnnotationLocked(newAnnotationUID, true);
@@ -232,6 +268,7 @@ export default function hydrateStructuredReport(
   });
 
   displaySet.isHydrated = true;
+
 
   return {
     StudyInstanceUID: targetStudyInstanceUID,

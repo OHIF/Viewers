@@ -9,6 +9,7 @@ import { useViewportGrid } from '@ohif/ui-next';
  * @returns { isHovered, isActive } - Whether the viewport is hovered and active
  */
 export function useViewportHover(viewportId: string): { isHovered: boolean; isActive: boolean } {
+  console.log('useViewportHover', viewportId);
   const [isHovered, setIsHovered] = useState(false);
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;
@@ -41,8 +42,8 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
     };
 
     const handleMouseMove = event => {
-      const isInside = isPointInViewport(event.clientX, event.clientY);
 
+      const isInside = isPointInViewport(event.clientX, event.clientY);
       if (isInside !== lastIsInside) {
         lastIsInside = isInside;
         setIsHovered(isInside);

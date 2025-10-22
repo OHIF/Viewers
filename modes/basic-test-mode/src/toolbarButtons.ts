@@ -614,6 +614,17 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  {
+    id: 'CustomProbe',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-probe',
+      label: 'Custom Probe',
+      tooltip: 'Custom Probe',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
 ];
 
 export default toolbarButtons;

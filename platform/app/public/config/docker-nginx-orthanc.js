@@ -4,6 +4,9 @@ window.config = {
   showStudyList: true,
   extensions: [],
   modes: [],
+  investigationalUseDialog: {
+    option: 'never',
+  },
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
@@ -15,6 +18,23 @@ window.config = {
     displaySetsCount: 2,
     maxNumPrefetchRequests: 10,
     order: 'closest',
+  },
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          href: '/', // or your preferred link
+        },
+        React.createElement('img', {
+          src: '/logo.png', // <-- PNG file is fine here!
+          className: 'w-10 h-10', // adjust size as needed
+          alt: 'My Custom Logo',
+        })
+      );
+    },
   },
   defaultDataSourceName: 'dicomweb',
   dataSources: [

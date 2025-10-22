@@ -31,12 +31,22 @@ const onDoubleClickHandler = {
           }
         } catch (error) {
           console.warn(error);
-          uiNotificationService.show({
-            title: 'Thumbnail Double Click',
-            message: 'The selected display sets could not be added to the viewport.',
-            type: 'error',
-            duration: 3000,
-          });
+          // Fallback: if HP required selectors fail (e.g., isReconstructable),
+          // keep the layout and place the display set in the active viewport.
+          try {
+            viewportGridService.setDisplaySetsForViewport({
+              viewportId,
+              displaySetInstanceUIDs: [displaySetInstanceUID],
+            });
+          } catch (e2) {
+            console.warn(e2);
+            uiNotificationService.show({
+              title: 'Thumbnail Double Click',
+              message: 'The selected display sets could not be added to the viewport.',
+              type: 'error',
+              duration: 3000,
+            });
+          }
         }
       },
   ],

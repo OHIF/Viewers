@@ -130,6 +130,7 @@
     "package-json": "^8.1.0",
     "sharp": "^0.32.6",
     "rollup": "2.79.2",
-    "body-parser": "1.20.3"
+    "body-parser": "1.20.3",
+    "dcmjs": "0.40.0"
   }
 }
