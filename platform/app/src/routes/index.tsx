@@ -255,17 +255,83 @@ const Home = () => {
         {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
         <div className="flex gap-4">
           <button
-            className="bg-primary rounded px-6 py-3 text-lg font-semibold text-black"
-            onClick={handleGoToViewer}
+            className="bg-primary flex items-center gap-2 rounded px-6 py-3 text-lg font-semibold text-white transition hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => handleGoToViewer()}
             disabled={isProcessing}
+            title={isProcessing ? 'Processing...' : ''}
           >
+            <span
+              aria-hidden="true"
+              className="flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                className="!h-[20px] !w-[20px] fill-current text-white"
+              >
+                <g fillRule="evenodd">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                  <path
+                    fill="#348cfd"
+                    fillRule="nonzero"
+                    d="M17.207 10.793c.36.36.388.928.083 1.32l-.083.094-5 5c-.39.39-1.024.39-1.414 0-.36-.36-.388-.928-.083-1.32l.083-.094 4.292-4.293-4.292-4.293c-.36-.36-.388-.928-.083-1.32l.083-.094c.36-.36.928-.388 1.32-.083l.094.083 5 5z"
+                  />
+                  <path
+                    fill="#348cfd"
+                    fillRule="nonzero"
+                    d="M17.5 11.5c0 .513-.386.936-.883.993l-.117.007H6c-.552 0-1-.448-1-1 0-.513.386-.936.883-.993L6 10.5h10.5c.552 0 1 .448 1 1z"
+                  />
+                </g>
+              </svg>
+            </span>
             Go to Viewer
           </button>
           <button
-            className="bg-secondary-light rounded px-6 py-3 text-lg font-semibold text-black"
+            className="bg-primary flex items-center gap-2 rounded px-6 py-3 text-lg font-semibold text-white transition hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
             onClick={() => handleGoToViewer('segmentation')}
             disabled={isProcessing}
+            title={isProcessing ? 'Processing...' : ''}
           >
+            <span
+              aria-hidden="true"
+              className="flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                className="!h-[20px] !w-[20px] fill-current text-white"
+              >
+                <g fillRule="evenodd">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                  <path
+                    fill="#348cfd"
+                    fillRule="nonzero"
+                    d="M17.207 10.793c.36.36.388.928.083 1.32l-.083.094-5 5c-.39.39-1.024.39-1.414 0-.36-.36-.388-.928-.083-1.32l.083-.094 4.292-4.293-4.292-4.293c-.36-.36-.388-.928-.083-1.32l.083-.094c.36-.36.928-.388 1.32-.083l.094.083 5 5z"
+                  />
+                  <path
+                    fill="#348cfd"
+                    fillRule="nonzero"
+                    d="M17.5 11.5c0 .513-.386.936-.883.993l-.117.007H6c-.552 0-1-.448-1-1 0-.513.386-.936.883-.993L6 10.5h10.5c.552 0 1 .448 1 1z"
+                  />
+                </g>
+              </svg>
+            </span>
             Segmentation
           </button>
         </div>
