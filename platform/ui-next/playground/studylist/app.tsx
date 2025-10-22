@@ -10,14 +10,20 @@ import { PanelDefault } from './panels/panel-default'
 import { PanelContent } from './panels/panel-content'
 
 export function App() {
-  const [layout, setLayout] = React.useState<'right' | 'bottom'>('bottom')
   const [selected, setSelected] = React.useState<StudyRow | null>(null)
+  const previewDefaultSize = React.useMemo(() => {
+    if (typeof window !== 'undefined' && window.innerWidth > 0) {
+      const percent = (300 / window.innerWidth) * 100
+      return Math.min(Math.max(percent, 15), 50)
+    }
+    return 30
+  }, [])
 
   return (
     <ThemeWrapper>
       <div className="h-screen w-screen overflow-hidden bg-black">
-        <ResizablePanelGroup direction={layout === 'right' ? 'horizontal' : 'vertical'} className="h-full w-full">
-          <ResizablePanel defaultSize={70}>
+        <ResizablePanelGroup direction="horizontal" className="h-full w-full">
+          <ResizablePanel defaultSize={100 - previewDefaultSize}>
             <div className="flex h-full w-full flex-col px-3 pb-3 pt-0">
               <div className="min-h-0 flex-1">
                 <div className="bg-background h-full rounded-md px-2 pb-2 pt-0">
@@ -38,11 +44,9 @@ export function App() {
 
           <ResizableHandle />
 
-          <ResizablePanel defaultSize={30} minSize={15}>
+          <ResizablePanel defaultSize={previewDefaultSize} minSize={15}>
             <SidePanel
-              layout={layout}
               selected={selected}
-              onToggleLayout={() => setLayout(layout === 'right' ? 'bottom' : 'right')}
             />
           </ResizablePanel>
         </ResizablePanelGroup>
@@ -51,23 +55,15 @@ export function App() {
   )
 }
 
-function SidePanel({
-  layout,
-  selected,
-  onToggleLayout,
-}: {
-  layout: 'right' | 'bottom'
-  selected: StudyRow | null
-  onToggleLayout: () => void
-}) {
+function SidePanel({ selected }: { selected: StudyRow | null }) {
   return (
     <div className="bg-background flex h-full w-full flex-col">
       <ScrollArea className="flex-1">
-        <div className="px-3 pb-3" style={{ paddingTop: layout === 'right' ? 'var(--panel-right-top-pad, 59px)' : 0 }}>
+        <div className="px-3 pb-3" style={{ paddingTop: 'var(--panel-right-top-pad, 59px)' }}>
           {selected ? (
-            <PanelContent key={selected.accession} study={selected} layout={layout} onToggleLayout={onToggleLayout} />
+            <PanelContent key={selected.accession} study={selected} />
           ) : (
-            <PanelDefault layout={layout} onToggleLayout={onToggleLayout} />
+            <PanelDefault />
           )}
         </div>
       </ScrollArea>
