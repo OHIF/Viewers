@@ -26,6 +26,12 @@ const screenShotPaths = {
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },
+  labelMapSegLocking: {
+    globalLockedSegPreEdit: 'lockedSegPreEdit.png',
+    globalLockedSegPostEdit: 'lockedSegPostEdit.png',
+    globalUnlockedSegPreEdit: 'unlockedSegPreEdit.png',
+    globalUnlockedSegPostEdit: 'unlockedSegPostEdit.png',
+  },
   length: {
     lengthDisplayedCorrectly: 'lengthDisplayedCorrectly.png',
   },

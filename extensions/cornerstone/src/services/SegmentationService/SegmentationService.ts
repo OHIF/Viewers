@@ -1754,7 +1754,10 @@ class SegmentationService extends PubSubService {
     return `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
   }
 
-  private _getSegmentCenter(segmentationId, segmentIndex) {
+  private _getSegmentCenter(
+    segmentationId: string,
+    segmentIndex: number
+  ): { image?: csTypes.Point3; world: csTypes.Point3 } | undefined {
     const segmentation = this.getSegmentation(segmentationId);
 
     if (!segmentation) {
@@ -1765,19 +1768,17 @@ class SegmentationService extends PubSubService {
 
     const { cachedStats } = segments[segmentIndex];
 
-    if (!cachedStats || !cachedStats?.center || !cachedStats?.namedStats?.center) {
-      return;
+    if (cachedStats?.center) {
+      const { center } = cachedStats;
+
+      return center as { image: csTypes.Point3; world: csTypes.Point3 };
     }
 
-    const { center } = cachedStats;
-
-    if (!center) {
+    if (cachedStats?.namedStats?.center) {
       return {
         world: cachedStats.namedStats.center.value,
       };
     }
-
-    return center;
   }
 
   private _setSegmentLockedStatus(segmentationId: string, segmentIndex: number, isLocked: boolean) {

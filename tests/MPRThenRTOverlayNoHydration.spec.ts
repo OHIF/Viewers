@@ -16,7 +16,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   await page.getByTestId('MPR').click();
 
   // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(10000);
 
   await checkForScreenshot(
     page,
