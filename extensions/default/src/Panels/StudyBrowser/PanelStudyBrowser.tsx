@@ -82,7 +82,7 @@ function PanelStudyBrowser({
     const query = new URLSearchParams();
     query.append('StudyInstanceUIDs', StudyInstanceUID);
     query.append('datasources', 'dicomlocal');
-    navigate(`/segmentation?${query.toString()}`);
+    navigate(`/segmentation/dicomlocal?${query.toString()}`);
   }, [displaySetService, navigate]);
 
   const onDoubleClickThumbnailHandler = useCallback(
@@ -112,6 +112,8 @@ function PanelStudyBrowser({
       servicesManager,
       isHangingProtocolLayout,
       customizationService,
+      extensionManager,
+      onDoubleClickThumbnailHandlerCallBack,
     ]
   );
 
@@ -125,10 +127,9 @@ function PanelStudyBrowser({
       }
 
       fetchedStudiesRef.current.add(StudyInstanceUID);
-
       // current study qido
       const qidoForStudyUID = await dataSource.query.studies.search({
-        studyInstanceUid: '1.2.276.0.7230010.3.1.2.447481088.1.1669202398.851612',
+        studyInstanceUid: StudyInstanceUID,
       });
 
       if (!qidoForStudyUID?.length) {

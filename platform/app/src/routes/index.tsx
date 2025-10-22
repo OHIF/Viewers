@@ -155,11 +155,11 @@ const Home = () => {
       setQueuedFilesCount(0);
       setQueuedStudyInstanceUIDs([]);
 
-      const path = target === 'segmentation' ? '/segmentation' : '/viewer/dicomlocal';
+      const path = target === 'segmentation' ? '/segmentation/dicomlocal' : '/viewer/dicomlocal';
 
       navigate(`${path}?${query.toString()}`);
     },
-    [queuedStudyInstanceUIDs, navigate]
+    [isProcessing, queuedStudyInstanceUIDs, navigate]
   );
 
   const handleClearQueue = useCallback(() => {
