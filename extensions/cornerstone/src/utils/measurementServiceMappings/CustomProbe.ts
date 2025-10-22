@@ -89,9 +89,6 @@ const Probe = {
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
-    console.log('CustomProbe toMeasurement', mappedAnnotations);
-    console.log('cachedStats', data.cachedStats);
-    console.log('displayText', displayText);
     return {
       uid: annotationUID,
       // For volume-based measurements, use volumeId instead of SOPInstanceUID

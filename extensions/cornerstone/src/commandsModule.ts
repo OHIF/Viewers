@@ -367,6 +367,7 @@ function commandsModule({
       setPositionPresentation(positionPresentationId, presentationData);
     },
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
+      console.log('getNearbyToolData', nearbyToolData, element, canvasCoordinates);
       return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
     },
     getNearbyAnnotation({ element, canvasCoordinates }) {

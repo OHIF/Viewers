@@ -11,6 +11,7 @@ export type OHIFViewportActionCornersProps = {
 function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCornersProps) {
   // Use the viewport hover hook to track if viewport is hovered or active
   const { isHovered, isActive } = useViewportHover(viewportId);
+  console.log('OHIFViewportActionCornersComponent', viewportId, isHovered, isActive);
 
   const shouldShowCorners = isHovered || isActive;
 
