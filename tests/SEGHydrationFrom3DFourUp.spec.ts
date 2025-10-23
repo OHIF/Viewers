@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test.describe('(runthistest) 3D four up SEG hydration', async () => {
+test.describe('3D four up SEG hydration', async () => {
   test('should properly hydrate SEG from 3D four up layout', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page
@@ -24,7 +24,7 @@ test.describe('(runthistest) 3D four up SEG hydration', async () => {
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await page.waitForTimeout(10000);
+    await page.waitForTimeout(5000);
 
     await checkForScreenshot(
       page,
