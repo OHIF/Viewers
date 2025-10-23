@@ -52,9 +52,10 @@ export default {
       ({ activeViewportId, servicesManager, commandsManager, isHangingProtocolLayout }) =>
         async displaySetInstanceUID => {
           const { hangingProtocolService, uiNotificationService } = servicesManager.services;
+          const { displaySetService } = servicesManager.services;
           let updatedViewports = [];
           const viewportId = activeViewportId;
-
+          console.log('double click', { displaySetInstanceUID });
           try {
             updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
               viewportId,
@@ -71,6 +72,31 @@ export default {
               type: 'error',
               duration: 3000,
             });
+            return;
+          }
+
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+          console.log({
+            segUID: displaySetInstanceUID,
+            referencedUID: displaySet?.referencedDisplaySetInstanceUID,
+          });
+          if (displaySet?.Modality === 'SEG') {
+            try {
+              await commandsManager.run('hydrateSecondaryDisplaySet', {
+                displaySet,
+                viewportId,
+              });
+            } catch (error) {
+              console.log('error', error);
+              console.warn(error);
+              uiNotificationService.show({
+                title: i18n.t('StudyBrowser:SEG Hydration'),
+                message: i18n.t('StudyBrowser:The segmentation could not be loaded.'),
+                type: 'error',
+                duration: 3000,
+              });
+              return;
+            }
           }
 
           commandsManager.run('setDisplaySetsForViewports', {
