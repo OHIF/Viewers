@@ -149,7 +149,7 @@ Here is a schematic representation of our development workflow:
    - `git remote add upstream https://github.com/OHIF/Viewers.git`
 5. `yarn install --frozen-lockfile` to restore dependencies and link projects
 
-:::warning
+:::danger
 In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
 supply chain attacks by enforcing reproducible dependencies. That is, if the
 `yarn.lock` file is clean and does NOT reference compromised packages, then
