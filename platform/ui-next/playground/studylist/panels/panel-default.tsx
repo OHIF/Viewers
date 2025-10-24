@@ -3,9 +3,9 @@ import { Summary } from './panel-summary';
 
 export function PanelDefault() {
   return (
-    <Summary>
+    <Summary.Root>
       <Summary.Patient />
       <Summary.Workflows />
-    </Summary>
+    </Summary.Root>
   );
 }

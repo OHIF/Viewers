@@ -19,10 +19,10 @@ export function PanelContent({ study }: { study: StudyRow }) {
     <DndProvider backend={HTML5Backend}>
       <TooltipProvider delayDuration={200}>
         <div className="flex flex-col gap-3">
-          <Summary study={study}>
+          <Summary.Root data={study}>
             <Summary.Patient />
             <Summary.Workflows />
-          </Summary>
+          </Summary.Root>
           <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
             {thumbnails.map(item => (
               <Thumbnail

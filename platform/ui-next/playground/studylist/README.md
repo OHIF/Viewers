@@ -149,6 +149,13 @@ function LaunchMenuCell({ row, value }: { row: any; value: number }) {
 - Domain (prototype)
   - `study-list-table.tsx`, `columns.tsx`, `cells/launch-menu-cell.tsx`, `panels/*`, `patient-studies.json`, `types.ts`.
 
+### Panel Summary Compound API
+
+- `panels/panel-summary.tsx` exports a flexible `Summary` namespace for the right-hand preview header.
+  - Compose it as `<Summary.Root data={row}><Summary.Patient /><Summary.Workflows /></Summary.Root>` or mix slot primitives like `<Summary.Section>`, `<Summary.Icon>`, `<Summary.Name>`, `<Summary.MRN>`, `<Summary.Actions>`, and `<Summary.WorkflowButton>`.
+  - Provide `get` adapters on the root to map custom data shapes (`name`/`mrn` formatters), omit slots to hide fields, and pass custom `icon`, `label`, or `onClick` handlers for launch actions.
+  - Legacy helpers `Summary.Patient` and `Summary.Workflows` remain available as thin wrappers around the new slots for quick defaults.
+
 ## Accessibility and Labels
 
 - Headers should set `aria-sort` based on `column.getIsSorted()`.
