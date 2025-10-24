@@ -247,6 +247,7 @@ function commandsModule({
         // presentation so that when we put the referencedDisplaySet back in the viewport
         // it will have the correct segmentation representation hydrated
         const segmentationType = (() => {
+          //todo: check if PMAP modality should be handled such as SEG
           if (displaySet.Modality !== 'SEG') {
             return SegmentationRepresentations.Contour;
           }
