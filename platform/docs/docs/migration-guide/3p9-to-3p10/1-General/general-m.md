@@ -57,7 +57,7 @@ yarn run dev
 
 After:
 ```bash
-yarn install
+yarn install --frozen-lockfile
 yarn run dev
 ```
 
