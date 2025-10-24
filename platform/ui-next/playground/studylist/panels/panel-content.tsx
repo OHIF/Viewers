@@ -1,10 +1,10 @@
 import React from 'react';
-import { Thumbnail } from '../../../src/components/Thumbnail';
-import { TooltipProvider } from '../../../src/components/Tooltip';
-import { Table, TableHeader, TableRow, TableHead } from '../../../src/components/Table';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Thumbnail } from '../../../src/components/Thumbnail';
+import { TooltipProvider } from '../../../src/components/Tooltip';
 import type { StudyRow } from '../types';
+import { Summary } from './panel-summary';
 
 export function PanelContent({ study }: { study: StudyRow }) {
   const seriesCount = React.useMemo(() => Math.floor(Math.random() * 7) + 3, []);
@@ -18,18 +18,11 @@ export function PanelContent({ study }: { study: StudyRow }) {
   return (
     <DndProvider backend={HTML5Backend}>
       <TooltipProvider delayDuration={200}>
-        <div className="flex flex-col gap-1">
-          <Table noScroll>
-            <TableHeader className="border-0 [&_tr]:border-b-0">
-              <TableRow className="border-b-0">
-                <TableHead className="bg-background sticky top-0 z-10 rounded-t-md">
-                  <div className="flex items-center">
-                    <span className="text-foreground text-xl font-medium">Studies</span>
-                  </div>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-          </Table>
+        <div className="flex flex-col gap-3">
+          <Summary study={study}>
+            <Summary.Patient />
+            <Summary.Workflows />
+          </Summary>
           <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
             {thumbnails.map(item => (
               <Thumbnail
