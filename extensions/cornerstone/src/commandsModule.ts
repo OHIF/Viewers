@@ -236,16 +236,31 @@ function commandsModule({
         return;
       }
 
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+      if (!viewport) {
+        return;
+      }
+
       if (displaySet.isOverlayDisplaySet) {
         // update the previously stored segmentationPresentation with the new viewportId
         // presentation so that when we put the referencedDisplaySet back in the viewport
         // it will have the correct segmentation representation hydrated
+        const segmentationType = (() => {
+          if (displaySet.Modality !== 'SEG') {
+            return SegmentationRepresentations.Contour;
+          }
+
+          if (viewport.type === CoreEnums.ViewportType.VOLUME_3D) {
+            return SegmentationRepresentations.Surface;
+          }
+
+          return SegmentationRepresentations.Labelmap;
+        })();
+
         commandsManager.runCommand('updateStoredSegmentationPresentation', {
           displaySet,
-          type:
-            displaySet.Modality === 'SEG'
-              ? SegmentationRepresentations.Labelmap
-              : SegmentationRepresentations.Contour,
+          type: segmentationType,
         });
       }
 
