@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test.describe('(shouldrunthis) 3D four up SEG hydration', async () => {
+test.describe('3D four up SEG hydration', async () => {
   test('should properly hydrate SEG from 3D four up layout', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page.getByTestId('3D four up').click();
