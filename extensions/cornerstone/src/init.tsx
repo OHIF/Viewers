@@ -106,6 +106,12 @@ export default async function init({
     colorbarService.EVENTS.STATE_CHANGED,
   ]);
 
+  toolbarService.registerEventForToolbarUpdate(segmentationService, [
+    segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+    segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+    segmentationService.EVENTS.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
+  ]);
+
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
@@ -134,7 +140,8 @@ export default async function init({
   cornerstoneTools.segmentation.config.style.setStyle(
     { type: SegmentationRepresentations.Contour },
     {
-      renderFill: false,
+      renderFill: true,
+      fillAlpha: 0.6,
     }
   );
 

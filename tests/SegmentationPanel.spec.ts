@@ -10,8 +10,11 @@ test.beforeEach(async ({ page }) => {
 
 test('checks basic add, rename, delete segments from panel', async ({ page }) => {
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithTools-btn');
+  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
   await expect(segmentationPanel).toBeVisible();
+
+  // Switch to labelmap tab.
+  segmentationPanel.click();
 
   // Add segmentation
   const addSegmentationBtn = page.getByTestId('addSegmentation');
@@ -72,7 +75,7 @@ test('checks saved segmentations loads and jumps to slices', async ({ page }) =>
   await page.getByTestId('yes-hydrate-btn').click();
 
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithTools-btn');
+  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
   await expect(segmentationPanel).toBeVisible();
 
   // Confirm spleen jumps to slice 17

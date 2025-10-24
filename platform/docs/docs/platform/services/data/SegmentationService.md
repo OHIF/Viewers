@@ -34,6 +34,17 @@ createLabelmapForDisplaySet(
     }
   }
 )
+
+createContourForDisplaySet(
+  displaySet,
+  {
+    segmentationId?: string,
+    label: string,
+    segments?: {
+      [segmentIndex: number]: Partial<Segment>
+    }
+  }
+)
 ```
 
 ### Segmentation Management
@@ -85,17 +96,33 @@ interface Segmentation {
 
 ## Code Examples
 
-### Creating a Segmentation
+### Creating a Label Map Segmentation
 
 ```typescript
 const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
 const segmentationId = await segmentationService.createLabelmapForDisplaySet(
   displaySet,
   {
-    label: 'New Segmentation',
+    label: 'New Label Map Segmentation',
     segments: {
       1: {
-        label: 'First Segment',
+        label: 'First Label Map Segment',
+        active: true
+      }
+    }
+  }
+);
+
+### Creating a Label Map Segmentation
+
+const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+const segmentationId = await segmentationService.createContourForDisplaySet(
+  displaySet,
+  {
+    label: 'New Contour Segmentation',
+    segments: {
+      1: {
+        label: 'First Contour Segment',
         active: true
       }
     }

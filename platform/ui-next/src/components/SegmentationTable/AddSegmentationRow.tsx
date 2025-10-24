@@ -8,12 +8,21 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   const { t } = useTranslation('SegmentationTable');
 
-  const { onSegmentationAdd, data, disableEditing, mode, disabled } =
-    useSegmentationTableContext('AddSegmentationRow');
+  const {
+    onSegmentationAdd,
+    data,
+    disableEditing,
+    mode,
+    disabled,
+    segmentationRepresentationType,
+  } = useSegmentationTableContext('AddSegmentationRow');
 
-  const isEmpty = data.length === 0;
+  // Check if we have at least one segmentation of the representation type for the panel this component is contained in.
+  const hasRepresentationType =
+    (!segmentationRepresentationType && data.length > 0) ||
+    data.some(info => segmentationRepresentationType === info.representation?.type);
 
-  if (!isEmpty && mode === 'collapsed') {
+  if (hasRepresentationType && mode === 'collapsed') {
     return null;
   }
 
@@ -25,7 +34,9 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
     <div
       data-cy="addSegmentation"
       className={`group ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
-      onClick={() => !disabled && onSegmentationAdd('')}
+      onClick={() =>
+        !disabled && onSegmentationAdd({ segmentationId: '', segmentationRepresentationType })
+      }
     >
       {children}
       <div className="text-primary group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
@@ -33,7 +44,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
           {disabled ? <Icons.Info /> : <Icons.Add />}
         </div>
         <span className="text-[13px]">
-          {t(`${disabled ? 'Segmentation Not Supported' : 'Add Segmentation'}`)}
+          {t(disabled ? 'Segmentation not supported' : 'Add segmentation')}
         </span>
       </div>
     </div>

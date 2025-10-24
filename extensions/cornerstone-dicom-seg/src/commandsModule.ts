@@ -3,7 +3,7 @@ import { classes, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
-import { createReportDialogPrompt } from '@ohif/extension-default';
+import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
 import { DicomMetadataStore } from '@ohif/core';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
@@ -37,7 +37,7 @@ const commandsModule = ({
   servicesManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const { segmentationService, displaySetService, viewportGridService, toolGroupService } =
+  const { segmentationService, displaySetService, viewportGridService } =
     servicesManager.services as AppTypes.Services;
 
   const actions = {
@@ -307,6 +307,17 @@ const commandsModule = ({
         console.warn(e);
       }
     },
+    toggleActiveSegmentationUtility: ({ itemId: buttonId }) => {
+      const { uiState, setUIState } = useUIStateStore.getState();
+      const isButtonActive = uiState['activeSegmentationUtility'] === buttonId;
+      console.log('toggleActiveSegmentationUtility', isButtonActive, buttonId);
+      // if the button is active, clear the active segmentation utility
+      if (isButtonActive) {
+        setUIState('activeSegmentationUtility', null);
+      } else {
+        setUIState('activeSegmentationUtility', buttonId);
+      }
+    },
   };
 
   const definitions = {
@@ -325,6 +336,9 @@ const commandsModule = ({
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
+    },
+    toggleActiveSegmentationUtility: {
+      commandFn: actions.toggleActiveSegmentationUtility,
     },
   };
 

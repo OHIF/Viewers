@@ -65,6 +65,13 @@ export interface SegmentationTableContextType {
   showSegmentIndex?: boolean;
   renderInactiveSegmentations?: boolean;
 
+  // The type segmentations displayed/filtered in this table. If undefined, show all types.
+  segmentationRepresentationType?: string;
+
+  // The (last) selected segmentation ID for the representation type above.
+  // If the type above is undefined, then it will store the last active segmentation ID.
+  selectedSegmentationIdForType?: string;
+
   // Function handlers
   setShowConfig?: (show: boolean) => void;
   setRenderFill?: ({ type }: { type: string }, value: boolean) => void;
@@ -73,12 +80,19 @@ export interface SegmentationTableContextType {
   setFillAlpha?: ({ type }: { type: string }, value: number) => void;
   setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
   toggleRenderInactiveSegmentations?: () => void;
-  onSegmentationAdd?: (segmentationId: string) => void;
+  onSegmentationAdd?: ({
+    segmentationId,
+    segmentationRepresentationType,
+  }: {
+    segmentationId: string;
+    segmentationRepresentationType: string;
+  }) => void;
   onSegmentationClick?: (segmentationId: string) => void;
   onSegmentationDelete?: (segmentationId: string) => void;
   onSegmentAdd?: (segmentationId: string) => void;
   onSegmentClick?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentEdit?: (segmentationId: string, segmentIndex: number) => void;
+  onSegmentCopy?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentationEdit?: (segmentationId: string) => void;
   onSegmentColorClick?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentDelete?: (segmentationId: string, segmentIndex: number) => void;

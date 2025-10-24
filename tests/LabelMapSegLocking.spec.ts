@@ -22,6 +22,8 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
       }
     );
   });
+  await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
+
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
@@ -74,6 +76,9 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
       }
     );
   });
+
+  await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
+
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);

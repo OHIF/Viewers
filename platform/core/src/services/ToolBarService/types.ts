@@ -34,7 +34,7 @@ export type EvaluateObject = {
 
 export type ButtonOptions = {
   id: string;
-  type: 'range' | 'radio' | 'double-range' | 'custom';
+  type: 'range' | 'radio' | 'double-range' | 'custom' | 'checkbox' | 'select' | 'button';
   name?: string;
   min?: number;
   max?: number;
@@ -59,6 +59,7 @@ export type ButtonProps = {
   listeners?: Record<string, RunCommand>;
   options?: ButtonOptions[];
   buttonSection?: string | boolean;
+  isActive?: boolean;
 };
 
 export type Button = {

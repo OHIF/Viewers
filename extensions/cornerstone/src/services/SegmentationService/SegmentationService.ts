@@ -81,6 +81,8 @@ const EVENTS = {
   SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // loading completed for all segments
   SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
+  // fired when a contour annotation cut merge process is completed
+  ANNOTATION_CUT_MERGE_PROCESS_COMPLETED: 'event::annotation_cut_merge_process_completed',
 };
 
 const VALUE_TYPES = {};
@@ -351,6 +353,39 @@ class SegmentationService extends PubSubService {
       label?: string;
     }
   ): Promise<string> {
+    return this._createSegmentationForDisplaySet(displaySet, LABELMAP, options);
+  }
+
+  public async createContourForDisplaySet(
+    displaySet: AppTypes.DisplaySet,
+    options?: {
+      segmentationId?: string;
+      segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
+      FrameOfReferenceUID?: string;
+      label?: string;
+    }
+  ): Promise<string> {
+    return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
+  }
+
+  /**
+   * Private method to create segmentation for a display set with the specified type
+   *
+   * @param displaySet - The display set to create the segmentation for
+   * @param segmentationType - The type of segmentation (SegmentationRepresentations enum)
+   * @param options - Optional parameters for creating the segmentation
+   * @returns A promise that resolves to the created segmentation ID
+   */
+  private async _createSegmentationForDisplaySet(
+    displaySet: AppTypes.DisplaySet,
+    segmentationType: SegmentationRepresentations,
+    options?: {
+      segmentationId?: string;
+      segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
+      FrameOfReferenceUID?: string;
+      label?: string;
+    }
+  ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
@@ -375,7 +410,7 @@ class SegmentationService extends PubSubService {
     const segmentationPublicInput: cstTypes.SegmentationPublicInput = {
       segmentationId,
       representation: {
-        type: LABELMAP,
+        type: segmentationType,
         data: {
           imageIds: segImageIds,
           // referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
@@ -808,6 +843,15 @@ class SegmentationService extends PubSubService {
     cstSegmentation.config.style.resetToGlobalStyle();
   };
 
+  public getNextAvailableSegmentIndex(segmentationId: string): number {
+    const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
+    // grab the next available segment index based on the object keys,
+    // so basically get the highest segment index value + 1
+
+    const segmentKeys = Object.keys(csSegmentation.segments);
+    return segmentKeys.length === 0 ? 1 : Math.max(...segmentKeys.map(Number)) + 1;
+  }
+
   /**
    * Adds a new segment to the specified segmentation.
    * @param segmentationId - The ID of the segmentation to add the segment to.
@@ -841,10 +885,7 @@ class SegmentationService extends PubSubService {
 
     let segmentIndex = config.segmentIndex;
     if (!segmentIndex) {
-      // grab the next available segment index based on the object keys,
-      // so basically get the highest segment index value + 1
-      const segmentKeys = Object.keys(csSegmentation.segments);
-      segmentIndex = segmentKeys.length === 0 ? 1 : Math.max(...segmentKeys.map(Number)) + 1;
+      segmentIndex = this.getNextAvailableSegmentIndex(segmentationId);
     }
 
     // update the segmentation
@@ -1627,6 +1668,11 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_ADDED,
       this._onSegmentationAddedFromSource
     );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
+      this._onAnnotationCutMergeProcessCompletedFromSource
+    );
   }
 
   private getCornerstoneSegmentation(segmentationId: string) {
@@ -1876,6 +1922,13 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = evt.detail;
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      segmentationId,
+    });
+  };
+
+  private _onAnnotationCutMergeProcessCompletedFromSource = evt => {
+    const { segmentationId } = evt.detail;
+    this._broadcastEvent(this.EVENTS.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED, {
       segmentationId,
     });
   };

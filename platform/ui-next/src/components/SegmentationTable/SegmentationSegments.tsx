@@ -15,6 +15,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     onSegmentClick,
     onSegmentEdit,
     onSegmentDelete,
+    onSegmentCopy,
     data,
     showSegmentIndex = true,
   } = useSegmentationTableContext('SegmentationSegments');
@@ -116,6 +117,9 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
             const { locked, active, label, displayText } = segmentFromSegmentation;
             const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
+            // Secondary selection: segment is active, but its parent segmentation is inactive
+            const isSecondarySelected = active && !isActiveSegmentation;
+
             const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
 
             const segmentRowRef = (element: HTMLElement) => {
@@ -139,7 +143,10 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 // details={displayText}
                 description={displayText}
                 colorHex={cssColor}
-                isSelected={active}
+                // Primary selection only when part of the active segmentation
+                isSelected={active && isActiveSegmentation}
+                // Secondary selection tint when selected in an inactive segmentation
+                isSecondarySelected={isSecondarySelected}
                 isVisible={visible}
                 isLocked={locked}
                 disableEditing={disableEditing}
@@ -158,6 +165,11 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
                 onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
                 onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
                 onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
+                onCopy={
+                  onSegmentCopy
+                    ? () => onSegmentCopy(segmentation.segmentationId, segmentIndex)
+                    : undefined
+                }
               />
             );
 
