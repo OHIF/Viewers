@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.73...v3.12.0-beta.74) (2025-10-23)
+
+
+### Features
+
+* **jpeg2000:** Add 16-bit RGB support to JPEG2000 decoder  ([#5519](https://github.com/OHIF/Viewers/issues/5519)) ([a154443](https://github.com/OHIF/Viewers/commit/a1544432db42bf77864bb7df2f757cae819a4b4d))
+
+
+
+
+
+# [3.12.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.72...v3.12.0-beta.73) (2025-10-22)
+
+
+### Bug Fixes
+
+* Fixed the tooltip text of the window button, it was mistakenly written in Chinese in the en-us json ([#5513](https://github.com/OHIF/Viewers/issues/5513)) ([8b9445c](https://github.com/OHIF/Viewers/commit/8b9445c442d0a40b7e4393614313192bd006461b))
+
+
+
+
+
+# [3.12.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.71...v3.12.0-beta.72) (2025-10-22)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.12.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.70...v3.12.0-beta.71) (2025-10-21)
 
 
