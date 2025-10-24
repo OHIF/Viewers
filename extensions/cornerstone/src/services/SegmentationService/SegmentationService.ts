@@ -15,6 +15,7 @@ import {
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
+  utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
 
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
@@ -35,9 +36,14 @@ const {
   getLabelmapImageIds,
   helpers: { convertStackToVolumeLabelmap },
   state: { addColorLUT, updateLabelmapSegmentationImageReferences },
-  triggerSegmentationEvents: { triggerSegmentationRepresentationModified },
+  triggerSegmentationEvents: {
+    triggerSegmentationRepresentationModified,
+    triggerSegmentationDataModified,
+  },
 } = cstSegmentation;
 
+const { addSegmentationListener, removeRepresentationListener, removeAllSegmentationListeners } =
+  csToolsUtils.segmentation;
 export type SegmentRepresentation = {
   segmentIndex: number;
   color: csTypes.Color;
@@ -266,6 +272,10 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_ADDED,
       this._onSegmentationAddedFromSource
     );
+    eventTarget.removeEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
+      this._onSegmentationRepresentationRemovedFromSource
+    );
 
     this.reset();
   };
@@ -317,6 +327,7 @@ class SegmentationService extends PubSubService {
         representationTypeToUse
       ));
     }
+    addSegmentationListener(segmentationId, representationTypeToUse);
 
     await this._addSegmentationRepresentation(
       viewportId,
@@ -326,6 +337,10 @@ class SegmentationService extends PubSubService {
       isConverted,
       config
     );
+    // Trigger segmentation modified to ensure previously skipped Surface updates in 3D viewports
+    if (representationTypeToUse === csToolsEnums.SegmentationRepresentations.Surface) {
+      triggerSegmentationDataModified(segmentationId);
+    }
 
     if (!suppressEvents) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, { segmentationId });
@@ -1165,6 +1180,7 @@ class SegmentationService extends PubSubService {
    */
   public remove(segmentationId: string): void {
     cstSegmentation.state.removeSegmentation(segmentationId);
+    removeAllSegmentationListeners(segmentationId);
   }
 
   public removeAllSegmentations(): void {
@@ -1627,6 +1643,11 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_ADDED,
       this._onSegmentationAddedFromSource
     );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
+      this._onSegmentationRepresentationRemovedFromSource
+    );
   }
 
   private getCornerstoneSegmentation(segmentationId: string) {
@@ -1816,7 +1837,7 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     isVisible: boolean,
-    type?: csToolsEnums.SegmentationRepresentations
+    type?: SegmentationRepresentations
   ) {
     cstSegmentation.config.visibility.setSegmentIndexVisibility(
       viewportId,
@@ -1878,6 +1899,17 @@ class SegmentationService extends PubSubService {
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
       segmentationId,
     });
+  };
+
+  private _onSegmentationRepresentationRemovedFromSource = (
+    evt: cstTypes.EventTypes.SegmentationRepresentationRemovedEventType
+  ) => {
+    const { segmentationId, type } = evt.detail;
+
+    // Remove all listeners for this segmentation representation.
+    // Note: This prevents triggering surface representation updates when updating labelmaps
+    // in layouts that do not have any 3D viewports enabled.
+    removeRepresentationListener(segmentationId, type);
   };
 }
 
