@@ -3,14 +3,19 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 
 import { cn } from '../../lib/utils';
+import { zhCN } from 'date-fns/locale';
+
+import { useTranslation } from 'react-i18next';
 
 import { buttonVariants } from '../Button';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+  const { i18n } = useTranslation();
   return (
     <DayPicker
+      locale={i18n.language === 'zh' ? zhCN : undefined}
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
       captionLayout="dropdown"
