@@ -289,7 +289,7 @@ class SegmentationService extends PubSubService {
     const segmentation = this.getSegmentation(segmentationId);
     const csViewport = this.getAndValidateViewport(viewportId);
 
-    if (!csViewport || !segmentation) {
+    if (!csViewport) {
       return;
     }
 
