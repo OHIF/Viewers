@@ -127,20 +127,21 @@ the `--frozen-lockfile` flag.
 
 :::danger
 Updating the package.json must be done with care so as to avoid incorporating
-vulnerable third-party packages and/or versions. Please research the added
+vulnerable, third-party packages and/or versions. Please research the added
 packages and/or versions for vulnerabilities.
 
 Here is what you should do when adding new packages and/or versions prior to
 committing and pushing your code:
-1. do your due diligence researching the added packages and/or versions for vulnerabilities
-2. update the `package.json` files
-3. execute `yarn install`
-4. execute `bun install --config=./bunfig.no-frozen-lockfile.toml`
-5. execute both `yarn audit` and `bun audit` for a last security check
-6. include both the `yarn.lock` and `bun.lock` files as part of your commit
+1. Do your due diligence researching the added packages and/or versions for vulnerabilities.
+2. Update the `package.json` files.
+3. Execute `yarn run install:update-lockfile`. This updates both the `yarn.lock` and
+the `bun.lock` files.
+4. Execute `yarn run audit` for a last security check. This runs both `yarn audit` and
+`bun audit`.
+6. Include both the `yarn.lock` and `bun.lock` files as part of your commit.
 
 If any of your research or auditing for vulnerabilities find HIGH risk vulnerabilities
-do NOT commit or push your changes!
+do NOT commit or push your changes! Low and moderate risk vulnerabilities are acceptable.
 :::
 
 ## Troubleshooting
