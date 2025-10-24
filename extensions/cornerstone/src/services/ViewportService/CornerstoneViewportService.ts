@@ -714,7 +714,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // is being used to navigate to the initial view position for measurement
     // navigation and other navigation forcing specific views.
     let initialImageIndexToUse =
-      presentations?.positionPresentation?.initialImageIndex ?? <number>initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ?? (initialImageIndex as number);
 
     const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
@@ -935,7 +935,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // seems like a hack but we need the actor to be ready first before
     // we set the properties
-    const debounceViewportCallback = (callback: () => void) => setTimeout(callback, 0);
+    const timeoutViewportCallback = (callback: () => void) => setTimeout(callback, 0);
 
     // filter overlay display sets (e.g. segmentation) since they will get handled below via the segmentation service
     const filteredVolumeInputArray = volumeInputArray
@@ -996,7 +996,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           }
 
           if (viewport.type === csEnums.ViewportType.VOLUME_3D) {
-            debounceViewportCallback(() => {
+            timeoutViewportCallback(() => {
               viewportGridService.setDisplaySetsForViewport({
                 viewportId: viewport.id,
                 displaySetInstanceUIDs: [backgroundDisplaySet[0].displaySetInstanceUID],
@@ -1019,7 +1019,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewport.render();
 
     volumesProperties.forEach(({ properties, volumeId }) => {
-      debounceViewportCallback(() => {
+      timeoutViewportCallback(() => {
         viewport.setProperties(properties, volumeId);
         viewport.render();
       });
