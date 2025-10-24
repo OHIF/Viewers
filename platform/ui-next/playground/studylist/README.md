@@ -151,10 +151,46 @@ function LaunchMenuCell({ row, value }: { row: any; value: number }) {
 
 ### Panel Summary Compound API
 
-- `panels/panel-summary.tsx` exports a flexible `Summary` namespace for the right-hand preview header.
-  - Compose it as `<Summary.Root data={row}><Summary.Patient /><Summary.Workflows /></Summary.Root>` or mix slot primitives like `<Summary.Section>`, `<Summary.Icon>`, `<Summary.Name>`, `<Summary.MRN>`, `<Summary.Actions>`, and `<Summary.WorkflowButton>`.
-  - Provide `get` adapters on the root to map custom data shapes (`name`/`mrn` formatters), omit slots to hide fields, and pass custom `icon`, `label`, or `onClick` handlers for launch actions.
-  - Legacy helpers `Summary.Patient` and `Summary.Workflows` remain available as thin wrappers around the new slots for quick defaults.
+- `panels/panel-summary.tsx` exports a `Summary` namespace that can render the preview header however you like. The most direct usage is:
+  ```tsx
+  <Summary.Root data={row}>
+    <Summary.Patient />
+    <Summary.Workflows />
+  </Summary.Root>
+  ```
+- Slot breakdown (each slot can be omitted or reordered):
+  - `Summary.Root<T>({ data, get, className, children })` – supplies context; `get.name`/`get.mrn` let you adapt any data shape.
+  - `Summary.Section({ variant = 'card' | 'row' | 'ghost', align = 'center', gap, ...divProps })` – layout wrapper with configurable alignment, spacing, and full div props/ref forwarding.
+  - `Summary.Icon({ src, alt, size, hideWhenEmpty })`, `Summary.Name({ showTitleOnTruncate })`, `Summary.MRN({ prefix, showTitleOnTruncate })`, `Summary.Meta`, `Summary.Field({ of, muted, showTitleOnTruncate })` – compose the identity block you need.
+  - `Summary.Actions({ direction, justify, wrap, gap })`, `Summary.Action({ as, iconPosition = 'end', disabledReason, ...htmlProps })`, `Summary.WorkflowButton({ iconPosition = 'end', ... })` – build CTAs; actions pass the current `data` to handlers and can render as links or arbitrary elements via `as`.
+  - `Summary.Empty({ icon, iconSrc, iconAlt, iconSize, section })` – optional placeholder that only renders when `data` is null.
+  - Legacy helpers `Summary.Patient` (thin wrapper over Section/Name/MRN) and `Summary.Workflows` (**deprecated**, prefer `Summary.WorkflowButton`) remain for quick defaults.
+- Example showing reordering, custom getters, and additional metadata:
+  ```tsx
+  import patientSummaryIcon from './assets/PatientStudyList.svg'
+
+  <Summary.Root
+    data={study}
+    get={{
+      name: (s) => s.patient,
+      mrn: (s) => (s.mrn ? <>MRN: <strong>{s.mrn}</strong></> : ''),
+    }}
+  >
+    <Summary.Empty>Select a study to preview</Summary.Empty>
+    <Summary.Actions>
+      <Summary.WorkflowButton iconPosition="start" onClick={(s) => launchDefault(s)} />
+      <Summary.Action as="a" href={`/viewer/${study?.accession}`} label="Open by accession" iconPosition="end" />
+    </Summary.Actions>
+    <Summary.Section align='start'>
+      <Summary.Icon src={patientSummaryIcon} alt="Patient" />
+      <div className="min-w-0">
+        <Summary.Name />
+        <Summary.MRN />
+        <Summary.Field of={(s) => s.accession} muted />
+      </div>
+    </Summary.Section>
+  </Summary.Root>
+  ```
 
 ## Accessibility and Labels
 

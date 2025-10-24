@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ElementType } from 'react';
 import type { StudyRow } from '../types';
 import { cn } from '../../../src/lib/utils';
 import patientSummaryIcon from '../assets/PatientStudyList.svg';
@@ -51,10 +52,10 @@ function SummaryRoot<T extends { patient?: unknown; mrn?: unknown } = StudyRow>(
     () => ({
       name:
         get?.name ??
-        ((item: T) => ((item as unknown as StudyRow | undefined)?.patient ?? '') as React.ReactNode),
+        ((item: T) => ((item as any)?.patient ?? '') as React.ReactNode),
       mrn:
         get?.mrn ??
-        ((item: T) => ((item as unknown as StudyRow | undefined)?.mrn ?? '') as React.ReactNode),
+        ((item: T) => ((item as any)?.mrn ?? '') as React.ReactNode),
     }),
     [get]
   );
@@ -66,19 +67,54 @@ function SummaryRoot<T extends { patient?: unknown; mrn?: unknown } = StudyRow>(
   );
 }
 
-type SummarySectionProps = {
-  variant?: 'card' | 'row';
-  className?: string;
-  children?: React.ReactNode;
+type SummarySectionProps = React.HTMLAttributes<HTMLDivElement> & {
+  variant?: 'card' | 'row' | 'ghost';
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  gap?: number;
 };
 
-function SummarySection({ variant = 'card', className, children }: SummarySectionProps) {
-  const base =
-    variant === 'card'
-      ? 'border-border/50 bg-muted/40 rounded-lg border px-4 py-3'
-      : 'border-border/50 rounded-lg border px-4 py-3';
-  return <div className={cn(base, 'flex items-center gap-3', className)}>{children}</div>;
-}
+const SummarySection = React.forwardRef<HTMLDivElement, SummarySectionProps>(
+  (
+    {
+      variant = 'card',
+      align = 'center',
+      gap = 3,
+      className,
+      style,
+      children,
+      ...rest
+    },
+    ref
+  ) => {
+    const baseClassMap = {
+      card: 'border-border/50 bg-muted/40 rounded-lg border px-4 py-3',
+      row: 'border-border/50 rounded-lg border px-4 py-3',
+      ghost: 'px-0 py-0',
+    } as const;
+    const baseClass = baseClassMap[variant] ?? baseClassMap.card;
+
+    const alignClassMap = {
+      start: 'items-start',
+      end: 'items-end',
+      stretch: 'items-stretch',
+      center: 'items-center',
+    } as const;
+    const alignmentClass = alignClassMap[align] ?? alignClassMap.center;
+
+    return (
+      <div
+        ref={ref}
+        className={cn(baseClass, 'flex', alignmentClass, className)}
+        style={{ gap: `${gap * 0.25}rem`, ...style }}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+
+SummarySection.displayName = 'SummarySection';
 
 type SummaryIconProps = {
   src?: string;
@@ -121,8 +157,6 @@ function SummaryIcon({
     <img
       src={src}
       alt={alt}
-      width={size}
-      height={size}
       className={cn('shrink-0', className)}
       style={{ width: size, height: size }}
     />
@@ -133,19 +167,28 @@ type SummaryNameProps<T = StudyRow> = {
   placeholder?: React.ReactNode;
   className?: string;
   children?: (value: React.ReactNode, data: T | null) => React.ReactNode;
+  showTitleOnTruncate?: boolean;
 };
 
 function SummaryName<T = StudyRow>({
   placeholder = 'Select a study',
   className,
   children,
+  showTitleOnTruncate = true,
 }: SummaryNameProps<T>) {
   const { data, get } = useSummaryContext<T>();
   const value = data ? get.name(data) : null;
   const content = value ?? placeholder;
+  const title =
+    showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
+      ? String(value)
+      : undefined;
 
   return (
-    <span className={cn('text-foreground truncate text-base font-medium leading-tight', className)}>
+    <span
+      title={title}
+      className={cn('text-foreground truncate text-base font-medium leading-tight', className)}
+    >
       {typeof children === 'function' ? children(content, data) : content}
     </span>
   );
@@ -156,6 +199,7 @@ type SummaryMRNProps<T = StudyRow> = {
   prefix?: React.ReactNode;
   className?: string;
   children?: (value: React.ReactNode, data: T | null) => React.ReactNode;
+  showTitleOnTruncate?: boolean;
 };
 
 function SummaryMRN<T = StudyRow>({
@@ -163,6 +207,7 @@ function SummaryMRN<T = StudyRow>({
   prefix,
   className,
   children,
+  showTitleOnTruncate = true,
 }: SummaryMRNProps<T>) {
   const { data, get } = useSummaryContext<T>();
   const value = data ? get.mrn(data) : null;
@@ -179,14 +224,21 @@ function SummaryMRN<T = StudyRow>({
   );
 
   return (
-    <span className={cn('text-muted-foreground truncate text-sm leading-tight', className)}>
+    <span
+      title={
+        showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
+          ? String(value)
+          : undefined
+      }
+      className={cn('text-muted-foreground truncate text-sm leading-tight', className)}
+    >
       {typeof children === 'function' ? children(value, data) : baseContent}
     </span>
   );
 }
 
 function SummaryMeta({ className, children }: { className?: string; children?: React.ReactNode }) {
-  if (!children) {
+  if (children == null) {
     return null;
   }
   return (
@@ -196,11 +248,53 @@ function SummaryMeta({ className, children }: { className?: string; children?: R
   );
 }
 
-function SummaryActions({ className, children }: { className?: string; children?: React.ReactNode }) {
-  return <div className={cn('flex flex-col gap-2', className)}>{children}</div>;
-}
+type SummaryActionsProps = React.HTMLAttributes<HTMLDivElement> & {
+  direction?: 'column' | 'row';
+  gap?: number;
+  wrap?: boolean;
+  justify?: 'start' | 'end' | 'between' | 'center';
+};
 
-type SummaryActionProps<T = StudyRow> = {
+const SummaryActions = React.forwardRef<HTMLDivElement, SummaryActionsProps>(
+  (
+    {
+      direction = 'column',
+      gap = 2,
+      wrap = false,
+      justify = 'start',
+      className,
+      style,
+      children,
+      ...rest
+    },
+    ref
+  ) => {
+    const directionClass = direction === 'row' ? 'flex-row' : 'flex-col';
+
+    const justifyClassMap = {
+      start: 'justify-start',
+      end: 'justify-end',
+      between: 'justify-between',
+      center: 'justify-center',
+    } as const;
+    const justifyClass = justifyClassMap[justify] ?? justifyClassMap.start;
+
+    return (
+      <div
+        ref={ref}
+        className={cn('flex', directionClass, justifyClass, className)}
+        style={{ gap: `${gap * 0.25}rem`, flexWrap: wrap ? 'wrap' : undefined, ...style }}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+
+SummaryActions.displayName = 'SummaryActions';
+
+type SummaryActionOwnProps<T = StudyRow> = {
   label?: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: (data: T | null) => void;
@@ -208,51 +302,150 @@ type SummaryActionProps<T = StudyRow> = {
   disabledReason?: string;
   className?: string;
   children?: React.ReactNode;
+  as?: ElementType;
+  href?: string;
+  iconPosition?: 'start' | 'end';
+  iconSize?: number;
 };
 
-function SummaryAction<T = StudyRow>({
-  label,
-  icon,
-  onClick,
-  disabled,
-  disabledReason,
-  className,
-  children,
-}: SummaryActionProps<T>) {
+type SummaryActionProps<T = StudyRow> = SummaryActionOwnProps<T> &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof SummaryActionOwnProps<T> | 'onClick'>;
+
+const SummaryActionInner = <T = StudyRow>(
+  {
+    label,
+    icon,
+    onClick,
+    disabled,
+    disabledReason,
+    className,
+    children,
+    as: Component = 'button',
+    href,
+    iconPosition = 'end',
+    iconSize = 24,
+    style,
+    ...rest
+  }: SummaryActionProps<T>,
+  ref: React.ForwardedRef<HTMLElement>
+) => {
   const { data } = useSummaryContext<T>();
   const isDisabled = disabled ?? !data;
   const titleAttr = isDisabled && disabledReason ? String(disabledReason) : undefined;
+  const id = React.useId();
+  const reasonId = `${id}-reason`;
 
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        if (!isDisabled) {
-          onClick?.(data ?? null);
-        }
-      }}
-      disabled={isDisabled}
-      aria-disabled={isDisabled}
-      title={titleAttr}
-      className={cn(
-        'border-border/50 flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition',
-        isDisabled
-          ? 'cursor-not-allowed opacity-50'
-          : 'hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-        className
-      )}
+  const iconNode = icon ? (
+    <span
+      className="text-primary shrink-0"
+      aria-hidden
+      style={{ width: iconSize, height: iconSize }}
     >
+      {icon}
+    </span>
+  ) : null;
+
+  const leadingContent =
+    iconNode && iconPosition === 'start' ? (
+      <span className="flex items-center gap-2 text-foreground text-base font-medium leading-tight">
+        {iconNode}
+        {children ?? label}
+      </span>
+    ) : (
       <span className="text-foreground text-base font-medium leading-tight">
         {children ?? label}
       </span>
-      {icon ? (
-        <span className="text-primary h-6 w-6 shrink-0" aria-hidden>
-          {icon}
-        </span>
-      ) : null}
-    </button>
+    );
+
+  const trailingContent = iconNode && iconPosition === 'end' ? iconNode : null;
+
+  const srOnly =
+    isDisabled && disabledReason ? (
+      <span id={reasonId} className="sr-only">
+        {disabledReason}
+      </span>
+    ) : null;
+
+  const commonClassName = cn(
+    'border-border/50 flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left transition',
+    isDisabled
+      ? 'cursor-not-allowed opacity-50'
+      : 'hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    className
   );
-}
+
+  const commonProps = {
+    className: commonClassName,
+    style,
+    'aria-disabled': isDisabled || undefined,
+    title: titleAttr,
+    'aria-describedby': isDisabled && disabledReason ? reasonId : undefined,
+  };
+
+  const handleActivate = (event: React.MouseEvent<HTMLElement>) => {
+    if (isDisabled) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    onClick?.(data ?? null);
+  };
+
+  if (Component === 'button') {
+    return (
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type="button"
+        disabled={isDisabled}
+        onClick={handleActivate}
+        {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+        {...commonProps}
+      >
+        {srOnly}
+        {leadingContent}
+        {trailingContent}
+      </button>
+    );
+  }
+
+  if (Component === 'a') {
+    return (
+      <a
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={isDisabled ? undefined : href}
+        onClick={handleActivate}
+        {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        {...commonProps}
+      >
+        {srOnly}
+        {leadingContent}
+        {trailingContent}
+      </a>
+    );
+  }
+
+  const Comp = Component as ElementType;
+
+  return (
+    <Comp
+      ref={ref}
+      onClick={handleActivate}
+      {...(rest as Record<string, unknown>)}
+      {...commonProps}
+    >
+      {srOnly}
+      {leadingContent}
+      {trailingContent}
+    </Comp>
+  );
+};
+
+type SummaryActionComponentType = <T = StudyRow>(
+  props: SummaryActionProps<T> & { ref?: React.Ref<HTMLElement> }
+) => React.ReactElement | null;
+
+const SummaryAction = React.forwardRef(SummaryActionInner) as SummaryActionComponentType;
+SummaryAction.displayName = 'SummaryAction';
 
 type SummaryWorkflowButtonProps<T = StudyRow> = {
   label?: React.ReactNode;
@@ -261,34 +454,58 @@ type SummaryWorkflowButtonProps<T = StudyRow> = {
   disabledReason?: string;
   className?: string;
   icon?: React.ReactNode;
-};
+  iconPosition?: 'start' | 'end';
+  iconSize?: number;
+  as?: ElementType;
+} & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
 
-function SummaryWorkflowButton<T = StudyRow>({
-  label = 'Launch workflow',
-  onClick,
-  disabled,
-  disabledReason,
-  className,
-  icon = <Icons.LaunchArrow />,
-}: SummaryWorkflowButtonProps<T>) {
+const SummaryWorkflowButtonInner = <T = StudyRow>(
+  {
+    label = 'Launch workflow',
+    onClick,
+    disabled,
+    disabledReason,
+    className,
+    icon = <Icons.LaunchArrow />,
+    iconPosition,
+    iconSize,
+    as,
+    style,
+    ...rest
+  }: SummaryWorkflowButtonProps<T>,
+  ref: React.ForwardedRef<HTMLElement>
+) => {
   const { data } = useSummaryContext<T>();
   const computedDisabled = disabled ?? !data;
 
   return (
     <SummaryAction<T>
+      ref={ref}
       label={label}
       icon={icon}
       className={className}
+      style={style}
       disabled={computedDisabled}
       disabledReason={disabledReason ?? 'Select a study to launch'}
+      iconPosition={iconPosition}
+      iconSize={iconSize}
+      as={as}
       onClick={(item) => {
         if (!computedDisabled && item) {
           onClick?.(item);
         }
       }}
+      {...rest}
     />
   );
-}
+};
+
+type SummaryWorkflowButtonComponent = <T = StudyRow>(
+  props: SummaryWorkflowButtonProps<T> & { ref?: React.Ref<HTMLElement> }
+) => React.ReactElement | null;
+
+const SummaryWorkflowButton = React.forwardRef(SummaryWorkflowButtonInner) as SummaryWorkflowButtonComponent;
+SummaryWorkflowButton.displayName = 'SummaryWorkflowButton';
 
 type SummaryPatientProps = {
   placeholder?: React.ReactNode;
@@ -298,6 +515,9 @@ type SummaryPatientProps = {
   hideMrn?: boolean;
   iconAlt?: string;
   iconSrc?: string;
+  align?: SummarySectionProps['align'];
+  gap?: number;
+  variant?: SummarySectionProps['variant'];
 };
 
 function SummaryPatient({
@@ -308,9 +528,12 @@ function SummaryPatient({
   hideMrn,
   iconAlt = '',
   iconSrc = patientSummaryIcon,
+  align,
+  gap,
+  variant,
 }: SummaryPatientProps) {
   return (
-    <SummarySection className={className}>
+    <SummarySection className={className} align={align} gap={gap} variant={variant}>
       {!hideIcon && <SummaryIcon src={iconSrc} alt={iconAlt} size={33} />}
       <div className="flex min-w-0 flex-col">
         {!hideName && <SummaryName placeholder={placeholder} />}
@@ -320,15 +543,9 @@ function SummaryPatient({
   );
 }
 
-type SummaryWorkflowsProps<T = StudyRow> = {
-  label?: React.ReactNode;
-  onClick?: (data: T) => void;
-  className?: string;
-  disabled?: boolean;
-  disabledReason?: string;
-  icon?: React.ReactNode;
-};
+type SummaryWorkflowsProps<T = StudyRow> = SummaryWorkflowButtonProps<T>;
 
+/** @deprecated Prefer <Summary.WorkflowButton /> for new usage. */
 function SummaryWorkflows<T = StudyRow>({
   label = 'Launch workflow',
   onClick,
@@ -336,6 +553,9 @@ function SummaryWorkflows<T = StudyRow>({
   disabled,
   disabledReason,
   icon,
+  iconPosition,
+  iconSize,
+  ...rest
 }: SummaryWorkflowsProps<T>) {
   return (
     <SummaryWorkflowButton<T>
@@ -345,11 +565,104 @@ function SummaryWorkflows<T = StudyRow>({
       disabled={disabled}
       disabledReason={disabledReason}
       icon={icon}
+      iconPosition={iconPosition}
+      iconSize={iconSize}
+      {...rest}
     />
   );
 }
 
-export const Summary = Object.assign(SummaryRoot, {
+type SummaryEmptyProps = {
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
+  iconSrc?: string;
+  iconAlt?: string;
+  iconSize?: number;
+  section?: SummarySectionProps;
+};
+
+function SummaryEmpty({
+  children,
+  icon,
+  iconSrc = patientSummaryIcon,
+  iconAlt = '',
+  iconSize = 33,
+  section,
+}: SummaryEmptyProps) {
+  const { data } = useSummaryContext<unknown>();
+
+  if (data) {
+    return null;
+  }
+
+  return (
+    <SummarySection variant="card" {...section}>
+      {icon ?? <SummaryIcon src={iconSrc} alt={iconAlt} size={iconSize} />}
+      <span className="text-muted-foreground text-base font-medium leading-tight">
+        {children ?? 'Select a study'}
+      </span>
+    </SummarySection>
+  );
+}
+
+type SummaryFieldProps<T = StudyRow> = {
+  of: (data: T) => React.ReactNode;
+  hideWhenEmpty?: boolean;
+  muted?: boolean;
+  className?: string;
+  showTitleOnTruncate?: boolean;
+};
+
+function SummaryField<T = StudyRow>({
+  of,
+  hideWhenEmpty = true,
+  muted,
+  className,
+  showTitleOnTruncate = true,
+}: SummaryFieldProps<T>) {
+  const { data } = useSummaryContext<T>();
+  const value = data ? of(data) : null;
+  const isEmpty = value === null || value === undefined || value === '';
+
+  if (hideWhenEmpty && isEmpty) {
+    return null;
+  }
+
+  return (
+    <span
+      className={cn(
+        muted ? 'text-muted-foreground' : 'text-foreground',
+        'truncate text-sm leading-tight',
+        className
+      )}
+      title={
+        showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
+          ? String(value)
+          : undefined
+      }
+    >
+      {value}
+    </span>
+  );
+}
+
+type SummaryNamespace = typeof SummaryRoot & {
+  Root: typeof SummaryRoot;
+  Section: typeof SummarySection;
+  Icon: typeof SummaryIcon;
+  Name: typeof SummaryName;
+  MRN: typeof SummaryMRN;
+  Meta: typeof SummaryMeta;
+  Actions: typeof SummaryActions;
+  Action: SummaryActionComponentType;
+  WorkflowButton: SummaryWorkflowButtonComponent;
+  Patient: typeof SummaryPatient;
+  Workflows: typeof SummaryWorkflows;
+  Empty: typeof SummaryEmpty;
+  Field: typeof SummaryField;
+};
+
+export const Summary: SummaryNamespace = Object.assign(SummaryRoot, {
   Root: SummaryRoot,
   Section: SummarySection,
   Icon: SummaryIcon,
@@ -361,6 +674,8 @@ export const Summary = Object.assign(SummaryRoot, {
   WorkflowButton: SummaryWorkflowButton,
   Patient: SummaryPatient,
   Workflows: SummaryWorkflows,
+  Empty: SummaryEmpty,
+  Field: SummaryField,
 });
 
 export const PanelSummary = Summary;
