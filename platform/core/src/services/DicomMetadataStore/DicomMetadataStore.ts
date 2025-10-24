@@ -2,6 +2,7 @@ import dcmjs from 'dcmjs';
 
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 import createStudyMetadata from './createStudyMetadata';
+import addProxyFields from '../../utils/addProxyFields';
 
 const EVENTS = {
   STUDY_ADDED: 'event::dicomMetadataStore:studyAdded',
@@ -70,7 +71,7 @@ function _getStudy(StudyInstanceUID) {
  * @returns {*} A series object
  */
 function _getSeries(StudyInstanceUID, SeriesInstanceUID) {
-  if(!StudyInstanceUID) {
+  if (!StudyInstanceUID) {
     const series = _model.studies.map(study => study.series).flat();
     return series.find(aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID);
   }
@@ -176,7 +177,7 @@ const BaseImplementation = {
       naturalizedDataset = dicomJSONDataset;
     }
 
-    const { StudyInstanceUID } = naturalizedDataset;
+    const { StudyInstanceUID, NumberOfFrames: numberOfFrames } = naturalizedDataset;
 
     let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
@@ -185,10 +186,19 @@ const BaseImplementation = {
       study = _model.studies[_model.studies.length - 1];
     }
 
+    naturalizedDataset = numberOfFrames > 1 ? addProxyFields(naturalizedDataset) : naturalizedDataset;
+
     study.addInstanceToSeries(naturalizedDataset);
   },
   addInstances(instances, madeInClient = false) {
-    const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
+    const { StudyInstanceUID, SeriesInstanceUID, NumberOfFrames } = instances[0];
+    // For multiframe images (NumberOfFrames > 1), wrap each instance with a metadata proxy
+    // to enable fallback access for key image plane fields. This allows fields like
+    // ImagePositionPatient, ImageOrientationPatient, and PixelSpacing to be transparently
+    // resolved from parent or shared metadata if they are not directly present on the instance directly
+    if (NumberOfFrames > 1) {
+      instances = instances.map(instance => addProxyFields(instance));
+    }
 
     let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
