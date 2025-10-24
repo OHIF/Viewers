@@ -16,6 +16,7 @@
     "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "yarn run build --watch",
     "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.playground.js",
+    "build:playground": "cross-env NODE_ENV=production webpack --config .webpack/webpack.playground.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build"
@@ -65,7 +66,8 @@
     "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
-    "@babel/plugin-transform-private-property-in-object": "7.27.1"
+    "@babel/plugin-transform-private-property-in-object": "7.27.1",
+    "copy-webpack-plugin": "10.2.4"
   },
   "keywords": [],
   "author": "OHIF",

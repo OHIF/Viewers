@@ -13,7 +13,7 @@ export function App() {
   const [selected, setSelected] = React.useState<StudyRow | null>(null)
   const previewDefaultSize = React.useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
-      const percent = (300 / window.innerWidth) * 100
+      const percent = (315 / window.innerWidth) * 100
       return Math.min(Math.max(percent, 15), 50)
     }
     return 30

@@ -158,6 +158,13 @@ function LaunchMenuCell({ row, value }: { row: any; value: number }) {
 
 - Start the UI Next dev server and navigate to `/studylist`.
 
+## Deploying to Netlify
+
+- Install workspace deps at repo root (`yarn install`) if you have not already.
+- Build the static playground bundle with `yarn --cwd platform/ui-next build:playground`. This runs webpack in production mode against `.webpack/webpack.playground.js`, extracts CSS, and copies any files under `playground/public/` (including `_redirects`) into the output.
+- Upload the contents of `platform/ui-next/dist/playground/` to Netlify (or point a Netlify site’s publish directory at that folder). The bundle contains `index.html`, hashed JS/CSS assets, and a `_redirects` file so routes such as `/studylist` stay functional on refresh.
+- Optional preflight: run `npx serve platform/ui-next/dist/playground` locally to confirm the build before uploading.
+
 ## Notes
 
 - Components are context-only where appropriate (no `table` prop for `FilterRow` and `ViewOptions`).
