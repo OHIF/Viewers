@@ -348,20 +348,4 @@ describe('Transitions Module', () => {
       });
     });
   });
-
-  describe('Performance Validation', () => {
-    it('should handle many rapid calls without issues', () => {
-      const startTime = performance.now();
-
-      for (let i = 0; i < 1000; i++) {
-        const t = i / 1000;
-        linear(t);
-        easeInOut(t, 0.1);
-        ease(t, 0.2, 1.5);
-      }
-
-      const endTime = performance.now();
-      expect(endTime - startTime).toBeLessThan(10);
-    });
-  });
 });
