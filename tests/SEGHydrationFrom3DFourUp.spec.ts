@@ -13,14 +13,10 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test.describe('3D four up SEG hydration', async () => {
+test.describe('(shouldrunthis) 3D four up SEG hydration', async () => {
   test('should properly hydrate SEG from 3D four up layout', async ({ page }) => {
     await page.getByTestId('Layout').click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^3D four up$/ })
-      .first()
-      .click();
+    await page.getByTestId('3D four up').click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
