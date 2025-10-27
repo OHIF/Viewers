@@ -16,7 +16,13 @@ import { Button } from '../../src/components/Button';
 import iconLeftBase from './assets/icon-left-base.svg';
 import settingsIcon from './assets/settings.svg';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../src/components/Dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../src/components/Select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../src/components/Select';
 import { Label } from '../../src/components/Label';
 
 export function App() {
@@ -25,7 +31,7 @@ export function App() {
   const [defaultMode, setDefaultMode] = React.useState<string | null>(null);
   const previewDefaultSize = React.useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
-      const percent = (315 / window.innerWidth) * 100;
+      const percent = (325 / window.innerWidth) * 100;
       return Math.min(Math.max(percent, 15), 50);
     }
     return 30;
@@ -86,10 +92,10 @@ function SidePanel({
   defaultMode,
   onDefaultModeChange,
 }: {
-  selected: StudyRow | null
-  onClose: () => void
-  defaultMode: string | null
-  onDefaultModeChange: (v: string | null) => void
+  selected: StudyRow | null;
+  onClose: () => void;
+  defaultMode: string | null;
+  onDefaultModeChange: (v: string | null) => void;
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const selectId = React.useId();
@@ -121,7 +127,10 @@ function SidePanel({
           />
         </Button>
       </div>
-      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+      <Dialog
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+      >
         <DialogContent
           className="max-w-none"
           style={{ width: 550, height: 350, maxWidth: 550, maxHeight: 350 }}
@@ -130,23 +139,38 @@ function SidePanel({
             <DialogTitle>Settings</DialogTitle>
           </DialogHeader>
           <div className="mt-2 flex items-center gap-3">
-            <Label htmlFor={selectId} className="whitespace-nowrap">Default Workflow</Label>
-            <div className="flex-1 min-w-0">
+            <Label
+              htmlFor={selectId}
+              className="whitespace-nowrap"
+            >
+              Default Workflow
+            </Label>
+            <div className="min-w-0 flex-1">
               <Select
                 value={defaultMode ?? undefined}
                 onValueChange={value => onDefaultModeChange(value)}
               >
-                <SelectTrigger id={selectId} className="w-full">
+                <SelectTrigger
+                  id={selectId}
+                  className="w-full"
+                >
                   <SelectValue placeholder="Select Default Workflow" />
                 </SelectTrigger>
                 <SelectContent onPointerDown={e => e.stopPropagation()}>
-                  {['Basic Viewer', 'Segmentation', 'TMTV Workflow', 'US Workflow', 'Preclinical 4D'].map(
-                    opt => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
-                    )
-                  )}
+                  {[
+                    'Basic Viewer',
+                    'Segmentation',
+                    'TMTV Workflow',
+                    'US Workflow',
+                    'Preclinical 4D',
+                  ].map(opt => (
+                    <SelectItem
+                      key={opt}
+                      value={opt}
+                    >
+                      {opt}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
