@@ -6,6 +6,12 @@ import patientSummaryIcon from '../assets/PatientStudyList.svg';
 import infoIcon from '../assets/info.svg';
 import { Icons } from '../../../src/components/Icons/Icons';
 import { Button } from '../../../src/components/Button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../../../src/components/DropdownMenu';
 
 export type SummaryGetters<T> = {
   name?: (data: T) => React.ReactNode;
@@ -449,6 +455,10 @@ type SummaryWorkflowButtonProps<T = StudyRow> = {
   as?: ElementType;
   onLaunchBasic?: (data: T) => void;
   onLaunchSegmentation?: (data: T) => void;
+  /** Selected default mode label; when set, replaces per-study workflow buttons with a badge */
+  defaultMode?: string | null;
+  /** Updates the default mode label (set or clear) */
+  onDefaultModeChange?: (value: string | null) => void;
 } & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
 
 const SummaryWorkflowButtonInner = <T = StudyRow,>(
@@ -470,13 +480,15 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     as,
     onLaunchBasic,
     onLaunchSegmentation,
+    defaultMode,
+    onDefaultModeChange,
     style,
     ...rest
   }: SummaryWorkflowButtonProps<T>,
   ref: React.ForwardedRef<HTMLElement>
 ) => {
   const { data } = useSummaryContext<T>();
-  const computedDisabled = disabled ?? !data;
+  const computedDisabled = disabled ?? false; // allow default-mode picking even when no data
   const id = React.useId();
   const reasonId = `${id}-reason`;
 
@@ -489,11 +501,16 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     const mod = String(d.modalities ?? '').toUpperCase();
     const flows = [...defaults];
     if (mod.includes('US')) flows.push('US Workflow');
-    if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT'))) flows.push('TMTV Workflow');
+    if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT')))
+      flows.push('TMTV Workflow');
     return Array.from(new Set(flows));
   }, []);
 
-  const workflowButtons = React.useMemo(() => getInferredWorkflows(data), [data, getInferredWorkflows]);
+  const workflowButtons = React.useMemo(
+    () => getInferredWorkflows(data),
+    [data, getInferredWorkflows]
+  );
+  const hasDefault = !!(defaultMode && String(defaultMode).trim().length > 0);
 
   const handleLaunch = (wfLabel: string) => {
     if (computedDisabled || !data) return;
@@ -502,7 +519,6 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     if (wfLabel === 'Segmentation') onLaunchSegmentation?.(data);
     // Generic handler fallback:
     onClick?.(data);
-    // For prototype visibility:
     try {
       // eslint-disable-next-line no-console
       console.log('Launch workflow:', wfLabel, { study: data });
@@ -529,6 +545,58 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
       </span>
     ) : null;
 
+  const renderBadge = (labelValue: string) => (
+    <div className="mt-2">
+      <span
+        className="border-primary/30 bg-primary/20 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-1 text-base"
+        role="status"
+        aria-live="polite"
+      >
+        {labelValue}
+        <button
+          type="button"
+          aria-label="Clear default mode"
+          className="hover:bg-primary/20 ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full"
+          onClick={() => onDefaultModeChange?.(null)}
+        >
+          x
+        </button>
+      </span>
+    </div>
+  );
+
+  const renderDefaultPicker = () => (
+    <div className="mt-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6"
+          >
+            Set Default Mode
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="start"
+          onClick={e => e.stopPropagation()}
+        >
+          {['Option 1', 'Option 2', 'Option 3'].map(opt => (
+            <DropdownMenuItem
+              key={opt}
+              onSelect={e => {
+                e.preventDefault();
+                onDefaultModeChange?.(opt);
+              }}
+            >
+              {opt}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
   return (
     <div
       ref={ref as React.Ref<HTMLDivElement>}
@@ -553,9 +621,18 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
         )}
         {iconNode && iconPosition === 'end' ? iconNode : null}
       </div>
-      {data ? (
+
+      {/* Content area:
+          - If default mode is chosen => show badge (even when a study is selected)
+          - Else if no study selected => show "Set Default Mode" picker
+          - Else (study selected and no default) => show dynamic workflow buttons */}
+      {hasDefault ? (
+        renderBadge(String(defaultMode))
+      ) : !data ? (
+        renderDefaultPicker()
+      ) : (
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          {workflowButtons.map((wf) => (
+          {workflowButtons.map(wf => (
             <Button
               key={String(wf)}
               variant="ghost"
@@ -568,7 +645,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
             </Button>
           ))}
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

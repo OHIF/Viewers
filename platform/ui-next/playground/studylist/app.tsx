@@ -18,6 +18,7 @@ import iconLeftBase from './assets/icon-left-base.svg';
 export function App() {
   const [selected, setSelected] = React.useState<StudyRow | null>(null);
   const [isPanelOpen, setIsPanelOpen] = React.useState(true);
+  const [defaultMode, setDefaultMode] = React.useState<string | null>(null);
   const previewDefaultSize = React.useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
       const percent = (315 / window.innerWidth) * 100;
@@ -63,6 +64,8 @@ export function App() {
                 <SidePanel
                   selected={selected}
                   onClose={() => setIsPanelOpen(false)}
+                  defaultMode={defaultMode}
+                  onDefaultModeChange={setDefaultMode}
                 />
               </ResizablePanel>
             </>
@@ -73,7 +76,17 @@ export function App() {
   );
 }
 
-function SidePanel({ selected, onClose }: { selected: StudyRow | null; onClose: () => void }) {
+function SidePanel({
+  selected,
+  onClose,
+  defaultMode,
+  onDefaultModeChange,
+}: {
+  selected: StudyRow | null
+  onClose: () => void
+  defaultMode: string | null
+  onDefaultModeChange: (v: string | null) => void
+}) {
   return (
     <div className="bg-background relative flex h-full w-full flex-col">
       <div className="absolute right-2 top-4 z-10 mt-1 mr-3">
@@ -99,9 +112,14 @@ function SidePanel({ selected, onClose }: { selected: StudyRow | null; onClose: 
             <PanelContent
               key={selected.accession}
               study={selected}
+              defaultMode={defaultMode}
+              onDefaultModeChange={onDefaultModeChange}
             />
           ) : (
-            <PanelDefault />
+            <PanelDefault
+              defaultMode={defaultMode}
+              onDefaultModeChange={onDefaultModeChange}
+            />
           )}
         </div>
       </ScrollArea>
