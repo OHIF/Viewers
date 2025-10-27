@@ -6,7 +6,15 @@ import { TooltipProvider } from '../../../src/components/Tooltip';
 import type { StudyRow } from '../types';
 import { Summary } from './panel-summary';
 
-export function PanelContent({ study }: { study: StudyRow }) {
+export function PanelContent({
+  study,
+  defaultMode,
+  onDefaultModeChange,
+}: {
+  study: StudyRow
+  defaultMode: string | null
+  onDefaultModeChange: (v: string | null) => void
+}) {
   const seriesCount = React.useMemo(() => Math.floor(Math.random() * 7) + 3, []);
   const thumbnails = Array.from({ length: seriesCount }, (_, i) => ({
     id: `preview-${study.accession}-${i}`,
@@ -21,7 +29,7 @@ export function PanelContent({ study }: { study: StudyRow }) {
         <div className="flex flex-col gap-3">
           <Summary.Root data={study}>
             <Summary.Patient />
-            <Summary.Workflows />
+            <Summary.Workflows defaultMode={defaultMode} onDefaultModeChange={onDefaultModeChange} />
           </Summary.Root>
           <div className="h-7 w-full px-2 flex items-center text-foreground font-semibold text-base">1 Study</div>
           <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
