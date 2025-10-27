@@ -1,6 +1,6 @@
-import * as React from 'react'
-import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table'
-import { flexRender } from '@tanstack/react-table'
+import * as React from 'react';
+import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table';
+import { flexRender } from '@tanstack/react-table';
 import {
   DataTable,
   DataTableToolbar,
@@ -8,7 +8,7 @@ import {
   DataTableFilterRow,
   DataTableViewOptions,
   useDataTable,
-} from '../../src/components/DataTable'
+} from '../../src/components/DataTable';
 import {
   Table,
   TableHeader,
@@ -16,23 +16,28 @@ import {
   TableHead,
   TableRow,
   TableCell,
-} from '../../src/components/Table'
-import { ScrollArea } from '../../src/components/ScrollArea'
-import type { StudyRow } from './types'
-import ohifLogo from './assets/ohif-logo.svg'
+} from '../../src/components/Table';
+import { ScrollArea } from '../../src/components/ScrollArea';
+import type { StudyRow } from './types';
+import ohifLogo from './assets/ohif-logo.svg';
+import { Button } from '../../src/components/Button';
+import iconLeftBase from './assets/icon-left-base.svg';
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[]
-  data: StudyRow[]
-  title?: React.ReactNode
-  getRowId?: (row: StudyRow, index: number) => string
-  initialSorting?: SortingState
-  initialVisibility?: VisibilityState
-  enforceSingleSelection?: boolean
-  showColumnVisibility?: boolean
-  tableClassName?: string
-  onSelectionChange?: (rows: StudyRow[]) => void
-}
+  columns: ColumnDef<StudyRow, unknown>[];
+  data: StudyRow[];
+  title?: React.ReactNode;
+  getRowId?: (row: StudyRow, index: number) => string;
+  initialSorting?: SortingState;
+  initialVisibility?: VisibilityState;
+  enforceSingleSelection?: boolean;
+  showColumnVisibility?: boolean;
+  tableClassName?: string;
+  onSelectionChange?: (rows: StudyRow[]) => void;
+  isPanelOpen?: boolean;
+  onOpenPanel?: () => void;
+};
 
 export function StudyListTable({
   columns,
@@ -45,6 +50,8 @@ export function StudyListTable({
   showColumnVisibility = true,
   tableClassName,
   onSelectionChange,
+  isPanelOpen,
+  onOpenPanel,
 }: Props) {
   return (
     <DataTable<StudyRow>
@@ -56,54 +63,93 @@ export function StudyListTable({
       enforceSingleSelection={enforceSingleSelection}
       onSelectionChange={onSelectionChange}
     >
-      <Content title={title} showColumnVisibility={showColumnVisibility} tableClassName={tableClassName} />
+      <Content
+        title={title}
+        showColumnVisibility={showColumnVisibility}
+        tableClassName={tableClassName}
+        isPanelOpen={isPanelOpen}
+        onOpenPanel={onOpenPanel}
+      />
     </DataTable>
-  )
+  );
 }
 
 function Content({
   title,
   showColumnVisibility,
   tableClassName,
+  isPanelOpen,
+  onOpenPanel,
 }: {
-  title?: React.ReactNode
-  showColumnVisibility?: boolean
-  tableClassName?: string
+  title?: React.ReactNode;
+  showColumnVisibility?: boolean;
+  tableClassName?: string;
+  isPanelOpen?: boolean;
+  onOpenPanel?: () => void;
 }) {
-  const { table, setColumnFilters } = useDataTable<StudyRow>()
+  const { table, setColumnFilters } = useDataTable<StudyRow>();
   return (
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
         <DataTableToolbar>
           <div className="absolute left-0">
-            <img src={ohifLogo} alt="OHIF Logo" width={232} height={22} className="h-[22px] w-[232px]" />
+            <img
+              src={ohifLogo}
+              alt="OHIF Logo"
+              width={232}
+              height={22}
+              className="h-[22px] w-[232px]"
+            />
           </div>
           {title ? <DataTableTitle>{title}</DataTableTitle> : null}
           {showColumnVisibility && (
-            <div className="absolute right-0">
+            <div className="absolute right-0 flex items-center">
               <DataTableViewOptions
-                getLabel={(id) => {
-                  const label = (table.getColumn(id)?.columnDef.meta as { label?: string } | undefined)?.label
-                  return label ?? id
+                getLabel={id => {
+                  const label = (
+                    table.getColumn(id)?.columnDef.meta as { label?: string } | undefined
+                  )?.label;
+                  return label ?? id;
                 }}
               />
+              {/* Open preview panel button appears when panel is closed; add right padding only when visible */}
+              {typeof onOpenPanel === 'function' && isPanelOpen === false ? (
+                <div className="mt-1 ml-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Open preview panel"
+                    onClick={onOpenPanel}
+                  >
+                    <img
+                      src={iconLeftBase}
+                      alt=""
+                      className="h-4 w-4"
+                    />
+                  </Button>
+                </div>
+              ) : null}
             </div>
           )}
         </DataTableToolbar>
       )}
       <div className="border-input/50 min-h-0 flex-1 rounded-md border">
         <ScrollArea className="h-full">
-          <Table className={tableClassName} containerClassName="h-full" noScroll>
+          <Table
+            className={tableClassName}
+            containerClassName="h-full"
+            noScroll
+          >
             <TableHeader>
-              {table.getHeaderGroups().map((hg) => (
+              {table.getHeaderGroups().map(hg => (
                 <TableRow key={hg.id}>
-                  {hg.headers.map((header) => (
+                  {hg.headers.map(header => (
                     <TableHead
                       key={header.id}
                       className="bg-muted sticky top-0 z-10"
                       aria-sort={(() => {
-                        const s = header.column.getIsSorted() as false | 'asc' | 'desc'
-                        return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none'
+                        const s = header.column.getIsSorted() as false | 'asc' | 'desc';
+                        return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none';
                       })()}
                     >
                       {header.isPlaceholder
@@ -115,9 +161,13 @@ function Content({
               ))}
             </TableHeader>
             <TableBody>
-              <DataTableFilterRow resetCellId="instances" onReset={() => setColumnFilters([])} excludeColumnIds={[]} />
+              <DataTableFilterRow
+                resetCellId="instances"
+                onReset={() => setColumnFilters([])}
+                excludeColumnIds={[]}
+              />
               {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
+                table.getRowModel().rows.map(row => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() ? 'selected' : undefined}
@@ -125,14 +175,19 @@ function Content({
                     aria-selected={row.getIsSelected()}
                     className="group cursor-pointer"
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={table.getAllLeafColumns().length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={table.getAllLeafColumns().length}
+                    className="h-24 text-center"
+                  >
                     No results.
                   </TableCell>
                 </TableRow>
@@ -142,5 +197,5 @@ function Content({
         </ScrollArea>
       </div>
     </div>
-  )
+  );
 }
