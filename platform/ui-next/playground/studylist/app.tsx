@@ -16,6 +16,8 @@ import { Button } from '../../src/components/Button';
 import iconLeftBase from './assets/icon-left-base.svg';
 import settingsIcon from './assets/settings.svg';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../src/components/Dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../src/components/Select';
+import { Label } from '../../src/components/Label';
 
 export function App() {
   const [selected, setSelected] = React.useState<StudyRow | null>(null);
@@ -90,6 +92,7 @@ function SidePanel({
   onDefaultModeChange: (v: string | null) => void
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const selectId = React.useId();
   return (
     <div className="bg-background relative flex h-full w-full flex-col">
       <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
@@ -119,10 +122,35 @@ function SidePanel({
         </Button>
       </div>
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent>
+        <DialogContent
+          className="max-w-none"
+          style={{ width: 550, height: 350, maxWidth: 550, maxHeight: 350 }}
+        >
           <DialogHeader>
             <DialogTitle>Settings</DialogTitle>
           </DialogHeader>
+          <div className="mt-2 flex items-center gap-3">
+            <Label htmlFor={selectId} className="whitespace-nowrap">Default Workflow</Label>
+            <div className="flex-1 min-w-0">
+              <Select
+                value={defaultMode ?? undefined}
+                onValueChange={value => onDefaultModeChange(value)}
+              >
+                <SelectTrigger id={selectId} className="w-full">
+                  <SelectValue placeholder="Select Default Workflow" />
+                </SelectTrigger>
+                <SelectContent onPointerDown={e => e.stopPropagation()}>
+                  {['Basic Viewer', 'Segmentation', 'TMTV Workflow', 'US Workflow', 'Preclinical 4D'].map(
+                    opt => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
       <ScrollArea className="flex-1">
