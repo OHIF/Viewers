@@ -14,6 +14,8 @@ import { PanelDefault } from './panels/panel-default';
 import { PanelContent } from './panels/panel-content';
 import { Button } from '../../src/components/Button';
 import iconLeftBase from './assets/icon-left-base.svg';
+import settingsIcon from './assets/settings.svg';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../src/components/Dialog';
 
 export function App() {
   const [selected, setSelected] = React.useState<StudyRow | null>(null);
@@ -87,9 +89,22 @@ function SidePanel({
   defaultMode: string | null
   onDefaultModeChange: (v: string | null) => void
 }) {
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   return (
     <div className="bg-background relative flex h-full w-full flex-col">
-      <div className="absolute right-2 top-4 z-10 mt-1 mr-3">
+      <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Open settings"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          <img
+            src={settingsIcon}
+            alt=""
+            className="h-4 w-4"
+          />
+        </Button>
         <Button
           variant="ghost"
           size="icon"
@@ -103,6 +118,13 @@ function SidePanel({
           />
         </Button>
       </div>
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
       <ScrollArea className="flex-1">
         <div
           className="px-3 pb-3"

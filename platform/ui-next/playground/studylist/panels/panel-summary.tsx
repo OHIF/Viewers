@@ -548,7 +548,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
   const renderBadge = (labelValue: string) => (
     <div className="mt-2">
       <span
-        className="border-primary/30 bg-primary/20 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-1 text-base"
+        className="border-primary bg-primary/20 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-1 text-base"
         role="status"
         aria-live="polite"
       >
@@ -581,17 +581,19 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
           align="start"
           onClick={e => e.stopPropagation()}
         >
-          {['Option 1', 'Option 2', 'Option 3'].map(opt => (
-            <DropdownMenuItem
-              key={opt}
-              onSelect={e => {
-                e.preventDefault();
-                onDefaultModeChange?.(opt);
-              }}
-            >
-              {opt}
-            </DropdownMenuItem>
-          ))}
+          {['Basic Viewer', 'Segmentation', 'TMTV Workflow', 'US Workflow', 'Preclinical 4D'].map(
+            opt => (
+              <DropdownMenuItem
+                key={opt}
+                onSelect={e => {
+                  e.preventDefault();
+                  onDefaultModeChange?.(opt);
+                }}
+              >
+                {opt}
+              </DropdownMenuItem>
+            )
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -637,7 +639,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
               key={String(wf)}
               variant="ghost"
               size="sm"
-              className="h-6 w-32"
+              className="bg-primary/20 h-6 w-32"
               disabled={computedDisabled}
               onClick={() => handleLaunch(String(wf))}
             >
