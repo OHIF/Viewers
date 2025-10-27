@@ -1,0 +1,351 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dental Theme CSS Variables */
+@layer base {
+  :root {
+    /* Dental Theme Colors */
+    --dental-primary: 160 100% 50%; /* Bright teal for dental theme */
+    --dental-primary-foreground: 0 0% 98%;
+    --dental-secondary: 200 100% 85%; /* Light blue for secondary elements */
+    --dental-secondary-foreground: 200 50% 20%;
+    --dental-accent: 45 100% 60%; /* Golden yellow for accents */
+    --dental-accent-foreground: 45 100% 20%;
+    --dental-muted: 200 20% 95%; /* Very light blue-gray */
+    --dental-muted-foreground: 200 20% 40%;
+    --dental-background: 0 0% 100%; /* Clean white background */
+    --dental-foreground: 200 20% 15%;
+    --dental-card: 0 0% 100%;
+    --dental-card-foreground: 200 20% 15%;
+    --dental-border: 200 20% 90%;
+    --dental-input: 200 20% 95%;
+    --dental-ring: 160 100% 50%;
+
+    /* Typography for dental theme */
+    --dental-font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    --dental-font-size-sm: 0.875rem;
+    --dental-font-size-base: 1rem;
+    --dental-font-size-lg: 1.125rem;
+    --dental-font-size-xl: 1.25rem;
+    --dental-font-size-2xl: 1.5rem;
+
+    /* Dental spacing */
+    --dental-spacing-xs: 0.25rem;
+    --dental-spacing-sm: 0.5rem;
+    --dental-spacing-md: 1rem;
+    --dental-spacing-lg: 1.5rem;
+    --dental-spacing-xl: 2rem;
+
+    /* Dental border radius */
+    --dental-radius-sm: 0.25rem;
+    --dental-radius-md: 0.5rem;
+    --dental-radius-lg: 0.75rem;
+    --dental-radius-xl: 1rem;
+  }
+
+  /* Dark mode dental theme */
+  .dental-dark {
+    --dental-primary: 160 100% 60%;
+    --dental-primary-foreground: 0 0% 98%;
+    --dental-secondary: 200 50% 20%;
+    --dental-secondary-foreground: 200 100% 85%;
+    --dental-accent: 45 100% 70%;
+    --dental-accent-foreground: 45 100% 20%;
+    --dental-muted: 200 20% 15%;
+    --dental-muted-foreground: 200 20% 60%;
+    --dental-background: 200 20% 8%;
+    --dental-foreground: 200 20% 90%;
+    --dental-card: 200 20% 12%;
+    --dental-card-foreground: 200 20% 90%;
+    --dental-border: 200 20% 20%;
+    --dental-input: 200 20% 15%;
+    --dental-ring: 160 100% 60%;
+  }
+}
+
+/* Dental theme utility classes - Only keeping what's actually used */
+.dental-theme {
+  font-family: var(--dental-font-family);
+  background-color: hsl(var(--dental-background));
+  color: hsl(var(--dental-foreground));
+}
+
+.dental-theme .practice-header {
+  background: linear-gradient(135deg, hsl(var(--dental-primary)), hsl(var(--dental-secondary)));
+  color: hsl(var(--dental-primary-foreground));
+  padding: var(--dental-spacing-md) var(--dental-spacing-lg);
+  border-radius: var(--dental-radius-lg);
+  box-shadow: 0 4px 12px hsl(var(--dental-primary) / 0.2);
+}
+
+.dental-theme .practice-name {
+  font-size: var(--dental-font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--dental-spacing-sm);
+}
+
+.dental-theme .patient-info {
+  font-size: var(--dental-font-size-base);
+  opacity: 0.9;
+}
+
+.dental-theme .dental-button {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border: none;
+  border-radius: var(--dental-radius-md);
+  padding: var(--dental-spacing-sm) var(--dental-spacing-md);
+  font-family: var(--dental-font-family);
+  font-size: var(--dental-font-size-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dental-theme .dental-button:hover {
+  background-color: hsl(var(--dental-primary) / 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px hsl(var(--dental-primary) / 0.3);
+}
+
+.dental-theme .dental-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px hsl(var(--dental-primary) / 0.3);
+}
+
+/* Toolbar styling for dental theme */
+.dental-theme .toolbar-section {
+  background-color: hsl(var(--dental-card));
+  border-color: hsl(var(--dental-border));
+  color: hsl(var(--dental-card-foreground));
+}
+
+.dental-theme .toolbar-button {
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.dental-theme .toolbar-button:hover {
+  color: hsl(var(--dental-foreground));
+  background-color: hsl(var(--dental-muted));
+}
+
+.dental-theme .toolbar-divider {
+  border-color: hsl(var(--dental-border));
+}
+
+.dental-theme .secondary-toolbar {
+  background-color: hsl(var(--dental-muted));
+  border-color: hsl(var(--dental-border));
+}
+
+.dental-dark .secondary-toolbar {
+  background-color: hsl(var(--dental-card));
+}
+
+/* Controls group styling */
+.dental-theme .controls-group {
+  display: flex;
+  align-items: center;
+  gap: var(--dental-spacing-md);
+  padding: var(--dental-spacing-sm);
+  background-color: hsl(var(--dental-card) / 0.1);
+  border-radius: var(--dental-radius-lg);
+  border: 1px solid hsl(var(--dental-border) / 0.3);
+}
+
+.dental-dark .controls-group {
+  background-color: hsl(var(--dental-card) / 0.2);
+  border-color: hsl(var(--dental-border) / 0.5);
+}
+
+/* Light mode styles for tooth selector and buttons */
+.tooth-selector-button {
+  background-color: hsl(var(--dental-card));
+  color: hsl(var(--dental-card-foreground));
+  border-color: hsl(var(--dental-border));
+}
+
+.tooth-selector-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border-color: hsl(var(--dental-primary));
+}
+
+.numbering-system-button {
+  background-color: hsl(var(--dental-card));
+  color: hsl(var(--dental-card-foreground));
+  border-color: hsl(var(--dental-border));
+}
+
+.numbering-system-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border-color: hsl(var(--dental-primary));
+}
+
+.tooth-modal {
+  background-color: hsl(var(--dental-card));
+  border-color: hsl(var(--dental-border));
+  color: hsl(var(--dental-card-foreground));
+}
+
+.tooth-modal .tooth-button {
+  background-color: hsl(var(--dental-background));
+  color: hsl(var(--dental-foreground));
+  border-color: hsl(var(--dental-border));
+}
+
+.tooth-modal .tooth-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border-color: hsl(var(--dental-primary));
+}
+
+.tooth-modal .tooth-button.selected {
+  background-color: hsl(var(--dental-accent));
+  color: hsl(var(--dental-accent-foreground));
+  border-color: hsl(var(--dental-accent));
+}
+
+.tooth-modal .quadrant-label {
+  color: hsl(var(--dental-card-foreground));
+}
+
+.tooth-modal .modal-title {
+  color: hsl(var(--dental-card-foreground));
+}
+
+.tooth-modal .modal-description {
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.tooth-modal .action-button {
+  background-color: hsl(var(--dental-muted));
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.tooth-modal .action-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+}
+
+.tooth-modal .close-button {
+  background-color: hsl(var(--dental-muted));
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.tooth-modal .close-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+}
+
+/* Dark mode specific styles */
+.dental-dark .tooth-selector-button {
+  background-color: hsl(var(--dental-card));
+  color: hsl(var(--dental-card-foreground));
+  border-color: hsl(var(--dental-border));
+}
+
+.dental-dark .tooth-selector-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border-color: hsl(var(--dental-primary));
+}
+
+.dental-dark .numbering-system-button {
+  background-color: hsl(var(--dental-card));
+  color: hsl(var(--dental-card-foreground));
+  border-color: hsl(var(--dental-border));
+}
+
+.dental-dark .numbering-system-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border-color: hsl(var(--dental-primary));
+}
+
+.dental-dark .tooth-modal {
+  background-color: hsl(var(--dental-card));
+  border-color: hsl(var(--dental-border));
+  color: hsl(var(--dental-card-foreground));
+}
+
+.dental-dark .tooth-modal .tooth-button {
+  background-color: hsl(var(--dental-background));
+  color: hsl(var(--dental-foreground));
+  border-color: hsl(var(--dental-border));
+}
+
+.dental-dark .tooth-modal .tooth-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+  border-color: hsl(var(--dental-primary));
+}
+
+.dental-dark .tooth-modal .tooth-button.selected {
+  background-color: hsl(var(--dental-accent));
+  color: hsl(var(--dental-accent-foreground));
+  border-color: hsl(var(--dental-accent));
+}
+
+.dental-dark .tooth-modal .quadrant-label {
+  color: hsl(var(--dental-card-foreground));
+}
+
+.dental-dark .tooth-modal .modal-title {
+  color: hsl(var(--dental-card-foreground));
+}
+
+.dental-dark .tooth-modal .modal-description {
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.dental-dark .tooth-modal .action-button {
+  background-color: hsl(var(--dental-muted));
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.dental-dark .tooth-modal .action-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+}
+
+.dental-dark .tooth-modal .close-button {
+  background-color: hsl(var(--dental-muted));
+  color: hsl(var(--dental-muted-foreground));
+}
+
+.dental-dark .tooth-modal .close-button:hover {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-primary-foreground));
+}
+
+/* Responsive design for dental theme */
+@media (max-width: 768px) {
+  .dental-theme .practice-header {
+    padding: var(--dental-spacing-sm) var(--dental-spacing-md);
+  }
+
+  .dental-theme .practice-name {
+    font-size: var(--dental-font-size-lg);
+  }
+
+  .dental-theme .controls-group {
+    flex-direction: column;
+    gap: var(--dental-spacing-sm);
+    align-items: stretch;
+  }
+
+  .dental-theme .controls-group > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Dental theme transitions */
+.dental-theme * {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}

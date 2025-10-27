@@ -1,0 +1,25 @@
+{
+  "name": "@ohif/extension-dental-header",
+  "version": "1.0.1",
+  "description": "Extension for custom header style for dental theme with light and dark mode toggle",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "repository": "https://github.com/OHIF/Viewers",
+  "author": "OHIF franz",
+  "license": "MIT",
+  "keywords": [
+    "ohif-extension"
+  ],
+  "scripts": {
+    "build": "echo 'Build script placeholder'",
+    "test": "echo 'Test script placeholder'"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^3.0.0",
+    "@ohif/ui-next": "^3.0.0",
+    "react": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0"
+  }
+}

@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
+import { CommandsManager, HangingProtocolService } from '@ohif/core';
+import { Onboarding, ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@ohif/ui-next';
+import React, { useCallback, useEffect, useState } from 'react';
 
+import { DentalViewerHeader } from '@ohif/extension-dental-header';
 import { InvestigationalUseDialog } from '@ohif/ui-next';
-import { HangingProtocolService, CommandsManager } from '@ohif/core';
-import { useAppConfig } from '@state';
-import ViewerHeader from './ViewerHeader';
+import PropTypes from 'prop-types';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
+import ViewerHeader from './ViewerHeader';
+import { useAppConfig } from '@state';
 import useResizablePanels from './ResizablePanelsHook';
 
 const resizableHandleClassName = 'mt-[1px] bg-black';
@@ -151,12 +152,16 @@ function ViewerLayout({
 
   return (
     <div>
-      <ViewerHeader
+      <DentalViewerHeader
+        isReturnEnabled={!!appConfig.showStudyList}
+        appConfig={appConfig}
+      />
+      {/* <ViewerHeader
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
         appConfig={appConfig}
-      />
+      /> */}
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
