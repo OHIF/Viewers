@@ -480,17 +480,33 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
   const id = React.useId();
   const reasonId = `${id}-reason`;
 
-  const handleBasic = () => {
-    if (computedDisabled || !data) return;
-    // Prefer explicit basic callback if provided; fall back to legacy onClick.
-    onLaunchBasic?.(data);
-    if (!onLaunchBasic) onClick?.(data);
-  };
+  const getInferredWorkflows = React.useCallback((d: any): string[] => {
+    const defaults = ['Basic Viewer', 'Segmentation'];
+    if (!d) return defaults;
+    if (Array.isArray(d.workflows) && d.workflows.length > 0) {
+      return Array.from(new Set(d.workflows));
+    }
+    const mod = String(d.modalities ?? '').toUpperCase();
+    const flows = [...defaults];
+    if (mod.includes('US')) flows.push('US Workflow');
+    if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT'))) flows.push('TMTV Workflow');
+    return Array.from(new Set(flows));
+  }, []);
 
-  const handleSegmentation = () => {
+  const workflowButtons = React.useMemo(() => getInferredWorkflows(data), [data, getInferredWorkflows]);
+
+  const handleLaunch = (wfLabel: string) => {
     if (computedDisabled || !data) return;
-    onLaunchSegmentation?.(data);
-    if (!onLaunchSegmentation) onClick?.(data);
+    // Back-compat explicit callbacks:
+    if (wfLabel === 'Basic Viewer') onLaunchBasic?.(data);
+    if (wfLabel === 'Segmentation') onLaunchSegmentation?.(data);
+    // Generic handler fallback:
+    onClick?.(data);
+    // For prototype visibility:
+    try {
+      // eslint-disable-next-line no-console
+      console.log('Launch workflow:', wfLabel, { study: data });
+    } catch {}
   };
 
   const iconNode = icon ? (
@@ -539,24 +555,18 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
       </div>
       {data ? (
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-32"
-            disabled={computedDisabled}
-            onClick={handleBasic}
-          >
-            Basic Viewer
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-32"
-            disabled={computedDisabled}
-            onClick={handleSegmentation}
-          >
-            Segmentation
-          </Button>
+          {workflowButtons.map((wf) => (
+            <Button
+              key={String(wf)}
+              variant="ghost"
+              size="sm"
+              className="h-6 w-32"
+              disabled={computedDisabled}
+              onClick={() => handleLaunch(String(wf))}
+            >
+              {wf}
+            </Button>
+          ))}
         </div>
       ) : null}
     </div>

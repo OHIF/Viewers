@@ -9,8 +9,23 @@ import {
   DropdownMenuItem,
 } from '../../../src/components/DropdownMenu'
 
+function getWorkflowsFromRow<TData>(row: Row<TData>): string[] {
+  const defaults = ['Basic Viewer', 'Segmentation']
+  const original: any = row.original ?? {}
+  if (Array.isArray(original.workflows) && original.workflows.length > 0) {
+    return Array.from(new Set(original.workflows))
+  }
+  const mod = String(original.modalities ?? '').toUpperCase()
+  const flows = [...defaults]
+  if (mod.includes('US')) flows.push('US Workflow')
+  if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT'))) flows.push('TMTV Workflow')
+  return Array.from(new Set(flows))
+}
+
 export function LaunchMenuCell<TData>({ row, value }: { row: Row<TData>; value: number }) {
   const [open, setOpen] = React.useState(false)
+  const workflows = getWorkflowsFromRow(row)
+
   return (
     <DataTableActionOverlayCell
       isActive={row.getIsSelected()}
@@ -26,12 +41,11 @@ export function LaunchMenuCell<TData>({ row, value }: { row: Row<TData>; value: 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Basic Viewer</DropdownMenuItem>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Segmentation</DropdownMenuItem>
-            <DropdownMenuItem disabled>US Pleura B-line Annotations</DropdownMenuItem>
-            <DropdownMenuItem disabled>Total Metabolic Tumor Volume</DropdownMenuItem>
-            <DropdownMenuItem disabled>Microscopy</DropdownMenuItem>
-            <DropdownMenuItem disabled>Preclinical 4D</DropdownMenuItem>
+            {workflows.map((wf) => (
+              <DropdownMenuItem key={String(wf)} onSelect={(e) => e.preventDefault()}>
+                {wf}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       }

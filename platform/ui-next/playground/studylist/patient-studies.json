@@ -6,7 +6,8 @@
     "modalities": "CT",
     "description": "Chest CT w/ Contrast",
     "accession": "ACC-102938",
-    "instances": 324
+    "instances": 324,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Smith, Jane",
@@ -15,7 +16,8 @@
     "modalities": "MR",
     "description": "Brain MRI",
     "accession": "ACC-564738",
-    "instances": 210
+    "instances": 210,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Ruiz, Carlos",
@@ -24,7 +26,8 @@
     "modalities": "US",
     "description": "Abdominal Ultrasound",
     "accession": "ACC-223344",
-    "instances": 58
+    "instances": 58,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Khan, Amina",
@@ -33,7 +36,8 @@
     "modalities": "PET/CT",
     "description": "Whole Body PET/CT",
     "accession": "ACC-998877",
-    "instances": 512
+    "instances": 512,
+    "workflows": ["Basic Viewer", "Segmentation", "TMTV Workflow"]
   },
   {
     "patient": "Johnson, Michael",
@@ -42,7 +46,8 @@
     "modalities": "CT",
     "description": "CT Abdomen/Pelvis w/ Contrast",
     "accession": "ACC-300001",
-    "instances": 512
+    "instances": 512,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Patel, Priya",
@@ -51,7 +56,8 @@
     "modalities": "MR",
     "description": "MR Brain w/ and w/o Contrast",
     "accession": "ACC-300002",
-    "instances": 240
+    "instances": 240,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Lee, David",
@@ -60,7 +66,8 @@
     "modalities": "US",
     "description": "US Carotid Duplex",
     "accession": "ACC-300003",
-    "instances": 76
+    "instances": 76,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Ahmed, Fatima",
@@ -69,7 +76,8 @@
     "modalities": "XR",
     "description": "XR Chest PA & Lateral",
     "accession": "ACC-300004",
-    "instances": 4
+    "instances": 4,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Thompson, Robert",
@@ -78,7 +86,8 @@
     "modalities": "CT",
     "description": "CT Head w/o Contrast",
     "accession": "ACC-300005",
-    "instances": 220
+    "instances": 220,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Chen, Emily",
@@ -87,7 +96,8 @@
     "modalities": "MG",
     "description": "MG Screening Tomosynthesis",
     "accession": "ACC-300006",
-    "instances": 132
+    "instances": 132,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Zhang, Wei",
@@ -96,7 +106,8 @@
     "modalities": "DEXA",
     "description": "DEXA Bone Density Axial",
     "accession": "ACC-300007",
-    "instances": 28
+    "instances": 28,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Rossi, Sofia",
@@ -105,7 +116,8 @@
     "modalities": "MR",
     "description": "MR Knee Left",
     "accession": "ACC-300008",
-    "instances": 180
+    "instances": 180,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "O'Connor, Liam",
@@ -114,7 +126,8 @@
     "modalities": "US",
     "description": "US Venous Doppler Lower Extremity Right",
     "accession": "ACC-300009",
-    "instances": 64
+    "instances": 64,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Garcia, Maria",
@@ -123,7 +136,8 @@
     "modalities": "CT",
     "description": "CT Pulmonary Angiography",
     "accession": "ACC-300010",
-    "instances": 650
+    "instances": 650,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Al-Sayed, Ahmed",
@@ -132,7 +146,8 @@
     "modalities": "US",
     "description": "US Abdomen RUQ",
     "accession": "ACC-300011",
-    "instances": 54
+    "instances": 54,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Kim, Hannah",
@@ -141,7 +156,8 @@
     "modalities": "MR",
     "description": "MR Lumbar Spine w/o Contrast",
     "accession": "ACC-300012",
-    "instances": 156
+    "instances": 156,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Brown, Ethan",
@@ -150,7 +166,8 @@
     "modalities": "XR",
     "description": "XR Ankle Right",
     "accession": "ACC-300013",
-    "instances": 3
+    "instances": 3,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Martinez, Olivia",
@@ -159,7 +176,8 @@
     "modalities": "CT",
     "description": "CT Chest Low-Dose Screening",
     "accession": "ACC-300014",
-    "instances": 420
+    "instances": 420,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Wilson, Noah",
@@ -168,7 +186,8 @@
     "modalities": "MR",
     "description": "MR Shoulder Right",
     "accession": "ACC-300015",
-    "instances": 168
+    "instances": 168,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Nguyen, Chloe",
@@ -177,7 +196,8 @@
     "modalities": "XR",
     "description": "XR Abdomen (KUB)",
     "accession": "ACC-300016",
-    "instances": 2
+    "instances": 2,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Silva, Lucas",
@@ -186,7 +206,8 @@
     "modalities": "US",
     "description": "US Renal",
     "accession": "ACC-300017",
-    "instances": 48
+    "instances": 48,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Costa, Isabella",
@@ -195,7 +216,8 @@
     "modalities": "MG",
     "description": "MG Diagnostic Unilateral Right",
     "accession": "ACC-300018",
-    "instances": 96
+    "instances": 96,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Alvarez, Mateo",
@@ -204,7 +226,8 @@
     "modalities": "PET/CT",
     "description": "PET/CT FDG Skull Base to Mid-Thigh",
     "accession": "ACC-300019",
-    "instances": 582
+    "instances": 582,
+    "workflows": ["Basic Viewer", "Segmentation", "TMTV Workflow"]
   },
   {
     "patient": "Tanaka, Yuki",
@@ -213,7 +236,8 @@
     "modalities": "MR",
     "description": "MR Angiography Brain w/ and w/o Contrast",
     "accession": "ACC-300020",
-    "instances": 212
+    "instances": 212,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Cohen, Sara",
@@ -222,7 +246,8 @@
     "modalities": "CT",
     "description": "CT Sinuses w/o Contrast",
     "accession": "ACC-300021",
-    "instances": 190
+    "instances": 190,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Ivanov, Pavel",
@@ -231,7 +256,8 @@
     "modalities": "US",
     "description": "US Thyroid",
     "accession": "ACC-300022",
-    "instances": 44
+    "instances": 44,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "El-Sayed, Amira",
@@ -240,7 +266,8 @@
     "modalities": "XR",
     "description": "XR Shoulder Left",
     "accession": "ACC-300023",
-    "instances": 4
+    "instances": 4,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Papadopoulos, George",
@@ -249,7 +276,8 @@
     "modalities": "CT",
     "description": "CT Urogram",
     "accession": "ACC-300024",
-    "instances": 780
+    "instances": 780,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Bergstrom, Hanna",
@@ -258,7 +286,8 @@
     "modalities": "DEXA",
     "description": "DEXA Bone Density Axial",
     "accession": "ACC-300025",
-    "instances": 30
+    "instances": 30,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Johansson, Marcus",
@@ -267,7 +296,8 @@
     "modalities": "MR",
     "description": "MR Brain w/o Contrast",
     "accession": "ACC-300026",
-    "instances": 132
+    "instances": 132,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Bello, Aisha",
@@ -276,7 +306,8 @@
     "modalities": "US",
     "description": "US Pelvis TA/TV",
     "accession": "ACC-300027",
-    "instances": 66
+    "instances": 66,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Adeyemi, Seun",
@@ -285,7 +316,8 @@
     "modalities": "XR",
     "description": "XR Hand Left",
     "accession": "ACC-300028",
-    "instances": 2
+    "instances": 2,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Dubois, Lea",
@@ -294,7 +326,8 @@
     "modalities": "MR",
     "description": "MR Abdomen w/ and w/o Contrast",
     "accession": "ACC-300029",
-    "instances": 228
+    "instances": 228,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Novak, Tomas",
@@ -303,7 +336,8 @@
     "modalities": "CT",
     "description": "CT Cervical Spine w/o Contrast",
     "accession": "ACC-300030",
-    "instances": 360
+    "instances": 360,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Ortiz, Daniel",
@@ -312,7 +346,8 @@
     "modalities": "XR",
     "description": "XR Chest Portable AP",
     "accession": "ACC-300031",
-    "instances": 1
+    "instances": 1,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Petrova, Nadia",
@@ -321,7 +356,8 @@
     "modalities": "NM",
     "description": "NM Bone Scan Whole Body",
     "accession": "ACC-300032",
-    "instances": 240
+    "instances": 240,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Mehta, Arjun",
@@ -330,7 +366,8 @@
     "modalities": "MR",
     "description": "MR Prostate w/ and w/o Contrast",
     "accession": "ACC-300033",
-    "instances": 200
+    "instances": 200,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Lin, Mei",
@@ -339,7 +376,8 @@
     "modalities": "US",
     "description": "US Obstetric 2nd Trimester",
     "accession": "ACC-300034",
-    "instances": 92
+    "instances": 92,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "O'Brien, Kevin",
@@ -348,7 +386,8 @@
     "modalities": "CT",
     "description": "CT Angiography Head/Neck",
     "accession": "ACC-300035",
-    "instances": 700
+    "instances": 700,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Hussain, Zahra",
@@ -357,7 +396,8 @@
     "modalities": "MR",
     "description": "MR Enterography",
     "accession": "ACC-300036",
-    "instances": 216
+    "instances": 216,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Nasser, Omar",
@@ -366,7 +406,8 @@
     "modalities": "US",
     "description": "US Aorta Screening",
     "accession": "ACC-300037",
-    "instances": 42
+    "instances": 42,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Walker, Jade",
@@ -375,7 +416,8 @@
     "modalities": "XR",
     "description": "XR Lumbar Spine 2-3 Views",
     "accession": "ACC-300038",
-    "instances": 5
+    "instances": 5,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Muller, Peter",
@@ -384,7 +426,8 @@
     "modalities": "CT",
     "description": "CT Coronary Calcium Score",
     "accession": "ACC-300039",
-    "instances": 180
+    "instances": 180,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Mendes, Carla",
@@ -393,7 +436,8 @@
     "modalities": "MG",
     "description": "MG Screening Tomosynthesis",
     "accession": "ACC-300040",
-    "instances": 140
+    "instances": 140,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Pereira, Joao",
@@ -402,7 +446,8 @@
     "modalities": "PET/CT",
     "description": "PET/CT FDG Whole Body",
     "accession": "ACC-300041",
-    "instances": 620
+    "instances": 620,
+    "workflows": ["Basic Viewer", "Segmentation", "TMTV Workflow"]
   },
   {
     "patient": "Krishnan, Rajiv",
@@ -411,7 +456,8 @@
     "modalities": "MR",
     "description": "MR Shoulder Left",
     "accession": "ACC-300042",
-    "instances": 160
+    "instances": 160,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Bianchi, Giulia",
@@ -420,7 +466,8 @@
     "modalities": "CT",
     "description": "CT Abdomen/Pelvis w/o Contrast",
     "accession": "ACC-300043",
-    "instances": 480
+    "instances": 480,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Svensson, Nora",
@@ -429,7 +476,8 @@
     "modalities": "US",
     "description": "US Gallbladder RUQ",
     "accession": "ACC-300044",
-    "instances": 50
+    "instances": 50,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Svensson, Nora",
@@ -438,7 +486,8 @@
     "modalities": "XR",
     "description": "XR Hip Left",
     "accession": "ACC-300045",
-    "instances": 3
+    "instances": 3,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Wei, Jing",
@@ -447,7 +496,8 @@
     "modalities": "US",
     "description": "US Doppler Carotid Bilateral",
     "accession": "ACC-300046",
-    "instances": 70
+    "instances": 70,
+    "workflows": ["Basic Viewer", "Segmentation", "US Workflow"]
   },
   {
     "patient": "Mensah, Kofi",
@@ -456,7 +506,8 @@
     "modalities": "NM",
     "description": "NM HIDA w/ Ejection Fraction",
     "accession": "ACC-300047",
-    "instances": 180
+    "instances": 180,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Shah, Lila",
@@ -465,7 +516,8 @@
     "modalities": "MR",
     "description": "MR Cervical Spine w/o Contrast",
     "accession": "ACC-300048",
-    "instances": 150
+    "instances": 150,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Laurent, Antoine",
@@ -474,7 +526,8 @@
     "modalities": "CT",
     "description": "CT Head w/ and w/o Contrast",
     "accession": "ACC-300049",
-    "instances": 540
+    "instances": 540,
+    "workflows": ["Basic Viewer", "Segmentation"]
   },
   {
     "patient": "Park, Grace",
@@ -483,6 +536,7 @@
     "modalities": "XR",
     "description": "XR Foot Left",
     "accession": "ACC-300050",
-    "instances": 2
+    "instances": 2,
+    "workflows": ["Basic Viewer", "Segmentation"]
   }
 ]
