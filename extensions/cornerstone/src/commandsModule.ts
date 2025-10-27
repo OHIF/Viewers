@@ -246,18 +246,14 @@ function commandsModule({
         // update the previously stored segmentationPresentation with the new viewportId
         // presentation so that when we put the referencedDisplaySet back in the viewport
         // it will have the correct segmentation representation hydrated
-        const segmentationType = (() => {
-          //todo: check if PMAP modality should be handled such as SEG
-          if (displaySet.Modality !== 'SEG') {
-            return SegmentationRepresentations.Contour;
-          }
 
-          if (viewport.type === CoreEnums.ViewportType.VOLUME_3D) {
-            return SegmentationRepresentations.Surface;
-          }
-
-          return SegmentationRepresentations.Labelmap;
-        })();
+        const segmentationType =
+          // Todo: check if PMAP modality should be handled such as SEG
+          displaySet.Modality !== 'SEG'
+            ? SegmentationRepresentations.Contour
+            : viewport.type === CoreEnums.ViewportType.VOLUME_3D
+              ? SegmentationRepresentations.Surface
+              : SegmentationRepresentations.Labelmap;
 
         commandsManager.runCommand('updateStoredSegmentationPresentation', {
           displaySet,
