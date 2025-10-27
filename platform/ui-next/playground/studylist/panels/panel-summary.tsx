@@ -60,7 +60,7 @@ function SummaryRoot<T extends { patient?: unknown; mrn?: unknown } = StudyRow>(
 
   return (
     <SummaryContext.Provider value={{ data, get: resolvedGetters }}>
-      <div className={cn('flex flex-col gap-2', className)}>{children}</div>
+      <div className={cn('flex flex-col gap-1', className)}>{children}</div>
     </SummaryContext.Provider>
   );
 }
@@ -494,14 +494,21 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
   };
 
   const iconNode = icon ? (
-    <span className="text-primary shrink-0" aria-hidden style={{ width: iconSize, height: iconSize }}>
+    <span
+      className="text-primary shrink-0"
+      aria-hidden
+      style={{ width: iconSize, height: iconSize }}
+    >
       {icon}
     </span>
   ) : null;
 
   const srOnly =
     computedDisabled && disabledReason ? (
-      <span id={reasonId} className="sr-only">
+      <span
+        id={reasonId}
+        className="sr-only"
+      >
         {disabledReason}
       </span>
     ) : null;
@@ -510,7 +517,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     <div
       ref={ref as React.Ref<HTMLDivElement>}
       className={cn(
-        'border-border/50 w-full rounded-lg bg-muted px-4 py-3 text-left transition',
+        'border-border/50 bg-muted w-full rounded-lg px-4 py-3 text-left transition',
         className
       )}
       style={style}
@@ -531,7 +538,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
         {iconNode && iconPosition === 'end' ? iconNode : null}
       </div>
       {data ? (
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
           <Button
             variant="ghost"
             size="sm"
