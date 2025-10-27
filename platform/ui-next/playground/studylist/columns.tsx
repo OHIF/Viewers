@@ -14,36 +14,60 @@ export const studyListColumns: ColumnDef<StudyRow, unknown>[] = [
   {
     accessorKey: 'mrn',
     header: ({ column }) => <DataTableColumnHeader column={column} title="MRN" />,
-    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('mrn')}</div>,
-    meta: { label: 'MRN' },
+    cell: ({ row }) => <div className="truncate">{row.getValue('mrn')}</div>,
+    meta: {
+      label: 'MRN',
+      headerClassName: 'w-[120px] min-w-[120px] max-w-[120px]',
+      cellClassName: 'w-[120px] min-w-[120px] max-w-[120px]',
+      fixedWidth: 120,
+    },
   },
   {
     accessorKey: 'studyDateTime',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Study Date" />,
-    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('studyDateTime')}</div>,
+    cell: ({ row }) => <div className="truncate">{row.getValue('studyDateTime')}</div>,
     sortingFn: (a, b, colId) => {
       const norm = (s: string) => new Date(s.replace(' ', 'T')).getTime() || 0
       return norm(a.getValue(colId) as string) - norm(b.getValue(colId) as string)
     },
-    meta: { label: 'Study Date' },
+    meta: {
+      label: 'Study Date',
+      headerClassName: 'w-[150px] min-w-[150px] max-w-[150px]',
+      cellClassName: 'w-[150px] min-w-[150px] max-w-[150px]',
+      fixedWidth: 150,
+    },
   },
   {
     accessorKey: 'modalities',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Modalities" />,
-    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('modalities')}</div>,
-    meta: { label: 'Modalities' },
+    cell: ({ row }) => <div className="truncate">{row.getValue('modalities')}</div>,
+    meta: {
+      label: 'Modalities',
+      headerClassName: 'w-[85px] min-w-[85px] max-w-[85px]',
+      cellClassName: 'w-[85px] min-w-[85px] max-w-[85px]',
+      fixedWidth: 85,
+    },
   },
   {
     accessorKey: 'description',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
     cell: ({ row }) => <div>{row.getValue('description')}</div>,
-    meta: { label: 'Description' },
+    meta: {
+      label: 'Description',
+      headerClassName: 'min-w-[290px]',
+      cellClassName: 'min-w-[290px]',
+    },
   },
   {
     accessorKey: 'accession',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Accession" />,
-    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('accession')}</div>,
-    meta: { label: 'Accession' },
+    cell: ({ row }) => <div className="truncate">{row.getValue('accession')}</div>,
+    meta: {
+      label: 'Accession',
+      headerClassName: 'w-[140px] min-w-[140px] max-w-[140px]',
+      cellClassName: 'w-[140px] min-w-[140px] max-w-[140px]',
+      fixedWidth: 140,
+    },
   },
   {
     accessorKey: 'instances',
@@ -53,6 +77,11 @@ export const studyListColumns: ColumnDef<StudyRow, unknown>[] = [
       return <LaunchMenuCell row={row} value={value} />
     },
     sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
-    meta: { label: 'Instances' },
+    meta: {
+      label: 'Instances',
+      headerClassName: 'w-[90px] min-w-[90px] max-w-[90px]',
+      cellClassName: 'w-[90px] min-w-[90px] max-w-[90px] overflow-hidden',
+      fixedWidth: 90,
+    },
   },
 ]

@@ -44,7 +44,6 @@ export function App() {
                     enforceSingleSelection={true}
                     showColumnVisibility={true}
                     title="Study List"
-                    tableClassName="min-w-[1000px]"
                     isPanelOpen={isPanelOpen}
                     onOpenPanel={() => setIsPanelOpen(true)}
                     onSelectionChange={rows => setSelected(rows[0] ?? null)}
