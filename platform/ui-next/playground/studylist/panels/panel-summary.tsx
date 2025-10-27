@@ -574,7 +574,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
             size="sm"
             className="h-6"
           >
-            Set Default Mode
+            Set Default Workflow
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
