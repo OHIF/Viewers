@@ -8,8 +8,13 @@ export const studyListColumns: ColumnDef<StudyRow, unknown>[] = [
   {
     accessorKey: 'patient',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Patient" />,
-    cell: ({ row }) => <div className="whitespace-nowrap">{row.getValue('patient')}</div>,
-    meta: { label: 'Patient' },
+    cell: ({ row }) => <div className="truncate">{row.getValue('patient')}</div>,
+    meta: {
+      label: 'Patient',
+      headerClassName: 'w-[165px] min-w-[165px] max-w-[165px]',
+      cellClassName: 'w-[165px] min-w-[165px] max-w-[165px]',
+      fixedWidth: 165,
+    },
   },
   {
     accessorKey: 'mrn',
