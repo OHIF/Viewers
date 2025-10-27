@@ -140,13 +140,27 @@ function Content({
             containerClassName="h-full"
             noScroll
           >
+            {/* Column widths */}
+            <colgroup>
+              {table.getVisibleLeafColumns().map(col => {
+                const meta = col.columnDef.meta as unknown as { fixedWidth?: number | string } | undefined;
+                const width = meta?.fixedWidth;
+                return width ? (
+                  <col key={col.id} style={{ width: typeof width === 'number' ? `${width}px` : width }} />
+                ) : (
+                  <col key={col.id} />
+                );
+              })}
+            </colgroup>
             <TableHeader>
               {table.getHeaderGroups().map(hg => (
                 <TableRow key={hg.id}>
                   {hg.headers.map(header => (
                     <TableHead
                       key={header.id}
-                      className="bg-muted sticky top-0 z-10"
+                      className={`bg-muted sticky top-0 z-10 ${
+                        ((header.column.columnDef.meta as unknown as { headerClassName?: string })?.headerClassName) ?? ''
+                      }`}
                       aria-sort={(() => {
                         const s = header.column.getIsSorted() as false | 'asc' | 'desc';
                         return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none';
@@ -176,7 +190,12 @@ function Content({
                     className="group cursor-pointer"
                   >
                     {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          ((cell.column.columnDef.meta as unknown as { cellClassName?: string })?.cellClassName) ?? ''
+                        }
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
