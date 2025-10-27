@@ -633,13 +633,13 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
       ) : !data ? (
         renderDefaultPicker()
       ) : (
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <div className="mt-2 flex flex-wrap items-center gap-0">
           {workflowButtons.map(wf => (
             <Button
               key={String(wf)}
               variant="ghost"
               size="sm"
-              className="bg-primary/20 h-6 w-32"
+              className="bg-primary/20 ml-1 mb-1 h-6 w-32"
               disabled={computedDisabled}
               onClick={() => handleLaunch(String(wf))}
             >
