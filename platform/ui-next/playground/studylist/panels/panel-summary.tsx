@@ -5,6 +5,7 @@ import { cn } from '../../../src/lib/utils';
 import patientSummaryIcon from '../assets/PatientStudyList.svg';
 import infoIcon from '../assets/info.svg';
 import { Icons } from '../../../src/components/Icons/Icons';
+import { Button } from '../../../src/components/Button';
 
 export type SummaryGetters<T> = {
   name?: (data: T) => React.ReactNode;
@@ -446,6 +447,8 @@ type SummaryWorkflowButtonProps<T = StudyRow> = {
   iconPosition?: 'start' | 'end';
   iconSize?: number;
   as?: ElementType;
+  onLaunchBasic?: (data: T) => void;
+  onLaunchSegmentation?: (data: T) => void;
 } & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
 
 const SummaryWorkflowButtonInner = <T = StudyRow,>(
@@ -462,9 +465,11 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
         className="h-4.5 w-4.5"
       />
     ),
-    iconPosition,
+    iconPosition = 'end',
     iconSize = 18,
     as,
+    onLaunchBasic,
+    onLaunchSegmentation,
     style,
     ...rest
   }: SummaryWorkflowButtonProps<T>,
@@ -472,26 +477,82 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
 ) => {
   const { data } = useSummaryContext<T>();
   const computedDisabled = disabled ?? !data;
+  const id = React.useId();
+  const reasonId = `${id}-reason`;
+
+  const handleBasic = () => {
+    if (computedDisabled || !data) return;
+    // Prefer explicit basic callback if provided; fall back to legacy onClick.
+    onLaunchBasic?.(data);
+    if (!onLaunchBasic) onClick?.(data);
+  };
+
+  const handleSegmentation = () => {
+    if (computedDisabled || !data) return;
+    onLaunchSegmentation?.(data);
+    if (!onLaunchSegmentation) onClick?.(data);
+  };
+
+  const iconNode = icon ? (
+    <span className="text-primary shrink-0" aria-hidden style={{ width: iconSize, height: iconSize }}>
+      {icon}
+    </span>
+  ) : null;
+
+  const srOnly =
+    computedDisabled && disabledReason ? (
+      <span id={reasonId} className="sr-only">
+        {disabledReason}
+      </span>
+    ) : null;
 
   return (
-    <SummaryAction<T>
-      ref={ref}
-      label={label}
-      icon={icon}
-      className={className}
+    <div
+      ref={ref as React.Ref<HTMLDivElement>}
+      className={cn(
+        'border-border/50 w-full rounded-lg bg-muted px-4 py-3 text-left transition',
+        className
+      )}
       style={style}
-      disabled={computedDisabled}
-      disabledReason={disabledReason ?? 'Select a study to launch'}
-      iconPosition={iconPosition}
-      iconSize={iconSize}
-      as={as}
-      onClick={item => {
-        if (!computedDisabled && item) {
-          onClick?.(item);
-        }
-      }}
+      aria-disabled={computedDisabled || undefined}
+      aria-describedby={computedDisabled && disabledReason ? reasonId : undefined}
       {...rest}
-    />
+    >
+      {srOnly}
+      <div className="flex w-full items-center justify-between">
+        {iconNode && iconPosition === 'start' ? (
+          <span className="text-foreground flex items-center gap-2 text-base font-medium leading-tight">
+            {iconNode}
+            {label}
+          </span>
+        ) : (
+          <span className="text-foreground text-base font-medium leading-tight">{label}</span>
+        )}
+        {iconNode && iconPosition === 'end' ? iconNode : null}
+      </div>
+      {data ? (
+        <div className="mt-2 flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-32"
+            disabled={computedDisabled}
+            onClick={handleBasic}
+          >
+            Basic Viewer
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-32"
+            disabled={computedDisabled}
+            onClick={handleSegmentation}
+          >
+            Segmentation
+          </Button>
+        </div>
+      ) : null}
+    </div>
   );
 };
 
