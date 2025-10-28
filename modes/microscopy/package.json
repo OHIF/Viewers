@@ -39,7 +39,7 @@
     "@ohif/extension-dicom-microscopy": "3.11.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "i18next": "^17.0.3"
+    "@babel/runtime": "7.28.2",
+    "i18next": "17.3.1"
   }
 }

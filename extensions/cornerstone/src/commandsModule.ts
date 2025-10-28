@@ -245,10 +245,35 @@ function commandsModule({
           referencedDisplaySetInstanceUID
         );
         storePositionPresentation(referencedDisplaySet);
-        return commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
+
+        const results = commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
           viewportId,
           displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
         });
+
+        const disableEditing = customizationService.getCustomization(
+          'panelSegmentation.disableEditing'
+        );
+        if (disableEditing) {
+          const segmentationRepresentations = segmentationService.getSegmentationRepresentations(
+            viewportId,
+            {
+              segmentationId: displaySet.displaySetInstanceUID,
+            }
+          );
+
+          segmentationRepresentations.forEach(representation => {
+            const segmentIndices = Object.keys(representation.segments);
+            segmentIndices.forEach(segmentIndex => {
+              segmentationService.setSegmentLocked(
+                representation.segmentationId,
+                parseInt(segmentIndex),
+                true
+              );
+            });
+          });
+        }
+        return results;
       } else if (displaySet.Modality === 'SR') {
         const results = commandsManager.runCommand('hydrateStructuredReport', {
           displaySetInstanceUID: displaySet.displaySetInstanceUID,

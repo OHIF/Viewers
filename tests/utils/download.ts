@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 
-const _streamToString = async (stream: Readable) => {
+const _streamToString = async (stream: Readable): Promise<string> => {
   return new Promise((resolve, reject) => {
     const chunks = [];
     stream.on('data', chunk => chunks.push(chunk));
