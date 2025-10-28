@@ -84,7 +84,7 @@ export default function interleaveCenterLoader({
   // the imageIds and save them in AllRequests for later use
   const AllRequests = [];
   volumes.forEach(volume => {
-    const requests = volume.getImageLoadRequests();
+    const requests = volume.getImageLoadRequests?.() ?? [];
 
     if (!requests.length || !requests[0] || !requests[0].imageId) {
       return;
