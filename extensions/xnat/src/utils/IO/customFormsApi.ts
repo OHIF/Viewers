@@ -69,26 +69,26 @@ export async function fetchCustomForms(projectId: string): Promise<ParsedCustomF
   try {
     const route = `xapi/customforms`;
     const response = await fetchJSON(route).promise;
-    
+
     if (!response) {
       console.warn('No custom forms found');
       return [];
     }
-    
+
     // Parse the forms and filter by project
     const forms: CustomForm[] = Array.isArray(response) ? response : [response];
     const parsedForms: ParsedCustomForm[] = [];
-    
+
     forms.forEach(form => {
       try {
         // Parse the contents JSON string
         const contents = JSON.parse(form.contents);
-        
+
         // Check if this form applies to the project
         const appliesToProject = form.appliesToList.some(
           item => item.entityId === projectId && item.status === 'enabled'
         );
-        
+
         if (appliesToProject) {
           const parsedForm: ParsedCustomForm = {
             id: form.formId,
@@ -98,14 +98,14 @@ export async function fetchCustomForms(projectId: string): Promise<ParsedCustomF
             scope: form.scope,
             appliesToProjects: form.appliesToList.map(item => item.entityId)
           };
-          
+
           parsedForms.push(parsedForm);
         }
       } catch (parseError) {
         console.error('Error parsing form contents:', parseError, form);
       }
     });
-    
+
     console.log('Parsed custom forms for project:', projectId, parsedForms);
     return parsedForms;
   } catch (error) {
@@ -125,17 +125,17 @@ export async function getExperimentCustomFormData(
   formUuid?: string
 ): Promise<CustomFormData> {
   try {
-    const route = formUuid 
+    const route = formUuid
       ? `xapi/custom-fields/experiments/${experimentId}/fields/${formUuid}`
       : `xapi/custom-fields/experiments/${experimentId}/fields`;
-    
+
     const response = await fetchJSON(route).promise;
-    
+
     if (!response) {
       console.warn(`No custom form data found for experiment ${experimentId}`);
       return {};
     }
-    
+
     console.log('Experiment custom form data:', experimentId, response);
     return response;
   } catch (error) {
@@ -156,13 +156,13 @@ export async function saveExperimentCustomFormData(
 ): Promise<CustomFormData> {
   try {
     const route = `xapi/custom-fields/experiments/${experimentId}/fields`;
-    
+
     // Use PUT method for adding/updating custom form data
     const { xnatRootUrl } = sessionMap;
     const cleanRoute = route.startsWith('/') ? route.substring(1) : route;
     const baseUrl = xnatRootUrl.endsWith('/') ? xnatRootUrl : xnatRootUrl + '/';
     const url = `${baseUrl}${cleanRoute}`;
-    
+
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -170,11 +170,11 @@ export async function saveExperimentCustomFormData(
       },
       body: JSON.stringify(formData),
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const result = await response.json();
     return result;
   } catch (error) {
@@ -195,20 +195,20 @@ export async function deleteExperimentCustomFormData(
 ): Promise<CustomFormData> {
   try {
     const route = `xapi/custom-fields/experiments/${experimentId}/fields/${formUuid}`;
-    
+
     const { xnatRootUrl } = sessionMap;
     const cleanRoute = route.startsWith('/') ? route.substring(1) : route;
     const baseUrl = xnatRootUrl.endsWith('/') ? xnatRootUrl : xnatRootUrl + '/';
     const url = `${baseUrl}${cleanRoute}`;
-    
+
     const response = await fetch(url, {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const result = await response.json();
     return result;
   } catch (error) {
@@ -232,7 +232,7 @@ export async function updateExperimentFormData(
   try {
     // First get existing data
     const existingData = await getExperimentCustomFormData(experimentId);
-    
+
     // Update the specific form's data
     const updatedData = {
       ...existingData,
@@ -241,7 +241,7 @@ export async function updateExperimentFormData(
         ...formFieldData
       }
     };
-    
+
     // Save the updated data
     return await saveExperimentCustomFormData(experimentId, updatedData);
   } catch (error) {
@@ -281,6 +281,156 @@ export function createFormEntry(
   };
 }
 
+/**
+ * Gets overread form data filtered by current user
+ * This function ensures that different overread radiologists cannot see each other's
+ * overread results while still allowing them to answer their own forms.
+ *
+ * @param experimentId - The experiment ID
+ * @param formUuid - Optional form UUID to retrieve specific form data
+ * @returns Promise that resolves to custom form data filtered by current user
+ */
+export async function getOverreadFormData(
+  experimentId: string,
+  formUuid?: string
+): Promise<CustomFormData> {
+  try {
+    const route = formUuid
+      ? `xapi/overread/custom-fields?experimentId=${experimentId}&formUuid=${formUuid}`
+      : `xapi/overread/custom-fields?experimentId=${experimentId}`;
+
+    const response = await fetchJSON(route).promise;
+
+    if (!response) {
+      console.warn(`No overread form data found for experiment ${experimentId}`);
+      return {};
+    }
+
+    console.log('Overread form data:', experimentId, response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching overread form data:', error);
+    throw new Error(`Failed to fetch overread form data: ${error.message}`);
+  }
+}
+
+/**
+ * Saves overread form data for current user only
+ * Data is stored with user-specific keys to prevent cross-user access.
+ *
+ * @param experimentId - The experiment ID
+ * @param formUuid - The UUID of the form to update
+ * @param formFieldData - The form field data to update
+ * @returns Promise that resolves to the updated custom form data for current user
+ */
+export async function saveOverreadFormData(
+  experimentId: string,
+  formUuid: string,
+  formFieldData: { [fieldName: string]: any }
+): Promise<CustomFormData> {
+  try {
+    const route = `xapi/overread/custom-fields?experimentId=${experimentId}&formUuid=${formUuid}`;
+
+    const { xnatRootUrl } = sessionMap;
+    const cleanRoute = route.startsWith('/') ? route.substring(1) : route;
+    const baseUrl = xnatRootUrl.endsWith('/') ? xnatRootUrl : xnatRootUrl + '/';
+    const url = `${baseUrl}${cleanRoute}`;
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formFieldData),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error saving overread form data:', error);
+    throw new Error(`Failed to save overread form data: ${error.message}`);
+  }
+}
+
+/**
+ * Checks if the current user has any overread form data for a specific experiment
+ *
+ * @param experimentId - The experiment ID
+ * @returns Promise that resolves to an object with hasData boolean flag
+ */
+export async function hasUserOverreadData(experimentId: string): Promise<{ hasData: boolean; userId: number; username: string }> {
+  try {
+    const route = `xapi/overread/custom-fields/has-data?experimentId=${experimentId}`;
+
+    const response = await fetchJSON(route).promise;
+
+    if (!response) {
+      console.warn(`No response for overread data check for experiment ${experimentId}`);
+      return { hasData: false, userId: 0, username: '' };
+    }
+
+    console.log('Overread data check result:', experimentId, response);
+    return response;
+  } catch (error) {
+    console.error('Error checking user overread data:', error);
+    throw new Error(`Failed to check user overread data: ${error.message}`);
+  }
+}
+
+/**
+ * Gets all users' overread form data for a specific experiment (admin only)
+ * This function is restricted to site administrators and project owners.
+ *
+ * @param experimentId - The experiment ID
+ * @returns Promise that resolves to map of user IDs to their form data
+ */
+export async function getAllUsersOverreadData(experimentId: string): Promise<{ [userId: string]: CustomFormData }> {
+  try {
+    const route = `xapi/overread/custom-fields/all-users?experimentId=${experimentId}`;
+
+    const response = await fetchJSON(route).promise;
+
+    if (!response) {
+      console.warn(`No overread data found for any users in experiment ${experimentId}`);
+      return {};
+    }
+
+    console.log('All users overread data:', experimentId, response);
+    return response;
+  } catch (error) {
+    console.error('Error fetching all users overread data:', error);
+    throw new Error(`Failed to fetch all users overread data: ${error.message}`);
+  }
+}
+
+/**
+ * Updates a specific form's data within an experiment using overread API
+ * This ensures user-specific data storage for overread workflows.
+ *
+ * @param experimentId - The experiment ID
+ * @param formUuid - The UUID of the form to update
+ * @param formFieldData - The form field data to update
+ * @returns Promise that resolves to the updated custom form data for current user
+ */
+export async function updateOverreadFormData(
+  experimentId: string,
+  formUuid: string,
+  formFieldData: { [fieldName: string]: any }
+): Promise<CustomFormData> {
+  try {
+    // Use the overread-specific save function
+    return await saveOverreadFormData(experimentId, formUuid, formFieldData);
+  } catch (error) {
+    console.error('Error updating overread experiment form data:', error);
+    throw new Error(`Failed to update overread experiment form data: ${error.message}`);
+  }
+}
+
 export default {
   fetchCustomForms,
   getExperimentCustomFormData,
@@ -289,4 +439,10 @@ export default {
   updateExperimentFormData,
   getFormDataByUuid,
   createFormEntry,
-}; 
+  // Overread-specific functions
+  getOverreadFormData,
+  saveOverreadFormData,
+  hasUserOverreadData,
+  getAllUsersOverreadData,
+  updateOverreadFormData,
+};

@@ -35,6 +35,15 @@ const callbacks = (toolName: string) => [
 
 const toolbarButtons: Button[] = [
   {
+    id: 'returnToXNAT',
+    uiType: 'ohif.returnToXNAT',
+    props: {
+      icon: 'external-link',
+      label: 'Return to XNAT',
+      tooltip: 'Return to XNAT interface',
+    },
+  },
+  {
     id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',
     props: {

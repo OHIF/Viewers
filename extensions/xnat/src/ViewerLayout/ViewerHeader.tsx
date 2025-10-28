@@ -21,7 +21,7 @@ function ViewerHeader({
 }: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const navigate = useNavigate();
   const location = useLocation();
-
+  
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);

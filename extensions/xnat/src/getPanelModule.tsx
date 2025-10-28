@@ -1,5 +1,5 @@
 import React from 'react';
-import { WrappedPanelStudyBrowser, WrappedXNATNavigationPanel, WrappedXNATStudyBrowserPanel } from './Panels';
+import { WrappedXNATNavigationPanel, WrappedXNATStudyBrowserPanel, WrappedOverreadNavigationPanel } from './Panels';
 import i18n from 'i18next';
 import XNATSegmentationPanel from './Panels/XNATSegmentationPanel';
 import XNATPanelMeasurement from './Panels/XNATPanelMeasurement';
@@ -61,10 +61,24 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       },
     },
     {
+      name: 'overreadNavigation',
+      iconName: 'tab-studies',
+      iconLabel: 'Overread',
+      label: i18n.t('SidePanel:Overread'),
+      component: props => (
+        <WrappedOverreadNavigationPanel
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
+    },
+    {
       name: 'xnatNavigation',
       iconName: 'tab-studies',
-      iconLabel: 'Studies',
-      label: i18n.t('SidePanel:Studies'),
+      iconLabel: 'Projects',
+      label: i18n.t('SidePanel:Projects'),
       component: props => (
         <WrappedXNATNavigationPanel
           {...props}

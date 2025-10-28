@@ -13,6 +13,7 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
+import ReturnToXNATButton from './Toolbar/ReturnToXNATButton';
 
 // Define the withAppTypes interface to match ExtensionParams
 interface withAppTypes {
@@ -84,6 +85,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.progressDropdown',
       defaultComponent: ProgressDropdownWithService,
+    },
+    {
+      name: 'ohif.returnToXNAT',
+      defaultComponent: ReturnToXNATButton,
     },
     {
       name: 'evaluate.group.promoteToPrimary',
