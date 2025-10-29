@@ -106,6 +106,7 @@ function commandsModule({
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
     viewportGridService,
+    toolbarService,
     toolGroupService,
     cineService,
     uiDialogService,
@@ -2069,7 +2070,16 @@ function commandsModule({
 
       for (const toolGroupId of toolGroupIds) {
         const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
-        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize + 3);
+
+        const newBrushSize = Math.min(brushSize + 3, 99.5);
+
+        if (brushSize) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
+
+          const activeButton = toolbarService.getActiveButton();
+          const optionId = activeButton.props.options[0].id;
+          toolbarService.setButtonValue(activeButton.id, optionId, newBrushSize);
+        }
       }
     },
     decreaseBrushSize: () => {
@@ -2080,7 +2090,16 @@ function commandsModule({
 
       for (const toolGroupId of toolGroupIds) {
         const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
-        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize - 3);
+
+        const newBrushSize = Math.max(brushSize - 3, 0.5);
+
+        if (brushSize) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
+
+          const activeButton = toolbarService.getActiveButton();
+          const optionId = activeButton.props.options[0].id;
+          toolbarService.setButtonValue(activeButton.id, optionId, newBrushSize);
+        }
       }
     },
     addNewSegment: () => {
