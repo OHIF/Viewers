@@ -2,11 +2,13 @@ import { setUpSegmentationEventHandlers } from './setUpSegmentationEventHandlers
 import {
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
+  setUpSelectedSegmentationsForViewportHandler,
 } from './segmentationHandlers';
 
 jest.mock('./segmentationHandlers', () => ({
   setupSegmentationDataModifiedHandler: jest.fn(),
   setupSegmentationModifiedHandler: jest.fn(),
+  setUpSelectedSegmentationsForViewportHandler: jest.fn(),
 }));
 
 describe('setUpSegmentationEventHandlers', () => {
@@ -38,6 +40,7 @@ describe('setUpSegmentationEventHandlers', () => {
   const mockUnsubscribeDataModified = jest.fn();
   const mockUnsubscribeModified = jest.fn();
   const mockUnsubscribeCreated = jest.fn();
+  const mockUnsubscribeSelectedSegmentationsForViewportEvents = [jest.fn(), jest.fn()];
 
   const defaultParameters = {
     servicesManager: mockServicesManager as unknown as AppTypes.ServicesManager,
@@ -51,6 +54,10 @@ describe('setUpSegmentationEventHandlers', () => {
     });
     (setupSegmentationModifiedHandler as jest.Mock).mockReturnValue({
       unsubscribe: mockUnsubscribeModified,
+    });
+    (setUpSelectedSegmentationsForViewportHandler as jest.Mock).mockReturnValue({
+      unsubscribeSelectedSegmentationsForViewportEvents:
+        mockUnsubscribeSelectedSegmentationsForViewportEvents,
     });
     mockSegmentationService.subscribe.mockReturnValue({
       unsubscribe: mockUnsubscribeCreated,
@@ -92,6 +99,7 @@ describe('setUpSegmentationEventHandlers', () => {
         mockUnsubscribeDataModified,
         mockUnsubscribeModified,
         mockUnsubscribeCreated,
+        ...mockUnsubscribeSelectedSegmentationsForViewportEvents,
       ],
     });
   });
