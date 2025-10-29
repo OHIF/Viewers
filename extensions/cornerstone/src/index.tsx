@@ -44,6 +44,7 @@ import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSynchronizersStore,
+  useSelectedSegmentationsForViewportStore,
 } from './stores';
 import { useToggleOneUpViewportGridStore } from '@ohif/extension-default';
 import { useActiveViewportSegmentationRepresentations } from './hooks/useActiveViewportSegmentationRepresentations';
@@ -109,6 +110,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(segmentationService, [
       segmentationService.EVENTS.SEGMENTATION_REMOVED,
       segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+      segmentationService.EVENTS.ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
     ]);
 
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
@@ -153,6 +155,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     useSynchronizersStore.getState().clearSynchronizersStore();
     useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
     useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
+    useSelectedSegmentationsForViewportStore
+      .getState()
+      .clearSelectedSegmentationsForViewportStore();
     segmentationService.removeAllSegmentations();
   },
 
@@ -256,6 +261,7 @@ export {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSynchronizersStore,
+  useSelectedSegmentationsForViewportStore,
   Enums,
   useMeasurements,
   useActiveViewportSegmentationRepresentations,
