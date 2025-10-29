@@ -27,6 +27,7 @@ export const CustomDropdownMenuContent = () => {
     activeSegmentation,
     activeSegmentationId,
     segmentationRepresentationType,
+    disableEditing,
   } = useSegmentationTableContext('CustomDropdownMenu');
 
   // Try to get segmentation data from expanded context first, fall back to table context
@@ -76,12 +77,14 @@ export const CustomDropdownMenuContent = () => {
 
   return (
     <DropdownMenuContent align="start">
-      <DropdownMenuItem
-        onClick={() => onSegmentationAdd({ segmentationId, segmentationRepresentationType })}
-      >
-        <Icons.Add className="text-foreground" />
-        <span className="pl-2">{t('Create New Segmentation')}</span>
-      </DropdownMenuItem>
+      {!disableEditing && (
+        <DropdownMenuItem
+          onClick={() => onSegmentationAdd({ segmentationId, segmentationRepresentationType })}
+        >
+          <Icons.Add className="text-foreground" />
+          <span className="pl-2">{t('Create New Segmentation')}</span>
+        </DropdownMenuItem>
+      )}
       <DropdownMenuSeparator />
       <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
       <DropdownMenuItem onClick={() => onSegmentationRemoveFromViewport(segmentationId)}>

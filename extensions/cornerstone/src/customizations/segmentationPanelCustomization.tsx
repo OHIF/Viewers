@@ -3,6 +3,7 @@ import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
 import SegmentationToolConfig from '../components/SegmentationToolConfig';
 import React from 'react';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
@@ -10,7 +11,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
-    'panelSegmentation.onSegmentationAdd': ({
+    'panelSegmentation.onSegmentationAdd': async ({
       segmentationRepresentationType = SegmentationRepresentations.Labelmap,
     }) => {
       const { viewportGridService } = servicesManager.services;
@@ -18,7 +19,16 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       if (segmentationRepresentationType === SegmentationRepresentations.Labelmap) {
         commandsManager.run('createLabelmapForViewport', { viewportId });
       } else if (segmentationRepresentationType === SegmentationRepresentations.Contour) {
-        commandsManager.run('createContourForViewport', { viewportId });
+        const segmentationId = await commandsManager.run('createContourForViewport', {
+          viewportId,
+        });
+        cornerstoneTools.segmentation.config.style.setStyle(
+          { segmentationId, type: SegmentationRepresentations.Contour },
+          {
+            fillAlpha: 0.5,
+            renderFill: true,
+          }
+        );
       }
     },
     'panelSegmentation.tableMode': 'collapsed',

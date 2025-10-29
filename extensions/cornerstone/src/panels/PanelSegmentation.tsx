@@ -30,8 +30,13 @@ export default function PanelSegmentation({
   segmentationRepresentationType,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const { customizationService, displaySetService, viewportGridService, toolbarService } =
-    servicesManager.services;
+  const {
+    customizationService,
+    displaySetService,
+    viewportGridService,
+    toolbarService,
+    segmentationService,
+  } = servicesManager.services;
   const { activeViewportId } = viewportGridService.getState();
 
   const utilitiesSectionMap = {
@@ -45,7 +50,7 @@ export default function PanelSegmentation({
 
   const selectedSegmentationIdForType = segmentationRepresentationType
     ? selectedSegmentationsForViewportMap?.get(segmentationRepresentationType)
-    : undefined;
+    : segmentationService?.getActiveSegmentation(activeViewportId)?.segmentationId;
 
   const buttonSection = utilitiesSectionMap[segmentationRepresentationType];
 
