@@ -819,4 +819,63 @@ export default class ToolbarService extends PubSubService {
         return { align: 'start', side: 'bottom' };
     }
   }
+
+  /**
+   * Retrieves the active button.
+   *
+   * @returns The active button, or null if no button is active.
+   */
+  public getActiveButton(): Button | null {
+    const buttons = Object.values(this.getButtons());
+
+    const activeButton = buttons.find(button => button.props.isActive);
+
+    return activeButton ?? null;
+  }
+
+  /**
+   * Sets the value for a specific option within a toolbar button.
+   * Automatically clamps range values to min/max constraints and validates
+   * values against allowed options if defined.
+   *
+   * @param buttonId - The ID of the button containing the option
+   * @param optionId - The ID of the option to update
+   * @param value - The new value to set. Can be a number, array of numbers (for double-range), or string
+   *
+   * @fires TOOL_BAR_STATE_MODIFIED - after successful update
+   */
+  public setButtonValue(buttonId: string, optionId: string, value: number | number[] | string) {
+    const button = this.getButton(buttonId);
+    const option = button?.props?.options?.find(option => option.id === optionId);
+
+    if (!option) {
+      console.warn(`Option ${optionId} not found for button ${buttonId}`);
+      return;
+    }
+
+    let newValue = value;
+    if (option.max && option.min) {
+      if (option.type === 'double-range' && Array.isArray(value)) {
+        newValue = value.map(v => Math.max(option.min, Math.min(v, option.max)));
+      } else if (option.type === 'range' && typeof value === 'number') {
+        newValue = Math.max(option.min, Math.min(value, option.max));
+      }
+    }
+
+    if (option.values) {
+      const valueOption = option.values.find(v => v.value === value);
+      if (!valueOption) {
+        console.warn(`Value ${value} not found in values array for option ${optionId}`);
+        return;
+      }
+    }
+
+    option.value = newValue;
+
+    // Notify that toolbar state has been modified
+    this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
+      buttons: this.state.buttons,
+      buttonSections: this.state.buttonSections,
+    });
+  }
 }
