@@ -80,11 +80,17 @@ following commands:
 
 ```bash
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Start local development server
 yarn run dev
 ```
+:::danger
+In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
+supply chain attacks by enforcing reproducible dependencies. That is, if the
+`yarn.lock` file is clean and does NOT reference compromised packages, then
+no compromised packages should land on your machine by using this flag.
+:::
 
 You should see the following output:
 
@@ -112,6 +118,31 @@ You should see the following output:
 # Build static assets to host a PWA
 yarn run build
 ```
+
+### Updating Dependencies
+In general you will typically not be updating the various `package.json` files.
+But for the case when you do, you will have to also update the various OHIF lock files
+and as such you will have to do both a `yarn` and `bun` `install` without
+the `--frozen-lockfile` flag.
+
+:::danger
+Updating the package.json must be done with care so as to avoid incorporating
+vulnerable, third-party packages and/or versions. Please research the added
+packages and/or versions for vulnerabilities.
+
+Here is what you should do when adding new packages and/or versions prior to
+committing and pushing your code:
+1. Do your due diligence researching the added packages and/or versions for vulnerabilities.
+2. Update the `package.json` files.
+3. Execute `yarn run install:update-lockfile`. This updates both the `yarn.lock` and
+the `bun.lock` files.
+4. Execute `yarn run audit` for a last security check. This runs both `yarn audit` and
+`bun audit`.
+6. Include both the `yarn.lock` and `bun.lock` files as part of your commit.
+
+If any of your research or auditing for vulnerabilities find HIGH risk vulnerabilities
+do NOT commit or push your changes! Low and moderate risk vulnerabilities are acceptable.
+:::
 
 ## Troubleshooting
 

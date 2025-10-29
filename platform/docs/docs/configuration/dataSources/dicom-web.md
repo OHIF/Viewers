@@ -88,7 +88,7 @@ this repository's root directory, and run:
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Run our dev command, but with the local orthanc config
 yarn run dev:orthanc

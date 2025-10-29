@@ -45,7 +45,10 @@
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
     "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
-    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
+    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --frozen-lockfile --modules-folder ../node_modules",
+    "install:update-lockfile": "yarn install && bun install --config=./bunfig.update-lockfile.toml",
+    "install:yarn:frozen-lockfile": "yarn install --frozen-lockfile",
+    "audit": "yarn audit || bun audit",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",
@@ -79,7 +82,7 @@
   },
   "optionalDependencies": {
     "@percy/cypress": "3.1.6",
-    "@playwright/test": "1.54.1"
+    "@playwright/test": "1.56.1"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",

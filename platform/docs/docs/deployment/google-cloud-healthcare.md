@@ -127,7 +127,7 @@ Images can even be transcoded on the fly if this is desired.
 
 ```bash
 cd OHIFViewer
-yarn install
+yarn install --frozen-lockfile
 APP_CONFIG=config/google.js yarn run dev
 ```
 
