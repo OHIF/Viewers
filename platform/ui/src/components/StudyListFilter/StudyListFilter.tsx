@@ -87,7 +87,7 @@ const StudyListFilter = ({
         </div>
       </div>
       <div className="sticky -top-1 z-10 mx-auto border-b-4 border-black">
-        <div className="bg-primary-dark pt-3 pb-3">
+        <div className="bg-[hsl(var(--muted))] pt-3 pb-3">
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
@@ -99,7 +99,7 @@ const StudyListFilter = ({
         </div>
         {numOfStudies > 100 && (
           <div className="container m-auto">
-            <div className="bg-primary-main rounded-b py-1 text-center text-base">
+            <div className="bg-[hsl(var(--primary))] rounded-b py-1 text-center text-base">
               <p className="text-white">
                 {t('Filter list to 100 studies or less to enable sorting')}
               </p>

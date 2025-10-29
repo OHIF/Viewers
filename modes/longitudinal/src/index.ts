@@ -93,9 +93,7 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.register(toolbarButtons);
       toolbarService.updateSection(toolbarService.sections.primary, [
         'MeasurementTools',
-        'Zoom',
         'Pan',
-        'TrackballRotate',
         'WindowLevel',
         'Capture',
         'Layout',
@@ -131,9 +129,9 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       toolbarService.updateSection('MeasurementTools', [
-        'Length',
-        'Probe',
         'CustomProbe',
+        'Zoom',
+        'Length',
         'Angle',
         'CobbAngle',
         'Bidirectional',

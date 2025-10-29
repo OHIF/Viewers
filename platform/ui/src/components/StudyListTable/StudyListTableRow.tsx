@@ -15,7 +15,7 @@ const StudyListTableRow = props => {
       >
         <td
           className={classnames('border-0 p-0', {
-            'border-secondary-light bg-primary-dark border-b': isExpanded,
+            'border-secondary-light bg-[hsl(var(--secondary))] border-b': isExpanded,
           })}
         >
           <div
@@ -34,11 +34,11 @@ const StudyListTableRow = props => {
               <tbody>
                 <tr
                   className={classnames(
-                    'hover:bg-secondary-main cursor-pointer transition duration-300',
+                    'hover:bg-[hsl(var(--accent))] cursor-pointer transition duration-300',
                     {
-                      'bg-primary-dark': !isExpanded,
+                      'bg-[hsl(var(--muted))]': !isExpanded,
                     },
-                    { 'bg-secondary-dark': isExpanded }
+                    { 'bg-[hsl(var(--secondary))]': isExpanded }
                   )}
                   onClick={onClickRow}
                   data-cy={clickableCY}
@@ -79,7 +79,7 @@ const StudyListTableRow = props => {
                   })}
                 </tr>
                 {isExpanded && (
-                  <tr className="max-h-0 w-full select-text overflow-hidden bg-black">
+                  <tr className="max-h-0 w-full select-text overflow-hidden bg-[hsl(var(--background))]">
                     <td colSpan={row.length}>{expandedContent}</td>
                   </tr>
                 )}

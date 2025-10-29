@@ -267,7 +267,7 @@ const Preset = ({
       <div className="flex-shrink-0">
         <Icons.ByName
           name={icon}
-          className={cn('group-hover:text-primary', iconSize)}
+          className={cn('group-hover:text-highlight', iconSize)}
         />
       </div>
       {title && <div className="text-foreground text-base">{title}</div>}
@@ -320,7 +320,10 @@ const GridSelector = ({ rows = 3, columns = 4, className }: GridSelectorProps) =
       {Array.from(Array(rows * columns).keys()).map(index => (
         <div
           key={index}
-          className={cn('cursor-pointer', isHovered(index) ? 'bg-primary-active' : 'bg-[#04225b]')}
+          className={cn(
+            'cursor-pointer',
+            isHovered(index) ? 'bg-[hsl(var(--highlight))]' : 'bg-[hsl(var(--secondary))]'
+          )}
           data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
           onClick={() => handleSelection(index)}
           onMouseEnter={() => setHoveredIndex(index)}
