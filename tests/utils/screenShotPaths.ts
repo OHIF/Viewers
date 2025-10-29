@@ -139,6 +139,11 @@ const screenShotPaths = {
     mprAfterSegHydrated: 'mprAfterSegHydrated.png',
     mprAfterSegHydratedAfterLayoutChange: 'mprAfterSegHydratedAfterLayoutChange.png',
   },
+  segHydrationFrom3DFourUp: {
+    threeDFourUpBeforeSEG: 'threeDFourUpBeforeSEG.png',
+    threeDFourUpAfterSEG: 'threeDFourUpAfterSEG.png',
+    threeDFourUpAfterSegHydrated: 'threeDFourUpAfterSegHydrated.png',
+  },
   segNoHydrationThenMPR: {
     segNoHydrationPreMPR: 'segNoHydrationPreMpr.png',
     segNoHydrationPostMPR: 'segNoHydrationPostMpr.png',
