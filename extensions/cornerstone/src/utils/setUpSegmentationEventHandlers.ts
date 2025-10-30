@@ -1,4 +1,5 @@
 import {
+  setUpSelectedSegmentationsForViewportHandler,
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
 } from './segmentationHandlers';
@@ -28,7 +29,9 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
 
       const segmentation = segmentationService.getSegmentation(segmentationId);
       const label = segmentation.cachedStats.info;
-      const imageIds = segmentation.representationData.Labelmap.imageIds;
+      const imageIds =
+        segmentation.representationData?.Labelmap?.imageIds ??
+        segmentation.representationData?.Contour?.imageIds;
 
       // Create a display set for the segmentation
       const segmentationDisplaySet = {
@@ -50,10 +53,16 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
     }
   );
 
+  const { unsubscribeSelectedSegmentationsForViewportEvents } =
+    setUpSelectedSegmentationsForViewportHandler({
+      segmentationService,
+    });
+
   const unsubscriptions = [
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
     unsubscribeSegmentationCreated,
+    ...unsubscribeSelectedSegmentationsForViewportEvents,
   ];
 
   return { unsubscriptions };
