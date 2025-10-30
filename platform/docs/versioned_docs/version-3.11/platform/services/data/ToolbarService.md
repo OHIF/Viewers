@@ -34,7 +34,9 @@ The `ToolBarService` is a straightforward service designed to handle the toolbar
 - `setButtons`: sets the buttons defined in the service. It overrides all the
   previous buttons
 
+- `getActiveButton`: Retrieves the currently active button.
 
+- `setButtonValue(buttonId, optionId, value)`: Sets the value for a specific option within a toolbar button. Automatically clamps range values to min/max constraints and validates values against allowed options if defined.
 
 
 ## Button Definitions
