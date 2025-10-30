@@ -2,8 +2,6 @@ import React from 'react';
 import type { ElementType } from 'react';
 import type { StudyRow } from '../../../StudyList/StudyListTypes';
 import { cn } from '../../../src/lib/utils';
-import patientSummaryIcon from '../assets/PatientStudyList.svg';
-import infoIcon from '../assets/info.svg';
 import { Icons } from '../../../src/components/Icons/Icons';
 import { Button } from '../../../src/components/Button';
 import {
@@ -468,13 +466,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     disabled,
     disabledReason,
     className,
-    icon = (
-      <img
-        src={infoIcon}
-        alt=""
-        className="h-4.5 w-4.5"
-      />
-    ),
+    icon = <Icons.Info />,
     iconPosition = 'end',
     iconSize = 18,
     as,
@@ -667,8 +659,7 @@ type SummaryPatientProps = {
   hideIcon?: boolean;
   hideName?: boolean;
   hideMrn?: boolean;
-  iconAlt?: string;
-  iconSrc?: string;
+  icon?: React.ReactNode;
   align?: SummarySectionProps['align'];
   gap?: number;
   variant?: SummarySectionProps['variant'];
@@ -680,8 +671,7 @@ function SummaryPatient({
   hideIcon,
   hideName,
   hideMrn,
-  iconAlt = '',
-  iconSrc = patientSummaryIcon,
+  icon,
   align,
   gap,
   variant,
@@ -695,10 +685,16 @@ function SummaryPatient({
     >
       {!hideIcon && (
         <SummaryIcon
-          src={iconSrc}
-          alt={iconAlt}
           size={33}
-        />
+          className="text-primary"
+        >
+          {icon ?? (
+            <Icons.PatientStudyList
+              width="100%"
+              height="100%"
+            />
+          )}
+        </SummaryIcon>
       )}
       <div className="flex min-w-0 flex-col">
         {!hideName && <SummaryName placeholder={placeholder} />}
@@ -740,18 +736,12 @@ function SummaryWorkflows<T = StudyRow>({
 type SummaryEmptyProps = {
   children?: React.ReactNode;
   icon?: React.ReactNode;
-  iconSrc?: string;
-  iconAlt?: string;
-  iconSize?: number;
   section?: SummarySectionProps;
 };
 
 function SummaryEmpty({
   children,
   icon,
-  iconSrc = patientSummaryIcon,
-  iconAlt = '',
-  iconSize = 33,
   section,
 }: SummaryEmptyProps) {
   const { data } = useSummaryContext<unknown>();
@@ -767,10 +757,14 @@ function SummaryEmpty({
     >
       {icon ?? (
         <SummaryIcon
-          src={iconSrc}
-          alt={iconAlt}
-          size={iconSize}
-        />
+          size={33}
+          className="text-primary"
+        >
+          <Icons.PatientStudyList
+            width="100%"
+            height="100%"
+          />
+        </SummaryIcon>
       )}
       <span className="text-muted-foreground text-base font-medium leading-tight">
         {children ?? 'Select a study'}

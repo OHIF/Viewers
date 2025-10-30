@@ -35,6 +35,7 @@ import MultiplePatients from './Sources/MultiplePatients';
 import NavigationPanelReveal from './Sources/NavigationPanelReveal';
 import OHIFLogo from './Sources/OHIFLogo';
 import Patient from './Sources/Patient';
+import PatientStudyList from './Sources/PatientStudyList';
 import Pin from './Sources/Pin';
 import PinFill from './Sources/PinFill';
 import Plus from './Sources/Plus';
@@ -506,6 +507,7 @@ export const Icons = {
   NavigationPanelReveal,
   OHIFLogo,
   Patient,
+  PatientStudyList,
   Pin,
   PinFill,
   Plus,
