@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ElementType } from 'react';
-import type { StudyRow } from '../types';
+import type { StudyRow } from '../../../StudyList/StudyListTypes';
 import { cn } from '../../../src/lib/utils';
 import patientSummaryIcon from '../assets/PatientStudyList.svg';
 import infoIcon from '../assets/info.svg';
