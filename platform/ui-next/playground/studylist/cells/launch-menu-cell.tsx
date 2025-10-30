@@ -3,15 +3,14 @@ import type { Row } from '@tanstack/react-table';
 import { DataTableActionOverlayCell } from '../../../src/components/DataTable';
 import { StudylistWorkflowsMenu } from '../workflows/WorkflowsMenu';
 import { useStudylistTableContext } from '../components/studylist-table-context';
+import type { WorkflowId } from '../../../StudyList/WorkflowsInfer';
 
 export function LaunchMenuCell<TData>({ row, value }: { row: Row<TData>; value: number }) {
-  const [open, setOpen] = React.useState(false);
   const { defaultMode, onLaunch } = useStudylistTableContext();
 
   const original: any = row.original ?? {};
-  const handleLaunch = (wf: string) => {
+  const handleLaunch = (wf: WorkflowId) => {
     onLaunch?.(original, wf);
-    setOpen(false);
   };
 
   return (

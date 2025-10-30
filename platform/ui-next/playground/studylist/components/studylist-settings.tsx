@@ -8,53 +8,27 @@ import {
   SelectValue,
 } from '../../../src/components/Select';
 import { Label } from '../../../src/components/Label';
+import { ALL_WORKFLOW_OPTIONS, type WorkflowId } from '../../../StudyList/WorkflowsInfer';
+import { useDefaultWorkflow as useDefaultWorkflowDS } from '../../../StudyList/useDefaultWorkflow';
 
-export const WORKFLOW_OPTIONS = [
-  'Basic Viewer',
-  'Segmentation',
-  'TMTV Workflow',
-  'US Workflow',
-  'Preclinical 4D',
-] as const;
+/** Keep the existing export name so playground imports remain unchanged */
+export const WORKFLOW_OPTIONS = ALL_WORKFLOW_OPTIONS;
+/** Alias to DS union to avoid churn in playground callers */
+export type DefaultWorkflow = WorkflowId;
 
-export type DefaultWorkflow = typeof WORKFLOW_OPTIONS[number];
-
+/**
+ * Prototype wrapper around the DS hook to enforce the WorkflowId union and allowed list.
+ * Keeps the same signature used by the playground.
+ */
 export function useDefaultWorkflow(storageKey = 'studylist.defaultWorkflow') {
-  const [value, setValue] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const raw = window.localStorage.getItem(storageKey);
-        if (raw) setValue(raw);
-      }
-    } catch {}
-  }, [storageKey]);
-
-  const setAndPersist = React.useCallback(
-    (next: string | null) => {
-      setValue(next);
-      try {
-        if (typeof window !== 'undefined') {
-          if (next == null) {
-            window.localStorage.removeItem(storageKey);
-          } else {
-            window.localStorage.setItem(storageKey, next);
-          }
-        }
-      } catch {}
-    },
-    [storageKey]
-  );
-
-  return [value, setAndPersist] as const;
+  return useDefaultWorkflowDS<WorkflowId>(storageKey, ALL_WORKFLOW_OPTIONS);
 }
 
 type SettingsDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  defaultMode: string | null;
-  onDefaultModeChange: (value: string | null) => void;
+  defaultMode: WorkflowId | null;
+  onDefaultModeChange: (value: WorkflowId | null) => void;
 };
 
 export function StudylistSettingsDialog({
@@ -81,13 +55,13 @@ export function StudylistSettingsDialog({
           <div className="min-w-0 flex-1">
             <Select
               value={defaultMode ?? undefined}
-              onValueChange={(value) => onDefaultModeChange(value)}
+              onValueChange={(value) => onDefaultModeChange(value as WorkflowId)}
             >
               <SelectTrigger id={selectId} className="w-full">
                 <SelectValue placeholder="Select Default Workflow" />
               </SelectTrigger>
               <SelectContent onPointerDown={(e) => e.stopPropagation()}>
-                {WORKFLOW_OPTIONS.map((opt) => (
+                {ALL_WORKFLOW_OPTIONS.map((opt) => (
                   <SelectItem key={opt} value={opt}>
                     {opt}
                   </SelectItem>
