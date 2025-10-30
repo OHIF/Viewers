@@ -1,5 +1,4 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
 import { ThemeWrapper } from '../../src/components/ThemeWrapper';
 import data from './patient-studies.json';
 import { StudyList, type StudyRow, type WorkflowId } from '../../StudyList';
@@ -19,11 +18,4 @@ export function App() {
       </div>
     </ThemeWrapper>
   );
-}
-
-// In case this file is mounted directly (dev convenience)
-const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
 }
