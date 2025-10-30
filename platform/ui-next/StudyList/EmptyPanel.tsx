@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Summary } from '../playground/studylist/panels/panel-summary';
+import { PatientSummary } from '../src/components/PatientSummary';
 import type { WorkflowId } from './WorkflowsInfer';
 
 export function EmptyPanel({
@@ -10,13 +10,12 @@ export function EmptyPanel({
   onDefaultModeChange: (v: WorkflowId | null) => void;
 }) {
   return (
-    <Summary.Root>
-      <Summary.Patient />
-      {/* Casting to any since panel-summary is prototype-only and untyped */}
-      <Summary.Workflows
-        defaultMode={defaultMode as any}
-        onDefaultModeChange={onDefaultModeChange as any}
+    <PatientSummary.Root>
+      <PatientSummary.Patient />
+      <PatientSummary.Workflows<WorkflowId>
+        defaultMode={defaultMode}
+        onDefaultModeChange={onDefaultModeChange}
       />
-    </Summary.Root>
+    </PatientSummary.Root>
   );
 }

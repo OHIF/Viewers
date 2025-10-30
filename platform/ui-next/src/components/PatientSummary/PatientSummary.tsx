@@ -1,29 +1,29 @@
-import React from 'react';
+import * as React from 'react';
 import type { ElementType } from 'react';
-import type { StudyRow } from '../../../StudyList/StudyListTypes';
-import { cn } from '../../../src/lib/utils';
-import { Icons } from '../../../src/components/Icons/Icons';
-import { Button } from '../../../src/components/Button';
+import { cn } from '../../lib/utils';
+import { Icons } from '../Icons/Icons';
+import { Button } from '../Button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '../../../src/components/DropdownMenu';
+} from '../DropdownMenu';
 
-export type SummaryGetters<T> = {
+/** Public getters to adapt arbitrary data shapes to the PatientSummary defaults */
+export type PatientSummaryGetters<T> = {
   name?: (data: T) => React.ReactNode;
   mrn?: (data: T) => React.ReactNode;
 };
 
-type SummaryResolvedGetters<T> = {
+type ResolvedGetters<T> = {
   name: (data: T) => React.ReactNode;
   mrn: (data: T) => React.ReactNode;
 };
 
 type SummaryContextValue<T> = {
   data: T | null;
-  get: SummaryResolvedGetters<T>;
+  get: ResolvedGetters<T>;
 };
 
 const SummaryContext = React.createContext<SummaryContextValue<unknown> | null>(null);
@@ -31,30 +31,30 @@ const SummaryContext = React.createContext<SummaryContextValue<unknown> | null>(
 function useSummaryContext<T>() {
   const context = React.useContext(SummaryContext);
   if (!context) {
-    throw new Error('Summary.* components must be used within <Summary.Root>');
+    throw new Error('PatientSummary.* components must be used within <PatientSummary.Root>');
   }
   return context as SummaryContextValue<T>;
 }
 
-type SummaryRootProps<T extends { patient?: unknown; mrn?: unknown } = StudyRow> = {
+type RootProps<T extends { patient?: unknown; mrn?: unknown } = any> = {
   data?: T | null;
   /** @deprecated use `data` instead */
   study?: T | null;
-  get?: SummaryGetters<T>;
+  get?: PatientSummaryGetters<T>;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-function SummaryRoot<T extends { patient?: unknown; mrn?: unknown } = StudyRow>({
+function Root<T extends { patient?: unknown; mrn?: unknown } = any>({
   data: dataProp,
   study,
   get,
   className,
   children,
-}: SummaryRootProps<T>) {
+}: RootProps<T>) {
   const data = dataProp ?? study ?? null;
 
-  const resolvedGetters = React.useMemo<SummaryResolvedGetters<T>>(
+  const resolvedGetters = React.useMemo<ResolvedGetters<T>>(
     () => ({
       name: get?.name ?? ((item: T) => ((item as any)?.patient ?? '') as React.ReactNode),
       mrn: get?.mrn ?? ((item: T) => ((item as any)?.mrn ?? '') as React.ReactNode),
@@ -69,13 +69,13 @@ function SummaryRoot<T extends { patient?: unknown; mrn?: unknown } = StudyRow>(
   );
 }
 
-type SummarySectionProps = React.HTMLAttributes<HTMLDivElement> & {
+type SectionProps = React.HTMLAttributes<HTMLDivElement> & {
   variant?: 'card' | 'row' | 'ghost';
   align?: 'start' | 'center' | 'end' | 'stretch';
   gap?: number;
 };
 
-const SummarySection = React.forwardRef<HTMLDivElement, SummarySectionProps>(
+const Section = React.forwardRef<HTMLDivElement, SectionProps>(
   ({ variant = 'card', align = 'center', gap = 3, className, style, children, ...rest }, ref) => {
     const baseClassMap = {
       card: 'bg-muted rounded-lg px-4 py-3',
@@ -104,10 +104,9 @@ const SummarySection = React.forwardRef<HTMLDivElement, SummarySectionProps>(
     );
   }
 );
+Section.displayName = 'PatientSummarySection';
 
-SummarySection.displayName = 'SummarySection';
-
-type SummaryIconProps = {
+type IconProps = {
   src?: string;
   alt?: string;
   size?: number;
@@ -116,14 +115,14 @@ type SummaryIconProps = {
   children?: React.ReactNode;
 };
 
-function SummaryIcon({
+function Icon({
   src,
   alt = '',
   size = 33,
   className,
   hideWhenEmpty,
   children,
-}: SummaryIconProps) {
+}: IconProps) {
   if (hideWhenEmpty && !src && !children) {
     return null;
   }
@@ -154,19 +153,19 @@ function SummaryIcon({
   );
 }
 
-type SummaryNameProps<T = StudyRow> = {
+type NameProps<T = any> = {
   placeholder?: React.ReactNode;
   className?: string;
   children?: (value: React.ReactNode, data: T | null) => React.ReactNode;
   showTitleOnTruncate?: boolean;
 };
 
-function SummaryName<T = StudyRow>({
+function Name<T = any>({
   placeholder = 'Select a study',
   className,
   children,
   showTitleOnTruncate = true,
-}: SummaryNameProps<T>) {
+}: NameProps<T>) {
   const { data, get } = useSummaryContext<T>();
   const value = data ? get.name(data) : null;
   const content = value ?? placeholder;
@@ -185,7 +184,7 @@ function SummaryName<T = StudyRow>({
   );
 }
 
-type SummaryMRNProps<T = StudyRow> = {
+type MRNProps<T = any> = {
   hideWhenEmpty?: boolean;
   prefix?: React.ReactNode;
   className?: string;
@@ -193,13 +192,13 @@ type SummaryMRNProps<T = StudyRow> = {
   showTitleOnTruncate?: boolean;
 };
 
-function SummaryMRN<T = StudyRow>({
+function MRN<T = any>({
   hideWhenEmpty = true,
   prefix,
   className,
   children,
   showTitleOnTruncate = true,
-}: SummaryMRNProps<T>) {
+}: MRNProps<T>) {
   const { data, get } = useSummaryContext<T>();
   const value = data ? get.mrn(data) : null;
 
@@ -228,7 +227,7 @@ function SummaryMRN<T = StudyRow>({
   );
 }
 
-function SummaryMeta({ className, children }: { className?: string; children?: React.ReactNode }) {
+function Meta({ className, children }: { className?: string; children?: React.ReactNode }) {
   if (children == null) {
     return null;
   }
@@ -239,14 +238,14 @@ function SummaryMeta({ className, children }: { className?: string; children?: R
   );
 }
 
-type SummaryActionsProps = React.HTMLAttributes<HTMLDivElement> & {
+type ActionsProps = React.HTMLAttributes<HTMLDivElement> & {
   direction?: 'column' | 'row';
   gap?: number;
   wrap?: boolean;
   justify?: 'start' | 'end' | 'between' | 'center';
 };
 
-const SummaryActions = React.forwardRef<HTMLDivElement, SummaryActionsProps>(
+const Actions = React.forwardRef<HTMLDivElement, ActionsProps>(
   (
     {
       direction = 'column',
@@ -282,10 +281,9 @@ const SummaryActions = React.forwardRef<HTMLDivElement, SummaryActionsProps>(
     );
   }
 );
+Actions.displayName = 'PatientSummaryActions';
 
-SummaryActions.displayName = 'SummaryActions';
-
-type SummaryActionOwnProps<T = StudyRow> = {
+type ActionOwnProps<T = any> = {
   label?: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: (data: T | null) => void;
@@ -299,10 +297,10 @@ type SummaryActionOwnProps<T = StudyRow> = {
   iconSize?: number;
 };
 
-type SummaryActionProps<T = StudyRow> = SummaryActionOwnProps<T> &
-  Omit<React.HTMLAttributes<HTMLElement>, keyof SummaryActionOwnProps<T> | 'onClick'>;
+type ActionProps<T = any> = ActionOwnProps<T> &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof ActionOwnProps<T> | 'onClick'>;
 
-const SummaryActionInner = <T = StudyRow,>(
+const ActionInner = <T = any,>(
   {
     label,
     icon,
@@ -317,7 +315,7 @@ const SummaryActionInner = <T = StudyRow,>(
     iconSize = 24,
     style,
     ...rest
-  }: SummaryActionProps<T>,
+  }: ActionProps<T>,
   ref: React.ForwardedRef<HTMLElement>
 ) => {
   const { data } = useSummaryContext<T>();
@@ -352,10 +350,7 @@ const SummaryActionInner = <T = StudyRow,>(
 
   const srOnly =
     isDisabled && disabledReason ? (
-      <span
-        id={reasonId}
-        className="sr-only"
-      >
+      <span id={reasonId} className="sr-only">
         {disabledReason}
       </span>
     ) : null;
@@ -434,14 +429,14 @@ const SummaryActionInner = <T = StudyRow,>(
   );
 };
 
-type SummaryActionComponentType = <T = StudyRow>(
-  props: SummaryActionProps<T> & { ref?: React.Ref<HTMLElement> }
+type ActionComponentType = <T = any>(
+  props: ActionProps<T> & { ref?: React.Ref<HTMLElement> }
 ) => React.ReactElement | null;
 
-const SummaryAction = React.forwardRef(SummaryActionInner) as SummaryActionComponentType;
-SummaryAction.displayName = 'SummaryAction';
+const Action = React.forwardRef(ActionInner) as ActionComponentType;
+Action.displayName = 'PatientSummaryAction';
 
-type SummaryWorkflowButtonProps<T = StudyRow> = {
+type WorkflowButtonProps<T = any, M extends string = string> = {
   label?: React.ReactNode;
   onClick?: (data: T) => void;
   disabled?: boolean;
@@ -454,12 +449,12 @@ type SummaryWorkflowButtonProps<T = StudyRow> = {
   onLaunchBasic?: (data: T) => void;
   onLaunchSegmentation?: (data: T) => void;
   /** Selected default mode label; when set, replaces per-study workflow buttons with a badge */
-  defaultMode?: string | null;
+  defaultMode?: M | null;
   /** Updates the default mode label (set or clear) */
-  onDefaultModeChange?: (value: string | null) => void;
+  onDefaultModeChange?: (value: M | null) => void;
 } & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
 
-const SummaryWorkflowButtonInner = <T = StudyRow,>(
+const WorkflowButtonInner = <T = any, M extends string = string>(
   {
     label = 'Launch workflow',
     onClick,
@@ -476,7 +471,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     onDefaultModeChange,
     style,
     ...rest
-  }: SummaryWorkflowButtonProps<T>,
+  }: WorkflowButtonProps<T, M>,
   ref: React.ForwardedRef<HTMLElement>
 ) => {
   const { data } = useSummaryContext<T>();
@@ -488,7 +483,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     const defaults = ['Basic Viewer', 'Segmentation'];
     if (!d) return defaults;
     if (Array.isArray(d.workflows) && d.workflows.length > 0) {
-      return Array.from(new Set(d.workflows));
+      return Array.from(new Set(d.workflows.map(String)));
     }
     const mod = String(d.modalities ?? '').toUpperCase();
     const flows = [...defaults];
@@ -529,10 +524,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
 
   const srOnly =
     computedDisabled && disabledReason ? (
-      <span
-        id={reasonId}
-        className="sr-only"
-      >
+      <span id={reasonId} className="sr-only">
         {disabledReason}
       </span>
     ) : null;
@@ -561,25 +553,18 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
     <div className="mt-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6"
-          >
+          <Button variant="ghost" size="sm" className="h-6">
             Set Default Workflow
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          onClick={e => e.stopPropagation()}
-        >
+        <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
           {['Basic Viewer', 'Segmentation', 'TMTV Workflow', 'US Workflow', 'Preclinical 4D'].map(
-            opt => (
+            (opt) => (
               <DropdownMenuItem
                 key={opt}
-                onSelect={e => {
+                onSelect={(e) => {
                   e.preventDefault();
-                  onDefaultModeChange?.(opt);
+                  onDefaultModeChange?.(opt as M);
                 }}
               >
                 {opt}
@@ -594,10 +579,7 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
   return (
     <div
       ref={ref as React.Ref<HTMLDivElement>}
-      className={cn(
-        'border-border/50 bg-muted w-full rounded-lg px-4 py-3 text-left transition',
-        className
-      )}
+      className={cn('border-border/50 bg-muted w-full rounded-lg px-4 py-3 text-left transition', className)}
       style={style}
       aria-disabled={computedDisabled || undefined}
       aria-describedby={computedDisabled && disabledReason ? reasonId : undefined}
@@ -616,17 +598,14 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
         {iconNode && iconPosition === 'end' ? iconNode : null}
       </div>
 
-      {/* Content area:
-          - If default mode is chosen => show badge (even when a study is selected)
-          - Else if no study selected => show "Set Default Mode" picker
-          - Else (study selected and no default) => show dynamic workflow buttons */}
+      {/* Content selection logic */}
       {hasDefault ? (
         renderBadge(String(defaultMode))
       ) : !data ? (
         renderDefaultPicker()
       ) : (
         <div className="mt-2 flex flex-wrap items-center gap-0">
-          {workflowButtons.map(wf => (
+          {workflowButtons.map((wf) => (
             <Button
               key={String(wf)}
               variant="ghost"
@@ -644,28 +623,26 @@ const SummaryWorkflowButtonInner = <T = StudyRow,>(
   );
 };
 
-type SummaryWorkflowButtonComponent = <T = StudyRow>(
-  props: SummaryWorkflowButtonProps<T> & { ref?: React.Ref<HTMLElement> }
+type WorkflowButtonComponent = <T = any, M extends string = string>(
+  props: WorkflowButtonProps<T, M> & { ref?: React.Ref<HTMLElement> }
 ) => React.ReactElement | null;
 
-const SummaryWorkflowButton = React.forwardRef(
-  SummaryWorkflowButtonInner
-) as SummaryWorkflowButtonComponent;
-SummaryWorkflowButton.displayName = 'SummaryWorkflowButton';
+const WorkflowButton = React.forwardRef(WorkflowButtonInner) as WorkflowButtonComponent;
+WorkflowButton.displayName = 'PatientSummaryWorkflowButton';
 
-type SummaryPatientProps = {
+type PatientProps = {
   placeholder?: React.ReactNode;
   className?: string;
   hideIcon?: boolean;
   hideName?: boolean;
   hideMrn?: boolean;
   icon?: React.ReactNode;
-  align?: SummarySectionProps['align'];
+  align?: SectionProps['align'];
   gap?: number;
-  variant?: SummarySectionProps['variant'];
+  variant?: SectionProps['variant'];
 };
 
-function SummaryPatient({
+function Patient({
   placeholder = 'Select a study',
   className,
   hideIcon,
@@ -675,105 +652,53 @@ function SummaryPatient({
   align,
   gap,
   variant,
-}: SummaryPatientProps) {
+}: PatientProps) {
   return (
-    <SummarySection
-      className={className}
-      align={align}
-      gap={gap}
-      variant={variant}
-    >
+    <Section className={className} align={align} gap={gap} variant={variant}>
       {!hideIcon && (
-        <SummaryIcon
-          size={33}
-          className="text-primary"
-        >
-          {icon ?? (
-            <Icons.PatientStudyList
-              width="100%"
-              height="100%"
-            />
-          )}
-        </SummaryIcon>
+        <Icon size={33} className="text-primary">
+          {icon ?? <Icons.PatientStudyList width="100%" height="100%" />}
+        </Icon>
       )}
       <div className="flex min-w-0 flex-col">
-        {!hideName && <SummaryName placeholder={placeholder} />}
-        {!hideMrn && <SummaryMRN />}
+        {!hideName && <Name placeholder={placeholder} />}
+        {!hideMrn && <MRN />}
       </div>
-    </SummarySection>
+    </Section>
   );
 }
 
-type SummaryWorkflowsProps<T = StudyRow> = SummaryWorkflowButtonProps<T>;
-
-/** @deprecated Prefer <Summary.WorkflowButton /> for new usage. */
-function SummaryWorkflows<T = StudyRow>({
-  label = 'Launch workflow',
-  onClick,
-  className,
-  disabled,
-  disabledReason,
-  icon,
-  iconPosition,
-  iconSize,
-  ...rest
-}: SummaryWorkflowsProps<T>) {
-  return (
-    <SummaryWorkflowButton<T>
-      label={label}
-      onClick={onClick}
-      className={className}
-      disabled={disabled}
-      disabledReason={disabledReason}
-      icon={icon}
-      iconPosition={iconPosition}
-      iconSize={iconSize}
-      {...rest}
-    />
-  );
+/** Back-compat alias to match the prototype naming */
+type WorkflowsProps<T = any, M extends string = string> = WorkflowButtonProps<T, M>;
+function Workflows<T = any, M extends string = string>(props: WorkflowsProps<T, M>) {
+  return <WorkflowButton<T, M> {...props} />;
 }
 
-type SummaryEmptyProps = {
+type EmptyProps = {
   children?: React.ReactNode;
   icon?: React.ReactNode;
-  section?: SummarySectionProps;
+  section?: SectionProps;
 };
 
-function SummaryEmpty({
-  children,
-  icon,
-  section,
-}: SummaryEmptyProps) {
+function Empty({ children, icon, section }: EmptyProps) {
   const { data } = useSummaryContext<unknown>();
-
-  if (data) {
-    return null;
-  }
+  if (data) return null;
 
   return (
-    <SummarySection
-      variant="card"
-      {...section}
-    >
+    <Section variant="card" {...section}>
       {icon ?? (
-        <SummaryIcon
-          size={33}
-          className="text-primary"
-        >
-          <Icons.PatientStudyList
-            width="100%"
-            height="100%"
-          />
-        </SummaryIcon>
+        <Icon size={33} className="text-primary">
+          <Icons.PatientStudyList width="100%" height="100%" />
+        </Icon>
       )}
       <span className="text-muted-foreground text-base font-medium leading-tight">
         {children ?? 'Select a study'}
       </span>
-    </SummarySection>
+    </Section>
   );
 }
 
-type SummaryFieldProps<T = StudyRow> = {
+type FieldProps<T = any> = {
   of: (data: T) => React.ReactNode;
   hideWhenEmpty?: boolean;
   muted?: boolean;
@@ -781,13 +706,13 @@ type SummaryFieldProps<T = StudyRow> = {
   showTitleOnTruncate?: boolean;
 };
 
-function SummaryField<T = StudyRow>({
+function Field<T = any>({
   of,
   hideWhenEmpty = true,
   muted,
   className,
   showTitleOnTruncate = true,
-}: SummaryFieldProps<T>) {
+}: FieldProps<T>) {
   const { data } = useSummaryContext<T>();
   const value = data ? of(data) : null;
   const isEmpty = value === null || value === undefined || value === '';
@@ -814,36 +739,34 @@ function SummaryField<T = StudyRow>({
   );
 }
 
-type SummaryNamespace = typeof SummaryRoot & {
-  Root: typeof SummaryRoot;
-  Section: typeof SummarySection;
-  Icon: typeof SummaryIcon;
-  Name: typeof SummaryName;
-  MRN: typeof SummaryMRN;
-  Meta: typeof SummaryMeta;
-  Actions: typeof SummaryActions;
-  Action: SummaryActionComponentType;
-  WorkflowButton: SummaryWorkflowButtonComponent;
-  Patient: typeof SummaryPatient;
-  Workflows: typeof SummaryWorkflows;
-  Empty: typeof SummaryEmpty;
-  Field: typeof SummaryField;
+type PatientSummaryNamespace = typeof Root & {
+  Root: typeof Root;
+  Section: typeof Section;
+  Icon: typeof Icon;
+  Name: typeof Name;
+  MRN: typeof MRN;
+  Meta: typeof Meta;
+  Actions: typeof Actions;
+  Action: ActionComponentType;
+  WorkflowButton: WorkflowButtonComponent;
+  Patient: typeof Patient;
+  Workflows: typeof Workflows;
+  Empty: typeof Empty;
+  Field: typeof Field;
 };
 
-export const Summary: SummaryNamespace = Object.assign(SummaryRoot, {
-  Root: SummaryRoot,
-  Section: SummarySection,
-  Icon: SummaryIcon,
-  Name: SummaryName,
-  MRN: SummaryMRN,
-  Meta: SummaryMeta,
-  Actions: SummaryActions,
-  Action: SummaryAction,
-  WorkflowButton: SummaryWorkflowButton,
-  Patient: SummaryPatient,
-  Workflows: SummaryWorkflows,
-  Empty: SummaryEmpty,
-  Field: SummaryField,
+export const PatientSummary: PatientSummaryNamespace = Object.assign(Root, {
+  Root,
+  Section,
+  Icon,
+  Name,
+  MRN,
+  Meta,
+  Actions,
+  Action,
+  WorkflowButton,
+  Patient,
+  Workflows,
+  Empty,
+  Field,
 });
-
-export const PanelSummary = Summary;

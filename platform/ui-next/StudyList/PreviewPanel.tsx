@@ -5,7 +5,7 @@ import { Thumbnail } from '../src/components/Thumbnail';
 import { TooltipProvider } from '../src/components/Tooltip';
 import type { StudyRow } from './StudyListTypes';
 import type { WorkflowId } from './WorkflowsInfer';
-import { Summary } from '../playground/studylist/panels/panel-summary';
+import { PatientSummary } from '../src/components/PatientSummary';
 
 export function PreviewPanel({
   study,
@@ -28,14 +28,13 @@ export function PreviewPanel({
     <DndProvider backend={HTML5Backend}>
       <TooltipProvider delayDuration={200}>
         <div className="flex flex-col gap-3">
-          <Summary.Root data={study}>
-            <Summary.Patient />
-            {/* Casting to any since panel-summary is prototype-only and untyped */}
-            <Summary.Workflows
-              defaultMode={defaultMode as any}
-              onDefaultModeChange={onDefaultModeChange as any}
+          <PatientSummary.Root data={study}>
+            <PatientSummary.Patient />
+            <PatientSummary.Workflows<WorkflowId>
+              defaultMode={defaultMode}
+              onDefaultModeChange={onDefaultModeChange}
             />
-          </Summary.Root>
+          </PatientSummary.Root>
           <div className="h-7 w-full px-2 flex items-center text-foreground font-semibold text-base">
             1 Study
           </div>
