@@ -1,3 +1,5 @@
+import type { WorkflowId } from '../../StudyList/WorkflowsInfer';
+
 export type StudyRow = {
   patient: string
   mrn: string
@@ -6,6 +8,6 @@ export type StudyRow = {
   description: string
   accession: string
   instances: number
-  /** Optional, data-driven list of available workflows for this study */
-  workflows?: string[]
+  /** Optional, data-driven list of available workflows for this study (immutable) */
+  workflows?: readonly WorkflowId[]
 }

@@ -12,12 +12,13 @@ import iconLeftBase from './assets/icon-left-base.svg';
 import settingsIcon from './assets/settings.svg';
 import { StudylistLayout } from './components/studylist-layout';
 import { StudylistSettingsDialog, useDefaultWorkflow } from './components/studylist-settings';
+import type { WorkflowId } from '../../StudyList/WorkflowsInfer';
 
 export function App() {
   const [selected, setSelected] = React.useState<StudyRow | null>(null);
   const [isPanelOpen, setIsPanelOpen] = React.useState(true);
 
-  // Default Workflow with persistence
+  // Default Workflow with persistence (DS-typed)
   const [defaultMode, setDefaultMode] = useDefaultWorkflow();
 
   const previewDefaultSize = React.useMemo(() => {
@@ -28,7 +29,7 @@ export function App() {
     return 30;
   }, []);
 
-  const launchWorkflow = React.useCallback((study: StudyRow, workflow: string) => {
+  const launchWorkflow = React.useCallback((study: StudyRow, workflow: WorkflowId) => {
     // Prototype: log the intent. Replace with navigation as needed.
     try {
       // eslint-disable-next-line no-console
@@ -89,8 +90,8 @@ function SidePanel({
 }: {
   selected: StudyRow | null;
   onClose: () => void;
-  defaultMode: string | null;
-  onDefaultModeChange: (v: string | null) => void;
+  defaultMode: WorkflowId | null;
+  onDefaultModeChange: (v: WorkflowId | null) => void;
 }) {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
@@ -125,10 +126,13 @@ function SidePanel({
               key={selected.accession}
               study={selected}
               defaultMode={defaultMode}
-              onDefaultModeChange={onDefaultModeChange}
+              onDefaultModeChange={(v) => onDefaultModeChange(v as WorkflowId | null)}
             />
           ) : (
-            <PanelDefault defaultMode={defaultMode} onDefaultModeChange={onDefaultModeChange} />
+            <PanelDefault
+              defaultMode={defaultMode}
+              onDefaultModeChange={(v) => onDefaultModeChange(v as WorkflowId | null)}
+            />
           )}
         </div>
       </ScrollArea>

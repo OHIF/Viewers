@@ -1,9 +1,10 @@
 import * as React from 'react';
 import type { StudyRow } from '../types';
+import type { WorkflowId } from '../../../StudyList/WorkflowsInfer';
 
 type Ctx = {
-  defaultMode: string | null;
-  onLaunch?: (study: StudyRow, workflow: string) => void;
+  defaultMode: WorkflowId | null;
+  onLaunch?: (study: StudyRow, workflow: WorkflowId) => void;
 };
 
 const StudylistTableContext = React.createContext<Ctx | undefined>(undefined);

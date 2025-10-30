@@ -23,6 +23,7 @@ import ohifLogo from './assets/ohif-logo.svg';
 import { Button } from '../../src/components/Button';
 import iconLeftBase from './assets/icon-left-base.svg';
 import { StudylistTableProvider } from './components/studylist-table-context';
+import type { WorkflowId } from '../../StudyList/WorkflowsInfer';
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[];
@@ -38,10 +39,10 @@ type Props = {
   isPanelOpen?: boolean;
   onOpenPanel?: () => void;
 
-  /** Prototype-only: default workflow label for highlighting */
-  defaultMode?: string | null;
-  /** Prototype-only: centralized launcher for workflow actions */
-  onLaunch?: (study: StudyRow, workflow: string) => void;
+  /** Prototype-only: default workflow label for highlighting (DS-typed) */
+  defaultMode?: WorkflowId | null;
+  /** Prototype-only: centralized launcher for workflow actions (DS-typed) */
+  onLaunch?: (study: StudyRow, workflow: WorkflowId) => void;
 };
 
 export function StudyListTable({
@@ -97,8 +98,8 @@ function Content({
   tableClassName?: string;
   isPanelOpen?: boolean;
   onOpenPanel?: () => void;
-  defaultMode?: string | null;
-  onLaunch?: (study: StudyRow, workflow: string) => void;
+  defaultMode?: WorkflowId | null;
+  onLaunch?: (study: StudyRow, workflow: WorkflowId) => void;
 }) {
   const { table, setColumnFilters } = useDataTable<StudyRow>();
 

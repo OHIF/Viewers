@@ -7,13 +7,14 @@ import {
   DropdownMenuItem,
 } from '../../../src/components/DropdownMenu';
 import { getAvailableWorkflows } from './getAvailableWorkflows';
+import type { WorkflowId } from '../../../StudyList/WorkflowsInfer';
 
 type Props = {
   /** Optional explicit workflows; if omitted, `modalities` is used to infer. */
-  workflows?: string[];
+  workflows?: readonly (WorkflowId | string)[];
   modalities?: string;
-  defaultMode?: string | null;
-  onLaunch?: (workflow: string) => void;
+  defaultMode?: WorkflowId | null;
+  onLaunch?: (workflow: WorkflowId) => void;
   align?: 'start' | 'end' | 'center';
 };
 
@@ -26,7 +27,7 @@ export function StudylistWorkflowsMenu({
 }: Props) {
   const [open, setOpen] = React.useState(false);
   const items = React.useMemo(
-    () => (workflows && workflows.length ? workflows : getAvailableWorkflows({ workflows, modalities })),
+    () => getAvailableWorkflows({ workflows, modalities }),
     [workflows, modalities]
   );
 
@@ -43,7 +44,7 @@ export function StudylistWorkflowsMenu({
               key={String(wf)}
               onSelect={(e) => {
                 e.preventDefault();
-                onLaunch?.(String(wf));
+                onLaunch?.(wf);
               }}
               className={isDefault ? 'font-semibold' : undefined}
               aria-current={isDefault ? 'true' : undefined}

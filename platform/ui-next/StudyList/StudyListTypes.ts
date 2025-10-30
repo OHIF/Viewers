@@ -8,6 +8,6 @@ export type StudyRow = {
   description: string;
   accession: string;
   instances: number;
-  /** Optional, data-driven list of available workflows for this study */
-  workflows?: WorkflowId[];
+  /** Optional, data-driven list of available workflows for this study (immutable) */
+  workflows?: readonly WorkflowId[];
 };
