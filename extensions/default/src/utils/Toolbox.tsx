@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { Icons, PanelSection, ToolSettings } from '@ohif/ui-next';
-import { useSystem, useToolbar } from '@ohif/core';
-import classnames from 'classnames';
+import { useSystem, useToolbar, useActiveToolOptions } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
-interface ButtonProps {
-  isActive?: boolean;
-  options?: unknown;
+/**
+ * Props for the Toolbox component that renders a collection of toolbar button sections.
+ */
+interface ToolboxProps {
+  /**
+   * The unique identifier of the button section this toolbox represents.
+   */
+  buttonSectionId: string;
+
+  /**
+   * The display title for the toolbox.
+   */
+  title: string;
 }
 
 /**
@@ -19,7 +28,7 @@ interface ButtonProps {
  * role in enhancing the app with a toolbox by providing a way to integrate
  * and display various tools and their corresponding options
  */
-export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; title: string }) {
+export function Toolbox({ buttonSectionId, title }: ToolboxProps) {
   const { servicesManager } = useSystem();
   const { t } = useTranslation();
 
@@ -29,6 +38,8 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
   const { toolbarButtons: toolboxSections, onInteraction } = useToolbar({
     buttonSection: buttonSectionId,
   });
+
+  const { activeToolOptions } = useActiveToolOptions({ buttonSectionId });
 
   if (!toolboxSections.length) {
     return null;
@@ -40,35 +51,6 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
       'Toolbox accepts only button sections at the top level, not buttons. Create at least one button section.'
     );
   }
-
-  // Helper to check a list of buttons for an active tool.
-  const findActiveOptions = (buttons: any[]): unknown => {
-    for (const tool of buttons) {
-      if (tool.componentProps.isActive) {
-        return tool.componentProps.options;
-      }
-      if (tool.componentProps.buttonSection) {
-        const nestedButtons = toolbarService.getButtonPropsInButtonSection(
-          tool.componentProps.buttonSection
-        ) as ButtonProps[];
-        const activeNested = nestedButtons.find(nested => nested.isActive);
-        if (activeNested) {
-          return activeNested.options;
-        }
-      }
-    }
-    return null;
-  };
-
-  // Look for active tool options across all sections.
-  const activeToolOptions = toolboxSections.reduce((activeOptions, section) => {
-    if (activeOptions) {
-      return activeOptions;
-    }
-    const sectionId = section.componentProps.buttonSection;
-    const buttons = toolbarService.getButtonSection(sectionId);
-    return findActiveOptions(buttons);
-  }, null);
 
   // Define the interaction handler once.
   const handleInteraction = ({ itemId }: { itemId: string }) => {
@@ -103,19 +85,20 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
           return (
             <div
               key={sectionId}
-              className="bg-muted flex flex-wrap space-x-2 py-2 px-1"
+              className="bg-muted flex flex-wrap gap-2 py-2 px-1"
             >
               {buttons.map(tool => {
-                if (!tool) {
+                // Skip over tools that are not visible. The visible flag is typically set to
+                // false as a result of the evaluator function. The evaluator might explicitly
+                // set visible to false. Alternatively, the ToolbarService will set the visible flag to
+                // false when the evaluator sets disabled to true and the tool has the hideWhenDisabled flag set to true.
+                if (!tool || !tool.componentProps.visible) {
                   return null;
                 }
                 const { id, Component, componentProps } = tool;
 
                 return (
-                  <div
-                    key={id}
-                    className={classnames('ml-1')}
-                  >
+                  <div key={id}>
                     <Component
                       {...componentProps}
                       id={id}
