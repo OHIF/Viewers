@@ -2,16 +2,19 @@ import * as React from 'react';
 import type { Row } from '@tanstack/react-table';
 import { DataTableActionOverlayCell } from '../src/components/DataTable';
 import { WorkflowsMenu } from './WorkflowsMenu';
-import { useStudyListTableContext } from './TableContext';
+import { useStudyList } from './headless/StudyListProvider';
 import type { WorkflowId } from './WorkflowsInfer';
 
 export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>; value: number }) {
-  const { defaultMode, onLaunch } = useStudyListTableContext();
+  const { defaultWorkflow, launch } = useStudyList<TData, WorkflowId>();
   const original: any = row.original ?? {};
 
-  const handleLaunch = (wf: WorkflowId) => {
-    onLaunch?.(original, wf);
-  };
+  const handleLaunch = React.useCallback(
+    (wf: WorkflowId) => {
+      launch(original, wf);
+    },
+    [launch, original]
+  );
 
   return (
     <DataTableActionOverlayCell
@@ -25,7 +28,7 @@ export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>;
           <WorkflowsMenu
             workflows={original.workflows}
             modalities={original.modalities}
-            defaultMode={defaultMode}
+            defaultMode={defaultWorkflow}
             onLaunch={handleLaunch}
           />
         </div>

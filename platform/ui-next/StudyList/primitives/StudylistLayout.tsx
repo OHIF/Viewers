@@ -3,9 +3,9 @@ import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-} from '../../../src/components/Resizable';
-import { Button } from '../../../src/components/Button';
-import { Icons } from '../../../src/components/Icons';
+} from '../../src/components/Resizable';
+import { Button } from '../../src/components/Button';
+import { Icons } from '../../src/components/Icons';
 
 type LayoutContextValue = {
   isPanelOpen: boolean;
