@@ -34,6 +34,9 @@ const {
 
 const {
   getLabelmapImageIds,
+  addDefaultSegmentationListener,
+  removeSegmentationListener,
+  removeAllSegmentationListeners,
   helpers: { convertStackToVolumeLabelmap },
   state: { addColorLUT, updateLabelmapSegmentationImageReferences },
   triggerSegmentationEvents: {
@@ -41,9 +44,6 @@ const {
     triggerSegmentationDataModified,
   },
 } = cstSegmentation;
-
-const { addSegmentationListener, removeRepresentationListener, removeAllSegmentationListeners } =
-  csToolsUtils.segmentation;
 
 export type SegmentRepresentation = {
   segmentIndex: number;
@@ -275,6 +275,7 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_ADDED,
       this._onSegmentationAddedFromSource
     );
+
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
       this._onSegmentationRepresentationRemovedFromSource
@@ -330,7 +331,7 @@ class SegmentationService extends PubSubService {
         representationTypeToUse
       ));
     }
-    addSegmentationListener(segmentationId, representationTypeToUse);
+    addDefaultSegmentationListener(csViewport, segmentationId, representationTypeToUse);
 
     await this._addSegmentationRepresentation(
       viewportId,
@@ -1963,7 +1964,7 @@ class SegmentationService extends PubSubService {
     // Remove all listeners for this segmentation representation.
     // Note: This prevents triggering surface representation updates when updating labelmaps
     // in layouts that do not have any 3D viewports enabled.
-    removeRepresentationListener(segmentationId, type);
+    removeSegmentationListener(segmentationId, type);
   };
 }
 
