@@ -2,9 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { ScrollArea } from '../src/components/ScrollArea';
 import { Button } from '../src/components/Button';
-import settingsIcon from '../playground/studylist/assets/settings.svg';
-import iconLeftBase from '../playground/studylist/assets/icon-left-base.svg';
-import ohifLogo from '../playground/studylist/assets/ohif-logo.svg';
+import { Icons } from '../src/components/Icons';
 
 import type { StudyRow } from './StudyListTypes';
 import { StudyListColumns } from './StudyListColumns';
@@ -65,7 +63,10 @@ export function StudyList({
   );
 
   const toolbarLeft = (
-    <img src={ohifLogo} alt="OHIF Logo" width={232} height={22} className="h-[22px] w-[232px]" />
+    <Icons.OHIFLogoHorizontal
+      aria-label="OHIF logo"
+      className="h-[22px] w-[232px]"
+    />
   );
 
   return (
@@ -99,7 +100,10 @@ export function StudyList({
                       aria-label="Open preview panel"
                       onClick={onOpenPanel}
                     >
-                      <img src={iconLeftBase} alt="" className="h-4 w-4" />
+                      <Icons.PanelRight
+                        aria-hidden="true"
+                        className="h-4 w-4"
+                      />
                     </Button>
                   )}
                 />
@@ -138,10 +142,16 @@ function SidePanel({
     <div className="bg-background relative flex h-full w-full flex-col">
       <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
         <Button variant="ghost" size="icon" aria-label="Open settings" onClick={() => setIsSettingsOpen(true)}>
-          <img src={settingsIcon} alt="" className="h-4 w-4" />
+          <Icons.SettingsStudyList
+            aria-hidden="true"
+            className="h-4 w-4"
+          />
         </Button>
         <Button variant="ghost" size="icon" aria-label="Close preview panel" onClick={onClose}>
-          <img src={iconLeftBase} alt="" className="h-4 w-4" />
+          <Icons.PanelRight
+            aria-hidden="true"
+            className="h-4 w-4"
+          />
         </Button>
       </div>
 

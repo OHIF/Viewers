@@ -5,7 +5,7 @@ import {
   ResizableHandle,
 } from '../../../src/components/Resizable';
 import { Button } from '../../../src/components/Button';
-import iconLeftBase from '../assets/icon-left-base.svg';
+import { Icons } from '../../../src/components/Icons';
 
 type LayoutContextValue = {
   isPanelOpen: boolean;
@@ -93,7 +93,10 @@ function OpenPreviewButton({
       onClick={openPanel}
       className={className}
     >
-      <img src={iconLeftBase} alt="" className="h-4 w-4" />
+      <Icons.PanelRight
+        aria-hidden="true"
+        className="h-4 w-4"
+      />
     </Button>
   );
 }
