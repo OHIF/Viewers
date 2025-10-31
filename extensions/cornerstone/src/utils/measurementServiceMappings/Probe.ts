@@ -107,8 +107,8 @@ function getMappedAnnotations(annotation, displaySetService) {
     const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
     const { SeriesNumber } = displaySet;
-    const { value } = targetStats;
-    const unit = 'HU';
+    const { value, modalityUnit } = targetStats;
+    const unit = modalityUnit || '';
 
     annotations.push({
       SeriesInstanceUID,
