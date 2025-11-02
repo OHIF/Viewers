@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactSelect, { components } from 'react-select';
@@ -56,6 +56,44 @@ const Select = ({
   components = {},
   value = [],
 }) => {
+  const [inputValue, setInputValue] = React.useState('');
+
+  // Memoized and sorted list of options based on inputValue:
+  const filteredOptions = React.useMemo(() => {
+    if (!options || !Array.isArray(options)) {
+      return [];
+    }
+
+    return [...options].sort((a, b) => {
+      const input = inputValue.toLowerCase();
+
+      const aLabel = (a.label || '').toLowerCase();
+      const bLabel = (b.label || '').toLowerCase();
+
+      const aExact = aLabel === input;
+      const bExact = bLabel === input;
+
+      if (aExact && !bExact) {
+        return -1;
+      }
+      if (!aExact && bExact) {
+        return 1;
+      }
+
+      const aIncludes = aLabel.includes(input);
+      const bIncludes = bLabel.includes(input);
+
+      if (aIncludes && !bIncludes) {
+        return -1;
+      }
+      if (!aIncludes && bIncludes) {
+        return 1;
+      }
+
+      return aLabel.localeCompare(bLabel);
+    });
+  }, [options, inputValue]);
+
   const _noIconComponents = {
     DropdownIndicator: () => null,
     IndicatorSeparator: () => null,
@@ -92,11 +130,17 @@ const Select = ({
       hideSelectedOptions={hideSelectedOptions}
       components={_components}
       placeholder={placeholder}
-      options={options}
+      options={filteredOptions}
       blurInputOnSelect={true}
       menuPortalTarget={document.body}
       styles={{
         menuPortal: base => ({ ...base, zIndex: 9999 }),
+      }}
+      inputValue={inputValue}
+      onInputChange={(value, { action }) => {
+        if (action !== 'input-blur' && action !== 'menu-close') {
+          setInputValue(value);
+        }
       }}
       value={value && Array.isArray(value) ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
