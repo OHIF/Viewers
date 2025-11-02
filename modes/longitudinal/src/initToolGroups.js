@@ -228,7 +228,21 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.OpenSpline },
+      {
+        toolName: toolNames.OpenSpline,
+        configuration: {
+          spline: {
+            type: 'CATMULLROM',
+            closed: false,
+          },
+          // Cho phép scroll trong khi vẽ
+          allowOpenContours: true,
+          alwaysRenderOnTopOfImage: false,
+          preventHandleOutsideImage: false,
+          // Không block mouse events khác
+          consumeMouseWheel: false,
+        },
+      },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },

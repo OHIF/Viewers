@@ -8,6 +8,9 @@ import { utilities } from '@cornerstonejs/core';
 import CprWrapper from '../utils/CprWrapper';
 import { servicesManager } from '@ohif/app/src/App';
 import { Point3 } from '@cornerstonejs/core/types';
+import { Enums } from '@cornerstonejs/tools';
+
+const { Events } = Enums;
 
 /**
  * Minimal extension of SplineROITool that simply forces splines to render as open curves
@@ -19,6 +22,22 @@ class OpenSplineTool extends SplineROITool {
   _renderingViewport: any;
   _splineRoiToolRenderAnnotation = this.renderAnnotation;
   _origTriggerModified = this.triggerAnnotationModified;
+  _currentCPR: CprWrapper | null = null;
+  _currentRotation: number = 0;
+
+  /**
+   * Override to allow annotation to be rendered on any slice
+   * By default, SplineROI only renders on the slice it was created on
+   * This allows drawing across multiple slices while scrolling
+   */
+  filterInteractableAnnotationsForElement(
+    element: HTMLDivElement,
+    annotations: SplineROIAnnotation[]
+  ): SplineROIAnnotation[] {
+    // Return all annotations - allow them to be visible on all slices
+    // This enables cross-slice visualization for 3D spline paths
+    return annotations;
+  }
 
   renderAnnotation = (enabledElement, svgDrawingHelper) => {
     const { viewport } = enabledElement;
@@ -26,12 +45,19 @@ class OpenSplineTool extends SplineROITool {
     return this._splineRoiToolRenderAnnotation(enabledElement, svgDrawingHelper);
   };
 
-  // Khi bắt đầu vẽ spline
-  addNewAnnotation(evt) {
-    const annotation = super.addNewAnnotation(evt);
-    // console.log('🔹 OpenSplineTool - bắt đầu vẽ', annotation);
+  addNewAnnotation = (evt) => {
+    const result = super.addNewAnnotation(evt);
+
+    console.log('✅ Started drawing - use arrow keys ↑↓ to scroll slices');
     cleanOldAnnotation();
-    return annotation;
+    return result;
+  }
+
+  /**
+   * Override cancel to cleanup
+   */
+  cancel(element: HTMLDivElement) {
+    return super.cancel(element);
   }
 
   // wrap lai ham triggerAnnotationModified cua parent (bat su kien update)
@@ -77,7 +103,14 @@ class OpenSplineTool extends SplineROITool {
 
     // console.log(points, worldPoints, cornerstoneViewportService.getViewportIds())
 
-    const currentCPR = new CprWrapper(cprViewport, image, plane);
+    // Create or reuse CPR instance
+    if (this._currentCPR) {
+      // Clean up old CPR if exists
+      this._currentCPR = null;
+    }
+
+    this._currentCPR = new CprWrapper(cprViewport, image, plane);
+    this._currentRotation = 0; // Reset rotation
 
     function flipPointsAlongZ(points, dimensions, spacing) {
       const sizeZ = dimensions[2] * spacing[2]; // chiều dài thật theo trục Z
@@ -90,16 +123,64 @@ class OpenSplineTool extends SplineROITool {
 
     if (plane !== "axial")
       worldPoints = flipPointsAlongZ(worldPoints, image.getDimensions(), image.getSpacing());
+
     // Set centerline and render
-    currentCPR.setCenterline(worldPoints);
+    this._currentCPR.setCenterline(worldPoints);
 
     // Use safe render method
-    currentCPR.safeRender();
+    this._currentCPR.safeRender();
 
     const { voiRange } = viewport.getProperties();
-    currentCPR.setVOI(voiRange);
+    this._currentCPR.setVOI(voiRange);
 
     removeBlackOverlay("cpr");
+
+    // Setup scroll rotation on CPR viewport
+    this.setupCPRScrollRotation(cprViewport);
+  }
+
+  /**
+   * Setup wheel scroll to rotate CPR
+   */
+  setupCPRScrollRotation(cprViewport: any) {
+    const element = cprViewport.element;
+
+    console.log('🎯 Setting up CPR scroll rotation on element:', element);
+
+    // Remove old listener if exists
+    if ((element as any)._cprWheelListener) {
+      element.removeEventListener('wheel', (element as any)._cprWheelListener);
+    }
+
+    const wheelHandler = (evt: WheelEvent) => {
+      console.log('🔄 Wheel event triggered on CPR viewport!', evt.deltaY);
+
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      if (!this._currentCPR) {
+        console.warn('⚠️ No current CPR instance');
+        return;
+      }
+
+      // Rotate ±5 degrees per wheel tick
+      const delta = evt.deltaY > 0 ? 5 : -5;
+      this._currentRotation += delta;
+
+      // Keep rotation in 0-360 range
+      this._currentRotation = ((this._currentRotation % 360) + 360) % 360;
+
+      console.log(`🔄 CPR rotation: ${this._currentRotation}°`);
+
+      // Apply rotation
+      this._currentCPR.rotateCPR(this._currentRotation);
+    };
+
+    // Store listener reference for cleanup
+    (element as any)._cprWheelListener = wheelHandler;
+    element.addEventListener('wheel', wheelHandler, { passive: false });
+
+    console.log('✅ CPR wheel listener attached');
   }
 
   /**
@@ -181,9 +262,9 @@ function getImageDataFromViewport(viewport) {
 
     // Create new vtkImageData
     const vtkImage = vtkImageData.newInstance();
-    vtkImage.setDimensions(...dimensions);
-    vtkImage.setSpacing(...spacing);
-    vtkImage.setOrigin(...origin);
+    vtkImage.setDimensions(dimensions as [number, number, number]);
+    vtkImage.setSpacing(spacing as [number, number, number]);
+    vtkImage.setOrigin(origin as [number, number, number]);
 
     const dataArray = vtkDataArray.newInstance({
       name: 'Scalars',

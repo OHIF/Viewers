@@ -14,6 +14,11 @@ function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCo
 
   const shouldShowCorners = isHovered || isActive;
 
+  // Ẩn action corners cho viewport CPR
+  if (viewportId === 'cpr') {
+    return null;
+  }
+
   if (!shouldShowCorners) {
     return null;
   }

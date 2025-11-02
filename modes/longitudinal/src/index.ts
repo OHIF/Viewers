@@ -157,6 +157,7 @@ function modeFactory({ modeConfiguration }) {
         'CobbAngle',
         'Magnify',
         'OpenSpline',
+        'CPRRotation',
         'CalibrationLine',
         'TagBrowser',
         'AdvancedMagnify',

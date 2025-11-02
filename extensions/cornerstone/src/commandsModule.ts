@@ -42,6 +42,7 @@ import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
+import CPRRotationDialog from './components/CPRRotationDialog';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -1887,6 +1888,45 @@ function commandsModule({
       tools.disabled = disabledTools;
       return tools;
     },
+    showCPRRotationDialog: () => {
+      const dialogId = 'cpr-rotation-dialog';
+
+      // Get OpenSplineTool instance to access current CPR
+      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup('mpr');
+      if (!toolGroup) {
+        console.warn('MPR tool group not found');
+        return;
+      }
+
+      const tools = toolGroup.getToolInstances();
+      const openSplineTool = tools['OpenSpline'] as any; // Type assertion for private properties
+
+      if (!openSplineTool || !openSplineTool._currentCPR) {
+        uiNotificationService.show({
+          title: 'CPR Rotation',
+          message: 'Please draw a spline first to create CPR view',
+          type: 'warning',
+        });
+        return;
+      }
+
+      const currentRotation = openSplineTool._currentRotation || 0;
+
+      uiDialogService.show({
+        id: dialogId,
+        title: 'CPR Rotation',
+        content: CPRRotationDialog,
+        contentProps: {
+          onRotate: (angle: number) => {
+            if (openSplineTool._currentCPR) {
+              openSplineTool._currentRotation = angle;
+              openSplineTool._currentCPR.rotateCPR(angle);
+            }
+          },
+          initialAngle: currentRotation,
+        },
+      });
+    },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
       let labelmapTools = getLabelmapTools({ toolGroupService });
       labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
@@ -2501,6 +2541,9 @@ function commandsModule({
     endRecordingForAnnotationGroup: actions.endRecordingForAnnotationGroup,
     toggleSegmentLabel: actions.toggleSegmentLabel,
     jumpToMeasurementViewport: actions.jumpToMeasurementViewport,
+    showCPRRotationDialog: {
+      commandFn: actions.showCPRRotationDialog,
+    },
     initializeSegmentLabelTool: actions.initializeSegmentLabelTool,
   };
 

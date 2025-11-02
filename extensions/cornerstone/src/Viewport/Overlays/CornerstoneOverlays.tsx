@@ -35,6 +35,11 @@ function CornerstoneOverlays(props: withAppTypes) {
     return null;
   }
 
+  // Ẩn tất cả overlays cho viewport CPR
+  if (viewportId === 'cpr') {
+    return null;
+  }
+
   if (viewportData) {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 

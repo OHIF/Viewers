@@ -60,7 +60,10 @@ export const cpr = {
           viewportOptions: {
             toolGroupId: 'cpr',
             viewportType: 'stack',
-            viewportId: 'cpr'
+            viewportId: 'cpr',
+            customViewportProps: {
+              hideOverlays: true,
+            },
           },
           // disable de khong tu dong load anh
           displaySets: [

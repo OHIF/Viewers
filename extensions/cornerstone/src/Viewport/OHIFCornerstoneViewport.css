@@ -21,7 +21,7 @@
   /* Prevents the entire page from getting larger
      when the magnify tool is near the sides/corners of the page */
   overflow: hidden;
-  
+
   /* Prevent text selection on the viewport element */
   user-select: none;
   -webkit-user-select: none;
@@ -43,4 +43,15 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+/* Ẩn tất cả overlay và scrollbar cho viewport CPR */
+[data-viewportid="cpr"] ~ .noselect,
+[data-viewportid="cpr"] ~ div {
+  display: none !important;
+}
+
+/* Giữ lại chỉ canvas render CPR */
+[data-viewportid="cpr"] {
+  display: block !important;
 }
