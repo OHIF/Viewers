@@ -1,8 +1,34 @@
 import { utilities as cstUtils } from '@cornerstonejs/tools';
+import { useUIStateStore } from '@ohif/extension-default';
+
+import LogicalContourOperationsOptions from './components/LogicalContourOperationsOptions';
+import SimplifyContourOptions from './components/SimplifyContourOptions';
+import SmoothContoursOptions from './components/SmoothContoursOptions';
 
 export function getToolbarModule({ servicesManager }: withAppTypes) {
   const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
   return [
+    {
+      name: 'cornerstone.SimplifyContourOptions',
+      defaultComponent: SimplifyContourOptions,
+    },
+    {
+      name: 'cornerstone.LogicalContourOperationsOptions',
+      defaultComponent: LogicalContourOperationsOptions,
+    },
+    {
+      name: 'cornerstone.SmoothContoursOptions',
+      defaultComponent: SmoothContoursOptions,
+    },
+    {
+      name: 'cornerstone.isActiveSegmentationUtility',
+      evaluate: ({ button }) => {
+        const { uiState } = useUIStateStore.getState();
+        return {
+          isActive: uiState[`activeSegmentationUtility`] === button.id,
+        };
+      },
+    },
     {
       name: 'evaluate.cornerstone.hasSegmentation',
       evaluate: ({ viewportId }) => {
@@ -10,6 +36,30 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         return {
           disabled: !segmentations?.length,
         };
+      },
+    },
+    {
+      name: 'evaluate.cornerstone.hasSegmentationOfType',
+      evaluate: ({ viewportId, segmentationRepresentationType }) => {
+        const segmentations = segmentationService.getSegmentationRepresentations(viewportId);
+
+        if (!segmentations?.length) {
+          return {
+            disabled: true,
+            disabledText: 'No segmentations available',
+          };
+        }
+
+        if (
+          !segmentations.some(segmentation =>
+            Boolean(segmentation.type === segmentationRepresentationType)
+          )
+        ) {
+          return {
+            disabled: true,
+            disabledText: `No ${segmentationRepresentationType} segmentations available`,
+          };
+        }
       },
     },
     {

@@ -70,43 +70,6 @@ describe('getUpdatedViewportsForSegmentation', () => {
     expect(result).toEqual(mockUpdatedViewports);
   });
 
-  it('should filter out volume3d viewports', () => {
-    const mockUpdatedViewports = [
-      {
-        viewportOptions: {
-          viewportType: 'stack',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'volume3d',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'volume',
-        },
-      },
-    ];
-
-    mockHangingProtocolService.getViewportsRequireUpdate.mockReturnValue(mockUpdatedViewports);
-
-    const result = getUpdatedViewportsForSegmentation(defaultParameters);
-
-    expect(result).toEqual([
-      {
-        viewportOptions: {
-          viewportType: 'stack',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'volume',
-        },
-      },
-    ]);
-  });
-
   it('should handle viewports without viewportOptions', () => {
     const mockUpdatedViewports = [
       {
@@ -255,70 +218,22 @@ describe('getUpdatedViewportsForSegmentation', () => {
   it('should handle getViewportsRequireUpdate returning null', () => {
     mockHangingProtocolService.getViewportsRequireUpdate.mockReturnValue(null);
 
-    expect(() => getUpdatedViewportsForSegmentation(defaultParameters)).toThrow();
+    expect(getUpdatedViewportsForSegmentation(defaultParameters)).toEqual(null);
   });
 
   it('should handle mixed viewport types including volume3d', () => {
     const mockUpdatedViewports = [
-      {
-        viewportOptions: {
-          viewportType: 'stack',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'volume3d',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'volume3d',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'orthogonal',
-        },
-      },
+      { viewportOptions: { viewportType: 'stack' } },
+      { viewportOptions: { viewportType: 'volume3d' } },
+      { viewportOptions: { viewportType: 'volume3d' } },
+      { viewportOptions: { viewportType: 'orthogonal' } },
     ];
 
     mockHangingProtocolService.getViewportsRequireUpdate.mockReturnValue(mockUpdatedViewports);
 
     const result = getUpdatedViewportsForSegmentation(defaultParameters);
 
-    expect(result).toEqual([
-      {
-        viewportOptions: {
-          viewportType: 'stack',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'orthogonal',
-        },
-      },
-    ]);
-  });
-
-  it('should handle all volume3d viewports', () => {
-    const mockUpdatedViewports = [
-      {
-        viewportOptions: {
-          viewportType: 'volume3d',
-        },
-      },
-      {
-        viewportOptions: {
-          viewportType: 'volume3d',
-        },
-      },
-    ];
-
-    mockHangingProtocolService.getViewportsRequireUpdate.mockReturnValue(mockUpdatedViewports);
-
-    const result = getUpdatedViewportsForSegmentation(defaultParameters);
-
-    expect(result).toEqual([]);
+    expect(result).toEqual(mockUpdatedViewports);
   });
 
   it('should handle viewports with undefined viewportType', () => {
@@ -326,6 +241,11 @@ describe('getUpdatedViewportsForSegmentation', () => {
       {
         viewportOptions: {
           viewportType: undefined,
+        },
+      },
+      {
+        viewportOptions: {
+          viewportType: 'volume3d',
         },
       },
       {

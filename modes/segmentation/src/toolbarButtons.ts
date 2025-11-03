@@ -174,17 +174,31 @@ const toolbarButtons: Button[] = [
       buttonSection: true,
     },
   },
-  // Section containers for the nested toolbox
+  // Section containers for the nested toolboxes and toolbars.
   {
-    id: 'SegmentationUtilities',
-    uiType: 'ohif.toolBoxButton',
+    id: 'LabelMapUtilities',
+    uiType: 'ohif.Toolbar',
     props: {
       buttonSection: true,
     },
   },
   {
-    id: 'SegmentationTools',
-    uiType: 'ohif.toolBoxButton',
+    id: 'ContourUtilities',
+    uiType: 'ohif.Toolbar',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'LabelMapTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'ContourTools',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
     },
@@ -399,7 +413,232 @@ const toolbarButtons: Button[] = [
       commands: 'openDICOMTagViewer',
     },
   },
-
+  {
+    id: 'PlanarFreehandContourSegmentationTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-freehand-roi',
+      label: 'Freehand Segmentation',
+      tooltip: 'Freehand Segmentation',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['PlanarFreehandContourSegmentationTool'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            bindings: [
+              {
+                mouseButton: 1, // Left Click
+              },
+              {
+                mouseButton: 1, // Left Click+Shift to create a hole
+                modifierKey: 16, // Shift
+              },
+            ],
+          },
+        },
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Interpolate Contours',
+          type: 'switch',
+          id: 'planarFreehandInterpolateContours',
+          value: false,
+          commands: {
+            commandName: 'setInterpolationToolConfiguration',
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'LivewireContourSegmentationTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-livewire',
+      label: 'Livewire Contour',
+      tooltip: 'Livewire Contour',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['LivewireContourSegmentationTool'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            bindings: [
+              {
+                mouseButton: 1, // Left Click
+              },
+              {
+                mouseButton: 1, // Left Click+Shift to create a hole
+                modifierKey: 16, // Shift
+              },
+            ],
+          },
+        },
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Interpolate Contours',
+          type: 'switch',
+          id: 'livewireInterpolateContours',
+          value: false,
+          commands: {
+            commandName: 'setInterpolationToolConfiguration',
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'SplineContourSegmentationTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-spline-roi',
+      label: 'Spline Contour Segmentation Tool',
+      tooltip: 'Spline Contour Segmentation Tool',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CatmullRomSplineROI', 'LinearSplineROI', 'BSplineROI'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Spline Type',
+          type: 'select',
+          id: 'splineTypeSelect',
+          value: 'CatmullRomSplineROI',
+          values: [
+            {
+              id: 'CatmullRomSplineROI',
+              value: 'CatmullRomSplineROI',
+              label: 'Catmull Rom Spline',
+            },
+            { id: 'LinearSplineROI', value: 'LinearSplineROI', label: 'Linear Spline' },
+            { id: 'BSplineROI', value: 'BSplineROI', label: 'B-Spline' },
+          ],
+          commands: {
+            commandName: 'setToolActiveToolbar',
+            commandOptions: {
+              bindings: [
+                {
+                  mouseButton: 1, // Left Click
+                },
+                {
+                  mouseButton: 1, // Left Click+Shift to create a hole
+                  modifierKey: 16, // Shift
+                },
+              ],
+            },
+          },
+        },
+        {
+          name: 'Simplified Spline',
+          type: 'switch',
+          id: 'simplifiedSpline',
+          value: true,
+          commands: {
+            commandName: 'setSimplifiedSplineForSplineContourSegmentationTool',
+          },
+        },
+        {
+          name: 'Interpolate Contours',
+          type: 'switch',
+          id: 'splineInterpolateContours',
+          value: false,
+          commands: {
+            commandName: 'setInterpolationToolConfiguration',
+            commandOptions: {
+              toolNames: ['CatmullRomSplineROI', 'LinearSplineROI', 'BSplineROI'],
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'SculptorTool',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-sculptor',
+      label: 'Sculptor Tool',
+      tooltip: 'Sculptor Tool',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['SculptorTool'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Contour',
+        },
+      ],
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Contour',
+          },
+        },
+      ],
+      options: [
+        {
+          name: 'Dynamic Cursor Size',
+          type: 'switch',
+          id: 'dynamicCursorSize',
+          value: true,
+          commands: {
+            commandName: 'setDynamicCursorSizeForSculptorTool',
+          },
+        },
+      ],
+    },
+  },
   {
     id: 'Brush',
     uiType: 'ohif.toolBoxButton',
@@ -416,7 +655,17 @@ const toolbarButtons: Button[] = [
           name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
           radiusOptionId: 'brush-radius',
         },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
       options: [
         {
           name: 'Radius (mm)',
@@ -426,10 +675,12 @@ const toolbarButtons: Button[] = [
           max: 99.5,
           step: 0.5,
           value: 25,
-          commands: {
-            commandName: 'setBrushSize',
-            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
-          },
+          commands: [
+            {
+              commandName: 'setBrushSize',
+              commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+            },
+          ],
         },
         {
           name: 'Shape',
@@ -440,44 +691,72 @@ const toolbarButtons: Button[] = [
             { value: 'CircularBrush', label: 'Circle' },
             { value: 'SphereBrush', label: 'Sphere' },
           ],
-          commands: 'setToolActiveToolbar',
+          commands: ['setToolActiveToolbar'],
         },
       ],
     },
   },
   {
     id: 'InterpolateLabelmap',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolButton',
     props: {
-      icon: 'icon-tool-interpolation',
+      icon: 'actions-interpolate',
       label: i18n.t('Buttons:Interpolate Labelmap'),
       tooltip: i18n.t(
         'Buttons:Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.'
       ),
       evaluate: [
-        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.cornerstone.segmentation',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
         {
           name: 'evaluate.displaySetIsReconstructable',
           disabledText: i18n.t('Buttons:The current viewport cannot handle interpolation.'),
         },
       ],
-      commands: 'interpolateLabelmap',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'interpolateLabelmap',
+      ],
     },
   },
   {
     id: 'SegmentBidirectional',
-    uiType: 'ohif.toolBoxButton',
+    uiType: 'ohif.toolButton',
     props: {
-      icon: 'icon-tool-bidirectional-segment',
+      icon: 'actions-bidirectional',
       label: i18n.t('Buttons:Segment Bidirectional'),
       tooltip: i18n.t(
         'Buttons:Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.'
       ),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
-      },
-      commands: 'runSegmentBidirectional',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
+      ],
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'runSegmentBidirectional',
+      ],
     },
   },
   {
@@ -489,12 +768,26 @@ const toolbarButtons: Button[] = [
       tooltip: i18n.t(
         'Buttons:Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.'
       ),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['RegionSegmentPlus'],
-        disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
-      },
-      commands: 'setToolActiveToolbar',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['RegionSegmentPlus'],
+          disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
+      ],
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
     },
   },
   {
@@ -509,7 +802,8 @@ const toolbarButtons: Button[] = [
       evaluate: [
         'evaluate.cornerstoneTool.toggle',
         {
-          name: 'evaluate.cornerstone.hasSegmentation',
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
       listeners: {
@@ -518,7 +812,15 @@ const toolbarButtons: Button[] = [
         ),
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
       },
-      commands: 'toggleEnabledDisabledToolbar',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'toggleEnabledDisabledToolbar',
+      ],
     },
   },
   {
@@ -535,8 +837,20 @@ const toolbarButtons: Button[] = [
           name: 'evaluate.cornerstone.segmentation',
           toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
         },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
       ],
-      commands: 'setToolActiveToolbar',
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
       listeners: {
         [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
@@ -588,6 +902,10 @@ const toolbarButtons: Button[] = [
           name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
           radiusOptionId: 'eraser-radius',
         },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
       ],
       options: [
         {
@@ -615,6 +933,12 @@ const toolbarButtons: Button[] = [
           commands: 'setToolActiveToolbar',
         },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
     },
   },
   {
@@ -637,7 +961,17 @@ const toolbarButtons: Button[] = [
           name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
           radiusOptionId: 'threshold-radius',
         },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
       ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
       options: [
         {
           name: 'Radius (mm)',
@@ -746,10 +1080,22 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-shape',
       label: i18n.t('Buttons:Shapes'),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-        disabledText: i18n.t('Buttons:Create new segmentation to enable shapes tool.'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+          disabledText: i18n.t('Buttons:Create new segmentation to enable shapes tool.'),
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
+      ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
       },
       options: [
         {
@@ -763,6 +1109,81 @@ const toolbarButtons: Button[] = [
             { value: 'RectangleScissor', label: 'Rectangle' },
           ],
           commands: 'setToolActiveToolbar',
+        },
+      ],
+    },
+  },
+  {
+    id: 'SimplifyContours',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-simplify',
+      label: 'Simplify Contours',
+      tooltip: 'Simplify Contours',
+      commands: ['toggleActiveSegmentationUtility'],
+      evaluate: [
+        {
+          name: 'cornerstone.isActiveSegmentationUtility',
+        },
+      ],
+      options: 'cornerstone.SimplifyContourOptions',
+    },
+  },
+  {
+    id: 'SmoothContours',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-smooth',
+      label: 'Smooth Contours',
+      tooltip: 'Smooth Contours',
+      commands: ['toggleActiveSegmentationUtility'],
+      evaluate: [
+        {
+          name: 'cornerstone.isActiveSegmentationUtility',
+        },
+      ],
+      options: 'cornerstone.SmoothContoursOptions',
+    },
+  },
+  {
+    id: 'LogicalContourOperations',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-combine',
+      label: 'Combine Contours',
+      tooltip: 'Combine Contours',
+      commands: ['toggleActiveSegmentationUtility'],
+      evaluate: [
+        {
+          name: 'cornerstone.isActiveSegmentationUtility',
+        },
+      ],
+      options: 'cornerstone.LogicalContourOperationsOptions',
+    },
+  },
+  {
+    id: 'LabelMapEditWithContour',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'tool-labelmap-edit-with-contour',
+      label: 'Labelmap Edit with Contour Tool',
+      tooltip: 'Labelmap Edit with Contour Tool',
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: { segmentationRepresentationType: 'Labelmap' },
+        },
+      ],
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['LabelMapEditWithContour'],
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
         },
       ],
     },
