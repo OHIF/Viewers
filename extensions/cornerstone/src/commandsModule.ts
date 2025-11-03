@@ -2076,9 +2076,7 @@ function commandsModule({
         if (brushSize) {
           segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
 
-          const activeButton = toolbarService.getActiveButton();
-          const optionId = activeButton.props.options[0].id;
-          toolbarService.setButtonValue(activeButton.id, optionId, newBrushSize);
+          toolbarService.refreshToolbarState({ toolGroupId });
         }
       }
     },
@@ -2096,9 +2094,7 @@ function commandsModule({
         if (brushSize) {
           segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
 
-          const activeButton = toolbarService.getActiveButton();
-          const optionId = activeButton.props.options[0].id;
-          toolbarService.setButtonValue(activeButton.id, optionId, newBrushSize);
+          toolbarService.refreshToolbarState({ toolGroupId });
         }
       }
     },

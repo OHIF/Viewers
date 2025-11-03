@@ -1,3 +1,5 @@
+import { utilities as cstUtils } from '@cornerstonejs/tools';
+
 export function getToolbarModule({ servicesManager }: withAppTypes) {
   const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
   return [
@@ -66,6 +68,23 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
           disabled: false,
           isActive: isPrimaryActive,
         };
+      },
+    },
+    {
+      name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+      evaluate: ({ button, radiusOptionId }) => {
+        const toolGroupIds = toolGroupService.getToolGroupIds();
+        if (!toolGroupIds?.length) {
+          return;
+        }
+
+        for (const toolGroupId of toolGroupIds) {
+          const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(toolGroupId);
+
+          if (brushSize) {
+            toolbarService.setButtonValue(button.id, radiusOptionId, brushSize);
+          }
+        }
       },
     },
   ];

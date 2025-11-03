@@ -821,19 +821,6 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
-   * Retrieves the active button.
-   *
-   * @returns The active button, or null if no button is active.
-   */
-  public getActiveButton(): Button | null {
-    const buttons = Object.values(this.getButtons());
-
-    const activeButton = buttons.find(button => button.props.isActive);
-
-    return activeButton ?? null;
-  }
-
-  /**
    * Sets the value for a specific option within a toolbar button.
    * Automatically clamps range values to min/max constraints and validates
    * values against allowed options if defined.

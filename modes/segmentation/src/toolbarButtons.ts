@@ -406,11 +406,17 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-brush',
       label: i18n.t('Buttons:Brush'),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularBrush', 'SphereBrush'],
-        disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularBrush', 'SphereBrush'],
+          disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'brush-radius',
+        },
+      ],
       options: [
         {
           name: 'Radius (mm)',
@@ -573,10 +579,16 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-eraser',
       label: i18n.t('Buttons:Eraser'),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularEraser', 'SphereEraser'],
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularEraser', 'SphereEraser'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'eraser-radius',
+        },
+      ],
       options: [
         {
           name: 'Radius (mm)',
@@ -611,15 +623,21 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-threshold',
       label: 'Threshold Tool',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: [
-          'ThresholdCircularBrush',
-          'ThresholdSphereBrush',
-          'ThresholdCircularBrushDynamic',
-          'ThresholdSphereBrushDynamic',
-        ],
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: [
+            'ThresholdCircularBrush',
+            'ThresholdSphereBrush',
+            'ThresholdCircularBrushDynamic',
+            'ThresholdSphereBrushDynamic',
+          ],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'threshold-radius',
+        },
+      ],
       options: [
         {
           name: 'Radius (mm)',
