@@ -2592,6 +2592,9 @@ function commandsModule({
   };
 
   const definitions = {
+    loadSRsForActiveViewport: {
+      commandFn: actions.loadSRsForActiveViewport,
+    },
     loadSegmentationsForActiveViewport: {
       commandFn: actions.loadSegmentationsForActiveViewport,
     },
