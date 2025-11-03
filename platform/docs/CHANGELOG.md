@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.78...v3.12.0-beta.79) (2025-10-30)
+
+
+### Bug Fixes
+
+* **security:** Exact versioning and docs dependabot alerts ([#5536](https://github.com/OHIF/Viewers/issues/5536)) ([000e42e](https://github.com/OHIF/Viewers/commit/000e42e9a6eaa4f0878cbf877f03b09a459ad18e))
+
+
+
+
+
+# [3.12.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.77...v3.12.0-beta.78) (2025-10-29)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.12.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.76...v3.12.0-beta.77) (2025-10-28)
 
 **Note:** Version bump only for package ohif-docs
