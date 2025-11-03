@@ -51,6 +51,7 @@ import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
+import { DisplaySet } from 'platform/core/src/types';
 import { EasingFunctionEnum } from './utils/transitions';
 import { createSegmentationForViewport } from './utils/createSegmentationForViewport';
 import { utilities as segmentationUtilities } from '@cornerstonejs/tools/segmentation';
@@ -131,6 +132,7 @@ function commandsModule({
     hangingProtocolService,
     syncGroupService,
     segmentationService,
+    userAuthenticationService,
     displaySetService,
   } = servicesManager.services as AppTypes.Services;
 
@@ -159,7 +161,134 @@ function commandsModule({
     };
   }
 
+  /**
+   * Retrieves derived segmentations (SEG/RTSTRUCT) that are not yet hydrated
+   * for the given display set UID.
+   */
+  function _getDerivedSegmentations(displaySetUID: string): DisplaySet[] {
+    const currentDisplaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+    if (!currentDisplaySet) {
+      return [];
+    }
+
+    const displaySetCache = displaySetService.getDisplaySetCache();
+    const allDisplaySets = Array.from(displaySetCache.values());
+
+    return allDisplaySets.filter((ds): ds is DisplaySet => {
+      if (!ds?.isOverlayDisplaySet || ds?.isHydrated) {
+        return false;
+      }
+
+      /** Check if this is a SEG or RTSTRUCT modality */
+      const isSegmentationModality = ds.Modality === 'SEG' || ds.Modality === 'RTSTRUCT';
+      if (!isSegmentationModality) {
+        return false;
+      }
+
+      /** Check if this derived display set references the current display set */
+      const referencesDisplaySet =
+        ds.referencedDisplaySetInstanceUID === displaySetUID ||
+        ds.SeriesInstanceUID === currentDisplaySet.SeriesInstanceUID;
+
+      return referencesDisplaySet;
+    });
+  }
+
   const actions = {
+    loadSRsForActiveViewport: async () => {
+      console.info('Loading SRs for active viewport...');
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      if (!activeViewportId) {
+        console.warn('No active viewport found');
+        return;
+      }
+
+      const displaySetInstanceUIDs =
+        viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+      if (!displaySetInstanceUIDs?.length) {
+        console.warn('No display sets found for active viewport');
+        return;
+      }
+
+      const primaryDisplaySetUID = displaySetInstanceUIDs[0];
+      const derivedDisplaySets = _getDerivedSegmentations(primaryDisplaySetUID);
+      if (!derivedDisplaySets.length) {
+        console.warn('No derived SRs found for active viewport');
+        return;
+      }
+
+      const headers = userAuthenticationService.getAuthorizationHeader();
+
+      /** Load all segmentations in parallel for better performance */
+      const loadPromises = derivedDisplaySets.map(async displaySet => {
+        try {
+          /** Load the display set */
+          await displaySet.load({ headers });
+
+          /** Hydrate the SR */
+          commandsManager.run('hydrateStructuredReport', {
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          });
+        } catch (error) {
+          console.error(`Failed to load segmentation ${displaySet.displaySetInstanceUID}:`, error);
+          /** Continue with other segmentations even if one fails */
+        }
+      });
+
+      await Promise.all(loadPromises);
+      console.info('SRs loaded for active viewport.');
+    },
+    loadSegmentationsForActiveViewport: async () => {
+      console.info('Loading segmentations for active viewport...');
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      if (!activeViewportId) {
+        console.warn('No active viewport found');
+        return;
+      }
+
+      const displaySetInstanceUIDs =
+        viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+      if (!displaySetInstanceUIDs?.length) {
+        console.warn('No display sets found for active viewport');
+        return;
+      }
+
+      const primaryDisplaySetUID = displaySetInstanceUIDs[0];
+      const derivedDisplaySets = _getDerivedSegmentations(primaryDisplaySetUID);
+      if (!derivedDisplaySets.length) {
+        console.warn('No derived segmentations found for active viewport');
+        return;
+      }
+
+      const headers = userAuthenticationService.getAuthorizationHeader();
+
+      /** Load all segmentations in parallel for better performance */
+      const loadPromises = derivedDisplaySets.map(async displaySet => {
+        try {
+          /** Load the display set */
+          await displaySet.load({ headers });
+
+          /** Get the representation type */
+          const representationType =
+            displaySet.Modality === 'SEG'
+              ? Enums.SegmentationRepresentations.Labelmap
+              : Enums.SegmentationRepresentations.Contour;
+
+          segmentationService.addSegmentationRepresentation(activeViewportId, {
+            segmentationId: displaySet.displaySetInstanceUID,
+            type: representationType,
+          });
+        } catch (error) {
+          console.error(`Failed to load segmentation ${displaySet.displaySetInstanceUID}:`, error);
+          /** Continue with other segmentations even if one fails */
+        }
+      });
+
+      await Promise.all(loadPromises);
+      console.info('Segmentations loaded for active viewport.');
+    },
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
       const { metadata } = measurement;
@@ -2463,6 +2592,12 @@ function commandsModule({
   };
 
   const definitions = {
+    loadSRsForActiveViewport: {
+      commandFn: actions.loadSRsForActiveViewport,
+    },
+    loadSegmentationsForActiveViewport: {
+      commandFn: actions.loadSegmentationsForActiveViewport,
+    },
     // The command here is to show the viewer context menu, as being the
     // context menu
     showCornerstoneContextMenu: {
