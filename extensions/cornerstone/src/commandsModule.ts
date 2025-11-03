@@ -2064,7 +2064,7 @@ function commandsModule({
         });
       }
     },
-    increaseBrushSize: () => {
+    _handleBrushSizeAction: (action: 'increase' | 'decrease') => {
       const toolGroupIds = toolGroupService.getToolGroupIds();
       if (!toolGroupIds?.length) {
         return;
@@ -2073,7 +2073,8 @@ function commandsModule({
       for (const toolGroupId of toolGroupIds) {
         const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
 
-        const newBrushSize = Math.min(brushSize + 3, 99.5);
+        const newBrushSize =
+          action === 'increase' ? Math.min(brushSize + 3, 99.5) : Math.max(brushSize - 3, 0.5);
 
         if (brushSize) {
           segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
@@ -2082,23 +2083,11 @@ function commandsModule({
         }
       }
     },
+    increaseBrushSize: () => {
+      actions._handleBrushSizeAction('increase');
+    },
     decreaseBrushSize: () => {
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-      if (!toolGroupIds?.length) {
-        return;
-      }
-
-      for (const toolGroupId of toolGroupIds) {
-        const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
-
-        const newBrushSize = Math.max(brushSize - 3, 0.5);
-
-        if (brushSize) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
-
-          toolbarService.refreshToolbarState({ toolGroupId });
-        }
-      }
+      actions._handleBrushSizeAction('decrease');
     },
     addNewSegment: () => {
       const { segmentationService } = servicesManager.services;
