@@ -6,6 +6,7 @@ type Props = {
   overlay: React.ReactNode
   onActivate?: () => void
   alignRight?: boolean
+  overlayAlign?: 'start' | 'center' | 'end'
 }
 
 export function DataTableActionOverlayCell({
@@ -14,20 +15,33 @@ export function DataTableActionOverlayCell({
   overlay,
   onActivate,
   alignRight = true,
+  overlayAlign,
 }: Props) {
+  const computedAlign = overlayAlign ?? (alignRight ? 'end' : 'start')
+  const valueAlignmentClass =
+    computedAlign === 'end' ? 'text-right' : computedAlign === 'center' ? 'text-center' : ''
+  const overlayPositionClass =
+    computedAlign === 'center'
+      ? 'inset-y-0 inset-x-0 justify-center px-2'
+      : computedAlign === 'start'
+        ? 'inset-y-0 left-0 px-2'
+        : 'inset-y-0 right-0 px-2'
+  const overlayVisibilityClass = isActive
+    ? 'bg-popover opacity-100'
+    : 'opacity-0 group-hover:bg-muted group-hover:opacity-100'
+  const valueVisibilityClass = isActive
+    ? 'invisible opacity-0'
+    : 'group-hover:invisible group-hover:opacity-0 group-hover:text-transparent'
+
   return (
     <div className="relative">
       <div
-        className={`transition-opacity ${alignRight ? 'text-right' : ''} ${
-          isActive ? 'invisible opacity-0' : 'group-hover:invisible group-hover:opacity-0 group-hover:text-transparent'
-        }`}
+        className={`transition-opacity ${valueAlignmentClass} ${valueVisibilityClass}`}
       >
         {value}
       </div>
       <div
-        className={`absolute inset-y-0 ${alignRight ? 'right-0' : 'left-0'} z-10 flex items-center px-2 ${
-          isActive ? 'bg-popover opacity-100' : 'opacity-0 group-hover:bg-muted group-hover:opacity-100'
-        }`}
+        className={`absolute z-10 flex items-center ${overlayPositionClass} ${overlayVisibilityClass}`}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => {
           e.stopPropagation()
@@ -43,4 +57,3 @@ export function DataTableActionOverlayCell({
     </div>
   )
 }
-

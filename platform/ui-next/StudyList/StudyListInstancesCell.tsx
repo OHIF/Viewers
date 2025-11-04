@@ -20,6 +20,7 @@ export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>;
     <DataTableActionOverlayCell
       isActive={row.getIsSelected()}
       value={<div className="text-right">{value}</div>}
+      overlayAlign="end"
       onActivate={() => {
         if (!row.getIsSelected()) row.toggleSelected(true);
       }}

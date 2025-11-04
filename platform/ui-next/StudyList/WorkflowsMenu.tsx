@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button } from '../src/components/Button';
+import { Icons } from '../src/components/Icons';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -32,11 +33,21 @@ export function WorkflowsMenu({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" aria-expanded={open}>
-          Open in...
+        <Button
+          size="icon"
+          variant="ghost"
+          aria-expanded={open}
+          aria-haspopup="menu"
+          aria-label="Open workflows menu"
+          className="mt-1 transition-opacity"
+        >
+          <Icons.More className="h-6 w-6" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align} onClick={(e) => e.stopPropagation()}>
+        <div className="text-muted-foreground border-b border-input py-1 pl-1 pr-4 text-sm my-1.5 mx-1">
+          Launch Workflow:
+        </div>
         {items.map((wf) => {
           const isDefault = defaultMode != null && String(defaultMode) === String(wf);
           return (

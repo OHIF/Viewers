@@ -52,7 +52,7 @@ StudyList/
 │
 ├─ StudyList.tsx                     # Public façade -> recipe (keeps external API stable)
 ├─ StudyListTable.tsx                # Thin table primitive built on DataTable
-├─ StudyListInstancesCell.tsx        # "Open in..." overlay cell (workflow launcher)
+├─ StudyListInstancesCell.tsx        # Workflow launcher menu trigger
 ├─ WorkflowsMenu.tsx                 # Dropdown to pick a workflow
 ├─ WorkflowsInfer.ts                 # Re-exports from headless registry
 ├─ SettingsDialog.tsx                # Settings (default workflow)
