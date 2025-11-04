@@ -8,39 +8,9 @@
 1 notice cli v7.4.2
 2 verbose packageConfigs Explicit "packages" configuration found in lerna.json. Resolving packages using the configured glob(s): ["extensions/*","platform/*","modes/*","addOns/externals/*"]
 3 verbose rootPath /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat
-4 error Error: The following projects are defined in multiple locations:
-4 error - xnat:
-4 error   - extensions/xnat
-4 error   - modes/xnat
-4 error
-4 error To fix this, set a unique name for each project in a project.json inside the project's root. If the project does not currently have a project.json, you can create one that contains only a name.
-4 error     at readProjectConfigurationsFromRootMap (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/project-configuration-utils.js:108:15)
-4 error     at buildProjectsConfigurationsFromProjectPathsAndPlugins (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/project-configuration-utils.js:81:19)
-4 error     at createProjectConfigurations (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:131:129)
-4 error     at WorkspaceContext.<anonymous> (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:82:39)
-4 error     at getProjectConfigurationsFromContext (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/workspace-context.js:26:29)
-4 error     at _retrieveProjectConfigurations (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:81:72)
-4 error     at retrieveProjectConfigurations (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:58:12)
-4 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-4 error     at async processCollectedUpdatedAndDeletedFiles (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/daemon/server/project-graph-incremental-recomputation.js:129:34)
-0 silly argv {
-0 silly argv   _: [ 'run' ],
-0 silly argv   stream: true,
-0 silly argv   lernaVersion: '7.2.0',
-0 silly argv   '$0': '/Users/zpick/Desktop/Viewers/node_modules/.bin/lerna',
-0 silly argv   script: 'dev:viewer'
-0 silly argv }
-1 notice cli v7.2.0
-2 verbose packageConfigs Explicit "packages" configuration found in lerna.json. Resolving packages using the configured glob(s): ["extensions/*","platform/*","modes/*"]
-3 verbose rootPath /Users/zpick/Desktop/Viewers
-4 error TypeError [ERR_INVALID_ARG_TYPE]: Failed to process the project graph with "nx-js-graph-plugin".
-4 error The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
-4 error     at writeFileSync (node:fs:2288:5)
-4 error     at writeLastProcessedLockfileHash (/Users/zpick/Desktop/Viewers/node_modules/nx/src/plugins/js/index.js:53:28)
-4 error     at /Users/zpick/Desktop/Viewers/node_modules/nx/src/plugins/js/index.js:26:17
-4 error     at Generator.next (<anonymous>)
-4 error     at /Users/zpick/Desktop/Viewers/node_modules/tslib/tslib.js:167:75
-4 error     at new Promise (<anonymous>)
-4 error     at Object.__awaiter (/Users/zpick/Desktop/Viewers/node_modules/tslib/tslib.js:163:16)
-4 error     at Object.processProjectGraph (/Users/zpick/Desktop/Viewers/node_modules/nx/src/plugins/js/index.js:16:57)
-4 error     at /Users/zpick/Desktop/Viewers/node_modules/nx/src/project-graph/build-project-graph.js:138:42
+4 error Error: GenericFailure
+4 error     at getNxWorkspaceFilesFromContext (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/workspace-context.js:16:29)
+4 error     at retrieveWorkspaceFiles (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:26:138)
+4 error     at async buildProjectGraphWithoutDaemon (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/project-graph.js:65:82)
+4 error     at async createProjectGraphAsync (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/project-graph.js:116:25)
+4 error     at async detectProjects (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/lerna/dist/index.js:1455:25)
