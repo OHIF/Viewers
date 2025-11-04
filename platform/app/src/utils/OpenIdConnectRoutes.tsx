@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
@@ -94,8 +94,8 @@ function LoginComponent(userManager) {
 }
 
 function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }) {
-  const userManager = initUserManager(oidc, routerBasename);
-  console.log('OpenIdConnectRoutes');
+  const userManager = useMemo(() => initUserManager(oidc, routerBasename), [oidc, routerBasename]);
+
   const getAuthorizationHeader = () => {
     const user = userAuthenticationService.getUser();
 

@@ -26,6 +26,12 @@ const screenShotPaths = {
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },
+  labelMapSegLocking: {
+    globalLockedSegPreEdit: 'lockedSegPreEdit.png',
+    globalLockedSegPostEdit: 'lockedSegPostEdit.png',
+    globalUnlockedSegPreEdit: 'unlockedSegPreEdit.png',
+    globalUnlockedSegPostEdit: 'unlockedSegPostEdit.png',
+  },
   length: {
     lengthDisplayedCorrectly: 'lengthDisplayedCorrectly.png',
   },
@@ -120,6 +126,11 @@ const screenShotPaths = {
     mprAfterSEG: 'mprAfterSEG.png',
     mprAfterSegHydrated: 'mprAfterSegHydrated.png',
     mprAfterSegHydratedAfterLayoutChange: 'mprAfterSegHydratedAfterLayoutChange.png',
+  },
+  segHydrationFrom3DFourUp: {
+    threeDFourUpBeforeSEG: 'threeDFourUpBeforeSEG.png',
+    threeDFourUpAfterSEG: 'threeDFourUpAfterSEG.png',
+    threeDFourUpAfterSegHydrated: 'threeDFourUpAfterSegHydrated.png',
   },
   segNoHydrationThenMPR: {
     segNoHydrationPreMPR: 'segNoHydrationPreMpr.png',

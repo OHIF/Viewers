@@ -76,7 +76,7 @@ contributions of individuals, research groups, and commercial organizations.
 After more than 8-years of integrating with many companies and organizations,
 The OHIF Viewer has been rebuilt from the ground up to better address the
 varying workflow and configuration needs of its many users. All of the Viewer's
-core features are built using it's own extension system. The same extensibility
+core features are built using its own extension system. The same extensibility
 that allows us to offer:
 
 - 2D and 3D medical image viewing
@@ -147,7 +147,14 @@ Here is a schematic representation of our development workflow:
 3. Navigate to the cloned project's directory
 4. Add this repo as a `remote` named `upstream`
    - `git remote add upstream https://github.com/OHIF/Viewers.git`
-5. `yarn install` to restore dependencies and link projects
+5. `yarn install --frozen-lockfile` to restore dependencies and link projects
+
+:::danger
+In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
+supply chain attacks by enforcing reproducible dependencies. That is, if the
+`yarn.lock` file is clean and does NOT reference compromised packages, then
+no compromised packages should land on your machine by using this flag.
+:::
 
 #### To Develop
 
@@ -158,7 +165,7 @@ _From this repository's root directory:_
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 ```
 
 ## Commands

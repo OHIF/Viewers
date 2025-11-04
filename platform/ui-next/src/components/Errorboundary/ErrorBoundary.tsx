@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ErrorBoundary as ReactErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent } from '../Dialog/Dialog';
+import { Dialog, DialogContent, DialogTitle } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { Button } from '../Button/Button';
 import { useNotification } from '../../contextProviders';
@@ -112,10 +112,17 @@ interface ErrorBoundaryError extends Error {
   stack?: string;
 }
 
+enum ShowErrorDetails {
+  always = 'always',
+  dev = 'dev',
+  production = 'production',
+}
+
 interface DefaultFallbackProps extends FallbackProps {
   error: ErrorBoundaryError;
   context: string;
   resetErrorBoundary: () => void;
+  showErrorDetails?: ShowErrorDetails;
 }
 
 interface ErrorBoundaryProps {
@@ -126,13 +133,21 @@ interface ErrorBoundaryProps {
   children: React.ReactNode;
   fallbackRoute?: string | null;
   isPage?: boolean;
+  showErrorDetails?: ShowErrorDetails;
 }
 
 const DefaultFallback = ({
   error,
   context,
   resetErrorBoundary = () => {},
+  showErrorDetails,
 }: DefaultFallbackProps) => {
+  const isShowDetailsButtonVisible =
+    showErrorDetails == null ||
+    showErrorDetails === ShowErrorDetails.always ||
+    (showErrorDetails === ShowErrorDetails.dev && !isProduction) ||
+    (showErrorDetails === ShowErrorDetails.production && isProduction);
+
   const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
   const notificationContext = useNotification();
@@ -170,22 +185,21 @@ const DefaultFallback = ({
       type: 'error',
       duration: 0,
       id: errorId,
-      action: {
-        label: t('Show Details'),
-        onClick: () => setShowDetails(true),
-      },
+      action: isShowDetailsButtonVisible
+        ? {
+            label: t('Show Details'),
+            onClick: () => setShowDetails(true),
+          }
+        : undefined,
     });
   }, [error, errorTitle, subtitle, t, title, show]);
-
-  if (isProduction) {
-    return null;
-  }
 
   return (
     <Dialog
       open={showDetails}
       onOpenChange={setShowDetails}
     >
+      <DialogTitle className="invisible">{errorTitle}</DialogTitle>
       <DialogContent
         className="bg-muted max-w-3xl overflow-hidden border-0 p-0"
         onInteractOutside={e => e.preventDefault()}
@@ -254,6 +268,7 @@ const ErrorBoundary = ({
   onError = _error => {},
   fallbackComponent: FallbackComponent = DefaultFallback,
   children,
+  showErrorDetails,
 }: ErrorBoundaryProps) => {
   const [error, setError] = useState<ErrorBoundaryError | null>(null);
 
@@ -267,7 +282,6 @@ const ErrorBoundary = ({
     let errorTimeout: NodeJS.Timeout;
 
     const handleError = (event: ErrorEvent) => {
-      event.preventDefault();
       clearTimeout(errorTimeout);
       errorTimeout = setTimeout(() => {
         setError(event.error);
@@ -308,6 +322,7 @@ const ErrorBoundary = ({
         <FallbackComponent
           {...props}
           context={context}
+          showErrorDetails={showErrorDetails}
         />
       )}
       onReset={onResetHandler}
@@ -320,6 +335,7 @@ const ErrorBoundary = ({
             error={error}
             context={context}
             resetErrorBoundary={() => setError(null)}
+            showErrorDetails={showErrorDetails}
           />
         )}
       </>

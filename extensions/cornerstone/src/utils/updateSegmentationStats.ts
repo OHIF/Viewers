@@ -1,4 +1,5 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
+import cloneDeep from 'lodash.clonedeep';
 
 interface BidirectionalAxis {
   length: number;
@@ -53,7 +54,7 @@ export async function updateSegmentationStats({
     return null;
   }
 
-  const updatedSegmentation = { ...segmentation };
+  const updatedSegmentation = cloneDeep(segmentation);
   let hasUpdates = false;
 
   // Loop through each segment's stats

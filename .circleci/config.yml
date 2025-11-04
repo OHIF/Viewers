@@ -15,22 +15,13 @@ defaults: &defaults
 commands:
   install_bun:
     steps:
-      - restore_cache:
-          keys:
-            - bun-cache-v2-{{ arch }}-latest
       - run:
           name: Install Bun
           command: |
-            if [ ! -d "$HOME/.bun" ]; then
-              curl -fsSL https://bun.sh/install | bash
-            fi
+            curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.23"
             echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
             echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
             source $BASH_ENV
-      - save_cache:
-          key: bun-cache-v2-{{ arch }}-latest
-          paths:
-            - ~/.bun
 
 jobs:
   UNIT_TESTS:
@@ -121,6 +112,34 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
+      # SECURITY AUDIT
+      - run:
+          name: 'Security Audit - High Risk Vulnerabilities'
+          command: |
+            echo "🔍 Running bun audit for security vulnerabilities..."
+            echo "Checking for HIGH-RISK vulnerabilities..."
+
+            if bun audit --audit-level high; then
+              echo "✅ No high-risk vulnerabilities found"
+              echo "🎉 Security audit passed!"
+            else
+              echo ""
+              echo "❌ HIGH-RISK VULNERABILITIES DETECTED!"
+              echo "======================================"
+              echo ""
+              echo "🔧 To fix these issues:"
+              echo "  1. Run: bun audit"
+              echo "  2. Review the vulnerability details"
+              echo "  3. Update affected packages to secure versions"
+              echo "  4. Test your changes"
+              echo "  5. Re-run: bun audit --audit-level high"
+              echo ""
+              echo "📋 Full audit report:"
+              bun audit --audit-level low || true
+              echo ""
+              echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
+              exit 1
+            fi
       - run:
           name: Install Dependencies
           command: bun install --frozen-lockfile
@@ -352,7 +371,7 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-command: yarn install --no-save
+          install-command: yarn install --frozen-lockfile --no-save
       - cypress/run-tests:
           cypress-command: |
             npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel

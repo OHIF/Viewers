@@ -127,11 +127,17 @@ const createRoutes = ({
   ];
 
   function RouteWithErrorBoundary({ route, ...rest }) {
+    const [appConfig] = useAppConfig();
+    const { showErrorDetails } = appConfig;
+
     history.navigate = useNavigate();
 
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary context={`Route ${route.path}`}>
+      <ErrorBoundary
+        context={`Route ${route.path}`}
+        showErrorDetails={showErrorDetails}
+      >
         <route.children
           {...rest}
           {...route.props}

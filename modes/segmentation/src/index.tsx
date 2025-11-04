@@ -1,6 +1,7 @@
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
+import setUpAutoTabSwitchHandler from './utils/setUpAutoTabSwitchHandler';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -11,7 +12,10 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
+  labelMapSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
+  contourSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -36,6 +40,7 @@ const extensionDependencies = {
 };
 
 function modeFactory({ modeConfiguration }) {
+  const _unsubscriptions = [];
   return {
     /**
      * Mode ID, which should be unique among modes used by the viewer. This ID
@@ -53,8 +58,14 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        segmentationService,
+        viewportGridService,
+        panelService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -114,23 +125,54 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.updateSection(toolbarService.sections.segmentationToolbox, [
-        'SegmentationUtilities',
-        'SegmentationTools',
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
+        'LabelMapTools',
       ]);
-      toolbarService.updateSection('SegmentationUtilities', [
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationToolbox, [
+        'ContourTools',
+      ]);
+
+      toolbarService.updateSection('LabelMapTools', [
         'LabelmapSlicePropagation',
-        'InterpolateLabelmap',
-        'SegmentBidirectional',
-        'SegmentLabelTool',
-      ]);
-      toolbarService.updateSection('SegmentationTools', [
         'BrushTools',
         'MarkerLabelmap',
         'RegionSegmentPlus',
         'Shapes',
+        'LabelMapEditWithContour',
       ]);
+      toolbarService.updateSection('ContourTools', [
+        'PlanarFreehandContourSegmentationTool',
+        'SculptorTool',
+        'SplineContourSegmentationTool',
+        'LivewireContourSegmentationTool',
+      ]);
+
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationUtilities, [
+        'LabelMapUtilities',
+      ]);
+      toolbarService.updateSection(toolbarService.sections.contourSegmentationUtilities, [
+        'ContourUtilities',
+      ]);
+
+      toolbarService.updateSection('LabelMapUtilities', [
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ]);
+      toolbarService.updateSection('ContourUtilities', [
+        'LogicalContourOperations',
+        'SimplifyContours',
+        'SmoothContours',
+      ]);
+
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
+
+      const { unsubscribeAutoTabSwitchEvents } = setUpAutoTabSwitchHandler({
+        segmentationService,
+        viewportGridService,
+        panelService,
+      });
+
+      _unsubscriptions.push(...unsubscribeAutoTabSwitchEvents);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -141,6 +183,9 @@ function modeFactory({ modeConfiguration }) {
         uiDialogService,
         uiModalService,
       } = servicesManager.services;
+
+      _unsubscriptions.forEach(unsubscribe => unsubscribe());
+      _unsubscriptions.length = 0;
 
       uiDialogService.hideAll();
       uiModalService.hide();
@@ -193,7 +238,10 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool],
+              rightPanels: [
+                cornerstone.contourSegmentationPanel,
+                cornerstone.labelMapSegmentationPanel,
+              ],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

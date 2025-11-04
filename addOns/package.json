@@ -22,30 +22,29 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
-    "@babel/plugin-transform-class-properties": "^7.27.1",
-    "@babel/plugin-transform-object-rest-spread": "^7.28.0",
-    "@babel/plugin-transform-private-methods": "^7.27.1",
-    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-arrow-functions": "^7.16.7",
-    "@babel/plugin-transform-regenerator": "^7.16.7",
+    "@babel/plugin-transform-class-properties": "7.27.1",
+    "@babel/plugin-transform-object-rest-spread": "7.28.0",
+    "@babel/plugin-transform-private-methods": "7.27.1",
+    "@babel/plugin-transform-private-property-in-object": "7.27.1",
+    "@babel/plugin-syntax-dynamic-import": "7.8.3",
+    "@babel/plugin-transform-arrow-functions": "7.27.1",
+    "@babel/plugin-transform-regenerator": "7.28.1",
     "@babel/plugin-transform-runtime": "7.28.0",
-    "@babel/plugin-transform-typescript": "^7.28.0",
+    "@babel/plugin-transform-typescript": "7.28.0",
     "@babel/preset-env": "7.28.0",
-    "@babel/preset-react": "^7.27.1",
-    "@babel/preset-typescript": "^7.27.1"
+    "@babel/preset-react": "7.27.1",
+    "@babel/preset-typescript": "7.27.1"
   },
   "resolutions": {
-    "**/@babel/runtime": "^7.20.13",
+    "**/@babel/runtime": "7.28.2",
     "commander": "8.3.0",
     "dcmjs": "0.43.1",
-    "dicomweb-client": ">=0.10.4",
-    "nth-check": "^2.1.1",
-    "trim-newlines": "^5.0.0",
-    "glob-parent": "^6.0.2",
-    "trim": "^1.0.0",
-    "package-json": "^8.1.0",
-    "typescript": "5.5.4",
-    "sharp": "^0.32.6"
+    "dicomweb-client": "0.10.4",
+    "nth-check": "2.1.1",
+    "trim-newlines": "5.0.0",
+    "glob-parent": "6.0.2",
+    "trim": "1.0.1",
+    "package-json": "8.1.1",
+    "typescript": "5.5.4"
   }
 }

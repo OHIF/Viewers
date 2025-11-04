@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { Router } from 'react-router-dom';
+import { Router, type BrowserRouterProps } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import Compose from './routes/Mode/Compose';
@@ -44,6 +44,11 @@ let commandsManager: CommandsManager,
   servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
+
+const routerFutureFlags: BrowserRouterProps['future'] = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
 
 function App({
   config = {
@@ -177,7 +182,7 @@ function App({
     );
   }
 
-  
+
 
   return (
     <ErrorBoundary

@@ -25,6 +25,7 @@ import {
 } from '@ohif/core';
 
 import loadModules, { loadModule as peerImport } from './pluginImports';
+import { publicUrl } from './utils/publicUrl';
 
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
@@ -48,6 +49,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   // Default the peer import function
   appConfig.peerImport ||= peerImport;
   appConfig.measurementTrackingMode ||= 'standard';
+  appConfig.routerBasename ||= publicUrl;
 
   const extensionManager = new ExtensionManager({
     commandsManager,

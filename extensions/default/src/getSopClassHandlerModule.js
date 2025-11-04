@@ -83,16 +83,6 @@ const makeDisplaySet = instances => {
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
-  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
-  let imageId = imageIds[Math.floor(imageIds.length / 2)];
-  let thumbnailInstance = instances[Math.floor(instances.length / 2)];
-  if (isDynamicVolume) {
-    const timePoints = dynamicVolumeInfo.timePoints;
-    const middleIndex = Math.floor(timePoints.length / 2);
-    const middleTimePointImageIds = timePoints[middleIndex];
-    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
-  }
-
   imageSet.setAttributes({
     volumeLoaderSchema,
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
@@ -114,12 +104,25 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
-    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
     supportsWindowLevel: true,
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
+  });
+
+  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
+  let imageId = imageIds[Math.floor(imageIds.length / 2)];
+  let thumbnailInstance = instances[Math.floor(instances.length / 2)];
+  if (isDynamicVolume) {
+    const timePoints = dynamicVolumeInfo.timePoints;
+    const middleIndex = Math.floor(timePoints.length / 2);
+    const middleTimePointImageIds = timePoints[middleIndex];
+    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
+  }
+
+  imageSet.setAttributes({
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
   });
 
   const { servicesManager } = appContext;

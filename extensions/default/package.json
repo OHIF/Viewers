@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.12.0-beta.10",
+  "version": "3.12.0-beta.79",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -34,22 +34,22 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.12.0-beta.10",
-    "@ohif/i18n": "3.12.0-beta.10",
+    "@ohif/core": "3.12.0-beta.79",
+    "@ohif/i18n": "3.12.0-beta.79",
     "dcmjs": "0.43.1",
-    "dicomweb-client": "^0.10.4",
-    "prop-types": "^15.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
-    "react-window": "^1.8.9",
+    "dicomweb-client": "0.10.4",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "12.3.1",
+    "react-window": "1.8.11",
     "webpack": "5.89.0",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "5.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/calculate-suv": "^1.1.0",
-    "lodash.get": "^4.4.2",
-    "lodash.uniqby": "^4.7.0"
+    "@babel/runtime": "7.28.2",
+    "@cornerstonejs/calculate-suv": "1.1.0",
+    "lodash.get": "4.4.2",
+    "lodash.uniqby": "4.7.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "3.12.0-beta.10",
+  "version": "3.12.0-beta.79",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -31,24 +31,24 @@
     "test:unit:ci": "echo 'platform/i18n: missing unit tests'"
   },
   "peerDependencies": {
-    "i18next": "^17.0.3",
-    "i18next-browser-languagedetector": "^3.0.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2"
+    "i18next": "17.3.1",
+    "i18next-browser-languagedetector": "3.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "12.3.1"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "i18next-locize-backend": "^2.0.0",
-    "locize-editor": "^2.0.0",
-    "locize-lastused": "^1.1.0"
+    "@babel/runtime": "7.28.2",
+    "i18next-locize-backend": "2.2.2",
+    "locize-editor": "2.2.2",
+    "locize-lastused": "1.1.1"
   },
   "devDependencies": {
-    "i18next": "^17.0.3",
-    "i18next-browser-languagedetector": "^3.0.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
-    "webpack-merge": "^5.7.3"
+    "i18next": "17.3.1",
+    "i18next-browser-languagedetector": "3.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "12.3.1",
+    "webpack-merge": "5.10.0"
   }
 }
