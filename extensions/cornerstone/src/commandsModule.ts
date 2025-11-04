@@ -43,6 +43,7 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport';
 import { getCenterExtent } from './utils/getCenterExtent';
 import { EasingFunctionEnum } from './utils/transitions';
+import { collectActiveStudyMetadata } from '../../default/src/utils/collectDicomMetadata';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -712,6 +713,39 @@ function commandsModule({
       };
 
       generateSegmentationCSVReport(segmentation, additionalInfo);
+    },
+
+    sendActiveStudyMetadata: async () => {
+      const json = await collectActiveStudyMetadata(servicesManager as any);
+      const url = await callInputDialog({
+        uiDialogService,
+        title: i18n.t('Tools:Send Metadata JSON'),
+        placeholder: 'https://webhook.site/786776e7-96e6-497b-b888-2e6ffdb1cd85',
+        defaultValue: '',
+      });
+
+      if (!url) {
+        return;
+      }
+
+      try {
+        await fetch(url as any, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(json),
+        });
+        uiNotificationService.show({
+          title: 'Metadata',
+          message: 'Metadata JSON sent',
+          type: 'success',
+        });
+      } catch (e) {
+        uiNotificationService.show({
+          title: 'Metadata',
+          message: 'Failed to send metadata JSON',
+          type: 'error',
+        });
+      }
     },
 
     // Retrieve value commands
@@ -2508,6 +2542,7 @@ function commandsModule({
     interpolateLabelmap: actions.interpolateLabelmap,
     runSegmentBidirectional: actions.runSegmentBidirectional,
     downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
+    sendActiveStudyMetadata: { commandFn: actions.sendActiveStudyMetadata },
     toggleSegmentPreviewEdit: actions.toggleSegmentPreviewEdit,
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,
