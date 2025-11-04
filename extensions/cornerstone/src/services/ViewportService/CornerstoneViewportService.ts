@@ -415,15 +415,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // same viewport/element and just change the viewportData for it (drag and drop etc.)
     // the disableElement storePresentation handle would not be called in this case
     // and we would lose the presentation.
-    this.storePresentation({ viewportId: viewportInfo.getViewportId() });
+    if (viewportInfo) {
+      this.storePresentation({ viewportId: viewportInfo.getViewportId() });
+    }
 
     // Todo: i don't like this here, move it
-    this.servicesManager.services.segmentationService.clearSegmentationRepresentations(
-      viewportInfo.getViewportId()
-    );
+    if (viewportInfo) {
+      this.servicesManager.services.segmentationService.clearSegmentationRepresentations(
+        viewportInfo.getViewportId()
+      );
+    }
 
     if (!viewportInfo) {
-      throw new Error('element is not enabled for the given viewportId');
+      return;
     }
 
     // override the viewportOptions and displaySetOptions with the public ones
@@ -714,7 +718,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // is being used to navigate to the initial view position for measurement
     // navigation and other navigation forcing specific views.
     let initialImageIndexToUse =
-      presentations?.positionPresentation?.initialImageIndex ?? <number>initialImageIndex;
+      presentations?.positionPresentation?.initialImageIndex ?? (initialImageIndex as number);
 
     const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
@@ -1330,7 +1334,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { segmentationService } = this.servicesManager.services;
+    const { segmentationService, displaySetService } = this.servicesManager.services;
 
     segmentationPresentation.forEach((presentationItem: SegmentationPresentationItem) => {
       const { segmentationId, type, hydrated } = presentationItem;
@@ -1349,6 +1353,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       })();
 
       if (hydrated) {
+        const existingSegmentation = segmentationService.getSegmentation(segmentationId);
+        if (!existingSegmentation) {
+          const segDisplaySet = displaySetService.getDisplaySetByUID(segmentationId);
+          type LoadableDisplaySet = { load?: (args?: unknown) => Promise<unknown> };
+          const segLoader = (segDisplaySet as LoadableDisplaySet)?.load;
+          if (typeof segLoader === 'function') {
+            segLoader({}).then(() => {
+              segmentationService.addSegmentationRepresentation(viewport.id, {
+                segmentationId,
+                type: representationType,
+              });
+            });
+          }
+          return;
+        }
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
           type: representationType,

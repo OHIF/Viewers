@@ -292,6 +292,18 @@ const OHIFCornerstoneViewport = React.memo(
           viewportOptions.needsRerendering = false;
         }
 
+        const waitForViewportInfo = async () => {
+          let info = cornerstoneViewportService.getViewportInfo(viewportId);
+          let attempts = 0;
+          while (!info && attempts < 20) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+            info = cornerstoneViewportService.getViewportInfo(viewportId);
+            attempts++;
+          }
+        };
+
+        await waitForViewportInfo();
+
         cornerstoneViewportService.setViewportData(
           viewportId,
           viewportData,
