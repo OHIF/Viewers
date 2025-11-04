@@ -7,7 +7,7 @@ import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
-
+import { collectActiveStudyMetadata } from '../../utils/collectDicomMetadata';
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
@@ -117,6 +117,16 @@ function PanelStudyBrowser({
     ]
   );
 
+  const downloadMetadata = useCallback(async () => {
+    const json = await collectActiveStudyMetadata(servicesManager);
+    const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'metadata.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [servicesManager]);
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
@@ -424,6 +434,14 @@ function PanelStudyBrowser({
           className="bg-black"
           thickness="2px"
         />
+        <div className="p-2">
+          <button
+            onClick={downloadMetadata}
+            className="bg-primary rounded px-3 py-1 text-white"
+          >
+            Download metadata JSON
+          </button>
+        </div>
       </>
 
       <StudyBrowser
