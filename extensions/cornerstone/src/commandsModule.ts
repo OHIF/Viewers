@@ -720,7 +720,7 @@ function commandsModule({
       const url = await callInputDialog({
         uiDialogService,
         title: i18n.t('Tools:Send Metadata JSON'),
-        placeholder: 'https://webhook.site/786776e7-96e6-497b-b888-2e6ffdb1cd85',
+        placeholder: 'https://webhook.site/65ae2152-128f-4e7f-8579-d36cbe3152eb',
         defaultValue: '',
       });
 

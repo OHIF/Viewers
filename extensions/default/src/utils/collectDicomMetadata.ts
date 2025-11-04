@@ -8,6 +8,17 @@ type InstanceMeta = {
   Columns?: number;
   PixelSpacing?: number[] | string;
   SliceThickness?: number | string;
+  SOPClassUID?: string;
+  ImageType?: string[];
+  StudyDate?: string;
+  SeriesDate?: string;
+  AcquisitionDate?: string;
+  ContentDate?: string;
+  StudyTime?: string;
+  SeriesTime?: string;
+  AcquisitionTime?: string;
+  ContentTime?: string;
+  Raw?: Record<string, unknown>;
 };
 
 type SeriesEntry = {
@@ -15,6 +26,8 @@ type SeriesEntry = {
   Modality?: string;
   SeriesNumber?: number | string;
   SeriesDescription?: string;
+  SeriesDate?: string;
+  SeriesTime?: string;
   Instances: InstanceMeta[];
 };
 
@@ -29,7 +42,22 @@ type StudyEntry = {
 
 export async function collectActiveStudyMetadata(servicesManager: AppTypes.ServicesManager) {
   const { displaySetService } = servicesManager.services as AppTypes.Services;
-  const activeDisplaySets = displaySetService.getActiveDisplaySets() as any[];
+  type DisplaySetLike = {
+    StudyInstanceUID: string;
+    SeriesInstanceUID: string;
+    Modality?: string;
+    SeriesNumber?: number | string;
+    SeriesDescription?: string;
+    SeriesDate?: string;
+    SeriesTime?: string;
+    imageIds?: string[];
+    images?: Array<{ imageId: string }>;
+    PatientID?: string;
+    PatientName?: string;
+    StudyDate?: string;
+    StudyTime?: string;
+  };
+  const activeDisplaySets = displaySetService.getActiveDisplaySets() as DisplaySetLike[];
 
   const studies = new Map<string, StudyEntry>();
 
@@ -53,16 +81,41 @@ export async function collectActiveStudyMetadata(servicesManager: AppTypes.Servi
         Modality: ds.Modality,
         SeriesNumber: ds.SeriesNumber,
         SeriesDescription: ds.SeriesDescription,
+        SeriesDate: ds.SeriesDate,
+        SeriesTime: ds.SeriesTime,
         Instances: [],
       };
       study.Series.push(series);
     }
 
     const imageIds: string[] =
-      ds.imageIds ?? (ds.images ? ds.images.map((i: any) => i.imageId) : []) ?? [];
+      ds.imageIds ?? (ds.images ? ds.images.map(i => i.imageId) : []) ?? [];
 
     for (const imageId of imageIds) {
-      const inst = (metaData.get('instance', imageId) as any) ?? {};
+      type DicomInstanceLike = {
+        SOPInstanceUID?: string;
+        SopInstanceUID?: string;
+        ImagePositionPatient?: number[];
+        ImageOrientationPatient?: number[];
+        Rows?: number;
+        Columns?: number;
+        PixelSpacing?: number[] | string;
+        SliceThickness?: number | string;
+        SOPClassUID?: string;
+        ImageType?: string[];
+        StudyDate?: string;
+        SeriesDate?: string;
+        AcquisitionDate?: string;
+        ContentDate?: string;
+        StudyTime?: string;
+        SeriesTime?: string;
+        AcquisitionTime?: string;
+        ContentTime?: string;
+        PatientID?: string;
+        PatientName?: string;
+        [key: string]: unknown;
+      };
+      const inst = (metaData.get('instance', imageId) as DicomInstanceLike) ?? {};
       const entry: InstanceMeta = {
         SOPInstanceUID: inst.SOPInstanceUID || inst.SopInstanceUID,
         ImagePositionPatient: inst.ImagePositionPatient,
@@ -71,8 +124,32 @@ export async function collectActiveStudyMetadata(servicesManager: AppTypes.Servi
         Columns: inst.Columns,
         PixelSpacing: inst.PixelSpacing,
         SliceThickness: inst.SliceThickness,
+        SOPClassUID: inst.SOPClassUID,
+        ImageType: inst.ImageType,
+        StudyDate: inst.StudyDate,
+        SeriesDate: inst.SeriesDate,
+        AcquisitionDate: inst.AcquisitionDate,
+        ContentDate: inst.ContentDate,
+        StudyTime: inst.StudyTime,
+        SeriesTime: inst.SeriesTime,
+        AcquisitionTime: inst.AcquisitionTime,
+        ContentTime: inst.ContentTime,
+        Raw: inst,
       };
       series.Instances.push(entry);
+
+      if (!study.PatientID && inst.PatientID) {
+        study.PatientID = inst.PatientID;
+      }
+      if (!study.PatientName && inst.PatientName) {
+        study.PatientName = inst.PatientName;
+      }
+      if (!study.StudyDate && inst.StudyDate) {
+        study.StudyDate = inst.StudyDate;
+      }
+      if (!study.StudyTime && inst.StudyTime) {
+        study.StudyTime = inst.StudyTime;
+      }
     }
 
     studies.set(studyUID, study);
