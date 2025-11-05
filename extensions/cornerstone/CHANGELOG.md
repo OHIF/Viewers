@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.81...v3.12.0-beta.82) (2025-11-05)
+
+
+### Bug Fixes
+
+* **segmentation:** When synchronizing a segmentation representation, use the type of the source viewport segmentation to determine the type of the target viewport segmentation ([#5546](https://github.com/OHIF/Viewers/issues/5546)) ([a0556b0](https://github.com/OHIF/Viewers/commit/a0556b08be98e0bba950ad7b9b575d7b971104ba))
+
+
+
+
+
 # [3.12.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.80...v3.12.0-beta.81) (2025-11-05)
 
 
