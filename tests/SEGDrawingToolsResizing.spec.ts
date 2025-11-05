@@ -16,37 +16,57 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function performDrawingToolInteraction(page: Page, toolName: string) {
-  await expect(page.getByTestId(`${toolName}-radius`).locator('input')).toHaveValue('25');
-  await page.getByTestId('viewport-grid').click({ position: { x: 275, y: 300 } });
+  const brushRadiusInput = page.getByTestId(`${toolName}-radius`).locator('input');
+  const viewportGrid = page.getByTestId('viewport-grid');
+  const circle = viewportGrid.locator('svg.svg-layer circle').first();
+
+  await expect(brushRadiusInput).toHaveValue('25');
+  await viewportGrid.click({ position: { x: 275, y: 300 } });
+  let radius = parseFloat(await circle.getAttribute('r'));
+  expect(radius).toBeGreaterThanOrEqual(65);
+  expect(radius).toBeLessThanOrEqual(68);
 
   await page.waitForTimeout(500);
   await press({ page, key: '[', nTimes: 2 });
-  await expect(page.getByTestId(`${toolName}-radius`).locator('input')).toHaveValue('19');
-  await page.getByTestId('viewport-grid').click({ position: { x: 500, y: 300 } });
+  await expect(brushRadiusInput).toHaveValue('19');
+  await viewportGrid.click({ position: { x: 500, y: 300 } });
+  radius = parseFloat(await circle.getAttribute('r'));
+  expect(radius).toBeGreaterThanOrEqual(49);
+  expect(radius).toBeLessThanOrEqual(52);
 
   await page.waitForTimeout(500);
 
   await press({ page, key: ']', nTimes: 5 });
-  await expect(page.getByTestId(`${toolName}-radius`).locator('input')).toHaveValue('34');
-  await page.getByTestId('viewport-grid').click({ position: { x: 275, y: 500 } });
+  await expect(brushRadiusInput).toHaveValue('34');
+  await viewportGrid.click({ position: { x: 275, y: 500 } });
+  radius = parseFloat(await circle.getAttribute('r'));
+  expect(radius).toBeGreaterThanOrEqual(87);
+  expect(radius).toBeLessThanOrEqual(90);
 
   await page.waitForTimeout(500);
 
-  await page.getByTestId(`${toolName}-radius`).locator('input').fill('42');
-  await page.getByTestId('viewport-grid').click({ position: { x: 500, y: 500 } });
+  await brushRadiusInput.fill('42');
+  await viewportGrid.click({ position: { x: 500, y: 500 } });
+  radius = parseFloat(await circle.getAttribute('r'));
+  expect(radius).toBeGreaterThanOrEqual(108);
+  expect(radius).toBeLessThanOrEqual(111);
 
   await page.waitForTimeout(500);
 }
 
-test('should resize segmentation brush tool', async ({ page }) => {
+test('(shouldUpdateThis) should resize segmentation brush tool', async ({ page }) => {
   await page.getByTestId('Brush-btn').click();
 
   await performDrawingToolInteraction(page, 'brush');
 
-  await checkForScreenshot(page, page, screenShotPaths.segDrawingToolsResizing.brushTool);
+  await checkForScreenshot(
+    page,
+    page.getByTestId('viewport-grid'),
+    screenShotPaths.segDrawingToolsResizing.brushTool
+  );
 });
 
-test('should resize segmentation eraser tool', async ({ page }) => {
+test('(shouldUpdateThis) should resize segmentation eraser tool', async ({ page }) => {
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
@@ -55,16 +75,20 @@ test('should resize segmentation eraser tool', async ({ page }) => {
   await page.waitForTimeout(500);
 
   await page.getByTestId('Eraser-btn').click();
-  await page.getByTestId(`eraser-radius`).locator('input').fill('25');
+  await page.getByTestId('eraser-radius').locator('input').fill('25');
 
   await page.waitForTimeout(500);
 
   await performDrawingToolInteraction(page, 'eraser');
 
-  await checkForScreenshot(page, page, screenShotPaths.segDrawingToolsResizing.eraserTool);
+  await checkForScreenshot(
+    page,
+    page.getByTestId('viewport-grid'),
+    screenShotPaths.segDrawingToolsResizing.eraserTool
+  );
 });
 
-test('should resize segmentation threshold tool', async ({ page }) => {
+test('(shouldUpdateThis) should resize segmentation threshold tool', async ({ page }) => {
   await page.getByTestId('Threshold-btn').click();
 
   await performDrawingToolInteraction(page, 'threshold');
