@@ -833,4 +833,14 @@ export default class ToolbarService extends PubSubService {
         return { align: 'start', side: 'bottom' };
     }
   }
+
+  /**
+   * Retrieves an option by its ID from a button's options array.
+   * @param button - The button object.
+   * @param optionId - The ID of the option to retrieve.
+   * @returns The option with the specified ID.
+   */
+  public getOptionById(button: Button, optionId: string) {
+    return button.props.options?.find(option => option.id === optionId);
+  }
 }
