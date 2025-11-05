@@ -12,6 +12,8 @@ test.beforeEach(async ({ page }) => {
   await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
   await press({ page, key: 'ArrowDown', nTimes: 64 });
   await page.getByTestId('addSegmentation').click();
+
+  await page.waitForTimeout(500);
 });
 
 async function performDrawingToolInteraction(page: Page, toolName: string) {
