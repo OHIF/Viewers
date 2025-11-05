@@ -39,6 +39,7 @@ import {
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
+import { extensionManager } from '../../App';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -537,6 +538,8 @@ function WorkList({
         }
       : undefined;
 
+  const isDicomLocal = extensionManager.activeDataSourceName === 'dicomlocal';
+
   const dataSourceConfigurationComponent = customizationService.getCustomization(
     'ohif.dataSourceConfigurationComponent'
   );
@@ -562,7 +565,7 @@ function WorkList({
               onChange={setFilterValues}
               clearFilters={() => setFilterValues(defaultFilterValues)}
               isFiltering={isFiltering(filterValues, defaultFilterValues)}
-              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+              onUploadClick={uploadProps ? () => show(uploadProps) : isDicomLocal ? () => navigate('/local') : undefined}
               getDataSourceConfigurationComponent={
                 dataSourceConfigurationComponent
                   ? () => dataSourceConfigurationComponent()
