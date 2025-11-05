@@ -27,7 +27,7 @@ const {
 
 const {
   Cornerstone3D: {
-    RTSS: { generateRTSSFromSegmentations },
+    RTSS: { generateRTSSFromRepresentation },
   },
 } = adaptersRT;
 
@@ -272,7 +272,7 @@ const commandsModule = ({
     },
     /**
      * Converts segmentations into RTSS for download.
-     * This sample function retrieves all segentations and passes to
+     * This sample function retrieves all segmentations and passes to
      * cornerstone tool adapter to convert to DICOM RTSS format. It then
      * converts dataset to downloadable blob.
      *
@@ -291,11 +291,10 @@ const commandsModule = ({
         );
       });
 
-      const RTSS = await generateRTSSFromSegmentations(
-        segmentations,
-        classes.MetadataProvider,
-        DicomMetadataStore
-      );
+      const RTSS = await generateRTSSFromRepresentation(segmentations, {
+        metaData: classes.MetadataProvider,
+        DicomMetadataStore,
+      });
 
       try {
         const reportBlob = datasetToBlob(RTSS);
