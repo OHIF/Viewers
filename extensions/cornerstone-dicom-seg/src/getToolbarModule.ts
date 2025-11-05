@@ -132,7 +132,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
           const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(toolGroupId);
 
           if (brushSize) {
-            toolbarService.setButtonValue(button.id, radiusOptionId, brushSize);
+            button.props.options.find(option => option.id === radiusOptionId).value = brushSize;
           }
         }
       },
