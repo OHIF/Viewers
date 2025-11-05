@@ -1,6 +1,8 @@
 import { toolGroupIds } from './initToolGroups';
 import i18n from 'i18next';
 
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
@@ -222,8 +224,8 @@ const toolbarButtons = [
           id: 'brush-radius',
           type: 'range',
           explicitRunOnly: true,
-          min: 0.5,
-          max: 99.5,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -267,8 +269,8 @@ const toolbarButtons = [
           id: 'eraser-radius',
           type: 'range',
           explicitRunOnly: true,
-          min: 0.5,
-          max: 99.5,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -312,8 +314,8 @@ const toolbarButtons = [
           id: 'threshold-radius',
           type: 'range',
           explicitRunOnly: true,
-          min: 0.5,
-          max: 99.5,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {

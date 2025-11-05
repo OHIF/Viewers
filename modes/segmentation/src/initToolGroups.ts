@@ -1,3 +1,5 @@
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -9,9 +11,6 @@ const colorsByOrientation = {
   sagittal: 'rgb(200, 200, 0)',
   coronal: 'rgb(0, 200, 0)',
 };
-
-const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
-const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
 
 function createTools({ utilityModule, commandsManager }) {
   const { toolNames, Enums } = utilityModule.exports;
