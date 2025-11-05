@@ -2,7 +2,7 @@ import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { RunCommand } from '../../types/Command';
-import { Button, ButtonProps, EvaluateFunction, EvaluatePublic } from './types';
+import { Button, ButtonOptions, ButtonProps, EvaluateFunction, EvaluatePublic } from './types';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
@@ -592,7 +592,7 @@ export default class ToolbarService extends PubSubService {
 
     const { id: buttonId, props: componentProps } = btn;
 
-    const createEnhancedOptions = (options, itemId) => {
+    const createEnhancedOptions = (options: ButtonOptions[], itemId) => {
       const optionsToUse = Array.isArray(options) ? options : [options];
       const toolProps = this.getButtonProps(itemId);
 

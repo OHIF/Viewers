@@ -2045,17 +2045,11 @@ function commandsModule({
         segmentAI.initViewport(viewport);
       }
     },
-    setBrushSize: ({ value, toolNames }) => {
+    setBrushSize: ({ value }) => {
       const brushSize = Number(value);
 
       toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        if (toolNames?.length === 0) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
-        } else {
-          toolNames?.forEach(toolName => {
-            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
-          });
-        }
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
       });
     },
     setThresholdRange: ({
