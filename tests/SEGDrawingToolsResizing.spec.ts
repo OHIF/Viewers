@@ -10,7 +10,6 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
   await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
-  await press({ page, key: 'ArrowDown', nTimes: 64 });
   await page.getByTestId('addSegmentation').click();
 
   await page.waitForTimeout(500);
