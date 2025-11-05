@@ -1712,6 +1712,15 @@ class SegmentationService extends PubSubService {
       segmentIndex,
     }) as cstTypes.LabelmapStyle;
 
+    const restoreStyle = cstSegmentation.config.style.createRestoreFunction(
+      {
+        segmentationId,
+        segmentIndex,
+        type: LABELMAP,
+      },
+      ['fillAlpha', 'fillAlphaInactive']
+    );
+
     let startTime: number = null;
     const animation = (timestamp: number) => {
       if (startTime === null) {
@@ -1737,14 +1746,7 @@ class SegmentationService extends PubSubService {
       if (progress < 1) {
         requestAnimationFrame(animation);
       } else {
-        cstSegmentation.config.style.setStyle(
-          {
-            segmentationId,
-            segmentIndex,
-            type: LABELMAP,
-          },
-          {}
-        );
+        restoreStyle();
       }
     };
 
