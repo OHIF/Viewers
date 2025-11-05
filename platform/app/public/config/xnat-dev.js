@@ -7,7 +7,7 @@ window.config = {
 
     // whiteLabeling: {},
     extensions: [],
-    modes: ['@ohif/mode-xnat', '@ohif/mode-overread-xnat'],
+    modes: ['@ohif/mode-xnat'],
     customizationService: {},
     showStudyList: true,
     // some windows systems have issues with more than 3 web workers

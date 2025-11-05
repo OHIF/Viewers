@@ -80,15 +80,7 @@ module.exports = (env, argv) => {
                 path.resolve(__dirname, '../../../node_modules'),
                 SRC_DIR,
                 path.resolve(__dirname, '/Users/zpick/Desktop/Viewers/modes/longitudinal/node_modules'),
-                path.resolve(__dirname, '/Users/zpick/Desktop/Viewers/modes/lytic-lesions/node_modules'),
-                path.resolve(
-                    __dirname,
-                    '/Users/zpick/Desktop/Viewers/extensions/extension-lytic-lesion/node_modules'
-                ),
-                path.resolve(
-                    __dirname,
-                    '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/modes/overread-xnat/node_modules'
-                ),
+
             ],
         },
         plugins: [
@@ -137,18 +129,16 @@ module.exports = (env, argv) => {
                 },
             }),
             // Generate a service worker for fast local loads
-            ...(IS_COVERAGE ?
-                [] :
-                [
-                    new InjectManifest({
-                        swDest: 'sw.js',
-                        swSrc: path.join(SRC_DIR, 'service-worker.js'),
-                        // Need to exclude the theme as it is updated independently
-                        exclude: [/theme/],
-                        // Cache large files for the manifests to avoid warning messages
-                        maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
-                    }),
-                ]),
+            ...(IS_COVERAGE ? [] : [
+                new InjectManifest({
+                    swDest: 'sw.js',
+                    swSrc: path.join(SRC_DIR, 'service-worker.js'),
+                    // Need to exclude the theme as it is updated independently
+                    exclude: [/theme/],
+                    // Cache large files for the manifests to avoid warning messages
+                    maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
+                }),
+            ]),
         ],
         // https://webpack.js.org/configuration/dev-server/
         devServer: {

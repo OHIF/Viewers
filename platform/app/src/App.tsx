@@ -69,7 +69,7 @@ function App({
     extensions: [],
   },
   defaultExtensions = [],
-  defaultModes = ['@ohif/mode-xnat', '@ohif/mode-overread-xnat'],
+  defaultModes = ['@ohif/mode-xnat'],
 }) {
   const [init, setInit] = useState(null);
   const history = createBrowserHistory();

@@ -32,7 +32,7 @@ const xnatConfig = {
         '@ohif/extension-xnat',
         '@ohif/extension-measurement-tracking'
     ],
-    modes: ['@ohif/mode-xnat', '@ohif/mode-overread-xnat'],
+    modes: ['@ohif/mode-xnat'],
     customizationService: {
         'autoCineModalities': { $set: [] } // Set to an empty array by default
     },
