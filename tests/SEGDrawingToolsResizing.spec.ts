@@ -37,7 +37,7 @@ async function performDrawingToolInteraction(page: Page, toolName: string) {
   await page.waitForTimeout(500);
 }
 
-test('(shouldUpdateThis) should resize segmentation brush tool', async ({ page }) => {
+test('should resize segmentation brush tool', async ({ page }) => {
   await page.getByTestId('Brush-btn').click();
 
   await performDrawingToolInteraction(page, 'brush');
@@ -45,7 +45,7 @@ test('(shouldUpdateThis) should resize segmentation brush tool', async ({ page }
   await checkForScreenshot(page, page, screenShotPaths.segDrawingToolsResizing.brushTool);
 });
 
-test('(shouldUpdateThis) should resize segmentation eraser tool', async ({ page }) => {
+test('should resize segmentation eraser tool', async ({ page }) => {
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
@@ -63,7 +63,7 @@ test('(shouldUpdateThis) should resize segmentation eraser tool', async ({ page 
   await checkForScreenshot(page, page, screenShotPaths.segDrawingToolsResizing.eraserTool);
 });
 
-test('(shouldUpdateThis) should resize segmentation threshold tool', async ({ page }) => {
+test('should resize segmentation threshold tool', async ({ page }) => {
   await page.getByTestId('Threshold-btn').click();
 
   await performDrawingToolInteraction(page, 'threshold');
