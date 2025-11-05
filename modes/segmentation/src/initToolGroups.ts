@@ -10,6 +10,9 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
+const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
+const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
+
 function createTools({ utilityModule, commandsManager }) {
   const { toolNames, Enums } = utilityModule.exports;
 
@@ -32,6 +35,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -48,6 +53,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -55,6 +62,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -62,6 +71,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -69,6 +80,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -76,6 +89,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -83,6 +98,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
           threshold: {
             isDynamic: true,
             dynamicRadius: 3,
@@ -100,6 +117,8 @@ function createTools({ utilityModule, commandsManager }) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
           threshold: {
             isDynamic: true,
             dynamicRadius: 3,

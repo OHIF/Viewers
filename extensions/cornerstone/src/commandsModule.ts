@@ -160,6 +160,25 @@ function commandsModule({
     };
   }
 
+  function _handleBrushSizeAction(action: 'increase' | 'decrease') {
+    const toolGroupIds = toolGroupService.getToolGroupIds();
+    if (!toolGroupIds?.length) {
+      return;
+    }
+
+    for (const toolGroupId of toolGroupIds) {
+      const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+
+      const newBrushSize = action === 'increase' ? brushSize + 3 : brushSize - 3;
+
+      if (brushSize) {
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
+
+        toolbarService.refreshToolbarState({ toolGroupId });
+      }
+    }
+  }
+
   const actions = {
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
@@ -2064,30 +2083,11 @@ function commandsModule({
         });
       }
     },
-    _handleBrushSizeAction: (action: 'increase' | 'decrease') => {
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-      if (!toolGroupIds?.length) {
-        return;
-      }
-
-      for (const toolGroupId of toolGroupIds) {
-        const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
-
-        const newBrushSize =
-          action === 'increase' ? Math.min(brushSize + 3, 99.5) : Math.max(brushSize - 3, 0.5);
-
-        if (brushSize) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, newBrushSize);
-
-          toolbarService.refreshToolbarState({ toolGroupId });
-        }
-      }
-    },
     increaseBrushSize: () => {
-      actions._handleBrushSizeAction('increase');
+      _handleBrushSizeAction('increase');
     },
     decreaseBrushSize: () => {
-      actions._handleBrushSizeAction('decrease');
+      _handleBrushSizeAction('decrease');
     },
     addNewSegment: () => {
       const { segmentationService } = servicesManager.services;
