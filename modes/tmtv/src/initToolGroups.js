@@ -1,3 +1,5 @@
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
 export const toolGroupIds = {
   CT: 'ctToolGroup',
   PT: 'ptToolGroup',
@@ -61,6 +63,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -68,6 +72,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -75,6 +81,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'FILL_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -82,6 +90,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'ERASE_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -89,6 +99,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -96,6 +108,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
       {
@@ -110,6 +124,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
             isDynamic: true,
             dynamicRadius: 3,
           },
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
         },
       },
     ],

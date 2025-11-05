@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.80...v3.12.0-beta.81) (2025-11-05)
+
+
+### Bug Fixes
+
+* **SegmentationTools:** [Bug] Changes of brush/eraser radius with hotkey do not reflect on segmentation tool ([#5535](https://github.com/OHIF/Viewers/issues/5535)) ([29bd87c](https://github.com/OHIF/Viewers/commit/29bd87c8c0592a9a1350e687b862f5452627aece))
+
+
+
+
+
+# [3.12.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.79...v3.12.0-beta.80) (2025-11-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
+
+
+
+
+
 # [3.12.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.78...v3.12.0-beta.79) (2025-10-30)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
