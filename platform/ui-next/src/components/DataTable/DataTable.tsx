@@ -63,10 +63,10 @@ export function DataTable<TData>({
     getRowId,
   })
 
-  // When filters (or incoming data) change, go back to the first page
+  // When filters, sorting, or incoming data change, go back to the first page
   React.useEffect(() => {
     setPagination(p => ({ ...p, pageIndex: 0 }))
-  }, [columnFilters, data])
+  }, [columnFilters, sorting, data])
 
   React.useEffect(() => {
     if (!onSelectionChange) return
@@ -85,9 +85,11 @@ export function DataTable<TData>({
       setRowSelection,
       columnFilters,
       setColumnFilters,
+      pagination,
+      setPagination,
       resetFilters: () => setColumnFilters([]),
     }),
-    [table, sorting, columnVisibility, rowSelection, columnFilters]
+    [table, sorting, columnVisibility, rowSelection, columnFilters, pagination]
   )
 
   return <DataTableContext.Provider value={value}>{children}</DataTableContext.Provider>
