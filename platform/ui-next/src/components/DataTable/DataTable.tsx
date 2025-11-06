@@ -5,11 +5,13 @@ import type {
   RowSelectionState,
   SortingState,
   VisibilityState,
+  PaginationState,
 } from '@tanstack/react-table'
 import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import { DataTableContext } from './context'
@@ -41,22 +43,30 @@ export function DataTable<TData>({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(initialVisibility)
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(initialFilters)
+  const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 50 })
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnVisibility, rowSelection, columnFilters },
+    state: { sorting, columnVisibility, rowSelection, columnFilters, pagination },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: true,
     enableMultiRowSelection: !enforceSingleSelection,
     getRowId,
   })
+
+  // When filters (or incoming data) change, go back to the first page
+  React.useEffect(() => {
+    setPagination(p => ({ ...p, pageIndex: 0 }))
+  }, [columnFilters, data])
 
   React.useEffect(() => {
     if (!onSelectionChange) return
