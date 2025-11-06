@@ -848,6 +848,133 @@ function commandsModule({
       }
     },
 
+    sendDicomZipToBackend: async () => {
+      try {
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: 'Preparing DICOM files for upload...',
+          type: 'info',
+        });
+
+        const zipFileWriter = new BlobWriter('application/zip');
+        const zipWriter = new ZipWriter(zipFileWriter);
+
+        let fileCount = 0;
+        const fileManager = dicomImageLoader.wadouri.fileManager;
+
+        const studyInstanceUIDs = DicomMetadataStore.getStudyInstanceUIDs();
+
+        if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: 'No DICOM studies found to send',
+            type: 'warning',
+          });
+          return;
+        }
+
+        for (const studyInstanceUID of studyInstanceUIDs) {
+          const study = DicomMetadataStore.getStudy(studyInstanceUID);
+
+          if (!study || !study.series) {
+            continue;
+          }
+
+          for (const series of study.series) {
+            if (!series.instances) {
+              continue;
+            }
+
+            for (const instance of series.instances) {
+              try {
+                const imageId = instance.imageId;
+
+                if (!imageId || !imageId.startsWith('dicomfile:')) {
+                  continue;
+                }
+
+                const fileIndex = parseInt(imageId.split(':')[1]);
+                const file = fileManager.get(fileIndex);
+
+                if (file) {
+                  const fileName =
+                    (file instanceof File ? file.name : null) ||
+                    `instance_${fileCount.toString().padStart(5, '0')}.dcm`;
+
+                  await zipWriter.add(fileName, new BlobReader(file));
+                  fileCount++;
+                }
+              } catch (error) {
+                console.error('Error processing instance:', error);
+              }
+            }
+          }
+        }
+
+        if (fileCount === 0) {
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: 'No local DICOM files found to send',
+            type: 'warning',
+          });
+          return;
+        }
+
+        await zipWriter.close();
+        const zipBlob = await zipFileWriter.getData();
+
+        // Generate sessionID (UUID)
+        const sessionID = csUtils.uuidv4();
+
+        // Prompt for backend URL with default FastAPI endpoint
+        const url = await callInputDialog({
+          uiDialogService,
+          title: i18n.t('Tools:Send DICOM ZIP to Backend'),
+          placeholder: 'http://localhost:8000/upload_dicom',
+          defaultValue: 'http://localhost:8000/upload_dicom',
+        });
+
+        if (!url) {
+          return;
+        }
+
+        // Create FormData to send the ZIP file and sessionID
+        const formData = new FormData();
+        const zipFileName = `dicom_study_${new Date().getTime()}.zip`;
+        formData.append('file', zipBlob, zipFileName);
+        formData.append('sessionID', sessionID);
+
+        // Send to backend
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: `Uploading DICOM files to backend (Session: ${sessionID.substring(0, 8)}...)...`,
+          type: 'info',
+        });
+
+        const response = await fetch(url as string, {
+          method: 'POST',
+          body: formData,
+        });
+        console.log('response', response);
+        if (!response.ok) {
+          throw new Error(`Backend responded with status: ${response.status}`);
+        }
+
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: `Successfully sent ${fileCount} DICOM files to backend (Session: ${sessionID})`,
+          type: 'success',
+        });
+      } catch (error) {
+        console.error('Error sending DICOM ZIP to backend:', error);
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: `Failed to send DICOM ZIP to backend: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      }
+    },
+
     // Retrieve value commands
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
@@ -2644,6 +2771,7 @@ function commandsModule({
     downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
     sendActiveStudyMetadata: { commandFn: actions.sendActiveStudyMetadata },
     downloadDicomZip: { commandFn: actions.downloadDicomZip },
+    sendDicomZipToBackend: { commandFn: actions.sendDicomZipToBackend },
     toggleSegmentPreviewEdit: actions.toggleSegmentPreviewEdit,
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,

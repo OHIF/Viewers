@@ -116,8 +116,12 @@ function PanelStudyBrowser({
     ]
   );
 
-  const downloadDicomZip = useCallback(() => {
-    commandsManager.run('downloadDicomZip');
+  // const downloadDicomZip = useCallback(() => {
+  //   commandsManager.run('downloadDicomZip');
+  // }, [commandsManager]);
+
+  const sendDicomZipToBackend = useCallback(() => {
+    commandsManager.run('sendDicomZipToBackend');
   }, [commandsManager]);
   // ~~ studyDisplayList
   useEffect(() => {
@@ -428,7 +432,7 @@ function PanelStudyBrowser({
         />
         <div className="p-2">
           <button
-            onClick={downloadDicomZip}
+            onClick={sendDicomZipToBackend}
             className="bg-primary rounded px-3 py-1 text-white"
           >
             Download dicom zip
