@@ -28,6 +28,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from '../DicomWebDa
 import StaticWadoClient from '../DicomWebDataSource/utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from '../DicomWebDataSource/utils/fixBulkDataURI';
+import { XNATQueryMethods } from './query';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -62,9 +63,9 @@ const getAppropriateImageId = (url: string, preferredScheme = 'wadouri'): string
   }
   // If URL already has a scheme, respect it
   if (url.includes(':') &&
-      !url.startsWith('http://') &&
-      !url.startsWith('https://') &&
-      !url.startsWith('dicomweb:')) {
+    !url.startsWith('http://') &&
+    !url.startsWith('https://') &&
+    !url.startsWith('dicomweb:')) {
     return url;
   }
 
@@ -272,122 +273,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         ? new StaticWadoClient(wadoConfig)
         : new api.DICOMwebClient(wadoConfig);
     },
-    query: {
-      studies: {
-        mapParams: mapParams.bind({}), // Consider if mapParams needs config
-        search: async function (origParams) {
-          let studyInstanceUid = origParams?.studyInstanceUID || origParams?.StudyInstanceUID;
-          if (!studyInstanceUid && typeof origParams === 'object' && origParams !== null) {
-            if (origParams.studyInstanceUid) {
-              studyInstanceUid = origParams.studyInstanceUid;
-            }
-          }
-
-          const { projectId, experimentId } = getXNATStatusFromStudyInstanceUID(studyInstanceUid, xnatConfigCopy);
-
-          if (!projectId || !experimentId) {
-            log.error('XNAT: Missing projectId or experimentId for metadata fetch in search');
-            log.error('XNAT: Please provide these values in URL parameters or configuration');
-            // Fallback to DICOMweb search if XNAT specific identifiers are missing
-          } else {
-            try {
-              const xnatMetadata = await implementation.xnat.getExperimentMetadata(projectId, experimentId);
-
-              if (!xnatMetadata || !xnatMetadata.studies || !xnatMetadata.studies.length) {
-                log.error('XNAT: No valid metadata returned from XNAT API in search');
-                return [];
-              }
-
-              const results = [];
-              xnatMetadata.studies.forEach(study => {
-                const result = {
-                  "00080020": { vr: "DA", Value: [study.StudyDate || ""] },
-                  "00080030": { vr: "TM", Value: [study.StudyTime || ""] },
-                  "00080050": { vr: "SH", Value: [study.AccessionNumber || ""] },
-                  "00080054": { vr: "AE", Value: [xnatConfigCopy.qidoRoot || ""] },
-                  "00080056": { vr: "CS", Value: ["ONLINE"] },
-                  "00080061": { vr: "CS", Value: study.ModalitiesInStudy || study.Modalities || (study.series && study.series.length > 0 ? Array.from(new Set(study.series.map(s => s.Modality).filter(Boolean))) : ["UNKNOWN"]) },
-                  "00080090": { vr: "PN", Value: [{ Alphabetic: study.ReferringPhysicianName || "" }] },
-                  "00081190": { vr: "UR", Value: [xnatConfigCopy.qidoRoot || ""] },
-                  "00100010": { vr: "PN", Value: [{ Alphabetic: study.PatientName || "Anonymous" }] },
-                  "00100020": { vr: "LO", Value: [study.PatientID || ""] },
-                  "00100030": { vr: "DA", Value: [study.PatientBirthDate || ""] },
-                  "00100040": { vr: "CS", Value: [study.PatientSex || ""] },
-                  "0020000D": { vr: "UI", Value: [studyInstanceUid || study.StudyInstanceUID || xnatMetadata.transactionId || generateRandomUID()] },
-                  "00200010": { vr: "SH", Value: [study.StudyID || ""] },
-                  "00081030": { vr: "LO", Value: [study.StudyDescription || "XNAT Study"] }
-                };
-                if (study.series && study.series.length) {
-                  result["00201206"] = { vr: "IS", Value: [study.series.length.toString()] };
-                }
-                results.push(result);
-              });
-              return results;
-            } catch (error) {
-              log.error('XNAT: Error in XNAT-specific study search:', error);
-              // Fall through to DICOMweb search on error
-            }
-          }
-
-          // Fallback to traditional DICOMweb search
-          log.warn('XNAT: Falling back to DICOMweb search for studies.');
-          if (!qidoDicomWebClient) {
-            log.error('qidoDicomWebClient not available - DICOMweb search will fail');
-            return [];
-          }
-          qidoDicomWebClient.headers = getAuthorizationHeader();
-          const validOrigParams = typeof origParams === 'object' && origParams !== null ? origParams : {};
-          const mappedResult = mapParams(validOrigParams, {
-            supportsFuzzyMatching: xnatConfigCopy.supportsFuzzyMatching,
-            supportsWildcard: xnatConfigCopy.supportsWildcard,
-          });
-          const paramMap: Record<string, any> = typeof mappedResult === 'object' && mappedResult !== null ? mappedResult : {};
-          const queryStudyInstanceUid = paramMap.studyInstanceUID || origParams?.studyInstanceUID || origParams?.StudyInstanceUID;
-          const querySeriesInstanceUid = paramMap.seriesInstanceUID;
-          delete paramMap.studyInstanceUID;
-          delete paramMap.seriesInstanceUID;
-          const dicomWebResults = await qidoSearch(qidoDicomWebClient, queryStudyInstanceUid, querySeriesInstanceUid, paramMap);
-          return processResults(dicomWebResults);
-        },
-        processResults: processResults,
-      },
-      series: {
-        search: async function (studyInstanceUID, filters) {
-          if (!qidoDicomWebClient) {
-            log.error('qidoDicomWebClient not available - series search may fail');
-            return [];
-          }
-          qidoDicomWebClient.headers = getAuthorizationHeader();
-
-          let currentStudyInstanceUID = studyInstanceUID;
-          if (typeof studyInstanceUID === 'object' && studyInstanceUID !== null) {
-            currentStudyInstanceUID = studyInstanceUID.StudyInstanceUID || studyInstanceUID.studyInstanceUID;
-          }
-          if (typeof currentStudyInstanceUID !== 'string') {
-            log.error('XNAT series search: Unable to determine studyInstanceUID from', studyInstanceUID);
-            return [];
-          }
-          try {
-            const results = await seriesInStudy(qidoDicomWebClient, currentStudyInstanceUID);
-            return processSeriesResults(results);
-          } catch (error) {
-            log.error('XNAT series search error:', error);
-            return [];
-          }
-        },
-      },
-      instances: {
-        search: (studyInstanceUid, seriesInstanceUid, queryParameters) => { // Added seriesInstanceUid
-          qidoDicomWebClient.headers = getAuthorizationHeader();
-          return qidoSearch.call(
-            undefined,
-            qidoDicomWebClient,
-            studyInstanceUid,
-            seriesInstanceUid, // Pass seriesInstanceUid
-            queryParameters
-          );
-        },
-      },
+    get query() {
+      return queryMethods;
     },
     retrieve: {
       getGetThumbnailSrc: function (instance, imageId) {
@@ -468,9 +355,9 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         // Only call fixBulkDataURI if we have a valid config with bulkDataURI settings
         let finalBulkDataURI = BulkDataURI;
         if (xnatConfigCopy && xnatConfigCopy.bulkDataURI && instance) {
-             const tempValue = { BulkDataURI };
-             fixBulkDataURI(tempValue, instance, xnatConfigCopy);
-             finalBulkDataURI = tempValue.BulkDataURI;
+          const tempValue = { BulkDataURI };
+          fixBulkDataURI(tempValue, instance, xnatConfigCopy);
+          finalBulkDataURI = tempValue.BulkDataURI;
         }
 
         const options = {
@@ -517,7 +404,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
 
               if (!projectId || !experimentId) {
                 log.error(`XNAT: Missing projectId or experimentId in config for StudyInstanceUID ${StudyInstanceUID}. projectId: ${projectId}, experimentId: ${experimentId}`);
-                 // Attempt to parse from StudyInstanceUID as a fallback
+                // Attempt to parse from StudyInstanceUID as a fallback
                 const parsed = getXNATStatusFromStudyInstanceUID(StudyInstanceUID, xnatConfigCopy);
                 if (parsed.projectId && parsed.experimentId) {
                   log.warn(`XNAT: Using parsed projectId ${parsed.projectId} and experimentId ${parsed.experimentId} from StudyInstanceUID`);
@@ -587,8 +474,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                   Columns: xnatMeta.Columns || 512,
                   PixelSpacing: xnatMeta.PixelSpacing || [1, 1],
                   SliceThickness: xnatMeta.SliceThickness || 1,
-                  ImagePositionPatient: xnatMeta.ImagePositionPatient || [0,0,index],
-                  ImageOrientationPatient: xnatMeta.ImageOrientationPatient || [1,0,0,0,1,0],
+                  ImagePositionPatient: xnatMeta.ImagePositionPatient || [0, 0, index],
+                  ImageOrientationPatient: xnatMeta.ImageOrientationPatient || [1, 0, 0, 0, 1, 0],
                   ImageType: xnatMeta.ImageType || 'ORIGINAL',
                   PhotometricInterpretation: xnatMeta.PhotometricInterpretation || (determinedModality === 'CT' || determinedModality === 'MR' || determinedModality === 'PT' ? 'MONOCHROME2' : 'RGB'),
                   SamplesPerPixel: xnatMeta.SamplesPerPixel || ((determinedModality === 'CT' || determinedModality === 'MR' || determinedModality === 'PT') ? 1 : 3),
@@ -662,20 +549,20 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               });
 
               if (instancesToStoreForThisSeries.length > 0) {
-                 DicomMetadataStore.addInstances(instancesToStoreForThisSeries, madeInClient);
+                DicomMetadataStore.addInstances(instancesToStoreForThisSeries, madeInClient);
               }
             }
 
             // Add Series level metadata (summary) to DicomMetadataStore
             const seriesSummaryMetadata = study.series.map(s => {
-                return {
-                    StudyInstanceUID,
-                    SeriesInstanceUID: s.SeriesInstanceUID,
-                    Modality: s.Modality || "Unknown",
-                    SeriesDescription: s.SeriesDescription || "XNAT Series",
-                    SeriesNumber: s.SeriesNumber || "1",
-                    // Add other relevant series tags from XNAT if available
-                };
+              return {
+                StudyInstanceUID,
+                SeriesInstanceUID: s.SeriesInstanceUID,
+                Modality: s.Modality || "Unknown",
+                SeriesDescription: s.SeriesDescription || "XNAT Series",
+                SeriesNumber: s.SeriesNumber || "1",
+                // Add other relevant series tags from XNAT if available
+              };
             });
             DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
 
@@ -694,17 +581,17 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           if (returnPromises) {
             const promiseLike = {
               _promise: null,
-              start: function() {
+              start: function () {
                 if (!this._promise) {
                   this._promise = retrieveSeriesMetadataAsync();
                 }
                 return this._promise;
               },
-              then: function(onFulfilled, onRejected) {
+              then: function (onFulfilled, onRejected) {
                 if (!this._promise) { this.start(); }
                 return this._promise.then(onFulfilled, onRejected).finally(setSuccessFlag);
               },
-              catch: function(onRejected) {
+              catch: function (onRejected) {
                 if (!this._promise) { this.start(); }
                 return this._promise.catch(onRejected);
               }
@@ -729,9 +616,9 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           let experimentId = xnatConfigCopy.xnat?.experimentId || xnatConfigCopy.xnat?.sessionId;
 
           if ((!projectId || !experimentId) && studyUid) {
-              const parsed = getXNATStatusFromStudyInstanceUID(studyUid, xnatConfigCopy);
-              if (!projectId) projectId = parsed.projectId;
-              if (!experimentId) experimentId = parsed.experimentId;
+            const parsed = getXNATStatusFromStudyInstanceUID(studyUid, xnatConfigCopy);
+            if (!projectId) projectId = parsed.projectId;
+            if (!experimentId) experimentId = parsed.experimentId;
           }
 
           if (!projectId || !experimentId) {
@@ -748,8 +635,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
 
             const studyFromXnat = xnatMetadata.studies.find(s => s.StudyInstanceUID === studyUid);
             if (!studyFromXnat) {
-                log.error(`XNAT: Study ${studyUid} not found in XNAT experiment ${experimentId} response.`);
-                return null;
+              log.error(`XNAT: Study ${studyUid} not found in XNAT experiment ${experimentId} response.`);
+              return null;
             }
 
             const studyMetadataForStore = {
@@ -844,16 +731,16 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       madeInClient = false,
       returnPromises = false // This flag is important for how OHIF calls this
     ) => {
-        // This function body is effectively replaced by retrieve.series.metadata's XNAT logic
-        // We call the main retrieve.series.metadata here.
-        return implementation.retrieve.series.metadata({
-            StudyInstanceUID,
-            filters,
-            sortCriteria,
-            sortFunction,
-            madeInClient,
-            returnPromises,
-        });
+      // This function body is effectively replaced by retrieve.series.metadata's XNAT logic
+      // We call the main retrieve.series.metadata here.
+      return implementation.retrieve.series.metadata({
+        StudyInstanceUID,
+        filters,
+        sortCriteria,
+        sortFunction,
+        madeInClient,
+        returnPromises,
+      });
     },
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {
@@ -886,9 +773,9 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     getImageIdsForInstance({ instance, frame = undefined }) {
       // Ensure instance has necessary fields for getImageId
       const instanceForImageId = {
-          ...instance,
-          wadoRoot: xnatConfigCopy.wadoRoot, // Ensure wadoRoot is present
-          wadoUri: xnatConfigCopy.wadoUri,   // Ensure wadoUri is present
+        ...instance,
+        wadoRoot: xnatConfigCopy.wadoRoot, // Ensure wadoRoot is present
+        wadoUri: xnatConfigCopy.wadoUri,   // Ensure wadoUri is present
       };
       const imageId = getImageId({ // Note: getImageId is imported from DicomWebDataSource utils
         instance: instanceForImageId,
@@ -920,7 +807,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       getExperimentMetadata: async (projectId, experimentId) => {
         const currentConfig = xnatConfigCopy || xnatConfig;
         const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
-        
+
         // Dynamic server URL detection for robust deployment
         const getServerUrl = () => {
           if (typeof window !== 'undefined' && window.location) {
@@ -930,7 +817,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
           }
           return 'http://localhost'; // Development fallback
         };
-        
+
         const baseUrl = currentConfig.wadoRoot || getServerUrl();
         const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
         const headers = getAuthorizationHeader();
@@ -967,7 +854,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         }
         try {
           const currentConfig = xnatConfigCopy || xnatConfig;
-          
+
           // Dynamic server URL detection for robust deployment
           const getServerUrl = () => {
             if (typeof window !== 'undefined' && window.location) {
@@ -977,7 +864,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
             }
             return 'http://localhost'; // Development fallback
           };
-          
+
           const baseUrl = currentConfig.wadoRoot || getServerUrl();
           const apiPath = `/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
@@ -1004,7 +891,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
         }
         try {
           const currentConfig = xnatConfigCopy || xnatConfig;
-          
+
           // Dynamic server URL detection for robust deployment
           const getServerUrl = () => {
             if (typeof window !== 'undefined' && window.location) {
@@ -1014,7 +901,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
             }
             return 'http://localhost'; // Development fallback
           };
-          
+
           const baseUrl = currentConfig.wadoRoot || getServerUrl();
           const apiPath = `/xapi/viewer/projects/${projectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
@@ -1038,10 +925,18 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     reject: xnatConfig.supportsReject
       ? dcm4cheeReject(xnatConfig.wadoRoot, getAuthorizationHeader)
       : () => {
-          log.warn('Reject operation is not supported by this XNAT data source.');
-          return Promise.reject(new Error('Reject operation is not supported.'));
-        },
+        log.warn('Reject operation is not supported by this XNAT data source.');
+        return Promise.reject(new Error('Reject operation is not supported.'));
+      },
   };
+
+  // Initialize query methods after implementation is fully constructed
+  const queryMethods = new XNATQueryMethods(
+    xnatConfigCopy,
+    qidoDicomWebClient,
+    getAuthorizationHeader,
+    implementation.xnat
+  );
 
   return IWebApiDataSource.create(implementation);
 }
