@@ -34,12 +34,13 @@ export type EvaluateObject = {
 
 export type ButtonOptions = {
   id: string;
-  type: 'range' | 'radio' | 'double-range' | 'custom';
+  type: 'range' | 'radio' | 'double-range' | 'custom' | 'checkbox' | 'select' | 'button';
   name?: string;
   min?: number;
   max?: number;
   step?: number;
   value?: number | number[] | string;
+  values: Array<{ value: string; label: string }>;
   commands?: RunCommand;
   condition?: (props: Record<string, unknown>) => boolean;
   children?: React.ReactNode | (() => React.ReactNode);
@@ -50,6 +51,7 @@ export type ButtonOptions = {
 export type ButtonProps = {
   id: string;
   icon: string;
+  isActive?: boolean;
   label: string;
   tooltip?: string;
   commands?: RunCommand;
@@ -59,6 +61,7 @@ export type ButtonProps = {
   listeners?: Record<string, RunCommand>;
   options?: ButtonOptions[];
   buttonSection?: string | boolean;
+  isActive?: boolean;
 };
 
 export type Button = {

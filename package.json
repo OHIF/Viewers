@@ -45,7 +45,10 @@
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
     "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
-    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
+    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --frozen-lockfile --modules-folder ../node_modules",
+    "install:update-lockfile": "yarn install && bun install --config=./bunfig.update-lockfile.toml",
+    "install:yarn:frozen-lockfile": "yarn install --frozen-lockfile",
+    "audit": "yarn audit || bun audit",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",
@@ -79,7 +82,7 @@
   },
   "optionalDependencies": {
     "@percy/cypress": "3.1.6",
-    "@playwright/test": "1.54.1"
+    "@playwright/test": "1.56.1"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
@@ -144,11 +147,11 @@
     "package-json": "8.1.1",
     "rollup": "2.79.2",
     "body-parser": "1.20.3",
-    "form-data": ">=4.0.4",
     "axios": "1.12.0",
     "core-js": "3.45.1",
     "@babel/runtime-corejs2": "7.26.10",
-    "tapable": "2.2.2"
+    "tapable": "2.2.2",
+    "@cornerstonejs/codec-openjpeg": "1.3.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

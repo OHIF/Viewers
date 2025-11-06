@@ -34,8 +34,7 @@ The `ToolBarService` is a straightforward service designed to handle the toolbar
 - `setButtons`: sets the buttons defined in the service. It overrides all the
   previous buttons
 
-
-
+- `getOptionById(button, optionId)`: from inside a given button, will search through its props and grab the one with the given optionId
 
 ## Button Definitions
 

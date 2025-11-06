@@ -26,6 +26,12 @@ const screenShotPaths = {
   ellipse: {
     ellipseDisplayedCorrectly: 'ellipseDisplayedCorrectly.png',
   },
+  labelMapSegLocking: {
+    globalLockedSegPreEdit: 'lockedSegPreEdit.png',
+    globalLockedSegPostEdit: 'lockedSegPostEdit.png',
+    globalUnlockedSegPreEdit: 'unlockedSegPreEdit.png',
+    globalUnlockedSegPostEdit: 'unlockedSegPostEdit.png',
+  },
   length: {
     lengthDisplayedCorrectly: 'lengthDisplayedCorrectly.png',
   },
@@ -121,6 +127,11 @@ const screenShotPaths = {
     mprAfterSegHydrated: 'mprAfterSegHydrated.png',
     mprAfterSegHydratedAfterLayoutChange: 'mprAfterSegHydratedAfterLayoutChange.png',
   },
+  segHydrationFrom3DFourUp: {
+    threeDFourUpBeforeSEG: 'threeDFourUpBeforeSEG.png',
+    threeDFourUpAfterSEG: 'threeDFourUpAfterSEG.png',
+    threeDFourUpAfterSegHydrated: 'threeDFourUpAfterSegHydrated.png',
+  },
   segNoHydrationThenMPR: {
     segNoHydrationPreMPR: 'segNoHydrationPreMpr.png',
     segNoHydrationPostMPR: 'segNoHydrationPostMpr.png',
@@ -132,6 +143,10 @@ const screenShotPaths = {
   segDataOverlayNoHydrationThenMPR: {
     segDataOverlayNoHydrationPreMPR: 'segDataOverlayNoHydrationPreMpr.png',
     segDataOverlayNoHydrationPostMPR: 'segDataOverlayNoHydrationPostMpr.png',
+  },
+  segDrawingToolsResizing: {
+    brushTool: 'brushTool.png',
+    eraserTool: 'eraserTool.png',
   },
   mprThenRTOverlayNoHydration: {
     mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
