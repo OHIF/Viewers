@@ -29,156 +29,15 @@ import StaticWadoClient from '../DicomWebDataSource/utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from '../DicomWebDataSource/utils/fixBulkDataURI';
 import { XNATQueryMethods } from './query';
+import type { XNATDataSourceConfig, BulkDataURIConfig, InstanceMetadataForStore } from './types';
+import { log, getAppropriateImageId, ImplementationClassUID, ImplementationVersionName, EXPLICIT_VR_LITTLE_ENDIAN } from './constants';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 
-// Define the logger
-const log = {
-  debug: (message: string, ...args: any[]) => {
-    console.debug(`XNATDataSource: ${message}`, ...args);
-  },
-  info: (message: string, ...args: any[]) => {
-    console.info(`XNATDataSource: ${message}`, ...args);
-  },
-  warn: (message: string, ...args: any[]) => {
-    console.warn(`XNATDataSource: ${message}`, ...args);
-  },
-  error: (message: string, ...args: any[]) => {
-    console.error(`XNATDataSource: ${message}`, ...args);
-  }
-};
-
-/**
- * Determines the appropriate image loader scheme based on the provided DICOM URL.
- * @param url - The URL to the DICOM file or DICOMweb endpoint
- * @param preferredScheme - The preferred scheme to use, defaults to 'wadouri'
- * @returns A properly formatted imageId string
- */
-const getAppropriateImageId = (url: string, preferredScheme = 'wadouri'): string => {
-  if (!url) {
-    log.warn('XNAT: Empty URL provided to getAppropriateImageId');
-    return '';
-  }
-  // If URL already has a scheme, respect it
-  if (url.includes(':') &&
-    !url.startsWith('http://') &&
-    !url.startsWith('https://') &&
-    !url.startsWith('dicomweb:')) {
-    return url;
-  }
-
-  // For HTTP(S) URLs, always use dicomweb: prefix
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    const imageId = `dicomweb:${url}`;
-    return imageId;
-  }
-
-  // For relative URLs that don't have a scheme yet
-  if (!url.includes(':')) {
-    const imageId = `dicomweb:${url}`;
-    return imageId;
-  }
-
-  // If already has dicomweb: prefix, return as is
-  return url;
-};
-
-
-const ImplementationClassUID = '2.25.270695996825855179949881587723571202391.2.0.0';
-const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
-const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
 const metadataProvider = classes.MetadataProvider;
-export type XNATDataSourceConfig = {
-  /** Data source name */
-  name: string;
-  //  wadoUriRoot - Legacy? (potentially unused/replaced)
-  /** Base URL to use for QIDO requests */
-  qidoRoot?: string;
-  wadoRoot?: string; // - Base URL to use for WADO requests
-  wadoUri?: string; // - Base URL to use for WADO URI requests
-  qidoSupportsIncludeField?: boolean; // - Whether QIDO supports the "Include" option to request additional fields in response
-  imageRendering?: string; // - wadors | ? (unsure of where/how this is used)
-  thumbnailRendering?: string;
-  /**
-   wadors - render using the wadors fetch.  The full image is retrieved and rendered in cornerstone to thumbnail size  png and returned as binary data to the src attribute of the  image tag.
-           for example,  <img  src=data:image/png;base64,sdlfk;adkfadfk....asldfjkl;asdkf>
-   thumbnailDirect -  get the direct url endpoint for the thumbnail as the image src (eg not authentication required).
-           for example, <img src=http://server:port/wadors/studies/1.2.3/thumbnail?accept=image/jpeg>
-   thumbnail - render using the thumbnail endpoint on wadors using bulkDataURI, passing authentication params  to the url.
-    rendered - should use the rendered endpoint instead of the thumbnail endpoint
-*/
-  /** Whether the server supports reject calls (i.e. DCM4CHEE) */
-  supportsReject?: boolean;
-  /** Request series meta async instead of blocking */
-  lazyLoadStudy?: boolean;
-  /** indicates if the retrieves can fetch singlepart. Options are bulkdata, video, image, or  true */
-  singlepart?: boolean | string;
-  /** Transfer syntax to request from the server */
-  requestTransferSyntaxUID?: string;
-  acceptHeader?: string[]; // - Accept header to use for requests
-  /** Whether to omit quotation marks for multipart requests */
-  omitQuotationForMultipartRequest?: boolean;
-  /** Whether the server supports fuzzy matching */
-  supportsFuzzyMatching?: boolean;
-  /** Whether the server supports wildcard matching */
-  supportsWildcard?: boolean;
-  /** Whether the server supports the native DICOM model */
-  supportsNativeDICOMModel?: boolean;
-  /** Whether to enable request tag */
-  enableRequestTag?: boolean;
-  /** Whether to enable study lazy loading */
-  enableStudyLazyLoad?: boolean;
-  /** Whether to enable bulkDataURI */
-  bulkDataURI?: BulkDataURIConfig;
-  /** Function that is called after the configuration is initialized */
-  onConfiguration: (config: XNATDataSourceConfig, params) => XNATDataSourceConfig;
-  /** Whether to use the static WADO client */
-  staticWado?: boolean;
-  /** User authentication service */
-  userAuthenticationService: Record<string, unknown>;
-  /** XNAT specific configuration */
-  xnat?: {
-    projectId?: string;
-    subjectId?: string;
-    sessionId?: string;
-    experimentId?: string;
-  };
-};
-
-export type BulkDataURIConfig = {
-  /** Enable bulkdata uri configuration */
-  enabled?: boolean;
-  /**
-   * Remove the startsWith string.
-   * This is used to correct reverse proxied URLs by removing the startsWith path
-   */
-  startsWith?: string;
-  /**
-   * Adds this prefix path.  Only used if the startsWith is defined and has
-   * been removed.  This allows replacing the base path.
-   */
-  prefixWith?: string;
-  /** Transform the bulkdata path.  Used to replace a portion of the path */
-  transform?: (uri: string) => string;
-  /**
-   * Adds relative resolution to the path handling.
-   * series is the default, as the metadata retrieved is series level.
-   */
-  relativeResolution?: 'studies' | 'series';
-};
-
-interface InstanceMetadataForStore {
-  Modality?: string;
-  modality?: string;
-  SOPInstanceUID?: string;
-  StudyInstanceUID?: string;
-  SeriesInstanceUID?: string;
-  SOPClassUID?: string;
-  [key: string]: any; // For other DICOM tags
-}
 
 
 /**
