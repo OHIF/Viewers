@@ -5,6 +5,7 @@ import type {
   SortingState,
   Table as RTable,
   VisibilityState,
+  PaginationState,
 } from '@tanstack/react-table'
 
 export type DataTableContextValue<TData> = {
@@ -17,6 +18,8 @@ export type DataTableContextValue<TData> = {
   setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>
   columnFilters: ColumnFiltersState
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
+  pagination: PaginationState
+  setPagination: React.Dispatch<React.SetStateAction<PaginationState>>
   resetFilters: () => void
 }
 
