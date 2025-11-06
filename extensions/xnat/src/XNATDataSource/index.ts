@@ -1,38 +1,27 @@
-import { api } from 'dicomweb-client';
-import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
+// External dependencies
+import { DicomMetadataStore, IWebApiDataSource, utils, classes } from '@ohif/core';
+import dcmjs from 'dcmjs';
+import getImageId from '../DicomWebDataSource/utils/getImageId.js';
+import { retrieveStudyMetadata, deleteStudyMetadataPromise } from '../DicomWebDataSource/retrieveStudyMetadata.js';
+import getDirectURL from '../utils/getDirectURL';
+import { fixBulkDataURI } from '../DicomWebDataSource/utils/fixBulkDataURI';
+import dcm4cheeReject from '../DicomWebDataSource/dcm4cheeReject.js';
+
+// Utility imports
 import {
   getXNATStatusFromStudyInstanceUID,
-  getSeriesXNATInstancesMetadata,
-  convertToAbsoluteUrl,
-  setupDisplaySetLogging,
-  // processDataHandler, // Assuming this is from DataSourceUtils, uncomment if used and present
 } from './Utils/DataSourceUtils';
 import { getSOPClassUIDForModality } from './Utils/SOPUtils';
 import { ensureInstanceRequiredFields } from './Utils/instanceUtils';
-import {
-  generateRandomUID, // Added from backup
-  extractStudyUIDFromURL // Added from backup
-} from './Utils/UIDUtils'; // Assuming UIDUtils.js exists
-import {
-  mapParams,
-  search as qidoSearch,
-  seriesInStudy,
-  processResults,
-  processSeriesResults,
-} from './qido';
-import dcm4cheeReject from '../DicomWebDataSource/dcm4cheeReject.js';
+import { generateRandomUID } from './Utils/UIDUtils';
 
-import getImageId from '../DicomWebDataSource/utils/getImageId.js';
-import dcmjs from 'dcmjs';
-import { retrieveStudyMetadata, deleteStudyMetadataPromise } from '../DicomWebDataSource/retrieveStudyMetadata.js';
-import StaticWadoClient from '../DicomWebDataSource/utils/StaticWadoClient';
-import getDirectURL from '../utils/getDirectURL';
-import { fixBulkDataURI } from '../DicomWebDataSource/utils/fixBulkDataURI';
-import { XNATQueryMethods } from './query';
+// Extracted modules
 import type { XNATDataSourceConfig, BulkDataURIConfig, InstanceMetadataForStore } from './types';
-import { log, getAppropriateImageId, ImplementationClassUID, ImplementationVersionName, EXPLICIT_VR_LITTLE_ENDIAN } from './constants';
+import { log, getAppropriateImageId } from './constants';
 import { XNATDataSourceConfigManager } from './config';
+import { XNATQueryMethods } from './query';
 import { XNATStoreMethods } from './store';
+import { XNATApi } from './xnat-api';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -51,6 +40,9 @@ const metadataProvider = classes.MetadataProvider;
 function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
   const { userAuthenticationService } = servicesManager.services;
   const configManager = new XNATDataSourceConfigManager(xnatConfig, userAuthenticationService);
+
+  // Initialize XNAT API methods
+  const xnatApi = new XNATApi(configManager);
 
   const implementation = {
     initialize: ({ params, query }) => {
@@ -550,125 +542,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
 
       return StudyInstanceUIDsAsArray;
     },
-    xnat: {
-      getExperimentMetadata: async (projectId, experimentId) => {
-        const currentConfig = configManager.getConfig() || xnatConfig;
-        const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
-
-        // Dynamic server URL detection for robust deployment
-        const getServerUrl = () => {
-          if (typeof window !== 'undefined' && window.location) {
-            const { protocol, hostname, port } = window.location;
-            const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
-            return `${protocol}//${hostname}${portPart}`;
-          }
-          return 'http://localhost'; // Development fallback
-        };
-
-        const baseUrl = currentConfig.wadoRoot || getServerUrl();
-        const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
-        const headers = configManager.getAuthorizationHeader();
-        try {
-          const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json', ...headers },
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            log.error(`XNAT API error fetching experiment ${experimentId}: ${response.status} ${response.statusText}. Body: ${errorText}`);
-            throw new Error(`XNAT API error: ${response.status} ${response.statusText}. Body: ${errorText}`);
-          }
-          let data;
-          try {
-            data = await response.json();
-          } catch (jsonError) {
-            log.error(`XNATDataSource: Failed to parse JSON response for ${experimentId}. URL: ${apiUrl}, Status: ${response.status}. Error:`, jsonError);
-            const responseText = await response.text();
-            log.error(`XNATDataSource: Raw response text for ${experimentId}: ${responseText}`);
-            throw jsonError;
-          }
-          return data;
-        } catch (fetchError) {
-          log.error(`XNATDataSource: Error during fetch or processing for ${experimentId}. URL: ${apiUrl}. Error:`, fetchError);
-          throw fetchError;
-        }
-      },
-      getSubjectMetadata: async (projectId, subjectId) => {
-        if (!projectId || !subjectId) {
-          log.error('XNAT: Missing projectId or subjectId for metadata fetch');
-          return null;
-        }
-        try {
-          const currentConfig = configManager.getConfig() || xnatConfig;
-
-          // Dynamic server URL detection for robust deployment
-          const getServerUrl = () => {
-            if (typeof window !== 'undefined' && window.location) {
-              const { protocol, hostname, port } = window.location;
-              const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
-              return `${protocol}//${hostname}${portPart}`;
-            }
-            return 'http://localhost'; // Development fallback
-          };
-
-          const baseUrl = currentConfig.wadoRoot || getServerUrl();
-          const apiPath = `/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
-          const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
-          const headers = configManager.getAuthorizationHeader();
-          const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json', ...headers }
-          });
-          if (!response.ok) {
-            log.error('XNAT: Failed to fetch subject metadata', response.status, response.statusText);
-            throw new Error(`XNAT API error: ${response.status} ${response.statusText}`);
-          }
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          log.error('XNAT: Error fetching subject metadata:', error);
-          throw error;
-        }
-      },
-      getProjectMetadata: async (projectId) => {
-        if (!projectId) {
-          log.error('XNAT: Missing projectId for metadata fetch');
-          return null;
-        }
-        try {
-          const currentConfig = configManager.getConfig() || xnatConfig;
-
-          // Dynamic server URL detection for robust deployment
-          const getServerUrl = () => {
-            if (typeof window !== 'undefined' && window.location) {
-              const { protocol, hostname, port } = window.location;
-              const portPart = port && port !== '80' && port !== '443' ? `:${port}` : '';
-              return `${protocol}//${hostname}${portPart}`;
-            }
-            return 'http://localhost'; // Development fallback
-          };
-
-          const baseUrl = currentConfig.wadoRoot || getServerUrl();
-          const apiPath = `/xapi/viewer/projects/${projectId}`;
-          const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, currentConfig);
-          const headers = configManager.getAuthorizationHeader();
-          const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json', ...headers }
-          });
-          if (!response.ok) {
-            log.error('XNAT: Failed to fetch project metadata', response.status, response.statusText);
-            throw new Error(`XNAT API error: ${response.status} ${response.statusText}`);
-          }
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          log.error('XNAT: Error fetching project metadata:', error);
-          throw error;
-        }
-      }
-    },
+    xnat: xnatApi,
     reject: xnatConfig.supportsReject
       ? dcm4cheeReject(xnatConfig.wadoRoot, configManager.getAuthorizationHeader)
       : () => {
@@ -682,7 +556,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     configManager.getConfig(),
     configManager.getQidoClient(),
     configManager.getAuthorizationHeader,
-    implementation.xnat
+    xnatApi
   );
 
   const storeMethods = new XNATStoreMethods(configManager);
