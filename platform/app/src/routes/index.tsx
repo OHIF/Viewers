@@ -254,7 +254,7 @@ const Home = () => {
         )}
         {errorMessage && <p className="text-sm text-red-400">{errorMessage}</p>}
         <div className="flex gap-4">
-          <button
+          {/* <button
             className="bg-primary flex items-center gap-2 rounded px-6 py-3 text-lg font-semibold text-white transition hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
             onClick={() => handleGoToViewer()}
             disabled={isProcessing}
@@ -293,7 +293,7 @@ const Home = () => {
               </svg>
             </span>
             Go to Basic Viewer
-          </button>
+          </button> */}
           <button
             className="bg-primary flex items-center gap-2 rounded px-6 py-3 text-lg font-semibold text-white transition hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
             onClick={() => handleGoToViewer('segmentation')}
