@@ -1,4 +1,6 @@
+import { utilities as cstUtils } from '@cornerstonejs/tools';
 import { useUIStateStore } from '@ohif/extension-default';
+
 import LogicalContourOperationsOptions from './components/LogicalContourOperationsOptions';
 import SimplifyContourOptions from './components/SimplifyContourOptions';
 import SmoothContoursOptions from './components/SmoothContoursOptions';
@@ -116,6 +118,24 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
           disabled: false,
           isActive: isPrimaryActive,
         };
+      },
+    },
+    {
+      name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+      evaluate: ({ button, radiusOptionId }) => {
+        const toolGroupIds = toolGroupService.getToolGroupIds();
+        if (!toolGroupIds?.length) {
+          return;
+        }
+
+        for (const toolGroupId of toolGroupIds) {
+          const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(toolGroupId);
+
+          if (brushSize) {
+            const option = toolbarService.getOptionById(button, radiusOptionId);
+            option.value = brushSize;
+          }
+        }
       },
     },
   ];

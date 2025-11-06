@@ -2,6 +2,8 @@ import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
 import i18n from 'i18next';
 
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
@@ -652,6 +654,10 @@ const toolbarButtons: Button[] = [
           disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
         },
         {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'brush-radius',
+        },
+        {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
           segmentationRepresentationType: 'Labelmap',
         },
@@ -667,8 +673,9 @@ const toolbarButtons: Button[] = [
           name: 'Radius (mm)',
           id: 'brush-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: [
@@ -895,6 +902,10 @@ const toolbarButtons: Button[] = [
           toolNames: ['CircularEraser', 'SphereEraser'],
         },
         {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'eraser-radius',
+        },
+        {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
           segmentationRepresentationType: 'Labelmap',
         },
@@ -904,8 +915,9 @@ const toolbarButtons: Button[] = [
           name: 'Radius (mm)',
           id: 'eraser-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -950,6 +962,10 @@ const toolbarButtons: Button[] = [
           ],
         },
         {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'threshold-radius',
+        },
+        {
           name: 'evaluate.cornerstone.hasSegmentationOfType',
           segmentationRepresentationType: 'Labelmap',
         },
@@ -960,14 +976,14 @@ const toolbarButtons: Button[] = [
           segmentationRepresentationType: 'Labelmap',
         },
       },
-
       options: [
         {
           name: 'Radius (mm)',
           id: 'threshold-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {

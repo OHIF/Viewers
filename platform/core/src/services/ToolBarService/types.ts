@@ -40,6 +40,7 @@ export type ButtonOptions = {
   max?: number;
   step?: number;
   value?: number | number[] | string;
+  values: Array<{ value: string; label: string }>;
   commands?: RunCommand;
   condition?: (props: Record<string, unknown>) => boolean;
   children?: React.ReactNode | (() => React.ReactNode);
@@ -50,6 +51,7 @@ export type ButtonOptions = {
 export type ButtonProps = {
   id: string;
   icon: string;
+  isActive?: boolean;
   label: string;
   tooltip?: string;
   commands?: RunCommand;
