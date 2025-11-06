@@ -7,6 +7,7 @@ import {
   DataTableTitle,
   DataTableFilterRow,
   DataTableViewOptions,
+  DataTablePagination,
   useDataTable,
 } from '../src/components/DataTable';
 import {
@@ -119,6 +120,8 @@ function Content({
           <div className="absolute left-0">{toolbarLeft}</div>
           {title ? <DataTableTitle>{title}</DataTableTitle> : null}
           <div className="absolute right-0 flex items-center">
+            {/* Pagination appears to the left of the "View" button */}
+            <DataTablePagination />
             {showColumnVisibility && (
               <DataTableViewOptions
                 getLabel={(id) => {
