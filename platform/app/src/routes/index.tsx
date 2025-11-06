@@ -292,7 +292,7 @@ const Home = () => {
                 </g>
               </svg>
             </span>
-            Go to Viewer
+            Go to Basic Viewer
           </button>
           <button
             className="bg-primary flex items-center gap-2 rounded px-6 py-3 text-lg font-semibold text-white transition hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
@@ -332,7 +332,7 @@ const Home = () => {
                 </g>
               </svg>
             </span>
-            Segmentation
+            Go to Segmentation Viewer
           </button>
         </div>
       </div>

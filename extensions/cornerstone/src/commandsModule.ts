@@ -44,6 +44,9 @@ import { isMeasurementWithinViewport } from './utils/isMeasurementWithinViewport
 import { getCenterExtent } from './utils/getCenterExtent';
 import { EasingFunctionEnum } from './utils/transitions';
 import { collectActiveStudyMetadata } from '../../default/src/utils/collectDicomMetadata';
+import { BlobWriter, ZipWriter, BlobReader } from '@zip.js/zip.js';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
+import { DicomMetadataStore } from '@ohif/core';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -743,6 +746,103 @@ function commandsModule({
         uiNotificationService.show({
           title: 'Metadata',
           message: 'Failed to send metadata JSON',
+          type: 'error',
+        });
+      }
+    },
+
+    downloadDicomZip: async () => {
+      try {
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: 'Preparing DICOM files for download...',
+          type: 'info',
+        });
+
+        const zipFileWriter = new BlobWriter('application/zip');
+        const zipWriter = new ZipWriter(zipFileWriter);
+
+        let fileCount = 0;
+        const fileManager = dicomImageLoader.wadouri.fileManager;
+
+        const studyInstanceUIDs = DicomMetadataStore.getStudyInstanceUIDs();
+
+        if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: 'No DICOM studies found to download',
+            type: 'warning',
+          });
+          return;
+        }
+
+        for (const studyInstanceUID of studyInstanceUIDs) {
+          const study = DicomMetadataStore.getStudy(studyInstanceUID);
+
+          if (!study || !study.series) {
+            continue;
+          }
+
+          for (const series of study.series) {
+            if (!series.instances) {
+              continue;
+            }
+
+            for (const instance of series.instances) {
+              try {
+                const imageId = instance.imageId;
+
+                if (!imageId || !imageId.startsWith('dicomfile:')) {
+                  continue;
+                }
+
+                const fileIndex = parseInt(imageId.split(':')[1]);
+                const file = fileManager.get(fileIndex);
+
+                if (file) {
+                  const fileName =
+                    (file instanceof File ? file.name : null) ||
+                    `instance_${fileCount.toString().padStart(5, '0')}.dcm`;
+
+                  await zipWriter.add(fileName, new BlobReader(file));
+                  fileCount++;
+                }
+              } catch (error) {
+                console.error('Error processing instance:', error);
+              }
+            }
+          }
+        }
+
+        if (fileCount === 0) {
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: 'No local DICOM files found to download',
+            type: 'warning',
+          });
+          return;
+        }
+
+        await zipWriter.close();
+        const zipBlob = await zipFileWriter.getData();
+
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dicom_study_${new Date().getTime()}.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: `Successfully downloaded ${fileCount} DICOM files`,
+          type: 'success',
+        });
+      } catch (error) {
+        console.error('Error creating DICOM ZIP:', error);
+        uiNotificationService.show({
+          title: 'DICOM ZIP',
+          message: 'Failed to create DICOM ZIP',
           type: 'error',
         });
       }
@@ -2543,6 +2643,7 @@ function commandsModule({
     runSegmentBidirectional: actions.runSegmentBidirectional,
     downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
     sendActiveStudyMetadata: { commandFn: actions.sendActiveStudyMetadata },
+    downloadDicomZip: { commandFn: actions.downloadDicomZip },
     toggleSegmentPreviewEdit: actions.toggleSegmentPreviewEdit,
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,

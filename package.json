@@ -75,6 +75,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "@zip.js/zip.js": "^2.8.8",
     "execa": "8.0.1"
   },
   "optionalDependencies": {
