@@ -857,7 +857,7 @@ function commandsModule({
 
         uiNotificationService.show({
           title: 'DICOM ZIP',
-          message: 'Preparing DICOM files for upload...',
+          message: 'Uploading DICOM files to backend...',
           type: 'info',
         });
 
@@ -936,18 +936,10 @@ function commandsModule({
         formData.append('file', zipBlob, zipFileName);
         formData.append('sessionID', sessionID);
 
-        // Send to backend
-        uiNotificationService.show({
-          title: 'DICOM ZIP',
-          message: 'Uploading DICOM files to backend...',
-          type: 'info',
-        });
-
         const response = await fetch(url, {
           method: 'POST',
           body: formData,
         });
-        console.log('response', response);
         if (!response.ok) {
           throw new Error(`Backend responded with status: ${response.status}`);
         }

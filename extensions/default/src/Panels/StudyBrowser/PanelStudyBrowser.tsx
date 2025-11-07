@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
-import { useSystem, utils } from '@ohif/core';
+import { useSystem, utils, DicomMetadataStore } from '@ohif/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
@@ -55,8 +55,10 @@ function PanelStudyBrowser({
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
   const sessionID = searchParams.get('sessionID');
-  const [isUploadingDicom, setIsUploadingDicom] = useState(true);
-  const [hasSentDicom, setHasSentDicom] = useState(false);
+
+  const uploadKey = sessionID ? `dicom_uploaded_${sessionID}` : null;
+  const hasSentDicom = uploadKey ? sessionStorage.getItem(uploadKey) === 'true' : false;
+  const [isUploadingDicom, setIsUploadingDicom] = useState(!hasSentDicom);
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -81,14 +83,19 @@ function PanelStudyBrowser({
 
   useEffect(() => {
     const sendDicomToBackend = async () => {
-      if (!sessionID || hasSentDicom) {
+      if (!sessionID || !uploadKey) {
+        return;
+      }
+
+      if (sessionStorage.getItem(uploadKey) === 'true') {
+        setIsUploadingDicom(false);
         return;
       }
 
       setIsUploadingDicom(true);
       try {
         await commandsManager.runCommand('sendDicomZipToBackend', { sessionID });
-        setHasSentDicom(true);
+        sessionStorage.setItem(uploadKey, 'true');
       } catch (error) {
         console.error('Failed to send DICOM to backend:', error);
       } finally {
@@ -101,7 +108,7 @@ function PanelStudyBrowser({
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [sessionID, commandsManager, hasSentDicom]);
+  }, [sessionID, uploadKey, commandsManager]);
 
   const fetchSegmentationFromBackend = useCallback(async () => {
     if (!sessionID) {
@@ -149,9 +156,142 @@ function PanelStudyBrowser({
         return;
       }
 
+      const existingSeriesMap = new Map();
+      DicomMetadataStore.getStudyInstanceUIDs().forEach(studyUID => {
+        const study = DicomMetadataStore.getStudy(studyUID);
+        if (study?.series) {
+          study.series.forEach(series => {
+            existingSeriesMap.set(`${studyUID}_${series.SeriesInstanceUID}`, true);
+          });
+        }
+      });
+
+      // Process the segmentation files and add them to the study list
+      const studies = await filesToStudies(files);
+
+      if (studies?.length) {
+        // First, create display sets for new series
+        studies.forEach(studyInstanceUID => {
+          const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
+          if (studyMetadata?.series) {
+            studyMetadata.series.forEach(series => {
+              const seriesKey = `${studyInstanceUID}_${series.SeriesInstanceUID}`;
+              // Only process series that didn't exist before
+              if (!existingSeriesMap.has(seriesKey)) {
+                // Trigger display set creation for new series
+                displaySetService.makeDisplaySets(series.instances, { madeInClient: true });
+              }
+            });
+          }
+        });
+
+        // Wait a bit for display sets to be created, then update UI
+        setTimeout(() => {
+          // Update study display list for all affected studies
+          studies.forEach(studyInstanceUID => {
+            const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
+
+            if (studyMetadata) {
+              setStudyDisplayList(prevArray => {
+                const existingIndex = prevArray.findIndex(
+                  s => s.studyInstanceUid === studyInstanceUID
+                );
+
+                if (existingIndex !== -1) {
+                  // Study exists - update only modalities and numInstances
+                  const updated = [...prevArray];
+                  const existingStudy = updated[existingIndex];
+
+                  // Collect all modalities including new ones
+                  // existingStudy.modalities might be a string (e.g., "CT/MR"), so split it first
+                  const existingModalities =
+                    typeof existingStudy.modalities === 'string'
+                      ? existingStudy.modalities.split('/').filter(Boolean)
+                      : existingStudy.modalities || [];
+
+                  const modalitiesSet = new Set(existingModalities);
+
+                  // Extract modalities from series
+                  studyMetadata.series?.forEach(series => {
+                    if (series.Modality) {
+                      modalitiesSet.add(series.Modality);
+                    }
+                  });
+
+                  updated[existingIndex] = {
+                    ...existingStudy,
+                    modalities: Array.from(modalitiesSet).join('/'),
+                    numInstances:
+                      studyMetadata.series?.reduce(
+                        (sum, s) => sum + (s.instances?.length || 0),
+                        0
+                      ) || existingStudy.numInstances,
+                  };
+                  return updated;
+                } else {
+                  // New study - add it
+                  // Extract modalities from series
+                  const modalitiesSet = new Set();
+                  let studyDate = studyMetadata.StudyDate;
+
+                  // If study-level data is missing, extract from series/instances
+                  studyMetadata.series?.forEach(series => {
+                    if (series.Modality) {
+                      modalitiesSet.add(series.Modality);
+                    }
+                    // Try to get date from series if not available at study level
+                    if (!studyDate && series.instances?.[0]) {
+                      studyDate = series.instances[0].StudyDate;
+                    }
+                  });
+
+                  return [
+                    ...prevArray,
+                    {
+                      studyInstanceUid: studyMetadata.StudyInstanceUID,
+                      date: formatDate(studyDate) || '',
+                      description: studyMetadata.StudyDescription || '',
+                      modalities: Array.from(modalitiesSet).join('/'),
+                      numInstances:
+                        studyMetadata.series?.reduce(
+                          (sum, s) => sum + (s.instances?.length || 0),
+                          0
+                        ) || 0,
+                    },
+                  ];
+                }
+              });
+            }
+
+            // Expand the study to show the new series
+            setExpandedStudyInstanceUIDs(prev => {
+              if (!prev.includes(studyInstanceUID)) {
+                return [...prev, studyInstanceUID];
+              }
+              return prev;
+            });
+          });
+
+          // Force refresh of display sets to update UI
+          const currentDisplaySets = displaySetService.activeDisplaySets;
+          const mappedDisplaySets = mapDisplaySetsWithState(
+            currentDisplaySets,
+            displaySetsLoadingState,
+            thumbnailImageSrcMap,
+            viewports
+          );
+
+          if (!customMapDisplaySets) {
+            sortStudyInstances(mappedDisplaySets);
+          }
+
+          setDisplaySets(mappedDisplaySets);
+        }, 200);
+      }
+
       uiNotificationService.show({
         title: 'Segmentation',
-        message: `Successfully loaded ${files.length} segmentation file(s)`,
+        message: `Successfully loaded ${files.length} segmentation file(s) from ${studies?.length || 0} study(ies)`,
         type: 'success',
       });
     } catch (error) {
@@ -165,9 +305,12 @@ function PanelStudyBrowser({
   }, [
     sessionID,
     servicesManager,
-    StudyInstanceUIDs,
     displaySetService,
-    requestDisplaySetCreationForStudy,
+    mapDisplaySetsWithState,
+    displaySetsLoadingState,
+    thumbnailImageSrcMap,
+    viewports,
+    customMapDisplaySets,
   ]);
 
   const openReportFromBackend = useCallback(async () => {
