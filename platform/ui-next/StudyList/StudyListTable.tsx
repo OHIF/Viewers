@@ -112,6 +112,24 @@ function Content({
   renderOpenPanelButton?: (args: { onOpenPanel: () => void }) => React.ReactNode;
 }) {
   const { table, setColumnFilters } = useDataTable<StudyRow>();
+  const renderColGroup = React.useCallback(
+    () => (
+      <colgroup>
+        {table.getVisibleLeafColumns().map((col) => {
+          const meta =
+            (col.columnDef.meta as unknown as { fixedWidth?: number | string } | undefined) ??
+            undefined;
+          const width = meta?.fixedWidth;
+          return width ? (
+            <col key={col.id} style={{ width: typeof width === 'number' ? `${width}px` : width }} />
+          ) : (
+            <col key={col.id} />
+          );
+        })}
+      </colgroup>
+    ),
+    [table]
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -148,94 +166,93 @@ function Content({
         </DataTableToolbar>
       )}
       <div className="border-input/50 min-h-0 flex-1 rounded-md border">
-        <ScrollArea className="h-full">
-          <Table className={tableClassName} containerClassName="h-full" noScroll>
-            <colgroup>
-              {table.getVisibleLeafColumns().map((col) => {
-                const meta =
-                  (col.columnDef.meta as unknown as { fixedWidth?: number | string } | undefined) ??
-                  undefined;
-                const width = meta?.fixedWidth;
-                return width ? (
-                  <col
-                    key={col.id}
-                    style={{ width: typeof width === 'number' ? `${width}px` : width }}
-                  />
-                ) : (
-                  <col key={col.id} />
-                );
-              })}
-            </colgroup>
-            <TableHeader>
-              {table.getHeaderGroups().map((hg) => (
-                <TableRow key={hg.id}>
-                  {hg.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className={`bg-muted sticky top-0 z-10 ${
-                        ((header.column.columnDef.meta as unknown as { headerClassName?: string })
-                          ?.headerClassName) ?? ''
-                      }`}
-                      aria-sort={(() => {
-                        const s = header.column.getIsSorted() as false | 'asc' | 'desc';
-                        return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none';
-                      })()}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              <DataTableFilterRow
-                resetCellId="instances"
-                onReset={() => setColumnFilters([])}
-                excludeColumnIds={[]}
-              />
-              {table.getPaginationRowModel().rows.length ? (
-                table.getPaginationRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() ? 'selected' : undefined}
-                    onClick={() => row.toggleSelected()}
-                    aria-selected={row.getIsSelected()}
-                    className="group cursor-pointer"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        row.toggleSelected();
-                      }
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className={
-                          (
-                            (cell.column.columnDef.meta as unknown as { cellClassName?: string }) ??
-                            {}
-                          ).cellClassName ?? ''
-                        }
+        <div className="flex h-full flex-col">
+          <div className="shrink-0 border-b border-input/50">
+            <Table className={tableClassName} noScroll>
+              {renderColGroup()}
+              <TableHeader>
+                {table.getHeaderGroups().map((hg) => (
+                  <TableRow key={hg.id}>
+                    {hg.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        className={`bg-muted ${
+                          ((header.column.columnDef.meta as unknown as { headerClassName?: string })
+                            ?.headerClassName) ?? ''
+                        }`}
+                        aria-sort={(() => {
+                          const s = header.column.getIsSorted() as false | 'asc' | 'desc';
+                          return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none';
+                        })()}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={table.getAllLeafColumns().length} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </ScrollArea>
+                ))}
+              </TableHeader>
+              <TableBody>
+                <DataTableFilterRow
+                  resetCellId="instances"
+                  onReset={() => setColumnFilters([])}
+                  excludeColumnIds={[]}
+                />
+              </TableBody>
+            </Table>
+          </div>
+          <div className="min-h-0 flex-1">
+            <ScrollArea className="h-full">
+              <Table className={tableClassName} containerClassName="h-full" noScroll>
+                {renderColGroup()}
+                <TableBody>
+                  {table.getPaginationRowModel().rows.length ? (
+                    table.getPaginationRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() ? 'selected' : undefined}
+                        onClick={() => row.toggleSelected()}
+                        aria-selected={row.getIsSelected()}
+                        className="group cursor-pointer"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            row.toggleSelected();
+                          }
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            className={
+                              (
+                                (cell.column.columnDef.meta as unknown as { cellClassName?: string }) ??
+                                {}
+                              ).cellClassName ?? ''
+                            }
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={table.getAllLeafColumns().length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </div>
+        </div>
       </div>
     </div>
   );
