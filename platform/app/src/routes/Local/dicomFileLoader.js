@@ -14,6 +14,7 @@ const DICOMFileLoader = new (class extends FileLoader {
     const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
 
     dataset.url = imageId;
+    dataset.imageId = imageId; // Set imageId for proper file retrieval
 
     dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(dicomData.meta);
 

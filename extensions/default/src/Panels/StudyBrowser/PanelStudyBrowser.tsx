@@ -7,7 +7,7 @@ import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
-import { BlobReader, BlobWriter, ZipReader } from '@zip.js/zip.js';
+import { BlobReader, Uint8ArrayWriter, ZipReader } from '@zip.js/zip.js';
 import filesToStudies from '../../../../../platform/app/src/routes/Local/filesToStudies.js';
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -139,8 +139,13 @@ function PanelStudyBrowser({
       for (const entry of entries) {
         if (!entry.directory) {
           // @ts-expect-error - getData exists on Entry but TypeScript typing may be incomplete
-          const blob = await entry.getData(new BlobWriter());
-          const file = new File([blob], entry.filename, { type: 'application/dicom' });
+          const uint8Array = await entry.getData(new Uint8ArrayWriter());
+          // Extract just the filename without any directory path
+          const filename = entry.filename.split('/').pop() || entry.filename;
+          console.log(`Extracted file: ${filename}, size: ${uint8Array.byteLength} bytes`);
+          // Create a blob from the Uint8Array to ensure proper binary data handling
+          const blob = new Blob([uint8Array], { type: 'application/dicom' });
+          const file = new File([blob], filename, { type: 'application/dicom' });
           files.push(file);
         }
       }
