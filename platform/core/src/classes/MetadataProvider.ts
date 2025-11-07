@@ -514,6 +514,32 @@ const metadataProvider = new MetadataProvider();
 
 export default metadataProvider;
 
+const WADO_IMAGE_LOADER_TAGS = {
+  // dicomImageLoader specific
+  GENERAL_SERIES_MODULE: 'generalSeriesModule',
+  PATIENT_STUDY_MODULE: 'patientStudyModule',
+  IMAGE_PIXEL_MODULE: 'imagePixelModule',
+  VOI_LUT_MODULE: 'voiLutModule',
+  MODALITY_LUT_MODULE: 'modalityLutModule',
+  SOP_COMMON_MODULE: 'sopCommonModule',
+  PET_IMAGE_MODULE: 'petImageModule',
+  PET_ISOTOPE_MODULE: 'petIsotopeModule',
+  PET_SERIES_MODULE: 'petSeriesModule',
+  OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
+  PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
+
+  // react-cornerstone-viewport specific
+  PATIENT_MODULE: 'patientModule',
+  GENERAL_IMAGE_MODULE: 'generalImageModule',
+  GENERAL_STUDY_MODULE: 'generalStudyModule',
+  CINE_MODULE: 'cineModule',
+  CALIBRATION_MODULE: 'calibrationModule',
+
+  // Computed tags for new data
+  // Note these get returned in naturalized format
+  IMAGE_SOP_INSTANCE_REFERENCE: 'ImageSopInstanceReference',
+};
+
 const WADO_IMAGE_LOADER = {
   imagePlaneModule: instance => {
     const { ImageOrientationPatient, ImagePositionPatient } = instance;
@@ -588,28 +614,15 @@ const WADO_IMAGE_LOADER = {
       usingDefaultValues,
     };
   },
-};
 
-const WADO_IMAGE_LOADER_TAGS = {
-  // dicomImageLoader specific
-  GENERAL_SERIES_MODULE: 'generalSeriesModule',
-  PATIENT_STUDY_MODULE: 'patientStudyModule',
-  IMAGE_PIXEL_MODULE: 'imagePixelModule',
-  VOI_LUT_MODULE: 'voiLutModule',
-  MODALITY_LUT_MODULE: 'modalityLutModule',
-  SOP_COMMON_MODULE: 'sopCommonModule',
-  PET_IMAGE_MODULE: 'petImageModule',
-  PET_ISOTOPE_MODULE: 'petIsotopeModule',
-  PET_SERIES_MODULE: 'petSeriesModule',
-  OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
-  PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
-
-  // react-cornerstone-viewport specific
-  PATIENT_MODULE: 'patientModule',
-  GENERAL_IMAGE_MODULE: 'generalImageModule',
-  GENERAL_STUDY_MODULE: 'generalStudyModule',
-  CINE_MODULE: 'cineModule',
-  CALIBRATION_MODULE: 'calibrationModule',
+  [WADO_IMAGE_LOADER_TAGS.IMAGE_SOP_INSTANCE_REFERENCE]: (instance) => {
+    const { frameNumber } = instance;
+    return {
+      ReferencedSOPClassUID: instance.SOPClassUID,
+      ReferencedSOPInstanceUID: instance.SOPInstanceUID,
+      ReferencedFrameNumber: frameNumber>0 ? frameNumber : undefined,
+    };
+  },
 };
 
 const INSTANCE = 'instance';
