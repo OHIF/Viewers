@@ -325,6 +325,10 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Reference Lines'),
       tooltip: i18n.t('Buttons:Show Reference Lines'),
       commands: 'toggleEnabledDisabledToolbar',
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('ReferenceLines'),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('ReferenceLines'),
+      },
       evaluate: 'evaluate.cornerstoneTool.toggle',
     },
   },

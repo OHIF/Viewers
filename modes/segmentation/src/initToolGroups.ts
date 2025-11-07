@@ -115,7 +115,8 @@ function createTools({ utilityModule, commandsManager }) {
 
       { toolName: toolNames.UltrasoundDirectional },
     ],
-    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
+    enabled: [{ toolName: toolNames.ReferenceLines }],
+    disabled: [{ toolName: toolNames.AdvancedMagnify }],
   };
 
   const updatedTools = commandsManager.run('initializeSegmentLabelTool', { tools });
@@ -138,39 +139,40 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const servicesManager = extensionManager._servicesManager;
   const { cornerstoneViewportService } = servicesManager.services;
   const tools = createTools({ commandsManager, utilityModule });
-  tools.disabled.push(
-    {
-      toolName: utilityModule.exports.toolNames.Crosshairs,
-      configuration: {
-        viewportIndicators: true,
-        viewportIndicatorsConfig: {
-          circleRadius: 5,
-          xOffset: 0.95,
-          yOffset: 0.05,
-        },
-        disableOnPassive: true,
-        autoPan: {
-          enabled: false,
-          panSize: 10,
-        },
-        getReferenceLineColor: viewportId => {
-          const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-          const viewportOptions = viewportInfo?.viewportOptions;
-          if (viewportOptions) {
-            return (
-              colours[viewportOptions.id] ||
-              colorsByOrientation[viewportOptions.orientation] ||
-              '#0c0'
-            );
-          } else {
-            console.warn('missing viewport?', viewportId);
-            return '#0c0';
-          }
-        },
+
+  // Add Crosshairs to disabled for MPR
+  tools.disabled.push({
+    toolName: utilityModule.exports.toolNames.Crosshairs,
+    configuration: {
+      viewportIndicators: true,
+      viewportIndicatorsConfig: {
+        circleRadius: 5,
+        xOffset: 0.95,
+        yOffset: 0.05,
+      },
+      disableOnPassive: true,
+      autoPan: {
+        enabled: false,
+        panSize: 10,
+      },
+      getReferenceLineColor: viewportId => {
+        const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+        const viewportOptions = viewportInfo?.viewportOptions;
+        if (viewportOptions) {
+          return (
+            colours[viewportOptions.id] ||
+            colorsByOrientation[viewportOptions.orientation] ||
+            '#0c0'
+          );
+        } else {
+          console.warn('missing viewport?', viewportId);
+          return '#0c0';
+        }
       },
     },
-    { toolName: utilityModule.exports.toolNames.ReferenceLines }
-  );
+  });
+
+  // ReferenceLines is already in enabled array from createTools()
   toolGroupService.createToolGroupAndAddTools('mpr', tools);
 }
 
