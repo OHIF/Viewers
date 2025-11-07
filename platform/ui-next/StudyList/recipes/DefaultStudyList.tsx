@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Icons } from '../../src/components/Icons';
 import { Button } from '../../src/components/Button';
+import { Popover, PopoverTrigger } from '../../src/components/Popover/Popover';
 import type { StudyRow } from '../StudyListTypes';
 import type { WorkflowId } from '../WorkflowsInfer';
 import { StudyListTable } from '../StudyListTable';
@@ -108,27 +109,31 @@ function SidePanel() {
 
   return (
     <div className="bg-background relative flex h-full w-full flex-col">
-      <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
-        <Button variant="ghost" size="icon" aria-label="Open settings" onClick={() => setIsSettingsOpen(true)}>
-          <Icons.SettingsStudyList
-            aria-hidden="true"
-            className="h-4 w-4"
-          />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="Close preview panel" onClick={() => setPanelOpen(false)}>
-          <Icons.PanelRight
-            aria-hidden="true"
-            className="h-4 w-4"
-          />
-        </Button>
-      </div>
+      <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Open settings">
+              <Icons.SettingsStudyList
+                aria-hidden="true"
+                className="h-4 w-4"
+              />
+            </Button>
+          </PopoverTrigger>
+          <Button variant="ghost" size="icon" aria-label="Close preview panel" onClick={() => setPanelOpen(false)}>
+            <Icons.PanelRight
+              aria-hidden="true"
+              className="h-4 w-4"
+            />
+          </Button>
+        </div>
 
-      <SettingsDialog
-        open={isSettingsOpen}
-        onOpenChange={setIsSettingsOpen}
-        defaultMode={defaultWorkflow}
-        onDefaultModeChange={setDefaultWorkflow}
-      />
+        <SettingsDialog
+          open={isSettingsOpen}
+          onOpenChange={setIsSettingsOpen}
+          defaultMode={defaultWorkflow}
+          onDefaultModeChange={setDefaultWorkflow}
+        />
+      </Popover>
 
       {/* Reuse the exact preview content to keep visuals identical */}
       <div className="flex-1">
