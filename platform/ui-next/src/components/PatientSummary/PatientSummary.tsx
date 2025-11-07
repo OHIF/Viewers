@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { ElementType } from 'react';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons/Icons';
 import { Button } from '../Button';
@@ -529,23 +530,28 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
       </span>
     ) : null;
 
-  const renderBadge = (labelValue: string) => (
-    <div className="mt-2">
-      <span
-        className="border-primary bg-primary/20 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-1 text-base"
-        role="status"
-        aria-live="polite"
+  const renderDefaultWorkflow = (labelValue: string) => (
+    <div className="mt-2 flex flex-wrap items-center gap-0" role="status" aria-live="polite">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="bg-primary/20 ml-1 mb-1 h-6 w-32 text-primary ring-1 ring-primary ring-offset-2 ring-offset-background"
+        disabled={computedDisabled}
+        onClick={() => handleLaunch(labelValue)}
       >
         {labelValue}
-        <button
-          type="button"
-          aria-label="Clear default mode"
-          className="hover:bg-primary/20 ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full"
-          onClick={() => onDefaultModeChange?.(null)}
-        >
-          x
-        </button>
-      </span>
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label="Clear default mode"
+        className="ml-1.5 mb-1 text-primary opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        onClick={() => onDefaultModeChange?.(null)}
+      >
+        <Cross2Icon className="text-primary h-3.5 w-3.5" aria-hidden />
+        <span className="sr-only">Clear default mode</span>
+      </Button>
     </div>
   );
 
@@ -573,7 +579,7 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
       </div>
 
       {/* Content selection logic */}
-      {hasDefault && renderBadge(String(defaultMode))}
+      {hasDefault && renderDefaultWorkflow(String(defaultMode))}
       {data && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
           {workflowButtons
