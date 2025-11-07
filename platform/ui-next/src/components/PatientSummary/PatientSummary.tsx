@@ -549,32 +549,6 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
     </div>
   );
 
-  const renderDefaultPicker = () => (
-    <div className="mt-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-6">
-            Set Default Workflow
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
-          {['Basic Viewer', 'Segmentation', 'TMTV Workflow', 'US Workflow', 'Preclinical 4D'].map(
-            (opt) => (
-              <DropdownMenuItem
-                key={opt}
-                onSelect={(e) => {
-                  e.preventDefault();
-                  onDefaultModeChange?.(opt as M);
-                }}
-              >
-                {opt}
-              </DropdownMenuItem>
-            )
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
 
   return (
     <div
@@ -601,9 +575,7 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
       {/* Content selection logic */}
       {hasDefault ? (
         renderBadge(String(defaultMode))
-      ) : !data ? (
-        renderDefaultPicker()
-      ) : (
+      ) : data ? (
         <div className="mt-2 flex flex-wrap items-center gap-0">
           {workflowButtons.map((wf) => (
             <Button
@@ -618,7 +590,7 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
             </Button>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
