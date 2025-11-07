@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
+import { BlobReader, BlobWriter, ZipReader } from '@zip.js/zip.js';
+import filesToStudies from '../../../../../platform/app/src/routes/Local/filesToStudies.js';
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
@@ -26,6 +28,7 @@ function PanelStudyBrowser({
   const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
 
   const internalImageViewer = useImageViewer();
@@ -51,6 +54,9 @@ function PanelStudyBrowser({
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+  const sessionID = searchParams.get('sessionID');
+  const [isUploadingDicom, setIsUploadingDicom] = useState(true);
+  const [hasSentDicom, setHasSentDicom] = useState(false);
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -73,16 +79,142 @@ function PanelStudyBrowser({
 
   const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
 
-  const goToSegmentation = useCallback(() => {
-    const { StudyInstanceUID } = displaySetService.activeDisplaySets[0] || {};
-    if (!StudyInstanceUID) {
+  useEffect(() => {
+    const sendDicomToBackend = async () => {
+      if (!sessionID || hasSentDicom) {
+        return;
+      }
+
+      setIsUploadingDicom(true);
+      try {
+        await commandsManager.runCommand('sendDicomZipToBackend', { sessionID });
+        setHasSentDicom(true);
+      } catch (error) {
+        console.error('Failed to send DICOM to backend:', error);
+      } finally {
+        setIsUploadingDicom(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      sendDicomToBackend();
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [sessionID, commandsManager, hasSentDicom]);
+
+  const fetchSegmentationFromBackend = useCallback(async () => {
+    if (!sessionID) {
+      console.warn('No session ID available');
       return;
     }
-    const query = new URLSearchParams();
-    query.append('StudyInstanceUIDs', StudyInstanceUID);
-    query.append('datasources', 'dicomlocal');
-    navigate(`/segmentation/dicomlocal?${query.toString()}`);
-  }, [displaySetService, navigate]);
+
+    const { uiNotificationService } = servicesManager.services;
+
+    try {
+      uiNotificationService.show({
+        title: 'Segmentation',
+        message: 'Fetching segmentation files from backend...',
+        type: 'info',
+      });
+
+      const response = await fetch(`http://localhost:8000/segmentation?sessionID=${sessionID}`);
+
+      if (!response.ok) {
+        throw new Error(`Backend responded with status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const zipReader = new ZipReader(new BlobReader(blob));
+      const entries = await zipReader.getEntries();
+
+      const files = [];
+      for (const entry of entries) {
+        if (!entry.directory) {
+          // @ts-expect-error - getData exists on Entry but TypeScript typing may be incomplete
+          const blob = await entry.getData(new BlobWriter());
+          const file = new File([blob], entry.filename, { type: 'application/dicom' });
+          files.push(file);
+        }
+      }
+
+      await zipReader.close();
+
+      if (files.length === 0) {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'No segmentation files found in the archive',
+          type: 'warning',
+        });
+        return;
+      }
+
+      uiNotificationService.show({
+        title: 'Segmentation',
+        message: `Successfully loaded ${files.length} segmentation file(s)`,
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to fetch segmentation from backend:', error);
+      uiNotificationService.show({
+        title: 'Segmentation',
+        message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
+        type: 'error',
+      });
+    }
+  }, [
+    sessionID,
+    servicesManager,
+    StudyInstanceUIDs,
+    displaySetService,
+    requestDisplaySetCreationForStudy,
+  ]);
+
+  const openReportFromBackend = useCallback(async () => {
+    if (!sessionID) {
+      console.warn('No session ID available');
+      return;
+    }
+
+    const { uiNotificationService } = servicesManager.services;
+
+    try {
+      uiNotificationService.show({
+        title: 'Report',
+        message: 'Fetching report from backend...',
+        type: 'info',
+      });
+
+      const response = await fetch(`http://localhost:8000/generate_report?sessionID=${sessionID}`);
+
+      if (!response.ok) {
+        throw new Error(`Backend responded with status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const newWindow = window.open(blobUrl, '_blank');
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+
+      if (!newWindow) {
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Please allow pop-ups to view the report',
+          type: 'warning',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch report from backend:', error);
+      uiNotificationService.show({
+        title: 'Report',
+        message: `Failed to fetch report: ${error.message || error.toString()}`,
+        type: 'error',
+      });
+    }
+  }, [sessionID, servicesManager]);
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -116,13 +248,6 @@ function PanelStudyBrowser({
     ]
   );
 
-  // const downloadDicomZip = useCallback(() => {
-  //   commandsManager.run('downloadDicomZip');
-  // }, [commandsManager]);
-
-  const sendDicomZipToBackend = useCallback(() => {
-    commandsManager.run('sendDicomZipToBackend');
-  }, [commandsManager]);
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
@@ -430,12 +555,20 @@ function PanelStudyBrowser({
           className="bg-black"
           thickness="2px"
         />
-        <div className="p-2">
+        <div className="flex gap-2 p-2">
           <button
-            onClick={sendDicomZipToBackend}
-            className="bg-primary rounded px-3 py-1 text-white"
+            onClick={fetchSegmentationFromBackend}
+            disabled={!sessionID || isUploadingDicom}
+            className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Download dicom zip
+            {isUploadingDicom ? 'Uploading...' : 'Segmentation'}
+          </button>
+          <button
+            onClick={openReportFromBackend}
+            disabled={!sessionID || isUploadingDicom}
+            className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isUploadingDicom ? 'Uploading...' : 'Report'}
           </button>
         </div>
       </>

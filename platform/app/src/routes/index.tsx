@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 import Dropzone from 'react-dropzone';
@@ -13,9 +13,8 @@ import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import filesToStudies from './Local/filesToStudies';
-import { extensionManager } from '../App';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -68,7 +67,6 @@ const Home = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [queuedStudyInstanceUIDs, setQueuedStudyInstanceUIDs] = useState([]);
   const [queuedFilesCount, setQueuedFilesCount] = useState(0);
-  const [queuedFiles, setQueuedFiles] = useState([]);
   const folderInputRef = useRef(null);
 
   useEffect(() => {
@@ -77,13 +75,6 @@ const Home = () => {
       folderInputRef.current.setAttribute('mozdirectory', 'true');
       folderInputRef.current.setAttribute('directory', 'true');
     }
-  }, []);
-
-  const microscopyExtensionLoaded = useMemo(() => {
-    return (
-      extensionManager?.registeredExtensionIds?.includes('@ohif/extension-dicom-microscopy') ??
-      false
-    );
   }, []);
 
   const handleDrop = useCallback(
@@ -107,7 +98,6 @@ const Home = () => {
         const uniqueStudies = Array.from(new Set(studies));
         setQueuedStudyInstanceUIDs(uniqueStudies);
         setQueuedFilesCount(prev => prev + acceptedFiles.length);
-        setQueuedFiles(prev => [...prev, ...acceptedFiles]);
         setIsProcessing(false);
       } catch (error) {
         console.error('Failed to process dropped DICOM files', error);
@@ -150,8 +140,12 @@ const Home = () => {
       studyInstanceUIDs.forEach(id => query.append('StudyInstanceUIDs', id));
       query.append('datasources', 'dicomlocal');
 
+      if (target === 'segmentation') {
+        const sessionID = utils.uuidv4();
+        query.append('sessionID', sessionID);
+      }
+
       setErrorMessage('');
-      setQueuedFiles([]);
       setQueuedFilesCount(0);
       setQueuedStudyInstanceUIDs([]);
 
@@ -163,7 +157,6 @@ const Home = () => {
   );
 
   const handleClearQueue = useCallback(() => {
-    setQueuedFiles([]);
     setQueuedFilesCount(0);
     setQueuedStudyInstanceUIDs([]);
   }, []);

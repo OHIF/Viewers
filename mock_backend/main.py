@@ -1,11 +1,20 @@
 from fastapi import FastAPI, File, UploadFile, Form, Query
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import shutil
 from pathlib import Path
 
 app = FastAPI()
 
-# Create directories if they don't exist
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -20,12 +29,12 @@ async def upload_dicom(
     try:
         # Print session ID
         print(f"Session ID: {sessionID}")
-        
+
         # Save the uploaded file
         file_path = UPLOAD_DIR / file.filename
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        
+
         return {
             "filename": file.filename,
             "message": "File uploaded successfully",
@@ -46,12 +55,12 @@ async def get_segmentation(
     """
     # Print session ID
     print(f"Session ID: {sessionID}")
-    
+
     file_path = Path("segmentations.zip")
-    
+
     if not file_path.exists():
         return {"error": "segmentations.zip not found"}
-    
+
     return FileResponse(
         path=file_path,
         media_type="application/zip",
@@ -67,12 +76,12 @@ async def generate_report(
     """
     # Print session ID
     print(f"Session ID: {sessionID}")
-    
+
     file_path = Path("mri_report.pdf")
-    
+
     if not file_path.exists():
         return {"error": "mri_report.pdf not found"}
-    
+
     return FileResponse(
         path=file_path,
         media_type="application/pdf",

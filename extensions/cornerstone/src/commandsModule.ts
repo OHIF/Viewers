@@ -848,8 +848,13 @@ function commandsModule({
       }
     },
 
-    sendDicomZipToBackend: async () => {
+    sendDicomZipToBackend: async ({ sessionID }) => {
       try {
+        if (!sessionID) {
+          console.error('No sessionID provided');
+          return null;
+        }
+
         uiNotificationService.show({
           title: 'DICOM ZIP',
           message: 'Preparing DICOM files for upload...',
@@ -870,7 +875,7 @@ function commandsModule({
             message: 'No DICOM studies found to send',
             type: 'warning',
           });
-          return;
+          return null;
         }
 
         for (const studyInstanceUID of studyInstanceUIDs) {
@@ -917,26 +922,13 @@ function commandsModule({
             message: 'No local DICOM files found to send',
             type: 'warning',
           });
-          return;
+          return null;
         }
 
         await zipWriter.close();
         const zipBlob = await zipFileWriter.getData();
 
-        // Generate sessionID (UUID)
-        const sessionID = csUtils.uuidv4();
-
-        // Prompt for backend URL with default FastAPI endpoint
-        const url = await callInputDialog({
-          uiDialogService,
-          title: i18n.t('Tools:Send DICOM ZIP to Backend'),
-          placeholder: 'http://localhost:8000/upload_dicom',
-          defaultValue: 'http://localhost:8000/upload_dicom',
-        });
-
-        if (!url) {
-          return;
-        }
+        const url = 'http://localhost:8000/upload_dicom';
 
         // Create FormData to send the ZIP file and sessionID
         const formData = new FormData();
@@ -947,11 +939,11 @@ function commandsModule({
         // Send to backend
         uiNotificationService.show({
           title: 'DICOM ZIP',
-          message: `Uploading DICOM files to backend (Session: ${sessionID.substring(0, 8)}...)...`,
+          message: 'Uploading DICOM files to backend...',
           type: 'info',
         });
 
-        const response = await fetch(url as string, {
+        const response = await fetch(url, {
           method: 'POST',
           body: formData,
         });
@@ -962,9 +954,11 @@ function commandsModule({
 
         uiNotificationService.show({
           title: 'DICOM ZIP',
-          message: `Successfully sent ${fileCount} DICOM files to backend (Session: ${sessionID})`,
+          message: `Successfully sent ${fileCount} DICOM files to backend`,
           type: 'success',
         });
+
+        return sessionID;
       } catch (error) {
         console.error('Error sending DICOM ZIP to backend:', error);
         uiNotificationService.show({
@@ -972,6 +966,7 @@ function commandsModule({
           message: `Failed to send DICOM ZIP to backend: ${error.message || error.toString()}`,
           type: 'error',
         });
+        return null;
       }
     },
 
