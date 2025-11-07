@@ -573,24 +573,25 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
       </div>
 
       {/* Content selection logic */}
-      {hasDefault ? (
-        renderBadge(String(defaultMode))
-      ) : data ? (
+      {hasDefault && renderBadge(String(defaultMode))}
+      {data && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
-          {workflowButtons.map((wf) => (
-            <Button
-              key={String(wf)}
-              variant="ghost"
-              size="sm"
-              className="bg-primary/20 ml-1 mb-1 h-6 w-32"
-              disabled={computedDisabled}
-              onClick={() => handleLaunch(String(wf))}
-            >
-              {wf}
-            </Button>
-          ))}
+          {workflowButtons
+            .filter((wf) => !hasDefault || String(wf) !== String(defaultMode))
+            .map((wf) => (
+              <Button
+                key={String(wf)}
+                variant="ghost"
+                size="sm"
+                className="bg-primary/20 ml-1 mb-1 h-6 w-32"
+                disabled={computedDisabled}
+                onClick={() => handleLaunch(String(wf))}
+              >
+                {wf}
+              </Button>
+            ))}
         </div>
-      ) : null}
+      )}
     </div>
   );
 };
