@@ -285,7 +285,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
                   await this.bulkDataURI({
                     BulkDataURI: bulkDataURI.replace('wadors:', ''),
                     defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
+                    mediaTypes: mediaType,
                     thumbnail: true,
                   }),
                 ],
