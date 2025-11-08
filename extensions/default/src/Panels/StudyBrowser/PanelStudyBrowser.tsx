@@ -60,6 +60,12 @@ function PanelStudyBrowser({
   const hasSentDicom = uploadKey ? sessionStorage.getItem(uploadKey) === 'true' : false;
   const [isUploadingDicom, setIsUploadingDicom] = useState(!hasSentDicom);
 
+  const segmentationKey = sessionID ? `dicom_segmented_${sessionID}` : null;
+  const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
+  const [isSegmented, setIsSegmented] = useState(hasSegmented);
+  const [isSegmenting, setIsSegmenting] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
     actionIcon.value = !actionIcon.value;
@@ -118,6 +124,7 @@ function PanelStudyBrowser({
 
     const { uiNotificationService } = servicesManager.services;
 
+    setIsSegmenting(true);
     try {
       uiNotificationService.show({
         title: 'Segmentation',
@@ -299,6 +306,12 @@ function PanelStudyBrowser({
         message: `Successfully loaded ${files.length} segmentation file(s) from ${studies?.length || 0} study(ies)`,
         type: 'success',
       });
+
+      // Mark segmentation as completed
+      setIsSegmented(true);
+      if (segmentationKey) {
+        sessionStorage.setItem(segmentationKey, 'true');
+      }
     } catch (error) {
       console.error('Failed to fetch segmentation from backend:', error);
       uiNotificationService.show({
@@ -306,6 +319,8 @@ function PanelStudyBrowser({
         message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
         type: 'error',
       });
+    } finally {
+      setIsSegmenting(false);
     }
   }, [
     sessionID,
@@ -316,6 +331,7 @@ function PanelStudyBrowser({
     thumbnailImageSrcMap,
     viewports,
     customMapDisplaySets,
+    segmentationKey,
   ]);
 
   const openReportFromBackend = useCallback(async () => {
@@ -326,7 +342,19 @@ function PanelStudyBrowser({
 
     const { uiNotificationService } = servicesManager.services;
 
+    setIsGeneratingReport(true);
     try {
+      // Check if segmentation has been done, if not, call it first
+      if (!isSegmented) {
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Segmentation not done yet. Running segmentation first...',
+          type: 'info',
+        });
+
+        await fetchSegmentationFromBackend();
+      }
+
       uiNotificationService.show({
         title: 'Report',
         message: 'Fetching report from backend...',
@@ -361,8 +389,10 @@ function PanelStudyBrowser({
         message: `Failed to fetch report: ${error.message || error.toString()}`,
         type: 'error',
       });
+    } finally {
+      setIsGeneratingReport(false);
     }
-  }, [sessionID, servicesManager]);
+  }, [sessionID, servicesManager, isSegmented, fetchSegmentationFromBackend]);
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -706,17 +736,17 @@ function PanelStudyBrowser({
         <div className="flex gap-2 p-2">
           <button
             onClick={fetchSegmentationFromBackend}
-            disabled={!sessionID || isUploadingDicom}
+            disabled={!sessionID || isUploadingDicom || isSegmenting || isGeneratingReport}
             className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isUploadingDicom ? 'Uploading...' : 'Segmentation'}
+            {isUploadingDicom ? 'Uploading...' : isSegmenting ? 'Segmenting...' : 'Segmentation'}
           </button>
           <button
             onClick={openReportFromBackend}
-            disabled={!sessionID || isUploadingDicom}
+            disabled={!sessionID || isUploadingDicom || isSegmenting || isGeneratingReport}
             className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isUploadingDicom ? 'Uploading...' : 'Report'}
+            {isUploadingDicom ? 'Uploading...' : isGeneratingReport ? 'Generating...' : 'Report'}
           </button>
         </div>
       </>
