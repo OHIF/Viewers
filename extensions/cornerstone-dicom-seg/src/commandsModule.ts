@@ -1,5 +1,5 @@
 import dcmjs from 'dcmjs';
-import { classes, Types } from '@ohif/core';
+import { classes, Types, utils } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
@@ -291,17 +291,18 @@ const commandsModule = ({
         );
       });
 
-      const RTSS = await generateRTSSFromRepresentation(segmentations, {
+      const rtssNatural = await generateRTSSFromRepresentation(segmentations, {
         metaData: classes.MetadataProvider,
         DicomMetadataStore,
       });
+      const { InstanceNumber: instanceNumber = 1, SeriesInstanceUID: seriesUID } = rtssNatural;
 
       try {
-        const reportBlob = datasetToBlob(RTSS);
+        const reportBlob = datasetToBlob(rtssNatural);
 
         //Create a URL for the binary.
-        const objectUrl = URL.createObjectURL(reportBlob);
-        window.location.assign(objectUrl);
+        const filename = `rtss-${seriesUID}-${instanceNumber}.dcm`;
+        utils.downloadBlob(reportBlob, { mimeType: 'application/dicom', filename });
       } catch (e) {
         console.warn(e);
       }

@@ -541,6 +541,22 @@ const WADO_IMAGE_LOADER_TAGS = {
 };
 
 const WADO_IMAGE_LOADER = {
+  /** Returns information on the current frame reference */
+  frameModule: instance => {
+    const {
+      frameNumber = 1,
+      numberOfFrames = 1,
+      SOPClassUID: sopClassUID,
+      SOPInstanceUID: sopInstanceUID,
+    } = instance;
+    return {
+      frameNumber,
+      numberOfFrames,
+      sopClassUID,
+      sopInstanceUID,
+    };
+  },
+
   imagePlaneModule: instance => {
     const { ImageOrientationPatient, ImagePositionPatient } = instance;
 
@@ -612,15 +628,6 @@ const WADO_IMAGE_LOADER = {
       rowPixelSpacing: rowPixelSpacing ? toNumber(rowPixelSpacing) : null,
       columnPixelSpacing: columnPixelSpacing ? toNumber(columnPixelSpacing) : null,
       usingDefaultValues,
-    };
-  },
-
-  [WADO_IMAGE_LOADER_TAGS.IMAGE_SOP_INSTANCE_REFERENCE]: (instance) => {
-    const { frameNumber } = instance;
-    return {
-      ReferencedSOPClassUID: instance.SOPClassUID,
-      ReferencedSOPInstanceUID: instance.SOPInstanceUID,
-      ReferencedFrameNumber: frameNumber>0 ? frameNumber : undefined,
     };
   },
 };

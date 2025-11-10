@@ -1,11 +1,13 @@
-import { metaData, utilities } from '@cornerstonejs/core';
+import { metaData } from '@cornerstonejs/core';
 
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
+
+const { downloadBlob } = utils;
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
@@ -85,8 +87,7 @@ const commandsModule = (props: withAppTypes) => {
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.
-      const objectUrl = URL.createObjectURL(reportBlob);
-      window.location.assign(objectUrl);
+      downloadBlob(reportBlob, { filename: 'dicom-sr.dcm' });
     },
 
     /**
