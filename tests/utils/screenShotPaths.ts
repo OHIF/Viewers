@@ -156,6 +156,10 @@ const screenShotPaths = {
     segDataOverlayNoHydrationPreMPR: 'segDataOverlayNoHydrationPreMpr.png',
     segDataOverlayNoHydrationPostMPR: 'segDataOverlayNoHydrationPostMpr.png',
   },
+  segDrawingToolsResizing: {
+    brushTool: 'brushTool.png',
+    eraserTool: 'eraserTool.png',
+  },
   mprThenRTOverlayNoHydration: {
     mprPreRTOverlayNoHydration: 'mprPreRTOverlayNoHydration.png',
     mprPostRTOverlayNoHydration: 'mprPostRTOverlayNoHydration.png',
