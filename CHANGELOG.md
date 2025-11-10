@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.82...v3.12.0-beta.83) (2025-11-06)
+
+
+### Features
+
+* **metadata:** metadata access improvement ([#5292](https://github.com/OHIF/Viewers/issues/5292)) ([16233d9](https://github.com/OHIF/Viewers/commit/16233d980f17abfc30461b46c6b1888be10c7840))
+
+
+
+
+
 # [3.12.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.81...v3.12.0-beta.82) (2025-11-05)
 
 
