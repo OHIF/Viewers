@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.83...v3.12.0-beta.84) (2025-11-10)
+
+
+### Bug Fixes
+
+* **dev:** update webpack proxy config syntax for Orthanc dev mode ([#5531](https://github.com/OHIF/Viewers/issues/5531)) ([58aa0d1](https://github.com/OHIF/Viewers/commit/58aa0d1eaae2e1a8103e6096864a4e5d7baf090e))
+
+
+
+
+
 # [3.12.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.82...v3.12.0-beta.83) (2025-11-06)
 
 
