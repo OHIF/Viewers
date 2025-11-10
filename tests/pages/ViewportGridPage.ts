@@ -2,18 +2,16 @@ import { Page, Locator } from '@playwright/test';
 
 export class ViewportGridPage {
   readonly page: Page;
-  readonly viewportGrid: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.viewportGrid = page.getByTestId('viewport-grid');
   }
 
-  getViewportGrid(): Locator {
-    return this.page.getByTestId('viewport-grid');
+  get activeViewport() {
+    return this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
   }
 
-  getAllViewportPanes(): Locator {
+  get allViewportPanes() {
     return this.page.getByTestId('viewport-pane');
   }
 
@@ -21,7 +19,11 @@ export class ViewportGridPage {
     return this.page.getByTestId('viewport-pane').nth(index);
   }
 
-  getActiveViewport(): Locator {
-    return this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
+  getViewportById(viewportId: string): Locator {
+    return this.page.locator(`css=div[data-viewportid="${viewportId}"]`);
+  }
+
+  get viewportGrid() {
+    return this.page.getByTestId('viewport-grid');
   }
 }
