@@ -15,6 +15,7 @@ import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
+import { test, expect } from './fixture';
 
 export {
   visitStudy,
@@ -33,4 +34,6 @@ export {
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
+  test,
+  expect,
 };
