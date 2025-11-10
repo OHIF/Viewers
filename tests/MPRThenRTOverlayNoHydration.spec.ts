@@ -1,7 +1,5 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
-import { viewportLocator } from './utils/locators';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
@@ -11,9 +9,10 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
+  mainToolbarPage,
+  viewportGridPage,
 }) => {
-  await page.getByTestId('Layout').click();
-  await page.getByTestId('MPR').click();
+  await mainToolbarPage.layout.MPR.click();
 
   // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
   await page.waitForTimeout(10000);
@@ -25,7 +24,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   );
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
-  await viewportLocator({ viewportId: 'mpr-sagittal', page }).hover();
+  await viewportGridPage.getViewportById('mpr-sagittal').hover();
   await page.getByTestId('dataOverlayMenu-mpr-sagittal-btn').click();
   await page.getByTestId('AddSegmentationDataOverlay-mpr-sagittal').click();
   await page.getByText('SELECT A SEGMENTATION').click();

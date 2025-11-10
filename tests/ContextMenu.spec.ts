@@ -1,10 +1,10 @@
-import { test } from 'playwright-test-coverage';
 import {
-  visitStudy,
   checkForScreenshot,
   screenShotPaths,
-  simulateNormalizedClicksOnElement,
   simulateNormalizedClickOnElement,
+  simulateNormalizedClicksOnElement,
+  test,
+  visitStudy,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -15,21 +15,16 @@ test.beforeEach(async ({ page }) => {
 
 test('should the context menu completely on screen and is not clipped for a point near the bottom edge of the screen', async ({
   page,
+  mainToolbarPage,
+  viewportGridPage,
 }) => {
-  await page.getByTestId('MeasurementTools-split-button-secondary').click();
-  await page.locator('css=div[data-cy="Length"]').click();
-  const locator = page.getByTestId('viewport-pane').locator('canvas');
+  await mainToolbarPage.measurementTools.length.click();
+  const activeViewport = viewportGridPage.activeViewport;
   await simulateNormalizedClicksOnElement({
-    locator,
+    locator: activeViewport,
     normalizedPoints: [
-      {
-        x: 0.45,
-        y: 0.98,
-      },
-      {
-        x: 0.55,
-        y: 0.98,
-      },
+      { x: 0.45, y: 0.98 },
+      { x: 0.55, y: 0.98 },
     ],
   });
 
@@ -38,11 +33,8 @@ test('should the context menu completely on screen and is not clipped for a poin
   await checkForScreenshot(page, page, screenShotPaths.contextMenu.preContextMenuNearBottomEdge);
 
   await simulateNormalizedClickOnElement({
-    locator,
-    normalizedPoint: {
-      x: 0.55,
-      y: 0.98,
-    },
+    locator: activeViewport,
+    normalizedPoint: { x: 0.55, y: 0.98 },
     button: 'right',
   });
 

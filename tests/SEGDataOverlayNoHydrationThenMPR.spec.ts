@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -10,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG chosen from the data overlay menu', async ({
   page,
+  mainToolbarPage,
 }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('dataOverlayMenu-default-btn').click();
@@ -31,8 +31,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
     screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR
   );
 
-  await page.getByTestId('Layout').click();
-  await page.getByTestId('MPR').click();
+  await mainToolbarPage.layout.MPR.click();
 
   await page.waitForTimeout(5000);
 

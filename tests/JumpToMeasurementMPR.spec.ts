@@ -1,5 +1,10 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths, simulateClicksOnElement } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  simulateClicksOnElement,
+  test,
+  visitStudy,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -7,7 +12,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 5000);
 });
 
-test('should hydrate in MPR correctly', async ({ page }) => {
+test('should hydrate in MPR correctly', async ({ page, mainToolbarPage, viewportGridPage }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('trackedMeasurements-btn').click();
 
@@ -38,21 +43,13 @@ test('should hydrate in MPR correctly', async ({ page }) => {
 
   await page.waitForTimeout(5000);
 
-  await page.getByTestId('MeasurementTools-split-button-secondary').click();
-  await page.getByTestId('Bidirectional').click();
-  const locator = page.getByTestId('viewport-pane').locator('canvas');
-
+  await mainToolbarPage.measurementTools.bidirectional.click();
+  const activeViewport = viewportGridPage.activeViewport;
   await simulateClicksOnElement({
-    locator,
+    locator: activeViewport,
     points: [
-      {
-        x: 405,
-        y: 277,
-      },
-      {
-        x: 515,
-        y: 339,
-      },
+      { x: 405, y: 277 },
+      { x: 515, y: 339 },
     ],
   });
 
@@ -93,8 +90,7 @@ test('should hydrate in MPR correctly', async ({ page }) => {
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
 
-  await page.getByTestId('Layout').click();
-  await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
+  await mainToolbarPage.layout.MPR.click();
 
   // wait 5 seconds
   await page.waitForTimeout(5000);

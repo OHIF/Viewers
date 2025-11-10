@@ -1,8 +1,6 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 import { simulateNormalizedDragOnElement } from './utils/simulateDragOnElement';
-import { viewportLocator } from './utils/locators';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -12,6 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should prevent editing of label map segmentations when panelSegmentation.disableEditing is true', async ({
   page,
+  viewportGridPage,
 }) => {
   // disable editing of segmentations via the customization service
   await page.evaluate(() => {
@@ -46,17 +45,17 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await simulateNormalizedDragOnElement({
-    locator: viewportLocator({ page, viewportId: 'default' }),
+    locator: viewportGridPage.getViewportById('default'),
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportLocator({ page, viewportId: 'default' }),
+    locator: viewportGridPage.getViewportById('default'),
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportLocator({ page, viewportId: 'default' }),
+    locator: viewportGridPage.getViewportById('default'),
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });
@@ -66,6 +65,7 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
 
 test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
   page,
+  viewportGridPage,
 }) => {
   // disable editing of segmentations via the customization service
   await page.evaluate(() => {
@@ -100,17 +100,17 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await simulateNormalizedDragOnElement({
-    locator: viewportLocator({ page, viewportId: 'default' }),
+    locator: viewportGridPage.getViewportById('default'),
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportLocator({ page, viewportId: 'default' }),
+    locator: viewportGridPage.getViewportById('default'),
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportLocator({ page, viewportId: 'default' }),
+    locator: viewportGridPage.getViewportById('default'),
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });

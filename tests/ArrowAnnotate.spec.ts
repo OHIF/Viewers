@@ -1,10 +1,10 @@
-import { test } from 'playwright-test-coverage';
 import {
-  visitStudy,
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
+  test,
+  visitStudy,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -13,24 +13,21 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the arrow tool and allow free-form text to be entered', async ({ page }) => {
+test('should display the arrow tool and allow free-form text to be entered', async ({
+  page,
+  mainToolbarPage,
+  viewportGridPage,
+}) => {
   await page.getByTestId('trackedMeasurements-btn').click();
 
-  await page.getByTestId('MeasurementTools-split-button-secondary').click();
-  await page.getByTestId('ArrowAnnotate').click();
+  await mainToolbarPage.measurementTools.arrowAnnotate.click();
 
-  const locator = page.getByTestId('viewport-pane').locator('canvas');
+  const activeViewport = viewportGridPage.activeViewport;
   await simulateClicksOnElement({
-    locator,
+    locator: activeViewport,
     points: [
-      {
-        x: 164,
-        y: 234,
-      },
-      {
-        x: 344,
-        y: 232,
-      },
+      { x: 164, y: 234 },
+      { x: 344, y: 232 },
     ],
   });
 
@@ -50,11 +47,8 @@ test('should display the arrow tool and allow free-form text to be entered', asy
   // Now edit the arrow text and the label should not change.
 
   await simulateDoubleClickOnElement({
-    locator,
-    point: {
-      x: 164,
-      y: 234,
-    },
+    locator: activeViewport,
+    point: { x: 164, y: 234 },
   });
 
   await page.getByTestId('dialog-input').fill('Neil Peart was the drummer for Rush');

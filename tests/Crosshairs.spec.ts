@@ -1,17 +1,18 @@
-import { Page, test } from 'playwright-test-coverage';
+import { Page } from '@playwright/test';
 import {
-  visitStudy,
   checkForScreenshot,
-  screenShotPaths,
-  initializeMousePositionTracker,
   getMousePosition,
+  initializeMousePositionTracker,
+  screenShotPaths,
+  test,
+  visitStudy,
 } from './utils/index.js';
 
 const rotateCrosshairs = async (page: Page, id: string, lineNumber: number) => {
-  const locator = await page.locator(id).locator('line').nth(lineNumber);
+  const locator = page.locator(id).locator('line').nth(lineNumber);
   await locator.click({ force: true });
   await locator.hover({ force: true });
-  const circleLocator = await page.locator(id).locator('circle').nth(1);
+  const circleLocator = page.locator(id).locator('circle').nth(1);
   await circleLocator.hover({ force: true });
   await page.mouse.down();
   const position = await getMousePosition(page);
@@ -20,10 +21,10 @@ const rotateCrosshairs = async (page: Page, id: string, lineNumber: number) => {
 };
 
 const increaseSlabThickness = async (page: Page, id: string, lineNumber: number, axis: string) => {
-  const locator = await page.locator(id).locator('line').nth(lineNumber);
+  const locator = page.locator(id).locator('line').nth(lineNumber);
   await locator.click({ force: true });
   await locator.hover({ force: true });
-  const circleLocator = await page.locator(id).locator('rect').first();
+  const circleLocator = page.locator(id).locator('rect').first();
   await circleLocator.hover({ force: true });
   await page.mouse.down();
   const position = await getMousePosition(page);
@@ -46,17 +47,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Crosshairs Test', async () => {
-  test('should render the crosshairs correctly.', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
+  test('should render the crosshairs correctly.', async ({ page, mainToolbarPage }) => {
+    await mainToolbarPage.layout.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRendered);
   });
 
-  test('should allow the user to rotate the crosshairs', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
+  test('should allow the user to rotate the crosshairs', async ({ page, mainToolbarPage }) => {
+    await mainToolbarPage.layout.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -66,9 +65,8 @@ test.describe('Crosshairs Test', async () => {
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRotated);
   });
 
-  test('should allow the user to adjust the slab thickness', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
+  test('should allow the user to adjust the slab thickness', async ({ page, mainToolbarPage }) => {
+    await mainToolbarPage.layout.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await increaseSlabThickness(page, '#svg-layer-mpr-axial', 0, 'x');
@@ -80,9 +78,9 @@ test.describe('Crosshairs Test', async () => {
 
   test('should reset the crosshairs to the initial position when reset is clicked', async ({
     page,
+    mainToolbarPage,
   }) => {
-    await page.getByTestId('Layout').click();
-    await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
+    await mainToolbarPage.layout.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -94,9 +92,11 @@ test.describe('Crosshairs Test', async () => {
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsResetToolbar);
   });
 
-  test('should reset the crosshairs when a new displayset is loaded', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
+  test('should reset the crosshairs when a new displayset is loaded', async ({
+    page,
+    mainToolbarPage,
+  }) => {
+    await mainToolbarPage.layout.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 0);
