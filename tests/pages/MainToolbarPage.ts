@@ -126,10 +126,10 @@ export class MainToolbarPage {
       },
       get length() {
         return {
-          button: page.getByTestId('Length'),
+          button: page.locator('[data-cy="Length"][role="menuitem"]'),
           async click() {
             await measurementTools.click();
-            await page.getByTestId('Length').click();
+            await page.locator('[data-cy="Length"][role="menuitem"]').click();
           },
         };
       },
