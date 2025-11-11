@@ -25,7 +25,6 @@ export * from './StudyList';
 // Headless
 export * from './headless/StudyListProvider';
 export * from './headless/useStudyList';
-export * from './headless/workflows-registry';
 
 // Primitives
 export * from './primitives/StudylistLayout';

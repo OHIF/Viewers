@@ -229,8 +229,8 @@ function Content({
                           if (!defaultWorkflow) return;
                           // Ensure the row is selected, then launch with the default workflow
                           if (!row.getIsSelected()) row.toggleSelected(true);
-                          const original: any = row.original ?? {};
-                          launch(original as StudyRow, defaultWorkflow as WorkflowId);
+                          const original = row.original as StudyRow;
+                          launch(original, defaultWorkflow as WorkflowId);
                         }}
                         aria-selected={row.getIsSelected()}
                         className="group cursor-pointer"

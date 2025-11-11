@@ -7,7 +7,7 @@ import type { WorkflowId } from './WorkflowsInfer';
 
 export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>; value: number }) {
   const { defaultWorkflow, launch } = useStudyList<TData, WorkflowId>();
-  const original: any = row.original ?? {};
+  const original = row.original as TData;
 
   const handleLaunch = React.useCallback(
     (wf: WorkflowId) => {
@@ -27,8 +27,8 @@ export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>;
       overlay={
         <div onClick={(e) => e.stopPropagation()}>
           <WorkflowsMenu
-            workflows={original.workflows}
-            modalities={original.modalities}
+            workflows={(original as any).workflows}
+            modalities={(original as any).modalities}
             defaultMode={defaultWorkflow}
             onLaunch={handleLaunch}
           />
