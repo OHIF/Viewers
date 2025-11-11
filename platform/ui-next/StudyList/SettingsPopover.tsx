@@ -22,11 +22,11 @@ type Props = {
 };
 
 /**
- * SettingsDialog (Popover version)
- * This component now renders PopoverContent with the settings form.
- * It is intended to be used as a child of a Popover Root with a PopoverTrigger.
+ * SettingsPopover
+ * Renders PopoverContent with the settings form.
+ * Intended to be used inside a Popover with a PopoverTrigger.
  */
-export function SettingsDialog({ open, onOpenChange, defaultMode, onDefaultModeChange }: Props) {
+export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultModeChange }: Props) {
   const selectId = React.useId();
 
   return (
