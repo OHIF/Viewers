@@ -276,13 +276,13 @@ StudyList builds on a small set of DS primitives. Key modules:
   * `Icons` (`src/components/Icons`)
   * `TooltipProvider` (`src/components/Tooltip`)
   * `Thumbnail` (`src/components/Thumbnail`)
-  * `PatientSummary` (`src/components/PatientSummary`) — **compound** component with:
+  * `PatientSummary` (`@ohif/ui-next/components/PatientSummary`) — **compound** component with:
 
-    * `Root`, `Section`, `Icon`, `Name`, `MRN`, `Meta`, `Actions`, `Action`, `WorkflowButton`, `Patient`, `Workflows`, `Empty`, `Field`
+    * `Section`, `Icon`, `Name`, `MRN`, `Meta`, `Actions`, `Action`, `Patient`, `Workflows`, `Empty`, `Field`
     * Supports `get` mapping for different row shapes:
 
       ```tsx
-      <PatientSummary.Root
+      <PatientSummary
         data={row}
         get={{
           name: r => r.displayName,
@@ -290,8 +290,13 @@ StudyList builds on a small set of DS primitives. Key modules:
         }}
       >
         <PatientSummary.Patient />
-        <PatientSummary.Workflows defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
-      </PatientSummary.Root>
+        {/* Prefer passing workflows from headless to avoid duplicating inference */}
+        <PatientSummary.Workflows
+          defaultMode={defaultWorkflow}
+          onDefaultModeChange={setDefaultWorkflow}
+          workflows={availableWorkflowsFor(row)}
+        />
+      </PatientSummary>
       ```
 
 ---
@@ -355,12 +360,33 @@ function MyStudyList({ rows }: { rows: StudyRow[] }) {
 
 ### 3) PatientSummary anywhere
 
-You can place `PatientSummary` in the preview, above the table, or inside a cell. It reads data from `PatientSummary.Root` and can be tailored via `get`.
+You can place `PatientSummary` in the preview, above the table, or inside a cell. It reads data from `PatientSummary` (the root provider) and can be tailored via `get`. For `Workflows`, pass a workflows list from the headless layer (e.g., `availableWorkflowsFor(row)`).
+
+Quick custom layout example (high-level):
+
+```tsx
+import { PatientSummary } from '@ohif/ui-next/components/PatientSummary';
+
+<PatientSummary data={row}>
+  <PatientSummary.Section variant="row" align="center">
+    <PatientSummary.Icon />
+    <div className="min-w-0">
+      <PatientSummary.Name />
+      <PatientSummary.MRN prefix="MRN: " />
+    </div>
+    <PatientSummary.Actions direction="row" justify="end">
+      <PatientSummary.Action onClick={(data) => { /* action */ }}>
+        Open
+      </PatientSummary.Action>
+    </PatientSummary.Actions>
+  </PatientSummary.Section>
+</PatientSummary>
+```
 
 ### 4) Workflows per study
 
 * Provide `row.workflows` (array of strings in the allowed set) for deterministic menus.
-* Otherwise, the system will infer from `row.modalities`:
+* Otherwise, the headless layer will infer from `row.modalities`:
 
   * Adds **US Workflow** when modalities include `"US"`.
   * Adds **TMTV Workflow** when modalities include `"PET/CT"` (or both `"PET"` and `"CT"` present).
@@ -385,7 +411,7 @@ You can place `PatientSummary` in the preview, above the table, or inside a cell
   - The playground’s `onLaunch` navigates in-page to this route: `platform/ui-next/playground/studylist/app.tsx:6`.
   - The page rendering the workflow name and a back button lives at `platform/ui-next/playground/studylist/launch.tsx:1`.
   - Real apps should replace this with router navigation or a command handler via the `onLaunch(study, workflow)` prop.
-* **Launch**: The action flows through `useStudyListState(..., { onLaunch })` → `launch(study, workflow)`. The default recipe calls `console.log` for demo; apps should pass a real handler.
+* **Launch**: The action flows through `useStudyListState(..., { onLaunch })` → `launch(study, workflow)`. The default recipe delegates to the provided `onLaunch` handler; apps should pass a real handler.
 
 ---
 
@@ -398,6 +424,8 @@ During cleanup, the following were removed to keep the package lean:
 * `playground/studylist/components/studylist-layout.tsx` (bridge to the primitive)
 
 > If you find references to these in downstream code, update imports to the new headless and primitive locations.
+
+Additionally, workflow inference was removed from `PatientSummary.Workflows`. Pass workflows from the headless layer instead (via `availableWorkflowsFor`).
 
 ---
 
