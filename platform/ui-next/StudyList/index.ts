@@ -12,7 +12,7 @@ export * from './WorkflowsInfer';
 export * from './WorkflowsMenu';
 
 // Dialogs and panels
-export * from './SettingsDialog';
+export * from './SettingsPopover';
 export * from './PreviewPanel';
 export * from './EmptyPanel';
 

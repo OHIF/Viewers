@@ -6,7 +6,7 @@ import { Popover, PopoverTrigger } from '../../src/components/Popover/Popover';
 import type { StudyRow } from '../StudyListTypes';
 import type { WorkflowId } from '../WorkflowsInfer';
 import { StudyListTable } from '../StudyListTable';
-import { SettingsDialog } from '../SettingsDialog';
+import { SettingsPopover } from '../SettingsPopover';
 import { PreviewPanel } from '../PreviewPanel';
 import { EmptyPanel } from '../EmptyPanel';
 import { StudylistLayout } from '../primitives/StudylistLayout';
@@ -127,7 +127,7 @@ function SidePanel() {
           </Button>
         </div>
 
-        <SettingsDialog
+        <SettingsPopover
           open={isSettingsOpen}
           onOpenChange={setIsSettingsOpen}
           defaultMode={defaultWorkflow}

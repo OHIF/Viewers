@@ -55,7 +55,7 @@ StudyList/
 ├─ StudyListInstancesCell.tsx        # Workflow launcher menu trigger
 ├─ WorkflowsMenu.tsx                 # Dropdown to pick a workflow
 ├─ WorkflowsInfer.ts                 # Re-exports from headless registry
-├─ SettingsDialog.tsx                # Settings (default workflow)
+├─ SettingsPopover.tsx               # Settings (default workflow)
 ├─ PreviewPanel.tsx                  # Default preview content (PatientSummary + thumbnails)
 ├─ EmptyPanel.tsx                    # Default empty state (PatientSummary)
 ├─ useDefaultWorkflow.ts             # localStorage persistence hook
@@ -71,7 +71,7 @@ StudyList/
   * `StudyListTable` (selection → updates `selected`)
   * `StudylistLayout` (resizable split, toggling preview visiblity)
   * `StudyListInstancesCell` + `WorkflowsMenu` (launch workflows per row)
-  * `SettingsDialog` (persist default workflow via `useDefaultWorkflow`)
+  * `SettingsPopover` (persist default workflow via `useDefaultWorkflow`)
 
 ---
 
@@ -147,7 +147,7 @@ StudyList/
   * `useStudyListState` → `StudyListProvider`
   * `StudylistLayout` for split panes
   * `StudyListTable` with `defaultColumns()`
-  * `SettingsDialog`, `PreviewPanel`, `EmptyPanel`
+  * `SettingsPopover`, `PreviewPanel`, `EmptyPanel`
 * **Why**: A working example you can (a) use as-is or (b) copy and tweak.
 
 ### `StudyList.tsx` (Façade)
@@ -207,9 +207,9 @@ StudyList/
 
 * **What**: PatientSummary-based empty state when nothing is selected.
 
-### `SettingsDialog.tsx`
+### `SettingsPopover.tsx`
 
-* **What**: Dialog with the **Default Workflow** selector.
+* **What**: Popover content with the **Default Workflow** selector.
 * **Persistence**: Updates the headless `defaultWorkflow` which is persisted by `useDefaultWorkflow` in localStorage.
 
 ---
@@ -261,10 +261,10 @@ StudyList builds on a small set of DS primitives. Key modules:
 
   * `Button` (`src/components/Button`)
   * `DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuContent`, `DropdownMenuItem` (`src/components/DropdownMenu`)
-* **Inputs & Dialog**
+* **Inputs & Popover**
 
   * `Input` (`src/components/Input`) *(used by filter row)*
-  * `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle` (`src/components/Dialog`)
+  * `Popover`, `PopoverTrigger`, `PopoverContent` (`src/components/Popover/Popover`)
   * `Select`, `SelectTrigger`, `SelectContent`, `SelectItem`, `SelectValue` (`src/components/Select`)
   * `Label` (`src/components/Label`)
 * **Layout & Scroll**
@@ -371,7 +371,7 @@ You can place `PatientSummary` in the preview, above the table, or inside a cell
 
 * **Selection**: `StudyListTable` toggles selection on row click and `Enter`/`Space`.
 * **Panel**: `StudylistLayout` controls whether the preview area is visible. The toolbar exposes a button to reopen when closed.
-* **Default Workflow**: stored in `localStorage` under the `studylist.defaultWorkflow` key. The `SettingsDialog` writes to the same headless state.
+* **Default Workflow**: stored in `localStorage` under the `studylist.defaultWorkflow` key. The `SettingsPopover` writes to the same headless state.
 * **Launch**: The action flows through `useStudyListState(..., { onLaunch })` → `launch(study, workflow)`. The default recipe calls `console.log` for demo; apps should pass a real handler.
 
 ---
