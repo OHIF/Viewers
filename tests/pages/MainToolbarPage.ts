@@ -222,10 +222,10 @@ export class MainToolbarPage {
       },
       get reset() {
         return {
-          button: page.getByTestId('Reset'),
+          button: page.locator('[data-cy="Reset"][role="menuitem"]'),
           async click() {
             await moreTools.click();
-            await page.getByTestId('Reset').click();
+            await page.locator('[data-cy="Reset"][role="menuitem"]').click();
           },
         };
       },
