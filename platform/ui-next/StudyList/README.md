@@ -370,8 +370,21 @@ You can place `PatientSummary` in the preview, above the table, or inside a cell
 ## Event & State Semantics
 
 * **Selection**: `StudyListTable` toggles selection on row click and `Enter`/`Space`.
+* **Prototype: Default-mode double‑click launch**:
+  - When a default workflow is set, a row click always selects (a second click does not unselect).
+  - Double‑clicking a row launches the selected study using the default workflow.
+  - Keyboard Enter/Space mirror the single‑click behavior above.
+  - Implementation lives in `StudyListTable.tsx` row handlers:
+    - `platform/ui-next/StudyList/StudyListTable.tsx:219`
+    - `platform/ui-next/StudyList/StudyListTable.tsx:228`
+    - `platform/ui-next/StudyList/StudyListTable.tsx:238`
 * **Panel**: `StudylistLayout` controls whether the preview area is visible. The toolbar exposes a button to reopen when closed.
 * **Default Workflow**: stored in `localStorage` under the `studylist.defaultWorkflow` key. The `SettingsPopover` writes to the same headless state.
+* **Launch behavior (prototype)**:
+  - The playground route `/studylist/launch?wf=...` is used to preview launches.
+  - The playground’s `onLaunch` navigates in-page to this route: `platform/ui-next/playground/studylist/app.tsx:6`.
+  - The page rendering the workflow name and a back button lives at `platform/ui-next/playground/studylist/launch.tsx:1`.
+  - Real apps should replace this with router navigation or a command handler via the `onLaunch(study, workflow)` prop.
 * **Launch**: The action flows through `useStudyListState(..., { onLaunch })` → `launch(study, workflow)`. The default recipe calls `console.log` for demo; apps should pass a real handler.
 
 ---
