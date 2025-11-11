@@ -51,7 +51,7 @@ export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultMode
             }}
           >
             <SelectTrigger id={selectId} className="w-full">
-              <SelectValue placeholder="Select Default Workflow" />
+              <SelectValue placeholder="Select Workflow" />
             </SelectTrigger>
             {/* Keep stopPropagation so the Select's portal doesn't trigger outside interactions on the Popover */}
             <SelectContent onPointerDown={(e) => e.stopPropagation()}>
