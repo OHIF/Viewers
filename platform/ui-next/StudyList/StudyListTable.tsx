@@ -21,6 +21,8 @@ import {
 import { ScrollArea } from '../src/components/ScrollArea';
 import { Button } from '../src/components/Button';
 import type { StudyRow } from './StudyListTypes';
+import { useStudyList } from './headless/StudyListProvider';
+import type { WorkflowId } from './WorkflowsInfer';
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[];
@@ -112,6 +114,8 @@ function Content({
   renderOpenPanelButton?: (args: { onOpenPanel: () => void }) => React.ReactNode;
 }) {
   const { table, setColumnFilters } = useDataTable<StudyRow>();
+  // Access headless state for default workflow + launch
+  const { defaultWorkflow, launch } = useStudyList<StudyRow, WorkflowId>();
   const renderColGroup = React.useCallback(
     () => (
       <colgroup>
@@ -212,14 +216,35 @@ function Content({
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() ? 'selected' : undefined}
-                        onClick={() => row.toggleSelected()}
+                        onClick={(e) => {
+                          // When a default workflow is set, do not allow a second click to unselect.
+                          // Always select on click; otherwise toggle selection.
+                          if (defaultWorkflow) {
+                            if (!row.getIsSelected()) row.toggleSelected(true);
+                          } else {
+                            row.toggleSelected();
+                          }
+                        }}
+                        onDoubleClick={(e) => {
+                          if (!defaultWorkflow) return;
+                          // Ensure the row is selected, then launch with the default workflow
+                          if (!row.getIsSelected()) row.toggleSelected(true);
+                          const original: any = row.original ?? {};
+                          launch(original as StudyRow, defaultWorkflow as WorkflowId);
+                        }}
                         aria-selected={row.getIsSelected()}
                         className="group cursor-pointer"
                         tabIndex={0}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            row.toggleSelected();
+                            // Keyboard behavior mirrors click: when default workflow is set,
+                            // Enter/Space should select but not toggle to unselect.
+                            if (defaultWorkflow) {
+                              if (!row.getIsSelected()) row.toggleSelected(true);
+                            } else {
+                              row.toggleSelected();
+                            }
                           }
                         }}
                       >

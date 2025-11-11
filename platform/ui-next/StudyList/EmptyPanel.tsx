@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { PatientSummary } from '../src/components/PatientSummary';
 import type { WorkflowId } from './WorkflowsInfer';
+import { useStudyList } from './headless/StudyListProvider';
 
 export function EmptyPanel({
   defaultMode,
@@ -9,12 +10,16 @@ export function EmptyPanel({
   defaultMode: WorkflowId | null;
   onDefaultModeChange: (v: WorkflowId | null) => void;
 }) {
+  const { launch } = useStudyList<any, WorkflowId>();
   return (
     <PatientSummary.Root>
       <PatientSummary.Patient />
       <PatientSummary.Workflows<WorkflowId>
         defaultMode={defaultMode}
         onDefaultModeChange={onDefaultModeChange}
+        onLaunchWorkflow={(data, wf) => {
+          if (data) launch(data, wf);
+        }}
       />
     </PatientSummary.Root>
   );

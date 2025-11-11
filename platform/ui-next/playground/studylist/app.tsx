@@ -6,8 +6,8 @@ import { StudyList, type StudyRow, type WorkflowId } from '../../StudyList';
 export function App() {
   const handleLaunch = React.useCallback((study: StudyRow, workflow: WorkflowId) => {
     try {
-      // eslint-disable-next-line no-console
-      console.log('Launch workflow:', workflow, { study });
+      const target = `/studylist/launch?wf=${encodeURIComponent(String(workflow))}`;
+      window.location.assign(target);
     } catch {}
   }, []);
 

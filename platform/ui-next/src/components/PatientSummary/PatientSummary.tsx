@@ -116,14 +116,7 @@ type IconProps = {
   children?: React.ReactNode;
 };
 
-function Icon({
-  src,
-  alt = '',
-  size = 33,
-  className,
-  hideWhenEmpty,
-  children,
-}: IconProps) {
+function Icon({ src, alt = '', size = 33, className, hideWhenEmpty, children }: IconProps) {
   if (hideWhenEmpty && !src && !children) {
     return null;
   }
@@ -351,7 +344,10 @@ const ActionInner = <T = any,>(
 
   const srOnly =
     isDisabled && disabledReason ? (
-      <span id={reasonId} className="sr-only">
+      <span
+        id={reasonId}
+        className="sr-only"
+      >
         {disabledReason}
       </span>
     ) : null;
@@ -440,6 +436,8 @@ Action.displayName = 'PatientSummaryAction';
 type WorkflowButtonProps<T = any, M extends string = string> = {
   label?: React.ReactNode;
   onClick?: (data: T) => void;
+  /** Preferred: invoked with both data and workflow label */
+  onLaunchWorkflow?: (data: T, workflow: M) => void;
   disabled?: boolean;
   disabledReason?: string;
   className?: string;
@@ -459,6 +457,7 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
   {
     label = 'Launch workflow',
     onClick,
+    onLaunchWorkflow,
     disabled,
     disabledReason,
     className,
@@ -482,15 +481,20 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
 
   const getInferredWorkflows = React.useCallback((d: any): string[] => {
     const defaults = ['Basic Viewer', 'Segmentation'];
-    if (!d) return defaults;
+    if (!d) {
+      return defaults;
+    }
     if (Array.isArray(d.workflows) && d.workflows.length > 0) {
       return Array.from(new Set(d.workflows.map(String)));
     }
     const mod = String(d.modalities ?? '').toUpperCase();
     const flows = [...defaults];
-    if (mod.includes('US')) flows.push('US Workflow');
-    if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT')))
+    if (mod.includes('US')) {
+      flows.push('US Workflow');
+    }
+    if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT'))) {
       flows.push('TMTV Workflow');
+    }
     return Array.from(new Set(flows));
   }, []);
 
@@ -501,11 +505,18 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
   const hasDefault = !!(defaultMode && String(defaultMode).trim().length > 0);
 
   const handleLaunch = (wfLabel: string) => {
-    if (computedDisabled || !data) return;
+    if (computedDisabled || !data) {
+      return;
+    }
     // Back-compat explicit callbacks:
-    if (wfLabel === 'Basic Viewer') onLaunchBasic?.(data);
-    if (wfLabel === 'Segmentation') onLaunchSegmentation?.(data);
+    if (wfLabel === 'Basic Viewer') {
+      onLaunchBasic?.(data);
+    }
+    if (wfLabel === 'Segmentation') {
+      onLaunchSegmentation?.(data);
+    }
     // Generic handler fallback:
+    onLaunchWorkflow?.(data, wfLabel as unknown as M);
     onClick?.(data);
     try {
       // eslint-disable-next-line no-console
@@ -525,17 +536,24 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
 
   const srOnly =
     computedDisabled && disabledReason ? (
-      <span id={reasonId} className="sr-only">
+      <span
+        id={reasonId}
+        className="sr-only"
+      >
         {disabledReason}
       </span>
     ) : null;
 
   const renderDefaultWorkflow = (labelValue: string) => (
-    <div className="mt-2 flex flex-wrap items-center gap-0" role="status" aria-live="polite">
+    <div
+      className="mt-2 flex flex-wrap items-center gap-0"
+      role="status"
+      aria-live="polite"
+    >
       <Button
         variant="ghost"
         size="sm"
-        className="bg-primary/20 ml-1 mb-1 h-6 w-32 text-primary ring-1 ring-primary ring-offset-2 ring-offset-background"
+        className="bg-primary/20 text-primary ring-primary ring-offset-background ml-1 mb-1 h-6 w-32 ring-1 ring-offset-2"
         disabled={computedDisabled}
         onClick={() => handleLaunch(labelValue)}
       >
@@ -546,20 +564,25 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
         variant="ghost"
         size="icon"
         aria-label="Clear default mode"
-        className="ml-1.5 mb-1 text-primary opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="text-primary focus-visible:ring-ring focus-visible:ring-offset-background ml-1.5 mb-1 opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2"
         onClick={() => onDefaultModeChange?.(null)}
       >
-        <Cross2Icon className="text-primary h-3.5 w-3.5" aria-hidden />
+        <Cross2Icon
+          className="text-primary h-3.5 w-3.5"
+          aria-hidden
+        />
         <span className="sr-only">Clear default mode</span>
       </Button>
     </div>
   );
 
-
   return (
     <div
       ref={ref as React.Ref<HTMLDivElement>}
-      className={cn('border-border/50 bg-muted w-full rounded-lg px-4 py-3 text-left transition', className)}
+      className={cn(
+        'border-border/50 bg-muted w-full rounded-lg px-4 py-3 text-left transition',
+        className
+      )}
       style={style}
       aria-disabled={computedDisabled || undefined}
       aria-describedby={computedDisabled && disabledReason ? reasonId : undefined}
@@ -581,15 +604,13 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
       {/* Content selection logic */}
       {hasDefault && renderDefaultWorkflow(String(defaultMode))}
       {hasDefault && data && (
-        <div className="mt-2 text-sm text-muted-foreground">
-          Other Available Workflows
-        </div>
+        <div className="text-muted-foreground mt-2 text-sm">Other Available Workflows</div>
       )}
       {data && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
           {workflowButtons
-            .filter((wf) => !hasDefault || String(wf) !== String(defaultMode))
-            .map((wf) => (
+            .filter(wf => !hasDefault || String(wf) !== String(defaultMode))
+            .map(wf => (
               <Button
                 key={String(wf)}
                 variant="ghost"
@@ -638,10 +659,23 @@ function Patient({
   variant,
 }: PatientProps) {
   return (
-    <Section className={className} align={align} gap={gap} variant={variant}>
+    <Section
+      className={className}
+      align={align}
+      gap={gap}
+      variant={variant}
+    >
       {!hideIcon && (
-        <Icon size={33} className="text-primary">
-          {icon ?? <Icons.PatientStudyList width="100%" height="100%" />}
+        <Icon
+          size={33}
+          className="text-primary"
+        >
+          {icon ?? (
+            <Icons.PatientStudyList
+              width="100%"
+              height="100%"
+            />
+          )}
         </Icon>
       )}
       <div className="flex min-w-0 flex-col">
@@ -666,13 +700,24 @@ type EmptyProps = {
 
 function Empty({ children, icon, section }: EmptyProps) {
   const { data } = useSummaryContext<unknown>();
-  if (data) return null;
+  if (data) {
+    return null;
+  }
 
   return (
-    <Section variant="card" {...section}>
+    <Section
+      variant="card"
+      {...section}
+    >
       {icon ?? (
-        <Icon size={33} className="text-primary">
-          <Icons.PatientStudyList width="100%" height="100%" />
+        <Icon
+          size={33}
+          className="text-primary"
+        >
+          <Icons.PatientStudyList
+            width="100%"
+            height="100%"
+          />
         </Icon>
       )}
       <span className="text-muted-foreground text-base font-medium leading-tight">
