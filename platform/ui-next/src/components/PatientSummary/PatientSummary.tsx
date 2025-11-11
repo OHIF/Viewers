@@ -580,6 +580,11 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
 
       {/* Content selection logic */}
       {hasDefault && renderDefaultWorkflow(String(defaultMode))}
+      {hasDefault && data && (
+        <div className="mt-2 text-sm text-muted-foreground">
+          Other Available Workflows
+        </div>
+      )}
       {data && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
           {workflowButtons
