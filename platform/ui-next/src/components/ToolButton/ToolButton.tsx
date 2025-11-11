@@ -82,7 +82,7 @@ function ToolButton(props: ToolButtonProps) {
         {/* TooltipTrigger is a span since a disabled button does not fire events and the tooltip
         will not show. */}
         <span
-          data-cy={`${id}-tooltip-trigger`}
+          data-cy={id}
           data-tool={id}
           data-active={isActive}
         >
