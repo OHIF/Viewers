@@ -77,19 +77,7 @@ export function DefaultStudyList({
                   onSelectionChange={(rows) => state.setSelected(rows[0] ?? null)}
                   tableClassName={tableClassName}
                   toolbarLeft={toolbarLeft}
-                  renderOpenPanelButton={({ onOpenPanel }) => (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Open preview panel"
-                      onClick={onOpenPanel}
-                    >
-                      <Icons.PanelRight
-                        aria-hidden="true"
-                        className="h-4 w-4"
-                      />
-                    </Button>
-                  )}
+                  renderOpenPanelButton={() => <StudylistLayout.OpenPreviewButton />}
                 />
               </div>
             </div>
