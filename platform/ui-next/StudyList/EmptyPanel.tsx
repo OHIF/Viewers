@@ -10,17 +10,18 @@ export function EmptyPanel({
   defaultMode: WorkflowId | null;
   onDefaultModeChange: (v: WorkflowId | null) => void;
 }) {
-  const { launch } = useStudyList<any, WorkflowId>();
+  const { launch, availableWorkflowsFor } = useStudyList<any, WorkflowId>();
   return (
-    <PatientSummary.Root>
+    <PatientSummary>
       <PatientSummary.Patient />
       <PatientSummary.Workflows<WorkflowId>
         defaultMode={defaultMode}
         onDefaultModeChange={onDefaultModeChange}
+        workflows={availableWorkflowsFor(null)}
         onLaunchWorkflow={(data, wf) => {
           if (data) launch(data, wf);
         }}
       />
-    </PatientSummary.Root>
+    </PatientSummary>
   );
 }

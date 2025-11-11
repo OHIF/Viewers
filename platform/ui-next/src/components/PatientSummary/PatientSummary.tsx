@@ -1,15 +1,41 @@
+/**
+ * PatientSummary — compound component for patient header + workflow actions
+ *
+ * What it is
+ * - A small set of primitives composed under a root provider: Patient, Workflows, Name, MRN, Meta, Actions, Action, Field, Section, Icon.
+ * - All subcomponents read `data` from the nearest <PatientSummary> via context.
+ *
+ * Minimal usage
+ *   <PatientSummary data={row}>
+ *     <PatientSummary.Patient />
+ *     <PatientSummary.Workflows
+ *       workflows={availableWorkflowsFor(row)}
+ *       defaultMode={defaultWorkflow}
+ *       onDefaultModeChange={setDefaultWorkflow}
+ *       onLaunchWorkflow={(data, wf) => launch(data, wf)}
+ *     />
+ *   </PatientSummary>
+ *
+ * Adapting data shapes
+ * - Use `get` on the root to map custom fields:
+ *   <PatientSummary data={row} get={{ name: r => r.displayName, mrn: r => r.patientId }}>
+ *
+ * Default workflow behavior
+ * - Pass `defaultMode` and `onDefaultModeChange` to show a default badge and a clear control.
+ * - Workflows render buttons for the rest of the available workflows.
+ *
+ * Helpful references
+ * - platform/ui-next/StudyList/PreviewPanel.tsx (in-context example)
+ * - platform/ui-next/StudyList/EmptyPanel.tsx (empty state example)
+ * - platform/ui-next/StudyList/headless/useStudyList.ts (state + availableWorkflowsFor)
+ * - platform/ui-next/StudyList/headless/workflows-registry.ts (workflow ids/utilities)
+ */
 import * as React from 'react';
 import type { ElementType } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons/Icons';
 import { Button } from '../Button';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '../DropdownMenu';
 
 /** Public getters to adapt arbitrary data shapes to the PatientSummary defaults */
 export type PatientSummaryGetters<T> = {
@@ -32,28 +58,30 @@ const SummaryContext = React.createContext<SummaryContextValue<unknown> | null>(
 function useSummaryContext<T>() {
   const context = React.useContext(SummaryContext);
   if (!context) {
-    throw new Error('PatientSummary.* components must be used within <PatientSummary.Root>');
+    throw new Error('PatientSummary.* components must be used within <PatientSummary>');
   }
   return context as SummaryContextValue<T>;
 }
 
-type RootProps<T extends { patient?: unknown; mrn?: unknown } = any> = {
+type RootProps<T = any> = {
   data?: T | null;
-  /** @deprecated use `data` instead */
-  study?: T | null;
   get?: PatientSummaryGetters<T>;
   className?: string;
   children?: React.ReactNode;
 };
 
-function Root<T extends { patient?: unknown; mrn?: unknown } = any>({
+/**
+ * Root context provider for PatientSummary compound components.
+ *
+ * Use `get` to adapt arbitrary data shapes (e.g., map `displayName` → name, `patientId` → mrn).
+ */
+function Root<T = any>({
   data: dataProp,
-  study,
   get,
   className,
   children,
 }: RootProps<T>) {
-  const data = dataProp ?? study ?? null;
+  const data = dataProp ?? null;
 
   const resolvedGetters = React.useMemo<ResolvedGetters<T>>(
     () => ({
@@ -436,7 +464,7 @@ Action.displayName = 'PatientSummaryAction';
 type WorkflowButtonProps<T = any, M extends string = string> = {
   label?: React.ReactNode;
   onClick?: (data: T) => void;
-  /** Preferred: invoked with both data and workflow label */
+  /** Called with (data, workflow) when a workflow is launched */
   onLaunchWorkflow?: (data: T, workflow: M) => void;
   disabled?: boolean;
   disabledReason?: string;
@@ -444,13 +472,12 @@ type WorkflowButtonProps<T = any, M extends string = string> = {
   icon?: React.ReactNode;
   iconPosition?: 'start' | 'end';
   iconSize?: number;
-  as?: ElementType;
-  onLaunchBasic?: (data: T) => void;
-  onLaunchSegmentation?: (data: T) => void;
-  /** Selected default mode label; when set, replaces per-study workflow buttons with a badge */
+  /** Selected default workflow label (managed via SettingsPopover) */
   defaultMode?: M | null;
-  /** Updates the default mode label (set or clear) */
+  /** Update the default workflow label (managed via SettingsPopover) */
   onDefaultModeChange?: (value: M | null) => void;
+  /** Explicit list of workflows to render */
+  workflows?: readonly (M | string)[];
 } & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
 
 const WorkflowButtonInner = <T = any, M extends string = string>(
@@ -464,64 +491,34 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
     icon = <Icons.Info />,
     iconPosition = 'end',
     iconSize = 18,
-    as,
-    onLaunchBasic,
-    onLaunchSegmentation,
     defaultMode,
     onDefaultModeChange,
+    workflows,
     style,
     ...rest
   }: WorkflowButtonProps<T, M>,
   ref: React.ForwardedRef<HTMLElement>
 ) => {
   const { data } = useSummaryContext<T>();
-  const computedDisabled = disabled ?? false; // allow default-mode picking even when no data
+  const computedDisabled = disabled ?? false;
   const id = React.useId();
   const reasonId = `${id}-reason`;
-
-  const getInferredWorkflows = React.useCallback((d: any): string[] => {
-    const defaults = ['Basic Viewer', 'Segmentation'];
-    if (!d) {
-      return defaults;
-    }
-    if (Array.isArray(d.workflows) && d.workflows.length > 0) {
-      return Array.from(new Set(d.workflows.map(String)));
-    }
-    const mod = String(d.modalities ?? '').toUpperCase();
-    const flows = [...defaults];
-    if (mod.includes('US')) {
-      flows.push('US Workflow');
-    }
-    if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT'))) {
-      flows.push('TMTV Workflow');
-    }
-    return Array.from(new Set(flows));
-  }, []);
-
-  const workflowButtons = React.useMemo(
-    () => getInferredWorkflows(data),
-    [data, getInferredWorkflows]
-  );
+  const workflowButtons = React.useMemo(() => {
+    return Array.isArray(workflows) ? Array.from(new Set(workflows.map(String))) : [];
+  }, [workflows]);
   const hasDefault = !!(defaultMode && String(defaultMode).trim().length > 0);
+  const filteredWorkflows = React.useMemo(() => {
+    if (!hasDefault) return workflowButtons;
+    return workflowButtons.filter(wf => String(wf) !== String(defaultMode));
+  }, [workflowButtons, hasDefault, defaultMode]);
 
   const handleLaunch = (wfLabel: string) => {
     if (computedDisabled || !data) {
       return;
     }
-    // Back-compat explicit callbacks:
-    if (wfLabel === 'Basic Viewer') {
-      onLaunchBasic?.(data);
-    }
-    if (wfLabel === 'Segmentation') {
-      onLaunchSegmentation?.(data);
-    }
     // Generic handler fallback:
     onLaunchWorkflow?.(data, wfLabel as unknown as M);
     onClick?.(data);
-    try {
-      // eslint-disable-next-line no-console
-      console.log('Launch workflow:', wfLabel, { study: data });
-    } catch {}
   };
 
   const iconNode = icon ? (
@@ -601,16 +598,14 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
         {iconNode && iconPosition === 'end' ? iconNode : null}
       </div>
 
-      {/* Content selection logic */}
+      {/* Default workflow badge + other workflows */}
       {hasDefault && renderDefaultWorkflow(String(defaultMode))}
-      {hasDefault && data && (
+      {hasDefault && data && filteredWorkflows.length > 0 && (
         <div className="text-muted-foreground mt-2 text-sm">Other Available Workflows</div>
       )}
-      {data && (
+      {data && filteredWorkflows.length > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
-          {workflowButtons
-            .filter(wf => !hasDefault || String(wf) !== String(defaultMode))
-            .map(wf => (
+          {filteredWorkflows.map(wf => (
               <Button
                 key={String(wf)}
                 variant="ghost"
@@ -686,9 +681,16 @@ function Patient({
   );
 }
 
-/** Back-compat alias to match the prototype naming */
-type WorkflowsProps<T = any, M extends string = string> = WorkflowButtonProps<T, M>;
-function Workflows<T = any, M extends string = string>(props: WorkflowsProps<T, M>) {
+/**
+ * Public API for the workflow picker.
+ *
+ * Usage:
+ * - Must be used inside `<PatientSummary>` so it can read the current `data` from context.
+ * - Pass `workflows` (typically from headless `availableWorkflowsFor(row)`).
+ * - Optionally pass `defaultMode` and `onDefaultModeChange` to show the default badge and allow clearing it.
+ * - Handle launches with `onLaunchWorkflow(data, workflow)`.
+ */
+function Workflows<T = any, M extends string = string>(props: WorkflowButtonProps<T, M>) {
   return <WorkflowButton<T, M> {...props} />;
 }
 
@@ -769,7 +771,6 @@ function Field<T = any>({
 }
 
 type PatientSummaryNamespace = typeof Root & {
-  Root: typeof Root;
   Section: typeof Section;
   Icon: typeof Icon;
   Name: typeof Name;
@@ -777,7 +778,6 @@ type PatientSummaryNamespace = typeof Root & {
   Meta: typeof Meta;
   Actions: typeof Actions;
   Action: ActionComponentType;
-  WorkflowButton: WorkflowButtonComponent;
   Patient: typeof Patient;
   Workflows: typeof Workflows;
   Empty: typeof Empty;
@@ -785,7 +785,6 @@ type PatientSummaryNamespace = typeof Root & {
 };
 
 export const PatientSummary: PatientSummaryNamespace = Object.assign(Root, {
-  Root,
   Section,
   Icon,
   Name,
@@ -793,7 +792,6 @@ export const PatientSummary: PatientSummaryNamespace = Object.assign(Root, {
   Meta,
   Actions,
   Action,
-  WorkflowButton,
   Patient,
   Workflows,
   Empty,

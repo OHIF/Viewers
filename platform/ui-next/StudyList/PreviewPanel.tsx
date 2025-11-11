@@ -17,7 +17,7 @@ export function PreviewPanel({
   defaultMode: WorkflowId | null;
   onDefaultModeChange: (v: WorkflowId | null) => void;
 }) {
-  const { launch } = useStudyList<StudyRow, WorkflowId>();
+  const { launch, availableWorkflowsFor } = useStudyList<StudyRow, WorkflowId>();
   const seriesCount = React.useMemo(() => Math.floor(Math.random() * 7) + 3, []);
   const thumbnails = Array.from({ length: seriesCount }, (_, i) => ({
     id: `preview-${study.accession}-${i}`,
@@ -30,14 +30,15 @@ export function PreviewPanel({
     <DndProvider backend={HTML5Backend}>
       <TooltipProvider delayDuration={200}>
         <div className="flex flex-col gap-3">
-          <PatientSummary.Root data={study}>
+          <PatientSummary data={study}>
             <PatientSummary.Patient />
             <PatientSummary.Workflows<WorkflowId>
               defaultMode={defaultMode}
               onDefaultModeChange={onDefaultModeChange}
+              workflows={availableWorkflowsFor(study)}
               onLaunchWorkflow={(data, wf) => launch((data as StudyRow) ?? study, wf)}
             />
-          </PatientSummary.Root>
+          </PatientSummary>
           <div className="h-7 w-full px-2 flex items-center text-foreground font-semibold text-base">
             1 Study
           </div>

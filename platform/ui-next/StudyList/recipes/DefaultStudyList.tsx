@@ -9,6 +9,7 @@ import { StudyListTable } from '../StudyListTable';
 import { SettingsPopover } from '../SettingsPopover';
 import { PreviewPanel } from '../PreviewPanel';
 import { EmptyPanel } from '../EmptyPanel';
+import { PreviewShell } from '../primitives/PreviewShell';
 import { StudylistLayout } from '../primitives/StudylistLayout';
 import { StudyListProvider, useStudyList } from '../headless/StudyListProvider';
 import { useStudyListState } from '../headless/useStudyList';
@@ -108,48 +109,43 @@ function SidePanel() {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   return (
-    <div className="bg-background relative flex h-full w-full flex-col">
-      <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open settings">
-              <Icons.SettingsStudyList
-                aria-hidden="true"
-                className="h-4 w-4"
-              />
+    <PreviewShell
+      header={
+        <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+          <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open settings">
+                <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Close preview panel"
+              onClick={() => setPanelOpen(false)}
+            >
+              <Icons.PanelRight aria-hidden="true" className="h-4 w-4" />
             </Button>
-          </PopoverTrigger>
-          <Button variant="ghost" size="icon" aria-label="Close preview panel" onClick={() => setPanelOpen(false)}>
-            <Icons.PanelRight
-              aria-hidden="true"
-              className="h-4 w-4"
-            />
-          </Button>
-        </div>
-
-        <SettingsPopover
-          open={isSettingsOpen}
-          onOpenChange={setIsSettingsOpen}
+          </div>
+          <SettingsPopover
+            open={isSettingsOpen}
+            onOpenChange={setIsSettingsOpen}
+            defaultMode={defaultWorkflow}
+            onDefaultModeChange={setDefaultWorkflow}
+          />
+        </Popover>
+      }
+    >
+      {selected ? (
+        <PreviewPanel
+          key={(selected as StudyRow).accession}
+          study={selected as StudyRow}
           defaultMode={defaultWorkflow}
           onDefaultModeChange={setDefaultWorkflow}
         />
-      </Popover>
-
-      {/* Reuse the exact preview content to keep visuals identical */}
-      <div className="flex-1">
-        <div className="px-3 pb-3" style={{ paddingTop: 'var(--panel-right-top-pad, 59px)' }}>
-          {selected ? (
-            <PreviewPanel
-              key={(selected as StudyRow).accession}
-              study={selected as StudyRow}
-              defaultMode={defaultWorkflow}
-              onDefaultModeChange={setDefaultWorkflow}
-            />
-          ) : (
-            <EmptyPanel defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
-          )}
-        </div>
-      </div>
-    </div>
+      ) : (
+        <EmptyPanel defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
+      )}
+    </PreviewShell>
   );
 }

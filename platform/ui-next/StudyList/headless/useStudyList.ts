@@ -30,10 +30,6 @@ export function useStudyListState<T = any, W extends string = WorkflowId>(
   const launch = React.useCallback(
     (row: T, wf: W) => {
       onLaunch?.(row, wf);
-      try {
-        // eslint-disable-next-line no-console
-        console.log('Launch workflow:', wf, { study: row });
-      } catch {}
     },
     [onLaunch]
   );
