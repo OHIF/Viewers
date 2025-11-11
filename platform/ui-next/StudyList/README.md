@@ -278,15 +278,15 @@ StudyList builds on a small set of DS primitives. Key modules:
   * `Thumbnail` (`src/components/Thumbnail`)
   * `PatientSummary` (`@ohif/ui-next/components/PatientSummary`) — **compound** component with:
 
-    * `Section`, `Icon`, `Name`, `MRN`, `Meta`, `Actions`, `Action`, `Patient`, `Workflows`, `Empty`, `Field`
+    * `Section`, `Icon`, `Title`, `Subtitle`, `Meta`, `Actions`, `Action`, `Patient`, `Workflows`, `Empty`, `Field`
     * Supports `get` mapping for different row shapes:
 
       ```tsx
       <PatientSummary
         data={row}
         get={{
-          name: r => r.displayName,
-          mrn: r => r.patientId,
+          title: r => r.displayName,
+          subtitle: r => r.patientId,
         }}
       >
         <PatientSummary.Patient />
@@ -371,8 +371,8 @@ import { PatientSummary } from '@ohif/ui-next/components/PatientSummary';
   <PatientSummary.Section variant="row" align="center">
     <PatientSummary.Icon />
     <div className="min-w-0">
-      <PatientSummary.Name />
-      <PatientSummary.MRN prefix="MRN: " />
+      <PatientSummary.Title />
+      <PatientSummary.Subtitle prefix="MRN: " />
     </div>
     <PatientSummary.Actions direction="row" justify="end">
       <PatientSummary.Action onClick={(data) => { /* action */ }}>
@@ -380,6 +380,34 @@ import { PatientSummary } from '@ohif/ui-next/components/PatientSummary';
       </PatientSummary.Action>
     </PatientSummary.Actions>
   </PatientSummary.Section>
+</PatientSummary>
+```
+
+Alternate title/subtitle mapping (e.g., Description/Accession):
+
+```tsx
+import { PatientSummary } from '@ohif/ui-next/components/PatientSummary';
+
+<PatientSummary
+  data={row}
+  get={{
+    title: r => r.description,
+    subtitle: r => r.accession,
+  }}
+>
+  <PatientSummary.Section variant="row" align="center">
+    <PatientSummary.Icon />
+    <div className="min-w-0">
+      <PatientSummary.Title />
+      <PatientSummary.Subtitle prefix="Accession: " />
+    </div>
+  </PatientSummary.Section>
+  <PatientSummary.Workflows
+    workflows={availableWorkflowsFor(row)}
+    defaultMode={defaultWorkflow}
+    onDefaultModeChange={setDefaultWorkflow}
+    onLaunchWorkflow={(data, wf) => launch(data!, wf)}
+  />
 </PatientSummary>
 ```
 

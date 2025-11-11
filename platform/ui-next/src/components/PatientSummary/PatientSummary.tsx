@@ -2,7 +2,7 @@
  * PatientSummary — compound component for patient header + workflow actions
  *
  * What it is
- * - A small set of primitives composed under a root provider: Patient, Workflows, Name, MRN, Meta, Actions, Action, Field, Section, Icon.
+ * - A small set of primitives composed under a root provider: Patient, Workflows, Title, Subtitle, Meta, Actions, Action, Field, Section, Icon.
  * - All subcomponents read `data` from the nearest <PatientSummary> via context.
  *
  * Minimal usage
@@ -18,7 +18,7 @@
  *
  * Adapting data shapes
  * - Use `get` on the root to map custom fields:
- *   <PatientSummary data={row} get={{ name: r => r.displayName, mrn: r => r.patientId }}>
+ *   <PatientSummary data={row} get={{ title: r => r.displayName, subtitle: r => r.patientId }}>
  *
  * Default workflow behavior
  * - Pass `defaultMode` and `onDefaultModeChange` to show a default badge and a clear control.
@@ -39,13 +39,13 @@ import { Button } from '../Button';
 
 /** Public getters to adapt arbitrary data shapes to the PatientSummary defaults */
 export type PatientSummaryGetters<T> = {
-  name?: (data: T) => React.ReactNode;
-  mrn?: (data: T) => React.ReactNode;
+  title?: (data: T) => React.ReactNode;
+  subtitle?: (data: T) => React.ReactNode;
 };
 
 type ResolvedGetters<T> = {
-  name: (data: T) => React.ReactNode;
-  mrn: (data: T) => React.ReactNode;
+  title: (data: T) => React.ReactNode;
+  subtitle: (data: T) => React.ReactNode;
 };
 
 type SummaryContextValue<T> = {
@@ -85,8 +85,8 @@ function Root<T = any>({
 
   const resolvedGetters = React.useMemo<ResolvedGetters<T>>(
     () => ({
-      name: get?.name ?? ((item: T) => ((item as any)?.patient ?? '') as React.ReactNode),
-      mrn: get?.mrn ?? ((item: T) => ((item as any)?.mrn ?? '') as React.ReactNode),
+      title: get?.title ?? ((item: T) => ((item as any)?.patient ?? '') as React.ReactNode),
+      subtitle: get?.subtitle ?? ((item: T) => ((item as any)?.mrn ?? '') as React.ReactNode),
     }),
     [get]
   );
@@ -175,21 +175,21 @@ function Icon({ src, alt = '', size = 33, className, hideWhenEmpty, children }: 
   );
 }
 
-type NameProps<T = any> = {
+type TitleProps<T = any> = {
   placeholder?: React.ReactNode;
   className?: string;
   children?: (value: React.ReactNode, data: T | null) => React.ReactNode;
   showTitleOnTruncate?: boolean;
 };
 
-function Name<T = any>({
+function Title<T = any>({
   placeholder = 'Select a study',
   className,
   children,
   showTitleOnTruncate = true,
-}: NameProps<T>) {
+}: TitleProps<T>) {
   const { data, get } = useSummaryContext<T>();
-  const value = data ? get.name(data) : null;
+  const value = data ? get.title(data) : null;
   const content = value ?? placeholder;
   const title =
     showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
@@ -206,7 +206,7 @@ function Name<T = any>({
   );
 }
 
-type MRNProps<T = any> = {
+type SubtitleProps<T = any> = {
   hideWhenEmpty?: boolean;
   prefix?: React.ReactNode;
   className?: string;
@@ -214,15 +214,15 @@ type MRNProps<T = any> = {
   showTitleOnTruncate?: boolean;
 };
 
-function MRN<T = any>({
+function Subtitle<T = any>({
   hideWhenEmpty = true,
   prefix,
   className,
   children,
   showTitleOnTruncate = true,
-}: MRNProps<T>) {
+}: SubtitleProps<T>) {
   const { data, get } = useSummaryContext<T>();
-  const value = data ? get.mrn(data) : null;
+  const value = data ? get.subtitle(data) : null;
 
   if ((value === null || value === undefined || value === '') && hideWhenEmpty) {
     return null;
@@ -634,8 +634,8 @@ type PatientProps = {
   placeholder?: React.ReactNode;
   className?: string;
   hideIcon?: boolean;
-  hideName?: boolean;
-  hideMrn?: boolean;
+  hideTitle?: boolean;
+  hideSubtitle?: boolean;
   icon?: React.ReactNode;
   align?: SectionProps['align'];
   gap?: number;
@@ -646,8 +646,8 @@ function Patient({
   placeholder = 'Select a study',
   className,
   hideIcon,
-  hideName,
-  hideMrn,
+  hideTitle,
+  hideSubtitle,
   icon,
   align,
   gap,
@@ -674,8 +674,8 @@ function Patient({
         </Icon>
       )}
       <div className="flex min-w-0 flex-col">
-        {!hideName && <Name placeholder={placeholder} />}
-        {!hideMrn && <MRN />}
+        {!hideTitle && <Title placeholder={placeholder} />}
+        {!hideSubtitle && <Subtitle />}
       </div>
     </Section>
   );
@@ -773,8 +773,8 @@ function Field<T = any>({
 type PatientSummaryNamespace = typeof Root & {
   Section: typeof Section;
   Icon: typeof Icon;
-  Name: typeof Name;
-  MRN: typeof MRN;
+  Title: typeof Title;
+  Subtitle: typeof Subtitle;
   Meta: typeof Meta;
   Actions: typeof Actions;
   Action: ActionComponentType;
@@ -787,8 +787,8 @@ type PatientSummaryNamespace = typeof Root & {
 export const PatientSummary: PatientSummaryNamespace = Object.assign(Root, {
   Section,
   Icon,
-  Name,
-  MRN,
+  Title,
+  Subtitle,
   Meta,
   Actions,
   Action,
