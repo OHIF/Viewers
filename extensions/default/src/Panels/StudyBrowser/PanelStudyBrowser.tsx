@@ -132,7 +132,10 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      const response = await fetch(`http://localhost:8000/segmentation?sessionID=${sessionID}`);
+      // const response = await fetch(`http://localhost:8000/segmentation?sessionID=${sessionID}`);
+      const response = await fetch(
+        `https://backend-1084552301744.europe-west1.run.app/segmentation?sessionID=${sessionID}`
+      );
 
       if (!response.ok) {
         throw new Error(`Backend responded with status: ${response.status}`);
@@ -361,7 +364,10 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      const response = await fetch(`http://localhost:8000/generate_report?sessionID=${sessionID}`);
+      // const response = await fetch(`http://localhost:8000/generate_report?sessionID=${sessionID}`);
+      const response = await fetch(
+        `https://backend-1084552301744.europe-west1.run.app/generate_report?sessionID=${sessionID}`
+      );
 
       if (!response.ok) {
         throw new Error(`Backend responded with status: ${response.status}`);
@@ -370,18 +376,26 @@ function PanelStudyBrowser({
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
-      const newWindow = window.open(blobUrl, '_blank');
+      // Create a temporary anchor element to open PDF in new tab
+      // This method is more reliable and bypasses popup blockers
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL after a short delay
       setTimeout(() => {
         URL.revokeObjectURL(blobUrl);
       }, 1000);
 
-      if (!newWindow) {
-        uiNotificationService.show({
-          title: 'Report',
-          message: 'Please allow pop-ups to view the report',
-          type: 'warning',
-        });
-      }
+      uiNotificationService.show({
+        title: 'Report',
+        message: 'Report opened in new tab',
+        type: 'success',
+      });
     } catch (error) {
       console.error('Failed to fetch report from backend:', error);
       uiNotificationService.show({
