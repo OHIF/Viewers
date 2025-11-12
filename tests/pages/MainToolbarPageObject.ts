@@ -10,66 +10,73 @@ export class MainToolbarPageObject {
   get layoutSection() {
     const page = this.page;
 
+    const button = page.getByTestId('Layout');
     const layoutSection = {
-      button: page.getByTestId('Layout'),
+      button,
       async click() {
-        await page.getByTestId('Layout').click();
+        await button.click();
       },
     };
 
     return {
       ...layoutSection,
       get axialPrimary() {
+        const button = page.getByTestId('Axial Primary');
         return {
-          button: page.getByTestId('Axial Primary'),
+          button,
           async click() {
             await layoutSection.click();
-            await page.getByTestId('Axial Primary').click();
+            await button.click();
           },
         };
       },
       get MPR() {
+        const button = page.getByTestId('MPR');
         return {
-          button: page.getByTestId('MPR'),
+          button,
           async click() {
             await layoutSection.click();
-            await page.getByTestId('MPR').click();
+            await button.click();
           },
         };
       },
       get threeDFourUp() {
+        const button = page.getByTestId('3D four up');
         return {
-          button: page.getByTestId('3D four up'),
+          button,
           async click() {
             await layoutSection.click();
-            await page.getByTestId('3D four up').click();
+            await button.click();
           },
         };
       },
       get threeDMain() {
+        const button = page.getByTestId('3D main');
         return {
-          button: page.getByTestId('3D main'),
+          button,
           async click() {
             await layoutSection.click();
-            await page.getByTestId('3D main').click();
+            await button.click();
           },
         };
       },
       get threeDOnly() {
+        const button = page.getByTestId('3D only');
         return {
-          button: page.getByTestId('3D only'),
+          button,
           async click() {
             await layoutSection.click();
-            await page.getByTestId('3D only').click();
+            await button.click();
           },
         };
       },
       get threeDPrimary() {
+        const button = page.getByTestId('3D primary');
         return {
-          button: page.getByTestId('3D primary'),
+          button,
           async click() {
             await layoutSection.click();
-            await page.getByTestId('3D primary').click();
+            await button.click();
           },
         };
       },
@@ -79,84 +86,93 @@ export class MainToolbarPageObject {
   get measurementTools() {
     const page = this.page;
 
+    const button = page.getByTestId('MeasurementTools-split-button-secondary');
     const measurementTools = {
-      button: page.getByTestId('MeasurementTools-split-button-secondary'),
+      button,
       async click() {
-        await page.getByTestId('MeasurementTools-split-button-secondary').click();
+        await button.click();
       },
     };
 
     return {
       ...measurementTools,
       get arrowAnnotate() {
+        const button = page.getByTestId('ArrowAnnotate');
         return {
-          button: page.getByTestId('ArrowAnnotate'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('ArrowAnnotate').click();
+            await button.click();
           },
         };
       },
       get bidirectional() {
+        const button = page.getByTestId('Bidirectional');
         return {
-          button: page.getByTestId('Bidirectional'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('Bidirectional').click();
+            await button.click();
           },
         };
       },
       get circleROI() {
+        const button = page.getByTestId('CircleROI');
         return {
-          button: page.getByTestId('CircleROI'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('CircleROI').click();
+            await button.click();
           },
         };
       },
       get ellipticalROI() {
+        const button = page.getByTestId('EllipticalROI');
         return {
-          button: page.getByTestId('EllipticalROI'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('EllipticalROI').click();
+            await button.click();
           },
         };
       },
       get length() {
+        const button = page.locator('[data-cy="Length"][role="menuitem"]');
         return {
-          button: page.locator('[data-cy="Length"][role="menuitem"]'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.locator('[data-cy="Length"][role="menuitem"]').click();
+            await button.click();
           },
         };
       },
       get livewireContour() {
+        const button = page.getByTestId('LivewireContour');
         return {
-          button: page.getByTestId('LivewireContour'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('LivewireContour').click();
+            await button.click();
           },
         };
       },
       get rectangleROI() {
+        const button = page.getByTestId('RectangleROI');
         return {
-          button: page.getByTestId('RectangleROI'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('RectangleROI').click();
+            await button.click();
           },
         };
       },
       get splineROI() {
+        const button = page.getByTestId('SplineROI');
         return {
-          button: page.getByTestId('SplineROI'),
+          button,
           async click() {
             await measurementTools.click();
-            await page.getByTestId('SplineROI').click();
+            await button.click();
           },
         };
       },
@@ -166,84 +182,93 @@ export class MainToolbarPageObject {
   get moreTools() {
     const page = this.page;
 
+    const button = page.getByTestId('MoreTools-split-button-secondary');
     const moreTools = {
-      button: page.getByTestId('MoreTools-split-button-secondary'),
+      button,
       async click() {
-        await page.getByTestId('MoreTools-split-button-secondary').click();
+        await button.click();
       },
     };
 
     return {
       ...moreTools,
       get angle() {
+        const button = page.getByTestId('Angle');
         return {
-          button: page.getByTestId('Angle'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('Angle').click();
+            await button.click();
           },
         };
       },
       get cobbAngle() {
+        const button = page.getByTestId('CobbAngle');
         return {
-          button: page.getByTestId('CobbAngle'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('CobbAngle').click();
+            await button.click();
           },
         };
       },
       get flipHorizontal() {
+        const button = page.getByTestId('flipHorizontal');
         return {
-          button: page.getByTestId('flipHorizontal'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('flipHorizontal').click();
+            await button.click();
           },
         };
       },
       get invert() {
+        const button = page.getByTestId('invert');
         return {
-          button: page.getByTestId('invert'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('invert').click();
+            await button.click();
           },
         };
       },
       get probe() {
+        const button = page.getByTestId('Probe');
         return {
-          button: page.getByTestId('Probe'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('Probe').click();
+            await button.click();
           },
         };
       },
       get reset() {
+        const button = page.locator('[data-cy="Reset"][role="menuitem"]');
         return {
-          button: page.locator('[data-cy="Reset"][role="menuitem"]'),
+          button,
           async click() {
             await moreTools.click();
-            await page.locator('[data-cy="Reset"][role="menuitem"]').click();
+            await button.click();
           },
         };
       },
       get rotateRight() {
+        const button = page.getByTestId('rotate-right');
         return {
-          button: page.getByTestId('rotate-right'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('rotate-right').click();
+            await button.click();
           },
         };
       },
       get tagBrowser() {
+        const button = page.getByTestId('TagBrowser');
         return {
-          button: page.getByTestId('TagBrowser'),
+          button,
           async click() {
             await moreTools.click();
-            await page.getByTestId('TagBrowser').click();
+            await button.click();
           },
         };
       },
@@ -251,10 +276,11 @@ export class MainToolbarPageObject {
   }
 
   get panTool() {
+    const button = this.page.getByTestId('Pan');
     return {
-      button: this.page.getByTestId('Pan'),
+      button,
       async click() {
-        await this.page.getByTestId('Pan').click();
+        await button.click();
       },
     };
   }
