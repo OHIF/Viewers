@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Thumbnail } from '../src/components/Thumbnail';
-import { TooltipProvider } from '../src/components/Tooltip';
-import type { StudyRow } from './StudyListTypes';
-import type { WorkflowId } from './WorkflowsInfer';
-import { PatientSummary } from '../src/components/PatientSummary';
-import { useStudyList } from './headless/StudyListProvider';
+import { Thumbnail } from '../../Thumbnail';
+import { TooltipProvider } from '../../Tooltip';
+import type { StudyRow } from '../StudyListTypes';
+import type { WorkflowId } from '../WorkflowsInfer';
+import { PatientSummary } from '../../PatientSummary';
+import { useStudyList } from '../headless/StudyListProvider';
 
 export function PreviewPanel({
   study,
@@ -63,3 +63,4 @@ export function PreviewPanel({
     </DndProvider>
   );
 }
+

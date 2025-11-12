@@ -1,9 +1,9 @@
 import * as React from 'react';
 import type { Row } from '@tanstack/react-table';
-import { DataTableActionOverlayCell } from '../src/components/DataTable';
+import { DataTableActionOverlayCell } from '../../DataTable';
 import { WorkflowsMenu } from './WorkflowsMenu';
-import { useStudyList } from './headless/StudyListProvider';
-import type { WorkflowId } from './WorkflowsInfer';
+import { useStudyList } from '../headless/StudyListProvider';
+import type { WorkflowId } from '../WorkflowsInfer';
 
 export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>; value: number }) {
   const { defaultWorkflow, launch } = useStudyList<TData, WorkflowId>();
@@ -37,3 +37,4 @@ export function StudyListInstancesCell<TData>({ row, value }: { row: Row<TData>;
     />
   );
 }
+

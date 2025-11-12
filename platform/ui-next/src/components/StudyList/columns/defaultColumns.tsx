@@ -1,8 +1,8 @@
 import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from '../../src/components/DataTable';
+import { DataTableColumnHeader } from '../../DataTable';
 import type { StudyRow } from '../StudyListTypes';
-import { StudyListInstancesCell } from '../StudyListInstancesCell';
+import { StudyListInstancesCell } from '../components/StudyListInstancesCell';
 
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
@@ -92,3 +92,4 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
   ];
 }
+

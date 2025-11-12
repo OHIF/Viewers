@@ -1,16 +1,16 @@
 import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Icons } from '../../src/components/Icons';
-import { Button } from '../../src/components/Button';
-import { Popover, PopoverTrigger } from '../../src/components/Popover/Popover';
+import { Icons } from '../../Icons';
+import { Button } from '../../Button';
+import { Popover, PopoverTrigger } from '../../Popover/Popover';
 import type { StudyRow } from '../StudyListTypes';
 import type { WorkflowId } from '../WorkflowsInfer';
-import { StudyListTable } from '../StudyListTable';
-import { SettingsPopover } from '../SettingsPopover';
-import { PreviewPanel } from '../PreviewPanel';
-import { EmptyPanel } from '../EmptyPanel';
-import { PreviewShell } from '../primitives/PreviewShell';
-import { StudylistLayout } from '../primitives/StudylistLayout';
+import { StudyListTable } from '../components/StudyListTable';
+import { SettingsPopover } from '../components/SettingsPopover';
+import { PreviewPanel } from '../components/PreviewPanel';
+import { EmptyPanel } from '../components/EmptyPanel';
+import { PreviewShell } from '../components/PreviewShell';
+import { StudyListLayout } from '../components/StudyListLayout';
 import { StudyListProvider, useStudyList } from '../headless/StudyListProvider';
 import { useStudyListState } from '../headless/useStudyList';
 import { defaultColumns } from '../columns/defaultColumns';
@@ -26,7 +26,7 @@ type Props = {
   onLaunch?: (study: StudyRow, workflow: WorkflowId) => void;
 };
 
-export function DefaultStudyList({
+export function DesktopLayout({
   data,
   columns = defaultColumns(),
   title = 'Study List',
@@ -55,13 +55,13 @@ export function DefaultStudyList({
 
   return (
     <StudyListProvider value={state}>
-      <StudylistLayout.Root
+      <StudyListLayout.Root
         isPanelOpen={state.isPanelOpen}
         onIsPanelOpenChange={state.setPanelOpen}
         defaultPreviewSizePercent={previewDefaultSize}
         className="h-full w-full"
       >
-        <StudylistLayout.TableArea>
+        <StudyListLayout.TableArea>
           <div className="flex h-full w-full flex-col px-3 pb-3 pt-0">
             <div className="min-h-0 flex-1">
               <div className="bg-background h-full rounded-md px-2 pb-2 pt-0">
@@ -77,17 +77,17 @@ export function DefaultStudyList({
                   onSelectionChange={(rows) => state.setSelected(rows[0] ?? null)}
                   tableClassName={tableClassName}
                   toolbarLeft={toolbarLeft}
-                  renderOpenPanelButton={() => <StudylistLayout.OpenPreviewButton />}
+                  renderOpenPanelButton={() => <StudyListLayout.OpenPreviewButton />}
                 />
               </div>
             </div>
           </div>
-        </StudylistLayout.TableArea>
+        </StudyListLayout.TableArea>
 
-        <StudylistLayout.PreviewArea>
+        <StudyListLayout.PreviewArea>
           <SidePanel />
-        </StudylistLayout.PreviewArea>
-      </StudylistLayout.Root>
+        </StudyListLayout.PreviewArea>
+      </StudyListLayout.Root>
     </StudyListProvider>
   );
 }
@@ -137,3 +137,4 @@ function SidePanel() {
     </PreviewShell>
   );
 }
+

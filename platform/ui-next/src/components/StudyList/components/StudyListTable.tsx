@@ -9,7 +9,7 @@ import {
   DataTableViewOptions,
   DataTablePagination,
   useDataTable,
-} from '../src/components/DataTable';
+} from '../../DataTable';
 import {
   Table,
   TableHeader,
@@ -17,12 +17,12 @@ import {
   TableHead,
   TableRow,
   TableCell,
-} from '../src/components/Table';
-import { ScrollArea } from '../src/components/ScrollArea';
-import { Button } from '../src/components/Button';
-import type { StudyRow } from './StudyListTypes';
-import { useStudyList } from './headless/StudyListProvider';
-import type { WorkflowId } from './WorkflowsInfer';
+} from '../../Table';
+import { ScrollArea } from '../../ScrollArea';
+import { Button } from '../../Button';
+import type { StudyRow } from '../StudyListTypes';
+import { useStudyList } from '../headless/StudyListProvider';
+import type { WorkflowId } from '../WorkflowsInfer';
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[];
@@ -282,3 +282,4 @@ function Content({
     </div>
   );
 }
+

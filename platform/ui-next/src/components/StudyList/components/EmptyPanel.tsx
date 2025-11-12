@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { PatientSummary } from '../src/components/PatientSummary';
-import type { WorkflowId } from './WorkflowsInfer';
-import { useStudyList } from './headless/StudyListProvider';
+import { PatientSummary } from '../../PatientSummary';
+import type { WorkflowId } from '../WorkflowsInfer';
+import { useStudyList } from '../headless/StudyListProvider';
 
 export function EmptyPanel({
   defaultMode,
@@ -25,3 +25,4 @@ export function EmptyPanel({
     </PatientSummary>
   );
 }
+

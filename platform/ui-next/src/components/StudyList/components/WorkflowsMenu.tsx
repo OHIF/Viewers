@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Button } from '../src/components/Button';
-import { Icons } from '../src/components/Icons';
+import { Button } from '../../Button';
+import { Icons } from '../../Icons';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '../src/components/DropdownMenu';
-import { getAvailableWorkflows, type WorkflowId } from './WorkflowsInfer';
+} from '../../DropdownMenu';
+import { getAvailableWorkflows, type WorkflowId } from '../WorkflowsInfer';
 
 type Props = {
   workflows?: readonly (WorkflowId | string)[];
@@ -69,3 +69,4 @@ export function WorkflowsMenu({
     </DropdownMenu>
   );
 }
+
