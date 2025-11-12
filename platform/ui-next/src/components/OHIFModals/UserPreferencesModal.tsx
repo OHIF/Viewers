@@ -95,8 +95,8 @@ function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: Hot
   };
 
   return (
-    <div className={cn('flex items-center justify-between space-x-2', className)}>
-      <Label className="whitespace-nowrap">{label}</Label>
+    <div className={cn('flex items-start justify-between gap-2', className)}>
+      <Label className="flex-1 whitespace-normal break-words text-sm">{label}</Label>
       <Input
         className={cn(
           'w-16 text-center transition-colors',
