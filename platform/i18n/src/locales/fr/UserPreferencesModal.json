@@ -1,6 +1,6 @@
 {
-  "Cancel": "$t(Buttons:Cancel)",
-  "Reset to defaults": "$t(Buttons:Reset to defaults)",
-  "Save": "$t(Buttons:Save)",
+  "Cancel": "$t(Common:Cancel)",
+  "Reset to defaults": "Réinitialiser aux valeurs par défaut",
+  "Save": "$t(Common:Save)",
   "User preferences": "Préférences utilisateur"
 }
