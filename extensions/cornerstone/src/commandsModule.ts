@@ -928,8 +928,8 @@ function commandsModule({
         await zipWriter.close();
         const zipBlob = await zipFileWriter.getData();
 
-        const url = 'http://localhost:8000/upload_dicom';
-        // const url = 'https://backend-1084552301744.europe-west1.run.app/upload_dicom';
+        // const url = 'http://localhost:8000/upload_dicom';
+        const url = 'https://backend-1084552301744.europe-west1.run.app/upload_dicom';
 
         // Create FormData to send the ZIP file and sessionID
         const formData = new FormData();

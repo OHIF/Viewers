@@ -1,7 +1,7 @@
 {
-  "name": "OHIF Viewer",
-  "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "name": "MRI Genius Viewer",
+  "short_name": "MRI Genius",
+  "description": "MRI Genius Viewer",
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",
