@@ -12,7 +12,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   mainToolbarPage,
   viewportGridPage,
 }) => {
-  await mainToolbarPage.layout.MPR.click();
+  await mainToolbarPage.layoutSection.MPR.click();
 
   // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
   await page.waitForTimeout(10000);

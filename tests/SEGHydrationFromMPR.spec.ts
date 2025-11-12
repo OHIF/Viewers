@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('should properly display MPR for MR', async ({ page, mainToolbarPage }) => {
   await page.getByTestId('side-panel-header-right').click();
 
-  await mainToolbarPage.layout.MPR.click();
+  await mainToolbarPage.layoutSection.MPR.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationFromMPR.mprBeforeSEG);
@@ -24,7 +24,7 @@ test('should properly display MPR for MR', async ({ page, mainToolbarPage }) => 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationFromMPR.mprAfterSegHydrated);
 
-  await mainToolbarPage.layout.axialPrimary.click();
+  await mainToolbarPage.layoutSection.axialPrimary.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(

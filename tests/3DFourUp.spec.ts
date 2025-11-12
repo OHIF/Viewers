@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('3D four up Test', async () => {
   test('should render 3D four up correctly.', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layout.threeDFourUp.click();
+    await mainToolbarPage.layoutSection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 

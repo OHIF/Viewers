@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('should hydrate an RTSTRUCT from MPR', async ({ page, mainToolbarPage }) => {
   await page.getByTestId('side-panel-header-right').click();
 
-  await mainToolbarPage.layout.MPR.click();
+  await mainToolbarPage.layoutSection.MPR.click();
 
   await page.waitForTimeout(10000);
 
@@ -27,7 +27,7 @@ test('should hydrate an RTSTRUCT from MPR', async ({ page, mainToolbarPage }) =>
 
   await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprAfterRTHydrated);
 
-  await mainToolbarPage.layout.axialPrimary.click();
+  await mainToolbarPage.layoutSection.axialPrimary.click();
 
   await checkForScreenshot(
     page,

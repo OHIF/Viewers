@@ -7,10 +7,10 @@ export class MainToolbarPage {
     this.page = page;
   }
 
-  get layout() {
+  get layoutSection() {
     const page = this.page;
 
-    const layout = {
+    const layoutSection = {
       button: page.getByTestId('Layout'),
       async click() {
         await page.getByTestId('Layout').click();
@@ -18,12 +18,12 @@ export class MainToolbarPage {
     };
 
     return {
-      ...layout,
+      ...layoutSection,
       get axialPrimary() {
         return {
           button: page.getByTestId('Axial Primary'),
           async click() {
-            await layout.click();
+            await layoutSection.click();
             await page.getByTestId('Axial Primary').click();
           },
         };
@@ -32,7 +32,7 @@ export class MainToolbarPage {
         return {
           button: page.getByTestId('MPR'),
           async click() {
-            await layout.click();
+            await layoutSection.click();
             await page.getByTestId('MPR').click();
           },
         };
@@ -41,7 +41,7 @@ export class MainToolbarPage {
         return {
           button: page.getByTestId('3D four up'),
           async click() {
-            await layout.click();
+            await layoutSection.click();
             await page.getByTestId('3D four up').click();
           },
         };
@@ -50,7 +50,7 @@ export class MainToolbarPage {
         return {
           button: page.getByTestId('3D main'),
           async click() {
-            await layout.click();
+            await layoutSection.click();
             await page.getByTestId('3D main').click();
           },
         };
@@ -59,7 +59,7 @@ export class MainToolbarPage {
         return {
           button: page.getByTestId('3D only'),
           async click() {
-            await layout.click();
+            await layoutSection.click();
             await page.getByTestId('3D only').click();
           },
         };
@@ -68,7 +68,7 @@ export class MainToolbarPage {
         return {
           button: page.getByTestId('3D primary'),
           async click() {
-            await layout.click();
+            await layoutSection.click();
             await page.getByTestId('3D primary').click();
           },
         };

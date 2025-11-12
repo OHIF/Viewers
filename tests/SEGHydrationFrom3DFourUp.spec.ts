@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('3D four up SEG hydration', async () => {
   test('should properly hydrate SEG from 3D four up layout', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layout.threeDFourUp.click();
+    await mainToolbarPage.layoutSection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 

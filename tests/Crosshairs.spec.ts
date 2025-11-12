@@ -48,14 +48,14 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Crosshairs Test', async () => {
   test('should render the crosshairs correctly.', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layout.MPR.click();
+    await mainToolbarPage.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRendered);
   });
 
   test('should allow the user to rotate the crosshairs', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layout.MPR.click();
+    await mainToolbarPage.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -66,7 +66,7 @@ test.describe('Crosshairs Test', async () => {
   });
 
   test('should allow the user to adjust the slab thickness', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layout.MPR.click();
+    await mainToolbarPage.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await increaseSlabThickness(page, '#svg-layer-mpr-axial', 0, 'x');
@@ -80,7 +80,7 @@ test.describe('Crosshairs Test', async () => {
     page,
     mainToolbarPage,
   }) => {
-    await mainToolbarPage.layout.MPR.click();
+    await mainToolbarPage.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -96,7 +96,7 @@ test.describe('Crosshairs Test', async () => {
     page,
     mainToolbarPage,
   }) => {
-    await mainToolbarPage.layout.MPR.click();
+    await mainToolbarPage.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 0);

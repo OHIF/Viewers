@@ -16,7 +16,7 @@ test('should hydrate an RTSTRUCT and then launch MPR', async ({ page, mainToolba
 
   await checkForScreenshot(page, page, screenShotPaths.rtHydrationThenMPR.rtPostHydration);
 
-  await mainToolbarPage.layout.axialPrimary.click();
+  await mainToolbarPage.layoutSection.axialPrimary.click();
 
   await page.waitForTimeout(5000);
 

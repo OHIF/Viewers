@@ -90,7 +90,7 @@ test('should hydrate in MPR correctly', async ({ page, mainToolbarPage, viewport
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
 
-  await mainToolbarPage.layout.MPR.click();
+  await mainToolbarPage.layoutSection.MPR.click();
 
   // wait 5 seconds
   await page.waitForTimeout(5000);

@@ -14,7 +14,7 @@ test('should launch MPR with unhydrated SEG', async ({ page, mainToolbarPage }) 
 
   await checkForScreenshot(page, page, screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR);
 
-  await mainToolbarPage.layout.MPR.click();
+  await mainToolbarPage.layoutSection.MPR.click();
 
   await page.waitForTimeout(5000);
 

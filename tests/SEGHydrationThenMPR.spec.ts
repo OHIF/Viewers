@@ -15,7 +15,7 @@ test('should properly display MPR for MR', async ({ page, mainToolbarPage }) => 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationThenMPR.segPostHydration);
 
-  await mainToolbarPage.layout.axialPrimary.click();
+  await mainToolbarPage.layoutSection.axialPrimary.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(
