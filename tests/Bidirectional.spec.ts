@@ -1,10 +1,4 @@
-import {
-  checkForScreenshot,
-  screenShotPaths,
-  simulateClicksOnElement,
-  test,
-  visitStudy,
-} from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -15,18 +9,13 @@ test.beforeEach(async ({ page }) => {
 test('should display the bidirectional tool', async ({
   page,
   mainToolbarPageObject,
-  viewportGridPageObject,
+  viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.bidirectional.click();
-  const activeViewport = viewportGridPageObject.activeViewport;
-
-  await simulateClicksOnElement({
-    locator: activeViewport,
-    points: [
-      { x: 405, y: 277 },
-      { x: 515, y: 339 },
-    ],
-  });
+  await viewportPageObject.active.clicksOn([
+    { x: 405, y: 277 },
+    { x: 515, y: 339 },
+  ]);
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
   await checkForScreenshot(
     page,

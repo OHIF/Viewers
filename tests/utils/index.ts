@@ -7,6 +7,7 @@ import {
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
 } from './simulateClicksOnElement';
+import { simulateNormalizedDragOnElement } from './simulateDragOnElement';
 import { reduce3DViewportSize } from './reduce3DviewportSize';
 import { getMousePosition, initializeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
@@ -25,6 +26,7 @@ export {
   simulateDoubleClickOnElement,
   simulateNormalizedClickOnElement,
   simulateNormalizedClicksOnElement,
+  simulateNormalizedDragOnElement,
   reduce3DViewportSize,
   getMousePosition,
   initializeMousePositionTracker,

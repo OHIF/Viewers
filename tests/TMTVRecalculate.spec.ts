@@ -1,16 +1,9 @@
-import {
-  expect,
-  clearAllAnnotations,
-  getSUV,
-  simulateClicksOnElement,
-  test,
-  visitStudy,
-} from './utils';
+import { expect, clearAllAnnotations, getSUV, test, visitStudy } from './utils';
 
 test.skip('should update SUV values correctly.', async ({
   page,
   mainToolbarPageObject,
-  viewportGridPageObject,
+  viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
@@ -19,16 +12,12 @@ test.skip('should update SUV values correctly.', async ({
   // Create ROI
   await page.getByTestId('petSUV-btn').click();
   await mainToolbarPageObject.measurementTools.ellipticalROI.click();
-  const activeViewport = viewportGridPageObject.activeViewport;
   await clearAllAnnotations(page);
 
-  await simulateClicksOnElement({
-    locator: activeViewport,
-    points: [
-      { x: 100, y: 100 },
-      { x: 150, y: 150 },
-    ],
-  });
+  await viewportPageObject.active.clicksOn([
+    { x: 100, y: 100 },
+    { x: 150, y: 150 },
+  ]);
 
   // Get current SUV text
   let oldSUV = await getSUV(page);

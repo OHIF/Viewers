@@ -1,11 +1,11 @@
 import { expect, scrollVolumeViewport, test, visitStudy } from './utils';
 
-test.skip('PT should show slice closest to CT', async ({ page, viewportGridPageObject }) => {
+test.skip('PT should show slice closest to CT', async ({ page, viewportPageObject }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode);
 
-  const getNthViewportPane = (index: number) => viewportGridPageObject.getNthViewportPane(index);
+  const getNthViewportPane = (index: number) => viewportPageObject.getNth(index).pane;
 
   // Sagittal
   await expect(getNthViewportPane(1)).toContainText('257/512', {

@@ -10,9 +10,10 @@ test.beforeEach(async ({ page }) => {
 test('should launch MPR with unhydrated SEG chosen from the data overlay menu', async ({
   page,
   mainToolbarPageObject,
+  viewportPageObject,
 }) => {
   await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
   await page.getByText('SELECT A SEGMENTATION').click();
   await page.getByTestId('Segmentation').click();
@@ -21,7 +22,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
 
   await page.waitForTimeout(5000);
 

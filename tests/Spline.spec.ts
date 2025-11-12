@@ -1,10 +1,4 @@
-import {
-  checkForScreenshot,
-  screenShotPaths,
-  simulateClicksOnElement,
-  test,
-  visitStudy,
-} from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -15,21 +9,17 @@ test.beforeEach(async ({ page }) => {
 test('should display the spline tool', async ({
   page,
   mainToolbarPageObject,
-  viewportGridPageObject,
+  viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.splineROI.click();
-  const activeViewport = viewportGridPageObject.activeViewport;
-  await simulateClicksOnElement({
-    locator: activeViewport,
-    points: [
-      { x: 380, y: 459 },
-      { x: 420, y: 396 },
-      { x: 523, y: 392 },
-      { x: 581, y: 447 },
-      { x: 482, y: 493 },
-      { x: 383, y: 461 },
-    ],
-  });
+  await viewportPageObject.active.clicksOn([
+    { x: 380, y: 459 },
+    { x: 420, y: 396 },
+    { x: 523, y: 392 },
+    { x: 581, y: 447 },
+    { x: 482, y: 493 },
+    { x: 383, y: 461 },
+  ]);
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
   await checkForScreenshot(page, page, screenShotPaths.spline.splineDisplayedCorrectly);
 });

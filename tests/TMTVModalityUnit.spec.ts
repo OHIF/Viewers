@@ -1,16 +1,9 @@
-import {
-  expect,
-  clearAllAnnotations,
-  getTMTVModalityUnit,
-  simulateClicksOnElement,
-  test,
-  visitStudy,
-} from './utils';
+import { expect, clearAllAnnotations, getTMTVModalityUnit, test, visitStudy } from './utils';
 
 test.skip('pets where SUV cannot be calculated should show same unit in TMTV as in Basic Viewer.', async ({
   page,
   mainToolbarPageObject,
-  viewportGridPageObject,
+  viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
@@ -20,7 +13,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   await page.getByTestId('side-panel-header-left').click();
 
   // Change to image where SUV cannot be calculated
-  await viewportGridPageObject.getNthViewportPane(3).click();
+  await viewportPageObject.getNth(3).normalizedClicksOn([{ x: 0.5, y: 0.5 }]);
   await page.getByRole('button', { name: 'NAC' }).nth(1).dblclick();
 
   // Wait for the new series to load
@@ -28,16 +21,12 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
 
   // Add ROI annotation
   mainToolbarPageObject.measurementTools.ellipticalROI.click();
-  const activeViewport = viewportGridPageObject.activeViewport;
   await clearAllAnnotations(page);
 
-  await simulateClicksOnElement({
-    locator: activeViewport,
-    points: [
-      { x: 100, y: 100 },
-      { x: 150, y: 150 },
-    ],
-  });
+  await viewportPageObject.active.clicksOn([
+    { x: 100, y: 100 },
+    { x: 150, y: 150 },
+  ]);
 
   const modalityUnit = await getTMTVModalityUnit(page);
 

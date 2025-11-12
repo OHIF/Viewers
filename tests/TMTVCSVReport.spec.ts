@@ -1,9 +1,9 @@
-import { expect, simulateNormalizedClickOnElement, test, visitStudy } from './utils';
+import { expect, test, visitStudy } from './utils';
 import { downloadAsString } from './utils/download';
 
 test('should create and download the TMTV CSV report correctly', async ({
   page,
-  viewportGridPageObject,
+  viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
@@ -12,10 +12,7 @@ test('should create and download the TMTV CSV report correctly', async ({
   await page.getByTestId('addSegmentation').click();
   await page.getByTestId('Brush-btn').click();
 
-  await simulateNormalizedClickOnElement({
-    locator: viewportGridPageObject.getViewportById('ctAXIAL'),
-    normalizedPoint: { x: 0.5, y: 0.5 },
-  });
+  await viewportPageObject.getById('ctAXIAL').normalizedClicksOn([{ x: 0.5, y: 0.5 }]);
 
   await page.waitForTimeout(5000);
 
