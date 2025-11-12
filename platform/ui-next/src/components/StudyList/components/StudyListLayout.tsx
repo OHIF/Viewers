@@ -18,7 +18,7 @@ const LayoutContext = React.createContext<LayoutContextValue | undefined>(undefi
 export function useStudyListLayout() {
   const ctx = React.useContext(LayoutContext);
   if (!ctx) {
-    throw new Error('useStudyListLayout must be used within <StudyListLayout.Root>');
+    throw new Error('useStudyListLayout must be used within <StudyListLayout>');
   }
   return ctx;
 }
@@ -33,7 +33,7 @@ type RootProps = {
   className?: string;
 };
 
-function Root({
+function StudyListLayoutComponent({
   isPanelOpen,
   onIsPanelOpenChange,
   defaultPreviewSizePercent,
@@ -91,4 +91,5 @@ function OpenPreviewButton({
   );
 }
 
-export const StudyListLayout = Object.assign(Root, { Root, OpenPreviewButton });
+StudyListLayoutComponent.displayName = 'StudyListLayout';
+export const StudyListLayout = Object.assign(StudyListLayoutComponent, { OpenPreviewButton });

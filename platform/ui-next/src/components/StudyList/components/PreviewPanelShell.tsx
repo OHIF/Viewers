@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ScrollArea } from '../../ScrollArea';
 
-export function PreviewShell({
+export function PreviewPanelShell({
   header,
   children,
 }: {
@@ -19,4 +19,3 @@ export function PreviewShell({
     </div>
   );
 }
-
