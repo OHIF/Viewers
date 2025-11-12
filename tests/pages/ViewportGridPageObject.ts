@@ -7,15 +7,15 @@ export class ViewportGridPageObject {
     this.page = page;
   }
 
-  get activeViewport() {
+  get activeViewport(): Locator {
     return this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
   }
 
-  get allViewportPanes() {
+  get allViewports(): Locator {
     return this.page.getByTestId('viewport-pane');
   }
 
-  getNthViewportPane(index: number): Locator {
+  getNthViewport(index: number): Locator {
     return this.page.getByTestId('viewport-pane').nth(index);
   }
 
@@ -23,7 +23,7 @@ export class ViewportGridPageObject {
     return this.page.locator(`css=div[data-viewportid="${viewportId}"]`);
   }
 
-  get viewportGrid() {
+  get viewportGrid(): Locator {
     return this.page.getByTestId('viewport-grid');
   }
 }
