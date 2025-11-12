@@ -18,6 +18,7 @@ import Dialog from './Dialog.json';
 import Modals from './Modals.json';
 import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
+import Hps from './Hps.json';
 
 export default {
   fr: {
@@ -41,5 +42,6 @@ export default {
     Modals,
     Local,
     ErrorBoundary,
+    Hps,
   },
 };
