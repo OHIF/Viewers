@@ -19,6 +19,7 @@ import Modals from './Modals.json';
 import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Hps from './Hps.json';
+import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 
 export default {
   fr: {
@@ -43,5 +44,6 @@ export default {
     Local,
     ErrorBoundary,
     Hps,
+    ToolbarLayoutSelector,
   },
 };
