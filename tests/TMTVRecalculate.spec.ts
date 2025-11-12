@@ -9,8 +9,8 @@ import {
 
 test.skip('should update SUV values correctly.', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
@@ -18,8 +18,8 @@ test.skip('should update SUV values correctly.', async ({
 
   // Create ROI
   await page.getByTestId('petSUV-btn').click();
-  await mainToolbarPage.measurementTools.ellipticalROI.click();
-  const activeViewport = viewportGridPage.activeViewport;
+  await mainToolbarPageObject.measurementTools.ellipticalROI.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await clearAllAnnotations(page);
 
   await simulateClicksOnElement({

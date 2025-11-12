@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 
-import { ViewportGridPage } from './pages';
+import { viewportGridPageObject } from './pages';
 import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 
@@ -18,10 +18,10 @@ test.beforeEach(async ({ page }) => {
 async function performDrawingToolInteraction(
   page: Page,
   toolName: string,
-  viewportGridPage: ViewportGridPage
+  viewportGridPageObject: viewportGridPageObject
 ) {
   const brushRadiusInput = page.getByTestId(`${toolName}-radius`).locator('input');
-  const activeViewport = viewportGridPage.activeViewport;
+  const activeViewport = viewportGridPageObject.activeViewport;
   const circle = activeViewport.locator('svg.svg-layer circle').first();
 
   await expect(brushRadiusInput).toHaveValue('25');
@@ -58,23 +58,23 @@ async function performDrawingToolInteraction(
   await page.waitForTimeout(500);
 }
 
-test('should resize segmentation brush tool', async ({ page, viewportGridPage }) => {
+test('should resize segmentation brush tool', async ({ page, viewportGridPageObject }) => {
   await page.getByTestId('Brush-btn').click();
 
-  await performDrawingToolInteraction(page, 'brush', viewportGridPage);
+  await performDrawingToolInteraction(page, 'brush', viewportGridPageObject);
 
   await checkForScreenshot(
     page,
-    viewportGridPage.activeViewport,
+    viewportGridPageObject.activeViewport,
     screenShotPaths.segDrawingToolsResizing.brushTool
   );
 });
 
-test('should resize segmentation eraser tool', async ({ page, viewportGridPage }) => {
+test('should resize segmentation eraser tool', async ({ page, viewportGridPageObject }) => {
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
-  await viewportGridPage.activeViewport.click({ position: { x: 400, y: 400 } });
+  await viewportGridPageObject.activeViewport.click({ position: { x: 400, y: 400 } });
 
   await page.waitForTimeout(500);
 
@@ -83,17 +83,17 @@ test('should resize segmentation eraser tool', async ({ page, viewportGridPage }
 
   await page.waitForTimeout(500);
 
-  await performDrawingToolInteraction(page, 'eraser', viewportGridPage);
+  await performDrawingToolInteraction(page, 'eraser', viewportGridPageObject);
 
   await checkForScreenshot(
     page,
-    viewportGridPage.activeViewport,
+    viewportGridPageObject.activeViewport,
     screenShotPaths.segDrawingToolsResizing.eraserTool
   );
 });
 
-test('should resize segmentation threshold tool', async ({ page, viewportGridPage }) => {
+test('should resize segmentation threshold tool', async ({ page, viewportGridPageObject }) => {
   await page.getByTestId('Threshold-btn').click();
 
-  await performDrawingToolInteraction(page, 'threshold', viewportGridPage);
+  await performDrawingToolInteraction(page, 'threshold', viewportGridPageObject);
 });

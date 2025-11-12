@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should properly display MPR for MR', async ({ page, mainToolbarPage }) => {
+test('should properly display MPR for MR', async ({ page, mainToolbarPageObject }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
 
@@ -15,7 +15,7 @@ test('should properly display MPR for MR', async ({ page, mainToolbarPage }) => 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationThenMPR.segPostHydration);
 
-  await mainToolbarPage.layoutSection.axialPrimary.click();
+  await mainToolbarPageObject.layoutSection.axialPrimary.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(

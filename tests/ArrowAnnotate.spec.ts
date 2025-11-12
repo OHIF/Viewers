@@ -15,14 +15,14 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the arrow tool and allow free-form text to be entered', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
   await page.getByTestId('trackedMeasurements-btn').click();
 
-  await mainToolbarPage.measurementTools.arrowAnnotate.click();
+  await mainToolbarPageObject.measurementTools.arrowAnnotate.click();
 
-  const activeViewport = viewportGridPage.activeViewport;
+  const activeViewport = viewportGridPageObject.activeViewport;
   await simulateClicksOnElement({
     locator: activeViewport,
     points: [

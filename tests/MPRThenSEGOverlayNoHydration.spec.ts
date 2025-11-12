@@ -9,12 +9,12 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG chosen from the data overlay menu', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
   await page.getByTestId('side-panel-header-right').click();
 
-  await mainToolbarPage.layout.MPR.click();
+  await mainToolbarPageObject.layoutSection.MPR.click();
 
   await page.waitForTimeout(5000);
 
@@ -25,7 +25,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   );
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
-  await viewportGridPage.getViewportById('mpr-sagittal').hover();
+  await viewportGridPageObject.getViewportById('mpr-sagittal').hover();
   await page.getByTestId('dataOverlayMenu-mpr-sagittal-btn').click();
   await page.getByTestId('AddSegmentationDataOverlay-mpr-sagittal').click();
   await page.getByText('SELECT A SEGMENTATION').click();

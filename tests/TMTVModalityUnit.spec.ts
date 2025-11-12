@@ -9,8 +9,8 @@ import {
 
 test.skip('pets where SUV cannot be calculated should show same unit in TMTV as in Basic Viewer.', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
@@ -20,15 +20,15 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   await page.getByTestId('side-panel-header-left').click();
 
   // Change to image where SUV cannot be calculated
-  await viewportGridPage.getNthViewportPane(3).click();
+  await viewportGridPageObject.getNthViewportPane(3).click();
   await page.getByRole('button', { name: 'NAC' }).nth(1).dblclick();
 
   // Wait for the new series to load
   await page.waitForLoadState('networkidle');
 
   // Add ROI annotation
-  mainToolbarPage.measurementTools.ellipticalROI.click();
-  const activeViewport = viewportGridPage.activeViewport;
+  mainToolbarPageObject.measurementTools.ellipticalROI.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await clearAllAnnotations(page);
 
   await simulateClicksOnElement({

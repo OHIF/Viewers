@@ -47,15 +47,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Crosshairs Test', async () => {
-  test('should render the crosshairs correctly.', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layoutSection.MPR.click();
+  test('should render the crosshairs correctly.', async ({ page, mainToolbarPageObject }) => {
+    await mainToolbarPageObject.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRendered);
   });
 
-  test('should allow the user to rotate the crosshairs', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layoutSection.MPR.click();
+  test('should allow the user to rotate the crosshairs', async ({
+    page,
+    mainToolbarPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -65,8 +68,11 @@ test.describe('Crosshairs Test', async () => {
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRotated);
   });
 
-  test('should allow the user to adjust the slab thickness', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layoutSection.MPR.click();
+  test('should allow the user to adjust the slab thickness', async ({
+    page,
+    mainToolbarPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await increaseSlabThickness(page, '#svg-layer-mpr-axial', 0, 'x');
@@ -78,9 +84,9 @@ test.describe('Crosshairs Test', async () => {
 
   test('should reset the crosshairs to the initial position when reset is clicked', async ({
     page,
-    mainToolbarPage,
+    mainToolbarPageObject,
   }) => {
-    await mainToolbarPage.layoutSection.MPR.click();
+    await mainToolbarPageObject.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -94,9 +100,9 @@ test.describe('Crosshairs Test', async () => {
 
   test('should reset the crosshairs when a new displayset is loaded', async ({
     page,
-    mainToolbarPage,
+    mainToolbarPageObject,
   }) => {
-    await mainToolbarPage.layoutSection.MPR.click();
+    await mainToolbarPageObject.layoutSection.MPR.click();
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 0);

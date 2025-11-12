@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should launch MPR with unhydrated SEG', async ({ page, mainToolbarPage }) => {
+test('should launch MPR with unhydrated SEG', async ({ page, mainToolbarPageObject }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
 
@@ -14,7 +14,7 @@ test('should launch MPR with unhydrated SEG', async ({ page, mainToolbarPage }) 
 
   await checkForScreenshot(page, page, screenShotPaths.segNoHydrationThenMPR.segNoHydrationPreMPR);
 
-  await mainToolbarPage.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSection.MPR.click();
 
   await page.waitForTimeout(5000);
 

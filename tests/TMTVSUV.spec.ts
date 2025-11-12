@@ -2,13 +2,13 @@ import { expect, test, visitStudy } from './utils';
 
 test('should restrict the percentage of max SUV to be between 0 and 1', async ({
   page,
-  viewportGridPage,
+  viewportGridPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
-  await viewportGridPage.getViewportById('ptAXIAL').click();
+  await viewportGridPageObject.getViewportById('ptAXIAL').click();
 
   await page.getByTestId('addSegmentation').click();
   await page.getByTestId('RectangleROIStartEndThreshold-btn').click();

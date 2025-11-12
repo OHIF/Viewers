@@ -7,8 +7,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Axial Primary Test', async () => {
-  test('should render Axial Primary correctly.', async ({ page, mainToolbarPage }) => {
-    await mainToolbarPage.layout.axialPrimary.click();
+  test('should render Axial Primary correctly.', async ({ page, mainToolbarPageObject }) => {
+    await mainToolbarPageObject.layout.axialPrimary.click();
     await checkForScreenshot(
       page,
       page,

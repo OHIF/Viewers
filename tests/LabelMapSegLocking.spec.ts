@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should prevent editing of label map segmentations when panelSegmentation.disableEditing is true', async ({
   page,
-  viewportGridPage,
+  viewportGridPageObject,
 }) => {
   // disable editing of segmentations via the customization service
   await page.evaluate(() => {
@@ -45,17 +45,17 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await simulateNormalizedDragOnElement({
-    locator: viewportGridPage.getViewportById('default'),
+    locator: viewportGridPageObject.getViewportById('default'),
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportGridPage.getViewportById('default'),
+    locator: viewportGridPageObject.getViewportById('default'),
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportGridPage.getViewportById('default'),
+    locator: viewportGridPageObject.getViewportById('default'),
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });
@@ -65,7 +65,7 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
 
 test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
   page,
-  viewportGridPage,
+  viewportGridPageObject,
 }) => {
   // disable editing of segmentations via the customization service
   await page.evaluate(() => {
@@ -100,17 +100,17 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await simulateNormalizedDragOnElement({
-    locator: viewportGridPage.getViewportById('default'),
+    locator: viewportGridPageObject.getViewportById('default'),
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportGridPage.getViewportById('default'),
+    locator: viewportGridPageObject.getViewportById('default'),
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
   await simulateNormalizedDragOnElement({
-    locator: viewportGridPage.getViewportById('default'),
+    locator: viewportGridPageObject.getViewportById('default'),
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });

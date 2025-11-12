@@ -12,9 +12,13 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the rectangle tool', async ({ page, mainToolbarPage, viewportGridPage }) => {
-  await mainToolbarPage.measurementTools.rectangleROI.click();
-  const activeViewport = viewportGridPage.activeViewport;
+test('should display the rectangle tool', async ({
+  page,
+  mainToolbarPageObject,
+  viewportGridPageObject,
+}) => {
+  await mainToolbarPageObject.measurementTools.rectangleROI.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await simulateClicksOnElement({
     locator: activeViewport,
     points: [

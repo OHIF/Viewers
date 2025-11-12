@@ -9,10 +9,10 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
-  await mainToolbarPage.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSection.MPR.click();
 
   // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
   await page.waitForTimeout(10000);
@@ -24,7 +24,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   );
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
-  await viewportGridPage.getViewportById('mpr-sagittal').hover();
+  await viewportGridPageObject.getViewportById('mpr-sagittal').hover();
   await page.getByTestId('dataOverlayMenu-mpr-sagittal-btn').click();
   await page.getByTestId('AddSegmentationDataOverlay-mpr-sagittal').click();
   await page.getByText('SELECT A SEGMENTATION').click();

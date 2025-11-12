@@ -12,7 +12,11 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 5000);
 });
 
-test('should hydrate in MPR correctly', async ({ page, mainToolbarPage, viewportGridPage }) => {
+test('should hydrate in MPR correctly', async ({
+  page,
+  mainToolbarPageObject,
+  viewportGridPageObject,
+}) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('trackedMeasurements-btn').click();
 
@@ -43,8 +47,8 @@ test('should hydrate in MPR correctly', async ({ page, mainToolbarPage, viewport
 
   await page.waitForTimeout(5000);
 
-  await mainToolbarPage.measurementTools.bidirectional.click();
-  const activeViewport = viewportGridPage.activeViewport;
+  await mainToolbarPageObject.measurementTools.bidirectional.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await simulateClicksOnElement({
     locator: activeViewport,
     points: [
@@ -90,7 +94,7 @@ test('should hydrate in MPR correctly', async ({ page, mainToolbarPage, viewport
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
 
-  await mainToolbarPage.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSection.MPR.click();
 
   // wait 5 seconds
   await page.waitForTimeout(5000);

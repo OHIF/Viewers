@@ -12,9 +12,13 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the probe tool', async ({ page, mainToolbarPage, viewportGridPage }) => {
-  await mainToolbarPage.moreTools.probe.click();
-  const activeViewport = viewportGridPage.activeViewport;
+test('should display the probe tool', async ({
+  page,
+  mainToolbarPageObject,
+  viewportGridPageObject,
+}) => {
+  await mainToolbarPageObject.moreTools.probe.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await simulateClicksOnElement({
     locator: activeViewport,
     points: [{ x: 550, y: 200 }],

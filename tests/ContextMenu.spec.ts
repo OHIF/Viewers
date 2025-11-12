@@ -15,11 +15,11 @@ test.beforeEach(async ({ page }) => {
 
 test('should the context menu completely on screen and is not clipped for a point near the bottom edge of the screen', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
-  await mainToolbarPage.measurementTools.length.click();
-  const activeViewport = viewportGridPage.activeViewport;
+  await mainToolbarPageObject.measurementTools.length.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await simulateNormalizedClicksOnElement({
     locator: activeViewport,
     normalizedPoints: [

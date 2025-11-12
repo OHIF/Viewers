@@ -12,9 +12,13 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the circle tool', async ({ page, mainToolbarPage, viewportGridPage }) => {
-  await mainToolbarPage.measurementTools.circleROI.click();
-  const activeViewport = viewportGridPage.activeViewport;
+test('should display the circle tool', async ({
+  page,
+  mainToolbarPageObject,
+  viewportGridPageObject,
+}) => {
+  await mainToolbarPageObject.measurementTools.circleROI.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
   await simulateClicksOnElement({
     locator: activeViewport,
     points: [

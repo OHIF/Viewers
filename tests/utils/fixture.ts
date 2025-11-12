@@ -1,17 +1,17 @@
 import { test as base } from 'playwright-test-coverage';
-import { MainToolbarPage, ViewportGridPage } from '../pages';
+import { MainToolbarPageObject, ViewportGridPageObject } from '../pages';
 
 type PageObjects = {
-  mainToolbarPage: MainToolbarPage;
-  viewportGridPage: ViewportGridPage;
+  mainToolbarPageObject: MainToolbarPageObject;
+  viewportGridPageObject: ViewportGridPageObject;
 };
 
 export const test = base.extend<PageObjects>({
-  mainToolbarPage: async ({ page }, use) => {
-    await use(new MainToolbarPage(page));
+  mainToolbarPageObject: async ({ page }, use) => {
+    await use(new MainToolbarPageObject(page));
   },
-  viewportGridPage: async ({ page }, use) => {
-    await use(new ViewportGridPage(page));
+  viewportGridPageObject: async ({ page }, use) => {
+    await use(new ViewportGridPageObject(page));
   },
 });
 

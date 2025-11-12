@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should rotate the image to the right', async ({ page, mainToolbarPage }) => {
-  await mainToolbarPage.moreTools.rotateRight.click();
+test('should rotate the image to the right', async ({ page, mainToolbarPageObject }) => {
+  await mainToolbarPageObject.moreTools.rotateRight.click();
   await checkForScreenshot(page, page, screenShotPaths.rotateRight.rotateRightDisplayedCorrectly);
 });

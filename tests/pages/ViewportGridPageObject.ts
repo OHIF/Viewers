@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 
-export class ViewportGridPage {
+export class ViewportGridPageObject {
   readonly page: Page;
 
   constructor(page: Page) {

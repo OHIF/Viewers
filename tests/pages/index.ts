@@ -1,4 +1,4 @@
-import { MainToolbarPage } from './MainToolbarPage';
-import { ViewportGridPage } from './ViewportGridPage';
+import { MainToolbarPageObject } from './MainToolbarPageObject';
+import { ViewportGridPageObject } from './ViewportGridPageObject';
 
-export { MainToolbarPage, ViewportGridPage };
+export { MainToolbarPageObject, ViewportGridPageObject };

@@ -14,11 +14,11 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the bidirectional tool', async ({
   page,
-  mainToolbarPage,
-  viewportGridPage,
+  mainToolbarPageObject,
+  viewportGridPageObject,
 }) => {
-  await mainToolbarPage.measurementTools.bidirectional.click();
-  const activeViewport = viewportGridPage.activeViewport;
+  await mainToolbarPageObject.measurementTools.bidirectional.click();
+  const activeViewport = viewportGridPageObject.activeViewport;
 
   await simulateClicksOnElement({
     locator: activeViewport,

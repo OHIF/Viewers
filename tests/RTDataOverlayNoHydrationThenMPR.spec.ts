@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
-  mainToolbarPage,
+  mainToolbarPageObject,
 }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('dataOverlayMenu-default-btn').click();
@@ -31,7 +31,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
     screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPreMPR
   );
 
-  await mainToolbarPage.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSection.MPR.click();
 
   await page.waitForTimeout(5000);
 
