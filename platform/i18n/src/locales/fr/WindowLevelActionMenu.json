@@ -6,5 +6,10 @@
   "Color LUT": "LUT de couleur",
   "Preview in viewport": "Prévisualiser dans la fenêtre",
   "Grayscale": "Niveaux de gris",
-  "Rendering Options": "Options de rendu"
+  "Rendering Options": "Options de rendu",
+  "Soft tissue": "Tissus mous",
+  "Lung": "Poumon",
+  "Liver": "Foie",
+  "Bone": "Osseux",
+  "Brain": "Cérébral"
 }
