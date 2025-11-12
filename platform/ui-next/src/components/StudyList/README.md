@@ -31,33 +31,33 @@ Notes
 
 ```
 ui-next/src/components/StudyList/
-├── headless/              # State management (UI‑agnostic)
+├── headless/                       # State management (UI‑agnostic)
 │   ├── StudyListProvider.tsx
 │   ├── useStudyList.ts
 │   └── workflows-registry.ts
 │
-├── components/            # Building blocks
+├── components/                     # Building blocks
 │   ├── PreviewPanelContent.tsx
 │   ├── PreviewPanelEmpty.tsx
-│   ├── PreviewPanelShell.tsx     # Preview container (header + scroll)
+│   ├── PreviewPanelShell.tsx       # Preview container (header + scroll)
 │   ├── SettingsPopover.tsx
 │   ├── StudyListInstancesCell.tsx
-│   ├── StudyListLayout.tsx       # Resizable split layout
-│   ├── StudyListTable.tsx        # Table built on DS DataTable
+│   ├── StudyListLayout.tsx         # Resizable split layout
+│   ├── StudyListTable.tsx          # Table built on DS DataTable
 │   └── WorkflowsMenu.tsx
 │
-├── layouts/               # Compositions using components/
+├── layouts/                        # Compositions using components/
 │   ├── StudyListLargeLayout.tsx    # Default Study List recipe
 │   ├── StudyListMediumLayout.tsx   # (future)
 │   └── StudyListSmallLayout.tsx    # (future)
 │
 ├── columns/
-│   └── defaultColumns.tsx
+│   └── defaultColumns.tsx          # Default columns factory used by the table
 │
-├── StudyList.tsx          # Future responsive wrapper; currently renders StudyListLargeLayout
-├── StudyListTypes.ts
-├── WorkflowsInfer.ts
-├── useDefaultWorkflow.ts
+├── StudyList.tsx                   # Future responsive wrapper; currently renders Large
+├── StudyListTypes.ts               # Default row type (StudyRow) and related types
+├── WorkflowsInfer.ts               # Re-exports workflow ids + inference utilities
+├── useDefaultWorkflow.ts           # localStorage-backed default workflow hook
 └── index.ts
 ```
 
@@ -68,7 +68,7 @@ ui-next/src/components/StudyList/
 - Headless state (in `headless/`) owns selection, preview panel open state, default workflow persisted to localStorage, and a `launch` action handler.
 - Building blocks (in `components/`) are small, focused UI pieces that read from DS primitives (e.g., `DataTable`, `Table`, `DropdownMenu`, `Resizable`).
 - Layouts (in `layouts/`) compose building blocks into responsive study list experiences. `StudyListLargeLayout` is the default.
-- The façade `StudyList` renders `StudyListLargeLayout` to provide a stable entry point.
+- The façade `StudyList` is a future responsive wrapper; it currently renders `StudyListLargeLayout` to provide a stable entry point.
 
 ### Data Flow
 - `useStudyListState` builds the headless state and is provided via `<StudyListProvider value={...}>`.
@@ -170,7 +170,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
 
 ---
 
-## DS dependencies
+## Design System dependencies
 
 - DataTable (`@ohif/ui-next`)
   - `DataTable`, `useDataTable`, `DataTableColumnHeader`, `DataTableFilterRow`,
@@ -185,7 +185,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
 
 ## Customization Patterns
 
-- Replace or augment columns
+### Replace or augment columns
 
   ```tsx
   import React from 'react';
@@ -202,7 +202,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
   }
   ```
 
-- Compose your own layout with headless + blocks
+### Compose your own layout with headless + blocks
 
   ```tsx
   import React from 'react';
@@ -248,36 +248,79 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
   }
   ```
 
-- PatientSummary anywhere
+### PatientSummary anywhere
+
+  Place `PatientSummary` wherever you need it (preview panel, above the table, or inside a cell).
+  Use the StudyList headless hook to wire workflows and launch behavior.
+
+  Note: `PatientSummary.Workflows` is presentation‑only. It does not infer or fetch workflows.
+  Always pass an explicit list (e.g., from `useStudyList().availableWorkflowsFor(row)` or `WorkflowsInfer`).
+
+  In‑context example (inside a component rendered under `StudyListProvider` or `StudyList*Layout`):
 
   ```tsx
   import React from 'react';
-  import { PatientSummary } from '@ohif/ui-next';
+  import { PatientSummary, useStudyList, type WorkflowId } from '@ohif/ui-next';
 
-  <PatientSummary data={row}>
-    <PatientSummary.Patient />
-    <PatientSummary.Workflows
-      workflows={availableWorkflowsFor(row)}
-      defaultMode={defaultWorkflow}
-      onDefaultModeChange={setDefaultWorkflow}
-      onLaunchWorkflow={(data, wf) => launch(data!, wf)}
-    />
-  </PatientSummary>
+  function SummaryForRow({ row }: { row: any }) {
+    const { availableWorkflowsFor, defaultWorkflow, setDefaultWorkflow, launch } =
+      useStudyList<any, WorkflowId>();
+
+    return (
+      <PatientSummary data={row}>
+        <PatientSummary.Patient />
+        <PatientSummary.Workflows<WorkflowId>
+          workflows={availableWorkflowsFor(row)}
+          defaultMode={defaultWorkflow}
+          onDefaultModeChange={setDefaultWorkflow}
+          onLaunchWorkflow={(data, wf) => data && launch(data, wf)}
+        />
+      </PatientSummary>
+    );
+  }
+  ```
+
+  #### Alternate title/subtitle mapping (e.g., Description/Accession):
+
+  ```tsx
+  import React from 'react';
+  import { PatientSummary, useStudyList, type WorkflowId } from '@ohif/ui-next';
+
+  function SummaryWithMapping({ row }: { row: any }) {
+    const { availableWorkflowsFor, defaultWorkflow, setDefaultWorkflow, launch } =
+      useStudyList<any, WorkflowId>();
+
+    return (
+      <PatientSummary
+        data={row}
+        get={{
+          title: r => r.description,
+          subtitle: r => r.accession,
+        }}
+      >
+        <PatientSummary.Section variant="row" align="center">
+          <PatientSummary.Icon />
+          <div className="min-w-0">
+            <PatientSummary.Title />
+            <PatientSummary.Subtitle prefix="Accession: " />
+          </div>
+        </PatientSummary.Section>
+        <PatientSummary.Workflows<WorkflowId>
+          workflows={availableWorkflowsFor(row)}
+          defaultMode={defaultWorkflow}
+          onDefaultModeChange={setDefaultWorkflow}
+          onLaunchWorkflow={(data, wf) => data && launch(data, wf)}
+        />
+      </PatientSummary>
+    );
+  }
   ```
 
 - Deterministic workflows
   - Pass `row.workflows` (strings in the allowed set) to control the menu per row.
   - Otherwise inference derives from `modalities` (adds US or TMTV where applicable).
-
----
-
-## Removed / Not Present (prototype‑only)
-
-To keep the package lean, legacy prototype pieces were removed. If you relied on them, replace with the new headless + components API.
-
-- Legacy table contexts and column wrappers
-- Playground‑specific studylist layout bridges
-- Workflow inference inside `PatientSummary.Workflows` (now supplied by headless `availableWorkflowsFor`)
+  - Workflow ids and inference helpers are exported from `WorkflowsInfer`.
+  - `PatientSummary.Workflows` never computes available workflows; supply them from headless.
 
 ---
 
@@ -312,17 +355,17 @@ To keep the package lean, legacy prototype pieces were removed. If you relied on
 
 The API supports multiple responsive compositions. For example, we may add:
 
-- `MediumLayout` — a compact table + preview with adjusted paddings.
-- `SmallLayout` — a mobile‑first single‑pane list with an overlay preview.
+- `StudyListMediumLayout` — a compact table + preview with adjusted paddings.
+- `StudyListSmallLayout` — a mobile‑first single‑pane list with an overlay preview.
 
 Example usage (conceptual):
 
 ```tsx
-import { MediumLayout, SmallLayout } from '@ohif/ui-next';
+import { StudyListMediumLayout, StudyListSmallLayout } from '@ohif/ui-next';
 
 // Medium
-<MediumLayout data={rows} onLaunch={handleLaunch} />
+<StudyListMediumLayout data={rows} onLaunch={handleLaunch} />
 
 // Small
-<SmallLayout data={rows} onLaunch={handleLaunch} />
+<StudyListSmallLayout data={rows} onLaunch={handleLaunch} />
 ```

@@ -21,9 +21,12 @@ export * from './components/PreviewPanelEmpty';
 // Hooks
 export * from './useDefaultWorkflow';
 
-// Public StudyList (future responsive wrapper; currently renders StudyListLargeLayout)
-export { StudyListLargeLayout } from './layouts/StudyListLargeLayout';
+// Public StudyList component
+// Future: responsive wrapper; currently renders StudyListLargeLayout
 export * from './StudyList';
+
+// Layouts (explicit compositions)
+export { StudyListLargeLayout } from './layouts/StudyListLargeLayout';
 
 // Headless
 export * from './headless/StudyListProvider';

@@ -33,7 +33,7 @@ export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultMode
     <PopoverContent
       align="end"
       sideOffset={8}
-      className="w-[360px] p-4"
+      className="w-[315px] p-4"
       // Prevents unwanted focus jumps when opening
       onOpenAutoFocus={e => e.preventDefault()}
     >
@@ -67,4 +67,3 @@ export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultMode
     </PopoverContent>
   );
 }
-
