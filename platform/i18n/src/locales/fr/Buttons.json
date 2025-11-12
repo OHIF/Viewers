@@ -55,6 +55,7 @@
   "Play": "$t(Common:Play)",
   "Previous": "$t(Common:Previous)",
   "Probe": "Sonde",
+  "Colorbar": "Barre de couleurs",
   "Rectangle": "Rectangle",
   "Reference Lines": "Lignes de référence",
   "Reset to defaults": "Réinitialiser les valeurs par défaut",

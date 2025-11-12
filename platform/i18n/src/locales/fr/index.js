@@ -20,6 +20,9 @@ import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import WindowLevelActionMenu from './WindowLevelActionMenu.json';
+import CaptureViewportModal from './CaptureViewportModal.json';
+import Tools from './Tools.json';
 
 export default {
   fr: {
@@ -45,5 +48,8 @@ export default {
     ErrorBoundary,
     Hps,
     ToolbarLayoutSelector,
+    WindowLevelActionMenu,
+    CaptureViewportModal,
+    Tools,
   },
 };
