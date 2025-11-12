@@ -11,3 +11,4 @@ export type StudyRow = {
   /** Optional, data-driven list of available workflows for this study (immutable) */
   workflows?: readonly WorkflowId[];
 };
+

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeWrapper } from '../../src/components/ThemeWrapper';
 import data from './patient-studies.json';
-import { StudyList, type StudyRow, type WorkflowId } from '../../StudyList';
+import { StudyList, type StudyRow, type WorkflowId } from '../../src/components/StudyList';
 
 export function App() {
   const handleLaunch = React.useCallback((study: StudyRow, workflow: WorkflowId) => {

@@ -25,10 +25,10 @@
  * - Workflows render buttons for the rest of the available workflows.
  *
  * Helpful references
- * - platform/ui-next/StudyList/PreviewPanel.tsx (in-context example)
- * - platform/ui-next/StudyList/EmptyPanel.tsx (empty state example)
- * - platform/ui-next/StudyList/headless/useStudyList.ts (state + availableWorkflowsFor)
- * - platform/ui-next/StudyList/headless/workflows-registry.ts (workflow ids/utilities)
+ * - platform/ui-next/src/components/StudyList/components/PreviewPanel.tsx (in-context example)
+ * - platform/ui-next/src/components/StudyList/components/EmptyPanel.tsx (empty state example)
+ * - platform/ui-next/src/components/StudyList/headless/useStudyList.ts (state + availableWorkflowsFor)
+ * - platform/ui-next/src/components/StudyList/headless/workflows-registry.ts (workflow ids/utilities)
  */
 import * as React from 'react';
 import type { ElementType } from 'react';

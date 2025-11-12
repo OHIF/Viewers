@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { StudyRow } from './StudyListTypes';
 import type { WorkflowId } from './WorkflowsInfer';
-import { DefaultStudyList } from './recipes/DefaultStudyList';
+import { DesktopLayout as DefaultStudyList } from './layouts/DesktopLayout';
 
 type Props = {
   data: StudyRow[];
@@ -22,3 +22,4 @@ type Props = {
 export function StudyList(props: Props) {
   return <DefaultStudyList {...props} />;
 }
+

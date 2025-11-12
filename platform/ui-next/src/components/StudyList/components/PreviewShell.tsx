@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollArea } from '../../src/components/ScrollArea';
+import { ScrollArea } from '../../ScrollArea';
 
 export function PreviewShell({
   header,
@@ -19,3 +19,4 @@ export function PreviewShell({
     </div>
   );
 }
+

@@ -3,9 +3,9 @@ import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-} from '../../src/components/Resizable';
-import { Button } from '../../src/components/Button';
-import { Icons } from '../../src/components/Icons';
+} from '../../Resizable';
+import { Button } from '../../Button';
+import { Icons } from '../../Icons';
 
 type LayoutContextValue = {
   isPanelOpen: boolean;
@@ -15,10 +15,10 @@ type LayoutContextValue = {
 
 const LayoutContext = React.createContext<LayoutContextValue | undefined>(undefined);
 
-export function useStudylistLayout() {
+export function useStudyListLayout() {
   const ctx = React.useContext(LayoutContext);
   if (!ctx) {
-    throw new Error('useStudylistLayout must be used within <StudylistLayout.Root>');
+    throw new Error('useStudyListLayout must be used within <StudyListLayout.Root>');
   }
   return ctx;
 }
@@ -83,7 +83,7 @@ function OpenPreviewButton({
   className,
   'aria-label': ariaLabel = 'Open preview panel',
 }: React.HTMLAttributes<HTMLButtonElement> & { 'aria-label'?: string }) {
-  const { isPanelOpen, openPanel } = useStudylistLayout();
+  const { isPanelOpen, openPanel } = useStudyListLayout();
   if (isPanelOpen) return null;
   return (
     <Button
@@ -101,9 +101,10 @@ function OpenPreviewButton({
   );
 }
 
-export const StudylistLayout = Object.assign(Root, {
+export const StudyListLayout = Object.assign(Root, {
   Root,
   TableArea,
   PreviewArea,
   OpenPreviewButton,
 });
+

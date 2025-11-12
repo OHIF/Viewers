@@ -128,6 +128,7 @@ import {
   ToolButtonListDivider,
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
+export * from './StudyList';
 import { ToolSettings } from './OHIFToolSettings';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';

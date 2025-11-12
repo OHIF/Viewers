@@ -1,15 +1,9 @@
 import * as React from 'react';
 
-/**
- * Headless Study List context & hook.
- * Provides selection, panel state, default workflow, available workflows and launch action.
- * Generic over row type T and workflow type W (string union).
- */
-
 export type StudyListContextValue<T = any, W extends string = string> = {
   rows: T[];
   selected: T | null;
-  setSelected: (r: T | null) => void;
+  setSelected: (row: T | null) => void;
 
   isPanelOpen: boolean;
   setPanelOpen: (open: boolean) => void;
@@ -45,3 +39,4 @@ export function useStudyList<T = any, W extends string = string>() {
   }
   return ctx as StudyListContextValue<T, W>;
 }
+

@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { PopoverContent } from '../src/components/Popover/Popover';
+import { PopoverContent } from '../../Popover/Popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../src/components/Select';
-import { Label } from '../src/components/Label';
-import { ALL_WORKFLOW_OPTIONS, type WorkflowId } from './WorkflowsInfer';
+} from '../../Select';
+import { Label } from '../../Label';
+import { ALL_WORKFLOW_OPTIONS, type WorkflowId } from '../WorkflowsInfer';
 
 type Props = {
   /** Controlled open state from parent Popover */
@@ -67,3 +67,4 @@ export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultMode
     </PopoverContent>
   );
 }
+
