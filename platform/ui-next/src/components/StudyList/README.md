@@ -37,23 +37,24 @@ ui-next/src/components/StudyList/
 │   └── workflows-registry.ts
 │
 ├── components/            # Building blocks
-│   ├── StudyListLayout.tsx       # Resizable split layout
-│   ├── PreviewShell.tsx          # Preview container (header + scroll)
-│   ├── StudyListTable.tsx        # Table built on DS DataTable
-│   ├── StudyListInstancesCell.tsx
-│   ├── WorkflowsMenu.tsx
+│   ├── PreviewPanelContent.tsx
+│   ├── PreviewPanelEmpty.tsx
+│   ├── PreviewPanelShell.tsx     # Preview container (header + scroll)
 │   ├── SettingsPopover.tsx
-│   ├── PreviewPanel.tsx
-│   ├── EmptyPanel.tsx
-│   
+│   ├── StudyListInstancesCell.tsx
+│   ├── StudyListLayout.tsx       # Resizable split layout
+│   ├── StudyListTable.tsx        # Table built on DS DataTable
+│   └── WorkflowsMenu.tsx
 │
 ├── layouts/               # Compositions using components/
-│   └── DesktopLayout.tsx  # Default Study List recipe
+│   ├── StudyListLargeLayout.tsx    # Default Study List recipe
+│   ├── StudyListMediumLayout.tsx   # (future)
+│   └── StudyListSmallLayout.tsx    # (future)
 │
 ├── columns/
 │   └── defaultColumns.tsx
 │
-├── StudyList.tsx          # Public façade → DesktopLayout
+├── StudyList.tsx          # Future responsive wrapper; currently renders StudyListLargeLayout
 ├── StudyListTypes.ts
 ├── WorkflowsInfer.ts
 ├── useDefaultWorkflow.ts
@@ -66,8 +67,8 @@ ui-next/src/components/StudyList/
 
 - Headless state (in `headless/`) owns selection, preview panel open state, default workflow persisted to localStorage, and a `launch` action handler.
 - Building blocks (in `components/`) are small, focused UI pieces that read from DS primitives (e.g., `DataTable`, `Table`, `DropdownMenu`, `Resizable`).
-- Layouts (in `layouts/`) compose building blocks into responsive study list experiences. `DesktopLayout` is the default.
-- The façade `StudyList` renders `DesktopLayout` to provide a stable entry point.
+- Layouts (in `layouts/`) compose building blocks into responsive study list experiences. `StudyListLargeLayout` is the default.
+- The façade `StudyList` renders `StudyListLargeLayout` to provide a stable entry point.
 
 ### Data Flow
 - `useStudyListState` builds the headless state and is provided via `<StudyListProvider value={...}>`.
@@ -104,7 +105,7 @@ ui-next/src/components/StudyList/
 - Props: `isPanelOpen`, `onIsPanelOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent`, `table`, `preview`.
 - Hook: `useStudyListLayout()`; `OpenPreviewButton` re‑opens the preview when closed.
 
-### `components/PreviewShell.tsx`
+### `components/PreviewPanelShell.tsx`
 - Light container for preview content (header slot + scroll area).
 
 ### `components/StudyListTable.tsx`
@@ -123,16 +124,16 @@ ui-next/src/components/StudyList/
 ### `components/SettingsPopover.tsx`
 - Popover content for selecting the default workflow, persisted via `useDefaultWorkflow`.
 
-### `components/PreviewPanel.tsx` and `components/EmptyPanel.tsx`
+### `components/PreviewPanelContent.tsx` and `components/PreviewPanelEmpty.tsx`
 - Default preview content using `PatientSummary`; the former renders thumbnails and workflows for the selected row, the latter renders an empty state.
 
 ---
 
 ## Layouts
 
-### `layouts/DesktopLayout.tsx`
+### `layouts/StudyListLargeLayout.tsx`
 - The default composition used by `StudyList`.
-- Wires `useStudyListState` to `StudyListProvider`, `StudyListLayout`, `StudyListTable`, `SettingsPopover`, `PreviewPanel`, and `EmptyPanel`.
+- Wires `useStudyListState` to `StudyListProvider`, `StudyListLayout`, `StudyListTable`, `SettingsPopover`, `PreviewPanelContent`, and `PreviewPanelEmpty`.
 
 ---
 
@@ -151,7 +152,7 @@ ui-next/src/components/StudyList/
 - Use the façade (recommended):
   - `import { StudyList } from '@ohif/ui-next';`
 - Use the default recipe directly:
-  - `import { DefaultStudyList } from '@ohif/ui-next';`
+  - `import { StudyListLargeLayout } from '@ohif/ui-next';`
 - Compose your own with headless + blocks:
   - `import { StudyListProvider, useStudyListState, StudyListLayout, StudyListTable } from '@ohif/ui-next';`
 
@@ -224,7 +225,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
 
     return (
       <StudyListProvider value={state}>
-        <StudyListLayout.Root
+        <StudyListLayout
           isPanelOpen={state.isPanelOpen}
           onIsPanelOpenChange={state.setPanelOpen}
           defaultPreviewSizePercent={30}
@@ -303,4 +304,25 @@ To keep the package lean, legacy prototype pieces were removed. If you relied on
 - Moved StudyList to the Design System at `src/components/StudyList/`.
 - Renamed `StudylistLayout` → `StudyListLayout` and `useStudylistLayout` → `useStudyListLayout`.
 - Consolidated building blocks under `components/` and compositions under `layouts/`.
-- `StudyList` now renders `DesktopLayout` by default; `DefaultStudyList` re‑exports to keep recipes discoverable.
+- Renamed `DesktopLayout` → `StudyListLargeLayout` (default). Removed `DefaultStudyList` alias.
+
+---
+
+## Future Layout Examples
+
+The API supports multiple responsive compositions. For example, we may add:
+
+- `MediumLayout` — a compact table + preview with adjusted paddings.
+- `SmallLayout` — a mobile‑first single‑pane list with an overlay preview.
+
+Example usage (conceptual):
+
+```tsx
+import { MediumLayout, SmallLayout } from '@ohif/ui-next';
+
+// Medium
+<MediumLayout data={rows} onLaunch={handleLaunch} />
+
+// Small
+<SmallLayout data={rows} onLaunch={handleLaunch} />
+```

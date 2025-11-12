@@ -8,7 +8,7 @@ import type { WorkflowId } from '../WorkflowsInfer';
 import { PatientSummary } from '../../PatientSummary';
 import { useStudyList } from '../headless/StudyListProvider';
 
-export function PreviewPanel({
+export function PreviewPanelContent({
   study,
   defaultMode,
   onDefaultModeChange,
@@ -63,4 +63,3 @@ export function PreviewPanel({
     </DndProvider>
   );
 }
-

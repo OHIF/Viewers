@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { StudyRow } from './StudyListTypes';
 import type { WorkflowId } from './WorkflowsInfer';
-import { DesktopLayout as DefaultStudyList } from './layouts/DesktopLayout';
+import { StudyListLargeLayout } from './layouts/StudyListLargeLayout';
 
 type Props = {
   data: StudyRow[];
@@ -16,10 +16,11 @@ type Props = {
 };
 
 /**
- * Backwards-compatible facade that renders the default Study List recipe.
- * Consumers who want more control can import headless primitives directly.
+ * Backwards-compatible facade that renders the default Study List layout.
+ * Consumers who want more control can import headless primitives (or specific layouts) directly.
+ * Future: this becomes a responsive wrapper that selects an appropriate layout (e.g., Large/Medium/Small).
  */
 export function StudyList(props: Props) {
-  return <DefaultStudyList {...props} />;
+  // Temporary façade: renders LargeLayout until a responsive wrapper is introduced.
+  return <StudyListLargeLayout {...props} />;
 }
-

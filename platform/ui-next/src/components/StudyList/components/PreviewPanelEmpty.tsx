@@ -3,7 +3,7 @@ import { PatientSummary } from '../../PatientSummary';
 import type { WorkflowId } from '../WorkflowsInfer';
 import { useStudyList } from '../headless/StudyListProvider';
 
-export function EmptyPanel({
+export function PreviewPanelEmpty({
   defaultMode,
   onDefaultModeChange,
 }: {
@@ -25,4 +25,3 @@ export function EmptyPanel({
     </PatientSummary>
   );
 }
-

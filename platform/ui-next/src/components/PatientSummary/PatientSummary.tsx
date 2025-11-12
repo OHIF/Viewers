@@ -25,8 +25,8 @@
  * - Workflows render buttons for the rest of the available workflows.
  *
  * Helpful references
- * - platform/ui-next/src/components/StudyList/components/PreviewPanel.tsx (in-context example)
- * - platform/ui-next/src/components/StudyList/components/EmptyPanel.tsx (empty state example)
+ * - platform/ui-next/src/components/StudyList/components/PreviewPanelContent.tsx (in-context example)
+ * - platform/ui-next/src/components/StudyList/components/PreviewPanelEmpty.tsx (empty state example)
  * - platform/ui-next/src/components/StudyList/headless/useStudyList.ts (state + availableWorkflowsFor)
  * - platform/ui-next/src/components/StudyList/headless/workflows-registry.ts (workflow ids/utilities)
  */

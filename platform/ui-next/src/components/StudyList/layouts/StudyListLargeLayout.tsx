@@ -7,9 +7,9 @@ import type { StudyRow } from '../StudyListTypes';
 import type { WorkflowId } from '../WorkflowsInfer';
 import { StudyListTable } from '../components/StudyListTable';
 import { SettingsPopover } from '../components/SettingsPopover';
-import { PreviewPanel } from '../components/PreviewPanel';
-import { EmptyPanel } from '../components/EmptyPanel';
-import { PreviewShell } from '../components/PreviewShell';
+import { PreviewPanelContent } from '../components/PreviewPanelContent';
+import { PreviewPanelEmpty } from '../components/PreviewPanelEmpty';
+import { PreviewPanelShell } from '../components/PreviewPanelShell';
 import { StudyListLayout } from '../components/StudyListLayout';
 import { StudyListProvider, useStudyList } from '../headless/StudyListProvider';
 import { useStudyListState } from '../headless/useStudyList';
@@ -26,7 +26,7 @@ type Props = {
   onLaunch?: (study: StudyRow, workflow: WorkflowId) => void;
 };
 
-export function DesktopLayout({
+export function StudyListLargeLayout({
   data,
   columns = defaultColumns(),
   title = 'Study List',
@@ -55,7 +55,7 @@ export function DesktopLayout({
 
   return (
     <StudyListProvider value={state}>
-      <StudyListLayout.Root
+      <StudyListLayout
         isPanelOpen={state.isPanelOpen}
         onIsPanelOpenChange={state.setPanelOpen}
         defaultPreviewSizePercent={previewDefaultSize}
@@ -93,7 +93,7 @@ function SidePanel() {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   return (
-    <PreviewShell
+    <PreviewPanelShell
       header={
         <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
           <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
@@ -121,15 +121,16 @@ function SidePanel() {
       }
     >
       {selected ? (
-        <PreviewPanel
+        <PreviewPanelContent
           key={(selected as StudyRow).accession}
           study={selected as StudyRow}
           defaultMode={defaultWorkflow}
           onDefaultModeChange={setDefaultWorkflow}
         />
       ) : (
-        <EmptyPanel defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
+        <PreviewPanelEmpty defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
       )}
-    </PreviewShell>
+    </PreviewPanelShell>
   );
 }
+
