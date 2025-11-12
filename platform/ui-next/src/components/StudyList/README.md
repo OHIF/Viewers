@@ -45,14 +45,10 @@ ui-next/src/components/StudyList/
 │   ├── SettingsPopover.tsx
 │   ├── PreviewPanel.tsx
 │   ├── EmptyPanel.tsx
-│   ├── MobileTable.tsx           # (future)
-│   └── MobilePreview.tsx         # (future)
+│   
 │
 ├── layouts/               # Compositions using components/
-│   ├── DesktopLayout.tsx  # Default Study List recipe
-│   ├── MobileLayout.tsx   # (future)
-│   ├── TabletLayout.tsx   # (future)
-│   └── CompactLayout.tsx  # (future)
+│   └── DesktopLayout.tsx  # Default Study List recipe
 │
 ├── columns/
 │   └── defaultColumns.tsx
@@ -138,9 +134,6 @@ ui-next/src/components/StudyList/
 ### `layouts/DesktopLayout.tsx`
 - The default composition used by `StudyList`.
 - Wires `useStudyListState` to `StudyListProvider`, `StudyListLayout`, `StudyListTable`, `SettingsPopover`, `PreviewPanel`, and `EmptyPanel`.
-
-Future placeholders
-- `MobileLayout.tsx`, `TabletLayout.tsx`, `CompactLayout.tsx`, plus `MobileTable.tsx`, `MobilePreview.tsx` in components.
 
 ---
 
