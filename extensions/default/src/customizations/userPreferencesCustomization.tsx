@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
 import { UserPreferencesModal, FooterAction } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
@@ -23,10 +23,36 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
+  const fallbackHotkeyDefinitions = useMemo(
+    () =>
+      hotkeysManager.getValidHotkeyDefinitions(
+        hotkeysModule.defaults.hotkeyBindings
+      ) as HotkeyDefinitions,
+    [hotkeysManager]
+  );
+
+  useEffect(() => {
+    if (!Object.keys(hotkeyDefaults).length) {
+      hotkeysManager.setDefaultHotKeys(hotkeysModule.defaults.hotkeyBindings);
+    }
+
+    if (!Object.keys(hotkeyDefinitions).length) {
+      hotkeysManager.setHotkeys(fallbackHotkeyDefinitions);
+    }
+  }, [hotkeysManager, hotkeyDefaults, hotkeyDefinitions, fallbackHotkeyDefinitions]);
+
+  const resolvedHotkeyDefaults = Object.keys(hotkeyDefaults).length
+    ? (hotkeyDefaults as HotkeyDefinitions)
+    : fallbackHotkeyDefinitions;
+
+  const initialHotkeyDefinitions = Object.keys(hotkeyDefinitions).length
+    ? (hotkeyDefinitions as HotkeyDefinitions)
+    : resolvedHotkeyDefaults;
+
   const currentLanguage = currentLanguageFn();
 
   const [state, setState] = useState({
-    hotkeyDefinitions: hotkeyDefinitions as HotkeyDefinitions,
+    hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
   });
 
@@ -51,7 +77,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     setState(state => ({
       ...state,
       languageValue: defaultLanguage.value,
-      hotkeyDefinitions: hotkeyDefaults as HotkeyDefinitions,
+      hotkeyDefinitions: resolvedHotkeyDefaults,
     }));
 
     hotkeysManager.restoreDefaultBindings();
