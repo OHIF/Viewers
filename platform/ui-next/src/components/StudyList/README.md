@@ -101,9 +101,8 @@ ui-next/src/components/StudyList/
 
 ### `components/StudyListLayout.tsx`
 - Resizable horizontal split for table and preview.
-- Props: `isPanelOpen`, `onIsPanelOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent`.
-- Slots: `<StudyListLayout.TableArea>`, `<StudyListLayout.PreviewArea>`.
-- Hook: `useStudyListLayout()`.
+- Props: `isPanelOpen`, `onIsPanelOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent`, `table`, `preview`.
+- Hook: `useStudyListLayout()`; `OpenPreviewButton` re‑opens the preview when closed.
 
 ### `components/PreviewShell.tsx`
 - Light container for preview content (header slot + scroll area).
@@ -230,8 +229,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
           onIsPanelOpenChange={state.setPanelOpen}
           defaultPreviewSizePercent={30}
           className="h-full w-full"
-        >
-          <StudyListLayout.TableArea>
+          table={
             <StudyListTable
               data={rows}
               columns={defaultColumns()}
@@ -239,11 +237,11 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
               isPanelOpen={state.isPanelOpen}
               onOpenPanel={() => state.setPanelOpen(true)}
             />
-          </StudyListLayout.TableArea>
-          <StudyListLayout.PreviewArea>
-            {/* Your preview content */}
-          </StudyListLayout.PreviewArea>
-        </StudyListLayout.Root>
+          }
+          preview={
+            <div>{/* Your preview content */}</div>
+          }
+        />
       </StudyListProvider>
     );
   }

@@ -28,7 +28,8 @@ type RootProps = {
   onIsPanelOpenChange: (open: boolean) => void;
   defaultPreviewSizePercent: number;
   minPreviewSizePercent?: number;
-  children: React.ReactNode;
+  table?: React.ReactNode;
+  preview?: React.ReactNode;
   className?: string;
 };
 
@@ -37,7 +38,8 @@ function Root({
   onIsPanelOpenChange,
   defaultPreviewSizePercent,
   minPreviewSizePercent = 15,
-  children,
+  table,
+  preview,
   className,
 }: RootProps) {
   const openPanel = React.useCallback(() => onIsPanelOpenChange(true), [onIsPanelOpenChange]);
@@ -48,35 +50,23 @@ function Root({
     [isPanelOpen, openPanel, closePanel]
   );
 
-  const kids = React.Children.toArray(children) as React.ReactElement[];
-  const tableChild = kids.find(c => (c as any)?.type === TableArea) as React.ReactElement | undefined;
-  const previewChild = kids.find(c => (c as any)?.type === PreviewArea) as React.ReactElement | undefined;
-
   return (
     <LayoutContext.Provider value={value}>
       <ResizablePanelGroup direction="horizontal" className={className ?? 'h-full w-full'}>
         <ResizablePanel defaultSize={100 - defaultPreviewSizePercent}>
-          {tableChild ? tableChild.props.children : null}
+          {table ?? null}
         </ResizablePanel>
         {isPanelOpen ? (
           <>
             <ResizableHandle />
             <ResizablePanel defaultSize={defaultPreviewSizePercent} minSize={minPreviewSizePercent}>
-              {previewChild ? previewChild.props.children : null}
+              {preview ?? null}
             </ResizablePanel>
           </>
         ) : null}
       </ResizablePanelGroup>
     </LayoutContext.Provider>
   );
-}
-
-function TableArea({ children }: { children?: React.ReactNode }) {
-  return <>{children}</>;
-}
-
-function PreviewArea({ children }: { children?: React.ReactNode }) {
-  return <>{children}</>;
 }
 
 function OpenPreviewButton({
@@ -101,10 +91,4 @@ function OpenPreviewButton({
   );
 }
 
-export const StudyListLayout = Object.assign(Root, {
-  Root,
-  TableArea,
-  PreviewArea,
-  OpenPreviewButton,
-});
-
+export const StudyListLayout = Object.assign(Root, { Root, OpenPreviewButton });

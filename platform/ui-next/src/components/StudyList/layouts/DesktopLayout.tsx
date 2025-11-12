@@ -60,8 +60,7 @@ export function DesktopLayout({
         onIsPanelOpenChange={state.setPanelOpen}
         defaultPreviewSizePercent={previewDefaultSize}
         className="h-full w-full"
-      >
-        <StudyListLayout.TableArea>
+        table={
           <div className="flex h-full w-full flex-col px-3 pb-3 pt-0">
             <div className="min-h-0 flex-1">
               <div className="bg-background h-full rounded-md px-2 pb-2 pt-0">
@@ -82,12 +81,9 @@ export function DesktopLayout({
               </div>
             </div>
           </div>
-        </StudyListLayout.TableArea>
-
-        <StudyListLayout.PreviewArea>
-          <SidePanel />
-        </StudyListLayout.PreviewArea>
-      </StudyListLayout.Root>
+        }
+        preview={<SidePanel />}
+      />
     </StudyListProvider>
   );
 }
@@ -137,4 +133,3 @@ function SidePanel() {
     </PreviewShell>
   );
 }
-
