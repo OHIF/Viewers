@@ -132,10 +132,10 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      // const response = await fetch(`http://localhost:8000/segmentation?sessionID=${sessionID}`);
-      const response = await fetch(
-        `https://backend-1084552301744.europe-west1.run.app/segmentation?sessionID=${sessionID}`
-      );
+      const response = await fetch(`http://localhost:8000/segmentation?sessionID=${sessionID}`);
+      // const response = await fetch(
+      //   `https://backend-1084552301744.europe-west1.run.app/segmentation?sessionID=${sessionID}`
+      // );
 
       if (!response.ok) {
         throw new Error(`Backend responded with status: ${response.status}`);
@@ -301,6 +301,54 @@ function PanelStudyBrowser({
           }
 
           setDisplaySets(mappedDisplaySets);
+
+          // Automatically load SEG display sets into different viewports
+          setTimeout(async () => {
+            const { viewportGridService } = servicesManager.services;
+            const gridState = viewportGridService.getState();
+
+            // Get all available viewport IDs from the Map
+            const allViewportIds = Array.from(gridState.viewports.keys());
+
+            if (allViewportIds.length === 0) {
+              console.warn('No viewports available for segmentation loading');
+              return;
+            }
+
+            console.log('Available viewports:', allViewportIds);
+
+            // Find newly created SEG display sets
+            const currentDisplaySets = displaySetService.activeDisplaySets;
+            const segDisplaySets = currentDisplaySets.filter(
+              ds =>
+                ds.Modality === 'SEG' &&
+                !existingSeriesMap.has(`${ds.StudyInstanceUID}_${ds.SeriesInstanceUID}`)
+            );
+
+            console.log(`Found ${segDisplaySets.length} new segmentation(s) to load`);
+
+            // Load each segmentation into a different viewport
+            for (let i = 0; i < segDisplaySets.length; i++) {
+              const segDisplaySet = segDisplaySets[i];
+              // Cycle through viewports if there are more segmentations than viewports
+              const viewportId = allViewportIds[i % allViewportIds.length];
+
+              try {
+                await commandsManager.run('hydrateSecondaryDisplaySet', {
+                  displaySet: segDisplaySet,
+                  viewportId: viewportId,
+                });
+                console.log(
+                  `✓ Auto-loaded segmentation ${i + 1}/${segDisplaySets.length}: ${segDisplaySet.SeriesInstanceUID} into viewport ${viewportId}`
+                );
+              } catch (error) {
+                console.warn(
+                  `Failed to auto-load segmentation ${segDisplaySet.SeriesInstanceUID}:`,
+                  error
+                );
+              }
+            }
+          }, 500);
         }, 200);
       }
 
@@ -335,6 +383,7 @@ function PanelStudyBrowser({
     viewports,
     customMapDisplaySets,
     segmentationKey,
+    commandsManager,
   ]);
 
   const openReportFromBackend = useCallback(async () => {
@@ -364,10 +413,10 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      // const response = await fetch(`http://localhost:8000/generate_report?sessionID=${sessionID}`);
-      const response = await fetch(
-        `https://backend-1084552301744.europe-west1.run.app/generate_report?sessionID=${sessionID}`
-      );
+      const response = await fetch(`http://localhost:8000/generate_report?sessionID=${sessionID}`);
+      // const response = await fetch(
+      //   `https://backend-1084552301744.europe-west1.run.app/generate_report?sessionID=${sessionID}`
+      // );
 
       if (!response.ok) {
         throw new Error(`Backend responded with status: ${response.status}`);
