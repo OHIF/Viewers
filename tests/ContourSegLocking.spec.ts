@@ -122,7 +122,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportPageObject.getById('default').svg();
+  const svgPathLocatorPreEdit = viewportPageObject.getById('default').svg('path');
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -138,7 +138,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportPageObject.getById('default').svg();
+  const svgPathLocatorPostEdit = viewportPageObject.getById('default').svg('path');
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),
