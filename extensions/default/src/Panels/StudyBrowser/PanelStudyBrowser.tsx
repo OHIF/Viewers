@@ -132,10 +132,8 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      // const response = await fetch(`http://localhost:8000/segmentation?sessionID=${sessionID}`);
-      const response = await fetch(
-        `https://backend-1084552301744.europe-west1.run.app/segmentation?sessionID=${sessionID}`
-      );
+      const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
 
       if (!response.ok) {
         throw new Error(`Backend responded with status: ${response.status}`);
@@ -413,10 +411,8 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      // const response = await fetch(`http://localhost:8000/generate_report?sessionID=${sessionID}`);
-      const response = await fetch(
-        `https://backend-1084552301744.europe-west1.run.app/generate_report?sessionID=${sessionID}`
-      );
+      const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
 
       if (!response.ok) {
         throw new Error(`Backend responded with status: ${response.status}`);

@@ -27,6 +27,9 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
+// Backend API URL
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+
 export default defineConfig({
   source: {
     entry: {
@@ -44,6 +47,7 @@ export default defineConfig({
       'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
       'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
       'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+      'process.env.BACKEND_API_URL': JSON.stringify(BACKEND_API_URL),
     },
   },
   plugins: [pluginReact(), pluginNodePolyfill()],
