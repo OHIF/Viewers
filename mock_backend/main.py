@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Form, Query, Request
+from fastapi import FastAPI, File, UploadFile, Form, Query, Request, Body, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -9,9 +9,14 @@ from datetime import datetime, timedelta
 from typing import Optional
 import os
 
-# Uncomment these if you want to use Cloud Storage Signed URLs
-# from google.cloud import storage
-# import json
+from google.cloud import storage
+import json
+import requests
+import zipfile
+from fastapi import Body
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -53,88 +58,155 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-# Cloud Storage configuration (uncomment and configure if using signed URLs)
-# BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "your-bucket-name")
-# storage_client = storage.Client()
+# Cloud Storage configuration
+BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "ohif-dicom")
+try:
+    storage_client = storage.Client()
+    logger.info(f"Google Cloud Storage client initialized for bucket: {BUCKET_NAME}")
+except Exception as e:
+    logger.warning(f"Could not initialize GCS client: {e}")
+    storage_client = None
 
 @app.post("/generate_signed_url")
 async def generate_signed_url(
-    sessionID: str = Form(..., description="Session ID (UUID) for file organization"),
-    filename: str = Form(..., description="Filename for the upload")
+    sessionID: str = Body(..., description="Session ID (UUID) for file organization", embed=True),
+    filename: str = Body(..., description="Filename for the upload", embed=True)
 ):
     """
     Generate a signed URL for direct upload to Cloud Storage.
     This bypasses the 32MB Cloud Run HTTP/1 limit.
 
     To use this:
-    1. Uncomment Cloud Storage imports and configuration above
-    2. Set GCS_BUCKET_NAME environment variable
-    3. Frontend calls this endpoint first to get signed URL
-    4. Frontend uploads directly to the signed URL
-    5. Frontend calls /upload_complete to notify backend
+    1. Frontend calls this endpoint first to get signed URL and download URL
+    2. Frontend uploads directly to the signed upload URL
+    3. Frontend calls /upload_dicom_from_url with the download URL
     """
     try:
-        # UNCOMMENT THIS SECTION TO USE CLOUD STORAGE SIGNED URLS:
-        # bucket = storage_client.bucket(BUCKET_NAME)
-        # blob_name = f"uploads/{sessionID}/{filename}"
-        # blob = bucket.blob(blob_name)
-        #
-        # # Generate signed URL valid for 1 hour
-        # signed_url = blob.generate_signed_url(
-        #     version="v4",
-        #     expiration=timedelta(hours=1),
-        #     method="PUT",
-        #     content_type="application/zip"
-        # )
-        #
-        # return {
-        #     "signed_url": signed_url,
-        #     "blob_name": blob_name,
-        #     "sessionID": sessionID,
-        #     "expires_in": 3600
-        # }
+        if not storage_client:
+            raise HTTPException(
+                status_code=503,
+                detail="Cloud Storage not available. Check GCS credentials and configuration."
+            )
 
-        # For now, return a message to implement Cloud Storage
-        return {
-            "error": "Cloud Storage not configured",
-            "message": "Uncomment Cloud Storage code in main.py and set GCS_BUCKET_NAME",
-            "alternative": "Use HTTP/2 by deploying with --use-http2 flag"
-        }
+        bucket = storage_client.bucket(BUCKET_NAME)
+        blob_name = f"uploads/{sessionID}/{filename}"
+        blob = bucket.blob(blob_name)
+
+        # Generate signed URL for upload (PUT) - valid for 1 hour
+        upload_signed_url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(hours=1),
+            method="PUT",
+            content_type="application/zip"
+        )
+
+        # Generate signed URL for download (GET) - valid for 2 hours
+        download_signed_url = blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(hours=2),
+            method="GET"
+        )
+
+        return JSONResponse({
+            "upload_url": upload_signed_url,
+            "download_url": download_signed_url,
+            "blob_name": blob_name,
+            "sessionID": sessionID,
+            "expires_in": 3600
+        })
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error generating signed URL: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating signed URL: {str(e)}")
 
-@app.post("/upload_complete")
-async def upload_complete(
-    sessionID: str = Form(...),
-    blob_name: str = Form(...),
-    filename: str = Form(...)
+@app.post("/upload_dicom_from_url")
+async def upload_dicom_from_url(
+    signed_url: str = Body(..., description="Google Cloud Storage signed URL for the DICOM ZIP file", embed=True),
+    sessionID: str = Body(..., description="Session ID (UUID) for file organization", embed=True),
+    filename: Optional[str] = Body(None, description="Optional filename for the downloaded file", embed=True)
 ):
     """
-    Called by frontend after successfully uploading to Cloud Storage via signed URL.
-    Backend can now process the file from Cloud Storage.
+    Download a DICOM ZIP file from a Google Cloud Storage signed URL and process it.
+
+    This endpoint is useful for bypassing HTTP upload size limits by using pre-signed URLs.
+    The file will be downloaded from Google Cloud Storage and processed the same way as direct uploads.
+
+    Args:
+        signed_url: The pre-signed Google Cloud Storage URL
+        sessionID: The UUID session identifier
+        filename: Optional custom filename (defaults to dicom_files_{sessionID}.zip)
+
+    Returns:
+        Success response with the path where the file was saved
     """
     try:
-        print(f"Upload completed - Session: {sessionID}, File: {filename}, Blob: {blob_name}")
+        # Validate that the URL is from the expected bucket
+        if "storage.googleapis.com" not in signed_url:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid URL: Must be a Google Cloud Storage signed URL"
+            )
 
-        # UNCOMMENT TO PROCESS FROM CLOUD STORAGE:
-        # bucket = storage_client.bucket(BUCKET_NAME)
-        # blob = bucket.blob(blob_name)
-        #
-        # # Download and process the file
-        # local_path = UPLOAD_DIR / filename
-        # blob.download_to_filename(local_path)
-        #
-        # # Process the file here...
-        # file_size = local_path.stat().st_size
+        # Create session directory
+        session_dir = UPLOAD_DIR / sessionID
+        session_dir.mkdir(parents=True, exist_ok=True)
 
-        return {
+        # Determine filename
+        zip_filename = filename or f"dicom_files_{sessionID}.zip"
+        if not zip_filename.endswith('.zip'):
+            zip_filename += '.zip'
+
+        zip_path = session_dir / zip_filename
+
+        logger.info(f"Downloading DICOM ZIP file from signed URL to: {zip_path}")
+
+        # Download the file from the signed URL
+        response = requests.get(signed_url, stream=True, timeout=600)
+        response.raise_for_status()
+
+        # Check content type
+        content_type = response.headers.get('content-type', '')
+        if 'application/zip' not in content_type and 'application/x-zip' not in content_type and 'application/octet-stream' not in content_type:
+            logger.warning(f"Unexpected content type: {content_type}, proceeding anyway...")
+
+        # Save the downloaded file
+        total_size = 0
+        with open(zip_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    total_size += len(chunk)
+
+        logger.info(f"Successfully downloaded DICOM ZIP file ({total_size} bytes): {zip_path}")
+
+        # Validate that it's actually a ZIP file
+        if not zipfile.is_zipfile(zip_path):
+            raise HTTPException(
+                status_code=400,
+                detail="Downloaded file is not a valid ZIP file"
+            )
+
+        return JSONResponse({
             "status": "success",
+            "message": f"DICOM ZIP file downloaded and processed successfully",
+            "path": str(zip_path),
             "sessionID": sessionID,
-            "filename": filename,
-            "message": "File upload recorded"
-        }
+            "size_bytes": total_size,
+            "filename": zip_filename
+        })
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error downloading file from signed URL: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error downloading file: {str(e)}"
+        )
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error processing DICOM ZIP file from URL: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error during file processing: {str(e)}")
 
 @app.post("/upload_dicom")
 async def upload_dicom(

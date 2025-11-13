@@ -132,7 +132,11 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
+      // @ts-ignore - BACKEND_API_URL is injected at build time
+      const backendUrl =
+        typeof process !== 'undefined' && process.env?.BACKEND_API_URL
+          ? process.env.BACKEND_API_URL
+          : 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
 
       if (!response.ok) {
@@ -411,7 +415,11 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
+      // @ts-ignore - BACKEND_API_URL is injected at build time
+      const backendUrl =
+        typeof process !== 'undefined' && process.env?.BACKEND_API_URL
+          ? process.env.BACKEND_API_URL
+          : 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
 
       if (!response.ok) {

@@ -928,28 +928,100 @@ function commandsModule({
         await zipWriter.close();
         const zipBlob = await zipFileWriter.getData();
 
-        const backendUrl = process.env.BACKEND_API_URL || 'http://localhost:8000';
-        const url = `${backendUrl}/upload_dicom`;
-
-        // Create FormData to send the ZIP file and sessionID
-        const formData = new FormData();
+        // @ts-ignore - BACKEND_API_URL is injected at build time
+        const backendUrl =
+          typeof process !== 'undefined' && process.env?.BACKEND_API_URL
+            ? process.env.BACKEND_API_URL
+            : 'http://localhost:8000';
         const zipFileName = `dicom_study_${new Date().getTime()}.zip`;
-        formData.append('file', zipBlob, zipFileName);
-        formData.append('sessionID', sessionID);
+        const fileSizeInMB = zipBlob.size / (1024 * 1024);
+        const isLocalhost = backendUrl.includes('localho0st') || backendUrl.includes('127.0.0.1');
 
-        const response = await fetch(url, {
-          method: 'POST',
-          body: formData,
-        });
-        if (!response.ok) {
-          throw new Error(`Backend responded with status: ${response.status}`);
+        // If file > 30MB and not localhost, use Google Cloud Storage
+        if (fileSizeInMB > 30 && !isLocalhost) {
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: `Large file detected (${fileSizeInMB.toFixed(1)}MB). Using Cloud Storage...`,
+            type: 'info',
+          });
+
+          // Step 1: Get signed URL from backend
+          const signedUrlResponse = await fetch(`${backendUrl}/generate_signed_url`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionID: sessionID,
+              filename: zipFileName,
+            }),
+          });
+
+          if (!signedUrlResponse.ok) {
+            throw new Error(`Failed to get signed URL: ${signedUrlResponse.status}`);
+          }
+
+          const { upload_url, download_url } = await signedUrlResponse.json();
+
+          // Step 2: Upload to Google Cloud Storage using signed URL
+          const uploadResponse = await fetch(upload_url, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/zip',
+            },
+            body: zipBlob,
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error(`Failed to upload to Cloud Storage: ${uploadResponse.status}`);
+          }
+
+          // Step 3: Notify backend to process from Cloud Storage
+          const processResponse = await fetch(`${backendUrl}/upload_dicom_from_url`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              signed_url: download_url,
+              sessionID: sessionID,
+              filename: zipFileName,
+            }),
+          });
+
+          if (!processResponse.ok) {
+            throw new Error(`Backend processing failed: ${processResponse.status}`);
+          }
+
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: `Successfully uploaded ${fileCount} DICOM files (${fileSizeInMB.toFixed(1)}MB) via Cloud Storage`,
+            type: 'success',
+          });
+        } else {
+          // Direct upload for files <= 30MB or localhost
+          const url = `${backendUrl}/upload_dicom`;
+
+          // Create FormData to send the ZIP file and sessionID
+          const formData = new FormData();
+          formData.append('file', zipBlob, zipFileName);
+          formData.append('sessionID', sessionID);
+
+          const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Backend responded with status: ${response.status}`);
+          }
+
+          uiNotificationService.show({
+            title: 'DICOM ZIP',
+            message: `Successfully sent ${fileCount} DICOM files to backend`,
+            type: 'success',
+          });
         }
-
-        uiNotificationService.show({
-          title: 'DICOM ZIP',
-          message: `Successfully sent ${fileCount} DICOM files to backend`,
-          type: 'success',
-        });
 
         return sessionID;
       } catch (error) {
