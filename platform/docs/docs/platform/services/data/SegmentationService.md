@@ -11,12 +11,13 @@ summary: Documentation for OHIF's SegmentationService, which provides tools for 
 ## Events
 
 ```typescript
-SEGMENTATION_MODIFIED          // When a segmentation is updated
-SEGMENTATION_DATA_MODIFIED     // When segmentation data changes
-SEGMENTATION_ADDED            // When new segmentation is added
-SEGMENTATION_REMOVED          // When segmentation is removed
-SEGMENT_LOADING_COMPLETE      // When segment group adds pixel data to volume
-SEGMENTATION_LOADING_COMPLETE // When full segmentation volume is filled
+SEGMENTATION_MODIFIED                               // When a segmentation is updated
+SEGMENTATION_DATA_MODIFIED                          // When segmentation data changes
+SEGMENTATION_ADDED                                  // When new segmentation is added
+SEGMENTATION_REMOVED                                // When segmentation is removed
+SEGMENT_LOADING_COMPLETE                            // When segment group adds pixel data to volume
+SEGMENTATION_LOADING_COMPLETE                       // When full segmentation volume is filled
+SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED // When a segmentation's annotation cut merge process is completed.
 ```
 
 ## Core APIs
