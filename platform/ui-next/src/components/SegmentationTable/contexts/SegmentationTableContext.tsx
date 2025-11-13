@@ -78,7 +78,7 @@ export interface SegmentationTableContextType {
   setRenderOutline?: ({ type }: { type: string }, value: boolean) => void;
   setOutlineWidth?: ({ type }: { type: string }, value: number) => void;
   setFillAlpha?: ({ type }: { type: string }, value: number) => void;
-  setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
+  setFillAlphaInactive?: ({ type }: { type?: string }, value: number) => void;
   toggleRenderInactiveSegmentations?: () => void;
   onSegmentationAdd?: ({
     segmentationId,

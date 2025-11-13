@@ -25,9 +25,12 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
         cornerstoneTools.segmentation.config.style.setStyle(
           { segmentationId, type: SegmentationRepresentations.Contour },
           {
-            fillAlpha: 0.5,
+            // Override the default (RTSTRUCT) style for contours.
             renderFill: true,
-          }
+            renderFillInactive: true,
+          },
+          // Do not merge so that these created contours inherit other default style properties like the fill alpha.
+          false
         );
       }
     },

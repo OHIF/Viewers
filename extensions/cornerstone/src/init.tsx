@@ -140,7 +140,13 @@ export default async function init({
   cornerstoneTools.segmentation.config.style.setStyle(
     { type: SegmentationRepresentations.Contour },
     {
+      // Declare these alpha values at the Contour type level so that they can be set for all contour segmentations.
+      fillAlpha: 0.5,
+      fillAlphaInactive: 0.5,
+      // In general do not fill contours so that hydrated RTSTRUCTs are not filled in when active or inactive.
+      // Those Contours created in OHIF will override both of these upon creation.
       renderFill: false,
+      renderFillInactive: false,
     }
   );
 
