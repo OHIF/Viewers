@@ -83,7 +83,7 @@ export class ViewportPageObject {
   private getOverlayMenu(viewport: Locator) {
     return {
       get dataOverlay() {
-        const button = viewport.locator('[data-cy^="dataOverlayMenu"]');
+        const button = viewport.locator('[data-cy^="dataOverlayMenu"]').first();
         return {
           button,
           async click() {
@@ -180,7 +180,9 @@ export class ViewportPageObject {
   }
 
   getById(viewportId: string): IViewportPageObject {
-    const viewport = this.page.locator(`css=div[data-viewportid="${viewportId}"]`);
+    const viewport = this.page.locator(
+      `[data-cy="viewport-pane"]:has(div[data-viewportid="${viewportId}"])`
+    );
     return this.viewportPageObjectFactory(viewport);
   }
 
