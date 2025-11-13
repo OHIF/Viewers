@@ -1742,9 +1742,9 @@ class SegmentationService extends PubSubService {
             segmentationId,
             segmentIndex,
             type: LABELMAP,
-            merge: false,
           },
-          {}
+          {},
+          false
         );
       }
     };
