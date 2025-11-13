@@ -59,9 +59,6 @@ export const hasExportableLabelMapData = (
     SeriesInstanceUID
   );
 
-  if( !displaySet.isReconstructable ) {
-    console.warn("Display set for segmentation not reconstructable, might cause issues on seg export");
-  }
   return !!displaySet;
 };
 

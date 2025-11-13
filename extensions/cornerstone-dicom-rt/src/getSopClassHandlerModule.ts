@@ -62,7 +62,10 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
+  if (
+    instance.ReferencedFrameOfReferenceSequence?.RTReferencedStudySequence &&
+    !instance.ReferencedSeriesSequence
+  ) {
     instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
       instance.ReferencedFrameOfReferenceSequence
     );
@@ -70,7 +73,8 @@ function _getDisplaySetsFromSeries(
   }
 
   if (!referencedSeriesSequence) {
-    throw new Error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    console.error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    return;
   }
 
   const referencedSeries = referencedSeriesSequence[0];

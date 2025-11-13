@@ -147,9 +147,9 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:
         metadata = {
-          patientAge: toNumber(instance.PatientAge),
-          patientSize: toNumber(instance.PatientSize),
-          patientWeight: toNumber(instance.PatientWeight),
+          patientAge: instance.PatientAge,
+          patientSize: instance.PatientSize,
+          patientWeight: instance.PatientWeight,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_DEMOGRAPHIC_MODULE:
@@ -346,16 +346,13 @@ class MetadataProvider {
         break;
 
       case WADO_IMAGE_LOADER_TAGS.PATIENT_MODULE:
-        const { PatientName } = instance;
-
-        let patientName;
-        if (PatientName) {
-          patientName = formatPN(PatientName);
-        }
-
         metadata = {
-          patientName,
+          patientName: instance.PatientName,
           patientId: instance.PatientID,
+          patientSex: instance.PatientSex,
+          patientBirthDate: instance.PatientBirthDate,
+          issuerOfPatientId: instance.IssuerOfPatientID,
+          otherPatientIDsSequence: instance.OtherPatientIDsSequence,
         };
 
         break;
@@ -373,9 +370,11 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_STUDY_MODULE:
         metadata = {
           studyDescription: instance.StudyDescription,
+          studyInstanceUID: instance.StudyInstanceUID,
           studyDate: instance.StudyDate,
           studyTime: instance.StudyTime,
           accessionNumber: instance.AccessionNumber,
+          studyId: instance.StudyID,
         };
 
         break;
