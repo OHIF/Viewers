@@ -1771,13 +1771,26 @@ function commandsModule({
     },
 
     /**
-     * Sets the fill alpha for inactive segmentations
+     * Sets the fill alpha for inactive segmentations.
+     * If no type is provided, the fill alpha for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - The alpha value to set
      */
     setFillAlphaInactiveCommand: ({ type, value }) => {
       const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { fillAlphaInactive: value });
+
+      if (type) {
+        segmentationService.setStyle({ type }, { fillAlphaInactive: value });
+      } else {
+        segmentationService.setStyle(
+          { type: SegmentationRepresentations.Labelmap },
+          { fillAlphaInactive: value }
+        );
+        segmentationService.setStyle(
+          { type: SegmentationRepresentations.Contour },
+          { fillAlphaInactive: value }
+        );
+      }
     },
 
     editSegmentLabel: async ({ segmentationId, segmentIndex }) => {

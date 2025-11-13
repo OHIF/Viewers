@@ -136,9 +136,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Slider
             className="mx-1 flex-1"
             value={[fillAlphaInactive]}
-            onValueChange={([value]) =>
-              setFillAlphaInactive({ type: activeRepresentation.type }, value)
-            }
+            onValueChange={([value]) => setFillAlphaInactive({}, value)}
             max={1}
             min={0}
             step={0.1}
@@ -146,9 +144,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Input
             className="mx-1 w-10 flex-none"
             value={fillAlphaInactive}
-            onChange={e =>
-              setFillAlphaInactive({ type: activeRepresentation.type }, Number(e.target.value))
-            }
+            onChange={e => setFillAlphaInactive({}, Number(e.target.value))}
           />
         </div>
       )}
