@@ -44,15 +44,28 @@ const segmentationRepresentationModifiedCallback = async (
   const event = sourceEvent as ToolsTypes.EventTypes.SegmentationRepresentationModifiedEventType;
 
   const { segmentationId, type: segmentationRepresentationType } = event.detail;
-  const { segmentationService } = servicesManager.services;
+  const { segmentationService, cornerstoneViewportService } = servicesManager.services;
 
   const targetViewportId = targetViewport.viewportId;
+  const sourceViewportId = sourceViewport.viewportId;
 
   const { viewport } = getEnabledElementByViewportId(targetViewportId);
+  const sourceViewportInfo = cornerstoneViewportService.getViewportInfo(sourceViewportId);
+  const targetViewportInfo = cornerstoneViewportService.getViewportInfo(targetViewportId);
 
-  const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
+  const sourceDisplaySetUIDs = sourceViewportInfo
+    .getViewportData()
+    .data.map(ds => ds.displaySetInstanceUID);
+  const targetDisplaySetUIDs = targetViewportInfo
+    .getViewportData()
+    .data.map(ds => ds.displaySetInstanceUID);
 
-  if (!targetFrameOfReferenceUID) {
+  // Check if any displaySet is shared between source and target
+  const sharedDisplaySetExists = sourceDisplaySetUIDs.some(uid =>
+    targetDisplaySetUIDs.includes(uid)
+  );
+
+  if (!sharedDisplaySetExists && !viewport.getFrameOfReferenceUID()) {
     return;
   }
 
