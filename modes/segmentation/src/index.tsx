@@ -239,8 +239,8 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
               rightPanels: [
-                cornerstone.contourSegmentationPanel,
                 cornerstone.labelMapSegmentationPanel,
+                cornerstone.contourSegmentationPanel,
               ],
               rightPanelResizable: true,
               // leftPanelClosed: true,
