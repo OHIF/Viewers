@@ -75,6 +75,7 @@ function WorkList({
   const navigate = useNavigate();
   const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(searchParams);
+  const config = dataSource.getConfig();
   const [sessionQueryFilterValues, updateSessionQueryFilterValues] = useSessionStorage({
     key: 'queryFilterValues',
     defaultValue: queryFilterValues,
@@ -209,7 +210,7 @@ function WorkList({
   const handleDownloadStudy = async (studyUID: string) => {
     try {
       const res = await fetch(
-        `https://dicomobj.azurewebsites.net/api/downloaddicom?studyId=${encodeURIComponent(studyUID)}`,
+        `https://${config.pythonFunctionName}.azurewebsites.net/api/downloaddicom?studyId=${encodeURIComponent(studyUID)}`,
         {
           credentials: 'include',
           headers: {
@@ -533,7 +534,7 @@ function WorkList({
               size={ButtonEnums.size.small}
               onClick={() =>
                 runSegmentation(
-                  'https://dicomobj.azurewebsites.net/api/segmentdicom',
+                  `https://${config.pythonFunctionName}.azurewebsites.net/api/segmentdicom`,
                   studyInstanceUid,
                   'Synthetic Segmentation'
                 )
@@ -546,7 +547,7 @@ function WorkList({
               size={ButtonEnums.size.small}
               onClick={() =>
                 runSegmentation(
-                  'https://dicomobj.azurewebsites.net/api/segmenttumor',
+                  `https://${config.pythonFunctionName}.azurewebsites.net/api/segmenttumor`,
                   studyInstanceUid,
                   'Tumor Segmentation'
                 )
