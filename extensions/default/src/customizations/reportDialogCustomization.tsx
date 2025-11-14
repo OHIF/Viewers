@@ -11,26 +11,35 @@ type DataSource = {
 
 type ReportDialogProps = {
   dataSources: DataSource[];
+  modality?: string;
+  predecessorImageId?: string;
   hide: () => void;
   onSave: (data: { reportName: string; dataSource: string | null; series: string | null }) => void;
   onCancel: () => void;
 };
 
-function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps) {
+function ReportDialog({
+  dataSources,
+  modality = 'SR',
+  predecessorImageId,
+  hide,
+  onSave,
+  onCancel,
+}: ReportDialogProps) {
   const { servicesManager } = useSystem();
   const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
     dataSources?.[0]?.value ?? null
   );
+  const { displaySetService } = servicesManager.services;
+
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
   const [reportName, setReportName] = useState('');
-
-  const { displaySetService } = servicesManager.services;
 
   const seriesOptions = useMemo(() => {
     const displaySetsMap = displaySetService.getDisplaySetCache();
     const displaySets = Array.from(displaySetsMap.values());
     const options = displaySets
-      .filter(ds => ds.Modality === 'SR')
+      .filter(ds => ds.Modality === modality)
       .map(ds => ({
         value: ds.SeriesInstanceUID,
         description: ds.SeriesDescription,
@@ -45,7 +54,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
       },
       ...options,
     ];
-  }, [displaySetService]);
+  }, [displaySetService, modality]);
 
   useEffect(() => {
     const seriesOption = seriesOptions.find(s => s.value === selectedSeries);

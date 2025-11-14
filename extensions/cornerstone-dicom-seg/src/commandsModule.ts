@@ -8,8 +8,6 @@ import { DicomMetadataStore } from '@ohif/core';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 
-const { datasetToBlob } = dcmjs.data;
-
 const getTargetViewport = ({ viewportId, viewportGridService }) => {
   const { viewports, activeViewportId } = viewportGridService.getState();
   const targetViewportId = viewportId || activeViewportId;
@@ -212,7 +210,7 @@ const commandsModule = ({
      * @returns {Object|void} Returns the naturalized report if successfully stored,
      * otherwise throws an error.
      */
-    storeSegmentation: async ({ segmentationId, dataSource }) => {
+    storeSegmentation: async ({ segmentationId, dataSource, modality = 'SEG' }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
       if (!segmentation) {
@@ -230,6 +228,7 @@ const commandsModule = ({
         servicesManager,
         extensionManager,
         title: 'Store Segmentation',
+        modality,
       });
 
       if (action === PROMPT_RESPONSES.CREATE_REPORT) {
@@ -238,12 +237,16 @@ const commandsModule = ({
             ? extensionManager.getDataSources(selectedDataSource)[0]
             : defaultDataSource;
 
-          const generatedData = actions.generateSegmentation({
+          const args = {
             segmentationId,
             options: {
               SeriesDescription: reportName || label || 'Research Derived Series',
             },
-          });
+          };
+          const generatedDataAsync =
+            (modality === 'SEG' && actions.generateSegmentation(args)) ||
+            (modality === 'RTSTRUCT' && actions.generateContour(args));
+          const generatedData = await generatedDataAsync;
 
           if (!generatedData || !generatedData.dataset) {
             throw new Error('Error during segmentation generation');
@@ -270,14 +273,9 @@ const commandsModule = ({
         }
       }
     },
-    /**
-     * Converts segmentations into RTSS for download.
-     * This sample function retrieves all segmentations and passes to
-     * cornerstone tool adapter to convert to DICOM RTSS format. It then
-     * converts dataset to downloadable blob.
-     *
-     */
-    downloadRTSS: async ({ segmentationId }) => {
+
+    generateContour: async args => {
+      const { segmentationId, options } = args;
       const segmentations = segmentationService.getSegmentation(segmentationId);
 
       // inject colors to the segmentIndex
@@ -287,26 +285,30 @@ const commandsModule = ({
         segment.color = segmentationService.getSegmentColor(
           firstRepresentation.viewportId,
           segmentationId,
-          segmentIndex
+          Number(segmentIndex)
         );
       });
+      const dataset = await generateRTSSFromRepresentation(segmentations, options);
+      return { dataset };
+    },
 
-      const rtssNatural = await generateRTSSFromRepresentation(segmentations, {
-        metaData: classes.MetadataProvider,
-        DicomMetadataStore,
-      });
-      const { InstanceNumber: instanceNumber = 1, SeriesInstanceUID: seriesUID } = rtssNatural;
+    /**
+     * Downloads an RTSS instance from a segmentation or contour
+     * representation.
+     */
+    downloadRTSS: async args => {
+      const { dataset } = await actions.generateContour(args);
+      const { InstanceNumber: instanceNumber = 1, SeriesInstanceUID: seriesUID } = dataset;
 
       try {
-        const reportBlob = datasetToBlob(rtssNatural);
-
         //Create a URL for the binary.
         const filename = `rtss-${seriesUID}-${instanceNumber}.dcm`;
-        utils.downloadBlob(reportBlob, { mimeType: 'application/dicom', filename });
+        downloadDICOMData(dataset, filename);
       } catch (e) {
         console.warn(e);
       }
     },
+
     toggleActiveSegmentationUtility: ({ itemId: buttonId }) => {
       const { uiState, setUIState } = useUIStateStore.getState();
       const isButtonActive = uiState['activeSegmentationUtility'] === buttonId;

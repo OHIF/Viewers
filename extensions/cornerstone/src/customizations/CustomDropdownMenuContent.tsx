@@ -57,10 +57,10 @@ export const CustomDropdownMenuContent = () => {
   }
 
   const actions = {
-    storeSegmentation: async segmentationId => {
+    storeSegmentation: async (segmentationId, modality = 'SEG') => {
       commandsManager.run({
         commandName: 'storeSegmentation',
-        commandOptions: { segmentationId },
+        commandOptions: { segmentationId, modality },
         context: 'CORNERSTONE',
       });
     },
