@@ -434,10 +434,13 @@ class MeasurementService extends PubSubService {
 
     const internalUID = data.uid || guid();
 
-    const annotationData = data.annotation.data;
+    const {
+      annotation: { predecessorImageId, data: annotationData },
+    } = data;
 
     const newMeasurement = {
       finding: annotationData.finding,
+      predecessorImageId,
       findingSites: annotationData.findingSites,
       site: annotationData.findingSites?.[0],
       ...measurement,
@@ -683,8 +686,7 @@ class MeasurementService extends PubSubService {
   removeMany(measurementUIDs: string[]): void {
     const measurements = [];
     for (const measurementUID of measurementUIDs) {
-      const measurement =
-        this.measurements.get(measurementUID)
+      const measurement = this.measurements.get(measurementUID);
 
       if (!measurementUID || !measurement) {
         console.debug(`No uid provided, or unable to find measurement by uid.`);
@@ -727,8 +729,7 @@ class MeasurementService extends PubSubService {
    */
 
   public jumpToMeasurement(viewportId: string, measurementUID: string): void {
-    const measurement =
-      this.measurements.get(measurementUID)
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
       log.warn(`No measurement uid, or unable to find by uid.`);
@@ -850,8 +851,7 @@ class MeasurementService extends PubSubService {
   };
 
   public toggleLockMeasurement(measurementUID: string): void {
-    const measurement =
-      this.measurements.get(measurementUID)
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
@@ -868,8 +868,7 @@ class MeasurementService extends PubSubService {
   }
 
   public toggleVisibilityMeasurement(measurementUID: string, visibility?: boolean): void {
-    const measurement =
-      this.measurements.get(measurementUID)
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);
@@ -893,8 +892,7 @@ class MeasurementService extends PubSubService {
   }
 
   public updateColorMeasurement(measurementUID: string, color: number[]): void {
-    const measurement =
-      this.measurements.get(measurementUID)
+    const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
       console.debug(`No measurement found for uid: ${measurementUID}`);

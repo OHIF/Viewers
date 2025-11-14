@@ -277,11 +277,13 @@ class SegmentationService extends PubSubService {
     viewportId: string,
     {
       segmentationId,
+      predecessorImageId,
       type,
       config,
       suppressEvents = false,
     }: {
       segmentationId: string;
+      predecessorImageId?: string;
       type?: csToolsEnums.SegmentationRepresentations;
       config?: {
         blendMode?: csEnums.BlendModes;
@@ -290,6 +292,9 @@ class SegmentationService extends PubSubService {
     }
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
+    if (!segmentation.predecessorImageId && predecessorImageId) {
+      segmentation.predecessorImageId = predecessorImageId;
+    }
     const csViewport = this.getAndValidateViewport(viewportId);
 
     if (!csViewport) {
@@ -366,6 +371,7 @@ class SegmentationService extends PubSubService {
       label?: string;
     }
   ): Promise<string> {
+    console.warn('******************** create contour for display set');
     return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
   }
 
@@ -387,6 +393,7 @@ class SegmentationService extends PubSubService {
       label?: string;
     }
   ): Promise<string> {
+    console.warn('******************** create segmentation for display set');
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;

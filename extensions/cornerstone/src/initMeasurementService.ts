@@ -461,6 +461,7 @@ const connectMeasurementServiceToTools = ({
       const annotationManager = annotation.state.getAnnotationManager();
       const newAnnotation = {
         annotationUID: measurement.uid,
+        predecessorImageId: measurement?.predecessorImageId,
         highlighted: false,
         isLocked: false,
         // This is used to force a re-render of the annotation to

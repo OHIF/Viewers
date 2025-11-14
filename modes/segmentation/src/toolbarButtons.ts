@@ -20,7 +20,7 @@ const callbacks = (toolName: string) => [
   },
 ];
 
-const toolbarButtons: Button[] = [
+export const toolbarButtons: Button[] = [
   {
     id: 'AdvancedRenderingControls',
     uiType: 'ohif.advancedRenderingControls',

@@ -48,6 +48,8 @@ import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
 
+import { downloadBlob, downloadUrl } from './downloadBlob';
+
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -99,6 +101,8 @@ const utils = {
   getClosestOrientationFromIOP,
   calculateScanAxisNormal,
   areAllImageOrientationsEqual,
+  downloadBlob,
+  downloadUrl,
 };
 
 export {
@@ -137,6 +141,8 @@ export {
   MeasurementFilters,
   getClosestOrientationFromIOP,
   buildButtonCommands,
+  downloadBlob,
+  downloadUrl,
 };
 
 export default utils;

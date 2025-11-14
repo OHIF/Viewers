@@ -17,19 +17,25 @@ function _getDisplaySetsFromSeries(
   servicesManager: AppTypes.ServicesManager,
   extensionManager
 ) {
-  const instance = instances[0];
+  utils.sortStudyInstances(instances);
+  // Choose the LAST instance in the list as the most recently created one.
+  const instance = instances[instances.length - 1];
 
   const {
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,
-    SeriesDescription,
+    SeriesDescription = '',
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
+    StructureSetDate,
+    StructureSetTime,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
+    imageId: predecessorImageId,
   } = instance;
 
   const displaySet = {
@@ -39,7 +45,8 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
+    SeriesDate: StructureSetDate || SeriesDate,
+    SeriesTime: StructureSetTime || SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -54,6 +61,9 @@ function _getDisplaySetsFromSeries(
     structureSet: null,
     sopClassUids,
     instance,
+    instances,
+    numImageFrames: instances.length,
+    predecessorImageId,
     wadoRoot,
     wadoUriRoot,
     wadoUri,
@@ -62,7 +72,10 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
+  if (
+    instance.ReferencedFrameOfReferenceSequence?.RTReferencedStudySequence &&
+    !instance.ReferencedSeriesSequence
+  ) {
     instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
       instance.ReferencedFrameOfReferenceSequence
     );
@@ -70,7 +83,8 @@ function _getDisplaySetsFromSeries(
   }
 
   if (!referencedSeriesSequence) {
-    throw new Error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    console.error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    return;
   }
 
   const referencedSeries = referencedSeriesSequence[0];

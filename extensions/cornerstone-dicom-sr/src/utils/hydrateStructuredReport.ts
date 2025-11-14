@@ -54,6 +54,11 @@ export default function hydrateStructuredReport(
   const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const {
+    StudyInstanceUID: studyUID,
+    SeriesInstanceUID: seriesUID,
+    instance: { SOPInstanceUID: sopUID },
+  } = displaySet;
 
   // TODO -> We should define a strict versioning somewhere.
   const mappings = measurementService.getSourceMappings(
@@ -67,16 +72,12 @@ export default function hydrateStructuredReport(
     );
   }
 
-  const instance = DicomMetadataStore.getInstance(
-    displaySet.StudyInstanceUID,
-    displaySet.SeriesInstanceUID,
-    displaySet.SOPInstanceUID
-  );
+  const instance = DicomMetadataStore.getInstance(studyUID, seriesUID, sopUID);
 
   const sopInstanceUIDToImageId = {};
 
   displaySet.measurements.forEach(measurement => {
-    const { ReferencedSOPInstanceUID, imageId, frameNumber=1 } = measurement;
+    const { ReferencedSOPInstanceUID, imageId, frameNumber = 1 } = measurement;
     const key = `${ReferencedSOPInstanceUID}:${frameNumber}`;
 
     if (!sopInstanceUIDToImageId[key]) {
@@ -200,6 +201,7 @@ export default function hydrateStructuredReport(
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
+        predecessorImageId: toolData.predecessorImageId,
         metadata: {
           ...referenceData,
           toolName: annotationType,

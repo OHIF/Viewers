@@ -49,8 +49,19 @@ export type DisplaySet = {
   SeriesTime?: string;
   instance?: InstanceMetadata;
 
+  /**
+   * The predecessor image id is the image id to use when replacing this instance.
+   * It will only be defined for replacable instances such as SR or SEG
+   */
+  predecessorImageId?: string;
+
   isHydrated?: boolean;
   isRehydratable?: boolean;
+
+  measurements?: Array<any>;
+  referencedImages?: Array<string>;
+
+  isLoaded?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {
