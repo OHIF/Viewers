@@ -3,11 +3,15 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
 export default function CreateReportDialogPrompt({
   title = 'Create Report',
   modality = 'SR',
+  minSeriesNumber,
+  predecessorImageId,
   extensionManager,
   servicesManager,
 }): Promise<{
   value: string;
   dataSourceName: string;
+  priorSeriesNumber?: number;
+  predecessorImageId?: string;
   series: string;
   action: (typeof PROMPT_RESPONSES)[keyof typeof PROMPT_RESPONSES];
 }> {
@@ -17,19 +21,34 @@ export default function CreateReportDialogPrompt({
 
   const allowMultipleDataSources = window.config.allowMultiSelectExport;
 
-  return new Promise(function (resolve, reject) {
+  minSeriesNumber ||=
+    (modality === 'SR' && 3000) ||
+    (modality === 'SEG' && 3100) ||
+    (modality === 'RTSTRUCT' && 3200) ||
+    4000;
+
+  return new Promise(function (resolve) {
     uiDialogService.show({
       id: 'report-dialog',
       title,
       content: ReportDialog,
       contentProps: {
         dataSources: allowMultipleDataSources ? dataSources : undefined,
+        predecessorImageId,
+        minSeriesNumber,
         modality,
-        onSave: async ({ reportName, dataSource: selectedDataSource, series }) => {
+        onSave: async ({
+          reportName,
+          dataSource: selectedDataSource,
+          series,
+          priorSeriesNumber,
+        }) => {
+          debugger;
           resolve({
             value: reportName,
             dataSourceName: selectedDataSource,
             series,
+            priorSeriesNumber,
             action: PROMPT_RESPONSES.CREATE_REPORT,
           });
         },

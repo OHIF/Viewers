@@ -16,19 +16,24 @@ function _getDisplaySetsFromSeries(
   servicesManager: AppTypes.ServicesManager,
   extensionManager
 ) {
-  const instance = instances[0];
+  utils.sortStudyInstances(instances);
+
+  // Choose the LAST instance in the list as the most recently created one.
+  const instance = instances[instances.length - 1];
 
   const {
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,
-    SeriesDescription,
+    SeriesDescription = '',
     SeriesNumber,
     SeriesDate,
+    StructureSetDate,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
+    imageId: predecessorImageId,
   } = instance;
 
   const displaySet = {
@@ -38,7 +43,7 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
+    SeriesDate: SeriesDate || StructureSetDate || '',
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -53,6 +58,7 @@ function _getDisplaySetsFromSeries(
     segments: {},
     sopClassUids,
     instance,
+    predecessorImageId,
     instances: [instance],
     wadoRoot,
     wadoUriRoot,

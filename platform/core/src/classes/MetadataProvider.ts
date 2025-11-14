@@ -141,6 +141,7 @@ class MetadataProvider {
           seriesInstanceUID: instance.SeriesInstanceUID,
           seriesNumber: toNumber(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
+          seriesDescription: instance.SeriesDescription,
           seriesDate,
           seriesTime,
         };

@@ -100,6 +100,7 @@ function _getDisplaySetsFromSeries(
     SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
+    imageId: predecessorImageId,
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
@@ -128,6 +129,7 @@ function _getDisplaySetsFromSeries(
     isImagingMeasurementReport,
     sopClassUids,
     instance,
+    predecessorImageId,
     addInstances,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };

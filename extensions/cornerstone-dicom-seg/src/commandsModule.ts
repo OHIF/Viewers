@@ -90,6 +90,7 @@ const commandsModule = ({
      */
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
+      const predecessorImageId = options.predecessorImageId ?? segmentations.predecessorImageId;
 
       const { imageIds } = segmentation.representationData.Labelmap;
 
@@ -171,12 +172,10 @@ const commandsModule = ({
         labelmap3D.metadata[segmentIndex] = segmentMetadata;
       });
 
-      const generatedSegmentation = generateSegmentation(
-        referencedImages,
-        labelmap3D,
-        metaData,
-        options
-      );
+      const generatedSegmentation = generateSegmentation(referencedImages, labelmap3D, metaData, {
+        predecessorImageId,
+        ...options,
+      });
 
       return generatedSegmentation;
     },
@@ -217,16 +216,19 @@ const commandsModule = ({
         throw new Error('No segmentation found');
       }
 
-      const { label } = segmentation;
+      const { label, predecessorImageId } = segmentation;
       const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource()[0];
 
       const {
         value: reportName,
         dataSourceName: selectedDataSource,
+        series,
+        priorSeriesNumber,
         action,
       } = await createReportDialogPrompt({
         servicesManager,
         extensionManager,
+        predecessorImageId,
         title: 'Store Segmentation',
         modality,
       });
@@ -240,7 +242,9 @@ const commandsModule = ({
           const args = {
             segmentationId,
             options: {
-              SeriesDescription: reportName || label || 'Research Derived Series',
+              SeriesDescription: series ? undefined : reportName || label || 'Contour Series',
+              SeriesNumber: series ? undefined : 1 + priorSeriesNumber,
+              predecessorImageId: series,
             },
           };
           const generatedDataAsync =
@@ -288,7 +292,11 @@ const commandsModule = ({
           Number(segmentIndex)
         );
       });
-      const dataset = await generateRTSSFromRepresentation(segmentations, options);
+      const predecessorImageId = options?.predecessorImageId ?? segmentations.predecessorImageId;
+      const dataset = await generateRTSSFromRepresentation(segmentations, {
+        predecessorImageId,
+        ...options,
+      });
       return { dataset };
     },
 
@@ -323,25 +331,12 @@ const commandsModule = ({
   };
 
   const definitions = {
-    loadSegmentationsForViewport: {
-      commandFn: actions.loadSegmentationsForViewport,
-    },
-
-    generateSegmentation: {
-      commandFn: actions.generateSegmentation,
-    },
-    downloadSegmentation: {
-      commandFn: actions.downloadSegmentation,
-    },
-    storeSegmentation: {
-      commandFn: actions.storeSegmentation,
-    },
-    downloadRTSS: {
-      commandFn: actions.downloadRTSS,
-    },
-    toggleActiveSegmentationUtility: {
-      commandFn: actions.toggleActiveSegmentationUtility,
-    },
+    loadSegmentationsForViewport: actions.loadSegmentationsForViewport,
+    generateSegmentation: actions.generateSegmentation,
+    downloadSegmentation: actions.downloadSegmentation,
+    storeSegmentation: actions.storeSegmentation,
+    downloadRTSS: actions.downloadRTSS,
+    toggleActiveSegmentationUtility: actions.toggleActiveSegmentationUtility,
   };
 
   return {
