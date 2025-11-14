@@ -122,6 +122,7 @@ function _getDisplaySetsFromSeries(
     SOPClassHandlerId: is3DSR ? SOPClassHandlerId3D : SOPClassHandlerId,
     SOPClassUID,
     instances,
+    numImageFrames: instances.length,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
@@ -185,6 +186,10 @@ async function _load(
   } else {
     srDisplaySet.referencedImages = [];
     srDisplaySet.measurements = [];
+  }
+  const { predecessorImageId } = srDisplaySet;
+  for (const measurement of srDisplaySet.measurements) {
+    measurement.predecessorImageId = predecessorImageId;
   }
 
   const mappings = measurementService.getSourceMappings(

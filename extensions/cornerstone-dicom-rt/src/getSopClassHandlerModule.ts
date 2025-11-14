@@ -20,7 +20,6 @@ function _getDisplaySetsFromSeries(
   utils.sortStudyInstances(instances);
   // Choose the LAST instance in the list as the most recently created one.
   const instance = instances[instances.length - 1];
-  console.warn('Loading instance RT', instance);
 
   const {
     StudyInstanceUID,
@@ -63,6 +62,7 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     instances,
+    numImageFrames: instances.length,
     predecessorImageId,
     wadoRoot,
     wadoUriRoot,

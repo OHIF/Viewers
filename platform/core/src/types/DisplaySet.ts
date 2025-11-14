@@ -57,6 +57,11 @@ export type DisplaySet = {
 
   isHydrated?: boolean;
   isRehydratable?: boolean;
+
+  measurements?: Array<any>;
+  referencedImages?: Array<string>;
+
+  isLoaded?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

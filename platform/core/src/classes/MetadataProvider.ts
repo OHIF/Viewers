@@ -123,27 +123,14 @@ class MetadataProvider {
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
-        const { SeriesDate, SeriesTime } = instance;
-
-        let seriesDate;
-        let seriesTime;
-
-        if (SeriesDate) {
-          seriesDate = dicomParser.parseDA(SeriesDate);
-        }
-
-        if (SeriesTime) {
-          seriesTime = dicomParser.parseTM(SeriesTime);
-        }
-
         metadata = {
           modality: instance.Modality,
           seriesInstanceUID: instance.SeriesInstanceUID,
           seriesNumber: toNumber(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
           seriesDescription: instance.SeriesDescription,
-          seriesDate,
-          seriesTime,
+          seriesDate: instance.SeriesDate,
+          seriesTime: instance.SeriesTime,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:

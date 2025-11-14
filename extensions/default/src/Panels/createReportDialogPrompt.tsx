@@ -3,7 +3,7 @@ import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
 export default function CreateReportDialogPrompt({
   title = 'Create Report',
   modality = 'SR',
-  minSeriesNumber,
+  minSeriesNumber = 0,
   predecessorImageId,
   extensionManager,
   servicesManager,
@@ -11,7 +11,6 @@ export default function CreateReportDialogPrompt({
   value: string;
   dataSourceName: string;
   priorSeriesNumber?: number;
-  predecessorImageId?: string;
   series: string;
   action: (typeof PROMPT_RESPONSES)[keyof typeof PROMPT_RESPONSES];
 }> {
@@ -43,7 +42,6 @@ export default function CreateReportDialogPrompt({
           series,
           priorSeriesNumber,
         }) => {
-          debugger;
           resolve({
             value: reportName,
             dataSourceName: selectedDataSource,

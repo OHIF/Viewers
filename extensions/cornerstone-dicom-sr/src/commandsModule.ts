@@ -44,8 +44,6 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     dataset.SpecificCharacterSet = 'ISO_IR 192';
   }
 
-  dataset.InstanceNumber = options.InstanceNumber ?? 1;
-
   return dataset;
 };
 

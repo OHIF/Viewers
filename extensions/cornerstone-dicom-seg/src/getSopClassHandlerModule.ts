@@ -58,6 +58,7 @@ function _getDisplaySetsFromSeries(
     segments: {},
     sopClassUids,
     instance,
+    numImageFrames: instances.length,
     predecessorImageId,
     instances: [instance],
     wadoRoot,
