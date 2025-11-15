@@ -75,13 +75,6 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
-      labels={{
-        ...(props.labels ?? {}),
-        labelPrevious: () => t('Previous Month', 'Previous month'),
-        labelNext: () => t('Next Month', 'Next month'),
-        labelMonthDropdown: () => t('Select Month', 'Select month'),
-        labelYearDropdown: () => t('Select Year', 'Select year'),
-      }}
       {...props}
     />
   );
