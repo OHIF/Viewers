@@ -5,7 +5,20 @@ import { DayPicker } from 'react-day-picker';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
-import { enUS, fr as frLocale } from 'date-fns/locale';
+import {
+  ar as arLocale,
+  ca as caLocale,
+  de as deLocale,
+  enUS,
+  fr as frLocale,
+  ja as jaLocale,
+  nl as nlLocale,
+  ptBR as ptBRLocale,
+  ru as ruLocale,
+  tr as trLocale,
+  vi as viLocale,
+  zhCN as zhLocale,
+} from 'date-fns/locale';
 
 import { cn } from '../../lib/utils';
 
@@ -18,6 +31,22 @@ const DATE_FNS_LOCALE_MAP: Record<string, Locale> = {
   'en-US': enUS,
   fr: frLocale,
   'fr-FR': frLocale,
+  ar: arLocale,
+  ca: caLocale,
+  de: deLocale,
+  'ja-JP': jaLocale,
+  ja: jaLocale,
+  nl: nlLocale,
+  'pt-BR': ptBRLocale,
+  pt: ptBRLocale,
+  ru: ruLocale,
+  'tr-TR': trLocale,
+  tr: trLocale,
+  vi: viLocale,
+  zh: zhLocale,
+  'zh-CN': zhLocale,
+  'zh-cn': zhLocale,
+  'test-LNG': enUS,
 };
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
