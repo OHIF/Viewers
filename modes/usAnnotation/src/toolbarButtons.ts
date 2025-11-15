@@ -672,7 +672,7 @@ const toolbarButtons: Button[] = [
       },
       evaluate: {
         name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select an MPR viewport to enable this tool',
+        disabledText: i18n.t('Buttons:Select an MPR viewport to enable this tool'),
       },
     },
   },

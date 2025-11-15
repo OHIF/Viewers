@@ -72,10 +72,15 @@
   "Stop": "$t(Common:Stop)",
   "Themes": "Thèmes",
   "Toggle Image Overlay": "Basculer la superposition d'image",
+  "Click to show or hide segment labels when hovering with your mouse.": "Cliquez pour afficher ou masquer les étiquettes de segment lorsque vous survolez avec la souris.",
   "Ultrasound Directional": "Ultrason directionnel",
   "Window Level Region": "Fenêtre/Niveau régional",
   "W/L Presets": "Préréglages W/L",
   "Window Level": "Fenêtre/Niveau",
   "Segment Label Display": "Affichage des étiquettes de segment",
-  "Zoom": "Zoom"
+  "Zoom": "Zoom",
+  "3D Rotate": "Rotation 3D",
+  "Not available on the current viewport": "Non disponible sur la fenêtre d'affichage actuelle",
+  "Select an MPR viewport to enable this tool": "Sélectionnez une vue MPR pour activer cet outil",
+  "Tool not available for this modality": "Outil non disponible pour cette modalité"
 }

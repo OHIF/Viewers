@@ -1,4 +1,5 @@
 import { utilities as cstUtils } from '@cornerstonejs/tools';
+import i18n from '@ohif/i18n';
 import { useUIStateStore } from '@ohif/extension-default';
 
 import LogicalContourOperationsOptions from './components/LogicalContourOperationsOptions';
@@ -90,7 +91,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!toolGroup) {
           return {
             disabled: true,
-            disabledText: disabledText ?? 'Not available on the current viewport',
+            disabledText: disabledText ?? i18n.t('Buttons:Not available on the current viewport'),
           };
         }
 
@@ -106,7 +107,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!toolGroup.hasTool(toolName) && !toolNames) {
           return {
             disabled: true,
-            disabledText: disabledText ?? 'Not available on the current viewport',
+            disabledText: disabledText ?? i18n.t('Buttons:Not available on the current viewport'),
           };
         }
 
