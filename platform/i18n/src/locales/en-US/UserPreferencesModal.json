@@ -47,6 +47,8 @@
   "Brush": "Brush",
   "Add New Segment": "Add New Segment",
   "Press keys": "Press keys...",
+  "LanguageName.en-US": "English (US)",
+  "LanguageName.fr": "French",
   "HotkeyKeys.ctrl": "Ctrl",
   "HotkeyKeys.shift": "Shift",
   "HotkeyKeys.alt": "Alt",

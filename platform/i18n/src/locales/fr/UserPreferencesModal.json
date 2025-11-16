@@ -44,6 +44,8 @@
   "Brush": "$t(Buttons:Brush)",
   "Add New Segment": "Ajouter un segment",
   "Press keys": "Appuyez sur les touches...",
+  "LanguageName.en-US": "Anglais (États-Unis)",
+  "LanguageName.fr": "Français",
   "HotkeyKeys.ctrl": "Ctrl",
   "HotkeyKeys.shift": "Maj",
   "HotkeyKeys.alt": "Alt",

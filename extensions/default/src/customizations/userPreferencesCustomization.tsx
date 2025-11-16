@@ -19,7 +19,7 @@ interface HotkeyDefinitions {
 
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager } = useSystem();
-  const { t } = useTranslation('UserPreferencesModal');
+  const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -83,6 +83,46 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     hotkeysManager.restoreDefaultBindings();
   };
 
+  const displayNames = React.useMemo(() => {
+    if (typeof Intl === 'undefined' || typeof Intl.DisplayNames !== 'function') {
+      return null;
+    }
+
+    const locales = [state.languageValue, currentLanguage.value, i18nextInstance.language, 'en'];
+    const uniqueLocales = Array.from(new Set(locales.filter(Boolean)));
+
+    try {
+      return new Intl.DisplayNames(uniqueLocales, { type: 'language', fallback: 'none' });
+    } catch (error) {
+      console.warn('Intl.DisplayNames not supported for locales', uniqueLocales, error);
+    }
+
+    return null;
+  }, [state.languageValue, currentLanguage.value, i18nextInstance.language]);
+
+  const getLanguageLabel = React.useCallback(
+    (languageValue: string, fallbackLabel: string) => {
+      const translationKey = `LanguageName.${languageValue}`;
+      if (i18nextInstance.exists(translationKey, { ns: 'UserPreferencesModal' })) {
+        return t(translationKey);
+      }
+
+      if (displayNames) {
+        try {
+          const localized = displayNames.of(languageValue);
+          if (localized && localized.toLowerCase() !== languageValue.toLowerCase()) {
+            return localized.charAt(0).toUpperCase() + localized.slice(1);
+          }
+        } catch (error) {
+          console.debug(`Unable to resolve display name for ${languageValue}`, error);
+        }
+      }
+
+      return fallbackLabel;
+    },
+    [displayNames, i18nextInstance, t]
+  );
+
   return (
     <UserPreferencesModal>
       <UserPreferencesModal.Body>
@@ -105,7 +145,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                   key={lang.value}
                   value={lang.value}
                 >
-                  {lang.label}
+                  {getLanguageLabel(lang.value, lang.label)}
                 </SelectItem>
               ))}
             </SelectContent>
