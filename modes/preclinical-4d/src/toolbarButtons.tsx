@@ -290,7 +290,7 @@ const toolbarButtons = [
       },
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'eraser-radius',
           type: 'range',
           min: 0.5,
@@ -328,7 +328,7 @@ const toolbarButtons = [
       },
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'threshold-radius',
           type: 'range',
           min: 0.5,

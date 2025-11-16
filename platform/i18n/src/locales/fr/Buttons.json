@@ -84,7 +84,8 @@
   "3D Rotate": "Rotation 3D",
   "Shape": "Forme",
   "Eraser": "Gomme",
-  "Threshold Tool": "Outil de seuillage",
+  "Threshold Tool": "Outil seuil",
+  "Threshold": "Seuil",
   "Shapes": "Formes",
   "Not available on the current viewport": "Non disponible sur la fenêtre d'affichage actuelle",
   "Select an MPR viewport to enable this tool": "Sélectionnez une vue MPR pour activer cet outil",
@@ -115,4 +116,13 @@
   "Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.": "Utilisez des marqueurs d'inclusion/exclusion pour guider la segmentation IA (SAM). Cliquez pour placer des marqueurs, Entrée pour accepter les résultats, Échap pour rejeter, et N pour passer à la coupe suivante en conservant les marqueurs."
   ,
   "Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.": "Remplit automatiquement les coupes manquantes entre les segments dessinés. Utilisez les outils brosse ou seuillage sur au moins deux coupes, puis cliquez pour interpoler entre les coupes. Fonctionne dans toutes les directions. Le volume doit être reconstruisible."
+  ,
+  "Marker Mode": "Mode marqueur",
+  "Include": "Inclure",
+  "Exclude": "Exclure",
+  "Clear Markers": "Effacer les marqueurs"
+  ,
+  "Radius (mm)": "Rayon (mm)",
+  "Dynamic": "Dynamique",
+  "Range": "Plage"
 }

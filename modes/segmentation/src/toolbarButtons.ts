@@ -670,7 +670,7 @@ const toolbarButtons: Button[] = [
       },
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'brush-radius',
           type: 'range',
           explicitRunOnly: true,
@@ -860,13 +860,13 @@ const toolbarButtons: Button[] = [
       },
       options: [
         {
-          name: 'Marker Mode',
+          name: i18n.t('Buttons:Marker Mode'),
           type: 'radio',
           id: 'marker-mode',
           value: 'markerInclude',
           values: [
-            { value: 'markerInclude', label: 'Include' },
-            { value: 'markerExclude', label: 'Exclude' },
+            { value: 'markerInclude', label: i18n.t('Buttons:Include') },
+            { value: 'markerExclude', label: i18n.t('Buttons:Exclude') },
           ],
           commands: ({ commandsManager, options }) => {
             const markerModeOption = options.find(option => option.id === 'marker-mode');
@@ -882,7 +882,7 @@ const toolbarButtons: Button[] = [
           },
         },
         {
-          name: 'Clear Markers',
+          name: i18n.t('Buttons:Clear Markers'),
           type: 'button',
           id: 'clear-markers',
           commands: 'clearMarkersForMarkerLabelmap',
@@ -912,7 +912,7 @@ const toolbarButtons: Button[] = [
       ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'eraser-radius',
           type: 'range',
           explicitRunOnly: true,
@@ -950,7 +950,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-threshold',
-      label: 'Threshold Tool',
+      label: i18n.t('Buttons:Threshold Tool'),
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
@@ -978,7 +978,7 @@ const toolbarButtons: Button[] = [
       },
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'threshold-radius',
           type: 'range',
           explicitRunOnly: true,
@@ -1025,13 +1025,13 @@ const toolbarButtons: Button[] = [
           },
         },
         {
-          name: 'Threshold',
+          name: i18n.t('Buttons:Threshold'),
           type: 'radio',
           id: 'dynamic-mode',
           value: 'ThresholdDynamic',
           values: [
-            { value: 'ThresholdDynamic', label: 'Dynamic' },
-            { value: 'ThresholdRange', label: 'Range' },
+            { value: 'ThresholdDynamic', label: i18n.t('Buttons:Dynamic') },
+            { value: 'ThresholdRange', label: i18n.t('Buttons:Range') },
           ],
           commands: ({ value, commandsManager, options }) => {
             const thresholdRangeOption = options.find(option => option.id === 'threshold-shape');
