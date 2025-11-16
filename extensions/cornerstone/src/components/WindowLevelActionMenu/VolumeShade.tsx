@@ -2,11 +2,13 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Switch } from '@ohif/ui-next';
 import { VolumeShadeProps } from '../../types/ViewportPresets';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeShade({
   viewportId,
   onClickShade = bool => {},
 }: VolumeShadeProps): ReactElement {
+  const { t } = useTranslation('WindowLevelActionMenu');
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [shade, setShade] = useState(true);
@@ -29,7 +31,7 @@ export function VolumeShade({
 
   return (
     <>
-      <span className="flex-grow">Shade</span>
+      <span className="flex-grow">{t('Shade')}</span>
       <Switch
         className="ml-2 flex-shrink-0"
         key={key}
