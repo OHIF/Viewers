@@ -88,6 +88,7 @@
   "Shapes": "Formes",
   "Not available on the current viewport": "Non disponible sur la fenêtre d'affichage actuelle",
   "Select an MPR viewport to enable this tool": "Sélectionnez une vue MPR pour activer cet outil",
+  "Select a 3D viewport to enable this tool": "Sélectionnez une vue 3D pour activer cet outil",
   "Tool not available for this modality": "Outil non disponible pour cette modalité",
   "Create new segmentation to enable this tool.": "Créez une segmentation pour activer cet outil.",
   "Freehand Segmentation": "Segmentation à main levée",

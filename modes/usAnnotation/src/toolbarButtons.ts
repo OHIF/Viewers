@@ -628,7 +628,7 @@ const toolbarButtons: Button[] = [
       commands: setToolActiveToolbar,
       evaluate: {
         name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select a 3D viewport to enable this tool',
+        disabledText: i18n.t('Buttons:Select a 3D viewport to enable this tool'),
       },
     },
   },

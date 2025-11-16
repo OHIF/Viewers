@@ -25,6 +25,7 @@ import CaptureViewportModal from './CaptureViewportModal.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import Tools from './Tools.json';
+import Onboarding from './Onboarding.json';
 
 export default {
   'en-US': {
@@ -55,5 +56,6 @@ export default {
     Hps,
     ToolbarLayoutSelector,
     Tools,
+    Onboarding,
   },
 };
