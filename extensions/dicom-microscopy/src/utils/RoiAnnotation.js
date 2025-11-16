@@ -168,7 +168,16 @@ class RoiAnnotation extends PubSubService {
    * @returns {String} Text with geometry type and label
    */
   getDetailedLabel() {
-    const label = this.label ? `${this.label}` : '(empty)';
+    // Lazy import to avoid adding heavy i18n dependency at module load time
+    let translatedEmpty = '(empty)';
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const i18n = require('@ohif/i18n').default;
+      translatedEmpty = i18n.t('MeasurementTable:empty');
+    } catch (e) {
+      // fallback to default
+    }
+    const label = this.label ? `${this.label}` : translatedEmpty;
     return label;
   }
 
