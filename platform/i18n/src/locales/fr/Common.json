@@ -22,5 +22,8 @@
   "Show": "Afficher",
   "Stop": "Arrêter",
   "StudyDate": "Date d'étude",
-  "Yes": "Oui"
+  "Yes": "Oui",
+  "Foreground": "Avant-plan",
+  "SELECT A FOREGROUND": "SÉLECTIONNER UN AVANT-PLAN",
+  "SELECT A SEGMENTATION": "SÉLECTIONNER UNE SEGMENTATION"
 }
