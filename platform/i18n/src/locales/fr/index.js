@@ -25,6 +25,7 @@ import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
 import SegmentationTable from './SegmentationTable.json';
 import Onboarding from './Onboarding.json';
+import Colormaps from './Colormaps.json';
 
 export default {
   fr: {
@@ -55,5 +56,6 @@ export default {
     Tools,
     SegmentationTable,
     Onboarding,
+    Colormaps,
   },
 };

@@ -26,6 +26,7 @@ import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import Tools from './Tools.json';
 import Onboarding from './Onboarding.json';
+import Colormaps from './Colormaps.json';
 
 export default {
   'en-US': {
@@ -57,5 +58,6 @@ export default {
     ToolbarLayoutSelector,
     Tools,
     Onboarding,
+    Colormaps,
   },
 };
