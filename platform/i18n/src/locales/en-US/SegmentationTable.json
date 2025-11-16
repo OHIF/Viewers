@@ -43,4 +43,21 @@
   "CSV Report": "CSV Report",
   "DICOM SEG": "DICOM SEG",
   "DICOM RTSS": "DICOM RTSS"
+  ,
+  "Fill contour holes": "Fill contour holes",
+  "Fill Holes": "Fill Holes",
+  "Remove Small Contours": "Remove Small Contours",
+  "Area Threshold": "Area Threshold",
+  "Create New Segment from Holes": "Create New Segment from Holes",
+  "Create New Segment": "Create New Segment",
+  "Smooth all edges": "Smooth all edges",
+  "Smooth Edges": "Smooth Edges",
+  "Remove extra points": "Remove extra points",
+  "Remove Points": "Remove Points",
+  "Merge": "Merge",
+  "Intersect": "Intersect",
+  "Subtract": "Subtract",
+  "Select a segment": "Select a segment",
+  "Create a new segment": "Create a new segment",
+  "New segment name": "New segment name"
 }

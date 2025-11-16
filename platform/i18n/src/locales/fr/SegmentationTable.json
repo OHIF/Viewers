@@ -28,5 +28,22 @@
   "Export": "Exporter",
   "CSV Report": "Rapport CSV",
   "DICOM SEG": "DICOM SEG",
-  "DICOM RTSS": "DICOM RTSS"
+  "DICOM RTSS": "DICOM RTSS",
+  "Download DICOM RTSS": "Télécharger DICOM RTSS",
+  "Fill contour holes": "Remplir les trous de contour",
+  "Fill Holes": "Remplir les trous",
+  "Remove Small Contours": "Supprimer les petits contours",
+  "Area Threshold": "Seuil de surface",
+  "Create New Segment from Holes": "Créer un nouveau segment à partir des trous",
+  "Create New Segment": "Créer un nouveau segment",
+  "Smooth all edges": "Lisser tous les bords",
+  "Smooth Edges": "Lisser les bords",
+  "Remove extra points": "Supprimer les points supplémentaires",
+  "Remove Points": "Supprimer les points",
+  "Merge": "Fusionner",
+  "Intersect": "Intersection",
+  "Subtract": "Soustraire",
+  "Select a segment": "Sélectionner un segment",
+  "Create a new segment": "Créer un nouveau segment",
+  "New segment name": "Nom du nouveau segment"
 }

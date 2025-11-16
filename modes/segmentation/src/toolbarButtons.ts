@@ -686,13 +686,13 @@ const toolbarButtons: Button[] = [
           ],
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'brush-mode',
           value: 'CircularBrush',
           values: [
-            { value: 'CircularBrush', label: 'Circle' },
-            { value: 'SphereBrush', label: 'Sphere' },
+            { value: 'CircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           commands: ['setToolActiveToolbar'],
         },
@@ -926,13 +926,13 @@ const toolbarButtons: Button[] = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'CircularEraser',
           values: [
-            { value: 'CircularEraser', label: 'Circle' },
-            { value: 'SphereEraser', label: 'Sphere' },
+            { value: 'CircularEraser', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereEraser', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -999,13 +999,13 @@ const toolbarButtons: Button[] = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'threshold-shape',
           value: 'ThresholdCircularBrush',
           values: [
-            { value: 'ThresholdCircularBrush', label: 'Circle' },
-            { value: 'ThresholdSphereBrush', label: 'Sphere' },
+            { value: 'ThresholdCircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'ThresholdSphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           commands: ({ value, commandsManager, options }) => {
             const optionsDynamic = options.find(option => option.id === 'dynamic-mode');
@@ -1104,14 +1104,14 @@ const toolbarButtons: Button[] = [
       },
       options: [
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           value: 'CircleScissor',
           id: 'shape-mode',
           values: [
-            { value: 'CircleScissor', label: 'Circle' },
-            { value: 'SphereScissor', label: 'Sphere' },
-            { value: 'RectangleScissor', label: 'Rectangle' },
+            { value: 'CircleScissor', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereScissor', label: i18n.t('Buttons:Sphere') },
+            { value: 'RectangleScissor', label: i18n.t('Buttons:Rectangle') },
           ],
           commands: 'setToolActiveToolbar',
         },
