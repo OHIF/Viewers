@@ -23,6 +23,7 @@ import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
+import SegmentationTable from './SegmentationTable.json';
 
 export default {
   fr: {
@@ -51,5 +52,6 @@ export default {
     WindowLevelActionMenu,
     CaptureViewportModal,
     Tools,
+    SegmentationTable,
   },
 };

@@ -47,7 +47,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!segmentations?.length) {
           return {
             disabled: true,
-            disabledText: 'No segmentations available',
+            disabledText: i18n.t('Buttons:No segmentations available'),
           };
         }
 
@@ -74,7 +74,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!segmentations?.length) {
           return {
             disabled: true,
-            disabledText: disabledText ?? 'No segmentations available',
+            disabledText: disabledText ?? i18n.t('Buttons:No segmentations available'),
           };
         }
 
