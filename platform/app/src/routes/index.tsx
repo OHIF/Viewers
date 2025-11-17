@@ -3,8 +3,14 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
+// Study list variants:
+// - Default: StudyListNext2Entry (ui-next, with pre-DS hydration)
+// - Optional: StudyListNext (previous ui-next)
+// - Optional: WorkList (legacy)
+import StudyListNext from './StudyListNext/StudyListNext';
+import WorkList from './WorkList/WorkList';
+import StudyListNext2Entry from './StudyListNext2/StudyListNext2Entry';
 import DataSourceWrapper from './DataSourceWrapper';
-import WorkList from './WorkList';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
@@ -110,11 +116,19 @@ const createRoutes = ({
 
   console.log('Registering worklist route', routerBasename, path);
 
+  // Worklist Route: set `children` (and `props` if using DataSourceWrapper)
+
   const WorkListRoute = {
     path: '/',
-    children: DataSourceWrapper,
+    // Default: StudyListNext2Entry (pre-DS hydration)
+    children: StudyListNext2Entry,
     private: true,
-    props: { children: WorkList, servicesManager, extensionManager },
+    // To use StudyListNext instead:
+    // children: DataSourceWrapper,
+    // props: { children: StudyListNext, servicesManager, extensionManager },
+    // To use legacy WorkList instead:
+    // children: DataSourceWrapper,
+    // props: { children: WorkList, servicesManager, extensionManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');

@@ -1,6 +1,11 @@
 /** Core + extended workflow sets */
 export const DEFAULT_WORKFLOW_OPTIONS = ['Basic Viewer', 'Segmentation'] as const;
-export const EXTENDED_WORKFLOW_OPTIONS = ['TMTV Workflow', 'US Workflow', 'Preclinical 4D'] as const;
+export const EXTENDED_WORKFLOW_OPTIONS = [
+  'TMTV Workflow',
+  'US Workflow',
+  'Preclinical 4D',
+  'Microscopy',
+] as const;
 
 /** All workflow options that the UI supports. */
 export const ALL_WORKFLOW_OPTIONS = [
@@ -37,6 +42,7 @@ export function getAvailableWorkflows(
   const flows: string[] = [...DEFAULT_WORKFLOW_OPTIONS];
 
   if (mod.includes('US')) flows.push('US Workflow');
+  if (mod.includes('SM')) flows.push('Microscopy');
   if (mod.includes('PET/CT') || (mod.includes('PET') && mod.includes('CT'))) {
     flows.push('TMTV Workflow');
   }
@@ -44,4 +50,3 @@ export function getAvailableWorkflows(
   const filtered = flows.filter(w => all.has(w));
   return Array.from(new Set(filtered)) as WorkflowId[];
 }
-
