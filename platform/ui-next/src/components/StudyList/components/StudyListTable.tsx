@@ -172,7 +172,7 @@ function Content({
       <div className="border-input/50 min-h-0 flex-1 rounded-md border">
         <div className="flex h-full flex-col">
           <div className="shrink-0 border-b border-input/50">
-            <Table className={tableClassName} noScroll>
+            <Table className={tableClassName} containerClassName="overflow-x-hidden" noScroll>
               {renderColGroup()}
               <TableHeader>
                 {table.getHeaderGroups().map((hg) => (
