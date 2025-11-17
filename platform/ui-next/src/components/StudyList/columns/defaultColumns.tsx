@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '../../DataTable';
 import type { StudyRow } from '../StudyListTypes';
-import { StudyListInstancesCell } from '../components/StudyListInstancesCell';
+import { StudyListActionsCell } from '../components/StudyListActionsCell';
 
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
@@ -77,10 +77,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'instances',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Instances" align="right" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Instances" align="right" />
+      ),
       cell: ({ row }) => {
         const value = row.getValue('instances') as number;
-        return <StudyListInstancesCell row={row} value={value} />;
+        return <div className="text-right">{value}</div>;
       },
       sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
       meta: {
@@ -90,6 +92,19 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         fixedWidth: 90,
       },
     },
+    // Non-hideable trailing actions column to keep the menu at row end
+    {
+      id: 'actions',
+      header: () => null,
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => <StudyListActionsCell row={row as any} />,
+      meta: {
+        // No label so it never appears labeled in any UI; also non-hideable
+        headerClassName: 'w-[56px] min-w-[56px] max-w-[56px]',
+        cellClassName: 'w-[56px] min-w-[56px] max-w-[56px] overflow-visible',
+        fixedWidth: 56,
+      },
+    },
   ];
 }
-
