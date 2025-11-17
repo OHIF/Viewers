@@ -35,18 +35,20 @@ export function addProxyFields(instance) {
     return instance;
   }
 
-  for(const fieldProxy of fieldProxies) {
-    if( fieldProxy in instance) {
+  for (const fieldProxy of fieldProxies) {
+    if (fieldProxy in instance) {
       continue;
     }
-    Object.defineProperty(instance,fieldProxy, {
+    Object.defineProperty(instance, fieldProxy, {
       configurable: true,
       enumerable: true,
       get: () => {
-        return instance._parentInstance?.[fieldProxy] ?? instance._parentInstance?._shared?.[fieldProxy];
+        return (
+          instance._parentInstance?.[fieldProxy] ?? instance._parentInstance?._shared?.[fieldProxy]
+        );
       },
       set: (value) => {
-        Object.defineProperty(instance,fieldProxy, {
+        Object.defineProperty(instance, fieldProxy, {
           writable: true,
           enumerable: true,
           value,
@@ -56,7 +58,7 @@ export function addProxyFields(instance) {
   }
 
   // Mark this proxy to avoid double wrapping
-  Object.defineProperty(instance,METADATA_PROXY_FLAG, { value: true });
+  Object.defineProperty(instance, METADATA_PROXY_FLAG, { value: true });
 
   return instance;
 }
