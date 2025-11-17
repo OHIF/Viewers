@@ -1,22 +1,13 @@
 import * as React from 'react';
 import { Button } from '../Button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../DropdownMenu';
+import { Icons } from '../Icons';
 import { useDataTable } from './context';
-
-function ChevronLeftIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" {...props}>
-      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" {...props}>
-      <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" fill="currentColor" />
-    </svg>
-  );
-}
 
 /**
  * DataTablePagination
@@ -35,8 +26,34 @@ export function DataTablePagination() {
   const canNext = table.getCanNextPage();
 
   return (
-    <div className="flex items-center gap-1 mr-2">
-      <span className="text-primary/80 text-sm leading-tight">{`${start}-${end} of ${total}`}</span>
+    <div className="mr-2 flex items-center gap-0.5">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary/80 px-2 text-sm leading-tight"
+            aria-label="Rows per page"
+          >
+            {`${start}-${end} of ${total}`}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          {[25, 50, 100].map(size => (
+            <DropdownMenuItem
+              key={size}
+              onSelect={e => {
+                e.preventDefault();
+                table.setPageSize(size);
+              }}
+              className="flex items-center gap-[2px]"
+            >
+              <Icons.Checked className={`h-6 w-6 ${pageSize === size ? '' : 'invisible'}`} />
+              {size} per page
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <Button
         variant="ghost"
         size="icon"
@@ -45,7 +62,7 @@ export function DataTablePagination() {
         disabled={!canPrev}
         className="ml-1"
       >
-        <ChevronLeftIcon />
+        <Icons.ChevronLeft className="h-3 w-3" />
       </Button>
       <Button
         variant="ghost"
@@ -54,7 +71,7 @@ export function DataTablePagination() {
         onClick={() => table.nextPage()}
         disabled={!canNext}
       >
-        <ChevronRightIcon />
+        <Icons.ChevronRight className="h-3 w-3" />
       </Button>
     </div>
   );
