@@ -5,8 +5,6 @@ import setUpAutoTabSwitchHandler from './utils/setUpAutoTabSwitchHandler';
 import { ohif, cornerstone, extensionDependencies, dicomRT, segmentation } from '@ohif/mode-basic';
 export * from './toolbarButtons';
 
-console.warn('cornerstone=', cornerstone);
-
 function modeFactory({ modeConfiguration }) {
   const _unsubscriptions = [];
   return {

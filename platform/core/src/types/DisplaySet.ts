@@ -16,6 +16,8 @@ export type DisplaySet = {
   label?: string;
   /** Flag indicating if this is an overlay display set (e.g., SEG, RTSTRUCT) */
   isOverlayDisplaySet?: boolean;
+  /** Flag indicating this is a derived dataset */
+  isDerived?: boolean;
   /** flag indicating if it supports window level */
   supportsWindowLevel?: boolean;
 

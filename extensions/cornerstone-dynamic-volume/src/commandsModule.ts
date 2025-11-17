@@ -1,8 +1,10 @@
-import * as importedActions from './actions';
 import { utilities, Enums } from '@cornerstonejs/tools';
 import { cache } from '@cornerstonejs/core';
+import { utils } from '@ohif/core';
 
-const LABELMAP = Enums.SegmentationRepresentations.Labelmap;
+import * as importedActions from './actions';
+
+const { downloadCsv } = utils;
 
 const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
   const services = servicesManager.services;
@@ -37,7 +39,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       });
       return computedDisplaySets;
     },
-    exportTimeReportCSV: ({ segmentations, config, options, summaryStats }) => {
+    exportTimeReportCSV: ({ segmentations, summaryStats }) => {
       const dynamic4DDisplaySet = actions.getDynamic4DDisplaySet();
 
       const volumeId = dynamic4DDisplaySet?.displaySetInstanceUID;
@@ -203,15 +205,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
 
       // Generate filename and trigger download
       const filename = `${instance.PatientID}.csv`;
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      downloadCsv(csvContent, { filename });
     },
     swapDynamicWithComputedDisplaySet: ({ displaySet }) => {
       const computedDisplaySet = displaySet;

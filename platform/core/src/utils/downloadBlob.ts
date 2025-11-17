@@ -8,6 +8,16 @@ export function downloadBlob(content, options?) {
 }
 
 /**
+ * Trigger file download from an array buffer
+ * @param buffer
+ * @param filename
+ */
+export function downloadDicom(buffer: ArrayBuffer, options) {
+  const blob = new Blob([buffer], { type: 'application/dicom' });
+  downloadBlob(blob, options);
+}
+
+/**
  * Downloads a URL
  */
 export function downloadUrl(url, options?) {
@@ -17,4 +27,10 @@ export function downloadUrl(url, options?) {
   link.setAttribute('download', filename);
   document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
+}
+
+export function downloadCsv(csvString: string, options?) {
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  downloadBlob(blob, options);
 }

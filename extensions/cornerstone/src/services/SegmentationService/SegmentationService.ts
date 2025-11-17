@@ -371,7 +371,6 @@ class SegmentationService extends PubSubService {
       label?: string;
     }
   ): Promise<string> {
-    console.warn('******************** create contour for display set');
     return this._createSegmentationForDisplaySet(displaySet, CONTOUR, options);
   }
 
@@ -393,7 +392,6 @@ class SegmentationService extends PubSubService {
       label?: string;
     }
   ): Promise<string> {
-    console.warn('******************** create segmentation for display set');
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;

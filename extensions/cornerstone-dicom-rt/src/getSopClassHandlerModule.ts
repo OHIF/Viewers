@@ -45,6 +45,11 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
+    /**
+     * The "SeriesDate" for a display set is really the display set date, which
+     * should be the date of the instance being used, which will be the structure
+     * set date in this case.
+     */
     SeriesDate: StructureSetDate || SeriesDate,
     SeriesTime: StructureSetTime || SeriesTime,
     SOPInstanceUID,
@@ -62,6 +67,7 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     instances,
+    // Not really image frames, but equivalent
     numImageFrames: instances.length,
     predecessorImageId,
     wadoRoot,
