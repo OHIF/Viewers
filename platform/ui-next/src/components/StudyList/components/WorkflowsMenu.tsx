@@ -1,12 +1,8 @@
 import * as React from 'react';
 import { Button } from '../../Button';
 import { Icons } from '../../Icons';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '../../DropdownMenu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../DropdownMenu';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../Tooltip';
 import { getAvailableWorkflows, type WorkflowId } from '../WorkflowsInfer';
 
 type Props = {
@@ -32,18 +28,25 @@ export function WorkflowsMenu({
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          aria-expanded={open}
-          aria-haspopup="menu"
-          aria-label="Open workflows menu"
-          className="bg-primary/20 text-primary mt-1 h-6 w-6 transition-opacity hover:bg-primary/30"
-        >
-          <Icons.More className="h-6 w-6" />
-        </Button>
-      </DropdownMenuTrigger>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-expanded={open}
+                aria-haspopup="menu"
+                aria-label="Action Menu"
+                className="bg-primary/20 text-primary mt-1 h-6 w-6 transition-opacity hover:bg-primary/30"
+              >
+                <Icons.More className="h-6 w-6" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Action Menu</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenuContent align={align} onClick={(e) => e.stopPropagation()}>
         <div className="text-muted-foreground border-b border-input py-1 pl-1 pr-4 text-sm my-1.5 mx-1">
           Launch Workflow:

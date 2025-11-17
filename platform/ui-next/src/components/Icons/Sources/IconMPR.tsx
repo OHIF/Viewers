@@ -10,7 +10,6 @@ export const IconMPR = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <title>info-mpr</title>
     <g
       id="info-mpr"
       stroke="none"
