@@ -139,6 +139,7 @@ import {
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
 export * from './StudyList';
+export * from './PatientSummary';
 import { ToolSettings } from './OHIFToolSettings';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
