@@ -292,7 +292,7 @@ class SegmentationService extends PubSubService {
     }
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
-    if (!segmentation.predecessorImageId && predecessorImageId) {
+    if (segmentation && !segmentation.predecessorImageId && predecessorImageId) {
       segmentation.predecessorImageId = predecessorImageId;
     }
     const csViewport = this.getAndValidateViewport(viewportId);
