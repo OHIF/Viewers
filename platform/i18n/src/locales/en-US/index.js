@@ -27,6 +27,8 @@ import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import Tools from './Tools.json';
 import Onboarding from './Onboarding.json';
 import Colormaps from './Colormaps.json';
+import PanelSUV from './PanelSUV.json';
+import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
 
 export default {
   'en-US': {
@@ -59,5 +61,7 @@ export default {
     Tools,
     Onboarding,
     Colormaps,
+    PanelSUV,
+    ROIThresholdConfiguration,
   },
 };

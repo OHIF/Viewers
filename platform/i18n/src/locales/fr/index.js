@@ -26,6 +26,8 @@ import Tools from './Tools.json';
 import SegmentationTable from './SegmentationTable.json';
 import Onboarding from './Onboarding.json';
 import Colormaps from './Colormaps.json';
+import PanelSUV from './PanelSUV.json';
+import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
 
 export default {
   fr: {
@@ -57,5 +59,7 @@ export default {
     SegmentationTable,
     Onboarding,
     Colormaps,
+    PanelSUV,
+    ROIThresholdConfiguration,
   },
 };

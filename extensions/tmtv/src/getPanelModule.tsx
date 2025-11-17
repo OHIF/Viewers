@@ -14,7 +14,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     return (
       <Toolbox
         buttonSectionId={toolbarService.sections.roiThresholdToolbox}
-        title="Threshold Tools"
+        title="Buttons:Threshold Tools"
       />
     );
   };
@@ -28,7 +28,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       <>
         <Toolbox
           buttonSectionId={toolbarService.sections.roiThresholdToolbox}
-          title="Threshold Tools"
+          title="Buttons:Threshold Tools"
         />
         <PanelTMTV
           commandsManager={commandsManager}
