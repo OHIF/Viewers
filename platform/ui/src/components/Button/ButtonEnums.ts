@@ -4,6 +4,7 @@ enum type {
 }
 enum size {
   medium = 'medium',
+  smallTall = 'smallTall',
   small = 'small',
 }
 

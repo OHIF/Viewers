@@ -1,7 +1,9 @@
 import { CustomDropdownMenuContent } from './CustomDropdownMenuContent';
 import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
-import React, { useState } from 'react';
-import { Switch } from '@ohif/ui-next';
+import SegmentationToolConfig from '../components/SegmentationToolConfig';
+import React from 'react';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
@@ -9,10 +11,25 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
-    'panelSegmentation.onSegmentationAdd': () => {
+    'panelSegmentation.onSegmentationAdd': async ({
+      segmentationRepresentationType = SegmentationRepresentations.Labelmap,
+    }) => {
       const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getState().activeViewportId;
-      commandsManager.run('createLabelmapForViewport', { viewportId });
+      if (segmentationRepresentationType === SegmentationRepresentations.Labelmap) {
+        commandsManager.run('createLabelmapForViewport', { viewportId });
+      } else if (segmentationRepresentationType === SegmentationRepresentations.Contour) {
+        const segmentationId = await commandsManager.run('createContourForViewport', {
+          viewportId,
+        });
+        cornerstoneTools.segmentation.config.style.setStyle(
+          { segmentationId, type: SegmentationRepresentations.Contour },
+          {
+            fillAlpha: 0.5,
+            renderFill: true,
+          }
+        );
+      }
     },
     'panelSegmentation.tableMode': 'collapsed',
     'panelSegmentation.readableText': {
@@ -33,53 +50,11 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       lesionGlycolysis: 'Lesion Glycolysis',
       center: 'Center',
     },
-    'segmentationToolbox.config': () => {
-      // Get initial states based on current configuration
-      const [previewEdits, setPreviewEdits] = useState(false);
-      const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
-      const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
-      const handlePreviewEditsChange = checked => {
-        setPreviewEdits(checked);
-        commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });
-      };
-
-      const handleToggleSegmentEnabledChange = checked => {
-        setToggleSegmentEnabled(checked);
-        commandsManager.run('toggleSegmentSelect', { toggle: checked });
-      };
-
-      const handleUseCenterAsSegmentIndexChange = checked => {
-        setUseCenterAsSegmentIndex(checked);
-        commandsManager.run('toggleUseCenterSegmentIndex', { toggle: checked });
-      };
-
-      return (
-        <div className="bg-muted flex flex-col gap-4 border-b border-b-[2px] border-black px-2 py-3">
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={previewEdits}
-              onCheckedChange={handlePreviewEditsChange}
-            />
-            <span className="text-base text-white">Preview edits before creating</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={useCenterAsSegmentIndex}
-              onCheckedChange={handleUseCenterAsSegmentIndexChange}
-            />
-            <span className="text-base text-white">Use center as segment index</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={toggleSegmentEnabled}
-              onCheckedChange={handleToggleSegmentEnabledChange}
-            />
-            <span className="text-base text-white">Hover on segment border to activate</span>
-          </div>
-        </div>
-      );
+    'labelMapSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
+    },
+    'contourSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
     },
   };
 }

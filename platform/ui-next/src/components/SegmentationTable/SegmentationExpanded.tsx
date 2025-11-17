@@ -93,7 +93,7 @@ const SegmentationExpandedContent = ({ children }: { children: React.ReactNode }
 
 // Main compound component
 const SegmentationExpandedRoot = ({ children }) => {
-  const { data, activeSegmentationId, onSegmentationClick, mode } =
+  const { data, activeSegmentationId, onSegmentationClick, mode, segmentationRepresentationType } =
     useSegmentationTableContext('SegmentationExpanded');
 
   const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(data);
@@ -113,25 +113,31 @@ const SegmentationExpandedRoot = ({ children }) => {
         style={{ maxHeight: maxHeight }}
         className={`space-y-0 pl-0.5`}
       >
-        {data.map(segmentationInfo => {
-          const isActive = segmentationInfo.segmentation.segmentationId === activeSegmentationId;
+        {data
+          .filter(
+            segmentationInfo =>
+              !segmentationRepresentationType ||
+              segmentationInfo.representation.type === segmentationRepresentationType
+          )
+          .map(segmentationInfo => {
+            const isActive = segmentationInfo.segmentation.segmentationId === activeSegmentationId;
 
-          return (
-            <PanelSection
-              key={segmentationInfo.segmentation.segmentationId}
-              className=""
-            >
-              <SegmentationExpandedProvider
-                segmentation={segmentationInfo.segmentation}
-                representation={segmentationInfo.representation}
-                isActive={isActive}
-                onSegmentationClick={onSegmentationClick}
+            return (
+              <PanelSection
+                key={segmentationInfo.segmentation.segmentationId}
+                className=""
               >
-                {children}
-              </SegmentationExpandedProvider>
-            </PanelSection>
-          );
-        })}
+                <SegmentationExpandedProvider
+                  segmentation={segmentationInfo.segmentation}
+                  representation={segmentationInfo.representation}
+                  isActive={isActive}
+                  onSegmentationClick={onSegmentationClick}
+                >
+                  {children}
+                </SegmentationExpandedProvider>
+              </PanelSection>
+            );
+          })}
       </div>
     </ScrollArea>
   );

@@ -14,6 +14,7 @@ function PanelStudyBrowserHeader({
   actionIcons: actionIcon[];
   updateActionIconValue: (actionIcon: actionIcon) => void;
 }) {
+  // Button order: Settings button then List view mode (thumbnails vs. list)
   return (
     <>
       <div className="bg-muted flex h-[40px] select-none rounded-t p-2">

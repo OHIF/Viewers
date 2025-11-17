@@ -11,12 +11,13 @@ summary: Documentation for OHIF's SegmentationService, which provides tools for 
 ## Events
 
 ```typescript
-SEGMENTATION_MODIFIED          // When a segmentation is updated
-SEGMENTATION_DATA_MODIFIED     // When segmentation data changes
-SEGMENTATION_ADDED            // When new segmentation is added
-SEGMENTATION_REMOVED          // When segmentation is removed
-SEGMENT_LOADING_COMPLETE      // When segment group adds pixel data to volume
-SEGMENTATION_LOADING_COMPLETE // When full segmentation volume is filled
+SEGMENTATION_MODIFIED                               // When a segmentation is updated
+SEGMENTATION_DATA_MODIFIED                          // When segmentation data changes
+SEGMENTATION_ADDED                                  // When new segmentation is added
+SEGMENTATION_REMOVED                                // When segmentation is removed
+SEGMENT_LOADING_COMPLETE                            // When segment group adds pixel data to volume
+SEGMENTATION_LOADING_COMPLETE                       // When full segmentation volume is filled
+SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED // When a segmentation's annotation cut merge process is completed.
 ```
 
 ## Core APIs
@@ -25,6 +26,17 @@ SEGMENTATION_LOADING_COMPLETE // When full segmentation volume is filled
 
 ```typescript
 createLabelmapForDisplaySet(
+  displaySet,
+  {
+    segmentationId?: string,
+    label: string,
+    segments?: {
+      [segmentIndex: number]: Partial<Segment>
+    }
+  }
+)
+
+createContourForDisplaySet(
   displaySet,
   {
     segmentationId?: string,
@@ -85,17 +97,33 @@ interface Segmentation {
 
 ## Code Examples
 
-### Creating a Segmentation
+### Creating a Label Map Segmentation
 
 ```typescript
 const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
 const segmentationId = await segmentationService.createLabelmapForDisplaySet(
   displaySet,
   {
-    label: 'New Segmentation',
+    label: 'New Label Map Segmentation',
     segments: {
       1: {
-        label: 'First Segment',
+        label: 'First Label Map Segment',
+        active: true
+      }
+    }
+  }
+);
+
+### Creating a Label Map Segmentation
+
+const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
+const segmentationId = await segmentationService.createContourForDisplaySet(
+  displaySet,
+  {
+    label: 'New Contour Segmentation',
+    segments: {
+      1: {
+        label: 'First Contour Segment',
         active: true
       }
     }

@@ -9,31 +9,13 @@ export default {
       id: 'tagBrowser',
       label: i18n.t('StudyBrowser:Tag Browser'),
       iconName: 'DicomTagBrowser',
-      onClick: ({ commandsManager, displaySetInstanceUID }: withAppTypes) => {
-        commandsManager.runCommand('openDICOMTagViewer', {
-          displaySetInstanceUID,
-        });
-      },
+      commands: 'openDICOMTagViewer',
     },
     {
       id: 'addAsLayer',
       label: i18n.t('StudyBrowser:Add as Layer'),
       iconName: 'ViewportViews',
-      onClick: ({ commandsManager, displaySetInstanceUID, servicesManager }: withAppTypes) => {
-        const { viewportGridService } = servicesManager.services;
-
-        // Get the active viewport
-        const { activeViewportId } = viewportGridService.getState();
-        if (!activeViewportId) {
-          return;
-        }
-
-        // Use the new command to add the display set as a layer
-        commandsManager.runCommand('addDisplaySetAsLayer', {
-          viewportId: activeViewportId,
-          displaySetInstanceUID,
-        });
-      },
+      commands: 'addDisplaySetAsLayer',
     },
   ],
   'studyBrowser.sortFunctions': [

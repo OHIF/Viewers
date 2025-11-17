@@ -2,7 +2,6 @@ import { test, expect } from 'playwright-test-coverage';
 import { visitStudy, simulateNormalizedClickOnElement } from './utils/index';
 import { viewportLocator } from './utils/locators';
 import { downloadAsString } from './utils/download';
-import toArray from 'extensions/dicom-microscopy/src/utils/toArray';
 
 test('should create and download the TMTV CSV report correctly', async ({ page }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';

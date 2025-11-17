@@ -78,6 +78,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     );
     return cloned;
   }
+
   // Need to merge defaults on the content props to ensure they get passed to children
   return <StudyMeasurements items={displayMeasurements} />;
 }

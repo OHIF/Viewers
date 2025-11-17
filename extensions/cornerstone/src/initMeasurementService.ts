@@ -450,7 +450,7 @@ const connectMeasurementServiceToTools = ({
       if (measurement?.metadata?.referencedImageId) {
         imageId = measurement.metadata.referencedImageId;
         frameNumber = getSOPInstanceAttributes(measurement.metadata.referencedImageId).frameNumber;
-      } else {
+      } else if (instance) {
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
 
@@ -503,11 +503,15 @@ const connectMeasurementServiceToTools = ({
       }
       const removedAnnotation = annotation.state.getAnnotation(removedMeasurementId);
       removeAnnotation(removedMeasurementId);
-      commandsManager.run('triggerCreateAnnotationMemo', {
-        annotation: removedAnnotation,
-        FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
-        options: { deleting: true },
-      });
+      // Ensure `removedAnnotation` is available before triggering the memo,
+      // as it can be undefined during an undo operation
+      if (removedAnnotation) {
+        commandsManager.run('triggerCreateAnnotationMemo', {
+          annotation: removedAnnotation,
+          FrameOfReferenceUID: removedAnnotation.metadata.FrameOfReferenceUID,
+          options: { deleting: true },
+        });
+      }
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       // Note: We could do a better job by triggering the render on the
       // viewport itself, but the removeAnnotation does not include that info...

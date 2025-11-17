@@ -43,7 +43,7 @@ const segmentationRepresentationModifiedCallback = async (
 ) => {
   const event = sourceEvent as ToolsTypes.EventTypes.SegmentationRepresentationModifiedEventType;
 
-  const { segmentationId } = event.detail;
+  const { segmentationId, type: segmentationRepresentationType } = event.detail;
   const { segmentationService } = servicesManager.services;
 
   const targetViewportId = targetViewport.viewportId;
@@ -65,13 +65,12 @@ const segmentationRepresentationModifiedCallback = async (
     return;
   }
 
-  // whatever type the source viewport has, we need to add that to the target viewport
-  const sourceViewportRepresentation = segmentationService.getSegmentationRepresentations(
-    sourceViewport.viewportId,
-    { segmentationId }
-  );
-
-  const type = sourceViewportRepresentation[0].type;
+  // Ensure the segmentation representation aligns with the target viewport type.
+  const type: Enums.SegmentationRepresentations =
+    viewport.type === CoreEnums.ViewportType.VOLUME_3D
+      ? Enums.SegmentationRepresentations.Surface
+      : ((segmentationRepresentationType as Enums.SegmentationRepresentations) ??
+        Enums.SegmentationRepresentations.Labelmap);
 
   await segmentationService.addSegmentationRepresentation(targetViewportId, {
     segmentationId,
