@@ -4,6 +4,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '../../Select';
@@ -28,6 +29,7 @@ type Props = {
  */
 export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultModeChange }: Props) {
   const selectId = React.useId();
+  const NO_DEFAULT_VALUE = '__NO_DEFAULT__';
 
   return (
     <PopoverContent
@@ -45,7 +47,11 @@ export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultMode
           <Select
             value={defaultMode ?? undefined}
             onValueChange={(value) => {
-              onDefaultModeChange(value as WorkflowId);
+              if (value === NO_DEFAULT_VALUE) {
+                onDefaultModeChange(null);
+              } else {
+                onDefaultModeChange(value as WorkflowId);
+              }
               // Close the popover after selection for a snappier UX.
               onOpenChange(false);
             }}
@@ -60,6 +66,8 @@ export function SettingsPopover({ open, onOpenChange, defaultMode, onDefaultMode
                   {opt}
                 </SelectItem>
               ))}
+              <SelectSeparator />
+              <SelectItem value={NO_DEFAULT_VALUE}>No Default</SelectItem>
             </SelectContent>
           </Select>
         </div>
