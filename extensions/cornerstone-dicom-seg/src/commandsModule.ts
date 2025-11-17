@@ -90,7 +90,7 @@ const commandsModule = ({
      */
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
-      const predecessorImageId = options.predecessorImageId ?? segmentations.predecessorImageId;
+      const predecessorImageId = options.predecessorImageId ?? segmentation.predecessorImageId;
 
       const { imageIds } = segmentation.representationData.Labelmap;
 
