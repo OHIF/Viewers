@@ -63,7 +63,7 @@ export function StudyListLargeLayout({
         table={
           <div className="flex h-full w-full flex-col px-3 pb-3 pt-0">
             <div className="min-h-0 flex-1">
-              <div className="bg-background h-full rounded-md px-2 pb-2 pt-0">
+              <div className="h-full rounded-md px-2 pb-2 pt-0">
                 <StudyListTable
                   columns={columns}
                   data={data}
