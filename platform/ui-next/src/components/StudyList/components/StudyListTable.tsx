@@ -199,9 +199,9 @@ function Content({
               </TableHeader>
               <TableBody>
                 <DataTableFilterRow
-                  resetCellId="instances"
+                  resetCellId="actions"
                   onReset={() => setColumnFilters([])}
-                  excludeColumnIds={[]}
+                  excludeColumnIds={["instances"]}
                 />
               </TableBody>
             </Table>
@@ -282,4 +282,3 @@ function Content({
     </div>
   );
 }
-
