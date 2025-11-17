@@ -76,7 +76,7 @@ export function StudyListLargeLayout({
                   onSelectionChange={(rows) => state.setSelected(rows[0] ?? null)}
                   tableClassName={tableClassName}
                   toolbarLeft={toolbarLeft}
-                  renderOpenPanelButton={() => <StudyListLayout.OpenPreviewButton />}
+                  renderOpenPanelButton={() => <ClosedPanelControls />}
                 />
               </div>
             </div>
@@ -85,6 +85,30 @@ export function StudyListLargeLayout({
         preview={<SidePanel />}
       />
     </StudyListProvider>
+  );
+}
+
+function ClosedPanelControls() {
+  const { defaultWorkflow, setDefaultWorkflow } = useStudyList<StudyRow, WorkflowId>();
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  return (
+    <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+      <div className="relative -top-px flex items-center gap-1">
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Open settings">
+            <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <StudyListLayout.OpenPreviewButton />
+      </div>
+      <SettingsPopover
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        defaultMode={defaultWorkflow}
+        onDefaultModeChange={setDefaultWorkflow}
+      />
+    </Popover>
   );
 }
 
@@ -133,4 +157,3 @@ function SidePanel() {
     </PreviewPanelShell>
   );
 }
-
