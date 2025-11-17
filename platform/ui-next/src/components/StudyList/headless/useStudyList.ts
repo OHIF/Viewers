@@ -10,6 +10,8 @@ import {
  * Builds the headless state for the Study List.
  * Keeps selection, panel open state, default workflow, and a launch handler.
  */
+export type SeriesViewMode = 'thumbnails' | 'list';
+
 export function useStudyListState<T = any, W extends string = WorkflowId>(
   rows: T[],
   {
@@ -22,6 +24,7 @@ export function useStudyListState<T = any, W extends string = WorkflowId>(
 ) {
   const [selected, setSelected] = React.useState<T | null>(null);
   const [isPanelOpen, setPanelOpen] = React.useState(true);
+  const [seriesViewMode, setSeriesViewMode] = React.useState<SeriesViewMode>('thumbnails');
   const [defaultWorkflow, setDefaultWorkflow] = useDefaultWorkflow<W>(
     defaultWorkflowKey,
     ALL_WORKFLOW_OPTIONS as unknown as ReadonlyArray<W>
@@ -40,6 +43,8 @@ export function useStudyListState<T = any, W extends string = WorkflowId>(
     setSelected,
     isPanelOpen,
     setPanelOpen,
+    seriesViewMode,
+    setSeriesViewMode,
     defaultWorkflow,
     setDefaultWorkflow,
     availableWorkflowsFor: (r: Partial<T> | null | undefined) =>

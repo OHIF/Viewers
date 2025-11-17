@@ -23,6 +23,7 @@ import {
   Popover,
   PopoverTrigger,
   SettingsPopover,
+  SeriesListView,
 } from '@ohif/ui-next';
 
 import { Types as coreTypes, utils, DicomMetadataStore } from '@ohif/core';
@@ -332,7 +333,7 @@ function ClosedPanelControls() {
 }
 
 function SidePanelPreview({ dataSource, extensionManager }: { dataSource: any; extensionManager: any }) {
-  const { selected, setPanelOpen, defaultWorkflow, setDefaultWorkflow, launch } = useStudyList<UISLRow, WorkflowId>();
+  const { selected, setPanelOpen, defaultWorkflow, setDefaultWorkflow, launch, seriesViewMode, setSeriesViewMode } = useStudyList<UISLRow, WorkflowId>();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [series, setSeries] = React.useState<any[]>([]);
   const [thumbs, setThumbs] = React.useState<Record<string, string | null>>({});
@@ -497,31 +498,55 @@ function SidePanelPreview({ dataSource, extensionManager }: { dataSource: any; e
                   onLaunchWorkflow={(data, wf) => launch((data as UISLRow) ?? (selected as UISLRow), wf)}
                 />
               </PatientSummary>
-              <div className="h-7 w-full px-2 flex items-center text-foreground font-semibold text-base">
-                {series?.length ? '1 Study' : 'No Series'}
+              <div className="h-7 w-full px-2 flex items-center justify-between text-foreground font-semibold text-base">
+                <span>{series?.length ? '1 Study' : 'No Series'}</span>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSeriesViewMode('thumbnails')}
+                    className={seriesViewMode === 'thumbnails' ? 'bg-primary/20' : ''}
+                    aria-label="Thumbnail view"
+                  >
+                    <Icons.ThumbnailView className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSeriesViewMode('list')}
+                    className={seriesViewMode === 'list' ? 'bg-primary/20' : ''}
+                    aria-label="List view"
+                  >
+                    <Icons.ListView className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
-                {series?.map((s: any, i: number) => {
-                  const seriesUID = s.seriesInstanceUid || s.SeriesInstanceUID || String(i);
-                  const imageSrc = thumbs[seriesUID] || undefined;
-                  return (
-                    <Thumbnail
-                      key={`series-${seriesUID}`}
-                      displaySetInstanceUID={`series-${seriesUID}`}
-                      imageSrc={imageSrc as any}
-                      imageAltText={s.description || s.SeriesDescription || ''}
-                      description={s.description || s.SeriesDescription || '(empty)'}
-                      seriesNumber={s.seriesNumber ?? s.SeriesNumber ?? ''}
-                      numInstances={s.numSeriesInstances ?? s.numInstances ?? 0}
-                      modality={s.modality || s.Modality || ''}
-                      isActive={false}
-                      onClick={() => {}}
-                      onDoubleClick={() => {}}
-                      viewPreset="thumbnails"
-                    />
-                  );
-                })}
-              </div>
+              {seriesViewMode === 'thumbnails' ? (
+                <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
+                  {series?.map((s: any, i: number) => {
+                    const seriesUID = s.seriesInstanceUid || s.SeriesInstanceUID || String(i);
+                    const imageSrc = thumbs[seriesUID] || undefined;
+                    return (
+                      <Thumbnail
+                        key={`series-${seriesUID}`}
+                        displaySetInstanceUID={`series-${seriesUID}`}
+                        imageSrc={imageSrc as any}
+                        imageAltText={s.description || s.SeriesDescription || ''}
+                        description={s.description || s.SeriesDescription || '(empty)'}
+                        seriesNumber={s.seriesNumber ?? s.SeriesNumber ?? ''}
+                        numInstances={s.numSeriesInstances ?? s.numInstances ?? 0}
+                        modality={s.modality || s.Modality || ''}
+                        isActive={false}
+                        onClick={() => {}}
+                        onDoubleClick={() => {}}
+                        viewPreset="thumbnails"
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <SeriesListView series={series} />
+              )}
             </div>
           </TooltipProvider>
         </DndProvider>
