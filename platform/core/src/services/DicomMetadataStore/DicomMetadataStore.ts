@@ -50,6 +50,12 @@ const _model = {
   studies: [],
 };
 
+let metaDataProvider;
+
+function _setMetaData(metaData) {
+  metaDataProvider = metaData;
+}
+
 function _getStudyInstanceUIDs() {
   return _model.studies.map(aStudy => aStudy.StudyInstanceUID);
 }
@@ -102,16 +108,16 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
   return series.getInstance(SOPInstanceUID);
 }
 
+/**
+ * Gets the frame module from the OHIF metadata provider, and then
+ * uses the study/series/instance uids to get the instance data.
+ */
 function _getInstanceByImageId(imageId) {
-  for (const study of _model.studies) {
-    for (const series of study.series) {
-      for (const instance of series.instances) {
-        if (instance.imageId === imageId) {
-          return instance;
-        }
-      }
-    }
-  }
+  const { studyInstanceUID, seriesInstanceUID, sopInstanceUID } = metadataProvider.get(
+    'frameModule',
+    imageId
+  );
+  return _getInstance(studyInstanceUID, seriesInstanceUID, sopInstanceUID);
 }
 
 /**
@@ -186,7 +192,8 @@ const BaseImplementation = {
       study = _model.studies[_model.studies.length - 1];
     }
 
-    naturalizedDataset = numberOfFrames > 1 ? addProxyFields(naturalizedDataset) : naturalizedDataset;
+    naturalizedDataset =
+      numberOfFrames > 1 ? addProxyFields(naturalizedDataset) : naturalizedDataset;
 
     study.addInstanceToSeries(naturalizedDataset);
   },
@@ -289,6 +296,7 @@ const BaseImplementation = {
   getInstance: _getInstance,
   getInstanceByImageId: _getInstanceByImageId,
   updateMetadataForSeries: _updateMetadataForSeries,
+  setMetaData: _setMetaData,
 };
 const DicomMetadataStore = Object.assign(
   // get study

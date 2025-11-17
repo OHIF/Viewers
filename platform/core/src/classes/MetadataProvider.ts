@@ -6,7 +6,7 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
-import formatPN from '../utils/formatPN';
+
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
 
 class MetadataProvider {
@@ -498,6 +498,8 @@ class MetadataProvider {
 }
 
 const metadataProvider = new MetadataProvider();
+
+DicomMetadataStore.setMetaData(metadataProvider);
 
 export default metadataProvider;
 
