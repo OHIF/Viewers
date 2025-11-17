@@ -8,7 +8,7 @@ import type { WorkflowId } from '../WorkflowsInfer';
 import { PatientSummary } from '../../PatientSummary';
 import { useStudyList } from '../headless/StudyListProvider';
 import { SeriesListView } from './SeriesListView';
-import { Button } from '../../Button';
+import { ToggleGroup, ToggleGroupItem } from '../../ToggleGroup';
 import { Icons } from '../../Icons';
 
 export function PreviewPanelContent({
@@ -45,26 +45,18 @@ export function PreviewPanelContent({
           </PatientSummary>
           <div className="h-7 w-full px-2 flex items-center justify-between text-foreground font-semibold text-base">
             <span>1 Study</span>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSeriesViewMode('thumbnails')}
-                className={seriesViewMode === 'thumbnails' ? 'bg-primary/20' : ''}
-                aria-label="Thumbnail view"
-              >
-                <Icons.ThumbnailView className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSeriesViewMode('list')}
-                className={seriesViewMode === 'list' ? 'bg-primary/20' : ''}
-                aria-label="List view"
-              >
-                <Icons.ListView className="h-4 w-4" />
-              </Button>
-            </div>
+            <ToggleGroup
+              type="single"
+              value={seriesViewMode}
+              onValueChange={(value) => value && setSeriesViewMode(value as 'thumbnails' | 'list')}
+            >
+              <ToggleGroupItem value="thumbnails" aria-label="Thumbnail view" className="text-actions-primary">
+                <Icons.ThumbnailView />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" aria-label="List view" className="text-actions-primary">
+                <Icons.ListView />
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
           {seriesViewMode === 'thumbnails' ? (
             <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">

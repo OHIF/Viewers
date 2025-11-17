@@ -33,10 +33,11 @@ export function SeriesListView({ series, onSeriesClick }: Props) {
       <Table noScroll>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-foreground text-[13px] font-normal">
-              Modality / Series
+            <TableHead className="text-base font-normal pl-0">
+              <span className="text-foreground">Modality</span>
+              <span className="text-muted-foreground"> / Series</span>
             </TableHead>
-            <TableHead className="text-foreground text-[13px] font-normal text-right w-8 pr-0">
+            <TableHead className="text-foreground text-base font-normal text-right w-8 pr-0">
               <Icons.Series className="h-4 w-4 ml-auto" />
             </TableHead>
           </TableRow>
@@ -53,13 +54,13 @@ export function SeriesListView({ series, onSeriesClick }: Props) {
                 key={seriesUID}
                 className="hover:bg-transparent hover:text-muted-foreground cursor-default"
               >
-                <TableCell className="text-[13px]">
+                <TableCell className="text-base pl-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-foreground">{modality}</span>
+                    <span className="font-normal text-foreground">{modality}</span>
                     <span className="font-normal">{description}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-[13px] text-right w-8 pr-0">
+                <TableCell className="text-base text-right w-8 pr-0">
                   {numInstances}
                 </TableCell>
               </TableRow>
