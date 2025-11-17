@@ -29,7 +29,8 @@ const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
 // Backend API URL (defaults to localhost)
 // Production example: https://backend-ohif-1084552301744.us-central1.run.app
-const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
+const BACKEND_API_URL =
+  process.env.BACKEND_API_URL || 'https://backend-ohif-1084552301744.us-central1.run.app';
 
 export default defineConfig({
   source: {

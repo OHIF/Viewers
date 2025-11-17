@@ -14,6 +14,40 @@ const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
 
 /**
+ * Retry utility function that attempts an async operation up to maxRetries times
+ * with a delay between attempts
+ */
+async function retryWithDelay<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  delayMs: number = 3000,
+  suppressWarnings: boolean = true
+): Promise<T> {
+  let lastError: Error;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error as Error;
+
+      if (!suppressWarnings || attempt === maxRetries) {
+        console.error(`Attempt ${attempt}/${maxRetries} failed:`, error);
+      }
+
+      if (attempt < maxRetries) {
+        if (!suppressWarnings) {
+          console.log(`Retrying in ${delayMs / 1000} seconds...`);
+        }
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  throw lastError;
+}
+
+/**
  * Study Browser component that displays and manages studies and their display sets
  */
 function PanelStudyBrowser({
@@ -60,6 +94,11 @@ function PanelStudyBrowser({
   const hasSentDicom = uploadKey ? sessionStorage.getItem(uploadKey) === 'true' : false;
   const [isUploadingDicom, setIsUploadingDicom] = useState(!hasSentDicom);
 
+  const conversionKey = sessionID ? `nifti_converted_${sessionID}` : null;
+  const hasConverted = conversionKey ? sessionStorage.getItem(conversionKey) === 'true' : false;
+  const [isConversionComplete, setIsConversionComplete] = useState(hasConverted);
+  const [conversionStatus, setConversionStatus] = useState<string>('');
+
   const segmentationKey = sessionID ? `dicom_segmented_${sessionID}` : null;
   const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
@@ -86,6 +125,7 @@ function PanelStudyBrowser({
   };
 
   const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
+  const uploadInProgressRef = useRef(false);
 
   useEffect(() => {
     const sendDicomToBackend = async () => {
@@ -98,6 +138,13 @@ function PanelStudyBrowser({
         return;
       }
 
+      // Prevent concurrent uploads
+      if (uploadInProgressRef.current) {
+        console.log('Upload already in progress, skipping...');
+        return;
+      }
+
+      uploadInProgressRef.current = true;
       setIsUploadingDicom(true);
       try {
         await commandsManager.runCommand('sendDicomZipToBackend', { sessionID });
@@ -106,6 +153,7 @@ function PanelStudyBrowser({
         console.error('Failed to send DICOM to backend:', error);
       } finally {
         setIsUploadingDicom(false);
+        uploadInProgressRef.current = false;
       }
     };
 
@@ -115,6 +163,64 @@ function PanelStudyBrowser({
 
     return () => clearTimeout(timeoutId);
   }, [sessionID, uploadKey, commandsManager]);
+
+  // Poll conversion status after DICOM upload
+  useEffect(() => {
+    if (!sessionID || isUploadingDicom || isConversionComplete) {
+      return;
+    }
+
+    // Check if we already know conversion is complete
+    if (conversionKey && sessionStorage.getItem(conversionKey) === 'true') {
+      setIsConversionComplete(true);
+      return;
+    }
+
+    // const backendUrl = 'http://localhost:8000';
+    const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
+    let pollCount = 0;
+    const maxPolls = 60; // Poll for up to 60 seconds (60 * 1 second)
+
+    const checkConversionStatus = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/check_conversion_status/${sessionID}`);
+        const data = await response.json();
+
+        console.log('Conversion status:', data);
+        setConversionStatus(data.message || '');
+
+        if (data.conversion_complete) {
+          setIsConversionComplete(true);
+          if (conversionKey) {
+            sessionStorage.setItem(conversionKey, 'true');
+          }
+          console.log('✓ NIfTI conversion complete:', data);
+        } else {
+          pollCount++;
+          if (pollCount < maxPolls) {
+            // Continue polling
+            setTimeout(checkConversionStatus, 1000);
+          } else {
+            console.error('Conversion status polling timed out');
+            setConversionStatus('Conversion taking longer than expected. Please try refreshing.');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking conversion status:', error);
+        pollCount++;
+        if (pollCount < maxPolls) {
+          setTimeout(checkConversionStatus, 1000);
+        }
+      }
+    };
+
+    // Start polling after upload completes
+    const timeoutId = setTimeout(() => {
+      checkConversionStatus();
+    }, 2000); // Wait 2 seconds after upload before starting to poll
+
+    return () => clearTimeout(timeoutId);
+  }, [sessionID, isUploadingDicom, isConversionComplete, conversionKey]);
 
   const fetchSegmentationFromBackend = useCallback(async () => {
     if (!sessionID) {
@@ -133,15 +239,27 @@ function PanelStudyBrowser({
       });
 
       // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl =
-        typeof process !== 'undefined' && process.env?.BACKEND_API_URL
-          ? process.env.BACKEND_API_URL
-          : 'http://localhost:8000';
-      const response = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
+      const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
+      // const backendUrl = 'http://localhost:8000';
 
-      if (!response.ok) {
-        throw new Error(`Backend responded with status: ${response.status}`);
-      }
+      // const backendUrl =
+      //   typeof process !== 'undefined' && process.env?.BACKEND_API_URL
+      //     ? process.env.BACKEND_API_URL
+      //     : 'https://backend-ohif-1084552301744.us-central1.run.app';
+
+      // Wrap fetch operation with retry logic
+      const response = await retryWithDelay(
+        async () => {
+          const res = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
+          if (!res.ok) {
+            throw new Error(`Backend responded with status: ${res.status}`);
+          }
+          return res;
+        },
+        3, // maxRetries
+        3000, // 3 seconds delay
+        true // suppressWarnings
+      );
 
       const blob = await response.blob();
       const zipReader = new ZipReader(new BlobReader(blob));
@@ -415,16 +533,27 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl =
-        typeof process !== 'undefined' && process.env?.BACKEND_API_URL
-          ? process.env.BACKEND_API_URL
-          : 'http://localhost:8000';
-      const response = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
+      // @ts-ignore - BACKEND_API_URL is injected at build time\
+      const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
+      // const backendUrl = 'http://localhost:8000';
+      // const backendUrl =
+      //   typeof process !== 'undefined' && process.env?.BACKEND_API_URL
+      //     ? process.env.BACKEND_API_URL
+      //     : 'https://backend-ohif-1084552301744.us-central1.run.app';
 
-      if (!response.ok) {
-        throw new Error(`Backend responded with status: ${response.status}`);
-      }
+      // Wrap fetch operation with retry logic
+      const response = await retryWithDelay(
+        async () => {
+          const res = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
+          if (!res.ok) {
+            throw new Error(`Backend responded with status: ${res.status}`);
+          }
+          return res;
+        },
+        3, // maxRetries
+        3000, // 3 seconds delay
+        true // suppressWarnings
+      );
 
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
@@ -800,21 +929,60 @@ function PanelStudyBrowser({
           className="bg-black"
           thickness="2px"
         />
-        <div className="flex gap-2 p-2">
-          <button
-            onClick={fetchSegmentationFromBackend}
-            disabled={!sessionID || isUploadingDicom || isSegmenting || isGeneratingReport}
-            className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isUploadingDicom ? 'Uploading...' : isSegmenting ? 'Segmenting...' : 'Segmentation'}
-          </button>
-          <button
-            onClick={openReportFromBackend}
-            disabled={!sessionID || isUploadingDicom || isSegmenting || isGeneratingReport}
-            className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isUploadingDicom ? 'Uploading...' : isGeneratingReport ? 'Generating...' : 'Report'}
-          </button>
+        <div className="flex flex-col gap-2 p-2">
+          {conversionStatus && !isConversionComplete && (
+            <div className="text-primary-light px-2 text-xs">{conversionStatus}</div>
+          )}
+          <div className="flex gap-2">
+            <button
+              onClick={fetchSegmentationFromBackend}
+              disabled={
+                !sessionID ||
+                isUploadingDicom ||
+                !isConversionComplete ||
+                isSegmenting ||
+                isGeneratingReport
+              }
+              className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
+              title={
+                !isConversionComplete
+                  ? 'Waiting for DICOM to NIfTI conversion...'
+                  : 'Run segmentation'
+              }
+            >
+              {isUploadingDicom
+                ? 'Uploading...'
+                : !isConversionComplete
+                  ? 'Converting...'
+                  : isSegmenting
+                    ? 'Segmenting...'
+                    : 'Segmentation'}
+            </button>
+            <button
+              onClick={openReportFromBackend}
+              disabled={
+                !sessionID ||
+                isUploadingDicom ||
+                !isConversionComplete ||
+                isSegmenting ||
+                isGeneratingReport
+              }
+              className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
+              title={
+                !isConversionComplete
+                  ? 'Waiting for DICOM to NIfTI conversion...'
+                  : 'Generate report'
+              }
+            >
+              {isUploadingDicom
+                ? 'Uploading...'
+                : !isConversionComplete
+                  ? 'Converting...'
+                  : isGeneratingReport
+                    ? 'Generating...'
+                    : 'Report'}
+            </button>
+          </div>
         </div>
       </>
 
