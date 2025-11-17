@@ -113,7 +113,7 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
  * uses the study/series/instance uids to get the instance data.
  */
 function _getInstanceByImageId(imageId) {
-  const { studyInstanceUID, seriesInstanceUID, sopInstanceUID } = metadataProvider.get(
+  const { studyInstanceUID, seriesInstanceUID, sopInstanceUID } = metaDataProvider.get(
     'frameModule',
     imageId
   );

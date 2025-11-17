@@ -537,12 +537,16 @@ const WADO_IMAGE_LOADER = {
       numberOfFrames = 1,
       SOPClassUID: sopClassUID,
       SOPInstanceUID: sopInstanceUID,
+      SeriesInstanceUID: seriesInstanceUID,
+      StudyInstanceUID: studyInstanceUID,
     } = instance;
     return {
       frameNumber,
       numberOfFrames,
       sopClassUID,
       sopInstanceUID,
+      seriesInstanceUID,
+      studyInstanceUID,
     };
   },
 

@@ -648,7 +648,6 @@ class MeasurementService extends PubSubService {
       const instance = DicomMetadataStore.getInstanceByImageId(referencedImageId);
       if (!instance) {
         console.warn("Didn't find instance for", referencedImageId);
-        DicomMetadataStore.getInstanceByImageId(referencedImageId);
       } else {
         measurement.referenceStudyUID = instance.StudyInstanceUID;
         measurement.referenceSeriesUID = instance.SeriesInstanceUID;
