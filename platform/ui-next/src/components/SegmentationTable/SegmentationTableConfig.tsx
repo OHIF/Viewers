@@ -14,7 +14,9 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
     renderFill,
     renderOutline,
     setRenderFill,
+    setRenderFillInactive,
     setRenderOutline,
+    setRenderOutlineInactive,
     activeRepresentation,
     fillAlpha,
     fillAlphaInactive,
@@ -50,12 +52,18 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
             if (value === 'fill-and-outline') {
               setRenderFill({ type: activeRepresentation.type }, true);
               setRenderOutline({ type: activeRepresentation.type }, true);
+              setRenderFillInactive({ type: activeRepresentation.type }, true);
+              setRenderOutlineInactive({ type: activeRepresentation.type }, true);
             } else if (value === 'outline') {
               setRenderFill({ type: activeRepresentation.type }, false);
               setRenderOutline({ type: activeRepresentation.type }, true);
+              setRenderFillInactive({ type: activeRepresentation.type }, false);
+              setRenderOutlineInactive({ type: activeRepresentation.type }, true);
             } else {
               setRenderFill({ type: activeRepresentation.type }, true);
               setRenderOutline({ type: activeRepresentation.type }, false);
+              setRenderFillInactive({ type: activeRepresentation.type }, true);
+              setRenderOutlineInactive({ type: activeRepresentation.type }, false);
             }
           }}
         >

@@ -1761,6 +1761,16 @@ function commandsModule({
     },
 
     /**
+     * Sets whether to render fill for inactive segmentations of a segmentation type
+     * @param props.type - The type of segmentation
+     * @param props.value - Whether to render fill for inactive segmentations
+     */
+    setRenderFillInactiveCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { renderFillInactive: value });
+    },
+
+    /**
      * Sets whether to render outline for a segmentation type
      * @param props.type - The type of segmentation
      * @param props.value - Whether to render outline
@@ -1768,6 +1778,16 @@ function commandsModule({
     setRenderOutlineCommand: ({ type, value }) => {
       const { segmentationService } = servicesManager.services;
       segmentationService.setStyle({ type }, { renderOutline: value });
+    },
+
+    /**
+     * Sets whether to render outline for inactive segmentations of a segmentation type
+     * @param props.type - The type of segmentation
+     * @param props.value - Whether to render outline for inactive segmentations
+     */
+    setRenderOutlineInactiveCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { renderOutlineInactive: value });
     },
 
     /**
@@ -2721,8 +2741,14 @@ function commandsModule({
     setRenderFill: {
       commandFn: actions.setRenderFillCommand,
     },
+    setRenderFillInactive: {
+      commandFn: actions.setRenderFillInactiveCommand,
+    },
     setRenderOutline: {
       commandFn: actions.setRenderOutlineCommand,
+    },
+    setRenderOutlineInactive: {
+      commandFn: actions.setRenderOutlineInactiveCommand,
     },
     setFillAlphaInactive: {
       commandFn: actions.setFillAlphaInactiveCommand,

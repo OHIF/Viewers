@@ -41,24 +41,20 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
         const segmentationId = await commandsManager.run('createContourForViewport', {
           viewportId,
         });
-        // Override the default (i.e. hydrated RTSTRUCT) style for contours.
-        // However if the global CONTOUR type renderFill style property has been changed,, do not override the renderFill.
-        const segmentationStyle = contourRenderFillChangedGlobally
-          ? {
-              renderFillInactive: true,
-            }
-          : {
+        // Override the default (i.e. hydrated RTSTRUCT) style for contours if the global CONTOUR type
+        // renderFill style property has not been changed.
+        if (!contourRenderFillChangedGlobally) {
+          segmentationService.setStyle(
+            { segmentationId, type: SegmentationRepresentations.Contour },
+            {
               renderFill: true,
               renderFillInactive: true,
-            };
-
-        segmentationService.setStyle(
-          { segmentationId, type: SegmentationRepresentations.Contour },
-          segmentationStyle,
-          // Do not merge so that these created contours inherit other type-specific style properties like the fill alpha.
-          // Merging would otherwise permanently inherit the fill alpha and any inheritance from the type level would be lost.
-          false
-        );
+            },
+            // Do not merge so that these created contours inherit other type-specific style properties like the fill alpha.
+            // Merging would otherwise permanently inherit the fill alpha and any inheritance from the type level would be lost.
+            false
+          );
+        }
 
         // If the global CONTOUR type renderFill style property is already set, do not subscribe to the SEGMENTATION_STYLE_MODIFIED event.
         if (contourRenderFillChangedGlobally) {
@@ -77,7 +73,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
             ) {
               // We are here because the renderFill style property is globally being changed for ALL contours.
               // When this occurs, the desire is for ALL contours to inherit the property. To make this happen,
-              // we have to remove the `renderFill: true` style property that was set for this specific segmentation
+              // we have to clear the style property that was set for this specific segmentation
               // when it was created above.
               // We can now also unsubscribe because this change only needs to be made when the global CONTOUR type
               // renderFill style property is first changed.
@@ -86,9 +82,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
               unsubscribe();
               segmentationService.setStyle(
                 { segmentationId, type: SegmentationRepresentations.Contour },
-                {
-                  renderFillInactive: true,
-                },
+                {},
                 false
               );
             }

@@ -169,8 +169,14 @@ export default function PanelSegmentation({
     setRenderFill: ({ type }, value) => {
       commandsManager.run('setRenderFill', { type, value });
     },
+    setRenderFillInactive: ({ type }, value) => {
+      commandsManager.run('setRenderFillInactive', { type, value });
+    },
     setRenderOutline: ({ type }, value) => {
       commandsManager.run('setRenderOutline', { type, value });
+    },
+    setRenderOutlineInactive: ({ type }, value) => {
+      commandsManager.run('setRenderOutlineInactive', { type, value });
     },
     setFillAlphaInactive: ({ type }: { type?: string }, value) => {
       commandsManager.run('setFillAlphaInactive', { type, value });
