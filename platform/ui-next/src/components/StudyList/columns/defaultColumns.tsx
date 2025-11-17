@@ -1,6 +1,8 @@
 import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '../../DataTable';
+import { Icons } from '../../Icons';
+import { Button } from '../../Button';
 import type { StudyRow } from '../StudyListTypes';
 import { StudyListActionsCell } from '../components/StudyListActionsCell';
 
@@ -8,7 +10,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
     {
       accessorKey: 'patient',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Patient" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Patient"
+        />
+      ),
       cell: ({ row }) => <div className="truncate">{row.getValue('patient')}</div>,
       meta: {
         label: 'Patient',
@@ -19,7 +26,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'mrn',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="MRN" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="MRN"
+        />
+      ),
       cell: ({ row }) => <div className="truncate">{row.getValue('mrn')}</div>,
       meta: {
         label: 'MRN',
@@ -30,7 +42,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'studyDateTime',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Study Date" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Study Date"
+        />
+      ),
       cell: ({ row }) => <div className="truncate">{row.getValue('studyDateTime')}</div>,
       sortingFn: (a, b, colId) => {
         const norm = (s: string) => new Date(s.replace(' ', 'T')).getTime() || 0;
@@ -45,7 +62,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'modalities',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Modalities" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Modalities"
+        />
+      ),
       cell: ({ row }) => <div className="truncate">{row.getValue('modalities')}</div>,
       meta: {
         label: 'Modalities',
@@ -56,7 +78,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'description',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Description" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Description"
+        />
+      ),
       cell: ({ row }) => <div>{row.getValue('description')}</div>,
       meta: {
         label: 'Description',
@@ -66,7 +93,12 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'accession',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Accession" />,
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title="Accession"
+        />
+      ),
       cell: ({ row }) => <div className="truncate">{row.getValue('accession')}</div>,
       meta: {
         label: 'Accession',
@@ -77,9 +109,27 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'instances',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Instances" align="right" />
-      ),
+      header: ({ column }) => {
+        const sorted = column.getIsSorted() as false | 'asc' | 'desc';
+        const indicator = sorted === 'asc' ? '▲' : sorted === 'desc' ? '▼' : '↕';
+        return (
+          <div className="flex w-full items-center justify-end translate-x-5">
+            <Icons.IconMPR
+              className="text-muted-foreground h-3.5 w-3.5 shrink-0"
+              aria-hidden="true"
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => column.toggleSorting(sorted === 'asc')}
+              aria-label="Sort by instances"
+              className="px-1"
+            >
+              {indicator}
+            </Button>
+          </div>
+        );
+      },
       cell: ({ row }) => {
         const value = row.getValue('instances') as number;
         return <div className="text-right">{value}</div>;
@@ -87,9 +137,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
       meta: {
         label: 'Instances',
-        headerClassName: 'w-[90px] min-w-[90px] max-w-[90px]',
-        cellClassName: 'w-[90px] min-w-[90px] max-w-[90px] overflow-hidden',
-        fixedWidth: 90,
+        headerClassName: 'w-[45px] min-w-[45px] max-w-[45px]',
+        cellClassName: 'w-[45px] min-w-[45px] max-w-[45px] overflow-hidden',
+        fixedWidth: 45,
       },
     },
     // Non-hideable trailing actions column to keep the menu at row end
