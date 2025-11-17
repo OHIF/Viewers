@@ -84,7 +84,10 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
           title="Description"
         />
       ),
-      cell: ({ row }) => <div>{row.getValue('description')}</div>,
+      cell: ({ row }) => {
+        const description = row.getValue('description') as string;
+        return <div className={!description ? 'text-muted-foreground/40' : ''}>{description || 'No Description'}</div>;
+      },
       meta: {
         label: 'Description',
         headerClassName: 'min-w-[290px]',
