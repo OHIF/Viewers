@@ -10,5 +10,7 @@
   "Repository URL": "URL du dépôt",
   "Value": "Valeur",
   "Version information": "Informations sur la version",
-  "Visit the forum": "Visiter le forum"
+  "Visit the forum": "Visiter le forum",
+  "Commit Hash": "Numéro hash du commit",
+  "Current Browser & OS": "Navigateur et système d'exploitation actuels"
 }
