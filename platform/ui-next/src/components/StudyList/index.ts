@@ -17,6 +17,7 @@ export * from './components/PreviewPanelShell';
 export * from './components/StudyListLayout';
 export * from './components/PreviewPanelContent';
 export * from './components/PreviewPanelEmpty';
+export * from './components/SeriesListView';
 
 // Hooks
 export * from './useDefaultWorkflow';
