@@ -233,7 +233,7 @@ class CornerstoneCacheService {
     for (const displaySet of displaySets) {
       const { Modality } = displaySet;
       const isParametricMap = Modality === 'PMAP';
-      const isSeg = Modality === 'SEG';
+      const isSegOrRtstruct = Modality === 'SEG' || Modality === 'RTSTRUCT';
 
       // Don't create volumes for the displaySets that have custom load
       // function (e.g., SEG, RT, since they rely on the reference volumes
@@ -276,7 +276,7 @@ class CornerstoneCacheService {
 
       // Parametric maps do not have image ids but they already have volume data
       // therefore a new volume should not be created.
-      if (!isParametricMap && !isSeg && (!volumeImageIds || !volume)) {
+      if (!isParametricMap && !isSegOrRtstruct && (!volumeImageIds || !volume)) {
         volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
 
         volume = await volumeLoader.createAndCacheVolume(volumeId, {

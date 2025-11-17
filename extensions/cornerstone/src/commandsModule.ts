@@ -2292,7 +2292,6 @@ function commandsModule({
       const interpolationConfig = {
         interpolation: {
           enabled: interpolateContours,
-          showInterpolationPolyline: true,
         },
       };
       toolGroup.setToolConfiguration(activeTool, interpolationConfig);
@@ -2358,7 +2357,6 @@ function commandsModule({
           break;
         default:
           throw new Error('Unsupported logical operation');
-          break;
       }
     },
     copyContourSegment: ({
