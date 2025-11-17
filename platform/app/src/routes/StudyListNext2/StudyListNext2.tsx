@@ -292,7 +292,7 @@ export default function StudyListNext2({
                         onOpenPanel={() => state.setPanelOpen(true)}
                         onSelectionChange={sel => state.setSelected((sel as UISLRow[])[0] ?? null)}
                         toolbarLeft={<Icons.OHIFLogoHorizontal aria-label="OHIF logo" className="h-[22px] w-[232px]" />}
-                        renderOpenPanelButton={() => <StudyListLayout.OpenPreviewButton />}
+                        renderOpenPanelButton={() => <ClosedPanelControls />}
                       />
                     </div>
                   </div>
@@ -304,6 +304,30 @@ export default function StudyListNext2({
         </div>
       </div>
     </div>
+  );
+}
+
+function ClosedPanelControls() {
+  const { defaultWorkflow, setDefaultWorkflow } = useStudyList<UISLRow, WorkflowId>();
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  return (
+    <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+      <div className="relative -top-px flex items-center gap-1">
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Open settings">
+            <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <StudyListLayout.OpenPreviewButton />
+      </div>
+      <SettingsPopover
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        defaultMode={defaultWorkflow}
+        onDefaultModeChange={setDefaultWorkflow}
+      />
+    </Popover>
   );
 }
 

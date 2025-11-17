@@ -114,8 +114,8 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         const indicator = sorted === 'asc' ? '▲' : sorted === 'desc' ? '▼' : '↕';
         return (
           <div className="flex w-full items-center justify-end translate-x-5">
-            <Icons.IconMPR
-              className="text-muted-foreground h-3.5 w-3.5 shrink-0"
+            <Icons.Series
+              className="text-muted-foreground h-4 w-4 shrink-0"
               aria-hidden="true"
             />
             <Button
