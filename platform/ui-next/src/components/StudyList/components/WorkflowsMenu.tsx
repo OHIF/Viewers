@@ -39,7 +39,7 @@ export function WorkflowsMenu({
           aria-expanded={open}
           aria-haspopup="menu"
           aria-label="Open workflows menu"
-          className="mt-1 transition-opacity"
+          className="bg-primary/20 text-primary mt-1 h-6 w-6 transition-opacity hover:bg-primary/30"
         >
           <Icons.More className="h-6 w-6" />
         </Button>
@@ -69,4 +69,3 @@ export function WorkflowsMenu({
     </DropdownMenu>
   );
 }
-
