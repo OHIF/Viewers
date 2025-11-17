@@ -4,7 +4,7 @@ import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledEl
 import log from '@ohif/core/src/log';
 import { utils } from '@ohif/core';
 import { drawing } from '@cornerstonejs/tools';
-import { metaData, Types } from '@cornerstonejs/core';
+import { getEnabledElement, metaData, Types } from '@cornerstonejs/core';
 import { vec3 } from 'gl-matrix';
 
 const { calibrateImageSpacing } = utilities;
@@ -149,6 +149,42 @@ class CustomProbeTool extends ProbeTool {
     }
 
     return false;
+  }
+
+  /**
+   * Override default filtering so annotations remain interactive for any viewport
+   * sharing the same Frame of Reference and near the current viewing plane.
+   */
+  filterInteractableAnnotationsForElement(element, annotations) {
+    if (!annotations?.length) {
+      return [];
+    }
+
+    const enabledElement = getEnabledElement(element);
+    const { viewport } = enabledElement;
+    const viewportFrameOfReference = this.getViewportFrameOfReference(viewport);
+
+    if (!viewportFrameOfReference) {
+      return [];
+    }
+
+    return annotations.filter(annotation => {
+      if (!annotation?.isVisible) {
+        return false;
+      }
+
+      const annotationPoint = annotation?.data?.handles?.points?.[0];
+      if (!annotationPoint) {
+        return false;
+      }
+
+      const annotationFrameOfReference = annotation.metadata?.FrameOfReferenceUID;
+      if (annotationFrameOfReference !== viewportFrameOfReference) {
+        return false;
+      }
+
+      return this.isAnnotationNearViewingPlane(viewport, annotationPoint);
+    });
   }
 
   /**
