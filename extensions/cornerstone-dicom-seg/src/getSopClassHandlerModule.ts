@@ -83,7 +83,7 @@ function _getDisplaySetsFromSeries(
     instance.ReferencedSeriesSequence
   );
 
-  if (referencedDisplaySets.length > 1) {
+  if (referencedDisplaySets?.length > 1) {
     console.warn(
       'Segmentation does not currently handle references to multiple series, defaulting to first series'
     );

@@ -115,6 +115,13 @@ export default class DisplaySetService extends PubSubService {
     return this.activeDisplaySets;
   }
 
+  /**
+   * Gets the set of series with this series instance UID
+   *
+   * <b>WARNING: Do not use this method when you have a referenced series sequence
+   * as this method does NOT check sop instances.  Instead, use getDisplaySetsForReference
+   * to get those with the correct sop instances in them.</b>
+   */
   public getDisplaySetsForSeries = (seriesInstanceUID: string): DisplaySet[] => {
     return [...displaySetCache.values()].filter(
       displaySet => displaySet.SeriesInstanceUID === seriesInstanceUID

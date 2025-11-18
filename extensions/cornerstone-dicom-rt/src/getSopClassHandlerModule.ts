@@ -97,9 +97,13 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
-    displaySet.referencedSeriesInstanceUID
-  );
+  const referencedDisplaySets =
+    displaySetService.getDisplaySetsForReference(referencedSeriesSequence);
+  if (referencedDisplaySets?.length > 1) {
+    console.warn(
+      'Reference applies to more than 1 display set for Contours, applying only to first display set'
+    );
+  }
 
   if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
     // Instead of throwing error, subscribe to display sets added
@@ -115,7 +119,7 @@ function _getDisplaySetsFromSeries(
       }
     );
   } else {
-    const referencedDisplaySet = referencedDisplaySets[0];
+    const [referencedDisplaySet] = referencedDisplaySets;
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
   }
