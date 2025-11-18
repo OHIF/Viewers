@@ -20,6 +20,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+//
 test('should hydrate SCOORD rectangle measurements correctly', async ({ page }) => {
   // Wait for the side panel to be visible and clickable
   await page.waitForTimeout(3000);
