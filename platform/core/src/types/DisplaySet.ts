@@ -1,5 +1,15 @@
 import { InstanceMetadata } from './StudyMetadata';
 
+export type ReferencedInstance = {
+  ReferencedSOPClassUID: string;
+  ReferencedSOPInstanceUID: string;
+};
+
+export type ReferencedSeriesSequence = {
+  SeriesInstanceUID: string;
+  ReferencedInstanceSequence: ReferencedInstance[];
+};
+
 export type DisplaySet = {
   displaySetInstanceUID: string;
   instances: InstanceMetadata[];

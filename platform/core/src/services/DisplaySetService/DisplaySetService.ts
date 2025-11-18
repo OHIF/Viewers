@@ -1,5 +1,5 @@
 import { ExtensionManager } from '../../extensions';
-import { DisplaySet, InstanceMetadata } from '../../types';
+import { DisplaySet, InstanceMetadata, ReferencedSeriesSequence } from '../../types';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import EVENTS from './EVENTS';
 
@@ -121,10 +121,36 @@ export default class DisplaySetService extends PubSubService {
     );
   };
 
+  /**
+   * Given a reference to a series/sop, returns the set of display sets
+   * containing an instance from the references.
+   */
+  public getDisplaySetsForReference = (reference: ReferencedSeriesSequence[]): DisplaySet[] => {
+    const mapSeriesReferences = new Map<string, Set<string>>();
+    for (const seriesRef of reference) {
+      const { SeriesInstanceUID, ReferencedInstanceSequence } = seriesRef;
+      if (!mapSeriesReferences.has(SeriesInstanceUID)) {
+        mapSeriesReferences.set(SeriesInstanceUID, new Set<string>());
+      }
+      const sops = mapSeriesReferences.get(SeriesInstanceUID);
+      for (const sopReference of ReferencedInstanceSequence) {
+        sops.add(sopReference.ReferencedSOPInstanceUID);
+      }
+    }
+
+    return [...displaySetCache.values()].filter(displaySet => {
+      const sopReferences = mapSeriesReferences.get(displaySet.SeriesInstanceUID);
+      if (!sopReferences || !displaySet.instances) {
+        return;
+      }
+      return displaySet.instances.some(instance => sopReferences.has(instance.SOPInstanceUID));
+    });
+  };
+
   public getDisplaySetForSOPInstanceUID(
     sopInstanceUID: string,
     seriesInstanceUID: string,
-    frameNumber?: number
+    _frameNumber?: number
   ): DisplaySet {
     const displaySets = seriesInstanceUID
       ? this.getDisplaySetsForSeries(seriesInstanceUID)

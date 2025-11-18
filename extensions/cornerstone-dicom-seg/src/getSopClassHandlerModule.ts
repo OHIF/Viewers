@@ -79,9 +79,15 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
   const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
-    displaySet.referencedSeriesInstanceUID
+  const referencedDisplaySets = displaySetService.getDisplaySetsForReference(
+    instance.ReferencedSeriesSequence
   );
+
+  if (referencedDisplaySets.length > 1) {
+    console.warn(
+      'Segmentation does not currently handle references to multiple series, defaulting to first series'
+    );
+  }
 
   const referencedDisplaySet = referencedDisplaySets[0];
 
