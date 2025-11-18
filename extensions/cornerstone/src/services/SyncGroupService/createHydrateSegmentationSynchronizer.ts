@@ -60,7 +60,7 @@ const segmentationRepresentationModifiedCallback = async (
     .getViewportData()
     .data.map(ds => ds.displaySetInstanceUID);
 
-  // Check if any displaySet is shared between source and target
+  // Check if any displaySet is shared between source and target.
   const sharedDisplaySetExists = sourceDisplaySetUIDs.some(uid =>
     targetDisplaySetUIDs.includes(uid)
   );
