@@ -32,6 +32,9 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({ page }) =>
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   await page.waitForTimeout(2000);
   
+  // Wait for the SR to load and stabilize before taking screenshot
+  await page.waitForTimeout(1000);
+  
   // Take screenshot before hydration
   await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbePreHydration);
 
@@ -54,10 +57,18 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({ page }) =>
       viewport.render();
     }
   });
+  
+  // Wait for rendering to complete
+  await page.waitForTimeout(1000);
 
+  // Wait for the hydrate button to be visible and clickable
+  await page.getByTestId('yes-hydrate-btn').waitFor({ state: 'visible', timeout: 15000 });
+  
   // Click the hydrate button to load the SCOORD3D probe measurements
   await page.getByTestId('yes-hydrate-btn').click();
-  await page.waitForTimeout(2000);
+  
+  // Wait for hydration to complete and rendering to stabilize
+  await page.waitForTimeout(3000);
   
   // Take screenshot after hydration showing the probe measurements
   await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbePostHydration);
@@ -98,6 +109,9 @@ test('should display SCOORD3D probe measurements correctly', async ({ page }) =>
   await page.getByTestId('trackedMeasurements-btn').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   await page.waitForTimeout(2000);
+  
+  // Wait for the hydrate button to be visible and clickable
+  await page.getByTestId('yes-hydrate-btn').waitFor({ state: 'visible', timeout: 15000 });
   await page.getByTestId('yes-hydrate-btn').click();
   await page.waitForTimeout(2000);
 
@@ -119,6 +133,9 @@ test('should display SCOORD3D probe measurements correctly', async ({ page }) =>
       viewport.render();
     }
   });
+  
+  // Wait for rendering to complete before taking screenshot
+  await page.waitForTimeout(2000);
 
   // Take screenshot showing the SCOORD3D probe measurements rendered correctly
   await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly);
