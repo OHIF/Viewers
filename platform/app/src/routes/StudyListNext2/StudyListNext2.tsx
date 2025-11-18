@@ -20,15 +20,14 @@ import {
   TooltipProvider,
   Icons,
   Button,
-  Popover,
-  PopoverTrigger,
+  useModal,
   SettingsPopover,
   SeriesListView,
   ToggleGroup,
   ToggleGroupItem,
 } from '@ohif/ui-next';
 
-import { Types as coreTypes, utils, DicomMetadataStore } from '@ohif/core';
+import { Types as coreTypes, utils, DicomMetadataStore, useSystem } from '@ohif/core';
 import type { StudyRow as UISLRow } from '@ohif/ui-next';
 import type { WorkflowId } from '@ohif/ui-next';
 import { DndProvider } from 'react-dnd';
@@ -312,31 +311,62 @@ export default function StudyListNext2({
 
 function ClosedPanelControls() {
   const { defaultWorkflow, setDefaultWorkflow } = useStudyList<UISLRow, WorkflowId>();
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const { t } = useTranslation();
+  const { servicesManager } = useSystem();
+  const { customizationService } = servicesManager.services as any;
+  const { show } = useModal();
 
   return (
-    <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-      <div className="relative -top-px flex items-center gap-1">
-        <PopoverTrigger asChild>
+    <div className="relative -top-px flex items-center gap-1">
+      <SettingsPopover>
+        <SettingsPopover.Trigger>
           <Button variant="ghost" size="icon" aria-label="Open settings">
             <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
           </Button>
-        </PopoverTrigger>
-        <StudyListLayout.OpenPreviewButton />
-      </div>
-      <SettingsPopover
-        open={isSettingsOpen}
-        onOpenChange={setIsSettingsOpen}
-        defaultMode={defaultWorkflow}
-        onDefaultModeChange={setDefaultWorkflow}
-      />
-    </Popover>
+        </SettingsPopover.Trigger>
+        <SettingsPopover.Workflow
+          defaultMode={defaultWorkflow}
+          onDefaultModeChange={setDefaultWorkflow}
+        />
+        <SettingsPopover.Divider />
+        <SettingsPopover.Link
+          onClick={() => {
+            const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+            show({
+              content: AboutModal,
+              title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+              containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
+            });
+          }}
+        >
+          About OHIF Viewer
+        </SettingsPopover.Link>
+        <SettingsPopover.Link
+          onClick={() => {
+            const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+            show({
+              content: UserPreferencesModal,
+              title: UserPreferencesModal?.title ?? t('UserPreferencesModal:User preferences'),
+              containerClassName:
+                UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
+            });
+          }}
+        >
+          User Preferences
+        </SettingsPopover.Link>
+      </SettingsPopover>
+
+      <StudyListLayout.OpenPreviewButton />
+    </div>
   );
 }
 
 function SidePanelPreview({ dataSource, extensionManager }: { dataSource: any; extensionManager: any }) {
   const { selected, setPanelOpen, defaultWorkflow, setDefaultWorkflow, launch, seriesViewMode, setSeriesViewMode } = useStudyList<UISLRow, WorkflowId>();
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const { t } = useTranslation();
+  const { servicesManager } = useSystem();
+  const { customizationService } = servicesManager.services as any;
+  const { show } = useModal();
   const [series, setSeries] = React.useState<any[]>([]);
   const [thumbs, setThumbs] = React.useState<Record<string, string | null>>({});
   const { sortBySeriesDate } = utils as any;
@@ -462,29 +492,53 @@ function SidePanelPreview({ dataSource, extensionManager }: { dataSource: any; e
   return (
     <PreviewPanelShell
       header={
-        <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-          <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
-            <PopoverTrigger asChild>
+        <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
+          <SettingsPopover>
+            <SettingsPopover.Trigger>
               <Button variant="ghost" size="icon" aria-label="Open settings">
                 <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
               </Button>
-            </PopoverTrigger>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Close preview panel"
-              onClick={() => setPanelOpen(false)}
+            </SettingsPopover.Trigger>
+            <SettingsPopover.Workflow
+              defaultMode={defaultWorkflow}
+              onDefaultModeChange={setDefaultWorkflow}
+            />
+            <SettingsPopover.Divider />
+            <SettingsPopover.Link
+              onClick={() => {
+                const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+                show({
+                  content: AboutModal,
+                  title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+                  containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
+                });
+              }}
             >
-              <Icons.PanelRight aria-hidden="true" className="h-4 w-4" />
-            </Button>
-          </div>
-          <SettingsPopover
-            open={isSettingsOpen}
-            onOpenChange={setIsSettingsOpen}
-            defaultMode={defaultWorkflow}
-            onDefaultModeChange={setDefaultWorkflow}
-          />
-        </Popover>
+              About OHIF Viewer
+            </SettingsPopover.Link>
+            <SettingsPopover.Link
+              onClick={() => {
+                const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+                show({
+                  content: UserPreferencesModal,
+                  title: UserPreferencesModal?.title ?? t('UserPreferencesModal:User preferences'),
+                  containerClassName:
+                    UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
+                });
+              }}
+            >
+              User Preferences
+            </SettingsPopover.Link>
+          </SettingsPopover>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Close preview panel"
+            onClick={() => setPanelOpen(false)}
+          >
+            <Icons.PanelRight aria-hidden="true" className="h-4 w-4" />
+          </Button>
+        </div>
       }
     >
       {selected ? (
