@@ -126,8 +126,17 @@ ui-next/src/components/StudyList/
 - Dropdown built with DS `DropdownMenu` listing workflows for a row.
 - Source of truth: `getAvailableWorkflows({ workflows, modalities })`.
 
-### `components/SettingsPopover.tsx`
-- Popover content for selecting the default workflow, persisted via `useDefaultWorkflow`.
+### `components/SettingsPopover.tsx` (compound)
+- Overview: a small, composable popover used in the Study List to surface quick settings and actions (e.g., choosing a default workflow, opening About/User Preferences).
+- Structure: a root SettingsPopover with exactly one Trigger and any number of body items.
+- Subcomponents:
+  - SettingsPopover.Trigger — wraps your trigger element (such as a button or icon).
+  - SettingsPopover.Workflow — renders the “Default Workflow” selector and closes the popover after selection.
+  - SettingsPopover.Divider — visual separator between sections.
+  - SettingsPopover.Link — link‑style action that can navigate or run a custom handler; the popover closes after activation.
+- Notes:
+  - Include one Trigger as a direct child of SettingsPopover.
+  - Intended for use in the table toolbar and preview panel header.
 
 ### `components/PreviewPanelContent.tsx` and `components/PreviewPanelEmpty.tsx`
 - Default preview content using `PatientSummary`; the former renders thumbnails and workflows for the selected row, the latter renders an empty state.
