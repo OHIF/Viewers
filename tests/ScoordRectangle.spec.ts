@@ -1,8 +1,6 @@
 import { test } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
 
-// Temporarily skip all tests in this file
-test.describe.skip('SCOORD Rectangle Tests', () => {
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
   const mode = 'viewer';
@@ -142,4 +140,3 @@ test('should display SCOORD rectangle measurements correctly', async ({ page }) 
   // Take screenshot showing the SCOORD rectangle measurements rendered correctly
   await checkForScreenshot(page, page, screenShotPaths.scoordRectangle.scoordRectangleDisplayedCorrectly);
 });
-}); // End of test.describe.skip
