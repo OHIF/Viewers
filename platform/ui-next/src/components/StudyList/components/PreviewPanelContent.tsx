@@ -43,17 +43,17 @@ export function PreviewPanelContent({
               onLaunchWorkflow={(data, wf) => launch((data as StudyRow) ?? study, wf)}
             />
           </PatientSummary>
-          <div className="h-7 w-full px-2 flex items-center justify-between text-foreground font-semibold text-base">
-            <span>1 Study</span>
+          <div className="h-5 w-full px-2 flex items-center justify-between gap-1 text-muted-foreground text-base">
+            <span className="leading-tight">{study?.description || 'No Description'}</span>
             <ToggleGroup
               type="single"
               value={seriesViewMode}
               onValueChange={(value) => value && setSeriesViewMode(value as 'thumbnails' | 'list')}
             >
-              <ToggleGroupItem value="thumbnails" aria-label="Thumbnail view" className="text-actions-primary">
+              <ToggleGroupItem value="thumbnails" aria-label="Thumbnail view" className="text-primary">
                 <Icons.ThumbnailView />
               </ToggleGroupItem>
-              <ToggleGroupItem value="list" aria-label="List view" className="text-actions-primary">
+              <ToggleGroupItem value="list" aria-label="List view" className="text-primary">
                 <Icons.ListView />
               </ToggleGroupItem>
             </ToggleGroup>

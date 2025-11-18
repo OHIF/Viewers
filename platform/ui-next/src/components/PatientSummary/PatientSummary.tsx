@@ -199,7 +199,7 @@ function Title<T = any>({
   return (
     <span
       title={title}
-      className={cn('text-foreground truncate text-sm font-medium leading-tight', className)}
+      className={cn('text-foreground truncate text-lg font-medium leading-tight', className)}
     >
       {typeof children === 'function' ? children(content, data) : content}
     </span>
@@ -242,7 +242,7 @@ function Subtitle<T = any>({
           ? String(value)
           : undefined
       }
-      className={cn('text-muted-foreground truncate text-sm leading-tight', className)}
+      className={cn('text-muted-foreground truncate text-lg leading-tight', className)}
     >
       {typeof children === 'function' ? children(value, data) : baseContent}
     </span>
@@ -523,7 +523,7 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
 
   const iconNode = icon ? (
     <span
-      className="text-primary shrink-0"
+      className="text-primary shrink-0 -translate-y-0.5"
       aria-hidden
       style={{ width: iconSize, height: iconSize }}
     >
@@ -673,7 +673,7 @@ function Patient({
           )}
         </Icon>
       )}
-      <div className="flex min-w-0 flex-col">
+      <div className="flex min-w-0 flex-col gap-px">
         {!hideTitle && <Title placeholder={placeholder} />}
         {!hideSubtitle && <Subtitle />}
       </div>

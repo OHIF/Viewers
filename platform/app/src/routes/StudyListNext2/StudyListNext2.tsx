@@ -562,8 +562,8 @@ function SidePanelPreview({ dataSource, extensionManager }: { dataSource: any; e
                   onLaunchWorkflow={(data, wf) => launch((data as UISLRow) ?? (selected as UISLRow), wf)}
                 />
               </PatientSummary>
-              <div className="h-7 w-full px-2 flex items-center justify-between text-foreground font-semibold text-base">
-                <span>{series?.length ? '1 Study' : 'No Series'}</span>
+              <div className="h-5 w-full px-2 flex items-center justify-between gap-1 text-muted-foreground text-base">
+                <span className="leading-tight">{series?.length ? ((selected as UISLRow)?.description || 'No Description') : 'No Series'}</span>
                 <ToggleGroup
                   type="single"
                   value={seriesViewMode}
