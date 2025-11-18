@@ -199,7 +199,7 @@ function Title<T = any>({
   return (
     <span
       title={title}
-      className={cn('text-foreground truncate text-base font-medium leading-tight', className)}
+      className={cn('text-foreground truncate text-sm font-medium leading-tight', className)}
     >
       {typeof children === 'function' ? children(content, data) : content}
     </span>
