@@ -71,9 +71,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       cell: ({ row }) => <div className="truncate">{row.getValue('modalities')}</div>,
       meta: {
         label: 'Modalities',
-        headerClassName: 'w-[85px] min-w-[85px] max-w-[85px]',
-        cellClassName: 'w-[85px] min-w-[85px] max-w-[85px]',
-        fixedWidth: 85,
+        headerClassName: 'w-[97px] min-w-[97px] max-w-[97px]',
+        cellClassName: 'w-[97px] min-w-[97px] max-w-[97px]',
+        fixedWidth: 97,
       },
     },
     {
@@ -114,7 +114,11 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       accessorKey: 'instances',
       header: ({ column }) => {
         const sorted = column.getIsSorted() as false | 'asc' | 'desc';
-        const indicator = sorted === 'asc' ? '▲' : sorted === 'desc' ? '▼' : '↕';
+        const SortIcon = sorted === 'asc'
+          ? Icons.SortingNewAscending
+          : sorted === 'desc'
+          ? Icons.SortingNewDescending
+          : Icons.SortingNew;
         return (
           <div className="flex w-full items-center justify-end translate-x-5">
             <Icons.Series
@@ -128,7 +132,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
               aria-label="Sort by instances"
               className="px-1"
             >
-              {indicator}
+              <SortIcon className="h-4 w-2.5" aria-hidden="true" />
             </Button>
           </div>
         );

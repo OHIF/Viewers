@@ -288,6 +288,7 @@ export default function StudyListNext2({
                       <StudyListTable
                         columns={dateSortedColumns as any}
                         data={rows as UISLRow[]}
+                        initialSorting={[{ id: 'studyDateTime', desc: true }]}
                         enforceSingleSelection
                         showColumnVisibility
                         title={'Study List'}
