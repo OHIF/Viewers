@@ -33,15 +33,8 @@ type RootProps = {
   open?: boolean;
   /** onOpenChange for controlled usage (optional). */
   onOpenChange?: (open: boolean) => void;
-  /** PopoverContent alignment (defaults to "end"). */
-  align?: React.ComponentProps<typeof PopoverContent>['align'];
-  /** PopoverContent side offset (defaults to 8). */
-  sideOffset?: number;
-  /** Optional className to extend PopoverContent. */
-  contentClassName?: string;
   /**
-   * Children must include exactly one <SettingsPopover.Trigger> plus any content for the popover body
-   * (e.g., <SettingsPopover.Workflow />, <SettingsPopover.Divider />, <SettingsPopover.Link />, etc.).
+   * Children must include exactly one <SettingsPopover.Trigger> and one <SettingsPopover.Content>.
    */
   children?: React.ReactNode;
 };
@@ -62,17 +55,16 @@ SettingsPopoverTrigger.displayName = 'SettingsPopover.Trigger';
  * Usage:
  * <SettingsPopover>
  *   <SettingsPopover.Trigger><Button>...</Button></SettingsPopover.Trigger>
- *   <SettingsPopover.Workflow ... />
- *   <SettingsPopover.Divider />
- *   <SettingsPopover.Link href="/about">About</SettingsPopover.Link>
+ *   <SettingsPopover.Content>
+ *     <SettingsPopover.Workflow ... />
+ *     <SettingsPopover.Divider />
+ *     <SettingsPopover.Link href="/about">About</SettingsPopover.Link>
+ *   </SettingsPopover.Content>
  * </SettingsPopover>
  */
 function SettingsPopoverComponent({
   open,
   onOpenChange,
-  align = 'end',
-  sideOffset = 8,
-  contentClassName,
   children,
 }: RootProps) {
   const isControlled = typeof open === 'boolean';
@@ -91,22 +83,25 @@ function SettingsPopoverComponent({
 
   const close = React.useCallback(() => setOpen(false), [setOpen]);
 
-  // Extract the Trigger node from children and collect the rest as popover content
+  // Extract the Trigger and Content nodes from children
   const childrenArray = React.Children.toArray(children);
   let triggerNode: React.ReactNode | null = null;
-  const contentChildren: React.ReactNode[] = [];
+  let contentNode: React.ReactElement<ContentProps> | null = null;
 
   for (const child of childrenArray) {
     if (React.isValidElement(child) && child.type === SettingsPopoverTrigger) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       triggerNode = (child.props as TriggerProps).children;
-    } else {
-      contentChildren.push(child);
+    } else if (React.isValidElement(child) && child.type === SettingsPopoverContent) {
+      contentNode = child as React.ReactElement<ContentProps>;
     }
   }
 
   if (!triggerNode) {
     throw new Error('<SettingsPopover.Trigger> is required as a direct child of <SettingsPopover>.');
+  }
+  if (!contentNode) {
+    throw new Error('<SettingsPopover.Content> is required as a direct child of <SettingsPopover>.');
   }
 
   return (
@@ -115,18 +110,38 @@ function SettingsPopoverComponent({
         {triggerNode}
       </PopoverTrigger>
 
-      <PopoverContent
-        align={align}
-        sideOffset={sideOffset}
-        className={['w-[315px] p-4', contentClassName].filter(Boolean).join(' ')}
-        // Prevents unwanted focus jumps when opening
-        onOpenAutoFocus={e => e.preventDefault()}
-      >
-        <SettingsPopoverContext.Provider value={{ close }}>
-          {contentChildren}
-        </SettingsPopoverContext.Provider>
-      </PopoverContent>
+      <SettingsPopoverContext.Provider value={{ close }}>
+        {contentNode}
+      </SettingsPopoverContext.Provider>
     </Popover>
+  );
+}
+
+type ContentProps = {
+  /** PopoverContent alignment (defaults to "end"). */
+  align?: React.ComponentProps<typeof PopoverContent>['align'];
+  /** PopoverContent side offset (defaults to 8). */
+  sideOffset?: number;
+  /** Optional className to extend PopoverContent. */
+  className?: string;
+  children?: React.ReactNode;
+};
+
+/**
+ * SettingsPopover.Content
+ * Wraps the popover body content.
+ */
+function SettingsPopoverContent({ align = 'end', sideOffset = 8, className, children }: ContentProps) {
+  return (
+    <PopoverContent
+      align={align}
+      sideOffset={sideOffset}
+      className={["w-[315px] p-4", className].filter(Boolean).join(" ")}
+      // Prevents unwanted focus jumps when opening
+      onOpenAutoFocus={e => e.preventDefault()}
+    >
+      {children}
+    </PopoverContent>
   );
 }
 
@@ -257,6 +272,7 @@ SettingsPopoverComponent.displayName = 'SettingsPopover';
 
 export const SettingsPopover = Object.assign(SettingsPopoverComponent, {
   Trigger: SettingsPopoverTrigger,
+  Content: SettingsPopoverContent,
   Workflow,
   Divider,
   Link,

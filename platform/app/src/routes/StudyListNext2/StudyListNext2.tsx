@@ -324,36 +324,38 @@ function ClosedPanelControls() {
             <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
           </Button>
         </SettingsPopover.Trigger>
-        <SettingsPopover.Workflow
-          defaultMode={defaultWorkflow}
-          onDefaultModeChange={setDefaultWorkflow}
-        />
-        <SettingsPopover.Divider />
-        <SettingsPopover.Link
-          onClick={() => {
-            const AboutModal = customizationService.getCustomization('ohif.aboutModal');
-            show({
-              content: AboutModal,
-              title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
-              containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
-            });
-          }}
-        >
-          About OHIF Viewer
-        </SettingsPopover.Link>
-        <SettingsPopover.Link
-          onClick={() => {
-            const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
-            show({
-              content: UserPreferencesModal,
-              title: UserPreferencesModal?.title ?? t('UserPreferencesModal:User preferences'),
-              containerClassName:
-                UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
-            });
-          }}
-        >
-          User Preferences
-        </SettingsPopover.Link>
+        <SettingsPopover.Content>
+          <SettingsPopover.Workflow
+            defaultMode={defaultWorkflow}
+            onDefaultModeChange={setDefaultWorkflow}
+          />
+          <SettingsPopover.Divider />
+          <SettingsPopover.Link
+            onClick={() => {
+              const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+              show({
+                content: AboutModal,
+                title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+                containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
+              });
+            }}
+          >
+            About OHIF Viewer
+          </SettingsPopover.Link>
+          <SettingsPopover.Link
+            onClick={() => {
+              const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+              show({
+                content: UserPreferencesModal,
+                title: UserPreferencesModal?.title ?? t('UserPreferencesModal:User preferences'),
+                containerClassName:
+                  UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
+              });
+            }}
+          >
+            User Preferences
+          </SettingsPopover.Link>
+        </SettingsPopover.Content>
       </SettingsPopover>
 
       <StudyListLayout.OpenPreviewButton />
@@ -499,36 +501,38 @@ function SidePanelPreview({ dataSource, extensionManager }: { dataSource: any; e
                 <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
               </Button>
             </SettingsPopover.Trigger>
-            <SettingsPopover.Workflow
-              defaultMode={defaultWorkflow}
-              onDefaultModeChange={setDefaultWorkflow}
-            />
-            <SettingsPopover.Divider />
-            <SettingsPopover.Link
-              onClick={() => {
-                const AboutModal = customizationService.getCustomization('ohif.aboutModal');
-                show({
-                  content: AboutModal,
-                  title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
-                  containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
-                });
-              }}
-            >
-              About OHIF Viewer
-            </SettingsPopover.Link>
-            <SettingsPopover.Link
-              onClick={() => {
-                const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
-                show({
-                  content: UserPreferencesModal,
-                  title: UserPreferencesModal?.title ?? t('UserPreferencesModal:User preferences'),
-                  containerClassName:
-                    UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
-                });
-              }}
-            >
-              User Preferences
-            </SettingsPopover.Link>
+            <SettingsPopover.Content>
+              <SettingsPopover.Workflow
+                defaultMode={defaultWorkflow}
+                onDefaultModeChange={setDefaultWorkflow}
+              />
+              <SettingsPopover.Divider />
+              <SettingsPopover.Link
+                onClick={() => {
+                  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+                  show({
+                    content: AboutModal,
+                    title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+                    containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
+                  });
+                }}
+              >
+                About OHIF Viewer
+              </SettingsPopover.Link>
+              <SettingsPopover.Link
+                onClick={() => {
+                  const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+                  show({
+                    content: UserPreferencesModal,
+                    title: UserPreferencesModal?.title ?? t('UserPreferencesModal:User preferences'),
+                    containerClassName:
+                      UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
+                  });
+                }}
+              >
+                User Preferences
+              </SettingsPopover.Link>
+            </SettingsPopover.Content>
           </SettingsPopover>
           <Button
             variant="ghost"

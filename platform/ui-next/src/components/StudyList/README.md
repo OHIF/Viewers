@@ -128,15 +128,35 @@ ui-next/src/components/StudyList/
 
 ### `components/SettingsPopover.tsx` (compound)
 - Overview: a small, composable popover used in the Study List to surface quick settings and actions (e.g., choosing a default workflow, opening About/User Preferences).
-- Structure: a root SettingsPopover with exactly one Trigger and any number of body items.
+- Structure: a root `SettingsPopover` with exactly one `SettingsPopover.Trigger` and one `SettingsPopover.Content` (which wraps the body items).
 - Subcomponents:
-  - SettingsPopover.Trigger — wraps your trigger element (such as a button or icon).
-  - SettingsPopover.Workflow — renders the “Default Workflow” selector and closes the popover after selection.
-  - SettingsPopover.Divider — visual separator between sections.
-  - SettingsPopover.Link — link‑style action that can navigate or run a custom handler; the popover closes after activation.
+  - `SettingsPopover.Trigger` — wraps your trigger element (such as a button or icon).
+  - `SettingsPopover.Content` — wraps the popover body; accepts `align`, `sideOffset`, and `className`.
+  - `SettingsPopover.Workflow` — renders the “Default Workflow” selector and closes the popover after selection.
+  - `SettingsPopover.Divider` — visual separator between sections.
+  - `SettingsPopover.Link` — link‑style action that can navigate or run a custom handler; the popover closes after activation.
 - Notes:
-  - Include one Trigger as a direct child of SettingsPopover.
-  - Intended for use in the table toolbar and preview panel header.
+  - Both `Trigger` and `Content` are required as direct children of `SettingsPopover`.
+  - Place all body items (Workflow/Divider/Link/…) inside `SettingsPopover.Content`.
+  - Legacy usage without `Content` is not supported.
+
+Example:
+
+```tsx
+<SettingsPopover>
+  <SettingsPopover.Trigger>
+    <Button variant="ghost" size="icon" aria-label="Open settings">
+      <Icons.SettingsStudyList aria-hidden className="h-4 w-4" />
+    </Button>
+  </SettingsPopover.Trigger>
+  <SettingsPopover.Content>
+    <SettingsPopover.Workflow defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
+    <SettingsPopover.Divider />
+    <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
+    <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+  </SettingsPopover.Content>
+  </SettingsPopover>
+```
 
 ### `components/PreviewPanelContent.tsx` and `components/PreviewPanelEmpty.tsx`
 - Default preview content using `PatientSummary`; the former renders thumbnails and workflows for the selected row, the latter renders an empty state.

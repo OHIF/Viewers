@@ -98,13 +98,15 @@ function ClosedPanelControls() {
             <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
           </Button>
         </SettingsPopover.Trigger>
-        <SettingsPopover.Workflow
-          defaultMode={defaultWorkflow}
-          onDefaultModeChange={setDefaultWorkflow}
-        />
-        <SettingsPopover.Divider />
-        <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
-        <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+        <SettingsPopover.Content>
+          <SettingsPopover.Workflow
+            defaultMode={defaultWorkflow}
+            onDefaultModeChange={setDefaultWorkflow}
+          />
+          <SettingsPopover.Divider />
+          <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
+          <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+        </SettingsPopover.Content>
       </SettingsPopover>
 
       <StudyListLayout.OpenPreviewButton />
@@ -125,13 +127,15 @@ function SidePanel() {
                 <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
               </Button>
             </SettingsPopover.Trigger>
-            <SettingsPopover.Workflow
-              defaultMode={defaultWorkflow}
-              onDefaultModeChange={setDefaultWorkflow}
-            />
-            <SettingsPopover.Divider />
-            <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
-            <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+            <SettingsPopover.Content>
+              <SettingsPopover.Workflow
+                defaultMode={defaultWorkflow}
+                onDefaultModeChange={setDefaultWorkflow}
+              />
+              <SettingsPopover.Divider />
+              <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
+              <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+            </SettingsPopover.Content>
           </SettingsPopover>
 
           <Button
