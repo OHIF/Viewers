@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
   const mode = 'viewer';
   
-  await visitStudy(page, studyInstanceUID, mode, 5000, 'ohif');
+  await visitStudy(page, studyInstanceUID, mode, 5000);
   
   // Log the actual URL that was loaded
   const currentUrl = page.url();
