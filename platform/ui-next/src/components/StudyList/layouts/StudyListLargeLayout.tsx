@@ -2,7 +2,6 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Icons } from '../../Icons';
 import { Button } from '../../Button';
-import { Popover, PopoverTrigger } from '../../Popover/Popover';
 import type { StudyRow } from '../StudyListTypes';
 import type { WorkflowId } from '../WorkflowsInfer';
 import { StudyListTable } from '../components/StudyListTable';
@@ -90,58 +89,60 @@ export function StudyListLargeLayout({
 
 function ClosedPanelControls() {
   const { defaultWorkflow, setDefaultWorkflow } = useStudyList<StudyRow, WorkflowId>();
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   return (
-    <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-      <div className="relative -top-px flex items-center gap-1">
-        <PopoverTrigger asChild>
+    <div className="relative -top-px flex items-center gap-1">
+      <SettingsPopover>
+        <SettingsPopover.Trigger>
           <Button variant="ghost" size="icon" aria-label="Open settings">
             <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
           </Button>
-        </PopoverTrigger>
-        <StudyListLayout.OpenPreviewButton />
-      </div>
-      <SettingsPopover
-        open={isSettingsOpen}
-        onOpenChange={setIsSettingsOpen}
-        defaultMode={defaultWorkflow}
-        onDefaultModeChange={setDefaultWorkflow}
-      />
-    </Popover>
+        </SettingsPopover.Trigger>
+        <SettingsPopover.Workflow
+          defaultMode={defaultWorkflow}
+          onDefaultModeChange={setDefaultWorkflow}
+        />
+        <SettingsPopover.Divider />
+        <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
+        <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+      </SettingsPopover>
+
+      <StudyListLayout.OpenPreviewButton />
+    </div>
   );
 }
 
 function SidePanel() {
   const { selected, setPanelOpen, defaultWorkflow, setDefaultWorkflow } = useStudyList<StudyRow, WorkflowId>();
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   return (
     <PreviewPanelShell
       header={
-        <Popover open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-          <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
-            <PopoverTrigger asChild>
+        <div className="absolute right-2 top-4 z-10 mt-1 mr-3 flex items-center gap-1">
+          <SettingsPopover>
+            <SettingsPopover.Trigger>
               <Button variant="ghost" size="icon" aria-label="Open settings">
                 <Icons.SettingsStudyList aria-hidden="true" className="h-4 w-4" />
               </Button>
-            </PopoverTrigger>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Close preview panel"
-              onClick={() => setPanelOpen(false)}
-            >
-              <Icons.PanelRight aria-hidden="true" className="h-4 w-4" />
-            </Button>
-          </div>
-          <SettingsPopover
-            open={isSettingsOpen}
-            onOpenChange={setIsSettingsOpen}
-            defaultMode={defaultWorkflow}
-            onDefaultModeChange={setDefaultWorkflow}
-          />
-        </Popover>
+            </SettingsPopover.Trigger>
+            <SettingsPopover.Workflow
+              defaultMode={defaultWorkflow}
+              onDefaultModeChange={setDefaultWorkflow}
+            />
+            <SettingsPopover.Divider />
+            <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
+            <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+          </SettingsPopover>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Close preview panel"
+            onClick={() => setPanelOpen(false)}
+          >
+            <Icons.PanelRight aria-hidden="true" className="h-4 w-4" />
+          </Button>
+        </div>
       }
     >
       {selected ? (
