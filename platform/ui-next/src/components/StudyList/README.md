@@ -103,8 +103,13 @@ ui-next/src/components/StudyList/
 
 ### `components/StudyListLayout.tsx`
 - Resizable horizontal split for table and preview.
-- Props: `isPanelOpen`, `onIsPanelOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent`, `table`, `preview`.
-- Hook: `useStudyListLayout()`; `OpenPreviewButton` re‑opens the preview when closed.
+- Compound API using slots:
+  - `StudyListLayout.Table` — left panel content (e.g., table).
+  - `StudyListLayout.Preview` — right panel content (renders only when open).
+  - `StudyListLayout.Handle` — optional explicit handle insert (Preview includes one automatically).
+  - `StudyListLayout.OpenPreviewButton` — button to re‑open the preview when closed.
+- Props: `isPanelOpen`, `onIsPanelOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent?`, `className?`.
+- Hook: `useStudyListLayout()` to access `isPanelOpen`, `openPanel`, `closePanel`.
 
 ### `components/PreviewPanelShell.tsx`
 - Light container for preview content (header slot + scroll area).
@@ -264,7 +269,8 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
           onIsPanelOpenChange={state.setPanelOpen}
           defaultPreviewSizePercent={30}
           className="h-full w-full"
-          table={
+        >
+          <StudyListLayout.Table>
             <StudyListTable
               data={rows}
               columns={defaultColumns()}
@@ -272,11 +278,11 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
               isPanelOpen={state.isPanelOpen}
               onOpenPanel={() => state.setPanelOpen(true)}
             />
-          }
-          preview={
+          </StudyListLayout.Table>
+          <StudyListLayout.Preview>
             <div>{/* Your preview content */}</div>
-          }
-        />
+          </StudyListLayout.Preview>
+        </StudyListLayout>
       </StudyListProvider>
     );
   }
