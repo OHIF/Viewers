@@ -7,11 +7,9 @@ import { toolNames } from './initCornerstoneTools';
 import { onCompletedCalibrationLine } from './tools/CalibrationLineTool';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import {
-  setAnnotationLabel,
-  triggerAnnotationRenderForViewportIds,
-} from '@cornerstonejs/tools/utilities';
+import { setAnnotationLabel, triggerAnnotationRenderForViewportIds } from '@cornerstonejs/tools/utilities';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import { syncCustomProbeViewports } from './utils/syncCustomProbeViewports';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
@@ -278,6 +276,19 @@ const connectToolsToMeasurementService = ({
       annotationModifiedEventDetail.uid = annotationUID;
       // Passing true to indicate this is an update and NOT a annotation (start) completion.
       annotationToMeasurement(toolName, annotationModifiedEventDetail, true);
+
+      if (toolName === toolNames.CustomProbe) {
+        const updatedMeasurement = measurementService.getMeasurement(annotationUID);
+        if (updatedMeasurement?.worldPosition && updatedMeasurement.FrameOfReferenceUID) {
+          syncCustomProbeViewports({
+            worldPosition: updatedMeasurement.worldPosition,
+            FrameOfReferenceUID: updatedMeasurement.FrameOfReferenceUID,
+            referencedImageId: updatedMeasurement.referencedImageId,
+            displaySetInstanceUID: updatedMeasurement.displaySetInstanceUID,
+            cornerstoneViewportService,
+          });
+        }
+      }
     } catch (error) {
       console.warn('Failed to update measurement:', error);
     }

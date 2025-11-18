@@ -39,6 +39,7 @@ import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { syncCustomProbeViewports } from './utils/syncCustomProbeViewports';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -565,63 +566,12 @@ function commandsModule({
         return;
       }
 
-      // Find all viewports that are relevant to the measurement
-      // Prefer matching by the viewport's actual FrameOfReferenceUID, since
-      // volume viewports may not list matching display sets explicitly.
-      const relevantViewports = [];
-
-      // Get all viewport IDs
-      const allViewportIds = Array.from(cornerstoneViewportService.viewportsById.keys());
-
-      allViewportIds.forEach(viewportId => {
-        const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        let matchesFoR = false;
-
-        try {
-          const viewportFoR = cornerstoneViewport?.getFrameOfReferenceUID?.();
-          matchesFoR = Boolean(viewportFoR && viewportFoR === measurement.FrameOfReferenceUID);
-        } catch (_) {
-          matchesFoR = false;
-        }
-
-        if (!matchesFoR) {
-          // Fallback: check display sets associated with this viewport
-          const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
-          const hasMatchingFrame = viewportDisplaySets?.some(ds =>
-            ds.FrameOfReferenceUID === measurement.FrameOfReferenceUID ||
-            ds.displaySetInstanceUID === measurement.displaySetInstanceUID
-          );
-          matchesFoR = Boolean(hasMatchingFrame);
-        }
-
-        if (matchesFoR) {
-          relevantViewports.push(viewportId);
-        }
-      });
-
-      // Jump all relevant viewports to the world position
-      relevantViewports.forEach(viewportId => {
-        try {
-          const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-          if (cornerstoneViewport) {
-            // Use jumpToWorld if available (for volume viewports)
-            if (cornerstoneViewport && 'jumpToWorld' in cornerstoneViewport && typeof cornerstoneViewport.jumpToWorld === 'function') {
-              cornerstoneViewport.jumpToWorld(measurement.worldPosition);
-            } else {
-              // For stack viewports, try to navigate to the measurement slice
-              if (measurement.referencedImageId && cornerstoneViewport.setViewReference) {
-                cornerstoneViewport.setViewReference({
-                  referencedImageId: measurement.referencedImageId,
-                });
-              }
-            }
-
-            // Render the viewport
-            cornerstoneViewport.render();
-          }
-        } catch (e) {
-          console.warn(`Unable to jump viewport ${viewportId} to CustomProbe measurement:`, e);
-        }
+      const relevantViewportIds = syncCustomProbeViewports({
+        worldPosition: measurement.worldPosition,
+        FrameOfReferenceUID: measurement.FrameOfReferenceUID,
+        referencedImageId: measurement.referencedImageId,
+        displaySetInstanceUID: measurement.displaySetInstanceUID,
+        cornerstoneViewportService,
       });
 
       // Select the annotation
