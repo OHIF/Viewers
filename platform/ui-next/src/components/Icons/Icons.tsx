@@ -52,6 +52,9 @@ import SidePanelCloseRight from './Sources/SidePanelCloseRight';
 import SortingAscending from './Sources/SortingAscending';
 import SocialGithub from './Sources/SocialGithub';
 import SortingDescending from './Sources/SortingDescending';
+import SortingNew from './Sources/SortingNew';
+import SortingNewAscending from './Sources/SortingNewAscending';
+import SortingNewDescending from './Sources/SortingNewDescending';
 import StatusError from './Sources/StatusError';
 import StatusSuccess from './Sources/StatusSuccess';
 import StatusTracking from './Sources/StatusTracking';
@@ -529,6 +532,9 @@ export const Icons = {
   SortingAscending,
   SortingDescending,
   Sorting,
+  SortingNew,
+  SortingNewAscending,
+  SortingNewDescending,
   StatusError,
   StatusSuccess,
   StatusTracking,
