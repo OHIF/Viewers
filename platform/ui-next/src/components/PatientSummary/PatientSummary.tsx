@@ -673,7 +673,7 @@ function Patient({
           )}
         </Icon>
       )}
-      <div className="flex min-w-0 flex-col gap-px">
+      <div className="flex min-w-0 flex-col gap-px h-[38px] justify-center">
         {!hideTitle && <Title placeholder={placeholder} />}
         {!hideSubtitle && <Subtitle />}
       </div>
@@ -722,9 +722,11 @@ function Empty({ children, icon, section }: EmptyProps) {
           />
         </Icon>
       )}
-      <span className="text-muted-foreground text-base font-medium leading-tight">
-        {children ?? 'Select a study'}
-      </span>
+      <div className="flex items-center h-[38px]">
+        <span className="text-muted-foreground text-base font-medium leading-tight">
+          {children ?? 'Select a study'}
+        </span>
+      </div>
     </Section>
   );
 }
