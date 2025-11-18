@@ -67,8 +67,6 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     instances,
-    // Not really image frames, but equivalent
-    numImageFrames: instances.length,
     predecessorImageId,
     wadoRoot,
     wadoUriRoot,

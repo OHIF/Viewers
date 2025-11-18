@@ -494,7 +494,7 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         seriesNumber: ds.SeriesNumber,
         modality: ds.Modality,
         seriesDate: formatDate(ds.SeriesDate),
-        numInstances: ds.numImageFrames,
+        numInstances: ds.numImageFrames ?? ds.instances?.length,
         loadingProgress,
         countIcon: ds.countIcon,
         messages: ds.messages,
