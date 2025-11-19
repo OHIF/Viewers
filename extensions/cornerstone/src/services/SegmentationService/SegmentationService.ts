@@ -84,6 +84,7 @@ const EVENTS = {
   // fired when a contour annotation cut merge process is completed
   SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED:
     'event::annotation_cut_merge_process_completed',
+  SEGMENTATION_STYLE_MODIFIED: 'event::segmentation_style_modified',
 };
 
 const VALUE_TYPES = {};
@@ -840,9 +841,15 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       segmentIndex?: number;
     },
-    style: cstTypes.LabelmapStyle | cstTypes.ContourStyle | cstTypes.SurfaceStyle
+    style: cstTypes.LabelmapStyle | cstTypes.ContourStyle | cstTypes.SurfaceStyle,
+    merge: boolean = true
   ) => {
-    cstSegmentation.config.style.setStyle(specifier, style);
+    cstSegmentation.config.style.setStyle(specifier, style, merge);
+    this._broadcastEvent(EVENTS.SEGMENTATION_STYLE_MODIFIED, {
+      specifier,
+      style,
+      merge,
+    });
   };
 
   public resetToGlobalStyle = () => {
@@ -1742,7 +1749,8 @@ class SegmentationService extends PubSubService {
             segmentIndex,
             type: LABELMAP,
           },
-          {}
+          {},
+          false
         );
       }
     };
