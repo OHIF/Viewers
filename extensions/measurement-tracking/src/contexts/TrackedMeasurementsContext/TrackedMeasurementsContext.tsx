@@ -1,8 +1,10 @@
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
+import { utils } from '@ohif/core';
+import { createReportAsync } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
 import { measurementTrackingMode } from './promptBeginTracking';
 import hydrateStructuredReport from './hydrateStructuredReport';
@@ -16,6 +18,8 @@ import {
   promptSaveReportWrapper,
   promptHasDirtyAnnotationsWrapper,
 } from './promptWrapperFunctions';
+
+const { debounce } = utils;
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -297,6 +301,125 @@ function TrackedMeasurementsContextProvider(
       trackedMeasurementsService.updateTrackedSeries(trackedMeasurements.context.trackedSeries);
     }
   }, [trackedMeasurements?.context?.trackedSeries, trackedMeasurementsService]);
+
+  // Keep a ref to the latest trackedMeasurements to use in the debounced callback
+  const trackedMeasurementsRef = useRef(trackedMeasurements);
+  useEffect(() => {
+    trackedMeasurementsRef.current = trackedMeasurements;
+  }, [trackedMeasurements]);
+
+  useEffect(() => {
+    const { measurementService, displaySetService } = servicesManager.services;
+
+    const handleMeasurementChange = debounce(async () => {
+      const context = trackedMeasurementsRef.current?.context;
+      if (!context) {
+        return;
+      }
+
+      const { trackedStudy, trackedSeries } = context;
+
+      // Check if we have a hydrated SR
+      const displaySets = displaySetService.getActiveDisplaySets() as any[];
+      const hydratedSR = displaySets.find(ds =>
+        ds.Modality === 'SR' &&
+        ds.isHydrated
+      );
+
+      if (!hydratedSR) {
+        return;
+      }
+
+      // Logic to save to current SR
+      try {
+        const SeriesInstanceUID = hydratedSR.SeriesInstanceUID;
+        const now = new Date();
+        const SeriesDate =
+            now.getFullYear() +
+            ('0' + (now.getMonth() + 1)).slice(-2) +
+            ('0' + now.getDate()).slice(-2);
+        const SeriesTime =
+            ('0' + now.getHours()).slice(-2) +
+            ('0' + now.getMinutes()).slice(-2) +
+            ('0' + now.getSeconds()).slice(-2);
+
+        const baseDescription = hydratedSR.SeriesDescription || 'Structured Report';
+
+        // Only append date if it's not already there or if we want to update it
+        // Simplest approach: Just use base description and append new date
+        const newDescription = baseDescription;
+
+        const options = {
+          SeriesDescription: `${newDescription} ${SeriesDate}`,
+          SeriesInstanceUID,
+          SeriesDate,
+          SeriesTime,
+        };
+
+        // Get SR info
+        const displaySetsMap = displaySetService.getDisplaySetCache();
+        const allDisplaySets = Array.from(displaySetsMap.values()) as any[];
+        const srDisplaySet = allDisplaySets.find(
+            ds => ds.Modality === 'SR' && ds.SeriesInstanceUID === SeriesInstanceUID
+        );
+
+        if (srDisplaySet) {
+            const InstanceNumber = (srDisplaySet.instances?.length || 0) + 1;
+            Object.assign(options, {
+                SeriesNumber: srDisplaySet.SeriesNumber,
+                InstanceNumber,
+            });
+        }
+
+        const { filterAnd, filterMeasurementsByStudyUID, filterMeasurementsBySeriesUID } =
+          utils.MeasurementFilters;
+
+        const measurementFilter = filterAnd(
+          filterMeasurementsByStudyUID(trackedStudy),
+          filterMeasurementsBySeriesUID(trackedSeries)
+        );
+
+        const measurementData = measurementService.getMeasurements(measurementFilter);
+        const dataSources = extensionManager.getDataSources();
+        const dataSource = dataSources[0];
+
+        const getReport = async () => {
+          return commandsManager.runCommand(
+            'storeMeasurements',
+            {
+              measurementData,
+              dataSource,
+              additionalFindingTypes: ['ArrowAnnotate'],
+              options,
+            },
+            'CORNERSTONE_STRUCTURED_REPORT'
+          );
+        };
+
+        await createReportAsync({
+          servicesManager,
+          getReport,
+        } as any);
+
+      } catch (error) {
+        console.warn('Auto-save to current SR failed', error);
+      }
+    }, 1000);
+
+    const events = [
+      measurementService.EVENTS.MEASUREMENT_ADDED,
+      measurementService.EVENTS.MEASUREMENT_UPDATED,
+      measurementService.EVENTS.MEASUREMENT_REMOVED,
+    ];
+
+    const subscriptions = events.map(evt =>
+      measurementService.subscribe(evt, handleMeasurementChange)
+    );
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe());
+    };
+  }, [servicesManager, commandsManager, extensionManager]);
 
   useEffect(() => {
     // Update the state machine with the active viewport ID

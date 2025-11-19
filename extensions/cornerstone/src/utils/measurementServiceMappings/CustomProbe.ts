@@ -267,7 +267,6 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService, poi
 }
 
 export default Probe;
-
 function getClosestReferencedImageIdForPoint(displaySet, point) {
   const imageIds = displaySet?.imageIds || [];
   if (!imageIds.length || !point || point.length !== 3) {
