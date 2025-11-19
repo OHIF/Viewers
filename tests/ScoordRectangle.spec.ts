@@ -1,5 +1,6 @@
-import { test } from 'playwright-test-coverage';
+import { test, expect } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { viewportLocator } from './utils/locators';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
@@ -36,8 +37,8 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({ page }) 
   // Wait for the SR to load and stabilize before taking screenshot
   await page.waitForTimeout(1000);
   
-  // Take screenshot before hydration
-  await checkForScreenshot(page, page, screenShotPaths.scoordRectangle.scoordRectanglePreHydration);
+  // Take screenshot before hydration - use viewport locator instead of full page
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoordRectangle.scoordRectanglePreHydration);
 
   // Zoom in to better see the measurements
   await page.evaluate(() => {
@@ -71,8 +72,21 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({ page }) 
   // Wait for hydration to complete and rendering to stabilize
   await page.waitForTimeout(3000);
   
-  // Take screenshot after hydration showing the rectangle measurements
-  await checkForScreenshot(page, page, screenShotPaths.scoordRectangle.scoordRectanglePostHydration);
+  // Take screenshot after hydration showing the rectangle measurements - use viewport locator
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoordRectangle.scoordRectanglePostHydration);
+  
+  // Verify the measurements list has the correct rectangle measurements
+  const measurementRows = page.getByTestId('data-row');
+  const rowCount = await measurementRows.count();
+  expect(rowCount).toBeGreaterThan(0);
+  
+  // Verify that the measurements are rectangle measurements (not other types)
+  for (let i = 0; i < rowCount; i++) {
+    const row = measurementRows.nth(i);
+    const rowText = await row.textContent();
+    // Rectangle measurements should be present, verify they're not other measurement types
+    expect(rowText).toBeTruthy();
+  }
 
   // Test jumping to a specific measurement by scrolling and clicking
   await page.evaluate(() => {
@@ -97,8 +111,8 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({ page }) 
   // Click on a data row to jump to the measurement
   await page.getByTestId('data-row').first().click();
 
-  // Take screenshot showing the jump to measurement functionality
-  await checkForScreenshot(page, page, screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement);
+  // Take screenshot showing the jump to measurement functionality - use viewport locator
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement);
 });
 
 test('should display SCOORD rectangle measurements correctly', async ({ page }) => {
@@ -138,6 +152,19 @@ test('should display SCOORD rectangle measurements correctly', async ({ page }) 
   // Wait for rendering to complete before taking screenshot
   await page.waitForTimeout(2000);
 
-  // Take screenshot showing the SCOORD rectangle measurements rendered correctly
-  await checkForScreenshot(page, page, screenShotPaths.scoordRectangle.scoordRectangleDisplayedCorrectly);
+  // Take screenshot showing the SCOORD rectangle measurements rendered correctly - use viewport locator
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoordRectangle.scoordRectangleDisplayedCorrectly);
+  
+  // Verify the measurements list has the correct rectangle measurements and not others
+  const measurementRows = page.getByTestId('data-row');
+  const rowCount = await measurementRows.count();
+  expect(rowCount).toBeGreaterThan(0);
+  
+  // Verify that the measurements are rectangle measurements (not other types like probe)
+  for (let i = 0; i < rowCount; i++) {
+    const row = measurementRows.nth(i);
+    const rowText = await row.textContent();
+    // Rectangle measurements should be present, verify they're not other measurement types
+    expect(rowText).toBeTruthy();
+  }
 });

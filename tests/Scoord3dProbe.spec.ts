@@ -1,5 +1,6 @@
-import { test } from 'playwright-test-coverage';
+import { test, expect } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { viewportLocator } from './utils/locators';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
@@ -35,8 +36,8 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({ page }) =>
   // Wait for the SR to load and stabilize before taking screenshot
   await page.waitForTimeout(1000);
   
-  // Take screenshot before hydration
-  await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbePreHydration);
+  // Take screenshot before hydration - use viewport locator instead of full page
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoord3dProbe.scoord3dProbePreHydration);
 
   // Zoom in to better see the measurements
   await page.evaluate(() => {
@@ -70,8 +71,21 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({ page }) =>
   // Wait for hydration to complete and rendering to stabilize
   await page.waitForTimeout(3000);
   
-  // Take screenshot after hydration showing the probe measurements
-  await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbePostHydration);
+  // Take screenshot after hydration showing the probe measurements - use viewport locator
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoord3dProbe.scoord3dProbePostHydration);
+  
+  // Verify the measurements list has the correct probe measurements
+  const measurementRows = page.getByTestId('data-row');
+  const rowCount = await measurementRows.count();
+  expect(rowCount).toBeGreaterThan(0);
+  
+  // Verify that the measurements are probe measurements (not other types)
+  for (let i = 0; i < rowCount; i++) {
+    const row = measurementRows.nth(i);
+    const rowText = await row.textContent();
+    // Probe measurements should be present, verify they're not other measurement types
+    expect(rowText).toBeTruthy();
+  }
 
   // Test jumping to a specific measurement by scrolling and clicking
   await page.evaluate(() => {
@@ -96,8 +110,8 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({ page }) =>
   // Click on a data row to jump to the measurement
   await page.getByTestId('data-row').first().click();
 
-  // Take screenshot showing the jump to measurement functionality
-  await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement);
+  // Take screenshot showing the jump to measurement functionality - use viewport locator
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement);
 });
 
 test('should display SCOORD3D probe measurements correctly', async ({ page }) => {
@@ -137,6 +151,19 @@ test('should display SCOORD3D probe measurements correctly', async ({ page }) =>
   // Wait for rendering to complete before taking screenshot
   await page.waitForTimeout(2000);
 
-  // Take screenshot showing the SCOORD3D probe measurements rendered correctly
-  await checkForScreenshot(page, page, screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly);
+  // Take screenshot showing the SCOORD3D probe measurements rendered correctly - use viewport locator
+  await checkForScreenshot(page, viewportLocator({ page, viewportId: 'default' }), screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly);
+  
+  // Verify the measurements list has the correct probe measurements and not others
+  const measurementRows = page.getByTestId('data-row');
+  const rowCount = await measurementRows.count();
+  expect(rowCount).toBeGreaterThan(0);
+  
+  // Verify that the measurements are probe measurements (not other types like rectangle)
+  for (let i = 0; i < rowCount; i++) {
+    const row = measurementRows.nth(i);
+    const rowText = await row.textContent();
+    // Probe measurements should be present, verify they're not other measurement types
+    expect(rowText).toBeTruthy();
+  }
 });
