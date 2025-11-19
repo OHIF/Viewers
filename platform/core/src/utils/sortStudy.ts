@@ -12,7 +12,7 @@ const compare = (a, b) => {
 };
 
 const compareSameSeries = (a, b) => {
-  return compare(a.displaySetInstanceUID, b.displaySetInstanceUID);
+  return compare(a.instance.SOPInstanceUID, b.instance.SOPInstanceUID);
 };
 
 const compareSeriesUID = (a, b) =>
