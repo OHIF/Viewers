@@ -28,7 +28,8 @@ function PanelStudyBrowser({
   const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
-  const studyMode = (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
+  const studyMode =
+    (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
 
   const internalImageViewer = useImageViewer();
   const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
@@ -36,7 +37,7 @@ function PanelStudyBrowser({
 
   const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState(studyMode);
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
+  const [expandedSeriesInstanceUIDs, setExpandedSeriesInstanceUIDs] = useState(
     studyMode === 'primary' && StudyInstanceUIDs.length > 0
       ? [StudyInstanceUIDs[0]]
       : [...StudyInstanceUIDs]
@@ -348,20 +349,23 @@ function PanelStudyBrowser({
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
-  function _handleStudyClick(StudyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
-    const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
-      : [...expandedStudyInstanceUIDs, StudyInstanceUID];
+  const _handleStudyClick = useCallback(
+    seriesInstanceUID => {
+      const shouldCollapseStudy = expandedSeriesInstanceUIDs.includes(seriesInstanceUID);
+      const updatedExpandedSeriesInstanceUIDs = shouldCollapseStudy
+        ? // eslint-disable-next-line prettier/prettier
+          [...expandedSeriesInstanceUIDs.filter(seriesUid => seriesUid !== seriesInstanceUID)]
+        : [...expandedSeriesInstanceUIDs, seriesInstanceUID];
 
-    setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+      setExpandedSeriesInstanceUIDs(updatedExpandedSeriesInstanceUIDs);
 
-    if (!shouldCollapseStudy) {
-      const madeInClient = true;
-      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
-    }
-  }
-
+      if (!shouldCollapseStudy) {
+        const madeInClient = true;
+        requestDisplaySetCreationForStudy(displaySetService, seriesInstanceUID, madeInClient);
+      }
+    },
+    [displaySetService, expandedSeriesInstanceUIDs, requestDisplaySetCreationForStudy]
+  );
   useEffect(() => {
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
@@ -375,7 +379,7 @@ function PanelStudyBrowser({
         setJumpToDisplaySet(null);
       }
     }
-  }, [jumpToDisplaySet, expandedStudyInstanceUIDs, activeTabName]);
+  }, [jumpToDisplaySet, expandedSeriesInstanceUIDs, activeTabName]);
 
   useEffect(() => {
     if (!jumpToDisplaySet) {
@@ -384,18 +388,22 @@ function PanelStudyBrowser({
 
     const displaySetInstanceUID = jumpToDisplaySet;
     // It is possible to navigate to a study not currently in view
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs, activeTabName);
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
+      displaySetInstanceUID,
+      tabs,
+      activeTabName
+    );
     if (!thumbnailLocation) {
       return;
     }
     const { tabName, StudyInstanceUID } = thumbnailLocation;
     setActiveTabName(tabName);
-    const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+    const studyExpanded = expandedSeriesInstanceUIDs.includes(StudyInstanceUID);
     if (!studyExpanded) {
-      const updatedExpandedStudyInstanceUIDs = [...expandedStudyInstanceUIDs, StudyInstanceUID];
-      setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+      const updatedexpandedSeriesInstanceUIDs = [...expandedSeriesInstanceUIDs, StudyInstanceUID];
+      setExpandedSeriesInstanceUIDs(updatedexpandedSeriesInstanceUIDs);
     }
-  }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
+  }, [expandedSeriesInstanceUIDs, jumpToDisplaySet, tabs]);
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
@@ -419,7 +427,7 @@ function PanelStudyBrowser({
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}
-        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
+        expandedStudyInstanceUIDs={expandedSeriesInstanceUIDs}
         onClickStudy={_handleStudyClick}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
@@ -502,6 +510,7 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
           // .. Any other data to pass
         },
         isHydratedForDerivedDisplaySet: ds.isHydrated,
+        parentSeriesInstanceUID: ds.SeriesInstanceUID,
       });
     });
 
@@ -538,11 +547,13 @@ function _findTabAndStudyOfDisplaySet(
   tabs: TabsProps,
   currentTabName: string
 ) {
-  const current = tabs.find(tab => tab.name===currentTabName) || tabs[0];
+  const current = tabs.find(tab => tab.name === currentTabName) || tabs[0];
   const biasedTabs = [current, ...tabs];
 
   for (let t = 0; t < biasedTabs.length; t++) {
-    const study = biasedTabs[t].studies.find(study => study.displaySets.find(ds => ds.displaySetInstanceUID ===displaySetInstanceUID));
+    const study = biasedTabs[t].studies.find(study =>
+      study.displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID)
+    );
     if (study) {
       return {
         tabName: biasedTabs[t].name,

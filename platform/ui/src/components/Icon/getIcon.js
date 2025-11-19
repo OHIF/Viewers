@@ -1,6 +1,11 @@
 import React from 'react';
 
-const ICONS = {};
+import { ReactComponent as logoXylexa } from './../../../../ui/src/assets/svgs/logo-full-white.svg';
+
+const ICONS = {
+  'logo-xylexa': logoXylexa,
+};
+
 function addIcon(iconName, iconSVG) {
   if (ICONS[iconName]) {
     console.warn(`Icon ${iconName} already exists.`);
