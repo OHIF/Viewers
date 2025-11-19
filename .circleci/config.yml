@@ -119,7 +119,8 @@ jobs:
             echo "🔍 Running bun audit for security vulnerabilities..."
             echo "Checking for HIGH-RISK vulnerabilities..."
 
-            if bun audit --audit-level high; then
+            # Ignore CVE-2025-64756 (aka GHSA-5j98-mcp5-4vw2) - glob is not used on the command line
+            if bun audit --ignore=GHSA-5j98-mcp5-4vw2 --audit-level high; then
               echo "✅ No high-risk vulnerabilities found"
               echo "🎉 Security audit passed!"
             else
@@ -135,7 +136,10 @@ jobs:
               echo "  5. Re-run: bun audit --audit-level high"
               echo ""
               echo "📋 Full audit report:"
-              bun audit --audit-level low || true
+
+              # Ignore CVE-2025-64756 (aka GHSA-5j98-mcp5-4vw2) - glob is not used on the command line
+              bun audit --ignore=GHSA-5j98-mcp5-4vw2 --audit-level low || true
+
               echo ""
               echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
               exit 1
