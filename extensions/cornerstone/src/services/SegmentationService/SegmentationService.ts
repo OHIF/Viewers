@@ -1737,7 +1737,8 @@ class SegmentationService extends PubSubService {
             segmentIndex,
             type: LABELMAP,
           },
-          {}
+          {},
+          false
         );
       }
     };
