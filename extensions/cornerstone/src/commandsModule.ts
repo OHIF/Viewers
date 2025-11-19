@@ -40,6 +40,7 @@ import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVRe
 import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { syncCustomProbeViewports } from './utils/syncCustomProbeViewports';
+import { queueMeasurementRelocation } from './utils/measurementRelocationStore';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -537,8 +538,19 @@ function commandsModule({
      * Jumps to the specified (by uid) measurement in the active viewport.
      * Also marks any provided display measurements isActive value
      */
-    jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
-      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+    jumpToMeasurement: ({ uid, displayMeasurements = [], relocateOnNextClick = false }) => {
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      measurementService.jumpToMeasurement(activeViewportId, uid);
+      if (relocateOnNextClick) {
+        const measurement = measurementService.getMeasurement(uid);
+        if (measurement?.toolName === toolNames.CustomProbe) {
+          queueMeasurementRelocation({
+            measurementUID: uid,
+            frameOfReferenceUID: measurement.FrameOfReferenceUID,
+            toolName: measurement.toolName,
+          });
+        }
+      }
       for (const measurement of displayMeasurements) {
         measurement.isActive = measurement.uid === uid;
       }
@@ -547,7 +559,7 @@ function commandsModule({
     /**
      * Jumps to a CustomProbe measurement in all relevant viewports (similar to segmentations)
      */
-    jumpToCustomProbe: ({ uid, displayMeasurements = [] }) => {
+    jumpToCustomProbe: ({ uid, displayMeasurements = [], relocateOnNextClick = false }) => {
       const measurement = measurementService.getMeasurement(uid);
 
       if (!measurement) {
@@ -581,6 +593,14 @@ function commandsModule({
         } catch (e) {
           console.warn('Unable to select CustomProbe annotation:', e);
         }
+      }
+
+      if (relocateOnNextClick) {
+        queueMeasurementRelocation({
+          measurementUID: uid,
+          frameOfReferenceUID: measurement.FrameOfReferenceUID,
+          toolName: measurement.toolName,
+        });
       }
 
       // Mark display measurements as active

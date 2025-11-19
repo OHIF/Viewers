@@ -34,6 +34,7 @@ export default function MeasurementAccordion(props) {
       uid: measurement.uid,
       displayMeasurements: items,
       group,
+      relocateOnNextClick: command === 'jumpToCustomProbe',
     });
   };
 

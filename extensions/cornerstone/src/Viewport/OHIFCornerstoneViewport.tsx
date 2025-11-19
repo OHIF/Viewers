@@ -18,6 +18,11 @@ import { getViewportPresentations } from '../utils/presentations/getViewportPres
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
+import {
+  clearMeasurementRelocation,
+  consumeMeasurementRelocation,
+  getPendingMeasurementRelocation,
+} from '../utils/measurementRelocationStore';
 
 const STACK = 'stack';
 
@@ -330,6 +335,78 @@ const OHIFCornerstoneViewport = React.memo(
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
 
+    useEffect(() => {
+      const element = elementRef.current;
+      if (!element) {
+        return;
+      }
+
+      const handlePointerDown = (evt: PointerEvent) => {
+        if (evt.button !== 0 || evt.ctrlKey || evt.metaKey || evt.altKey || evt.shiftKey) {
+          return;
+        }
+
+        const pendingRelocation = getPendingMeasurementRelocation();
+        if (!pendingRelocation || pendingRelocation.toolName !== 'CustomProbe') {
+          return;
+        }
+
+        const measurement = measurementService.getMeasurement(pendingRelocation.measurementUID);
+        if (!measurement) {
+          clearMeasurementRelocation();
+          return;
+        }
+
+        const enabledElement = getEnabledElement(element);
+        if (!enabledElement) {
+          return;
+        }
+
+        const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
+        const viewportFOR = viewport.getFrameOfReferenceUID?.();
+        if (
+          pendingRelocation.frameOfReferenceUID &&
+          viewportFOR &&
+          pendingRelocation.frameOfReferenceUID !== viewportFOR
+        ) {
+          return;
+        }
+
+        const worldPosition = _getWorldPositionFromEvent(evt, element, viewport);
+        if (!worldPosition) {
+          return;
+        }
+
+        const annotationInstance = cs3DTools.annotation.state.getAnnotation(
+          pendingRelocation.measurementUID
+        );
+        if (!annotationInstance?.data?.handles?.points?.length) {
+          clearMeasurementRelocation();
+          return;
+        }
+
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        annotationInstance.data.handles.points[0] = worldPosition;
+        annotationInstance.metadata.referencedImageId =
+          viewport.getCurrentImageId?.() ?? annotationInstance.metadata.referencedImageId;
+        annotationInstance.invalidated = true;
+
+        cs3DTools.annotation.state.triggerAnnotationModified(
+          annotationInstance,
+          element,
+          cs3DTools.Enums.ChangeTypes.HandlesUpdated
+        );
+        consumeMeasurementRelocation();
+      };
+
+      element.addEventListener('pointerdown', handlePointerDown, { capture: true });
+      return () => {
+        element.removeEventListener('pointerdown', handlePointerDown, { capture: true });
+      };
+    }, [enabledVPElement, measurementService]);
+
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -433,6 +510,31 @@ function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewp
 
   cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
   event?.consume?.();
+}
+
+function _getWorldPositionFromEvent(
+  evt: PointerEvent,
+  element: HTMLElement,
+  viewport: csTypes.IStackViewport | csTypes.IVolumeViewport
+): csTypes.Point3 | null {
+  if (!element || !viewport) {
+    return null;
+  }
+
+  const rect = element.getBoundingClientRect();
+  const canvasCoordinates: [number, number] = [evt.clientX - rect.left, evt.clientY - rect.top];
+
+  try {
+    const world = viewport.canvasToWorld(canvasCoordinates);
+    if (!world || world.length < 3) {
+      return null;
+    }
+    return world as csTypes.Point3;
+  } catch (error) {
+    console.warn('Unable to convert canvas coordinates to world position', error);
+  }
+
+  return null;
 }
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {

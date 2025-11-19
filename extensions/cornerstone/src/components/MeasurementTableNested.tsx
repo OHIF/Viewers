@@ -18,7 +18,12 @@ export default function MeasurementTableNested(props) {
       }
     }
 
-    commandsManager.run(command, { uid, annotationUID: uid, displayMeasurements: items });
+    commandsManager.run(command, {
+      uid,
+      annotationUID: uid,
+      displayMeasurements: items,
+      relocateOnNextClick: command === 'jumpToCustomProbe',
+    });
   };
 
   return (
