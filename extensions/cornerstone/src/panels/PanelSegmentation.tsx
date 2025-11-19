@@ -161,18 +161,30 @@ export default function PanelSegmentation({
       commandsManager.run('deleteSegmentation', { segmentationId });
     },
     setFillAlpha: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setFillAlpha', { type, value });
     },
     setOutlineWidth: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setOutlineWidth', { type, value });
     },
     setRenderFill: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setRenderFill', { type, value });
     },
     setRenderFillInactive: ({ type }, value) => {
       commandsManager.run('setRenderFillInactive', { type, value });
     },
     setRenderOutline: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setRenderOutline', { type, value });
     },
     setRenderOutlineInactive: ({ type }, value) => {

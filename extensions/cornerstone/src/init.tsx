@@ -144,15 +144,11 @@ export default async function init({
       fillAlpha: 0.5,
       fillAlphaInactive: 0.4,
 
-      // In general do not fill contours so that hydrated RTSTRUCTs are not filled in when active by default.
-      // Hydrated RTSTRUCTs are NEVER filled in when inactive.
-      // However, hydrated RTSTRUCTs are filled in when active if the user chooses to fill ALL contours.
-      // Those Contours created in OHIF (i.e. using the Segmentation Panel) will override both of fill properties upon creation.
+      // In general do not fill contours so that hydrated RTSTRUCTs are not filled in when active or inactive by default.
+      // However, hydrated RTSTRUCTs are filled in when active or inactive if the user chooses to fill ALL contours.
+      // Those Contours created in OHIF (i.e. using the Segmentation Panel) will override both fill properties upon creation.
       renderFill: false,
       renderFillInactive: false,
-
-      // When inactive, all contours should at the very least have an outline.
-      renderOutlineInactive: true,
     }
   );
 
