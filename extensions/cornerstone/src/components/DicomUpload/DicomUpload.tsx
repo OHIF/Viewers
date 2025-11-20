@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
 import { Button } from '@ohif/ui-next';
-import './DicomUpload.css';
+// Removed dashed border CSS; using simple 1px solid border with muted foreground color
 
 type DicomUploadProps = {
   dataSource;
@@ -15,7 +15,8 @@ type DicomUploadProps = {
 };
 
 function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
-  const baseClassNames = 'min-h-[375px] flex flex-col bg-black select-none';
+  const baseClassNames =
+    'min-h-[375px] flex flex-col bg-black select-none rounded-lg overflow-hidden';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
@@ -34,7 +35,8 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
         {({ getRootProps }) => (
           <div
             {...getRootProps()}
-            className="dicom-upload-drop-area-border-dash m-5 flex h-full flex-col items-center justify-center"
+            className="m-5 flex h-full flex-col items-center justify-center rounded-2xl border"
+            style={{ borderColor: 'hsl(var(--muted-foreground) / 0.25)' }}
           >
             <div className="flex gap-2">
               <Dropzone
