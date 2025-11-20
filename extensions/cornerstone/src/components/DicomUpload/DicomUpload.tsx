@@ -36,7 +36,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
             {...getRootProps()}
             className="dicom-upload-drop-area-border-dash m-5 flex h-full flex-col items-center justify-center"
           >
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Dropzone
                 onDrop={onDrop}
                 noDrag
@@ -45,6 +45,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                   <div {...getRootProps()}>
                     <Button
                       variant="default"
+                      size="lg"
                       disabled={false}
                       onClick={() => {}}
                     >
@@ -65,6 +66,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                   <div {...getRootProps()}>
                     <Button
                       variant="secondary"
+                      size="lg"
                       disabled={false}
                       onClick={() => {}}
                     >
@@ -80,8 +82,8 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                 )}
               </Dropzone>
             </div>
-            <div className="pt-5">or drag images or folders here</div>
-            <div className="text-aqua-pale pt-3 text-lg">(DICOM files supported)</div>
+            <div className="text-foreground pt-6 text-base">or drag images or folders here</div>
+            <div className="text-aqua-pale pt-1 text-base">(DICOM files supported)</div>
           </div>
         )}
       </Dropzone>
