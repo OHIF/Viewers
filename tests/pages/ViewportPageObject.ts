@@ -116,7 +116,7 @@ export class ViewportPageObject {
     return viewport.locator(`svg.svg-layer${innerElement ? ` ${innerElement}` : ''}`);
   }
 
-  public viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
+  private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
     return {
       doubleClickOn: async (point: { x: number; y: number }) => {
         await simulateDoubleClickOnElement({
