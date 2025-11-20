@@ -29,12 +29,14 @@ export default function MeasurementAccordion(props) {
     // with the set of items.
 
     const measurement = items[0];
-    const command = measurement.toolName === 'CustomProbe' ? 'jumpToCustomProbe' : 'jumpToMeasurement';
+    const command =
+      measurement.toolName === 'CustomProbe' ? 'jumpToCustomProbe' : 'jumpToMeasurement';
+    const shouldRelocate = command === 'jumpToCustomProbe' && measurement.isVisible === false;
     system.commandsManager.run(command, {
       uid: measurement.uid,
       displayMeasurements: items,
       group,
-      relocateOnNextClick: command === 'jumpToCustomProbe',
+      relocateOnNextClick: shouldRelocate,
     });
   };
 

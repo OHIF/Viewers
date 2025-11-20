@@ -8,6 +8,7 @@ import { getEnabledElement, metaData, Types } from '@cornerstonejs/core';
 import { vec3 } from 'gl-matrix';
 
 const { calibrateImageSpacing } = utilities;
+const annotationModule = annotation;
 
 /**
  * CustomProbe tool that displays annotations per frame of reference instead of per DICOM slice
@@ -31,7 +32,7 @@ class CustomProbeTool extends ProbeTool {
     const { element } = viewport;
 
     // Get all annotations for this tool across all elements (not just this element)
-    let annotations = annotation.state.getAnnotations(this.getToolName(), element);
+    let annotations = annotationModule.state.getAnnotations(this.getToolName(), element);
     if (!annotations?.length) {
       return renderStatus;
     }
@@ -60,6 +61,10 @@ class CustomProbeTool extends ProbeTool {
       const annotationUID = annotation.annotationUID;
       const data = annotation.data;
       const point = data.handles.points[0];
+
+      if (!annotationModule.visibility.isAnnotationVisible(annotationUID)) {
+        continue;
+      }
 
       // Ensure volumeId is present in metadata for 3D SR export when referencedImageId is absent
       if (!annotation.metadata) {
@@ -169,7 +174,10 @@ class CustomProbeTool extends ProbeTool {
     }
 
     return annotations.filter(annotation => {
-      if (!annotation?.isVisible) {
+      if (
+        !annotation ||
+        !annotationModule.visibility.isAnnotationVisible(annotation.annotationUID)
+      ) {
         return false;
       }
 

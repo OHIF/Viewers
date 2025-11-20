@@ -68,10 +68,7 @@ const Probe = {
     const { points } = data.handles;
     // Resolve referencedImageId when missing by choosing closest image plane to first 3D point
     const firstPoint = points && points[0];
-    const resolvedReferencedImageId = metadata.referencedImageId ||
-      (firstPoint && displaySet ? getClosestReferencedImageIdForPoint(displaySet, firstPoint) : undefined);
-    // For volumetric annotations without a specific image plane, leave undefined so SR adapter uses 3D path.
-    // const resolvedReferencedImageId = undefined;
+    const resolvedReferencedImageId = firstPoint && displaySet ? getClosestReferencedImageIdForPoint(displaySet, firstPoint) : undefined;
 
     // Only set referencedImageId when we have a concrete image plane; otherwise remove it
     if (resolvedReferencedImageId) {

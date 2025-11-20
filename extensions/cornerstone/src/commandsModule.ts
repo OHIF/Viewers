@@ -539,21 +539,40 @@ function commandsModule({
      * Also marks any provided display measurements isActive value
      */
     jumpToMeasurement: ({ uid, displayMeasurements = [], relocateOnNextClick = false }) => {
+      const measurement = measurementService.getMeasurement(uid);
+      if (!measurement) {
+        console.warn(`No measurement found for uid: ${uid}`);
+        return;
+      }
+
+      const isCustomProbe = measurement.toolName === toolNames.CustomProbe;
+      const wasHidden = measurement.isVisible === false;
+
+      if (wasHidden) {
+        measurementService.toggleVisibilityMeasurement(uid, true);
+      }
+
+      for (const displayMeasurement of displayMeasurements) {
+        displayMeasurement.isActive = displayMeasurement.uid === uid;
+      }
+
+      const shouldRelocate = isCustomProbe && (relocateOnNextClick || wasHidden);
+
+      if (shouldRelocate) {
+        queueMeasurementRelocation({
+          measurementUID: uid,
+          frameOfReferenceUID: measurement.FrameOfReferenceUID,
+          toolName: measurement.toolName,
+        });
+        return;
+      }
+
+      if (wasHidden) {
+        return;
+      }
+
       const activeViewportId = viewportGridService.getActiveViewportId();
       measurementService.jumpToMeasurement(activeViewportId, uid);
-      if (relocateOnNextClick) {
-        const measurement = measurementService.getMeasurement(uid);
-        if (measurement?.toolName === toolNames.CustomProbe) {
-          queueMeasurementRelocation({
-            measurementUID: uid,
-            frameOfReferenceUID: measurement.FrameOfReferenceUID,
-            toolName: measurement.toolName,
-          });
-        }
-      }
-      for (const measurement of displayMeasurements) {
-        measurement.isActive = measurement.uid === uid;
-      }
     },
 
     /**
@@ -564,6 +583,25 @@ function commandsModule({
 
       if (!measurement) {
         console.warn(`No measurement found for uid: ${uid}`);
+        return;
+      }
+
+      const wasHidden = measurement.isVisible === false;
+
+      if (wasHidden) {
+        measurementService.toggleVisibilityMeasurement(uid, true);
+      }
+
+      for (const displayMeasurement of displayMeasurements) {
+        displayMeasurement.isActive = displayMeasurement.uid === uid;
+      }
+
+      if (wasHidden || relocateOnNextClick) {
+        queueMeasurementRelocation({
+          measurementUID: uid,
+          frameOfReferenceUID: measurement.FrameOfReferenceUID,
+          toolName: measurement.toolName,
+        });
         return;
       }
 
@@ -595,18 +633,7 @@ function commandsModule({
         }
       }
 
-      if (relocateOnNextClick) {
-        queueMeasurementRelocation({
-          measurementUID: uid,
-          frameOfReferenceUID: measurement.FrameOfReferenceUID,
-          toolName: measurement.toolName,
-        });
-      }
-
-      // Mark display measurements as active
-      for (const displayMeasurement of displayMeasurements) {
-        displayMeasurement.isActive = displayMeasurement.uid === uid;
-      }
+      // Selection already handled above
     },
 
     removeMeasurement: ({ uid }) => {

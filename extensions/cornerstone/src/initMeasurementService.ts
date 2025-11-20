@@ -1,4 +1,4 @@
-import { eventTarget, Types, metaData } from '@cornerstonejs/core';
+import { eventTarget, Types, metaData, getEnabledElement } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
@@ -265,6 +265,8 @@ const connectToolsToMeasurementService = ({
         annotation: { metadata, annotationUID },
       } = annotationModifiedEventDetail;
 
+      _syncAnnotationImageReference(annotationModifiedEventDetail);
+
       // If the measurement hasn't been added, don't modify it
       const measurement = measurementService.getMeasurement(annotationUID);
 
@@ -291,6 +293,37 @@ const connectToolsToMeasurementService = ({
       }
     } catch (error) {
       console.warn('Failed to update measurement:', error);
+    }
+  }
+
+  function _syncAnnotationImageReference(annotationModifiedEventDetail) {
+    const annotation = annotationModifiedEventDetail?.annotation;
+    const metadata = annotation?.metadata;
+    if (!annotation || !metadata) {
+      return;
+    }
+
+    const element = annotationModifiedEventDetail.element;
+    if (!element) {
+      return;
+    }
+
+    const enabledElement = getEnabledElement(element);
+    const viewport = enabledElement?.viewport;
+    const currentImageId = viewport?.getCurrentImageId?.();
+
+    if (!currentImageId || metadata.referencedImageId === currentImageId) {
+      return;
+    }
+
+    metadata.referencedImageId = currentImageId;
+
+    const frameOfReferenceUID =
+      viewport?.getFrameOfReferenceUID?.() ||
+      metaData.get('imagePlaneModule', currentImageId)?.frameOfReferenceUID;
+
+    if (frameOfReferenceUID) {
+      metadata.FrameOfReferenceUID = frameOfReferenceUID;
     }
   }
 
@@ -363,7 +396,7 @@ const connectMeasurementServiceToTools = ({
   commandsManager,
   extensionManager,
 }) => {
-  const { measurementService, cornerstoneViewportService, viewportGridService } =
+  const { measurementService, cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
@@ -373,7 +406,8 @@ const connectMeasurementServiceToTools = ({
       return;
     }
 
-    for (const measurement of Object.values(measurements)) {
+    const measurementList = Object.values(measurements) as Array<any>;
+    for (const measurement of measurementList) {
       const { uid, source } = measurement;
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
@@ -466,7 +500,11 @@ const connectMeasurementServiceToTools = ({
 
       if (measurement?.metadata?.referencedImageId) {
         imageId = measurement.metadata.referencedImageId;
-        frameNumber = getSOPInstanceAttributes(measurement.metadata.referencedImageId).frameNumber;
+        frameNumber = getSOPInstanceAttributes(
+          measurement.metadata.referencedImageId,
+          displaySetService,
+          data.annotation
+        ).frameNumber;
       } else {
         imageId = dataSource.getImageIdsForInstance({ instance });
       }
