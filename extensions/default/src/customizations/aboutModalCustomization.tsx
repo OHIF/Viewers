@@ -12,11 +12,11 @@ function AboutModalDefault() {
 
   return (
     <AboutModal className="w-[400px]">
-      <AboutModal.ProductName>OHIF Viewer</AboutModal.ProductName>
-      <AboutModal.ProductVersion>{main}</AboutModal.ProductVersion>
-      {beta && <AboutModal.ProductBeta>{beta}</AboutModal.ProductBeta>}
+      <AboutModal.ProductName>Vandad</AboutModal.ProductName>
+      {/* <AboutModal.ProductVersion>{main}</AboutModal.ProductVersion>
+      {beta && <AboutModal.ProductBeta>{beta}</AboutModal.ProductBeta>} */}
 
-      <AboutModal.Body>
+      {/* <AboutModal.Body>
         <AboutModal.DetailItem
           label="Commit Hash"
           value={commitHash}
@@ -30,7 +30,7 @@ function AboutModalDefault() {
           url="OHIF/Viewers"
           text="github.com/OHIF/Viewers"
         />
-      </AboutModal.Body>
+      </AboutModal.Body> */}
     </AboutModal>
   );
 }

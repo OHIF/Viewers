@@ -200,14 +200,14 @@ export function onModeExit({ servicesManager }: withAppTypes) {
 
 export const toolbarSections = {
   [TOOLBAR_SECTIONS.primary]: [
-    'MeasurementTools',
+    // 'MeasurementTools',
     'Zoom',
-    'Pan',
+    // 'Pan',
     'TrackballRotate',
     'WindowLevel',
-    'Capture',
+    // 'Capture',
     'Layout',
-    'Crosshairs',
+    // 'Crosshairs',
     'MoreTools',
   ],
 
