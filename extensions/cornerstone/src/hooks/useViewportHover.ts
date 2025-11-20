@@ -9,7 +9,6 @@ import { useViewportGrid } from '@ohif/ui-next';
  * @returns { isHovered, isActive } - Whether the viewport is hovered and active
  */
 export function useViewportHover(viewportId: string): { isHovered: boolean; isActive: boolean } {
-  console.log('useViewportHover', viewportId);
   const [isHovered, setIsHovered] = useState(false);
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;

@@ -15,7 +15,7 @@ export default function getCornerstoneViewportType(
   const lowerViewportType =
     ((displaySets?.[0] as any)?.viewportType?.toLowerCase?.()) || viewportType.toLowerCase();
   if (lowerViewportType === STACK) {
-    return Enums.ViewportType.ORTHOGRAPHIC;
+    return Enums.ViewportType.STACK;
   }
 
   if (lowerViewportType === VIDEO) {
