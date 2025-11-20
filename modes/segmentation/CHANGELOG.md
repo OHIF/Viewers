@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.87...v3.12.0-beta.88) (2025-11-20)
+
+**Note:** Version bump only for package @ohif/mode-segmentation
+
+
+
+
+
+# [3.12.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.86...v3.12.0-beta.87) (2025-11-19)
+
+**Note:** Version bump only for package @ohif/mode-segmentation
+
+
+
+
+
+# [3.12.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.85...v3.12.0-beta.86) (2025-11-13)
+
+
+### Bug Fixes
+
+* **segmentation:** Allow for manually added label map and contour segmentations to be used as viewport data overlays. ([#5562](https://github.com/OHIF/Viewers/issues/5562)) ([02f6744](https://github.com/OHIF/Viewers/commit/02f6744dab993f16cf2516fd5f657e0743e3fa42))
+
+
+
+
+
 # [3.12.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.84...v3.12.0-beta.85) (2025-11-11)
 
 **Note:** Version bump only for package @ohif/mode-segmentation

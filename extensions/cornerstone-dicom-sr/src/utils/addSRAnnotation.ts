@@ -64,33 +64,34 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
   const { ValueType: valueType, GraphicType: graphicType } = measurement.coords[0];
   const graphicTypePoints = renderableData[graphicType];
 
-  /** TODO: Read the tool name from the DICOM SR identification type in the future. */
+  /**
+   * TODO: Read the tool name from the DICOM SR identification type in the future.
+   */
   let frameOfReferenceUID = null;
   let planeRestriction = null;
 
+  /**
+   * Store the view reference for use in initial navigation
+   */
   if (imageId) {
     const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
     frameOfReferenceUID = imagePlaneModule?.frameOfReferenceUID;
   }
 
+  /**
+   * Store the view reference for use in initial navigation
+   */
   if (valueType === 'SCOORD3D') {
-    const adapter = MeasurementReport.getAdapterForTrackingIdentifier(
-      measurement.TrackingIdentifier
-    );
-    if (!adapter) {
-      toolName = toolNames.SRSCOORD3DPoint;
-    }
-
-    // get the ReferencedFrameOfReferenceUID from the measurement
     frameOfReferenceUID = measurement.coords[0].ReferencedFrameOfReferenceSequence;
-
     planeRestriction = {
       FrameOfReferenceUID: frameOfReferenceUID,
       point: graphicTypePoints[0][0],
     };
   }
 
-  // Store the view reference for use in initial navigation
+  /**
+   * Store the view reference for use in initial navigation
+   */
   measurement.viewReference = {
     planeRestriction,
     FrameOfReferenceUID: frameOfReferenceUID,
