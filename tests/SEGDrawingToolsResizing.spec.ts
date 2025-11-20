@@ -24,7 +24,7 @@ async function performDrawingToolInteraction(
   const circle = viewportPageObject.active.svg('circle').first();
 
   await expect(brushRadiusInput).toHaveValue('25');
-  await viewportPageObject.active.clicksOn([{ x: 275, y: 300 }]);
+  await viewportPageObject.active.clickAt([{ x: 275, y: 300 }]);
   let radius = parseFloat(await circle.getAttribute('r'));
   expect(radius).toBeGreaterThanOrEqual(65);
   expect(radius).toBeLessThanOrEqual(68);
@@ -32,7 +32,7 @@ async function performDrawingToolInteraction(
   await page.waitForTimeout(500);
   await press({ page, key: '[', nTimes: 2 });
   await expect(brushRadiusInput).toHaveValue('19');
-  await viewportPageObject.active.clicksOn([{ x: 500, y: 300 }]);
+  await viewportPageObject.active.clickAt([{ x: 500, y: 300 }]);
   radius = parseFloat(await circle.getAttribute('r'));
   expect(radius).toBeGreaterThanOrEqual(49);
   expect(radius).toBeLessThanOrEqual(52);
@@ -41,7 +41,7 @@ async function performDrawingToolInteraction(
 
   await press({ page, key: ']', nTimes: 5 });
   await expect(brushRadiusInput).toHaveValue('34');
-  await viewportPageObject.active.clicksOn([{ x: 275, y: 500 }]);
+  await viewportPageObject.active.clickAt([{ x: 275, y: 500 }]);
   radius = parseFloat(await circle.getAttribute('r'));
   expect(radius).toBeGreaterThanOrEqual(87);
   expect(radius).toBeLessThanOrEqual(90);
@@ -49,7 +49,7 @@ async function performDrawingToolInteraction(
   await page.waitForTimeout(500);
 
   await brushRadiusInput.fill('42');
-  await viewportPageObject.active.clicksOn([{ x: 500, y: 500 }]);
+  await viewportPageObject.active.clickAt([{ x: 500, y: 500 }]);
   radius = parseFloat(await circle.getAttribute('r'));
   expect(radius).toBeGreaterThanOrEqual(108);
   expect(radius).toBeLessThanOrEqual(111);
@@ -73,7 +73,7 @@ test('should resize segmentation eraser tool', async ({ page, viewportPageObject
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
-  await viewportPageObject.active.clicksOn([{ x: 400, y: 400 }]);
+  await viewportPageObject.active.clickAt([{ x: 400, y: 400 }]);
 
   await page.waitForTimeout(500);
 

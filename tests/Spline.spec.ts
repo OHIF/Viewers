@@ -12,7 +12,7 @@ test('should display the spline tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.splineROI.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 380, y: 459 },
     { x: 420, y: 396 },
     { x: 523, y: 392 },

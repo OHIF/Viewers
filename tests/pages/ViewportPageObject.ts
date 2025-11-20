@@ -15,16 +15,16 @@ type NormalizedDragParams = {
 };
 
 export interface IViewportPageObject {
-  doubleClickOn: (point: { x: number; y: number }) => Promise<void>;
-  clicksOn: (
+  doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
+  clickAt: (
     points: { x: number; y: number }[],
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
-  normalizedClicksOn: (
+  normalizedClickAt: (
     normalizedPoints: { x: number; y: number }[],
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
-  normalizedDragOn: (params: NormalizedDragParams) => Promise<void>;
+  normalizedDragAt: (params: NormalizedDragParams) => Promise<void>;
   orientationMarkers: {
     topMid: Locator;
     leftMid: Locator;
@@ -118,23 +118,20 @@ export class ViewportPageObject {
 
   private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
     return {
-      doubleClickOn: async (point: { x: number; y: number }) => {
+      doubleClickAt: async (point: { x: number; y: number }) => {
         await simulateDoubleClickOnElement({
           locator: viewport,
           point,
         });
       },
-      clicksOn: async (
-        points: { x: number; y: number }[],
-        button?: 'left' | 'right' | 'middle'
-      ) => {
+      clickAt: async (points: { x: number; y: number }[], button?: 'left' | 'right' | 'middle') => {
         await simulateClicksOnElement({
           locator: viewport,
           points,
           button,
         });
       },
-      normalizedClicksOn: async (
+      normalizedClickAt: async (
         normalizedPoints: { x: number; y: number }[],
         button?: 'left' | 'right' | 'middle'
       ) => {
@@ -144,7 +141,7 @@ export class ViewportPageObject {
           button,
         });
       },
-      normalizedDragOn: async (params: NormalizedDragParams) => {
+      normalizedDragAt: async (params: NormalizedDragParams) => {
         await simulateNormalizedDragOnElement({
           locator: viewport,
           start: params.start,

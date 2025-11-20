@@ -43,15 +43,15 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   await page.locator(`css=div[data-cy="eraser-radius"] input`).fill('1000');
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
-  await viewportPageObject.getById('default').normalizedDragOn({
+  await viewportPageObject.getById('default').normalizedDragAt({
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
-  await viewportPageObject.getById('default').normalizedDragOn({
+  await viewportPageObject.getById('default').normalizedDragAt({
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
-  await viewportPageObject.getById('default').normalizedDragOn({
+  await viewportPageObject.getById('default').normalizedDragAt({
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });
@@ -95,15 +95,15 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   await page.locator(`css=div[data-cy="eraser-radius"] input`).fill('1000');
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
-  await viewportPageObject.getById('default').normalizedDragOn({
+  await viewportPageObject.getById('default').normalizedDragAt({
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
-  await viewportPageObject.getById('default').normalizedDragOn({
+  await viewportPageObject.getById('default').normalizedDragAt({
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
-  await viewportPageObject.getById('default').normalizedDragOn({
+  await viewportPageObject.getById('default').normalizedDragAt({
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });

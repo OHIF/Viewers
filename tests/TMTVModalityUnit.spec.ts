@@ -13,7 +13,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   await page.getByTestId('side-panel-header-left').click();
 
   // Change to image where SUV cannot be calculated
-  await viewportPageObject.getNth(3).normalizedClicksOn([{ x: 0.5, y: 0.5 }]);
+  await viewportPageObject.getNth(3).normalizedClickAt([{ x: 0.5, y: 0.5 }]);
   await page.getByRole('button', { name: 'NAC' }).nth(1).dblclick();
 
   // Wait for the new series to load
@@ -23,7 +23,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   mainToolbarPageObject.measurementTools.ellipticalROI.click();
   await clearAllAnnotations(page);
 
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 100, y: 100 },
     { x: 150, y: 150 },
   ]);

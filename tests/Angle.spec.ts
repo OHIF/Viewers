@@ -12,7 +12,7 @@ test('should display the angle tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.angle.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 550, y: 200 },
     { x: 450, y: 250 },
     { x: 550, y: 300 },

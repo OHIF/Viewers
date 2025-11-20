@@ -12,7 +12,7 @@ test('should display the bidirectional tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.bidirectional.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);

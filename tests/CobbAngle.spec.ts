@@ -12,7 +12,7 @@ test('should display the cobb angle tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.cobbAngle.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 515, y: 212 },
     { x: 616, y: 207 },
     { x: 527, y: 293 },

@@ -12,7 +12,7 @@ test('should display the livewire tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.livewireContour.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 380, y: 459 },
     { x: 420, y: 396 },
     { x: 523, y: 392 },

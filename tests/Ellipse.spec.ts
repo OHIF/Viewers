@@ -12,7 +12,7 @@ test('should display the ellipse tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.ellipticalROI.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 446, y: 245 },
     { x: 508, y: 281 },
   ]);

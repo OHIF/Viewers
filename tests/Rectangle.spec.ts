@@ -12,7 +12,7 @@ test('should display the rectangle tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.rectangleROI.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 476, y: 159 },
     { x: 591, y: 217 },
   ]);

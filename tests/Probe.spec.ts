@@ -12,7 +12,7 @@ test('should display the probe tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.probe.click();
-  await viewportPageObject.active.clicksOn([{ x: 550, y: 200 }]);
+  await viewportPageObject.active.clickAt([{ x: 550, y: 200 }]);
   await page.getByTestId('prompt-begin-tracking-yes-btn').click();
   await checkForScreenshot(page, page, screenShotPaths.probe.probeDisplayedCorrectly);
 });

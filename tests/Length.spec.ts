@@ -12,7 +12,7 @@ test('should display the length tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.length.click();
-  await viewportPageObject.active.clicksOn([
+  await viewportPageObject.active.clickAt([
     { x: 364, y: 234 },
     { x: 544, y: 232 },
   ]);
