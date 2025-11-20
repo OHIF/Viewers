@@ -32,7 +32,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
     screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR
   );
 
-  await mainToolbarPageObject.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 

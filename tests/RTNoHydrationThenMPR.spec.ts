@@ -14,7 +14,7 @@ test('should launch MPR with unhydrated RTSTRUCT', async ({ page, mainToolbarPag
 
   await checkForScreenshot(page, page, screenShotPaths.rtNoHydrationThenMPR.rtNoHydrationPreMPR);
 
-  await mainToolbarPageObject.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 

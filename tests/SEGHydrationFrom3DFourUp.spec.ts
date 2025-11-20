@@ -18,7 +18,7 @@ test.describe('3D four up SEG hydration', async () => {
     page,
     mainToolbarPageObject,
   }) => {
-    await mainToolbarPageObject.layoutSection.threeDFourUp.click();
+    await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 

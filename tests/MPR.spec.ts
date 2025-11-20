@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('MPR Test', async () => {
   test('should render MPR correctly.', async ({ page, mainToolbarPageObject }) => {
-    await mainToolbarPageObject.layoutSection.MPR.click();
+    await mainToolbarPageObject.layoutSelection.MPR.click();
     await checkForScreenshot(page, page, screenShotPaths.mpr.mprDisplayedCorrectly);
   });
 });

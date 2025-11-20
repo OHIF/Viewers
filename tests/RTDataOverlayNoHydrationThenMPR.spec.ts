@@ -32,7 +32,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
     screenShotPaths.rtDataOverlayNoHydrationThenMPR.rtDataOverlayNoHydrationPreMPR
   );
 
-  await mainToolbarPageObject.layoutSection.MPR.click();
+  await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 

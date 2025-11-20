@@ -7,11 +7,11 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
-  get layoutSection() {
+  get layoutSelection() {
     const page = this.page;
 
     const button = page.getByTestId('Layout');
-    const layoutSection = {
+    const layoutSelection = {
       button,
       async click() {
         await button.click();
@@ -19,13 +19,13 @@ export class MainToolbarPageObject {
     };
 
     return {
-      ...layoutSection,
+      ...layoutSelection,
       get axialPrimary() {
         const button = page.getByTestId('Axial Primary');
         return {
           button,
           async click() {
-            await layoutSection.click();
+            await layoutSelection.click();
             await button.click();
           },
         };
@@ -35,7 +35,7 @@ export class MainToolbarPageObject {
         return {
           button,
           async click() {
-            await layoutSection.click();
+            await layoutSelection.click();
             await button.click();
           },
         };
@@ -45,7 +45,7 @@ export class MainToolbarPageObject {
         return {
           button,
           async click() {
-            await layoutSection.click();
+            await layoutSelection.click();
             await button.click();
           },
         };
@@ -55,7 +55,7 @@ export class MainToolbarPageObject {
         return {
           button,
           async click() {
-            await layoutSection.click();
+            await layoutSelection.click();
             await button.click();
           },
         };
@@ -65,7 +65,7 @@ export class MainToolbarPageObject {
         return {
           button,
           async click() {
-            await layoutSection.click();
+            await layoutSelection.click();
             await button.click();
           },
         };
@@ -75,7 +75,7 @@ export class MainToolbarPageObject {
         return {
           button,
           async click() {
-            await layoutSection.click();
+            await layoutSelection.click();
             await button.click();
           },
         };
