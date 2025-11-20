@@ -36,6 +36,67 @@ const convertSites = (codingValues, sites) => {
   return (ret.length && ret) || undefined;
 };
 
+const toArray = x => (Array.isArray(x) ? x : x ? [x] : []);
+
+const getToolClass = (
+  measurementGroup,
+  dataset,
+  measurementAdapterByToolType
+) => {
+  const contentSequence = toArray(measurementGroup.ContentSequence);
+  const trackingIdentifierGroup = contentSequence.find(
+    ci => ci.ConceptNameCodeSequence?.CodeMeaning === 'Tracking Identifier'
+  );
+  const trackingIdentifierValue = trackingIdentifierGroup?.TextValue;
+
+  if (!trackingIdentifierValue) {
+    return;
+  }
+
+  const toolAdapter = MeasurementReport.getAdapterForTrackingIdentifier(
+    trackingIdentifierValue
+  );
+
+  if (toolAdapter?.toolType === 'Probe') {
+    const numGroup = contentSequence.find(ci => ci.ValueType === 'NUM');
+    const numContent = toArray(numGroup?.ContentSequence);
+    const hasSCOORD3D = numContent.some(ci => ci.ValueType === 'SCOORD3D');
+    const hasSCOORD = numContent.some(ci => ci.ValueType === 'SCOORD');
+
+    if (hasSCOORD3D && hasSCOORD) {
+      return {
+        toolType: toolAdapter.toolType,
+        getMeasurementData: (
+          group,
+          sopInstanceUIDToImageIdMap,
+          imageToWorldCoords,
+          metadata,
+          trackingIdentifier
+        ) => {
+          const clonedGroup = JSON.parse(JSON.stringify(group));
+          const clonedNumGroup = toArray(clonedGroup.ContentSequence).find(
+            ci => ci.ValueType === 'NUM'
+          );
+          if (clonedNumGroup && clonedNumGroup.ContentSequence) {
+            let seq = toArray(clonedNumGroup.ContentSequence);
+            seq = seq.filter(ci => ci.ValueType !== 'SCOORD');
+            clonedNumGroup.ContentSequence = seq;
+          }
+          return toolAdapter.getMeasurementData(
+            clonedGroup,
+            sopInstanceUIDToImageIdMap,
+            imageToWorldCoords,
+            metadata,
+            trackingIdentifier
+          );
+        },
+      };
+    }
+  }
+
+  return toolAdapter;
+};
+
 /**
  * Hydrates a structured report, for default viewports.
  *
@@ -99,7 +160,7 @@ export default function hydrateStructuredReport(
     sopInstanceUIDToImageId,
     utilities.imageToWorldCoords,
     metaData,
-    undefined
+    { getToolClass }
   );
 
   const onBeforeSRHydrationCustomization = customizationService.getCustomization('onBeforeSRHydration');
@@ -134,12 +195,17 @@ export default function hydrateStructuredReport(
       // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
-      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      const frameNumber =
+        (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+      let imageId;
 
-      if (!imageIds.includes(imageId)) {
+      if (toolData.sopInstanceUid) {
+        imageId =
+          imageIdsForToolState[toolData.sopInstanceUid]?.[frameNumber] ||
+          sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      }
+
+      if (imageId && !imageIds.includes(imageId)) {
         imageIds.push(imageId);
       }
     });
@@ -171,20 +237,27 @@ export default function hydrateStructuredReport(
       // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
       // files, and looking up the imageId from sopInstanceUIDToImageId results
       // in the wrong value.
-      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      const frameNumber =
+        (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+      let imageId;
+
+      if (toolData.sopInstanceUid) {
+        imageId =
+          imageIdsForToolState[toolData.sopInstanceUid]?.[frameNumber] ||
+          sopInstanceUIDToImageId[toolData.sopInstanceUid];
+      }
 
       toolData.uid = guid();
 
-      const instance = metaData.get('instance', imageId);
-      const {
-        FrameOfReferenceUID,
-        // SOPInstanceUID,
-        // SeriesInstanceUID,
-        // StudyInstanceUID,
-      } = instance;
+      let instance;
+      let FrameOfReferenceUID;
+
+      if (imageId) {
+        instance = metaData.get('instance', imageId);
+        FrameOfReferenceUID = instance.FrameOfReferenceUID;
+      } else {
+        FrameOfReferenceUID = toolData.annotation.metadata.FrameOfReferenceUID;
+      }
 
       // Allow remapping adapter tool types back to custom app tools on hydration
       let effectiveAnnotationType = annotationType;
