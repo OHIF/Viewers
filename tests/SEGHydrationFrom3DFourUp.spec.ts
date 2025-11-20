@@ -1,10 +1,10 @@
-import { test } from 'playwright-test-coverage';
 import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  reduce3DViewportSize,
   attemptAction,
+  checkForScreenshot,
+  reduce3DViewportSize,
+  screenShotPaths,
+  test,
+  visitStudy,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,9 +14,11 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up SEG hydration', async () => {
-  test('should properly hydrate SEG from 3D four up layout', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page.getByTestId('3D four up').click();
+  test('should properly hydrate SEG from 3D four up layout', async ({
+    page,
+    mainToolbarPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
