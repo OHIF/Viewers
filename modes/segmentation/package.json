@@ -42,12 +42,12 @@
     "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.89",
     "@ohif/extension-default": "3.12.0-beta.89",
     "@ohif/extension-dicom-pdf": "3.12.0-beta.89",
-    "@ohif/extension-dicom-video": "3.12.0-beta.89"
+    "@ohif/extension-dicom-video": "3.12.0-beta.89",
+    "@ohif/mode-basic": "3.12.0-beta.89"
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "i18next": "17.3.1",
-    "@ohif/mode-basic": "3.12.0-beta.88"
+    "i18next": "17.3.1"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
