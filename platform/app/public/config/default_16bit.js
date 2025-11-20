@@ -23,6 +23,8 @@ window.config = {
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
+    // Maximum number of concurrent DICOM uploads
+    upload: 3,
   },
   // filterQueryParam: false,
   dataSources: [

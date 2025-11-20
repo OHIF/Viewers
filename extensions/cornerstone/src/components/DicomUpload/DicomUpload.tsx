@@ -8,6 +8,17 @@ import DicomUploadProgress from './DicomUploadProgress';
 import { Button, ButtonEnums } from '@ohif/ui';
 import './DicomUpload.css';
 
+// Extend window interface to include config
+declare global {
+  interface Window {
+    config?: {
+      maxNumRequests?: {
+        upload?: number;
+      };
+    };
+  }
+}
+
 type DicomUploadProps = {
   dataSource;
   onComplete: () => void;
@@ -16,12 +27,15 @@ type DicomUploadProps = {
 
 function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
   const baseClassNames = 'min-h-[480px] flex flex-col bg-black select-none';
-  const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
+  const [filesAndDataSource, setFilesAndDataSource] = useState<{files: File[], dataSource: any} | null>(null);
+
+  // Get the maxNumRequests configuration from window.config
+  const maxConcurrentUploads = window.config?.maxNumRequests?.upload || 3;
 
   const onDrop = useCallback(async acceptedFiles => {
     onStarted();
-    setDicomFileUploaderArr(acceptedFiles.map(file => new DicomFileUploader(file, dataSource)));
-  }, []);
+    setFilesAndDataSource({ files: acceptedFiles, dataSource });
+  }, [dataSource]);
 
   const getDropZoneComponent = (): ReactElement => {
     return (
@@ -43,12 +57,12 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
               >
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
+                    <input {...getInputProps()} key="file-input" style={{ display: 'none' }} />
                     <Button
                       disabled={false}
                       onClick={() => {}}
                     >
-                      {'Add files'}
-                      <input {...getInputProps()} />
+                      Add files
                     </Button>
                   </div>
                 )}
@@ -59,17 +73,18 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
               >
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
+                    <input
+                      {...getInputProps()}
+                      {...({ webkitdirectory: 'true', mozdirectory: 'true' } as any)}
+                      key="folder-input"
+                      style={{ display: 'none' }}
+                    />
                     <Button
                       type={ButtonEnums.type.secondary}
                       disabled={false}
                       onClick={() => {}}
                     >
-                      {'Add folder'}
-                      <input
-                        {...getInputProps()}
-                        webkitdirectory="true"
-                        mozdirectory="true"
-                      />
+                      Add folder
                     </Button>
                   </div>
                 )}
@@ -85,11 +100,13 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
 
   return (
     <>
-      {dicomFileUploaderArr.length ? (
+      {filesAndDataSource ? (
         <div className={classNames('h-[calc(100vh-300px)]', baseClassNames)}>
           <DicomUploadProgress
-            dicomFileUploaderArr={Array.from(dicomFileUploaderArr)}
+            files={filesAndDataSource.files}
+            dataSource={filesAndDataSource.dataSource}
             onComplete={onComplete}
+            maxConcurrentUploads={maxConcurrentUploads}
           />
         </div>
       ) : (

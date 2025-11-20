@@ -13,8 +13,10 @@ import DicomUploadProgressItem from './DicomUploadProgressItem';
 import classNames from 'classnames';
 
 type DicomUploadProgressProps = {
-  dicomFileUploaderArr: DicomFileUploader[];
+  files: File[];
+  dataSource: any;
   onComplete: () => void;
+  maxConcurrentUploads?: number;
 };
 
 const ONE_SECOND = 1000;
@@ -38,16 +40,18 @@ const UPLOAD_RATE_THRESHOLD = 75;
 const NO_WRAP_ELLIPSIS_CLASS_NAMES = 'text-ellipsis whitespace-nowrap overflow-hidden';
 
 function DicomUploadProgress({
-  dicomFileUploaderArr,
+  files,
+  dataSource,
   onComplete,
+  maxConcurrentUploads = 3,
 }: DicomUploadProgressProps): ReactElement {
   const { servicesManager } = useSystem();
 
   const ProgressLoadingBar =
-    servicesManager.services.customizationService.getCustomization('ui.progressLoadingBar');
+    servicesManager.services.customizationService.getCustomization('ui.progressLoadingBar') as React.ComponentType<{ progress?: number }>;
 
   const [totalUploadSize] = useState(
-    dicomFileUploaderArr.reduce((acc, fileUploader) => acc + fileUploader.getFileSize(), 0)
+    files.reduce((acc, file) => acc + file.size, 0)
   );
 
   const currentUploadSizeRef = useRef<number>(0);
@@ -64,7 +68,174 @@ function DicomUploadProgress({
 
   const [showFailedOnly, setShowFailedOnly] = useState(false);
 
-  const progressBarContainerRef = useRef<HTMLElement>();
+  const progressBarContainerRef = useRef<HTMLDivElement>();
+
+  // Upload queue management
+  const [activeUploads, setActiveUploads] = useState(new Set<string>());
+  const [uploadQueue, setUploadQueue] = useState<File[]>([]);
+  const uploadQueueRef = useRef<File[]>([]);
+  const activeUploadsRef = useRef(new Set<string>());
+  const createdUploadersRef = useRef<Map<string, DicomFileUploader>>(new Map());
+
+  // Store progress handlers and subscriptions for active uploads
+  const progressHandlersRef = useRef<Map<string, any>>(new Map());
+  const subscriptionsRef = useRef<Map<string, any>>(new Map());
+
+  // Setup progress tracking for a specific uploader when it starts
+  const setupProgressTracking = useCallback((fileUploader: DicomFileUploader) => {
+    const uploaderId = fileUploader.getFileId();
+
+    // Skip if already tracking this uploader
+    if (progressHandlersRef.current.has(uploaderId)) {
+      return;
+    }
+
+    let currentFileUploadSize = 0;
+
+    const updateProgress = (percentComplete: number) => {
+      const previousFileUploadSize = currentFileUploadSize;
+
+      currentFileUploadSize = Math.round((percentComplete / 100) * fileUploader.getFileSize());
+
+      currentUploadSizeRef.current = Math.min(
+        totalUploadSize,
+        currentUploadSizeRef.current - previousFileUploadSize + currentFileUploadSize
+      );
+
+      setPercentComplete((currentUploadSizeRef.current / totalUploadSize) * 100);
+
+      if (uploadRateRef.current !== 0) {
+        const uploadSizeRemaining = totalUploadSize - currentUploadSizeRef.current;
+        const timeRemaining = Math.round(uploadSizeRemaining / uploadRateRef.current);
+
+        // Update time remaining with smoothing logic
+        setTimeRemaining(prevTime => {
+          if (prevTime === null) {
+            return timeRemaining;
+          }
+
+          // Smooth time remaining updates to prevent jumping
+          if (timeRemaining < ONE_MINUTE) {
+            const currentSecondsRemaining = Math.ceil(prevTime / ONE_SECOND);
+            const secondsRemaining = Math.ceil(timeRemaining / ONE_SECOND);
+            const delta = secondsRemaining - currentSecondsRemaining;
+            if (delta < 0 || delta > 2) {
+              return timeRemaining;
+            }
+            return prevTime;
+          }
+
+          if (timeRemaining < ONE_HOUR) {
+            const currentMinutesRemaining = Math.ceil(prevTime / ONE_MINUTE);
+            const minutesRemaining = Math.ceil(timeRemaining / ONE_MINUTE);
+            const delta = minutesRemaining - currentMinutesRemaining;
+            if (delta < 0 || delta > 2) {
+              return timeRemaining;
+            }
+            return prevTime;
+          }
+
+          return timeRemaining;
+        });
+      }
+    };
+
+    const progressCallback = (progressEvent: DicomFileUploaderProgressEvent) => {
+      updateProgress(progressEvent.percentComplete);
+    };
+
+    const handleUploadComplete = () => {
+      updateProgress(100);
+      setNumFilesCompleted(numCompleted => numCompleted + 1);
+
+      // Clean up tracking for this uploader
+      const subscription = subscriptionsRef.current.get(uploaderId);
+      if (subscription) {
+        subscription.unsubscribe();
+        subscriptionsRef.current.delete(uploaderId);
+      }
+      progressHandlersRef.current.delete(uploaderId);
+    };
+
+    const handleUploadError = (rejection: UploadRejection) => {
+      if (rejection.status === UploadStatus.Failed) {
+        setNumFails(numFails => numFails + 1);
+      }
+    };
+
+    // Store handlers and subscription
+    const handlers = {
+      complete: handleUploadComplete,
+      error: handleUploadError,
+    };
+
+    const subscription = fileUploader.subscribe(EVENTS.PROGRESS, progressCallback);
+
+    progressHandlersRef.current.set(uploaderId, handlers);
+    subscriptionsRef.current.set(uploaderId, subscription);
+
+    // Store handlers on the uploader for the queue to access
+    (fileUploader as any)._progressHandlers = handlers;
+  }, [totalUploadSize]);
+
+  // Function to start the next upload from the queue
+  const startNextUpload = useCallback(() => {
+    if (activeUploadsRef.current.size >= maxConcurrentUploads || uploadQueueRef.current.length === 0) {
+      return;
+    }
+
+    const nextFile = uploadQueueRef.current.shift();
+    if (nextFile) {
+      // Create the DicomFileUploader instance only now
+      const nextUploader = new DicomFileUploader(nextFile, dataSource);
+      const uploaderId = nextUploader.getFileId();
+
+      // Store the created uploader
+      createdUploadersRef.current.set(uploaderId, nextUploader);
+
+      activeUploadsRef.current.add(uploaderId);
+      setActiveUploads(new Set(activeUploadsRef.current));
+
+      // Setup progress tracking for this uploader before starting
+      setupProgressTracking(nextUploader);
+
+      // Start the upload
+      nextUploader
+        .load()
+        .catch((rejection: UploadRejection) => {
+          // Call the error handler if it exists
+          const handlers = (nextUploader as any)._progressHandlers;
+          if (handlers?.error) {
+            handlers.error(rejection);
+          }
+        })
+        .finally(() => {
+          // Call the completion handler if it exists
+          const handlers = (nextUploader as any)._progressHandlers;
+          if (handlers?.complete) {
+            handlers.complete();
+          }
+
+          // Remove from active uploads when complete
+          activeUploadsRef.current.delete(uploaderId);
+          setActiveUploads(new Set(activeUploadsRef.current));
+
+          // Try to start the next upload
+          startNextUpload();
+        });
+    }
+  }, [maxConcurrentUploads, setupProgressTracking, dataSource]);
+
+  // Initialize the upload queue
+  useEffect(() => {
+    uploadQueueRef.current = [...files];
+    setUploadQueue([...files]);
+
+    // Start initial uploads up to the limit
+    for (let i = 0; i < Math.min(maxConcurrentUploads, files.length); i++) {
+      startNextUpload();
+    }
+  }, [files, maxConcurrentUploads, startNextUpload]);
 
   /**
    * The effect for measuring and setting the current upload rate. This is
@@ -112,104 +283,19 @@ function DicomUploadProgress({
     };
   }, []);
 
-  /**
-   * The effect for: updating the overall percentage complete; setting the
-   * estimated time remaining; updating the number of files uploaded; and
-   * detecting if any error has occurred.
-   */
+  // Cleanup effect
   useEffect(() => {
-    let currentTimeRemaining = null;
-
-    // For each uploader, listen for the progress percentage complete and
-    // add promise catch/finally callbacks to detect errors and count number
-    // of uploads complete.
-    const subscriptions = dicomFileUploaderArr.map(fileUploader => {
-      let currentFileUploadSize = 0;
-
-      const updateProgress = (percentComplete: number) => {
-        const previousFileUploadSize = currentFileUploadSize;
-
-        currentFileUploadSize = Math.round((percentComplete / 100) * fileUploader.getFileSize());
-
-        currentUploadSizeRef.current = Math.min(
-          totalUploadSize,
-          currentUploadSizeRef.current - previousFileUploadSize + currentFileUploadSize
-        );
-
-        setPercentComplete((currentUploadSizeRef.current / totalUploadSize) * 100);
-
-        if (uploadRateRef.current !== 0) {
-          const uploadSizeRemaining = totalUploadSize - currentUploadSizeRef.current;
-
-          const timeRemaining = Math.round(uploadSizeRemaining / uploadRateRef.current);
-
-          if (currentTimeRemaining === null) {
-            currentTimeRemaining = timeRemaining;
-            setTimeRemaining(currentTimeRemaining);
-            return;
-          }
-
-          // Do not show an increase in the time remaining by two seconds or minutes
-          // so as to prevent jumping the time remaining up and down constantly
-          // due to rounding, inaccuracies in the estimate and slight variations
-          // in upload rates over time.
-          if (timeRemaining < ONE_MINUTE) {
-            const currentSecondsRemaining = Math.ceil(currentTimeRemaining / ONE_SECOND);
-            const secondsRemaining = Math.ceil(timeRemaining / ONE_SECOND);
-            const delta = secondsRemaining - currentSecondsRemaining;
-            if (delta < 0 || delta > 2) {
-              currentTimeRemaining = timeRemaining;
-              setTimeRemaining(currentTimeRemaining);
-            }
-            return;
-          }
-
-          if (timeRemaining < ONE_HOUR) {
-            const currentMinutesRemaining = Math.ceil(currentTimeRemaining / ONE_MINUTE);
-            const minutesRemaining = Math.ceil(timeRemaining / ONE_MINUTE);
-            const delta = minutesRemaining - currentMinutesRemaining;
-            if (delta < 0 || delta > 2) {
-              currentTimeRemaining = timeRemaining;
-              setTimeRemaining(currentTimeRemaining);
-            }
-            return;
-          }
-
-          // Hours remaining...
-          currentTimeRemaining = timeRemaining;
-          setTimeRemaining(currentTimeRemaining);
-        }
-      };
-
-      const progressCallback = (progressEvent: DicomFileUploaderProgressEvent) => {
-        updateProgress(progressEvent.percentComplete);
-      };
-
-      // Use the uploader promise to flag any error and count the number of
-      // uploads completed.
-      fileUploader
-        .load()
-        .catch((rejection: UploadRejection) => {
-          if (rejection.status === UploadStatus.Failed) {
-            setNumFails(numFails => numFails + 1);
-          }
-        })
-        .finally(() => {
-          // If any error occurred, the percent complete progress stops firing
-          // but this call to updateProgress nicely puts all finished uploads at 100%.
-          updateProgress(100);
-          setNumFilesCompleted(numCompleted => numCompleted + 1);
-        });
-
-      return fileUploader.subscribe(EVENTS.PROGRESS, progressCallback);
-    });
     return () => {
-      subscriptions.forEach(subscription => subscription.unsubscribe());
+      // Clean up all subscriptions on unmount
+      subscriptionsRef.current.forEach(subscription => subscription.unsubscribe());
+      subscriptionsRef.current.clear();
+      progressHandlersRef.current.clear();
     };
   }, []);
 
   const cancelAllUploads = useCallback(async () => {
-    for (const dicomFileUploader of dicomFileUploaderArr) {
+    // Cancel all created uploaders
+    for (const dicomFileUploader of createdUploadersRef.current.values()) {
       // Important: we need a non-blocking way to cancel every upload,
       // otherwise the UI will freeze and the user will not be able
       // to interact with the app and progress will not be updated.
@@ -220,6 +306,10 @@ function DicomUploadProgress({
         }, 0);
       });
     }
+
+    // Clear the queue to prevent new uploads from starting
+    uploadQueueRef.current = [];
+    setUploadQueue([]);
   }, []);
 
   const getFormattedTimeRemaining = useCallback((): string => {
@@ -266,7 +356,7 @@ function DicomUploadProgress({
   const getNofMFilesStyle = useCallback(() => {
     // the number of digits accounts for the digits being on each side of the ' of '
     const numDigits =
-      numFilesCompleted.toString().length + dicomFileUploaderArr.length.toString().length;
+      numFilesCompleted.toString().length + files.length.toString().length;
     // The number of digits + 3 additional characters (accounts for ' of ').
     // Even though intuitively 4 should be better, this is the most accurate width.
     // The font may play a part in this discrepancy.
@@ -277,10 +367,10 @@ function DicomUploadProgress({
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
     return (
       <div className="bg-primary-dark flex h-14 items-center px-1 pb-4 text-lg text-white">
-        {numFilesCompleted === dicomFileUploaderArr.length ? (
+        {numFilesCompleted === files.length ? (
           <>
-            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${dicomFileUploaderArr.length} ${
-              dicomFileUploaderArr.length > 1 ? 'files' : 'file'
+            <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${files.length} ${
+              files.length > 1 ? 'files' : 'file'
             } completed.`}</span>
             <Button
               disabled={false}
@@ -297,7 +387,7 @@ function DicomUploadProgress({
                 style={getNofMFilesStyle()}
                 className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES, 'text-right')}
               >
-                {`${numFilesCompleted} of ${dicomFileUploaderArr.length}`}&nbsp;
+                {`${numFilesCompleted} of ${files.length}`}&nbsp;
               </span>
               <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{' files completed.'}</span>
               <br />
@@ -339,7 +429,7 @@ function DicomUploadProgress({
     return (
       <div className="ohif-scrollbar border-secondary-light overflow-y-scroll border-b px-2">
         <div className="min-h-14 flex w-full items-center p-2.5">
-          {numFilesCompleted === dicomFileUploaderArr.length ? (
+          {numFilesCompleted === files.length ? (
             <>
               <div className="text-primary-light text-xl">
                 {numFails > 0
@@ -375,17 +465,25 @@ function DicomUploadProgress({
       <div className="flex grow flex-col overflow-hidden bg-black text-lg">
         {getPercentCompleteComponent()}
         <div className="ohif-scrollbar h-1 grow overflow-y-scroll px-2">
-          {dicomFileUploaderArr
-            .filter(
-              dicomFileUploader =>
-                !showFailedOnly || dicomFileUploader.getStatus() === UploadStatus.Failed
-            )
-            .map(dicomFileUploader => (
+          {files.map((file, index) => {
+            // Try to find the created uploader for this file
+            const uploader = Array.from(createdUploadersRef.current.values()).find(
+              u => u.getFileName() === file.name && u.getFileSize() === file.size
+            );
+
+            // If showFailedOnly is true, only show failed uploads
+            if (showFailedOnly && (!uploader || uploader.getStatus() !== UploadStatus.Failed)) {
+              return null;
+            }
+
+            return (
               <DicomUploadProgressItem
-                key={dicomFileUploader.getFileId()}
-                dicomFileUploader={dicomFileUploader}
+                key={`${file.name}-${file.size}-${index}`}
+                dicomFileUploader={uploader}
+                file={file}
               />
-            ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -393,8 +491,10 @@ function DicomUploadProgress({
 }
 
 DicomUploadProgress.propTypes = {
-  dicomFileUploaderArr: PropTypes.arrayOf(PropTypes.instanceOf(DicomFileUploader)).isRequired,
+  files: PropTypes.arrayOf(PropTypes.instanceOf(File)).isRequired,
+  dataSource: PropTypes.object.isRequired,
   onComplete: PropTypes.func.isRequired,
+  maxConcurrentUploads: PropTypes.number,
 };
 
 export default DicomUploadProgress;
