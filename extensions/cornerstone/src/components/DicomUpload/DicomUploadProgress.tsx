@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
-import { Button } from '@ohif/ui';
+import { Button } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import DicomFileUploader, {
   EVENTS,

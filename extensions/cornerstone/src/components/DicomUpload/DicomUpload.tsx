@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
-import { Button, ButtonEnums } from '@ohif/ui';
+import { Button } from '@ohif/ui-next';
 import './DicomUpload.css';
 
 type DicomUploadProps = {
@@ -44,11 +44,15 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button
+                      variant="default"
                       disabled={false}
                       onClick={() => {}}
                     >
                       {'Add files'}
-                      <input {...getInputProps()} />
+                      <input
+                        {...getInputProps()}
+                        style={{ display: 'none' }}
+                      />
                     </Button>
                   </div>
                 )}
@@ -60,7 +64,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button
-                      type={ButtonEnums.type.secondary}
+                      variant="secondary"
                       disabled={false}
                       onClick={() => {}}
                     >
@@ -69,6 +73,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                         {...getInputProps()}
                         webkitdirectory="true"
                         mozdirectory="true"
+                        style={{ display: 'none' }}
                       />
                     </Button>
                   </div>
