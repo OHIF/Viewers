@@ -5,6 +5,7 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "main": "dist/ohif-mode-basic.js",
+  "module": "src/index.tsx",
   "files": [
     "dist/**",
     "public/**",
@@ -14,7 +15,6 @@
   "keywords": [
     "ohif-mode"
   ],
-  "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
     "npm": ">=6",
