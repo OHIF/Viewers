@@ -17,7 +17,7 @@ function PanelStudyBrowserHeader({
   // Button order: Settings button then List view mode (thumbnails vs. list)
   return (
     <>
-      <div className="bg-muted flex h-[40px] select-none rounded-t p-2">
+      <div className="bg-secondary-dark flex h-[40px] select-none rounded-t p-2">
         <div className={'flex h-[24px] w-full select-none justify-center self-center text-[14px]'}>
           <div className="flex w-full items-center gap-[10px]">
             <div className="flex items-center justify-center">
