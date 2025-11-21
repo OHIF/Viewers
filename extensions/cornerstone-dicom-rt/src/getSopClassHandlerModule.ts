@@ -98,7 +98,7 @@ function _getDisplaySetsFromSeries(
 
   const { displaySetService } = servicesManager.services;
   const referencedDisplaySets =
-    displaySetService.getDisplaySetsForReference(referencedSeriesSequence);
+    displaySetService.getDisplaySetsForReferences(referencedSeriesSequence);
   if (referencedDisplaySets?.length > 1) {
     console.warn(
       'Reference applies to more than 1 display set for Contours, applying only to first display set'

@@ -52,3 +52,17 @@ The output has been enhanced with:
 
 The priorSeriesNumber will default to 4000 for an unknown modality type, or
 3000 for sr, 3100 for seg and 3200 for rtstruct.
+
+## metadataProvider and formatted metadata
+
+The metadata provider has been formatting some fields, which causes inconsistency
+between different metadata providers and use of the instance object.  The
+specific fields that have changed are:
+
+- `patientName`
+- `studyDate`, `studyTime`
+- `seriesDate`, `seriesTime`
+
+If these fields need formatted versions, it is recommended to add a secondary/computed
+metadata provider which simply gets the base metadata module and adds the
+formatting.  That way different metadata providers are all handled identically.

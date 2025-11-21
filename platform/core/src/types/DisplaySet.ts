@@ -62,18 +62,22 @@ export type DisplaySet = {
   instance?: InstanceMetadata;
 
   /**
-   * The predecessor image id is the image id to use when replacing this instance.
-   * It will only be defined for replacable instances such as SR or SEG
+   * The predecessor image id refers to the SOP instance that is currently loaded
+   * into this display set for SEG/SR/RTSTRUCT type values.  The name is chosen
+   * for consistency when this value is used as the origin instance
+   * for saving a new instance intended to replace this instance where the
+   * new instance has a "predecessor sequence".
    */
   predecessorImageId?: string;
 
+  /**
+   * isLoaded is used for display sets containing a load operation that
+   * is required before the display set can be shown.  This is separate from
+   * isHydrated, which means it is loaded into view.
+   */
+  isLoaded?: boolean;
   isHydrated?: boolean;
   isRehydratable?: boolean;
-
-  measurements?: Array<any>;
-  referencedImages?: Array<string>;
-
-  isLoaded?: boolean;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

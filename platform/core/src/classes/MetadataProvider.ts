@@ -499,7 +499,7 @@ class MetadataProvider {
 
 const metadataProvider = new MetadataProvider();
 
-DicomMetadataStore.setMetaData(metadataProvider);
+DicomMetadataStore.setMetaDataProvider(metadataProvider);
 
 export default metadataProvider;
 

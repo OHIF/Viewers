@@ -79,7 +79,7 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
   const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForReference(
+  const referencedDisplaySets = displaySetService.getDisplaySetsForReferences(
     instance.ReferencedSeriesSequence
   );
 

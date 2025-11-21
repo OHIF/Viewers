@@ -52,7 +52,7 @@ const _model = {
 
 let metaDataProvider;
 
-function _setMetaData(metaData) {
+function _setMetaDataProvider(metaData) {
   metaDataProvider = metaData;
 }
 
@@ -113,11 +113,21 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
  * uses the study/series/instance uids to get the instance data.
  */
 function _getInstanceByImageId(imageId) {
-  const { studyInstanceUID, seriesInstanceUID, sopInstanceUID } = metaDataProvider.get(
-    'frameModule',
-    imageId
-  );
-  return _getInstance(studyInstanceUID, seriesInstanceUID, sopInstanceUID);
+  const metadataResult = metaDataProvider?.get('frameModule', imageId);
+  if (metadataResult) {
+    const { studyInstanceUID, seriesInstanceUID, sopInstanceUID } = metadataResult;
+    return _getInstance(studyInstanceUID, seriesInstanceUID, sopInstanceUID);
+  }
+  console.warn('No metadata result found for', imageId, 'looking through instances');
+  for (const study of _model.studies) {
+    for (const series of study.series) {
+      for (const instance of series.instances) {
+        if (instance.imageId === imageId) {
+          return instance;
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -296,7 +306,7 @@ const BaseImplementation = {
   getInstance: _getInstance,
   getInstanceByImageId: _getInstanceByImageId,
   updateMetadataForSeries: _updateMetadataForSeries,
-  setMetaData: _setMetaData,
+  setMetaDataProvider: _setMetaDataProvider,
 };
 const DicomMetadataStore = Object.assign(
   // get study

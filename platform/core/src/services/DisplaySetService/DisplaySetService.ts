@@ -116,7 +116,7 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
-   * Gets the set of series with this series instance UID
+   * Gets the set of display sets with this series instance UID
    *
    * <b>WARNING: Do not use this method when you have a referenced series sequence
    * as this method does NOT check sop instances.  Instead, use getDisplaySetsForReference
@@ -132,11 +132,11 @@ export default class DisplaySetService extends PubSubService {
    * Given a reference to a series/sop, returns the set of display sets
    * containing an instance from the references.
    */
-  public getDisplaySetsForReference = (
-    reference: ReferencedSeriesSequence | ReferencedSeriesSequence[]
+  public getDisplaySetsForReferences = (
+    references: ReferencedSeriesSequence | ReferencedSeriesSequence[]
   ): DisplaySet[] => {
     const mapSeriesReferences = new Map<string, Set<string>>();
-    const referenceArr = Array.isArray(reference) ? reference : [reference];
+    const referenceArr = Array.isArray(references) ? references : [references];
     for (const seriesRef of referenceArr) {
       const { SeriesInstanceUID, ReferencedInstanceSequence } = seriesRef;
       if (!mapSeriesReferences.has(SeriesInstanceUID)) {
