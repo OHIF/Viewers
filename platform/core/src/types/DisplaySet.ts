@@ -1,5 +1,15 @@
 import { InstanceMetadata } from './StudyMetadata';
 
+export type ReferencedInstance = {
+  ReferencedSOPClassUID: string;
+  ReferencedSOPInstanceUID: string;
+};
+
+export type ReferencedSeriesSequence = {
+  SeriesInstanceUID: string;
+  ReferencedInstanceSequence: ReferencedInstance[];
+};
+
 export type DisplaySet = {
   displaySetInstanceUID: string;
   instances: InstanceMetadata[];
@@ -16,6 +26,8 @@ export type DisplaySet = {
   label?: string;
   /** Flag indicating if this is an overlay display set (e.g., SEG, RTSTRUCT) */
   isOverlayDisplaySet?: boolean;
+  /** Flag indicating this is a derived dataset */
+  isDerived?: boolean;
   /** flag indicating if it supports window level */
   supportsWindowLevel?: boolean;
 
@@ -49,6 +61,21 @@ export type DisplaySet = {
   SeriesTime?: string;
   instance?: InstanceMetadata;
 
+  /**
+   * The predecessor image id refers to the SOP instance that is currently loaded
+   * into this display set for SEG/SR/RTSTRUCT type values.  The name is chosen
+   * for consistency when this value is used as the origin instance
+   * for saving a new instance intended to replace this instance where the
+   * new instance has a "predecessor sequence".
+   */
+  predecessorImageId?: string;
+
+  /**
+   * isLoaded is used for display sets containing a load operation that
+   * is required before the display set can be shown.  This is separate from
+   * isHydrated, which means it is loaded into view.
+   */
+  isLoaded?: boolean;
   isHydrated?: boolean;
   isRehydratable?: boolean;
 };

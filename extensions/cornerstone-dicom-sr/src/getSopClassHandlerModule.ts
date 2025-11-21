@@ -100,6 +100,7 @@ function _getDisplaySetsFromSeries(
     SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
+    imageId: predecessorImageId,
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
@@ -128,6 +129,7 @@ function _getDisplaySetsFromSeries(
     isImagingMeasurementReport,
     sopClassUids,
     instance,
+    predecessorImageId,
     addInstances,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };
@@ -183,6 +185,10 @@ async function _load(
   } else {
     srDisplaySet.referencedImages = [];
     srDisplaySet.measurements = [];
+  }
+  const { predecessorImageId } = srDisplaySet;
+  for (const measurement of srDisplaySet.measurements) {
+    measurement.predecessorImageId = predecessorImageId;
   }
 
   const mappings = measurementService.getSourceMappings(
