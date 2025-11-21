@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.89...v3.12.0-beta.90) (2025-11-21)
+
+
+### Bug Fixes
+
+* **DicomUpload:** Switch to use ui-next components and colors ([#5576](https://github.com/OHIF/Viewers/issues/5576)) ([62d6bf4](https://github.com/OHIF/Viewers/commit/62d6bf437b167ac3e60a0f134869c9f96d199d0f))
+
+
+
+
+
 # [3.12.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.88...v3.12.0-beta.89) (2025-11-20)
 
 **Note:** Version bump only for package ohif-monorepo-root
