@@ -3,19 +3,79 @@ import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 
+const compare = (a, b) => {
+  if (a === b) return 0;
+  if (!a && b) return -1;
+  if (!b && a) return 1;
+  if (a < b) return -1;
+  return 1;
+};
+
+/**
+ * Compares two sort vectors.  These are arrays of values
+ * where the zero element is a number value which should be
+ * created uniquely by the sop class handler module, and the
+ * remaining values are compared in order.  The typical use case
+ * for this is to allow split by various attributes to order by
+ * one of the specific attributes.
+ *
+ * For example, a split by echo time might use sort vector:
+ * `[ split echo time defualt order = 37,  echo time = 3.1]`
+ * where 37 is an arbitrary assignment of the sorting for this
+ * type, and the echo time of 3.1 is from the DICOM instance data.
+ *
+ * Returns 0 if either a,b don't have sort vectors or a,b are identical.
+ */
+function compareSortVector(a, b) {
+  const aV = a.sortVector;
+  const bV = b.sortVector;
+  if( !aV?.length || !bV?.length ) {
+    return 0;
+  }
+
+  // Compare element by element
+  for (let i = 0; i < Math.max(aV.length, bV.length); i++) {
+    const aVi = aV[i] ?? 0; // Default to 0 if vector is shorter
+    const bVi = bV[i] ?? 0;
+
+    const c = compare(aVi, bVi);
+    if (c !== 0) {
+      return c;
+    }
+  }
+
+  // If sort vectors are identical, fall back to other criteria
+  return 0;
+}
+
+/**
+ * Compares two display sets from the same series.
+ * This will use the sort vector from a,b if it is present.
+ *
+ * in both series, or will compare by the sop instance uid of the first
+ * instance.
+ */
+const compareSameSeries = (a, b) => {
+  return (
+    compareSortVector(a, b) ||
+    compareSortVector(a, b) ||
+    compare(a.instance.SOPInstanceUID, b.instance.SOPInstanceUID)
+  );
+};
+
+const compareSeriesUID = (a, b) =>
+  compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeries(a, b);
+
 const compareSeriesDateTime = (a, b) => {
   const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
   const seriesDateB = Date.parse(`${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`);
-  return seriesDateA - seriesDateB;
+  return compare(seriesDateA, seriesDateB) || compareSeriesUID(a, b);
 };
 
 const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
   const seriesNumberB = b.SeriesNumber ?? b.seriesNumber;
-  if (seriesNumberA === seriesNumberB) {
-    return compareSeriesDateTime(a, b);
-  }
-  return seriesNumberA - seriesNumberB;
+  return compare(seriesNumberA, seriesNumberB) || compareSeriesDateTime(a, b);
 };
 
 /**
@@ -42,6 +102,9 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
 const seriesSortCriteria = {
   default: seriesInfoSortingCriteria,
   seriesInfoSortingCriteria,
+  compareSameSeries,
+  compareSeriesDateTime,
+  compareSeriesUID,
 };
 
 const sortByInstanceNumber = (a, b) => {

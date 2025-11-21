@@ -67,7 +67,13 @@ function getDisplaySetInfo(instances) {
   };
 }
 
-const makeDisplaySet = instances => {
+/**
+ * This identifies the type of sort ordering so that sorting is consistent/stable
+ * between creation of display sets.
+ */
+export const DEFAULT_SORT_ORDER_NUMBER = 100;
+
+const makeDisplaySet = (instances, index) => {
   // Need to sort the instances in order to get a consistent instance/thumbnail
   sortStudyInstances(instances);
   const instance = instances[0];
@@ -110,6 +116,7 @@ const makeDisplaySet = instances => {
     isDynamicVolume,
     dynamicVolumeInfo,
     supportsWindowLevel: true,
+    sortVector: [DEFAULT_SORT_ORDER_NUMBER, index],
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
@@ -190,7 +197,7 @@ function getDisplaySetsFromSeries(instances) {
   // into their own specific display sets. Place the rest of each
   // series into another display set.
   const stackableInstances = [];
-  instances.forEach(instance => {
+  instances.forEach((instance, instanceIndex) => {
     // All imaging modalities must have a valid value for sopClassUid (x00080016) or rows (x00280010)
     if (!isImage(instance.SOPClassUID) && !instance.Rows) {
       return;
@@ -198,7 +205,7 @@ function getDisplaySetsFromSeries(instances) {
 
     let displaySet;
     if (isMultiFrame(instance)) {
-      displaySet = makeDisplaySet([instance]);
+      displaySet = makeDisplaySet([instance], instanceIndex);
       displaySet.setAttributes({
         sopClassUids,
         numImageFrames: instance.NumberOfFrames,
@@ -207,7 +214,7 @@ function getDisplaySetsFromSeries(instances) {
       });
       displaySets.push(displaySet);
     } else if (isSingleImageModality(instance.Modality)) {
-      displaySet = makeDisplaySet([instance]);
+      displaySet = makeDisplaySet([instance], instanceIndex);
       displaySet.setAttributes({
         sopClassUids,
         instanceNumber: instance.InstanceNumber,
@@ -220,7 +227,7 @@ function getDisplaySetsFromSeries(instances) {
   });
 
   if (stackableInstances.length) {
-    const displaySet = makeDisplaySet(stackableInstances);
+    const displaySet = makeDisplaySet(stackableInstances, displaySets.length);
     displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
     displaySet.setAttributes({
       sopClassUids,
