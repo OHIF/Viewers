@@ -278,11 +278,13 @@ class SegmentationService extends PubSubService {
     viewportId: string,
     {
       segmentationId,
+      predecessorImageId,
       type,
       config,
       suppressEvents = false,
     }: {
       segmentationId: string;
+      predecessorImageId?: string;
       type?: csToolsEnums.SegmentationRepresentations;
       config?: {
         blendMode?: csEnums.BlendModes;
@@ -291,6 +293,9 @@ class SegmentationService extends PubSubService {
     }
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
+    if (segmentation && !segmentation.predecessorImageId && predecessorImageId) {
+      segmentation.predecessorImageId = predecessorImageId;
+    }
     const csViewport = this.getAndValidateViewport(viewportId);
 
     if (!csViewport) {

@@ -1647,15 +1647,13 @@ function commandsModule({
      * Stores a segmentation and shows it in the viewport
      * @param props.segmentationId - The ID of the segmentation to store
      */
-    storeSegmentationCommand: async ({ segmentationId }) => {
+    storeSegmentationCommand: async args => {
+      const { segmentationId } = args;
       const { segmentationService, viewportGridService } = servicesManager.services;
 
       const displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
-        getReport: () =>
-          commandsManager.runCommand('storeSegmentation', {
-            segmentationId,
-          }),
+        getReport: () => commandsManager.runCommand('storeSegmentation', args),
         reportType: 'Segmentation',
       });
 

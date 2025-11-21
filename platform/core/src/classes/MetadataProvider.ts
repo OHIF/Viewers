@@ -6,7 +6,7 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
-import formatPN from '../utils/formatPN';
+
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
 
 class MetadataProvider {
@@ -123,33 +123,21 @@ class MetadataProvider {
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
-        const { SeriesDate, SeriesTime } = instance;
-
-        let seriesDate;
-        let seriesTime;
-
-        if (SeriesDate) {
-          seriesDate = dicomParser.parseDA(SeriesDate);
-        }
-
-        if (SeriesTime) {
-          seriesTime = dicomParser.parseTM(SeriesTime);
-        }
-
         metadata = {
           modality: instance.Modality,
           seriesInstanceUID: instance.SeriesInstanceUID,
           seriesNumber: toNumber(instance.SeriesNumber),
           studyInstanceUID: instance.StudyInstanceUID,
-          seriesDate,
-          seriesTime,
+          seriesDescription: instance.SeriesDescription,
+          seriesDate: instance.SeriesDate,
+          seriesTime: instance.SeriesTime,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_STUDY_MODULE:
         metadata = {
-          patientAge: toNumber(instance.PatientAge),
-          patientSize: toNumber(instance.PatientSize),
-          patientWeight: toNumber(instance.PatientWeight),
+          patientAge: instance.PatientAge,
+          patientSize: instance.PatientSize,
+          patientWeight: instance.PatientWeight,
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.PATIENT_DEMOGRAPHIC_MODULE:
@@ -346,16 +334,13 @@ class MetadataProvider {
         break;
 
       case WADO_IMAGE_LOADER_TAGS.PATIENT_MODULE:
-        const { PatientName } = instance;
-
-        let patientName;
-        if (PatientName) {
-          patientName = formatPN(PatientName);
-        }
-
         metadata = {
-          patientName,
+          patientName: instance.PatientName,
           patientId: instance.PatientID,
+          patientSex: instance.PatientSex,
+          patientBirthDate: instance.PatientBirthDate,
+          issuerOfPatientId: instance.IssuerOfPatientID,
+          otherPatientIDsSequence: instance.OtherPatientIDsSequence,
         };
 
         break;
@@ -373,9 +358,11 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_STUDY_MODULE:
         metadata = {
           studyDescription: instance.StudyDescription,
+          studyInstanceUID: instance.StudyInstanceUID,
           studyDate: instance.StudyDate,
           studyTime: instance.StudyTime,
           accessionNumber: instance.AccessionNumber,
+          studyId: instance.StudyID,
         };
 
         break;
@@ -512,9 +499,57 @@ class MetadataProvider {
 
 const metadataProvider = new MetadataProvider();
 
+DicomMetadataStore.setMetaDataProvider(metadataProvider);
+
 export default metadataProvider;
 
+const WADO_IMAGE_LOADER_TAGS = {
+  // dicomImageLoader specific
+  GENERAL_SERIES_MODULE: 'generalSeriesModule',
+  PATIENT_STUDY_MODULE: 'patientStudyModule',
+  IMAGE_PIXEL_MODULE: 'imagePixelModule',
+  VOI_LUT_MODULE: 'voiLutModule',
+  MODALITY_LUT_MODULE: 'modalityLutModule',
+  SOP_COMMON_MODULE: 'sopCommonModule',
+  PET_IMAGE_MODULE: 'petImageModule',
+  PET_ISOTOPE_MODULE: 'petIsotopeModule',
+  PET_SERIES_MODULE: 'petSeriesModule',
+  OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
+  PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
+
+  // react-cornerstone-viewport specific
+  PATIENT_MODULE: 'patientModule',
+  GENERAL_IMAGE_MODULE: 'generalImageModule',
+  GENERAL_STUDY_MODULE: 'generalStudyModule',
+  CINE_MODULE: 'cineModule',
+  CALIBRATION_MODULE: 'calibrationModule',
+
+  // Computed tags for new data
+  // Note these get returned in naturalized format
+  IMAGE_SOP_INSTANCE_REFERENCE: 'ImageSopInstanceReference',
+};
+
 const WADO_IMAGE_LOADER = {
+  /** Returns information on the current frame reference */
+  frameModule: instance => {
+    const {
+      frameNumber = 1,
+      numberOfFrames = 1,
+      SOPClassUID: sopClassUID,
+      SOPInstanceUID: sopInstanceUID,
+      SeriesInstanceUID: seriesInstanceUID,
+      StudyInstanceUID: studyInstanceUID,
+    } = instance;
+    return {
+      frameNumber,
+      numberOfFrames,
+      sopClassUID,
+      sopInstanceUID,
+      seriesInstanceUID,
+      studyInstanceUID,
+    };
+  },
+
   imagePlaneModule: instance => {
     const { ImageOrientationPatient, ImagePositionPatient } = instance;
 
@@ -588,28 +623,6 @@ const WADO_IMAGE_LOADER = {
       usingDefaultValues,
     };
   },
-};
-
-const WADO_IMAGE_LOADER_TAGS = {
-  // dicomImageLoader specific
-  GENERAL_SERIES_MODULE: 'generalSeriesModule',
-  PATIENT_STUDY_MODULE: 'patientStudyModule',
-  IMAGE_PIXEL_MODULE: 'imagePixelModule',
-  VOI_LUT_MODULE: 'voiLutModule',
-  MODALITY_LUT_MODULE: 'modalityLutModule',
-  SOP_COMMON_MODULE: 'sopCommonModule',
-  PET_IMAGE_MODULE: 'petImageModule',
-  PET_ISOTOPE_MODULE: 'petIsotopeModule',
-  PET_SERIES_MODULE: 'petSeriesModule',
-  OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
-  PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
-
-  // react-cornerstone-viewport specific
-  PATIENT_MODULE: 'patientModule',
-  GENERAL_IMAGE_MODULE: 'generalImageModule',
-  GENERAL_STUDY_MODULE: 'generalStudyModule',
-  CINE_MODULE: 'cineModule',
-  CALIBRATION_MODULE: 'calibrationModule',
 };
 
 const INSTANCE = 'instance';

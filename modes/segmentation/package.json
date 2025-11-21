@@ -35,6 +35,7 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
+    "@ohif/mode-basic": "3.12.0-beta.90",
     "@ohif/core": "3.12.0-beta.90",
     "@ohif/extension-cornerstone": "3.12.0-beta.90",
     "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.90",

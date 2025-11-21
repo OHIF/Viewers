@@ -32,14 +32,14 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "4.11.2",
-    "@cornerstonejs/tools": "4.11.2",
+    "@cornerstonejs/core": "4.11.3",
+    "@cornerstonejs/tools": "4.11.3",
     "@ohif/core": "3.12.0-beta.90",
     "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.90",
     "@ohif/extension-default": "3.12.0-beta.90",
     "@ohif/ui": "3.12.0-beta.90",
     "classnames": "2.5.1",
-    "dcmjs": "0.43.1",
+    "dcmjs": "0.45.0",
     "lodash.debounce": "4.0.8",
     "prop-types": "15.8.1",
     "react": "18.3.1",

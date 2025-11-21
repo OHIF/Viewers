@@ -59,7 +59,7 @@ export const hasExportableLabelMapData = (
     SeriesInstanceUID
   );
 
-  return displaySet?.isReconstructable;
+  return !!displaySet;
 };
 
 /**
