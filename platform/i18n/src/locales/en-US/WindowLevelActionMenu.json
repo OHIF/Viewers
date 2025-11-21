@@ -6,5 +6,14 @@
   "Color LUT": "Color LUT",
   "Preview in viewport": "Preview in viewport",
   "Grayscale": "Grayscale",
-  "Rendering Options": "Rendering Options"
+  "Rendering Options": "Rendering Options",
+  "Rendering Presets": "Rendering Presets",
+  "Search all": "Search all",
+  "Quality": "Quality",
+  "Lighting": "Lighting",
+  "Shade": "Shade",
+  "Ambient": "Ambient",
+  "Diffuse": "Diffuse",
+  "Specular": "Specular",
+  "Shift": "Shift"
 }
