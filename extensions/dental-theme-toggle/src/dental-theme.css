@@ -1,0 +1,211 @@
+/* Dental theme navigation and header backgrounds */
+.dental-theme .navbar,
+.dental-theme .NavBar,
+.dental-theme .Header {
+  background-color: #2a2d35 !important; /* Match dental root background */
+  color: #ffffff !important;
+}
+/* Dental Theme Styles */
+
+/* OHIF Theme (Default) - Based on existing OHIF colors */
+.ohif-theme {
+  --highlight: 191 74% 63%;
+  --neutral: 213 22% 59%;
+  --neutral-light: 214 69% 81%;
+  --neutral-dark: 214 16% 21%;
+  --background: 236 62% 5%;
+  --foreground: 0 0% 98%;
+  --card: 234 64% 10%;
+  --card-foreground: 0 0% 98%;
+  --popover: 219 90% 15%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 214 98% 60%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 214 66% 48%;
+  --secondary-foreground: 200 50% 84%;
+  --muted: 234 64% 10%;
+  --muted-foreground: 200 46% 65%;
+  --accent: 217 79% 24%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 236 52% 30%;
+  --ring: 214 98% 60%;
+}
+
+/* Dental Theme - Dark background with white fonts */
+.dental-theme {
+  /* Dental-optimized color palette */
+  --highlight: 174 62% 55%; /* Teal for dental highlights */
+  --neutral: 180 10% 65%;
+  --neutral-light: 180 15% 80%;
+  --neutral-dark: 220 16% 15%;
+
+  /* Background and foreground - Grayish dark with white text */
+  --background: 210 8% 20%; /* Grayish dark background */
+  --foreground: 0 0% 100%; /* Pure white font */
+
+  /* Cards and popovers */
+  --card: 210 8% 23%;
+  --card-foreground: 0 0% 100%;
+  --popover: 210 8% 21%;
+  --popover-foreground: 0 0% 100%;
+
+  /* Primary colors - Emerald/Teal theme for dental */
+  --primary: 160 84% 45%; /* Dental green/emerald - slightly brighter */
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary colors */
+  --secondary: 174 50% 48%; /* Teal */
+  --secondary-foreground: 0 0% 100%;
+
+  /* Muted colors */
+  --muted: 210 8% 23%;
+  --muted-foreground: 0 0% 75%;
+
+  /* Accent colors - Cyan for dental imaging emphasis */
+  --accent: 184 65% 35%;
+  --accent-foreground: 0 0% 100%;
+
+  /* Destructive/Error colors */
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Borders and inputs */
+  --border: 210 8% 25%;
+  --input: 210 8% 22%;
+  --ring: 160 84% 45%;
+
+  /* Chart colors for dental-specific data visualization */
+  --chart-1: 160 75% 50%; /* Dental green */
+  --chart-2: 184 65% 55%; /* Cyan */
+  --chart-3: 140 60% 55%; /* Light green */
+  --chart-4: 200 70% 50%; /* Blue-teal */
+  --chart-5: 170 80% 45%; /* Emerald */
+
+  /* Dental-specific color additions */
+  --dental-primary: 160 84% 45%;
+  --dental-secondary: 174 62% 52%;
+  --dental-accent: 184 65% 55%;
+  --dental-highlight: 140 75% 60%;
+}
+
+/* Smooth transitions for theme switching */
+:root,
+.ohif-theme,
+.dental-theme {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Additional dental theme enhancements */
+.dental-theme .ohif-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--dental-primary));
+}
+
+.dental-theme .ohif-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--dental-secondary));
+}
+
+/* Dental theme specific button colors */
+.dental-theme button[data-tool-active='true'],
+.dental-theme .active-tool {
+  background-color: hsl(var(--dental-primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Dental theme specific panel headers */
+.dental-theme .panel-header {
+  background-color: hsl(var(--dental-primary) / 0.15);
+  border-bottom: 2px solid hsl(var(--dental-primary));
+}
+
+/* Measurement colors in dental theme */
+.dental-theme .measurement-item {
+  border-left: 3px solid hsl(var(--dental-accent));
+}
+
+/* Viewport borders in dental theme */
+.dental-theme .viewport-element:hover {
+  border-color: hsl(var(--dental-secondary));
+}
+
+/* Active viewport in dental theme */
+.dental-theme .viewport-element.active {
+  border-color: hsl(var(--dental-primary));
+  box-shadow: 0 0 0 1px hsl(var(--dental-primary));
+}
+
+/* Dental theme tooltips */
+.dental-theme .tooltip {
+  background-color: hsl(var(--dental-primary));
+  border-color: hsl(var(--dental-secondary));
+}
+
+/* Enhance contrast for dental imaging */
+.dental-theme .viewport-overlay {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Dental theme notification colors */
+.dental-theme .notification-success {
+  background-color: hsl(var(--dental-primary) / 0.1);
+  border-color: hsl(var(--dental-primary));
+  color: hsl(var(--dental-highlight));
+}
+
+.dental-theme .notification-info {
+  background-color: hsl(var(--dental-accent) / 0.1);
+  border-color: hsl(var(--dental-accent));
+  color: hsl(var(--dental-secondary));
+}
+
+/* Force dark background and white text for dental theme on all main containers */
+.dental-theme,
+.dental-theme body,
+.dental-theme #root,
+.dental-theme .ohif-layout,
+.dental-theme main,
+.dental-theme .ViewerMain,
+.dental-theme [data-cy='viewport-grid'],
+.dental-theme .viewport-grid,
+.dental-theme .studyBrowser,
+.dental-theme .panel-section {
+  background-color: #2a2d35 !important; /* Grayish background */
+  color: #ffffff !important; /* Enforced white text */
+}
+
+/* Ensure panels and sidebars also have dark background */
+.dental-theme .panel,
+.dental-theme .sidebar,
+.dental-theme .sidebar-left,
+.dental-theme .sidebar-right,
+.dental-theme [class*='Panel'],
+.dental-theme [class*='sidebar'] {
+  background-color: #32353d !important;
+  color: #ffffff !important;
+}
+
+/* Cards and containers */
+.dental-theme .card,
+.dental-theme [class*='card'],
+.dental-theme .container {
+  background-color: #3a3d45 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure text elements are white */
+.dental-theme p,
+.dental-theme span,
+.dental-theme div,
+.dental-theme label,
+.dental-theme h1,
+.dental-theme h2,
+.dental-theme h3,
+.dental-theme h4,
+.dental-theme h5,
+.dental-theme h6 {
+  color: inherit;
+}

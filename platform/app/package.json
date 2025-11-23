@@ -61,6 +61,7 @@
     "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.89",
     "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.89",
     "@ohif/extension-default": "3.12.0-beta.89",
+    "@ohif/extension-dental-theme-toggle": "3.12.0-beta.89",
     "@ohif/extension-dicom-pdf": "3.12.0-beta.89",
     "@ohif/extension-test": "3.12.0-beta.89",
     "@ohif/i18n": "3.12.0-beta.89",

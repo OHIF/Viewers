@@ -1,8 +1,16 @@
 import { id } from './id';
 
+// Extend Window interface to allow setViewerTheme
+declare global {
+  interface Window {
+    setViewerTheme?: (theme: string) => void;
+  }
+}
+
 export const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-dental-theme-toggle': '^3.0.0',
 };
 
 /**
@@ -72,13 +80,27 @@ const modeInstance = {
   onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
     const { toolbarService, toolGroupService, customizationService } = servicesManager.services;
 
+    // Set dental theme as default on dental mode entry
+    const rootElement = document.documentElement;
+    rootElement.classList.add('dental-theme');
+    rootElement.classList.remove('ohif-theme');
+    localStorage.setItem('viewerTheme', 'dental');
+    // If theme toggle extension is present, update its state
+    if (window.setViewerTheme) {
+      window.setViewerTheme('dental');
+    }
+
     // Initialize basic dental viewing layout
     return {
       studies: [],
     };
   },
   onModeExit: () => {
-    // Cleanup when exiting mode
+    // Revert to OHIF theme when exiting dental mode
+    const rootElement = document.documentElement;
+    rootElement.classList.remove('dental-theme');
+    rootElement.classList.add('ohif-theme');
+    localStorage.setItem('viewerTheme', 'ohif');
   },
   validationTags: {
     study: [],
@@ -93,7 +115,10 @@ const modeInstance = {
           id: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
           props: {
             leftPanels: ['@ohif/extension-default.panelModule.seriesList'],
-            rightPanels: ['@ohif/extension-cornerstone.panelModule.panelMeasurement'],
+            rightPanels: [
+              '@ohif/extension-dental-theme-toggle.panelModule.dentalThemeToggle',
+              '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+            ],
             viewports: [
               {
                 namespace: '@ohif/extension-cornerstone.viewportModule.cornerstone',
