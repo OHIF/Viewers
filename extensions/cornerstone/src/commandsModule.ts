@@ -929,17 +929,12 @@ function commandsModule({
         const zipBlob = await zipFileWriter.getData();
 
         // @ts-ignore - BACKEND_API_URL is injected at build time
-        // const backendUrl =
-        //   typeof process !== 'undefined' && process.env?.BACKEND_API_URL
-        //     ? process.env.BACKEND_API_URL
-        //     : 'https://backend-ohif-1084552301744.us-central1.run.app';
-        // const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
-        // const backendUrl = 'http://localhost:8000';
-        const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+        console.log('Backend URL:', backendUrl);
 
         const zipFileName = `dicom_study_${new Date().getTime()}.zip`;
         const fileSizeInMB = zipBlob.size / (1024 * 1024);
-        const isLocalhost = backendUrl.includes('localho0st') || backendUrl.includes('127.0.0.1');
+        const isLocalhost = backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1');
 
         // If file > 30MB and not localhost, use Google Cloud Storage
         if (fileSizeInMB > 30 && !isLocalhost) {

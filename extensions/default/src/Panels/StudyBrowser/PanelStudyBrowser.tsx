@@ -176,8 +176,8 @@ function PanelStudyBrowser({
       return;
     }
 
-    // const backendUrl = 'http://localhost:8000';
-    const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+
     let pollCount = 0;
     const maxPolls = 60; // Poll for up to 60 seconds (60 * 1 second)
 
@@ -239,13 +239,8 @@ function PanelStudyBrowser({
       });
 
       // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
-      // const backendUrl = 'http://localhost:8000';
-
-      // const backendUrl =
-      //   typeof process !== 'undefined' && process.env?.BACKEND_API_URL
-      //     ? process.env.BACKEND_API_URL
-      //     : 'https://backend-ohif-1084552301744.us-central1.run.app';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://backend-ohif-1084552301744.us-central1.run.app';
+      console.log('Backend URL:', backendUrl);
 
       // Wrap fetch operation with retry logic
       const response = await retryWithDelay(
@@ -534,12 +529,7 @@ function PanelStudyBrowser({
       });
 
       // @ts-ignore - BACKEND_API_URL is injected at build time\
-      const backendUrl = 'https://backend-ohif-1084552301744.us-central1.run.app';
-      // const backendUrl = 'http://localhost:8000';
-      // const backendUrl =
-      //   typeof process !== 'undefined' && process.env?.BACKEND_API_URL
-      //     ? process.env.BACKEND_API_URL
-      //     : 'https://backend-ohif-1084552301744.us-central1.run.app';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
 
       // Wrap fetch operation with retry logic
       const response = await retryWithDelay(

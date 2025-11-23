@@ -84,7 +84,14 @@ module.exports = (env, argv) => {
     plugins: [
       // For debugging re-renders
       // MillionLint.webpack(),
-      new Dotenv(),
+      new Dotenv({
+        systemvars: true, // Load environment variables from system (Docker build args)
+      }),
+      new webpack.DefinePlugin({
+        'process.env.REACT_APP_BACKEND_URL': JSON.stringify(
+          process.env.REACT_APP_BACKEND_URL
+        ),
+      }),
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist

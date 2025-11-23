@@ -71,6 +71,8 @@ ENV QUICK_BUILD true
 ARG APP_CONFIG=config/default.js
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
+ARG REACT_APP_BACKEND_URL=https://backend-ohif-1084552301744.us-central1.run.app
+ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
 
 RUN bun run show:config
 RUN bun run build
