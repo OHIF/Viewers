@@ -69,6 +69,7 @@
     "@ohif/mode-longitudinal": "3.12.0-beta.89",
     "@ohif/mode-segmentation": "3.12.0-beta.89",
     "@ohif/mode-test": "3.12.0-beta.89",
+    "@ohif/mode-dental": "3.12.0-beta.89",
     "@svgr/webpack": "8.1.0",
     "@types/react": "18.3.23",
     "classnames": "2.5.1",

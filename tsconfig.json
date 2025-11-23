@@ -25,6 +25,7 @@
       "@ohif/extension-cornerstone-dicom-seg": ["./extensions/cornerstone-dicom-seg/src"],
       "@ohif/extension-cornerstone": ["./extensions/cornerstone/src"],
       "@ohif/extension-dicom-pdf": ["./extensions/dicom-pdf/src"],
+      "@ohif/mode-dental": ["./modes/dental/src"],
       "@state": ["./platform/app/src/state"]
     }
   },
