@@ -68,6 +68,7 @@ export function isValidMode({ modalities, series, study }) {
 const modeInstance = {
   id,
   displayName: 'Dental Mode',
+  routeName: 'dental',
   onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
     const { toolbarService, toolGroupService, customizationService } = servicesManager.services;
 
