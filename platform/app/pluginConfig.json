@@ -33,22 +33,12 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "@ohif/extension-dicom-microscopy",
-      "default": false,
-      "version": "3.0.0"
-    },
-    {
       "packageName": "@ohif/extension-dicom-pdf",
       "default": false,
       "version": "3.0.0"
     },
     {
       "packageName": "@ohif/extension-dicom-video",
-      "default": false,
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/extension-tmtv",
       "default": false,
       "version": "3.0.0"
     },
@@ -60,10 +50,6 @@
     {
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
     }
   ],
@@ -78,15 +64,6 @@
       "packageName": "@ohif/mode-segmentation"
     },
     {
-      "packageName": "@ohif/mode-tmtv"
-    },
-    {
-      "packageName": "@ohif/mode-microscopy"
-    },
-    {
-      "packageName": "@ohif/mode-preclinical-4d"
-    },
-    {
       "packageName": "@ohif/mode-test",
       "default": false,
       "version": "3.0.0"
@@ -95,22 +72,11 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/mode-ultrasound-pleura-bline",
-      "version": "3.0.0"
     }
   ],
   "public": [
     {
       "directory": "./platform/public"
-    },
-    {
-      "packageName": "dicom-microscopy-viewer",
-      "importPath": "dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
-      "globalName": "dicomMicroscopyViewer",
-      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
-      "to": "/dicom-microscopy-viewer/"
     }
   ]
 }
