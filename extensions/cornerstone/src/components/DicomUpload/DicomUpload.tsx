@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import DicomFileUploader from '../../utils/DicomFileUploader';
 import DicomUploadProgress from './DicomUploadProgress';
-import { Button, ButtonEnums } from '@ohif/ui';
-import './DicomUpload.css';
+import { Button } from '@ohif/ui-next';
+// Removed dashed border CSS; using simple 1px solid border with muted foreground color
 
 type DicomUploadProps = {
   dataSource;
@@ -15,7 +15,8 @@ type DicomUploadProps = {
 };
 
 function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
-  const baseClassNames = 'min-h-[480px] flex flex-col bg-black select-none';
+  const baseClassNames =
+    'min-h-[375px] flex flex-col bg-black select-none rounded-lg overflow-hidden';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
@@ -34,9 +35,10 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
         {({ getRootProps }) => (
           <div
             {...getRootProps()}
-            className="dicom-upload-drop-area-border-dash m-5 flex h-full flex-col items-center justify-center"
+            className="m-5 flex h-full flex-col items-center justify-center rounded-2xl border"
+            style={{ borderColor: 'hsl(var(--muted-foreground) / 0.25)' }}
           >
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Dropzone
                 onDrop={onDrop}
                 noDrag
@@ -44,11 +46,16 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button
+                      variant="default"
+                      size="lg"
                       disabled={false}
                       onClick={() => {}}
                     >
                       {'Add files'}
-                      <input {...getInputProps()} />
+                      <input
+                        {...getInputProps()}
+                        style={{ display: 'none' }}
+                      />
                     </Button>
                   </div>
                 )}
@@ -60,7 +67,8 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()}>
                     <Button
-                      type={ButtonEnums.type.secondary}
+                      variant="secondary"
+                      size="lg"
                       disabled={false}
                       onClick={() => {}}
                     >
@@ -69,14 +77,15 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
                         {...getInputProps()}
                         webkitdirectory="true"
                         mozdirectory="true"
+                        style={{ display: 'none' }}
                       />
                     </Button>
                   </div>
                 )}
               </Dropzone>
             </div>
-            <div className="pt-5">or drag images or folders here</div>
-            <div className="text-aqua-pale pt-3 text-lg">(DICOM files supported)</div>
+            <div className="text-foreground pt-6 text-base">or drag images or folders here</div>
+            <div className="text-muted-foreground pt-1 text-base">(DICOM files supported)</div>
           </div>
         )}
       </Dropzone>

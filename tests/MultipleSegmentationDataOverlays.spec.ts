@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
@@ -9,11 +8,14 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display multiple segmentation overlays (both SEG and RT)', async ({ page }) => {
+test('should display multiple segmentation overlays (both SEG and RT)', async ({
+  page,
+  viewportPageObject,
+}) => {
   await page.getByTestId('side-panel-header-right').click();
 
   // Add multiple segmentation overlays and ensure the overlay menu reflects this change.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
 
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
   await page.getByText('SELECT A SEGMENTATION').click();
@@ -51,15 +53,15 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   });
 
   // Hide the overlay menu and then show it again. The overlays from before should still be displayed.
-  await page.getByTestId('dataOverlayMenu-default-btn').click(); // hide
-  await page.getByTestId('dataOverlayMenu-default-btn').click(); // show
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click(); // hide
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click(); // show
 
   await checkForScreenshot({
     page,
     screenshotPath: screenShotPaths.multipleSegmentationDataOverlays.threeSegOverlaysInOverlayMenu,
   });
 
-  await page.getByTestId('dataOverlayMenu-default-btn').click(); // hide
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click(); // hide
 
   // Navigate to image 56.
   await press({ page, key: 'ArrowDown', nTimes: 55 });
@@ -72,7 +74,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   });
 
   // Now add the RT overlay
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
 
   await page.getByTestId('AddSegmentationDataOverlay-default').click();
   await page.getByText('SELECT A SEGMENTATION').click();
@@ -90,8 +92,8 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   });
 
   // Hide the overlay menu and then show it again. The overlays from before should still be displayed.
-  await page.getByTestId('dataOverlayMenu-default-btn').click(); // hide
-  await page.getByTestId('dataOverlayMenu-default-btn').click(); // show
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click(); // hide
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click(); // show
 
   await checkForScreenshot({
     page,

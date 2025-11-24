@@ -46,21 +46,21 @@ export const CustomDropdownMenuContent = () => {
     segmentationId = activeSegmentationId;
   }
 
-  // Determine if export is allowed for this segmentation
-  if (exportOptions && segmentationId) {
-    const exportOption = exportOptions.find(opt => opt.segmentationId === segmentationId);
-    allowExport = exportOption?.isExportable || false;
-  }
-
   if (!segmentation || !segmentationId) {
     return null;
   }
 
+  // Determine if export is allowed for this segmentation
+  if (exportOptions) {
+    const exportOption = exportOptions.find(opt => opt.segmentationId === segmentationId);
+    allowExport = exportOption?.isExportable || false;
+  }
+
   const actions = {
-    storeSegmentation: async segmentationId => {
+    storeSegmentation: async (segmentationId, modality = 'SEG') => {
       commandsManager.run({
         commandName: 'storeSegmentation',
-        commandOptions: { segmentationId },
+        commandOptions: { segmentationId, modality },
         context: 'CORNERSTONE',
       });
     },
