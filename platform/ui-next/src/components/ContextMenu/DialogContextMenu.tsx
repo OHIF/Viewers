@@ -5,7 +5,10 @@ import type { ContextMenuItem as ContextMenuItemType } from '../../types/Context
 
 /**
  * Extended menu item type that includes submenu-related properties
- * from the ContextMenuItemsBuilder
+ * from the ContextMenuItemsBuilder.
+ *
+ * Note: This should stay in sync with MenuItem from
+ * extensions/default/src/CustomizableContextMenu/types.ts
  */
 export interface DialogContextMenuItem extends ContextMenuItemType {
   subMenu?: string;
@@ -13,6 +16,26 @@ export interface DialogContextMenuItem extends ContextMenuItemType {
   delegating?: boolean;
   value?: unknown;
   element?: HTMLElement;
+}
+
+/**
+ * Menu definition type for submenu lookup.
+ *
+ * Note: This should stay in sync with Menu from
+ * extensions/default/src/CustomizableContextMenu/types.ts
+ */
+export interface DialogContextMenuDefinition {
+  id: string;
+  items: Array<{
+    label?: string;
+    subMenu?: string;
+    actionType?: string;
+    delegating?: boolean;
+    selector?: (props: Record<string, unknown>) => boolean;
+    commands?: unknown[];
+    action?: (item: unknown, props: unknown) => void;
+  }>;
+  selector?: (props: Record<string, unknown>) => boolean;
 }
 
 /**
@@ -26,18 +49,7 @@ export interface DialogContextMenuProps {
   selectorProps?: Record<string, unknown>;
 
   /** Available menus for submenu lookup */
-  menus?: Array<{
-    id: string;
-    items: Array<{
-      label?: string;
-      subMenu?: string;
-      actionType?: string;
-      delegating?: boolean;
-      selector?: (props: Record<string, unknown>) => boolean;
-      commands?: unknown[];
-    }>;
-    selector?: (props: Record<string, unknown>) => boolean;
-  }>;
+  menus?: DialogContextMenuDefinition[];
 
   /** The triggering event */
   event?: Event;
@@ -51,7 +63,7 @@ export interface DialogContextMenuProps {
   /** Callback to close the menu */
   onClose?: () => void;
 
-  /** Callback to show a submenu (used for legacy submenu handling) */
+  /** Callback to show a submenu (used for legacy submenu handling when menus is not provided) */
   onShowSubMenu?: (
     item: DialogContextMenuItem,
     itemRef: DialogContextMenuItem,
@@ -71,18 +83,20 @@ export interface DialogContextMenuProps {
  */
 const MenuItemRenderer: React.FC<{
   item: DialogContextMenuItem;
-  index: number;
-  props: DialogContextMenuProps;
-  menus?: DialogContextMenuProps['menus'];
+  menuProps: DialogContextMenuProps;
+  menus?: DialogContextMenuDefinition[];
   selectorProps?: Record<string, unknown>;
   event?: Event;
-}> = ({ item, index, props, menus, selectorProps, event }) => {
+}> = ({ item, menuProps, menus, selectorProps, event }) => {
   const [isSubMenuOpen, setIsSubMenuOpen] = React.useState(false);
   const [subMenuItems, setSubMenuItems] = React.useState<DialogContextMenuItem[] | null>(null);
   const itemRef = React.useRef<HTMLDivElement>(null);
-  const timeoutRef = React.useRef<NodeJS.Timeout>();
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hasSubMenu = item.subMenu && item.actionType === 'ShowSubMenu' && !item.delegating;
+  // Only intercept submenu handling if menus is provided.
+  // If menus is not available, fall back to legacy onShowSubMenu behavior.
+  const hasSubMenu =
+    !!menus && item.subMenu && item.actionType === 'ShowSubMenu' && !item.delegating;
 
   const handleMouseEnter = React.useCallback(() => {
     if (!hasSubMenu || !menus) {
@@ -104,13 +118,15 @@ const MenuItemRenderer: React.FC<{
           const adapted: DialogContextMenuItem = {
             ...subItem,
             label: subItem.label || '',
-            action: subItem.action || ((itemRef, componentProps) => {
-              componentProps.onClose?.();
-              const actionHandler = componentProps[`on${subItem.actionType || 'Default'}`];
-              if (actionHandler) {
-                actionHandler.call(componentProps, adapted, subItem, { selectorProps, event });
-              }
-            }),
+            action:
+              subItem.action ||
+              ((adaptedItemRef, componentProps) => {
+                componentProps.onClose?.();
+                const actionHandler = componentProps[`on${subItem.actionType || 'Default'}`];
+                if (actionHandler) {
+                  actionHandler.call(componentProps, adapted, subItem, { selectorProps, event });
+                }
+              }),
           };
 
           if (subItem.actionType === 'ShowSubMenu' && !adapted.iconRight) {
@@ -152,12 +168,13 @@ const MenuItemRenderer: React.FC<{
 
   const handleClick = React.useCallback(() => {
     if (hasSubMenu) {
-      // For submenu items, toggle submenu on click (mobile-friendly)
+      // For submenu items with menus available, toggle submenu on click (mobile-friendly)
       setIsSubMenuOpen(prev => !prev);
       return;
     }
-    item.action(item, props);
-  }, [hasSubMenu, item, props]);
+    // For regular items or submenu items without menus (legacy flow), call action
+    item.action(item, menuProps);
+  }, [hasSubMenu, item, menuProps]);
 
   return (
     <div
@@ -192,11 +209,11 @@ const MenuItemRenderer: React.FC<{
         )}
       </div>
 
-      {/* Submenu */}
+      {/* Submenu - rendered when menus is available and item has submenu */}
       {hasSubMenu && isSubMenuOpen && subMenuItems && subMenuItems.length > 0 && (
         <div
           className={cn(
-            'bg-popover text-popover-foreground absolute left-full top-0 z-50 ml-1 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-lg',
+            'bg-popover text-popover-foreground absolute left-full top-0 z-50 ml-1 min-w-[8rem] rounded-md border p-1 shadow-lg',
             'animate-in fade-in-0 zoom-in-95 slide-in-from-left-2'
           )}
           onMouseEnter={handleSubMenuMouseEnter}
@@ -206,8 +223,7 @@ const MenuItemRenderer: React.FC<{
             <MenuItemRenderer
               key={subIndex}
               item={subItem}
-              index={subIndex}
-              props={props}
+              menuProps={menuProps}
               menus={menus}
               selectorProps={selectorProps}
               event={event}
@@ -229,7 +245,8 @@ const MenuItemRenderer: React.FC<{
  *
  * Features:
  * - Matches ui-next ContextMenuContent/ContextMenuItem styling
- * - Supports nested submenus via hover
+ * - Supports nested submenus via hover (when menus prop is provided)
+ * - Falls back to legacy onShowSubMenu behavior when menus is not provided
  * - Maintains data-cy attributes for Cypress testing
  * - Calls item.action(item, props) on click (same contract as legacy)
  * - Supports iconRight for submenu indicators
@@ -245,12 +262,14 @@ export const DialogContextMenu: React.FC<DialogContextMenuProps> = ({
     return null;
   }
 
+  const menuProps: DialogContextMenuProps = { items, menus, selectorProps, event, ...props };
+
   return (
     <div
       data-cy="context-menu"
       role="menu"
       className={cn(
-        'bg-popover text-popover-foreground z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md',
+        'bg-popover text-popover-foreground z-50 min-w-[8rem] rounded-md border p-1 shadow-md',
         'animate-in fade-in-0 zoom-in-95'
       )}
       onContextMenu={e => e.preventDefault()}
@@ -259,8 +278,7 @@ export const DialogContextMenu: React.FC<DialogContextMenuProps> = ({
         <MenuItemRenderer
           key={index}
           item={item}
-          index={index}
-          props={{ items, menus, selectorProps, event, ...props }}
+          menuProps={menuProps}
           menus={menus}
           selectorProps={selectorProps}
           event={event}

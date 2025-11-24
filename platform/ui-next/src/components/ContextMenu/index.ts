@@ -20,6 +20,7 @@ import {
   DialogContextMenu,
   type DialogContextMenuProps,
   type DialogContextMenuItem,
+  type DialogContextMenuDefinition,
 } from './DialogContextMenu';
 
 export {
@@ -43,4 +44,5 @@ export {
   DialogContextMenu,
   type DialogContextMenuProps,
   type DialogContextMenuItem,
+  type DialogContextMenuDefinition,
 };
