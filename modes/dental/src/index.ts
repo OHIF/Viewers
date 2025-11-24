@@ -22,6 +22,14 @@ export const extensionDependencies = {
   '@ohif/extension-dental-theme-toggle': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
+};
+
+// Define SR viewport and SOP class handlers for dental mode
+const dicomsr = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
+  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
 };
 
 /**
@@ -276,6 +284,10 @@ const modeInstance = {
                 namespace: '@ohif/extension-cornerstone.viewportModule.cornerstone',
                 displaySetsToDisplay: ['@ohif/extension-default.sopClassHandlerModule.stack'],
               },
+              {
+                namespace: dicomsr.viewport,
+                displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
+              },
             ],
           },
         };
@@ -284,7 +296,11 @@ const modeInstance = {
   ],
   extensions: extensionDependencies,
   hangingProtocol: 'default',
-  sopClassHandlers: ['@ohif/extension-default.sopClassHandlerModule.stack'],
+  sopClassHandlers: [
+    '@ohif/extension-default.sopClassHandlerModule.stack',
+    dicomsr.sopClassHandler,
+    dicomsr.sopClassHandler3D,
+  ],
 };
 
 const mode = {

@@ -35,6 +35,77 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
+function initSRToolGroup(extensionManager, toolGroupService) {
+  const SRUtilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
+  );
+
+  if (!SRUtilityModule) {
+    console.warn('SR utility module not found for dental mode - SR functionality will be limited');
+    return;
+  }
+
+  const CS3DUtilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+
+  const { toolNames: SRToolNames } = SRUtilityModule.exports;
+  const { toolNames, Enums } = CS3DUtilityModule.exports;
+
+  const tools = {
+    active: [
+      {
+        toolName: toolNames.WindowLevel,
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+          },
+        ],
+      },
+      {
+        toolName: toolNames.Pan,
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Auxiliary,
+          },
+        ],
+      },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [
+          {
+            mouseButton: Enums.MouseBindings.Secondary,
+          },
+          { numTouchPoints: 2 },
+        ],
+      },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }, { numTouchPoints: 3 }],
+      },
+    ],
+    passive: [
+      { toolName: SRToolNames.SRLength },
+      { toolName: SRToolNames.SRArrowAnnotate },
+      { toolName: SRToolNames.SRBidirectional },
+      { toolName: SRToolNames.SREllipticalROI },
+      { toolName: SRToolNames.SRCircleROI },
+      { toolName: SRToolNames.SRPlanarFreehandROI },
+      { toolName: SRToolNames.SRRectangleROI },
+      { toolName: toolNames.WindowLevelRegion },
+    ],
+    enabled: [
+      {
+        toolName: SRToolNames.DICOMSRDisplay,
+      },
+    ],
+  };
+
+  const toolGroupId = 'SRToolGroup';
+  toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
+}
+
 export default function initDentalToolGroups(extensionManager, toolGroupService, commandsManager) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
+  initSRToolGroup(extensionManager, toolGroupService);
 }
