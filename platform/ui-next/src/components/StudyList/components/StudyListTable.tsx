@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { cn } from '../../../lib/utils';
 import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 import {
@@ -20,8 +21,11 @@ import {
 } from '../../Table';
 import { ScrollArea } from '../../ScrollArea';
 import { Button } from '../../Button';
+import { Input } from '../../Input';
+import { InputMultiSelect } from '../../InputMultiSelect';
 import type { StudyRow } from '../StudyListTypes';
 import { useStudyList } from '../headless/StudyListProvider';
+import { tokenizeModalities } from '../../../lib/filters';
 import type { WorkflowId } from '../WorkflowsInfer';
 
 type Props = {
@@ -114,18 +118,61 @@ function Content({
   renderOpenPanelButton?: (args: { onOpenPanel: () => void }) => React.ReactNode;
 }) {
   const { table, setColumnFilters } = useDataTable<StudyRow>();
+  const modalityOptions = React.useMemo(() => {
+    const rows = (table.options?.data as StudyRow[]) ?? [];
+    // Build a flat list of modality tokens across all rows.
+    // tokenizeModalities uppercases and splits on whitespace/slash/comma to produce unique modality codes for filtering.
+    const tokens = rows.flatMap(r => tokenizeModalities(String(r.modalities ?? '')));
+    return Array.from(new Set(tokens)).sort();
+  }, [table.options?.data]);
   // Access headless state for default workflow + launch
   const { defaultWorkflow, launch } = useStudyList<StudyRow, WorkflowId>();
+
+  // Responsive column visibility based on viewport width
+  React.useEffect(() => {
+    const updateVisibility = () => {
+      const width = window.innerWidth;
+      const isMobile = width < 768;
+      const isTablet = width >= 768 && width < 1024;
+
+      if (isMobile) {
+        // Mobile: Show only Patient, Description, Actions
+        table.getColumn('mrn')?.toggleVisibility(false);
+        table.getColumn('studyDateTime')?.toggleVisibility(false);
+        table.getColumn('modalities')?.toggleVisibility(false);
+        table.getColumn('accession')?.toggleVisibility(false);
+        table.getColumn('instances')?.toggleVisibility(false);
+      } else if (isTablet) {
+        // Tablet: Add Study Date, Modalities
+        table.getColumn('mrn')?.toggleVisibility(false);
+        table.getColumn('studyDateTime')?.toggleVisibility(true);
+        table.getColumn('modalities')?.toggleVisibility(true);
+        table.getColumn('accession')?.toggleVisibility(false);
+        table.getColumn('instances')?.toggleVisibility(false);
+      } else {
+        // Desktop: Show all
+        table.getColumn('mrn')?.toggleVisibility(true);
+        table.getColumn('studyDateTime')?.toggleVisibility(true);
+        table.getColumn('modalities')?.toggleVisibility(true);
+        table.getColumn('accession')?.toggleVisibility(true);
+        table.getColumn('instances')?.toggleVisibility(true);
+      }
+    };
+
+    updateVisibility();
+    window.addEventListener('resize', updateVisibility);
+    return () => window.removeEventListener('resize', updateVisibility);
+  }, [table]);
   const renderColGroup = React.useCallback(
     () => (
       <colgroup>
         {table.getVisibleLeafColumns().map((col) => {
           const meta =
-            (col.columnDef.meta as unknown as { fixedWidth?: number | string } | undefined) ??
+            (col.columnDef.meta as unknown as { minWidth?: number | string } | undefined) ??
             undefined;
-          const width = meta?.fixedWidth;
-          return width ? (
-            <col key={col.id} style={{ width: typeof width === 'number' ? `${width}px` : width }} />
+          const minWidth = meta?.minWidth;
+          return minWidth ? (
+            <col key={col.id} style={{ width: typeof minWidth === 'number' ? `${minWidth}px` : minWidth }} />
           ) : (
             <col key={col.id} />
           );
@@ -172,7 +219,7 @@ function Content({
       <div className="border-input/50 min-h-0 flex-1 rounded-md border">
         <div className="flex h-full flex-col">
           <div className="shrink-0 border-b border-input/50">
-            <Table className={tableClassName} containerClassName="overflow-x-hidden" noScroll>
+            <Table className={cn('table-fixed', tableClassName)} containerClassName="overflow-x-hidden" noScroll>
               {renderColGroup()}
               <TableHeader>
                 {table.getHeaderGroups().map((hg) => (
@@ -202,13 +249,40 @@ function Content({
                   resetCellId="actions"
                   onReset={() => setColumnFilters([])}
                   excludeColumnIds={["instances"]}
+                  renderCell={({ columnId, value, setValue }) => {
+                    if (columnId === 'modalities') {
+                      const selected = Array.isArray(value) ? (value as string[]) : [];
+                      return (
+                        <InputMultiSelect
+                          options={modalityOptions}
+                          value={selected}
+                          onChange={(next) => setValue(next)}
+                        >
+                          <InputMultiSelect.Field>
+                            <InputMultiSelect.Summary variant="single" />
+                            <InputMultiSelect.Input ariaLabel="Filter Modalities" placeholder="" />
+                          </InputMultiSelect.Field>
+                          <InputMultiSelect.Content fitToContent maxWidth={185}>
+                            <InputMultiSelect.Options />
+                          </InputMultiSelect.Content>
+                        </InputMultiSelect>
+                      );
+                    }
+                    return (
+                      <Input
+                        value={String((value as string) ?? '')}
+                        onChange={(e) => setValue(e.target.value)}
+                        className="h-7 w-full"
+                      />
+                    );
+                  }}
                 />
               </TableBody>
             </Table>
           </div>
           <div className="min-h-0 flex-1">
             <ScrollArea className="h-full">
-              <Table className={tableClassName} containerClassName="h-full" noScroll>
+              <Table className={cn('table-fixed', tableClassName)} containerClassName="h-full" noScroll>
                 {renderColGroup()}
                 <TableBody>
                   {table.getPaginationRowModel().rows.length ? (

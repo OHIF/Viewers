@@ -5,6 +5,7 @@ import { Icons } from '../../Icons';
 import { Button } from '../../Button';
 import type { StudyRow } from '../StudyListTypes';
 import { StudyListActionsCell } from '../components/StudyListActionsCell';
+import { tokenizeModalities } from '../../../lib/filters';
 
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
@@ -19,9 +20,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       cell: ({ row }) => <div className="truncate">{row.getValue('patient')}</div>,
       meta: {
         label: 'Patient',
-        headerClassName: 'w-[165px] min-w-[165px] max-w-[165px]',
-        cellClassName: 'w-[165px] min-w-[165px] max-w-[165px]',
-        fixedWidth: 165,
+        headerClassName: 'min-w-[165px]',
+        cellClassName: 'min-w-[165px]',
+        minWidth: 165,
       },
     },
     {
@@ -35,9 +36,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       cell: ({ row }) => <div className="truncate">{row.getValue('mrn')}</div>,
       meta: {
         label: 'MRN',
-        headerClassName: 'w-[120px] min-w-[120px] max-w-[120px]',
-        cellClassName: 'w-[120px] min-w-[120px] max-w-[120px]',
-        fixedWidth: 120,
+        headerClassName: 'min-w-[120px]',
+        cellClassName: 'min-w-[120px]',
+        minWidth: 120,
       },
     },
     {
@@ -55,9 +56,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
       meta: {
         label: 'Study Date',
-        headerClassName: 'w-[150px] min-w-[150px] max-w-[150px]',
-        cellClassName: 'w-[150px] min-w-[150px] max-w-[150px]',
-        fixedWidth: 150,
+        headerClassName: 'min-w-[150px]',
+        cellClassName: 'min-w-[150px]',
+        minWidth: 150,
       },
     },
     {
@@ -69,11 +70,18 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         />
       ),
       cell: ({ row }) => <div className="truncate">{row.getValue('modalities')}</div>,
+      filterFn: (row, colId, filter) => {
+        const selected = Array.isArray(filter) ? (filter as string[]) : [];
+        if (!selected.length) return true;
+        const tokens = tokenizeModalities(String(row.getValue(colId) ?? ''));
+        const set = new Set(tokens);
+        return selected.some(v => set.has(String(v).toUpperCase()));
+      },
       meta: {
         label: 'Modalities',
-        headerClassName: 'w-[97px] min-w-[97px] max-w-[97px]',
-        cellClassName: 'w-[97px] min-w-[97px] max-w-[97px]',
-        fixedWidth: 97,
+        headerClassName: 'min-w-[97px]',
+        cellClassName: 'min-w-[97px]',
+        minWidth: 97,
       },
     },
     {
@@ -92,6 +100,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         label: 'Description',
         headerClassName: 'min-w-[290px]',
         cellClassName: 'min-w-[290px]',
+        minWidth: 290,
       },
     },
     {
@@ -105,9 +114,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       cell: ({ row }) => <div className="truncate">{row.getValue('accession')}</div>,
       meta: {
         label: 'Accession',
-        headerClassName: 'w-[140px] min-w-[140px] max-w-[140px]',
-        cellClassName: 'w-[140px] min-w-[140px] max-w-[140px]',
-        fixedWidth: 140,
+        headerClassName: 'min-w-[140px]',
+        cellClassName: 'min-w-[140px]',
+        minWidth: 140,
       },
     },
     {
@@ -144,9 +153,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
       meta: {
         label: 'Instances',
-        headerClassName: 'w-[45px] min-w-[45px] max-w-[45px]',
-        cellClassName: 'w-[45px] min-w-[45px] max-w-[45px] overflow-hidden',
-        fixedWidth: 45,
+        headerClassName: 'min-w-[45px]',
+        cellClassName: 'min-w-[45px] overflow-hidden',
+        minWidth: 45,
       },
     },
     // Non-hideable trailing actions column to keep the menu at row end
@@ -160,7 +169,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
         // No label so it never appears labeled in any UI; also non-hideable
         headerClassName: 'w-[56px] min-w-[56px] max-w-[56px]',
         cellClassName: 'w-[56px] min-w-[56px] max-w-[56px] overflow-visible',
-        fixedWidth: 56,
+        minWidth: 56,
       },
     },
   ];
