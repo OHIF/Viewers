@@ -12,13 +12,56 @@ import { Switch, Label, Icons } from '@ohif/ui-next';
 const DentalThemeToggle = ({ servicesManager }) => {
   const [isDentalTheme, setIsDentalTheme] = useState(false);
 
-  // Initialize theme from localStorage or default
-  useEffect(() => {
+  // Function to get current theme from localStorage
+  const getCurrentTheme = () => {
     const savedTheme = localStorage.getItem('viewerTheme');
-    const prefersDental = savedTheme === 'dental';
-    setIsDentalTheme(prefersDental);
-    applyTheme(prefersDental);
+    return savedTheme === 'dental' || !savedTheme || savedTheme === '';
+  };
+
+  // Initialize theme state and apply theme on mount
+  useEffect(() => {
+    const shouldDefaultToDental = getCurrentTheme();
+
+    // Set localStorage to dental if it's empty or not set
+    const savedTheme = localStorage.getItem('viewerTheme');
+    if (!savedTheme || savedTheme === '') {
+      localStorage.setItem('viewerTheme', 'dental');
+    }
+
+    setIsDentalTheme(shouldDefaultToDental);
+    applyTheme(shouldDefaultToDental);
+
+    // Listen for localStorage changes to sync across components
+    const handleStorageChange = e => {
+      if (e.key === 'viewerTheme') {
+        const newTheme = getCurrentTheme();
+        setIsDentalTheme(newTheme);
+        applyTheme(newTheme);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for manual localStorage changes within the same tab
+    const checkThemeChange = () => {
+      const currentTheme = getCurrentTheme();
+      if (currentTheme !== isDentalTheme) {
+        setIsDentalTheme(currentTheme);
+      }
+    };
+
+    const interval = setInterval(checkThemeChange, 100);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
+
+  // Apply theme when state changes
+  useEffect(() => {
+    applyTheme(isDentalTheme);
+  }, [isDentalTheme]);
 
   const applyTheme = isDental => {
     const rootElement = document.documentElement;

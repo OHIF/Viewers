@@ -80,12 +80,11 @@ const modeInstance = {
   onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
     const { toolbarService, toolGroupService, customizationService } = servicesManager.services;
 
-    // Set dental theme as default on dental mode entry
+    // Always set dental theme as default on dental mode routing
     const rootElement = document.documentElement;
     rootElement.classList.add('dental-theme');
     rootElement.classList.remove('ohif-theme');
     localStorage.setItem('viewerTheme', 'dental');
-    // If theme toggle extension is present, update its state
     if (window.setViewerTheme) {
       window.setViewerTheme('dental');
     }
