@@ -28,6 +28,32 @@ const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
 };
+
+const dicomsr = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
+  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
+};
+
+const dicomvideo = {
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
+};
+
+const dicompdf = {
+  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
+  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
+};
+
+const dicomPmap = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
+};
+
+const wsi = {
+  sopClassHandler:
+    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
+};
 /**
  * Just two dependencies to be able to render a viewport with panels in order
  * to make sure that the mode is working.
@@ -37,6 +63,10 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
+  '@ohif/extension-dicom-pdf': '^3.0.1',
+  '@ohif/extension-dicom-video': '^3.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -257,6 +287,22 @@ function modeFactory({ modeConfiguration }) {
                   namespace: dicomRT.viewport,
                   displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
+                {
+                  namespace: dicomsr.viewport,
+                  displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
+                },
+                {
+                  namespace: dicomvideo.viewport,
+                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
+                },
+                {
+                  namespace: dicompdf.viewport,
+                  displaySetsToDisplay: [dicompdf.sopClassHandler],
+                },
+                {
+                  namespace: dicomPmap.viewport,
+                  displaySetsToDisplay: [dicomPmap.sopClassHandler],
+                },
               ],
             },
           };
@@ -270,7 +316,17 @@ function modeFactory({ modeConfiguration }) {
     // The example is used for a grid layout to specify that as a preferred layout
     hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
+    sopClassHandlers: [
+      ohif.sopClassHandler,
+      wsi.sopClassHandler,
+      segmentation.sopClassHandler,
+      dicomRT.sopClassHandler,
+      dicomsr.sopClassHandler,
+      dicomsr.sopClassHandler3D,
+      dicomvideo.sopClassHandler,
+      dicompdf.sopClassHandler,
+      dicomPmap.sopClassHandler,
+    ],
   };
 }
 
