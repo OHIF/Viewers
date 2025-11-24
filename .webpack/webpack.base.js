@@ -65,7 +65,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    devtool: isProdBuild ? false /*'source-map'*/ : 'cheap-module-source-map',
     entry: ENTRY,
     optimization: {
       // splitChunks: {
@@ -210,6 +210,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         path.resolve(__dirname, '../../../node_modules'),
         path.resolve(__dirname, '../platform/app/node_modules'),
         path.resolve(__dirname, '../platform/ui/node_modules'),
+        path.resolve(__dirname, '../../pixilib/node_modules'),
         SRC_DIR,
       ],
       // Attempt to resolve these extensions in order.

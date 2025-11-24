@@ -6,7 +6,10 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    "@pixilib/gaelo-panels-viewport.customizationModule.default",
+    "@pixilib/gaelo-ohif-forms.customizationModule.loginRoute",
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,

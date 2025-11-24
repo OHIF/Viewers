@@ -65,6 +65,30 @@
     {
       "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@pixilib/custom-tools",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@pixilib/e-learning",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@pixilib/gaelo-ohif-forms",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@pixilib/gaelo-panels-viewport",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@pixilib/gaelo-tmtv",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@pixilib/hanging-protocol-manager",
+      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -99,6 +123,14 @@
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@pixilib/gaelo-mode",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "@pixilib/learning-mode",
+      "version": "0.0.1"
     }
   ],
   "public": [
