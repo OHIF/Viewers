@@ -16,7 +16,14 @@ import {
   ContextMenuRadioGroup,
 } from './ContextMenu';
 
+import {
+  DialogContextMenu,
+  type DialogContextMenuProps,
+  type DialogContextMenuItem,
+} from './DialogContextMenu';
+
 export {
+  // Radix-based primitives for declarative context menus
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
@@ -32,4 +39,8 @@ export {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuRadioGroup,
+  // Dialog-based adapter for UIDialogService integration
+  DialogContextMenu,
+  type DialogContextMenuProps,
+  type DialogContextMenuItem,
 };
