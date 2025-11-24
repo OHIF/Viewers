@@ -1,7 +1,14 @@
 import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
-import { PanelMeasurement, StudyMeasurements } from '@ohif/extension-cornerstone';
+import {
+  PanelMeasurement,
+  StudyMeasurements,
+  MeasurementsOrAdditionalFindings,
+  StudyMeasurementsActions,
+  StudySummaryFromMetadata,
+  AccordionGroup,
+} from '@ohif/extension-cornerstone';
 
 /**
  * DentalMeasurementPanel - Custom panel for dental mode with JSON export button
@@ -57,13 +64,18 @@ export function DentalMeasurementPanel(props) {
 
   return (
     <div className="flex flex-col">
-      {/* Standard Measurement Panel */}
+      {/* Standard Measurement Panel with Dropdown Actions */}
       <PanelMeasurement {...props}>
-        <StudyMeasurements />
+        <StudyMeasurements>
+          <AccordionGroup.Trigger>
+            <StudySummaryFromMetadata />
+          </AccordionGroup.Trigger>
+          <MeasurementsOrAdditionalFindings customHeader={StudyMeasurementsActions} />
+        </StudyMeasurements>
       </PanelMeasurement>
 
-      {/* Dedicated JSON Export Button - Only visible in dental mode */}
-      {isDentalMode && (
+      {/* JSON Export Section - Only for Dental Mode */}
+      {isDentalMode && hasExportableMeasurements && (
         <div className="bg-secondary/50 border-secondary mt-3 rounded-lg border p-3">
           <div className="mb-3">
             <h4 className="text-foreground flex items-center text-sm font-semibold">
@@ -82,13 +94,11 @@ export function DentalMeasurementPanel(props) {
             disabled={!hasExportableMeasurements}
           >
             <Icons.Download className="mr-2 h-4 w-4" />
-            {hasExportableMeasurements ? 'Export JSON Report' : 'No Measurements to Export'}
+            Export JSON Report
           </Button>
-          {hasExportableMeasurements && (
-            <p className="text-muted-foreground mt-2 text-xs">
-              JSON format includes measurement metadata and full object data
-            </p>
-          )}
+          <p className="text-muted-foreground mt-2 text-xs">
+            JSON format includes measurement metadata and full object data
+          </p>
         </div>
       )}
     </div>
