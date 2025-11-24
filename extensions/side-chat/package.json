@@ -1,0 +1,46 @@
+{
+  "name": "@semenoflabs/extension-side-chat",
+  "version": "3.12.0-beta.61",
+  "description": "Side chat panel for OHIF Viewer",
+  "author": "Semenof Labs",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/ohif-extension-side-chat.umd.js",
+  "module": "src/index.tsx",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6",
+    "yarn": ">=1.18.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "ohif-extension"
+  ],
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package-1": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "3.12.0-beta.61",
+    "@ohif/ui": "3.12.0-beta.61",
+    "@ohif/ui-next": "3.12.0-beta.61",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "webpack": "5.89.0",
+    "webpack-merge": "5.10.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.28.2"
+  }
+}

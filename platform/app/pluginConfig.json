@@ -65,6 +65,10 @@
     {
       "packageName": "@ohif/extension-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@semenoflabs/extension-side-chat",
+      "version": "1.0.0"
     }
   ],
   "modes": [
