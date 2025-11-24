@@ -186,7 +186,7 @@ function onModeEnter({ servicesManager, extensionManager, commandsManager }) {
   // Add activation panel triggers for measurements like basic mode
   this._activatePanelTriggersSubscriptions = [
     ...panelService.addActivatePanelTriggers(
-      '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+      '@ohif/extension-cornerstone.panelModule.dentalMeasurement',
       [
         {
           sourcePubSubService: measurementService,
@@ -277,7 +277,7 @@ const modeInstance = {
             leftPanels: ['@ohif/extension-default.panelModule.seriesList'],
             rightPanels: [
               '@ohif/extension-dental-theme-toggle.panelModule.dentalThemeToggle',
-              '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+              '@ohif/extension-cornerstone.panelModule.dentalMeasurement',
             ],
             viewports: [
               {

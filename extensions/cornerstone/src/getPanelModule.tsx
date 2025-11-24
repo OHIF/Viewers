@@ -4,6 +4,7 @@ import { Toolbox } from '@ohif/extension-default';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
+import { DentalMeasurementPanel } from './components/DentalMeasurementPanel';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 
@@ -80,6 +81,20 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconLabel: 'Measure',
       label: 'Measurement',
       component: PanelMeasurement,
+    },
+    {
+      name: 'dentalMeasurement',
+      iconName: 'tab-linear',
+      iconLabel: 'Dental Measurements',
+      label: 'Dental Measurements',
+      component: props => (
+        <DentalMeasurementPanel
+          {...props}
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+        />
+      ),
     },
     {
       name: 'panelSegmentation',

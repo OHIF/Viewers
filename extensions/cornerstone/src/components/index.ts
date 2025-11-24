@@ -6,6 +6,7 @@ export * from './MeasurementsMenu';
 export * from './SeriesMeasurements';
 export * from './StudyMeasurementsActions';
 export * from './MeasurementsOrAdditionalFindings';
+export * from './DentalMeasurementPanel';
 export * from './WindowLevelActionMenu';
 export * from './ModalityLoadBadge';
 
