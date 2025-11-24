@@ -1,3 +1,4 @@
+import { Badge, badgeVariants } from './Badge';
 import { Button, buttonVariants } from './Button';
 import {
   SmartScrollbar,
@@ -47,6 +48,7 @@ import { Toggle, toggleVariants } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { Input } from './Input';
 import { InputNumber } from './InputNumber';
+import { InputMultiSelect } from './InputMultiSelect';
 import { Label } from './Label';
 import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
@@ -156,6 +158,8 @@ export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatist
 export {
   Numeric,
   ErrorBoundary,
+  Badge,
+  badgeVariants,
   Button,
   buttonVariants,
   ThemeWrapper,
@@ -191,6 +195,7 @@ export {
   DatePickerWithRange,
   Input,
   InputNumber,
+  InputMultiSelect,
   Label,
   Tabs,
   TabsContent,
