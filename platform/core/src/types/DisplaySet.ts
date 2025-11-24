@@ -78,6 +78,21 @@ export type DisplaySet = {
   isLoaded?: boolean;
   isHydrated?: boolean;
   isRehydratable?: boolean;
+
+  /**
+   * The sort vector is used to order display sets on the same series instance
+   * uid having the same other sort criteria.  The values are compared
+   * one at a time starting with the sortVector[0] element.  This allows
+   * defining the overall sort order between different types of sort values,
+   * and then allows sorting on the remaining values.
+   *
+   * For example, the "time sorted" entries might be in position "37", and the
+   * second value would be defined as time.  Those could have values:
+   * `[37, 0]` and `[37,1.5]` so that the second 1.5 value would sort last
+   * in a default ascending sort.  The might be after the "T1/T2" value sort which
+   * could be defined as overall sort '36'.
+   */
+  sortVector?: (number | string)[];
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

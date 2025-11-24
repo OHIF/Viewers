@@ -49,22 +49,24 @@ function compareSortVector(a, b) {
 }
 
 /**
- * Compares two display sets from the same series.
- * This will use the sort vector from a,b if it is present.
+ * When the "series" sort is used on display sets, it is possible to get the
+ * same series twice.  This method compares two display sets from the same series
+ * using the sort vector from a,b if it is present or defaulting to the
+ * first instance comparison.
  *
  * in both series, or will compare by the sop instance uid of the first
  * instance.
  */
-const compareSameSeries = (a, b) => {
+const compareSameSeriesDisplaySet = (a, b) => {
   return (
     compareSortVector(a, b) ||
     compareSortVector(a, b) ||
-    compare(a.instance.SOPInstanceUID, b.instance.SOPInstanceUID)
+    sortByInstanceNumber(a.instance, b.instance)
   );
 };
 
 const compareSeriesUID = (a, b) =>
-  compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeries(a, b);
+  compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeriesDisplaySet(a, b);
 
 const compareSeriesDateTime = (a, b) => {
   const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
@@ -102,23 +104,26 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
 const seriesSortCriteria = {
   default: seriesInfoSortingCriteria,
   seriesInfoSortingCriteria,
-  compareSameSeries,
+  compareSameSeries: compareSameSeriesDisplaySet,
   compareSeriesDateTime,
   compareSeriesUID,
 };
 
+/**
+ * Compares two instances first by instance number, and then by
+ * sop and frame numbers.
+ * Handles undefined values for use with display set comparison.
+ */
 const sortByInstanceNumber = (a, b) => {
-  // Sort by InstanceNumber (0020,0013)
+  if (!a || !b) {
+    return (!a && !b && 0) || (!a && -1) || 1;
+  }
   const aInstance = parseInt(a.InstanceNumber) || 0;
   const bInstance = parseInt(b.InstanceNumber) || 0;
   if (aInstance !== bInstance) {
     return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
   }
-  // Fallback rule to enable consistent sorting
-  if (a.SOPInstanceUID === b.SOPInstanceUID) {
-    return 0;
-  }
-  return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
+  return compare(a.SOPInstanceUID, b.SOPInstanceUID) || compare(a.frameNumber, b.frameNumber);
 };
 
 const instancesSortCriteria = {
@@ -132,12 +137,12 @@ const sortingCriteria = {
 };
 
 /**
- * Sorts given series (given param is modified)
+ * Sorts given series or display sets
  * The default criteria is based on series number in ascending order.
  *
- * @param {Array} series List of series
- * @param {function} seriesSortingCriteria method for sorting
- * @returns {Array} sorted series object
+ * @param series -  List of series (modified in place)
+ * @param seriesSortingCriteria - method for sorting
+ * @returns sorted series object
  */
 const sortStudySeries = (
   series,
