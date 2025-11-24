@@ -1,9 +1,10 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy, simulateNormalizedClickOnElement } from './utils/index';
-import { viewportLocator } from './utils/locators';
+import { expect, test, visitStudy } from './utils';
 import { downloadAsString } from './utils/download';
 
-test('should create and download the TMTV CSV report correctly', async ({ page }) => {
+test('should create and download the TMTV CSV report correctly', async ({
+  page,
+  viewportPageObject,
+}) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
@@ -11,10 +12,7 @@ test('should create and download the TMTV CSV report correctly', async ({ page }
   await page.getByTestId('addSegmentation').click();
   await page.getByTestId('Brush-btn').click();
 
-  await simulateNormalizedClickOnElement({
-    locator: viewportLocator({ viewportId: 'ctAXIAL', page }),
-    normalizedPoint: { x: 0.5, y: 0.5 },
-  });
+  await viewportPageObject.getById('ctAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
   await page.waitForTimeout(5000);
 

@@ -66,6 +66,18 @@ const screenShotPaths = {
   rectangle: {
     rectangleDisplayedCorrectly: 'rectangleDisplayedCorrectly.png',
   },
+  scoord3dProbe: {
+    scoord3dProbeDisplayedCorrectly: 'scoord3dProbeDisplayedCorrectly.png',
+    scoord3dProbePreHydration: 'scoord3dProbePreHydration.png',
+    scoord3dProbePostHydration: 'scoord3dProbePostHydration.png',
+    scoord3dProbeJumpToMeasurement: 'scoord3dProbeJumpToMeasurement.png',
+  },
+  scoordRectangle: {
+    scoordRectangleDisplayedCorrectly: 'scoordRectangleDisplayedCorrectly.png',
+    scoordRectanglePreHydration: 'scoordRectanglePreHydration.png',
+    scoordRectanglePostHydration: 'scoordRectanglePostHydration.png',
+    scoordRectangleJumpToMeasurement: 'scoordRectangleJumpToMeasurement.png',
+  },
   spline: {
     splineDisplayedCorrectly: 'splineDisplayedCorrectly.png',
   },

@@ -1,10 +1,10 @@
-import { test } from 'playwright-test-coverage';
 import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  reduce3DViewportSize,
   attemptAction,
+  checkForScreenshot,
+  reduce3DViewportSize,
+  screenShotPaths,
+  test,
+  visitStudy,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -14,13 +14,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up Test', async () => {
-  test('should render 3D four up correctly.', async ({ page }) => {
-    await page.getByTestId('Layout').click();
-    await page
-      .locator('div')
-      .filter({ hasText: /^3D four up$/ })
-      .first()
-      .click();
+  test('should render 3D four up correctly.', async ({ page, mainToolbarPageObject }) => {
+    await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 

@@ -33,6 +33,12 @@ const config = {
         amd: '@ohif/core',
         root: '@ohif/core',
       },
+      '@ohif/mode-basic': {
+        commonjs2: '@ohif/mode-basic',
+        commonjs: '@ohif/mode-basic',
+        amd: '@ohif/mode-basic',
+        root: '@ohif/mode-basic',
+      },
       '@ohif/ui': {
         commonjs2: '@ohif/ui',
         commonjs: '@ohif/ui',

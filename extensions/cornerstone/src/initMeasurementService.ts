@@ -461,6 +461,9 @@ const connectMeasurementServiceToTools = ({
       const annotationManager = annotation.state.getAnnotationManager();
       const newAnnotation = {
         annotationUID: measurement.uid,
+        // Not used in CS3D but stored in the CS3D state so that saving
+        // can apply the predecessor consistently.
+        predecessorImageId: measurement?.predecessorImageId,
         highlighted: false,
         isLocked: false,
         // This is used to force a re-render of the annotation to

@@ -18,6 +18,7 @@ SEGMENTATION_REMOVED                                // When segmentation is remo
 SEGMENT_LOADING_COMPLETE                            // When segment group adds pixel data to volume
 SEGMENTATION_LOADING_COMPLETE                       // When full segmentation volume is filled
 SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED // When a segmentation's annotation cut merge process is completed.
+SEGMENTATION_STYLE_MODIFIED                         // When a segmentation style is modified.
 ```
 
 ## Core APIs

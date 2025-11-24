@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy } from './utils';
+import { expect, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -55,9 +54,11 @@ test('checks basic add, rename, delete segments from panel', async ({ page }) =>
   await expect(page.getByTestId('data-row')).toHaveCount(0);
 });
 
-test('checks saved segmentations loads and jumps to slices', async ({ page }) => {
-  const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
-
+test('checks saved segmentations loads and jumps to slices', async ({
+  page,
+  viewportPageObject,
+}) => {
+  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight;
   // Image loads on slice 1, confirm on slice 1
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
 

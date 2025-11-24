@@ -40,6 +40,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     disabled = false,
     children,
     showConfig: externalShowConfig,
+    selectedSegmentationIdForType,
     ...contextProps
   } = props;
 
@@ -55,6 +56,11 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
   const activeRepresentation = props.activeRepresentation || activeSegmentationInfo?.representation;
   const activeSegmentation = props.activeSegmentation || activeSegmentationInfo?.segmentation;
 
+  const selectedSegmentationForTypeInfo = data.find(
+    info => info.segmentation?.segmentationId === selectedSegmentationIdForType
+  );
+  const selectedSegmentationForTypeRepresentation = selectedSegmentationForTypeInfo?.representation;
+
   // Extract style properties or use defaults
   const {
     fillAlpha = props.fillAlpha || 0.5,
@@ -62,7 +68,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     outlineWidth = props.outlineWidth || 1,
     renderFill = props.renderFill !== undefined ? props.renderFill : true,
     renderOutline = props.renderOutline !== undefined ? props.renderOutline : true,
-  } = activeRepresentation?.styles ?? {};
+  } = selectedSegmentationForTypeRepresentation?.styles ?? {};
 
   // Check if SegmentationTableConfig is present in children
   const hasConfigComponent = Children.toArray(children).some(
@@ -102,6 +108,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         activeSegmentationId,
         activeSegmentation,
         activeRepresentation,
+        selectedSegmentationIdForType,
         ...contextProps,
         setShowConfig: toggleShowConfig,
       }}

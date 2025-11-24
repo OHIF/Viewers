@@ -1,14 +1,14 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy, simulateNormalizedClickOnElement } from './utils/index';
-import { viewportLocator } from './utils/locators';
-import { downloadAsString } from './utils/download';
+import { expect, test, visitStudy } from './utils';
 
-test('should restrict the percentage of max SUV to be between 0 and 1', async ({ page }) => {
+test('should restrict the percentage of max SUV to be between 0 and 1', async ({
+  page,
+  viewportPageObject,
+}) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
-  await viewportLocator({ viewportId: 'ptAXIAL', page }).click();
+  await viewportPageObject.getById('ptAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
   await page.getByTestId('addSegmentation').click();
   await page.getByTestId('RectangleROIStartEndThreshold-btn').click();

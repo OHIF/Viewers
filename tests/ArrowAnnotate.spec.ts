@@ -1,11 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  simulateClicksOnElement,
-  simulateDoubleClickOnElement,
-} from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -13,26 +6,19 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the arrow tool and allow free-form text to be entered', async ({ page }) => {
+test('should display the arrow tool and allow free-form text to be entered', async ({
+  page,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
   await page.getByTestId('trackedMeasurements-btn').click();
 
-  await page.getByTestId('MeasurementTools-split-button-secondary').click();
-  await page.getByTestId('ArrowAnnotate').click();
+  await mainToolbarPageObject.measurementTools.arrowAnnotate.click();
 
-  const locator = page.getByTestId('viewport-pane').locator('canvas');
-  await simulateClicksOnElement({
-    locator,
-    points: [
-      {
-        x: 164,
-        y: 234,
-      },
-      {
-        x: 344,
-        y: 232,
-      },
-    ],
-  });
+  await viewportPageObject.active.clickAt([
+    { x: 164, y: 234 },
+    { x: 344, y: 232 },
+  ]);
 
   await page.getByTestId('dialog-input').fill('Ringo Starr was the drummer for The Beatles');
   await page.getByTestId('input-dialog-save-button').click();
@@ -49,13 +35,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   // Now edit the arrow text and the label should not change.
 
-  await simulateDoubleClickOnElement({
-    locator,
-    point: {
-      x: 164,
-      y: 234,
-    },
-  });
+  await viewportPageObject.active.doubleClickAt({ x: 164, y: 234 });
 
   await page.getByTestId('dialog-input').fill('Neil Peart was the drummer for Rush');
   await page.getByTestId('input-dialog-save-button').click();

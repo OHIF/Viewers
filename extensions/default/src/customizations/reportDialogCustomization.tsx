@@ -11,28 +11,44 @@ type DataSource = {
 
 type ReportDialogProps = {
   dataSources: DataSource[];
+  modality?: string;
+  predecessorImageId?: string;
   hide: () => void;
-  onSave: (data: { reportName: string; dataSource: string | null; series: string | null }) => void;
+  onSave: (data: {
+    reportName: string;
+    dataSource: string | null;
+    series: string | null;
+    priorSeriesNumber: number;
+  }) => void;
   onCancel: () => void;
 };
 
-function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps) {
+function ReportDialog({
+  dataSources,
+  modality = 'SR',
+  predecessorImageId,
+  minSeriesNumber = 3000,
+  hide,
+  onSave,
+  onCancel,
+}: ReportDialogProps) {
   const { servicesManager } = useSystem();
   const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
     dataSources?.[0]?.value ?? null
   );
-  const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
-  const [reportName, setReportName] = useState('');
-
   const { displaySetService } = servicesManager.services;
+
+  const [selectedSeries, setSelectedSeries] = useState<string | null>(predecessorImageId || null);
+  const [reportName, setReportName] = useState('');
 
   const seriesOptions = useMemo(() => {
     const displaySetsMap = displaySetService.getDisplaySetCache();
     const displaySets = Array.from(displaySetsMap.values());
     const options = displaySets
-      .filter(ds => ds.Modality === 'SR')
+      .filter(ds => ds.Modality === modality)
       .map(ds => ({
-        value: ds.SeriesInstanceUID,
+        value: ds.predecessorImageId || ds.SeriesInstanceUID,
+        seriesNumber: isFinite(ds.SeriesNumber) ? ds.SeriesNumber : minSeriesNumber,
         description: ds.SeriesDescription,
         label: `${ds.SeriesDescription} ${ds.SeriesDate}/${ds.SeriesTime} ${ds.SeriesNumber}`,
       }));
@@ -41,11 +57,12 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
       {
         value: null,
         description: null,
+        seriesNumber: minSeriesNumber,
         label: 'Create new series',
       },
       ...options,
     ];
-  }, [displaySetService]);
+  }, [displaySetService, modality]);
 
   useEffect(() => {
     const seriesOption = seriesOptions.find(s => s.value === selectedSeries);
@@ -58,6 +75,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
     onSave({
       reportName,
       dataSource: selectedDataSource,
+      priorSeriesNumber: Math.max(...seriesOptions.map(it => it.seriesNumber)),
       series: selectedSeries,
     });
     hide();
