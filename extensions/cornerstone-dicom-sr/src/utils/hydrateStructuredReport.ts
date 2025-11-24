@@ -270,13 +270,15 @@ export default function hydrateStructuredReport(
         effectiveAnnotationType = 'CustomProbe';
       }
 
+      const referencedImageId =
+        effectiveAnnotationType === 'CustomProbe' && !imageId ? undefined : imageId;
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
           toolName: effectiveAnnotationType,
-          referencedImageId:
-            effectiveAnnotationType === 'CustomProbe' ? undefined : imageId,
+          referencedImageId,
           FrameOfReferenceUID,
         },
       };

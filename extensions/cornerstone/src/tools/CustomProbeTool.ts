@@ -149,11 +149,22 @@ class CustomProbeTool extends ProbeTool {
    */
   shouldShowAnnotationInViewport(viewport, annotation) {
     // Check if frame of reference matches the viewport and the annotation
-    if (viewport.getFrameOfReferenceUID() === annotation.metadata?.FrameOfReferenceUID) {
-      return this.isAnnotationNearViewingPlane(viewport, annotation.data.handles.points[0]);
+    const viewportFrameOfReference = this.getViewportFrameOfReference(viewport);
+    if (viewportFrameOfReference !== annotation.metadata?.FrameOfReferenceUID) {
+      return false;
     }
 
-    return false;
+    // Check explicit ImageId match (Primary check for StackViewport/X-Ray)
+    // This ensures that if the annotation is on the current image, it is always shown/interactable
+    // regardless of small geometric discrepancies.
+    if (
+      viewport.getCurrentImageId &&
+      annotation.metadata?.referencedImageId === viewport.getCurrentImageId()
+    ) {
+      return true;
+    }
+
+    return this.isAnnotationNearViewingPlane(viewport, annotation.data.handles.points[0]);
   }
 
   /**
@@ -167,12 +178,8 @@ class CustomProbeTool extends ProbeTool {
 
     const enabledElement = getEnabledElement(element);
     const { viewport } = enabledElement;
-    const viewportFrameOfReference = this.getViewportFrameOfReference(viewport);
 
-    if (!viewportFrameOfReference) {
-      return [];
-    }
-
+    // Use the shared logic for consistency between rendering and interaction
     return annotations.filter(annotation => {
       if (
         !annotation ||
@@ -186,12 +193,7 @@ class CustomProbeTool extends ProbeTool {
         return false;
       }
 
-      const annotationFrameOfReference = annotation.metadata?.FrameOfReferenceUID;
-      if (annotationFrameOfReference !== viewportFrameOfReference) {
-        return false;
-      }
-
-      return this.isAnnotationNearViewingPlane(viewport, annotationPoint);
+      return this.shouldShowAnnotationInViewport(viewport, annotation);
     });
   }
 
