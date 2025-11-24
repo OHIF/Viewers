@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.91...v3.12.0-beta.92) (2025-11-24)
+
+
+### Bug Fixes
+
+* **docs:** Empty commit as an attempt to fix the docs build. ([#5582](https://github.com/OHIF/Viewers/issues/5582)) ([94b0358](https://github.com/OHIF/Viewers/commit/94b0358f18f81fa2822a208d68decfce076ef577))
+
+
+
+
+
 # [3.12.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.90...v3.12.0-beta.91) (2025-11-21)
 
 **Note:** Version bump only for package ohif-monorepo-root
