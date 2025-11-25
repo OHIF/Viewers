@@ -2,6 +2,7 @@ import { Types } from '@ohif/core';
 import { id } from './id';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
+import getHangingProtocolModule from './getHangingProtocolModule';
 import './dental-theme.css';
 
 /**
@@ -54,6 +55,11 @@ const dentalThemeToggleExtension: Types.Extensions.Extension = {
    * Commands module registration
    */
   getCommandsModule,
+
+  /**
+   * Hanging protocol module registration
+   */
+  getHangingProtocolModule,
 };
 
 export default dentalThemeToggleExtension;

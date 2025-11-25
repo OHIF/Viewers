@@ -3,6 +3,11 @@ import initDentalToolGroups from './initToolGroups';
 import dentalToolbarButtons from './toolbarButtons';
 import { toolbarButtons as basicToolbarButtons } from '@ohif/mode-basic';
 import { ToolbarService } from '@ohif/core';
+import {
+  initializeDentalAnnotationFiltering,
+  resetDentalAnnotationFiltering,
+} from './tools/DentalViewportAnnotationTool';
+import { removeAllAnnotationsForViewport } from './utils/dentalAnnotationFilter';
 
 const { TOOLBAR_SECTIONS } = ToolbarService;
 
@@ -96,6 +101,7 @@ export function isValidMode({ modalities, series, study }) {
 const dentalToolbarSections = {
   [TOOLBAR_SECTIONS.primary]: [
     'DentalMeasurementTools',
+    'ClearViewport',
     'Zoom',
     'Pan',
     'WindowLevel',
@@ -130,6 +136,10 @@ function onModeEnter({ servicesManager, extensionManager, commandsManager }) {
   const { toolbarService, toolGroupService, measurementService, panelService } =
     servicesManager.services;
 
+  // Initialize dental-specific annotation filtering
+  // This ensures annotations created in one viewport only appear in that viewport
+  initializeDentalAnnotationFiltering(servicesManager);
+
   // Clear measurements on mode enter like basic mode
   measurementService.clearMeasurements();
 
@@ -147,14 +157,47 @@ function onModeEnter({ servicesManager, extensionManager, commandsManager }) {
 
   // Create a dental commands context if not already present
   commandsManager.createContext('DENTAL_MODE');
+
+  // Register dental measurement activation command
   commandsManager.registerCommand('DENTAL_MODE', 'activateDentalMeasurement', {
     commandFn: ({ toolName, label }) => {
       // Activate underlying cornerstone tool via existing global command
+      // Apply to all dental tool groups for consistent behavior across viewports
       commandsManager.runCommand('setToolActiveToolbar', {
-        toolGroupIds: ['default'],
+        toolGroupIds: [
+          'dental-current',
+          'dental-prior',
+          'dental-bitewing-left',
+          'dental-bitewing-right',
+        ],
         toolName,
       });
       currentDentalLabel = label;
+    },
+  });
+
+  // Register clear viewport command
+  commandsManager.registerCommand('DENTAL_MODE', 'clearActiveViewport', {
+    commandFn: () => {
+      const { viewportGridService, cornerstoneViewportService } = servicesManager.services;
+      const activeViewportId = viewportGridService.getActiveViewportId();
+
+      if (activeViewportId) {
+        // Remove all annotations for this viewport
+        removeAllAnnotationsForViewport(activeViewportId);
+
+        // Clear the display sets for this viewport
+        viewportGridService.setDisplaySetsForViewport({
+          viewportId: activeViewportId,
+          displaySetInstanceUIDs: [],
+        });
+
+        // Force a re-render to update the viewport
+        const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+        if (renderingEngine) {
+          renderingEngine.render();
+        }
+      }
     },
   });
 
@@ -212,6 +255,9 @@ function onModeExit() {
   // Cleanup panel triggers like basic mode
   this._activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
   this._activatePanelTriggersSubscriptions.length = 0;
+
+  // Reset dental annotation filtering
+  resetDentalAnnotationFiltering();
 
   // Revert to OHIF theme when exiting dental mode
   const rootElement = document.documentElement;
@@ -295,7 +341,7 @@ const modeInstance = {
     },
   ],
   extensions: extensionDependencies,
-  hangingProtocol: 'default',
+  hangingProtocol: '@ohif/dental-2x2',
   sopClassHandlers: [
     '@ohif/extension-default.sopClassHandlerModule.stack',
     dicomsr.sopClassHandler,

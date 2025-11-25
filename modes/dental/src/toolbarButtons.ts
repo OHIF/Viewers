@@ -63,6 +63,18 @@ const dentalMeasurementButtons = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  {
+    id: 'ClearViewport',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-reset',
+      label: 'Clear',
+      tooltip: 'Clear active viewport images and measurements',
+      commands: {
+        commandName: 'clearActiveViewport',
+      },
+    },
+  },
 ];
 
 export default dentalMeasurementButtons;

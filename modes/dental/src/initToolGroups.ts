@@ -106,6 +106,20 @@ function initSRToolGroup(extensionManager, toolGroupService) {
 }
 
 export default function initDentalToolGroups(extensionManager, toolGroupService, commandsManager) {
+  // Initialize separate tool groups for each viewport in 2x2 layout
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'dental-current');
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'dental-prior');
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'dental-bitewing-left');
+  initDefaultToolGroup(
+    extensionManager,
+    toolGroupService,
+    commandsManager,
+    'dental-bitewing-right'
+  );
+
+  // Keep 'default' for compatibility with other modes/protocols
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
+
+  // SR tool group for structured reports
   initSRToolGroup(extensionManager, toolGroupService);
 }
