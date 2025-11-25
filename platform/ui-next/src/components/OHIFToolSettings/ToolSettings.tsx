@@ -118,15 +118,25 @@ const renderRadioSetting = option => {
 
 function renderDoubleRangeSetting(option) {
   return (
-    <RowDoubleRange
+    <div
+      className="flex items-center"
       key={option.id}
-      values={option.value}
-      onChange={option.onChange}
-      minValue={option.min}
-      maxValue={option.max}
-      step={option.step}
-      showLabel={false}
-    />
+    >
+      <div className="w-1/3 text-[13px]">
+        {renderLabelWithTooltip(option.name, option.tooltip)}
+      </div>
+      <div className="w-2/3">
+        <RowDoubleRange
+          values={option.value}
+          onChange={option.onChange}
+          minValue={option.min}
+          maxValue={option.max}
+          step={option.step}
+          showLabel={false}
+          tooltip={option.tooltip}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -139,14 +149,37 @@ const renderCustomSetting = option => {
 };
 
 const renderButtonSetting = option => {
-  return (
+  const button = (
     <Button
       key={option.id}
-      variant="ghost"
+      variant={option.variant || 'ghost'}
+      className={option.className || ''}
       onClick={() => option.onChange()}
     >
       {option.name}
     </Button>
+  );
+
+  if (option.tooltip) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent side="top">{option.tooltip}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return button;
+};
+
+const renderCheckboxLabel = option => {
+  return (
+    <Label
+      htmlFor={option.id}
+      className="cursor-pointer"
+    >
+      {renderLabelWithTooltip(option.name, option.tooltip)}
+    </Label>
   );
 };
 
@@ -163,12 +196,7 @@ const renderCheckboxSetting = option => {
           option.onChange?.(checked);
         }}
       />
-      <Label
-        htmlFor={option.id}
-        className="cursor-pointer"
-      >
-        {option.name}
-      </Label>
+      {renderCheckboxLabel(option)}
     </div>
   );
 };
@@ -186,37 +214,41 @@ const renderSwitchSetting = option => {
           option.onChange?.(checked);
         }}
       />
-      <Label
-        htmlFor={option.id}
-        className="cursor-pointer"
-      >
-        {option.name}
-      </Label>
+      {renderCheckboxLabel(option)}
     </div>
   );
 };
 
 const renderSelectSetting = option => {
   return (
-    <Select
+    <div
+      className="flex items-center"
       key={option.id}
-      onValueChange={value => option.onChange?.(value)}
-      value={option.value}
     >
-      <SelectTrigger className="w-full overflow-hidden">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {option.values.map(value => (
-          <SelectItem
-            key={value.id}
-            value={value.id}
-          >
-            {value.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+      <div className="w-1/3 text-[13px]">
+        {renderLabelWithTooltip(option.name, option.tooltip)}
+      </div>
+      <div className="w-2/3">
+        <Select
+          onValueChange={value => option.onChange?.(value)}
+          value={option.value}
+        >
+          <SelectTrigger className="w-full overflow-hidden">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {option.values.map(value => (
+              <SelectItem
+                key={value.id}
+                value={value.id}
+              >
+                {value.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
   );
 };
 
