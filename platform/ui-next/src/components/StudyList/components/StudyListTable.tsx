@@ -1,25 +1,8 @@
 import * as React from 'react';
-import { cn } from '../../../lib/utils';
 import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
-import {
-  DataTable,
-  DataTableToolbar,
-  DataTableTitle,
-  DataTableFilterRow,
-  DataTableViewOptions,
-  DataTablePagination,
-  useDataTable,
-} from '../../DataTable';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from '../../Table';
-import { ScrollArea } from '../../ScrollArea';
+import { DataTable, useDataTable } from '../../DataTable';
+import { TableRow, TableCell } from '../../Table';
 import { Button } from '../../Button';
 import { Input } from '../../Input';
 import { InputMultiSelect } from '../../InputMultiSelect';
@@ -117,7 +100,7 @@ function Content({
   toolbarRightExtras?: React.ReactNode;
   renderOpenPanelButton?: (args: { onOpenPanel: () => void }) => React.ReactNode;
 }) {
-  const { table, setColumnFilters } = useDataTable<StudyRow>();
+  const { table } = useDataTable<StudyRow>();
   const modalityOptions = React.useMemo(() => {
     const rows = (table.options?.data as StudyRow[]) ?? [];
     // Build a flat list of modality tokens across all rows.
@@ -163,36 +146,18 @@ function Content({
     window.addEventListener('resize', updateVisibility);
     return () => window.removeEventListener('resize', updateVisibility);
   }, [table]);
-  const renderColGroup = React.useCallback(
-    () => (
-      <colgroup>
-        {table.getVisibleLeafColumns().map((col) => {
-          const meta =
-            (col.columnDef.meta as unknown as { minWidth?: number | string } | undefined) ??
-            undefined;
-          const minWidth = meta?.minWidth;
-          return minWidth ? (
-            <col key={col.id} style={{ width: typeof minWidth === 'number' ? `${minWidth}px` : minWidth }} />
-          ) : (
-            <col key={col.id} />
-          );
-        })}
-      </colgroup>
-    ),
-    [table]
-  );
 
   return (
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
-        <DataTableToolbar>
+        <DataTable.Toolbar>
           <div className="absolute left-0">{toolbarLeft}</div>
-          {title ? <DataTableTitle>{title}</DataTableTitle> : null}
+          {title ? <DataTable.Title>{title}</DataTable.Title> : null}
           <div className="absolute right-0 flex items-center">
             {/* Pagination appears to the left of the "View" button */}
-            <DataTablePagination />
+            <DataTable.Pagination />
             {showColumnVisibility && (
-              <DataTableViewOptions
+              <DataTable.ViewOptions<StudyRow>
                 getLabel={(id) => {
                   const label = (
                     table.getColumn(id)?.columnDef.meta as { label?: string } | undefined
@@ -214,145 +179,97 @@ function Content({
               </div>
             ) : null}
           </div>
-        </DataTableToolbar>
+        </DataTable.Toolbar>
       )}
-      <div className="border-input/50 min-h-0 flex-1 rounded-md border">
-        <div className="flex h-full flex-col">
-          <div className="shrink-0 border-b border-input/50">
-            <Table className={cn('table-fixed', tableClassName)} containerClassName="overflow-x-hidden" noScroll>
-              {renderColGroup()}
-              <TableHeader>
-                {table.getHeaderGroups().map((hg) => (
-                  <TableRow key={hg.id}>
-                    {hg.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        className={`bg-muted ${
-                          ((header.column.columnDef.meta as unknown as { headerClassName?: string })
-                            ?.headerClassName) ?? ''
-                        }`}
-                        aria-sort={(() => {
-                          const s = header.column.getIsSorted() as false | 'asc' | 'desc';
-                          return s === 'asc' ? 'ascending' : s === 'desc' ? 'descending' : 'none';
-                        })()}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                <DataTableFilterRow
-                  resetCellId="actions"
-                  onReset={() => setColumnFilters([])}
-                  excludeColumnIds={["instances"]}
-                  renderCell={({ columnId, value, setValue }) => {
-                    if (columnId === 'modalities') {
-                      const selected = Array.isArray(value) ? (value as string[]) : [];
-                      return (
-                        <InputMultiSelect
-                          options={modalityOptions}
-                          value={selected}
-                          onChange={(next) => setValue(next)}
-                        >
-                          <InputMultiSelect.Field>
-                            <InputMultiSelect.Summary variant="single" />
-                            <InputMultiSelect.Input ariaLabel="Filter Modalities" placeholder="" />
-                          </InputMultiSelect.Field>
-                          <InputMultiSelect.Content fitToContent maxWidth={185}>
-                            <InputMultiSelect.Options />
-                          </InputMultiSelect.Content>
-                        </InputMultiSelect>
-                      );
-                    }
-                    return (
-                      <Input
-                        value={String((value as string) ?? '')}
-                        onChange={(e) => setValue(e.target.value)}
-                        className="h-7 w-full"
-                      />
-                    );
-                  }}
-                />
-              </TableBody>
-            </Table>
-          </div>
-          <div className="min-h-0 flex-1">
-            <ScrollArea className="h-full">
-              <Table className={cn('table-fixed', tableClassName)} containerClassName="h-full" noScroll>
-                {renderColGroup()}
-                <TableBody>
-                  {table.getPaginationRowModel().rows.length ? (
-                    table.getPaginationRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() ? 'selected' : undefined}
-                        onClick={(e) => {
-                          // When a default workflow is set, do not allow a second click to unselect.
-                          // Always select on click; otherwise toggle selection.
-                          if (defaultWorkflow) {
-                            if (!row.getIsSelected()) row.toggleSelected(true);
-                          } else {
-                            row.toggleSelected();
-                          }
-                        }}
-                        onDoubleClick={(e) => {
-                          if (!defaultWorkflow) return;
-                          // Ensure the row is selected, then launch with the default workflow
-                          if (!row.getIsSelected()) row.toggleSelected(true);
-                          const original = row.original as StudyRow;
-                          launch(original, defaultWorkflow as WorkflowId);
-                        }}
-                        aria-selected={row.getIsSelected()}
-                        className="group cursor-pointer"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            // Keyboard behavior mirrors click: when default workflow is set,
-                            // Enter/Space should select but not toggle to unselect.
-                            if (defaultWorkflow) {
-                              if (!row.getIsSelected()) row.toggleSelected(true);
-                            } else {
-                              row.toggleSelected();
-                            }
-                          }
-                        }}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            key={cell.id}
-                            className={
-                              (
-                                (cell.column.columnDef.meta as unknown as { cellClassName?: string }) ??
-                                {}
-                              ).cellClassName ?? ''
-                            }
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={table.getAllLeafColumns().length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </div>
-        </div>
-      </div>
+      <DataTable.Table tableClassName={tableClassName}>
+        <DataTable.Header />
+        <DataTable.FilterRow<StudyRow>
+          resetCellId="actions"
+          excludeColumnIds={['instances']}
+          renderCell={({ columnId, value, setValue }) => {
+            if (columnId === 'modalities') {
+              const selected = Array.isArray(value) ? (value as string[]) : [];
+              return (
+                <InputMultiSelect
+                  options={modalityOptions}
+                  value={selected}
+                  onChange={(next) => setValue(next)}
+                >
+                  <InputMultiSelect.Field>
+                    <InputMultiSelect.Summary variant="single" />
+                    <InputMultiSelect.Input ariaLabel="Filter Modalities" placeholder="" />
+                  </InputMultiSelect.Field>
+                  <InputMultiSelect.Content fitToContent maxWidth={185}>
+                    <InputMultiSelect.Options />
+                  </InputMultiSelect.Content>
+                </InputMultiSelect>
+              );
+            }
+            return (
+              <Input
+                value={String((value as string) ?? '')}
+                onChange={(e) => setValue(e.target.value)}
+                className="h-7 w-full"
+              />
+            );
+          }}
+        />
+        <DataTable.Body<StudyRow>
+          rowModel="pagination"
+          emptyMessage="No results."
+          renderRow={(row) => (
+            <TableRow
+              key={row.id}
+              data-state={row.getIsSelected() ? 'selected' : undefined}
+              onClick={() => {
+                // When a default workflow is set, do not allow a second click to unselect.
+                // Always select on click; otherwise toggle selection.
+                if (defaultWorkflow) {
+                  if (!row.getIsSelected()) row.toggleSelected(true);
+                } else {
+                  row.toggleSelected();
+                }
+              }}
+              onDoubleClick={() => {
+                if (!defaultWorkflow) return;
+                // Ensure the row is selected, then launch with the default workflow
+                if (!row.getIsSelected()) row.toggleSelected(true);
+                const original = row.original as StudyRow;
+                launch(original, defaultWorkflow as WorkflowId);
+              }}
+              aria-selected={row.getIsSelected()}
+              className="group cursor-pointer"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  // Keyboard behavior mirrors click: when default workflow is set,
+                  // Enter/Space should select but not toggle to unselect.
+                  if (defaultWorkflow) {
+                    if (!row.getIsSelected()) row.toggleSelected(true);
+                  } else {
+                    row.toggleSelected();
+                  }
+                }
+              }}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
+                  className={
+                    (
+                      (cell.column.columnDef.meta as unknown as { cellClassName?: string }) ??
+                      {}
+                    ).cellClassName ?? ''
+                  }
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          )}
+        />
+      </DataTable.Table>
     </div>
   );
 }

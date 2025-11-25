@@ -1,10 +1,14 @@
-export { DataTableColumnHeader } from './ColumnHeader'
-export { DataTableViewOptions } from './ViewOptions'
-export { DataTableFilterRow } from './FilterRow'
-export { DataTableActionOverlayCell } from './ActionOverlayCell'
-export { DataTableActionCell } from './ActionCell'
-export { DataTable } from './DataTable'
-export { useDataTable } from './context'
-export { DataTableToolbar } from './Toolbar'
-export { DataTableTitle } from './Title'
-export { DataTablePagination } from './Pagination'
+// Core compound table + hook
+export { DataTable } from './DataTable';
+export { useDataTable } from './context';
+
+// Shared building blocks for columns/cells
+export { DataTableColumnHeader } from './ColumnHeader';
+export { DataTableActionOverlayCell } from './ActionOverlayCell';
+
+// Export is no longer needed. Instead use DataTable compound component.
+// export { DataTableFilterRow } from './FilterRow'
+// export { DataTableViewOptions } from './ViewOptions'
+// export { DataTableToolbar } from './Toolbar'
+// export { DataTableTitle } from './Title'
+// export { DataTablePagination } from './Pagination'
