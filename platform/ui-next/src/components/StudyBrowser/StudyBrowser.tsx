@@ -17,6 +17,7 @@ const StudyBrowser = ({
   onClickThumbnail = noop,
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
+  onSegmentationClick = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
   showSettings,

@@ -11,7 +11,8 @@ import { BlobReader, Uint8ArrayWriter, ZipReader } from '@zip.js/zip.js';
 import filesToStudies from '../../../../../platform/app/src/routes/Local/filesToStudies.js';
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
-const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
+const thumbnailNoImageModalities = ['SR', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
+const hiddenModalities = ['SEG'];
 
 /**
  * Retry utility function that attempts an async operation up to maxRetries times
@@ -124,7 +125,24 @@ function PanelStudyBrowser({
     setViewPresets(newViewPresets);
   };
 
-  const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
+  const segmentationMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    displaySetService.activeDisplaySets
+      .filter(ds => ds.Modality === 'SEG' && ds.referencedSeriesInstanceUID)
+      .forEach(segDs => {
+        map.set(segDs.referencedSeriesInstanceUID, segDs.displaySetInstanceUID);
+      });
+
+    return map;
+  }, [displaySetService.activeDisplaySets]);
+
+  const mapDisplaySetsWithState = useCallback(
+    (dsSets, loadingState, thumbMap, vps) => {
+      const baseFn = customMapDisplaySets || _mapDisplaySets;
+      return baseFn(dsSets, loadingState, thumbMap, vps, segmentationMap);
+    },
+    [customMapDisplaySets, segmentationMap]
+  );
   const uploadInProgressRef = useRef(false);
 
   useEffect(() => {
@@ -239,7 +257,9 @@ function PanelStudyBrowser({
       });
 
       // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://backend-ohif-1084552301744.us-central1.run.app';
+      const backendUrl =
+        process.env.REACT_APP_BACKEND_URL ||
+        'https://backend-ohif-1084552301744.us-central1.run.app';
       console.log('Backend URL:', backendUrl);
 
       // Wrap fetch operation with retry logic
@@ -610,6 +630,15 @@ function PanelStudyBrowser({
       extensionManager,
       onDoubleClickThumbnailHandlerCallBack,
     ]
+  );
+
+  const handleSegmentationClick = useCallback(
+    (segDisplaySetInstanceUID: string) => {
+      if (segDisplaySetInstanceUID) {
+        onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
+      }
+    },
+    [onDoubleClickThumbnailHandler]
   );
 
   // ~~ studyDisplayList
@@ -988,6 +1017,7 @@ function PanelStudyBrowser({
         onClickUntrack={onClickUntrack}
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        onSegmentationClick={handleSegmentationClick}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
@@ -1030,11 +1060,17 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcMap, viewports) {
+function _mapDisplaySets(
+  displaySets,
+  displaySetLoadingState,
+  thumbnailImageSrcMap,
+  viewports,
+  segmentationMap?: Map<string, string>
+) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets
-    .filter(ds => !ds.excludeFromThumbnailBrowser)
+    .filter(ds => !ds.excludeFromThumbnailBrowser && !hiddenModalities.includes(ds.Modality))
     .forEach(ds => {
       const { thumbnailSrc, displaySetInstanceUID } = ds;
       const componentType = _getComponentType(ds);
@@ -1043,11 +1079,13 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
+      const segDisplaySetUID = segmentationMap?.get(ds.SeriesInstanceUID);
 
       array.push({
         displaySetInstanceUID,
         description: ds.SeriesDescription || '',
         seriesNumber: ds.SeriesNumber,
+        seriesInstanceUID: ds.SeriesInstanceUID,
         modality: ds.Modality,
         seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames,
@@ -1060,9 +1098,9 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         dragData: {
           type: 'displayset',
           displaySetInstanceUID,
-          // .. Any other data to pass
         },
         isHydratedForDerivedDisplaySet: ds.isHydrated,
+        segDisplaySetInstanceUID: segDisplaySetUID || null,
       });
     });
 
