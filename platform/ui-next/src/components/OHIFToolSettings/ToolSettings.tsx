@@ -7,6 +7,7 @@ import { Checkbox } from '../Checkbox/Checkbox';
 import { Label } from '../Label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../Select';
 import { Switch } from '../Switch';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 const SETTING_TYPES = {
   RANGE: 'range',
@@ -61,13 +62,32 @@ function ToolSettings({ options }) {
   );
 }
 
+const renderLabelWithTooltip = (label: React.ReactNode, tooltip?: string) => {
+  if (!label) {
+    return null;
+  }
+
+  if (!tooltip) {
+    return <span>{label}</span>;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="cursor-help">{label}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top">{tooltip}</TooltipContent>
+    </Tooltip>
+  );
+};
+
 const renderRangeSetting = option => {
   return (
     <div
       className="flex items-center"
       key={option.id}
     >
-      <div className="w-1/3 text-[13px]">{option.name}</div>
+      <div className="w-1/3 text-[13px]">{renderLabelWithTooltip(option.name, option.tooltip)}</div>
       <div
         className="w-2/3"
         data-cy={option.id}
