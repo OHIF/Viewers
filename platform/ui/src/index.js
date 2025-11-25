@@ -27,6 +27,7 @@ export {
   ButtonEnums,
   ContextMenu,
   InputFilterText,
+  Svg,
 } from './components';
 
 /** These are mostly used in the docs */

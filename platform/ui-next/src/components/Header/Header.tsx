@@ -1,15 +1,8 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  Icons,
-  Button,
-  ToolButton,
-} from '../';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, Icons, ToolButton } from '../';
 import { IconPresentationProvider } from '@ohif/ui-next';
+import { Svg } from '@ohif/ui';
 
 import NavBar from '../NavBar';
 
@@ -45,12 +38,6 @@ function Header({
   Secondary,
   ...props
 }: HeaderProps): ReactNode {
-  const onClickReturn = () => {
-    if (isReturnEnabled && onClickReturnButton) {
-      onClickReturnButton();
-    }
-  };
-
   return (
     <IconPresentationProvider
       size="large"
@@ -60,19 +47,22 @@ function Header({
         isSticky={isSticky}
         {...props}
       >
-        <div className="relative h-[48px] items-center">
+        <div className="relative h-[48px] items-center py-8">
           <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
             <div
               className={classNames(
                 'mr-3 inline-flex items-center',
                 isReturnEnabled && 'cursor-pointer'
               )}
-              onClick={onClickReturn}
               data-cy="return-to-work-list"
             >
-              {isReturnEnabled && <Icons.ArrowLeft className="text-primary ml-1 h-7 w-7" />}
               <div className="ml-1">
-                {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
+                {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
+                  <Svg
+                    name="logo-xylexa"
+                    className="w-40 hover:cursor-default sm:w-24 md:w-32 lg:w-36"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -87,15 +77,6 @@ function Header({
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             <div className="flex-shrink-0">
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-primary hover:bg-primary-dark mt-2 h-full w-full"
-                  >
-                    <Icons.GearSettings />
-                  </Button>
-                </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {menuOptions.map((option, index) => {
                     const IconComponent = option.icon

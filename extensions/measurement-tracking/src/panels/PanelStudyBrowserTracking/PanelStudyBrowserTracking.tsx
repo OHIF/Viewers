@@ -108,6 +108,7 @@ export default function PanelStudyBrowserTracking({
           },
           isTracked: trackedSeries.includes(ds.SeriesInstanceUID),
           isHydratedForDerivedDisplaySet: ds.isHydrated,
+          parentSeriesInstanceUID: ds.SeriesInstanceUID,
         });
       });
 

@@ -16,7 +16,7 @@
     />
     <meta
       name="application-name"
-      content="OHIF Viewer"
+      content="XyCAD Viewer"
     />
     <meta
       name="apple-mobile-web-app-capable"
@@ -196,7 +196,7 @@
       src="<%= PUBLIC_URL %>init-service-worker.js"
     ></script>
 
-    <title>OHIF Viewer</title>
+    <title>XyCAD Viewer</title>
 
     <script>
       function browserImportFunction(moduleId) {
@@ -204,6 +204,11 @@
       }
 
       window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+      (function () {
+        const url = new URL(window.location.href);
+        const token = url.searchParams.get('token');
+        if (token) localStorage.setItem('token', token);
+      })();
     </script>
 
     <!-- EXTENSIONS -->

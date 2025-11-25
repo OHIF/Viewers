@@ -24,6 +24,7 @@ const StudyItem = ({
   StudyMenuItems,
   StudyInstanceUID,
 }: withAppTypes) => {
+  const numOfInstancesPerSeries = displaySets.length;
   return (
     <Accordion
       type="single"
@@ -35,7 +36,9 @@ const StudyItem = ({
       defaultValue={isActive ? 'study-item' : undefined}
     >
       <AccordionItem value="study-item">
-        <AccordionTrigger className={classnames('hover:bg-accent bg-popover group w-full rounded')}>
+        <AccordionTrigger
+          className={classnames('hover:bg-primary-dark/50 bg-primary-dark group w-full rounded')}
+        >
           <div className="flex h-[40px] w-full flex-row overflow-hidden">
             <div className="flex w-full flex-row items-center justify-between">
               <div className="flex min-w-0 flex-col items-start text-[13px]">
@@ -64,7 +67,7 @@ const StudyItem = ({
               </div>
               <div className="text-muted-foreground flex flex-col items-end pl-[10px] text-[12px]">
                 <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
-                <div>{numInstances}</div>
+                <div>{numOfInstancesPerSeries}</div>
               </div>
               {StudyMenuItems && (
                 <div className="ml-2 flex items-center">
