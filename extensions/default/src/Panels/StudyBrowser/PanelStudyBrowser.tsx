@@ -133,9 +133,9 @@ function PanelStudyBrowser({
       .forEach(segDs => {
         map.set(segDs.referencedSeriesInstanceUID, segDs.displaySetInstanceUID);
       });
-    console.log('segmentationMap updated:', map.size, 'entries', Array.from(map.entries()));
     return map;
-  }, [displaySets, displaySetService]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displaySets]);
 
   const mapDisplaySetsWithState = useCallback(
     (dsSets, loadingState, thumbMap, vps) => {
@@ -642,6 +642,71 @@ function PanelStudyBrowser({
     [onDoubleClickThumbnailHandler]
   );
 
+  const handleReportClick = useCallback(
+    async (seriesInstanceUID: string) => {
+      if (!sessionID) {
+        console.warn('No session ID available');
+        return;
+      }
+
+      const { uiNotificationService } = servicesManager.services;
+
+      uiNotificationService.show({
+        title: 'Report',
+        message: `Generating report for series...`,
+        type: 'info',
+      });
+
+      try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+
+        const response = await retryWithDelay(
+          async () => {
+            const res = await fetch(
+              `${backendUrl}/generate_report?sessionID=${sessionID}&seriesInstanceUID=${seriesInstanceUID}`
+            );
+            if (!res.ok) {
+              throw new Error(`Backend responded with status: ${res.status}`);
+            }
+            return res;
+          },
+          3,
+          3000,
+          true
+        );
+
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+        }, 1000);
+
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Report opened in new tab',
+          type: 'success',
+        });
+      } catch (error) {
+        console.error('Failed to fetch report from backend:', error);
+        uiNotificationService.show({
+          title: 'Report',
+          message: `Failed to fetch report: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      }
+    },
+    [sessionID, servicesManager]
+  );
+
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
@@ -1019,6 +1084,7 @@ function PanelStudyBrowser({
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         onSegmentationClick={handleSegmentationClick}
+        onReportClick={handleReportClick}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}

@@ -20,6 +20,7 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   onSegmentationClick,
+  onReportClick,
   viewPreset = 'thumbnails',
   ThumbnailMenuItems,
   StudyMenuItems,
@@ -88,6 +89,7 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               onSegmentationClick={onSegmentationClick}
+              onReportClick={onReportClick}
               viewPreset={viewPreset}
               ThumbnailMenuItems={ThumbnailMenuItems}
             />

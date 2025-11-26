@@ -10,6 +10,7 @@ const ThumbnailList = ({
   onThumbnailDoubleClick,
   onClickUntrack,
   onSegmentationClick,
+  onReportClick,
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
   ThumbnailMenuItems,
@@ -54,6 +55,7 @@ const ThumbnailList = ({
                   onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
                   onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
                   onSegmentationClick={onSegmentationClick}
+                  onReportClick={onReportClick}
                   ThumbnailMenuItems={ThumbnailMenuItems}
                 />
               );
@@ -82,6 +84,7 @@ const ThumbnailList = ({
                   onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
                   onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
                   onSegmentationClick={onSegmentationClick}
+                  onReportClick={onReportClick}
                   ThumbnailMenuItems={ThumbnailMenuItems}
                 />
               );

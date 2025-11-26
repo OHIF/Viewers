@@ -30,10 +30,12 @@ const Thumbnail = ({
   isTracked = false,
   canReject = false,
   segDisplaySetInstanceUID = null,
+  seriesInstanceUID = null,
   dragData = {},
   onReject = () => {},
   onClickUntrack = () => {},
   onSegmentationClick = null,
+  onReportClick = null,
   ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
@@ -159,17 +161,30 @@ const Thumbnail = ({
               </div>
             </div>
           </div>
-          {segDisplaySetInstanceUID && onSegmentationClick && (
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                onSegmentationClick(segDisplaySetInstanceUID);
-              }}
-              className="bg-primary hover:bg-primary/80 mt-1 w-full rounded py-1 text-[11px] font-semibold text-white"
-            >
-              SEG
-            </button>
-          )}
+          <div className="mt-1 flex w-full gap-1">
+            {segDisplaySetInstanceUID && onSegmentationClick && (
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  onSegmentationClick(segDisplaySetInstanceUID);
+                }}
+                className="bg-primary hover:bg-primary/80 flex-1 rounded py-1 text-[11px] font-semibold text-white"
+              >
+                SEG
+              </button>
+            )}
+            {seriesInstanceUID && onReportClick && (
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  onReportClick(seriesInstanceUID);
+                }}
+                className="bg-secondary hover:bg-secondary/80 flex-1 rounded py-1 text-[11px] font-semibold text-white"
+              >
+                Report
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -261,6 +276,17 @@ const Thumbnail = ({
               className="bg-primary hover:bg-primary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
             >
               SEG
+            </button>
+          )}
+          {seriesInstanceUID && onReportClick && (
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                onReportClick(seriesInstanceUID);
+              }}
+              className="bg-secondary hover:bg-secondary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+            >
+              Report
             </button>
           )}
           <ThumbnailMenuItems
