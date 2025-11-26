@@ -78,6 +78,13 @@ export type DisplaySet = {
   isLoaded?: boolean;
   isHydrated?: boolean;
   isRehydratable?: boolean;
+
+  /**
+   * Loads the display set.
+   * @param headers - The headers to use for the request.
+   * @returns A promise that resolves when the display set is loaded.
+   */
+  load: ({ headers }: { headers?: unknown }) => Promise<void>;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {
