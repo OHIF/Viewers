@@ -2,6 +2,7 @@ import React from 'react';
 import { Label } from '../Label';
 import { Tabs, TabsList, TabsTrigger } from '../Tabs';
 import { cn } from '../../lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 interface RadioValue {
   value: string;
@@ -14,6 +15,7 @@ interface RadioOption {
   value: string;
   values: RadioValue[];
   onChange?: (val: string) => void;
+  tooltip?: string;
 }
 
 interface RowSegmentedControlProps {
@@ -38,7 +40,18 @@ export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({
       className={cn('flex items-center justify-between text-[13px]', className)}
       key={option.id}
     >
-      <Label className="mr-2">{option.name}</Label>
+      <Label className="mr-2">
+        {option.tooltip ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-help">{option.name}</span>
+            </TooltipTrigger>
+            <TooltipContent side="top">{option.tooltip}</TooltipContent>
+          </Tooltip>
+        ) : (
+          option.name
+        )}
+      </Label>
       <div className="max-w-1/2">
         <Tabs
           value={option.value}

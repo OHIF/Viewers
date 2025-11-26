@@ -17,19 +17,25 @@ function _getDisplaySetsFromSeries(
   servicesManager: AppTypes.ServicesManager,
   extensionManager
 ) {
-  const instance = instances[0];
+  utils.sortStudyInstances(instances);
+  // Choose the LAST instance in the list as the most recently created one.
+  const instance = instances[instances.length - 1];
 
   const {
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,
-    SeriesDescription,
+    SeriesDescription = '',
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
+    StructureSetDate,
+    StructureSetTime,
     SOPClassUID,
     wadoRoot,
     wadoUri,
     wadoUriRoot,
+    imageId: predecessorImageId,
   } = instance;
 
   const displaySet = {
@@ -39,7 +45,13 @@ function _getDisplaySetsFromSeries(
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
     SeriesNumber,
-    SeriesDate,
+    /**
+     * The "SeriesDate" for a display set is really the display set date, which
+     * should be the date of the instance being used, which will be the structure
+     * set date in this case.
+     */
+    SeriesDate: StructureSetDate || SeriesDate,
+    SeriesTime: StructureSetTime || SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
@@ -54,6 +66,8 @@ function _getDisplaySetsFromSeries(
     structureSet: null,
     sopClassUids,
     instance,
+    instances,
+    predecessorImageId,
     wadoRoot,
     wadoUriRoot,
     wadoUri,
@@ -62,7 +76,10 @@ function _getDisplaySetsFromSeries(
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
-  if (instance.ReferencedFrameOfReferenceSequence && !instance.ReferencedSeriesSequence) {
+  if (
+    instance.ReferencedFrameOfReferenceSequence?.RTReferencedStudySequence &&
+    !instance.ReferencedSeriesSequence
+  ) {
     instance.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
       instance.ReferencedFrameOfReferenceSequence
     );
@@ -70,7 +87,8 @@ function _getDisplaySetsFromSeries(
   }
 
   if (!referencedSeriesSequence) {
-    throw new Error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    console.error('ReferencedSeriesSequence is missing for the RTSTRUCT');
+    return;
   }
 
   const referencedSeries = referencedSeriesSequence[0];
@@ -79,9 +97,13 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
   const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
-    displaySet.referencedSeriesInstanceUID
-  );
+  const referencedDisplaySets =
+    displaySetService.getDisplaySetsForReferences(referencedSeriesSequence);
+  if (referencedDisplaySets?.length > 1) {
+    console.warn(
+      'Reference applies to more than 1 display set for Contours, applying only to first display set'
+    );
+  }
 
   if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
     // Instead of throwing error, subscribe to display sets added
@@ -97,7 +119,7 @@ function _getDisplaySetsFromSeries(
       }
     );
   } else {
-    const referencedDisplaySet = referencedDisplaySets[0];
+    const [referencedDisplaySet] = referencedDisplaySets;
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
   }
