@@ -104,6 +104,8 @@ function PanelStudyBrowser({
   const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
   const [isSegmenting, setIsSegmenting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadStage, setUploadStage] = useState<string>('');
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
