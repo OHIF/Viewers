@@ -47,6 +47,7 @@ const StudyBrowser = ({
               onClickThumbnail={onClickThumbnail}
               onDoubleClickThumbnail={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
+              onSegmentationClick={onSegmentationClick}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
               viewPreset={viewPreset}

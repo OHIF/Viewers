@@ -127,14 +127,15 @@ function PanelStudyBrowser({
 
   const segmentationMap = React.useMemo(() => {
     const map = new Map<string, string>();
-    displaySetService.activeDisplaySets
+    const allDisplaySets = displaySetService.activeDisplaySets;
+    allDisplaySets
       .filter(ds => ds.Modality === 'SEG' && ds.referencedSeriesInstanceUID)
       .forEach(segDs => {
         map.set(segDs.referencedSeriesInstanceUID, segDs.displaySetInstanceUID);
       });
-
+    console.log('segmentationMap updated:', map.size, 'entries', Array.from(map.entries()));
     return map;
-  }, [displaySetService.activeDisplaySets]);
+  }, [displaySets, displaySetService]);
 
   const mapDisplaySetsWithState = useCallback(
     (dsSets, loadingState, thumbMap, vps) => {
