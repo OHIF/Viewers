@@ -848,12 +848,20 @@ function commandsModule({
       }
     },
 
-    sendDicomZipToBackend: async ({ sessionID }) => {
+    sendDicomZipToBackend: async ({ sessionID, onProgress }) => {
       try {
         if (!sessionID) {
           console.error('No sessionID provided');
           return null;
         }
+
+        const reportProgress = (progress: number, stage: string) => {
+          if (onProgress && typeof onProgress === 'function') {
+            onProgress(progress, stage);
+          }
+        };
+
+        reportProgress(5, 'Preparing DICOM files...');
 
         uiNotificationService.show({
           title: 'DICOM ZIP',
@@ -876,6 +884,18 @@ function commandsModule({
             type: 'warning',
           });
           return null;
+        }
+
+        let totalFiles = 0;
+        for (const studyInstanceUID of studyInstanceUIDs) {
+          const study = DicomMetadataStore.getStudy(studyInstanceUID);
+          if (study?.series) {
+            study.series.forEach(s => {
+              if (s.instances) {
+                totalFiles += s.instances.length;
+              }
+            });
+          }
         }
 
         for (const studyInstanceUID of studyInstanceUIDs) {
@@ -908,6 +928,9 @@ function commandsModule({
 
                   await zipWriter.add(fileName, new BlobReader(file));
                   fileCount++;
+
+                  const progress = Math.min(20, 5 + (fileCount / totalFiles) * 15);
+                  reportProgress(progress, `Packaging files... (${fileCount}/${totalFiles})`);
                 }
               } catch (error) {
                 console.error('Error processing instance:', error);
@@ -925,8 +948,11 @@ function commandsModule({
           return null;
         }
 
+        reportProgress(20, 'Finalizing ZIP file...');
         await zipWriter.close();
         const zipBlob = await zipFileWriter.getData();
+
+        reportProgress(25, 'Preparing upload...');
 
         // @ts-ignore - BACKEND_API_URL is injected at build time
         const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
@@ -1006,14 +1032,41 @@ function commandsModule({
           formData.append('file', zipBlob, zipFileName);
           formData.append('sessionID', sessionID);
 
-          const response = await fetch(url, {
-            method: 'POST',
-            body: formData,
-          });
+          reportProgress(25, 'Uploading to server...');
 
-          if (!response.ok) {
-            throw new Error(`Backend responded with status: ${response.status}`);
-          }
+          await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', e => {
+              if (e.lengthComputable) {
+                const uploadProgress = (e.loaded / e.total) * 75 + 25;
+                reportProgress(
+                  uploadProgress,
+                  `Uploading... (${Math.round(uploadProgress - 25)}%)`
+                );
+              }
+            });
+
+            xhr.addEventListener('load', () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                reportProgress(100, 'Upload complete!');
+                resolve(xhr.response);
+              } else {
+                reject(new Error(`Backend responded with status: ${xhr.status}`));
+              }
+            });
+
+            xhr.addEventListener('error', () => {
+              reject(new Error('Network error during upload'));
+            });
+
+            xhr.addEventListener('abort', () => {
+              reject(new Error('Upload aborted'));
+            });
+
+            xhr.open('POST', url);
+            xhr.send(formData);
+          });
 
           uiNotificationService.show({
             title: 'DICOM ZIP',

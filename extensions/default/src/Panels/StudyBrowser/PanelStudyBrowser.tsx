@@ -104,7 +104,6 @@ function PanelStudyBrowser({
   const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
   const [isSegmenting, setIsSegmenting] = useState(false);
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -165,13 +164,23 @@ function PanelStudyBrowser({
 
       uploadInProgressRef.current = true;
       setIsUploadingDicom(true);
+      setUploadProgress(0);
+      setUploadStage('Preparing files...');
       try {
-        await commandsManager.runCommand('sendDicomZipToBackend', { sessionID });
+        await commandsManager.runCommand('sendDicomZipToBackend', {
+          sessionID,
+          onProgress: (progress: number, stage: string) => {
+            setUploadProgress(progress);
+            setUploadStage(stage);
+          },
+        });
         sessionStorage.setItem(uploadKey, 'true');
       } catch (error) {
         console.error('Failed to send DICOM to backend:', error);
       } finally {
         setIsUploadingDicom(false);
+        setUploadProgress(0);
+        setUploadStage('');
         uploadInProgressRef.current = false;
       }
     };
@@ -522,85 +531,6 @@ function PanelStudyBrowser({
     commandsManager,
   ]);
 
-  const openReportFromBackend = useCallback(async () => {
-    if (!sessionID) {
-      console.warn('No session ID available');
-      return;
-    }
-
-    const { uiNotificationService } = servicesManager.services;
-
-    setIsGeneratingReport(true);
-    try {
-      // Check if segmentation has been done, if not, call it first
-      if (!isSegmented) {
-        uiNotificationService.show({
-          title: 'Report',
-          message: 'Segmentation not done yet. Running segmentation first...',
-          type: 'info',
-        });
-
-        await fetchSegmentationFromBackend();
-      }
-
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Fetching report from backend...',
-        type: 'info',
-      });
-
-      // @ts-ignore - BACKEND_API_URL is injected at build time\
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
-
-      // Wrap fetch operation with retry logic
-      const response = await retryWithDelay(
-        async () => {
-          const res = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
-          if (!res.ok) {
-            throw new Error(`Backend responded with status: ${res.status}`);
-          }
-          return res;
-        },
-        3, // maxRetries
-        3000, // 3 seconds delay
-        true // suppressWarnings
-      );
-
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-
-      // Create a temporary anchor element to open PDF in new tab
-      // This method is more reliable and bypasses popup blockers
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the blob URL after a short delay
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-      }, 1000);
-
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Report opened in new tab',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error('Failed to fetch report from backend:', error);
-      uiNotificationService.show({
-        title: 'Report',
-        message: `Failed to fetch report: ${error.message || error.toString()}`,
-        type: 'error',
-      });
-    } finally {
-      setIsGeneratingReport(false);
-    }
-  }, [sessionID, servicesManager, isSegmented, fetchSegmentationFromBackend]);
-
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
       const customHandler = customizationService.getCustomization(
@@ -643,7 +573,7 @@ function PanelStudyBrowser({
   );
 
   const handleReportClick = useCallback(
-    async (seriesInstanceUID: string) => {
+    async (studyInstanceUID: string) => {
       if (!sessionID) {
         console.warn('No session ID available');
         return;
@@ -653,7 +583,7 @@ function PanelStudyBrowser({
 
       uiNotificationService.show({
         title: 'Report',
-        message: `Generating report for series...`,
+        message: `Generating report for study...`,
         type: 'info',
       });
 
@@ -663,7 +593,7 @@ function PanelStudyBrowser({
         const response = await retryWithDelay(
           async () => {
             const res = await fetch(
-              `${backendUrl}/generate_report?sessionID=${sessionID}&seriesInstanceUID=${seriesInstanceUID}`
+              `${backendUrl}/generate_report?sessionID=${sessionID}&studyInstanceUID=${studyInstanceUID}`
             );
             if (!res.ok) {
               throw new Error(`Backend responded with status: ${res.status}`);
@@ -1015,24 +945,32 @@ function PanelStudyBrowser({
           thickness="2px"
         />
         <div className="flex flex-col gap-2 p-2">
+          {isUploadingDicom && uploadProgress > 0 && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>{uploadStage}</span>
+                <span>{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
           {conversionStatus && !isConversionComplete && (
             <div className="text-primary-light px-2 text-xs">{conversionStatus}</div>
           )}
           <div className="flex gap-2">
             <button
               onClick={fetchSegmentationFromBackend}
-              disabled={
-                !sessionID ||
-                isUploadingDicom ||
-                !isConversionComplete ||
-                isSegmenting ||
-                isGeneratingReport
-              }
+              disabled={!sessionID || isUploadingDicom || !isConversionComplete || isSegmenting}
               className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
               title={
                 !isConversionComplete
                   ? 'Waiting for DICOM to NIfTI conversion...'
-                  : 'Run segmentation'
+                  : 'Load segmentation'
               }
             >
               {isUploadingDicom
@@ -1040,32 +978,8 @@ function PanelStudyBrowser({
                 : !isConversionComplete
                   ? 'Converting...'
                   : isSegmenting
-                    ? 'Segmenting...'
+                    ? 'Loading...'
                     : 'Segmentation'}
-            </button>
-            <button
-              onClick={openReportFromBackend}
-              disabled={
-                !sessionID ||
-                isUploadingDicom ||
-                !isConversionComplete ||
-                isSegmenting ||
-                isGeneratingReport
-              }
-              className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
-              title={
-                !isConversionComplete
-                  ? 'Waiting for DICOM to NIfTI conversion...'
-                  : 'Generate report'
-              }
-            >
-              {isUploadingDicom
-                ? 'Uploading...'
-                : !isConversionComplete
-                  ? 'Converting...'
-                  : isGeneratingReport
-                    ? 'Generating...'
-                    : 'Report'}
             </button>
           </div>
         </div>

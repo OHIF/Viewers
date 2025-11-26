@@ -68,11 +68,20 @@ const StudyItem = ({
                 <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
                 <div>{numInstances}</div>
               </div>
-              {StudyMenuItems && (
-                <div className="ml-2 flex items-center">
-                  <StudyMenuItems StudyInstanceUID={StudyInstanceUID} />
-                </div>
-              )}
+              <div className="ml-2 flex items-center gap-2">
+                {onReportClick && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      onReportClick(StudyInstanceUID);
+                    }}
+                    className="bg-secondary hover:bg-secondary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                  >
+                    Report
+                  </button>
+                )}
+                {StudyMenuItems && <StudyMenuItems StudyInstanceUID={StudyInstanceUID} />}
+              </div>
             </div>
           </div>
         </AccordionTrigger>
@@ -89,7 +98,6 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               onSegmentationClick={onSegmentationClick}
-              onReportClick={onReportClick}
               viewPreset={viewPreset}
               ThumbnailMenuItems={ThumbnailMenuItems}
             />
