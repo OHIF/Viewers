@@ -44,6 +44,13 @@ export function addProxyFields(instance) {
       enumerable: true,
       get: () => {
         return instance._parentInstance?.[fieldProxy] ?? instance._parentInstance?._shared?.[fieldProxy];
+      },
+      set: (value) => {
+        Object.defineProperty(instance,fieldProxy, {
+          writable: true,
+          enumerable: true,
+          value,
+        })
       }
     });
   }

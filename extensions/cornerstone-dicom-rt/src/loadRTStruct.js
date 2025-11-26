@@ -89,9 +89,12 @@ async function checkAndLoadContourData({
         ROIContour.ContourSequence.forEach((Contour, index) => {
           const promise = resolvedPromises[index];
           if (promise.status === 'fulfilled') {
-            if (Array.isArray(promise.value) && promise.value.every(Number.isFinite)) {
+            if (
+              Array.isArray(promise.value) &&
+              promise.value.every(it => Number.isFinite(Number(it)))
+            ) {
               // If promise.value is already an array of numbers, use it directly
-              Contour.ContourData = promise.value;
+              Contour.ContourData = promise.value.map(Number);
             } else {
               // If the resolved promise value is a byte array (Blob), it needs to be decoded
               const uint8Array = new Uint8Array(promise.value);

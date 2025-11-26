@@ -524,6 +524,7 @@ function WorkList({
     DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
       ? {
           title: 'Upload files',
+          containerClassName: DicomUploadComponent?.containerClassName,
           closeButton: true,
           shouldCloseOnEsc: false,
           shouldCloseOnOverlayClick: false,

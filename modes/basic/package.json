@@ -1,10 +1,11 @@
 {
   "name": "@ohif/mode-basic",
-  "version": "3.12.0-beta.85",
+  "version": "3.12.0-beta.93",
   "description": "A basic mode used to build other modes on top of",
   "author": "OHIF Contributors",
   "license": "MIT",
   "main": "dist/ohif-mode-basic.js",
+  "module": "src/index.tsx",
   "files": [
     "dist/**",
     "public/**",
@@ -14,21 +15,20 @@
   "keywords": [
     "ohif-mode"
   ],
-  "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },
   "peerDependencies": {
-    "@ohif/core": "3.12.0-beta.85",
-    "@ohif/extension-cornerstone": "3.12.0-beta.85",
-    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.85",
-    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.85",
-    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.85",
-    "@ohif/extension-default": "3.12.0-beta.85",
-    "@ohif/extension-dicom-pdf": "3.12.0-beta.85",
-    "@ohif/extension-dicom-video": "3.12.0-beta.85"
+    "@ohif/core": "3.12.0-beta.93",
+    "@ohif/extension-cornerstone": "3.12.0-beta.93",
+    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.93",
+    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.93",
+    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.93",
+    "@ohif/extension-default": "3.12.0-beta.93",
+    "@ohif/extension-dicom-pdf": "3.12.0-beta.93",
+    "@ohif/extension-dicom-video": "3.12.0-beta.93"
   },
   "dependencies": {
     "@babel/runtime": "7.28.2"

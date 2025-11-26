@@ -2,42 +2,8 @@ import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
 import setUpAutoTabSwitchHandler from './utils/setUpAutoTabSwitchHandler';
-
-const ohif = {
-  layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
-  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
-  leftPanel: '@ohif/extension-default.panelModule.seriesList',
-};
-
-const cornerstone = {
-  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-  labelMapSegmentationPanel:
-    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
-  contourSegmentationPanel:
-    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
-  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
-};
-
-const segmentation = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-};
-
-const dicomRT = {
-  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
-};
-/**
- * Just two dependencies to be able to render a viewport with panels in order
- * to make sure that the mode is working.
- */
-const extensionDependencies = {
-  '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
-};
+import { ohif, cornerstone, extensionDependencies, dicomRT, segmentation } from '@ohif/mode-basic';
+export * from './toolbarButtons';
 
 function modeFactory({ modeConfiguration }) {
   const _unsubscriptions = [];
@@ -236,11 +202,11 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ohif.leftPanel],
+              leftPanels: [ohif.thumbnailList],
               leftPanelResizable: true,
               rightPanels: [
-                cornerstone.contourSegmentationPanel,
                 cornerstone.labelMapSegmentationPanel,
+                cornerstone.contourSegmentationPanel,
               ],
               rightPanelResizable: true,
               // leftPanelClosed: true,

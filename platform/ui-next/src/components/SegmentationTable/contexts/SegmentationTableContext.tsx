@@ -75,10 +75,12 @@ export interface SegmentationTableContextType {
   // Function handlers
   setShowConfig?: (show: boolean) => void;
   setRenderFill?: ({ type }: { type: string }, value: boolean) => void;
+  setRenderFillInactive?: ({ type }: { type: string }, value: boolean) => void;
   setRenderOutline?: ({ type }: { type: string }, value: boolean) => void;
+  setRenderOutlineInactive?: ({ type }: { type: string }, value: boolean) => void;
   setOutlineWidth?: ({ type }: { type: string }, value: number) => void;
   setFillAlpha?: ({ type }: { type: string }, value: number) => void;
-  setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
+  setFillAlphaInactive?: ({ type }: { type?: string }, value: number) => void;
   toggleRenderInactiveSegmentations?: () => void;
   onSegmentationAdd?: ({
     segmentationId,

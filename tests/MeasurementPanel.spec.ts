@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy, addLengthMeasurement, scrollVolumeViewport } from './utils';
+import { addLengthMeasurement, expect, scrollVolumeViewport, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -136,8 +135,11 @@ test('checks if measurement item can be relabeled through the context menu on th
   await expect(measurementRow).toContainText(relabelText);
 });
 
-test('checks if image would jump when clicked on a measurement item', async ({ page }) => {
-  const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
+test('checks if image would jump when clicked on a measurement item', async ({
+  page,
+  viewportPageObject,
+}) => {
+  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight;
 
   // Image loads on slice 1, confirm on slice 1 then add measurement
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });

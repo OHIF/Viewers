@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.92...v3.12.0-beta.93) (2025-11-25)
+
+
+### Features
+
+* tooltips for tool settings ([#5586](https://github.com/OHIF/Viewers/issues/5586)) ([411553e](https://github.com/OHIF/Viewers/commit/411553ee916b8a63b2a934a7e1274bc449041016))
+
+
+
+
+
+# [3.12.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.91...v3.12.0-beta.92) (2025-11-24)
+
+
+### Bug Fixes
+
+* **docs:** Empty commit as an attempt to fix the docs build. ([#5582](https://github.com/OHIF/Viewers/issues/5582)) ([94b0358](https://github.com/OHIF/Viewers/commit/94b0358f18f81fa2822a208d68decfce076ef577))
+
+
+
+
+
+# [3.12.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.90...v3.12.0-beta.91) (2025-11-21)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.89...v3.12.0-beta.90) (2025-11-21)
+
+
+### Bug Fixes
+
+* **DicomUpload:** Switch to use ui-next components and colors ([#5576](https://github.com/OHIF/Viewers/issues/5576)) ([62d6bf4](https://github.com/OHIF/Viewers/commit/62d6bf437b167ac3e60a0f134869c9f96d199d0f))
+
+
+
+
+
+# [3.12.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.88...v3.12.0-beta.89) (2025-11-20)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.87...v3.12.0-beta.88) (2025-11-20)
+
+
+### Bug Fixes
+
+* Remove dead code and fix rectangle roi rehydration ([#5490](https://github.com/OHIF/Viewers/issues/5490)) ([9ca02b4](https://github.com/OHIF/Viewers/commit/9ca02b4071f77600f7dcd87930fecdcf3d1c249f))
+
+
+
+
+
+# [3.12.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.86...v3.12.0-beta.87) (2025-11-19)
+
+
+### Bug Fixes
+
+* **SegmentationStyle:** Fix inactive contour visibility and styling. ([#5563](https://github.com/OHIF/Viewers/issues/5563)) ([5c17c26](https://github.com/OHIF/Viewers/commit/5c17c262eaa5c1229033cfff4b3e7709e874611f))
+
+
+
+
+
+# [3.12.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.85...v3.12.0-beta.86) (2025-11-13)
+
+
+### Bug Fixes
+
+* **segmentation:** Allow for manually added label map and contour segmentations to be used as viewport data overlays. ([#5562](https://github.com/OHIF/Viewers/issues/5562)) ([02f6744](https://github.com/OHIF/Viewers/commit/02f6744dab993f16cf2516fd5f657e0743e3fa42))
+
+
+
+
+
 # [3.12.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.84...v3.12.0-beta.85) (2025-11-11)
 
 

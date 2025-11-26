@@ -1954,7 +1954,8 @@ describe('SegmentationService', () => {
           type,
           segmentIndex,
         },
-        style
+        style,
+        true
       );
     });
   });
@@ -2829,7 +2830,8 @@ describe('SegmentationService', () => {
             segmentIndex,
             type: csToolsEnums.SegmentationRepresentations.Labelmap,
           },
-          {}
+          {},
+          false
         );
 
         expect(window.requestAnimationFrame).not.toHaveBeenCalledTimes(3);
