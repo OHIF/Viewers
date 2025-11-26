@@ -31,8 +31,8 @@ export function initializeDentalAnnotationFiltering(
 
   const { cornerstoneViewportService } = servicesManager.services;
 
-  // Listen for annotation completed events and tag them with viewport ID
-  csEventTarget.addEventListener(csToolsEnums.Events.ANNOTATION_COMPLETED, ((evt: any) => {
+  // Function to tag annotation with viewport
+  const handleAnnotationEvent = (evt: any) => {
     const { annotation: newAnnotation, element } = evt.detail;
 
     if (newAnnotation && element) {
@@ -53,6 +53,37 @@ export function initializeDentalAnnotationFiltering(
         }
       } catch (error) {
         console.warn('Failed to tag annotation with viewport:', error);
+      }
+    }
+  };
+
+  // Listen for annotation completed events and tag them with viewport ID
+  csEventTarget.addEventListener(
+    csToolsEnums.Events.ANNOTATION_COMPLETED,
+    handleAnnotationEvent as EventListener
+  );
+
+  // Also listen for annotation added events (catches all annotation types including measurements)
+  csEventTarget.addEventListener(
+    csToolsEnums.Events.ANNOTATION_ADDED,
+    handleAnnotationEvent as EventListener
+  );
+
+  // Listen for annotation modified events to maintain viewport tagging
+  csEventTarget.addEventListener(csToolsEnums.Events.ANNOTATION_MODIFIED, ((evt: any) => {
+    const { annotation: modifiedAnnotation, element } = evt.detail;
+
+    if (modifiedAnnotation && element) {
+      try {
+        const enabledElement = getEnabledElement(element);
+        const viewportId = enabledElement?.viewport?.id;
+
+        if (viewportId && !modifiedAnnotation.metadata?.dentalViewportId) {
+          // If annotation doesn't have viewport tag yet, add it
+          tagAnnotationWithViewport(modifiedAnnotation.annotationUID, viewportId);
+        }
+      } catch (error) {
+        console.warn('Failed to maintain annotation viewport tag:', error);
       }
     }
   }) as EventListener);

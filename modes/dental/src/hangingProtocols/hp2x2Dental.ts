@@ -176,7 +176,7 @@ const topLeftViewport: Types.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'dental-current-primary',
     viewportType: 'stack',
-    toolGroupId: 'default',
+    toolGroupId: 'dental-current',
     allowUnmatchedView: true,
   },
   displaySets: [
@@ -188,18 +188,18 @@ const topLeftViewport: Types.HangingProtocol.Viewport = {
 };
 
 /**
- * Viewport configuration for top-right: Prior exam (same modality)
+ * Viewport configuration for top-right: Duplicate of current image
  */
 const topRightViewport: Types.HangingProtocol.Viewport = {
   viewportOptions: {
-    viewportId: 'dental-prior-primary',
+    viewportId: 'dental-current-duplicate',
     viewportType: 'stack',
-    toolGroupId: 'default',
+    toolGroupId: 'dental-prior',
     allowUnmatchedView: true,
   },
   displaySets: [
     {
-      id: 'priorDisplaySetId',
+      id: 'currentDisplaySetId',
       matchedDisplaySetsIndex: 0,
     },
   ],
@@ -212,7 +212,7 @@ const bottomLeftViewport: Types.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'dental-bitewing-left',
     viewportType: 'stack',
-    toolGroupId: 'default',
+    toolGroupId: 'dental-bitewing-left',
     allowUnmatchedView: true,
   },
   displaySets: [
@@ -230,7 +230,7 @@ const bottomRightViewport: Types.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'dental-bitewing-right',
     viewportType: 'stack',
-    toolGroupId: 'default',
+    toolGroupId: 'dental-bitewing-right',
     allowUnmatchedView: true,
   },
   displaySets: [
@@ -311,7 +311,7 @@ const hp2x2Dental: Types.HangingProtocol.Protocol = {
     },
   ],
 
-  toolGroupIds: ['default'],
+  toolGroupIds: ['dental-current', 'dental-prior', 'dental-bitewing-left', 'dental-bitewing-right'],
 
   /**
    * Display set selectors define how images are matched for each viewport
@@ -324,17 +324,18 @@ const hp2x2Dental: Types.HangingProtocol.Protocol = {
 
   /**
    * Default viewport settings for any additional viewports
+   * Updated to match upper right viewport (prior exam)
    */
   defaultViewport: {
     viewportOptions: {
       viewportType: 'stack',
-      toolGroupId: 'default',
+      toolGroupId: 'dental-current',
       allowUnmatchedView: true,
     },
     displaySets: [
       {
-        id: 'currentDisplaySetId',
-        matchedDisplaySetsIndex: -1,
+        id: 'priorDisplaySetId',
+        matchedDisplaySetsIndex: 0,
       },
     ],
   },

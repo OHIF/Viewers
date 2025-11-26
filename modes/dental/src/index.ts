@@ -8,6 +8,7 @@ import {
   resetDentalAnnotationFiltering,
 } from './tools/DentalViewportAnnotationTool';
 import { removeAllAnnotationsForViewport } from './utils/dentalAnnotationFilter';
+import dentalCustomizations from './customizations';
 
 const { TOOLBAR_SECTIONS } = ToolbarService;
 
@@ -133,8 +134,13 @@ const dentalToolbarSections = {
 };
 
 function onModeEnter({ servicesManager, extensionManager, commandsManager }) {
-  const { toolbarService, toolGroupService, measurementService, panelService } =
-    servicesManager.services;
+  const {
+    toolbarService,
+    toolGroupService,
+    measurementService,
+    panelService,
+    customizationService,
+  } = servicesManager.services;
 
   // Initialize dental-specific annotation filtering
   // This ensures annotations created in one viewport only appear in that viewport
@@ -142,6 +148,9 @@ function onModeEnter({ servicesManager, extensionManager, commandsManager }) {
 
   // Clear measurements on mode enter like basic mode
   measurementService.clearMeasurements();
+
+  // Register dental customizations using setCustomizations
+  customizationService.setCustomizations(dentalCustomizations);
 
   // Always set dental theme as default on dental mode routing
   const rootElement = document.documentElement;
@@ -173,6 +182,63 @@ function onModeEnter({ servicesManager, extensionManager, commandsManager }) {
         toolName,
       });
       currentDentalLabel = label;
+    },
+  });
+
+  // Register duplicate image command
+  commandsManager.registerCommand('DENTAL_MODE', 'duplicateImageToNextViewport', {
+    commandFn: ({ displaySetInstanceUID }) => {
+      const { viewportGridService, hangingProtocolService } = servicesManager.services;
+
+      if (!displaySetInstanceUID) {
+        console.warn('No display set instance UID provided for duplication');
+        return;
+      }
+
+      // Get all viewports
+      const { viewports } = viewportGridService.getState();
+      const viewportIds = Array.from(viewports.keys());
+
+      if (viewportIds.length < 2) {
+        console.warn('Not enough viewports to duplicate image');
+        return;
+      }
+
+      // Get active viewport
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      const currentIndex = viewportIds.indexOf(activeViewportId);
+
+      // Find next viewport (wrap around if needed)
+      const nextIndex = (currentIndex + 1) % viewportIds.length;
+      const nextViewportId = viewportIds[nextIndex];
+
+      // Set the display set in the next viewport
+      try {
+        const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+          nextViewportId,
+          displaySetInstanceUID,
+          true // isHangingProtocolLayout
+        );
+
+        if (updatedViewports && updatedViewports.length > 0) {
+          commandsManager.runCommand('setDisplaySetsForViewports', {
+            viewportsToUpdate: updatedViewports,
+          });
+        } else {
+          // Fallback: directly set the display set
+          viewportGridService.setDisplaySetsForViewport({
+            viewportId: nextViewportId,
+            displaySetInstanceUIDs: [displaySetInstanceUID],
+          });
+        }
+      } catch (error) {
+        console.error('Error duplicating image:', error);
+        // Fallback to simple assignment
+        viewportGridService.setDisplaySetsForViewport({
+          viewportId: nextViewportId,
+          displaySetInstanceUIDs: [displaySetInstanceUID],
+        });
+      }
     },
   });
 

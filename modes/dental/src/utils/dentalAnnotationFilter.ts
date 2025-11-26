@@ -45,12 +45,8 @@ export function filterAnnotationsForDentalViewport(
   return annotations.filter(ann => {
     const annViewportId = ann.metadata?.[DENTAL_VIEWPORT_METADATA_KEY];
 
-    // If no viewport metadata, this is a legacy annotation - show it everywhere (backward compatibility)
-    if (!annViewportId) {
-      return true;
-    }
-
     // Only show annotations that belong to this specific viewport
+    // Don't show annotations without viewport metadata (strict filtering for dental mode)
     return annViewportId === viewportId;
   });
 }
