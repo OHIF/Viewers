@@ -69,8 +69,9 @@ const compareSeriesUID = (a, b) =>
   compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeriesDisplaySet(a, b);
 
 const compareSeriesDateTime = (a, b) => {
-  const seriesDateA = Date.parse(`${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`);
-  const seriesDateB = Date.parse(`${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`);
+  // Natural order of string is good enough here
+  const seriesDateA = `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`;
+  const seriesDateB = `${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`;
   return compare(seriesDateA, seriesDateB) || compareSeriesUID(a, b);
 };
 
@@ -93,7 +94,7 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
   if (aLowPriority) {
     // Use the reverse sort order for low priority modalities so that the
     // most recent one comes up first as usually that is the one of interest.
-    return bLowPriority ? defaultSeriesSort(secondSeries, firstSeries) : 1;
+    return bLowPriority ? compareSeriesDateTime(secondSeries, firstSeries) : 1;
   } else if (bLowPriority) {
     return -1;
   }
