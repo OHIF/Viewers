@@ -71,7 +71,7 @@ function Header({
               data-cy="return-to-work-list"
             >
               {isReturnEnabled && <Icons.ArrowLeft className="text-primary ml-1 h-7 w-7" />}
-              <div className="ml-1">
+              <div className="ml-1 hidden md:block">
                 {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
               </div>
             </div>

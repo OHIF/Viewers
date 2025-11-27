@@ -19,7 +19,11 @@
   "jest.autoRun": "off",
   "prettier.disableLanguages": ["html"],
   "prettier.endOfLine": "lf",
-  "workbench.colorCustomizations": {},
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#42007D",
+    "titleBar.activeBackground": "#5D00B0",
+    "titleBar.activeForeground": "#FCF8FF"
+  },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
