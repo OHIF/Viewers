@@ -1,46 +1,49 @@
-import * as React from 'react'
-import { Button } from '../Button'
+import * as React from 'react';
+import { Button } from '../Button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from '../DropdownMenu'
+} from '../DropdownMenu';
 
-import { useDataTable } from './context'
+import { useDataTable } from './context';
+import type { ColumnMeta } from './types';
 
-type Props<TData> = {
-  getLabel?: (columnId: string) => string
-  canHide?: (columnId: string) => boolean
-  buttonText?: string
-}
+type ViewOptionsProps = {
+  buttonText?: string;
+};
 
-export function DataTableViewOptions<TData>({
-  getLabel = (id) => id,
-  canHide = () => true,
-  buttonText = 'View',
-}: Props<TData>) {
-  const { table } = useDataTable<TData>()
-  const columns = table.getAllColumns().filter((c) => c.getCanHide() && canHide(c.id))
+export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
+  const { table } = useDataTable<TData>();
+  const columns = table.getAllColumns().filter(c => c.getCanHide());
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+        >
           {buttonText}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {columns.map((column) => (
-          <DropdownMenuCheckboxItem
-            key={column.id}
-            checked={column.getIsVisible()}
-            onCheckedChange={(v) => column.toggleVisibility(!!v)}
-            className="capitalize"
-          >
-            {getLabel(column.id)}
-          </DropdownMenuCheckboxItem>
-        ))}
+        {columns.map(column => {
+          const meta = (column.columnDef.meta as ColumnMeta | undefined) ?? undefined;
+          const label = meta?.label ?? column.id;
+          return (
+            <DropdownMenuCheckboxItem
+              key={column.id}
+              checked={column.getIsVisible()}
+              onCheckedChange={v => column.toggleVisibility(!!v)}
+              className="capitalize"
+            >
+              {label}
+            </DropdownMenuCheckboxItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

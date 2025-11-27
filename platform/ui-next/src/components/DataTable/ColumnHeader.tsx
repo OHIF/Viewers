@@ -1,47 +1,46 @@
-import * as React from 'react'
-import type { Column } from '@tanstack/react-table'
-import { Button } from '../Button'
-import * as ReactNS from 'react'
-import { DataTableContext } from './context'
-import { Icons } from '../Icons'
+import * as React from 'react';
+import type { Column } from '@tanstack/react-table';
+import { Button } from '../Button';
+import { Icons } from '../Icons';
+import type { ColumnMeta } from './types';
 
-export function DataTableColumnHeader<TData, TValue>({
-  column,
-  columnId,
-  title,
-  align = 'left',
-}: {
-  column?: Column<TData, TValue>
-  columnId?: string
-  title: string
-  align?: 'left' | 'center' | 'right'
-}) {
-  const ctx = ReactNS.useContext(DataTableContext)
-  const resolvedColumn = column ?? (columnId && ctx ? (ctx.table.getColumn(columnId) as Column<TData, TValue>) : undefined)
-  if (!resolvedColumn) {
-    return <span>{title}</span>
-  }
-  const sorted = resolvedColumn.getIsSorted() as false | 'asc' | 'desc'
-  const justify = align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start'
+export function ColumnHeader<TData, TValue>({ column }: { column: Column<TData, TValue> }) {
+  const meta = (column.columnDef.meta as ColumnMeta | undefined) ?? undefined;
 
-  const SortIcon = sorted === 'asc'
-    ? Icons.SortingNewAscending
-    : sorted === 'desc'
-    ? Icons.SortingNewDescending
-    : Icons.SortingNew
+  // Use headerContent if provided, otherwise use label
+  const content = meta?.headerContent ?? meta?.label ?? column.id;
+  const align = meta?.align ?? 'left';
+  const canSort = column.getCanSort();
+  const sorted = column.getIsSorted() as false | 'asc' | 'desc';
+  const justify =
+    align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start';
+
+  const SortIcon =
+    sorted === 'asc'
+      ? Icons.SortingNewAscending
+      : sorted === 'desc'
+        ? Icons.SortingNewDescending
+        : Icons.SortingNew;
+
+  const ariaLabel = meta?.label ?? column.id;
 
   return (
     <div className={`flex w-full items-center gap-1 ${justify}`}>
-      <span>{title}</span>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => resolvedColumn.toggleSorting(sorted === 'asc')}
-        aria-label={`Sort ${title}`}
-        className="px-1"
-      >
-        <SortIcon className="h-4 w-2.5" aria-hidden="true" />
-      </Button>
+      {typeof content === 'string' ? <span>{content}</span> : content}
+      {canSort && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => column.toggleSorting(sorted === 'asc')}
+          aria-label={`Sort ${ariaLabel}`}
+          className="px-1"
+        >
+          <SortIcon
+            className="h-4 w-2.5"
+            aria-hidden="true"
+          />
+        </Button>
+      )}
     </div>
-  )
+  );
 }
