@@ -1,0 +1,2 @@
+import './studylist/entry'
+
