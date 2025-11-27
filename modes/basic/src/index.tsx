@@ -1,5 +1,5 @@
 import update from 'immutability-helper';
-import { ToolbarService, utils } from '@ohif/core';
+import { ToolbarService, utils, ViewportGridService } from '@ohif/core';
 
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
@@ -123,7 +123,7 @@ export function onModeEnter({
   panelService,
   segmentationService,
 }: withAppTypes) {
-  const { measurementService, toolbarService, toolGroupService, customizationService } =
+  const { measurementService, toolbarService, toolGroupService, customizationService, viewportGridService } =
     servicesManager.services;
 
   measurementService.clearMeasurements();
@@ -144,6 +144,23 @@ export function onModeEnter({
       },
     });
   }
+
+  const activateStackScroll = () => {
+    commandsManager.runCommand('setToolActiveToolbar', {
+      itemId: 'StackScroll',
+      toolGroupIds: ['default', 'mpr', 'SRToolGroup'],
+    });
+  };
+
+  const { unsubscribe: unsubscribeViewportsReady } = viewportGridService.subscribe(
+    ViewportGridService.EVENTS.VIEWPORTS_READY,
+    activateStackScroll
+  );
+
+  if (!this._viewportSubscriptions) {
+    this._viewportSubscriptions = [];
+  }
+  this._viewportSubscriptions.push(unsubscribeViewportsReady);
 
   // // ActivatePanel event trigger for when a segmentation or measurement is added.
   // // Do not force activation so as to respect the state the user may have left the UI in.
@@ -189,6 +206,11 @@ export function onModeExit({ servicesManager }: withAppTypes) {
 
   this._activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
   this._activatePanelTriggersSubscriptions.length = 0;
+
+  if (this._viewportSubscriptions) {
+    this._viewportSubscriptions.forEach(sub => sub());
+    this._viewportSubscriptions.length = 0;
+  }
 
   uiDialogService.hideAll();
   uiModalService.hide();
