@@ -1,6 +1,7 @@
 import type { WorkflowId } from './WorkflowsInfer';
 
 export type StudyRow = {
+  studyInstanceUid: string;
   patient: string;
   mrn: string;
   studyDateTime: string;
@@ -11,4 +12,3 @@ export type StudyRow = {
   /** Optional, data-driven list of available workflows for this study (immutable) */
   workflows?: readonly WorkflowId[];
 };
-

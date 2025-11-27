@@ -1,10 +1,7 @@
 import * as React from 'react';
 import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table';
-import { flexRender } from '@tanstack/react-table';
 import { DataTable, useDataTable } from '../../DataTable';
-import { TableRow, TableCell } from '../../Table';
 import { Button } from '../../Button';
-import { Input } from '../../Input';
 import { InputMultiSelect } from '../../InputMultiSelect';
 import type { StudyRow } from '../StudyListTypes';
 import { useStudyList } from '../headless/StudyListProvider';
@@ -75,8 +72,18 @@ export function StudyListTable({
 
 function ChevronLeftIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" {...props}>
-      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor" />
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <path
+        d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -156,23 +163,19 @@ function Content({
           <div className="absolute right-0 flex items-center">
             {/* Pagination appears to the left of the "View" button */}
             <DataTable.Pagination />
-            {showColumnVisibility && (
-              <DataTable.ViewOptions<StudyRow>
-                getLabel={(id) => {
-                  const label = (
-                    table.getColumn(id)?.columnDef.meta as { label?: string } | undefined
-                  )?.label;
-                  return label ?? id;
-                }}
-              />
-            )}
+            {showColumnVisibility && <DataTable.ViewOptions<StudyRow> />}
             {toolbarRightExtras}
             {typeof onOpenPanel === 'function' && isPanelOpen === false ? (
               <div className="mt-1 ml-2">
                 {renderOpenPanelButton ? (
                   renderOpenPanelButton({ onOpenPanel })
                 ) : (
-                  <Button variant="ghost" size="icon" aria-label="Open preview panel" onClick={onOpenPanel}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Open preview panel"
+                    onClick={onOpenPanel}
+                  >
                     <ChevronLeftIcon />
                   </Button>
                 )}
@@ -182,92 +185,79 @@ function Content({
         </DataTable.Toolbar>
       )}
       <DataTable.Table tableClassName={tableClassName}>
-        <DataTable.Header />
+        <DataTable.Header<StudyRow> />
         <DataTable.FilterRow<StudyRow>
-          resetCellId="actions"
           excludeColumnIds={['instances']}
-          renderCell={({ columnId, value, setValue }) => {
+          renderFilterCell={({ columnId, value, setValue }) => {
+            if (columnId === 'actions') {
+              return (
+                <div className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => table.setColumnFilters([])}
+                    aria-label="Reset filters"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              );
+            }
             if (columnId === 'modalities') {
               const selected = Array.isArray(value) ? (value as string[]) : [];
               return (
                 <InputMultiSelect
                   options={modalityOptions}
                   value={selected}
-                  onChange={(next) => setValue(next)}
+                  onChange={next => setValue(next)}
                 >
                   <InputMultiSelect.Field>
                     <InputMultiSelect.Summary variant="single" />
-                    <InputMultiSelect.Input ariaLabel="Filter Modalities" placeholder="" />
+                    <InputMultiSelect.Input
+                      ariaLabel="Filter Modalities"
+                      placeholder=""
+                    />
                   </InputMultiSelect.Field>
-                  <InputMultiSelect.Content fitToContent maxWidth={185}>
+                  <InputMultiSelect.Content
+                    fitToContent
+                    maxWidth={185}
+                  >
                     <InputMultiSelect.Options />
                   </InputMultiSelect.Content>
                 </InputMultiSelect>
               );
             }
-            return (
-              <Input
-                value={String((value as string) ?? '')}
-                onChange={(e) => setValue(e.target.value)}
-                className="h-7 w-full"
-              />
-            );
+            // Return null/undefined to use default rendering for other columns
+            return null;
           }}
         />
         <DataTable.Body<StudyRow>
-          rowModel="pagination"
           emptyMessage="No results."
-          renderRow={(row) => (
-            <TableRow
-              key={row.id}
-              data-state={row.getIsSelected() ? 'selected' : undefined}
-              onClick={() => {
-                // When a default workflow is set, do not allow a second click to unselect.
-                // Always select on click; otherwise toggle selection.
-                if (defaultWorkflow) {
-                  if (!row.getIsSelected()) row.toggleSelected(true);
-                } else {
-                  row.toggleSelected();
+          rowProps={{
+            className: 'group cursor-pointer',
+            onClick: row => {
+              // When a default workflow is set, do not allow a second click to unselect.
+              // Always select on click; otherwise toggle selection.
+              if (defaultWorkflow) {
+                if (!row.getIsSelected()) {
+                  row.toggleSelected(true);
                 }
-              }}
-              onDoubleClick={() => {
-                if (!defaultWorkflow) return;
-                // Ensure the row is selected, then launch with the default workflow
-                if (!row.getIsSelected()) row.toggleSelected(true);
-                const original = row.original as StudyRow;
-                launch(original, defaultWorkflow as WorkflowId);
-              }}
-              aria-selected={row.getIsSelected()}
-              className="group cursor-pointer"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  // Keyboard behavior mirrors click: when default workflow is set,
-                  // Enter/Space should select but not toggle to unselect.
-                  if (defaultWorkflow) {
-                    if (!row.getIsSelected()) row.toggleSelected(true);
-                  } else {
-                    row.toggleSelected();
-                  }
-                }
-              }}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  className={
-                    (
-                      (cell.column.columnDef.meta as unknown as { cellClassName?: string }) ??
-                      {}
-                    ).cellClassName ?? ''
-                  }
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          )}
+              } else {
+                row.toggleSelected();
+              }
+            },
+            onDoubleClick: row => {
+              if (!defaultWorkflow) {
+                return;
+              }
+              // Ensure the row is selected, then launch with the default workflow
+              if (!row.getIsSelected()) {
+                row.toggleSelected(true);
+              }
+              const original = row.original as StudyRow;
+              launch(original, defaultWorkflow as WorkflowId);
+            },
+          }}
         />
       </DataTable.Table>
     </div>

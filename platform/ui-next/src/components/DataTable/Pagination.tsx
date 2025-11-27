@@ -10,11 +10,11 @@ import { Icons } from '../Icons';
 import { useDataTable } from './context';
 
 /**
- * DataTablePagination
+ * Pagination
  * Renders "start-end of total" and ghost chevron buttons for prev/next.
  * Uses the TanStack table instance from DataTable context.
  */
-export function DataTablePagination() {
+export function Pagination() {
   const { table } = useDataTable<any>();
   const { pageIndex, pageSize } = table.getState().pagination ?? { pageIndex: 0, pageSize: 50 };
 

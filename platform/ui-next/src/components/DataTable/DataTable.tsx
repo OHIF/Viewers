@@ -17,13 +17,23 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 
-import { DataTableContext, useDataTable } from './context';
-import { DataTableToolbar } from './Toolbar';
-import { DataTableTitle } from './Title';
-import { DataTablePagination } from './Pagination';
-import { DataTableViewOptions as InternalViewOptions } from './ViewOptions';
-import { DataTableFilterRow } from './FilterRow';
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '../Table';
+import { DataTableContext, DataTableContextValue, useDataTable } from './context';
+import { Toolbar } from './Toolbar';
+import { Title } from './Title';
+import { Pagination } from './Pagination';
+import { ViewOptions } from './ViewOptions';
+import { ActionOverlayCell } from './ActionOverlayCell';
+import { FilterRow } from './FilterRow';
+import { ColumnHeader } from './ColumnHeader';
+import type { ColumnMeta } from './types';
+import {
+  Table as BasicTable,
+  TableHeader as BasicTableHeader,
+  TableBody as BasicTableBody,
+  TableHead as BasicTableHead,
+  TableRow as BasicTableRow,
+  TableCell as BasicTableCell,
+} from '../Table';
 import { ScrollArea } from '../ScrollArea';
 import { cn } from '../../lib/utils';
 
@@ -58,14 +68,13 @@ function DataTableRoot<TData>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(initialVisibility);
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-  const [columnFilters, setColumnFilters] =
-    React.useState<ColumnFiltersState>(initialFilters);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(initialFilters);
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 50,
   });
 
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data,
     columns,
     state: { sorting, columnVisibility, rowSelection, columnFilters, pagination },
@@ -90,86 +99,21 @@ function DataTableRoot<TData>({
 
   // Surface selection changes to consumers.
   React.useEffect(() => {
-    if (!onSelectionChange) return;
+    if (!onSelectionChange) {
+      return;
+    }
     const selected = table.getSelectedRowModel().rows.map(r => r.original as TData);
     onSelectionChange(selected);
   }, [rowSelection, onSelectionChange, table]);
 
-  const value = React.useMemo(
-    () => ({
-      table,
-      sorting,
-      setSorting,
-      columnVisibility,
-      setColumnVisibility,
-      rowSelection,
-      setRowSelection,
-      columnFilters,
-      setColumnFilters,
-      pagination,
-      setPagination,
-      resetFilters: () => setColumnFilters([]),
-    }),
-    [table, sorting, columnVisibility, rowSelection, columnFilters, pagination]
-  );
-
   return (
-    <DataTableContext.Provider value={value}>
+    <DataTableContext.Provider value={{ table } as DataTableContextValue<unknown>}>
       {children}
     </DataTableContext.Provider>
   );
 }
 
-/**
- * Simple toolbar wrapper. Typically used as:
- * <DataTable.Toolbar>
- *   <DataTable.Title>...</DataTable.Title>
- *   <DataTable.Pagination />
- *   <DataTable.ViewOptions />
- * </DataTable.Toolbar>
- */
-function Toolbar({ children }: { children?: React.ReactNode }) {
-  return <DataTableToolbar>{children}</DataTableToolbar>;
-}
-
-/**
- * Title element rendered inside the toolbar.
- */
-function Title({ children }: { children?: React.ReactNode }) {
-  return <DataTableTitle>{children}</DataTableTitle>;
-}
-
-/**
- * Pagination controls bound to the current table instance.
- */
-function Pagination() {
-  return <DataTablePagination />;
-}
-
-type ViewOptionsProps<TData> = {
-  getLabel?: (columnId: string) => string;
-  canHide?: (columnId: string) => boolean;
-  buttonText?: string;
-};
-
-/**
- * View options (column visibility) menu.
- */
-function ViewOptions<TData>({
-  getLabel,
-  canHide,
-  buttonText,
-}: ViewOptionsProps<TData>) {
-  return (
-    <InternalViewOptions<TData>
-      getLabel={getLabel}
-      canHide={canHide}
-      buttonText={buttonText}
-    />
-  );
-}
-
-type DataTableTableProps = {
+type TableProps = {
   children?: React.ReactNode;
   /**
    * Optional className applied to the outer bordered container.
@@ -189,15 +133,14 @@ type DataTableTableProps = {
  * Consumers pass <DataTable.Header />, <DataTable.FilterRow />, and <DataTable.Body />
  * as children; this component wires them into the correct structure.
  */
-function DataTableTable({ children, className, tableClassName }: DataTableTableProps) {
+function Table({ children, className, tableClassName }: TableProps) {
   const { table } = useDataTable<any>();
 
   const renderColGroup = React.useCallback(
     () => (
       <colgroup>
         {table.getVisibleLeafColumns().map(col => {
-          const meta =
-            (col.columnDef.meta as { minWidth?: number | string } | undefined) ?? undefined;
+          const meta = (col.columnDef.meta as ColumnMeta | undefined) ?? undefined;
           const minWidth = meta?.minWidth;
           return minWidth ? (
             <col
@@ -220,41 +163,47 @@ function DataTableTable({ children, className, tableClassName }: DataTableTableP
   let bodyChild: React.ReactElement | null = null;
 
   React.Children.forEach(children, child => {
-    if (!React.isValidElement(child)) return;
-    if (child.type === DataTableHeader) headerChild = child;
-    if (child.type === DataTableFilterRowCompound) filterRowChild = child;
-    if (child.type === DataTableBody) bodyChild = child;
+    if (!React.isValidElement(child)) {
+      return;
+    }
+    if (child.type === Header) {
+      headerChild = child;
+    }
+    if (child.type === FilterRow) {
+      filterRowChild = child;
+    }
+    if (child.type === Body) {
+      bodyChild = child;
+    }
   });
 
   return (
     <div className={cn('border-input/50 min-h-0 flex-1 rounded-md border', className)}>
       <div className="flex h-full flex-col">
         {/* Header + filter row */}
-        <div className="shrink-0 border-b border-input/50">
-          <Table
+        <div className="border-input/50 shrink-0 border-b">
+          <BasicTable
             className={cn('table-fixed', tableClassName)}
             containerClassName="overflow-x-hidden"
             noScroll
           >
             {renderColGroup()}
             {headerChild}
-            <TableBody>
-              {filterRowChild}
-            </TableBody>
-          </Table>
+            <BasicTableBody>{filterRowChild}</BasicTableBody>
+          </BasicTable>
         </div>
 
         {/* Scrollable body */}
         <div className="min-h-0 flex-1">
           <ScrollArea className="h-full">
-            <Table
+            <BasicTable
               className={cn('table-fixed', tableClassName)}
               containerClassName="h-full"
               noScroll
             >
               {renderColGroup()}
-              <TableBody>{bodyChild}</TableBody>
-            </Table>
+              <BasicTableBody>{bodyChild}</BasicTableBody>
+            </BasicTable>
           </ScrollArea>
         </div>
       </div>
@@ -266,85 +215,47 @@ function DataTableTable({ children, className, tableClassName }: DataTableTableP
  * Renders the table header row(s) based on the current table instance.
  * Applies meta.headerClassName and a muted background to match StudyList styling.
  */
-function DataTableHeader() {
-  const { table } = useDataTable<any>();
+function Header<TData>() {
+  const { table } = useDataTable<TData>();
 
   return (
-    <TableHeader>
+    <BasicTableHeader>
       {table.getHeaderGroups().map(headerGroup => (
-        <TableRow key={headerGroup.id}>
+        <BasicTableRow key={headerGroup.id}>
           {headerGroup.headers.map(header => {
-            const meta =
-              (header.column.columnDef.meta as { headerClassName?: string } | undefined) ??
-              undefined;
+            const meta = (header.column.columnDef.meta as ColumnMeta | undefined) ?? undefined;
             const headerClassName = meta?.headerClassName ?? '';
-            const sorted = header.column.getIsSorted() as false | 'asc' | 'desc';
+            const sortState = header.column.getIsSorted() as false | 'asc' | 'desc';
 
             return (
-              <TableHead
+              <BasicTableHead
                 key={header.id}
                 className={cn('bg-muted', headerClassName)}
                 aria-sort={
-                  sorted === 'asc'
-                    ? 'ascending'
-                    : sorted === 'desc'
-                      ? 'descending'
-                      : 'none'
+                  sortState === 'asc' ? 'ascending' : sortState === 'desc' ? 'descending' : 'none'
                 }
               >
                 {header.isPlaceholder
                   ? null
                   : flexRender(header.column.columnDef.header, header.getContext())}
-              </TableHead>
+              </BasicTableHead>
             );
           })}
-        </TableRow>
+        </BasicTableRow>
       ))}
-    </TableHeader>
+    </BasicTableHeader>
   );
 }
 
-type FilterRowProps<TData> = {
-  excludeColumnIds?: string[];
-  resetCellId?: string;
-  onReset?: () => void;
-  renderCell?: (opts: {
-    columnId: string;
-    value: unknown;
-    setValue: (v: unknown) => void;
-  }) => React.ReactNode;
-  inputClassName?: string;
+type RowProps<TData> = {
+  render?: (row: Row<TData>) => React.ReactNode;
+  onClick?: (row: Row<TData>) => void;
+  onDoubleClick?: (row: Row<TData>) => void;
+  className?: string | ((row: Row<TData>) => string);
 };
 
-/**
- * Wraps the lower-level DataTableFilterRow to automatically wire reset behavior
- * to the table's resetFilters helper when onReset is not provided.
- */
-function DataTableFilterRowCompound<TData>({
-  onReset,
-  ...rest
-}: FilterRowProps<TData>) {
-  const { resetFilters } = useDataTable<TData>();
-
-  return (
-    <DataTableFilterRow<TData>
-      onReset={onReset ?? resetFilters}
-      {...rest}
-    />
-  );
-}
-
 type BodyProps<TData> = {
-  /**
-   * Which row model to render:
-   * - "pagination" (default): uses table.getPaginationRowModel()
-   * - "core": uses table.getRowModel()
-   */
-  rowModel?: 'pagination' | 'core';
-  /**
-   * Optional custom row renderer. If omitted, a default cell-only renderer is used.
-   */
-  renderRow?: (row: Row<TData>) => React.ReactNode;
+  rowProps?: RowProps<TData>;
   /**
    * Message shown when there are no rows to render.
    */
@@ -353,68 +264,89 @@ type BodyProps<TData> = {
 
 /**
  * Core body renderer. Keeps awareness of selection state via data-state="selected".
+ * Automatically uses pagination if getPaginationRowModel is configured on the table.
  * Consumers can either rely on the default row renderer or provide a custom one.
  */
-function DataTableBody<TData>({
-  rowModel = 'pagination',
-  renderRow,
-  emptyMessage = 'No results.',
-}: BodyProps<TData>) {
+function Body<TData>({ rowProps, emptyMessage = 'No results.' }: BodyProps<TData>) {
   const { table } = useDataTable<TData>();
+
+  // Automatically determine if pagination should be used
+  // Use pagination if getPaginationRowModel is defined (pagination is configured)
   const rows =
-    rowModel === 'pagination'
+    typeof table.getPaginationRowModel === 'function'
       ? table.getPaginationRowModel().rows
       : table.getRowModel().rows;
 
   if (!rows.length) {
     return (
-      <TableRow>
-        <TableCell
+      <BasicTableRow>
+        <BasicTableCell
           colSpan={table.getAllLeafColumns().length}
           className="h-24 text-center"
         >
           {emptyMessage}
-        </TableCell>
-      </TableRow>
+        </BasicTableCell>
+      </BasicTableRow>
     );
   }
 
   return (
     <>
-      {rows.map(row =>
-        renderRow ? (
-          renderRow(row)
-        ) : (
-          <TableRow
+      {rows.map(row => {
+        const customRender = rowProps?.render?.(row);
+
+        if (customRender) {
+          return customRender;
+        }
+
+        // Default row rendering
+        return (
+          <BasicTableRow
             key={row.id}
             data-state={row.getIsSelected() ? 'selected' : undefined}
+            className={
+              rowProps?.className
+                ? typeof rowProps.className === 'function'
+                  ? rowProps.className(row)
+                  : rowProps.className
+                : ''
+            }
+            {...(rowProps?.onClick && { onClick: () => rowProps.onClick(row) })}
+            {...(rowProps?.onDoubleClick && {
+              onDoubleClick: () => rowProps.onDoubleClick(row),
+            })}
+            aria-selected={row.getIsSelected()}
           >
             {row.getVisibleCells().map(cell => {
               const metaClass =
-                ((cell.column.columnDef.meta as { cellClassName?: string })?.cellClassName) ??
-                '';
+                (cell.column.columnDef.meta as ColumnMeta | undefined)?.cellClassName ?? '';
               return (
-                <TableCell key={cell.id} className={metaClass}>
+                <BasicTableCell
+                  key={cell.id}
+                  className={metaClass}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
+                </BasicTableCell>
               );
             })}
-          </TableRow>
-        )
-      )}
+          </BasicTableRow>
+        );
+      })}
     </>
   );
 }
 
-const DataTableCompound = Object.assign(DataTableRoot, {
+const DataTable = Object.assign(DataTableRoot, {
   Toolbar,
   Title,
   Pagination,
   ViewOptions,
-  Table: DataTableTable,
-  Header: DataTableHeader,
-  FilterRow: DataTableFilterRowCompound,
-  Body: DataTableBody,
+  Table,
+  Header,
+  FilterRow,
+  Body,
+  ColumnHeader,
+  ActionOverlayCell,
 });
 
-export { DataTableCompound as DataTable };
+export { DataTable };
