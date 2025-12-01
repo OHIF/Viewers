@@ -35,6 +35,8 @@ OBSERVER_CODE = ("121008", "DCM", "Person Observer Name")
 PROCEDURE_REPORTED_CODE = ("121058", "DCM", "Procedure reported")
 UNKNOWN_PROCEDURE_CODE = ("1", "99dcmjs", "Unknown procedure")
 FINDING_CODE = ("121071", "DCM", "Finding")
+FINDING_SITE_CODE = ("363698007", "SCT", "Finding Site")
+HIDDEN_UNANNOTATED_CODE = ("HIDDEN", "99MEDICALVIEWER", "")
 CORNERSTONE_FREETEXT = ("CORNERSTONEFREETEXT", "CORNERSTONEJS")
 
 
@@ -147,6 +149,17 @@ def _make_measurement_group(
     tracking_uid.UID = generate_uid()
     group.ContentSequence.append(tracking_uid)
 
+    # Finding site item used by the viewer to detect unannotated / hidden annotations.
+    finding_site = Dataset()
+    finding_site.RelationshipType = "CONTAINS"
+    finding_site.ValueType = "CODE"
+    finding_site.ConceptNameCodeSequence = [Dataset()]
+    fscn = finding_site.ConceptNameCodeSequence[0]
+    fscn.CodeValue, fscn.CodingSchemeDesignator, fscn.CodeMeaning = FINDING_SITE_CODE
+    # Mark the finding site as \"hidden\" / unannotated, matching the template SR.
+    hidden_code = _make_code(*HIDDEN_UNANNOTATED_CODE)
+    finding_site.ConceptCodeSequence = [hidden_code]
+
     num = Dataset()
     num.RelationshipType = "CONTAINS"
     num.ValueType = "NUM"
@@ -178,7 +191,13 @@ def _make_measurement_group(
     freetext.CodeMeaning = label
     finding.ConceptCodeSequence = [freetext]
 
-    group.ContentSequence.extend([num, finding])
+    # Order of items in ContentSequence matches the template SR:
+    # [0] Tracking Identifier (TEXT)
+    # [1] Tracking UID (UIDREF)
+    # [2] Finding Site (CODE) with HIDDEN/99MEDICALVIEWER
+    # [3] Center (NUM) with SCOORD point
+    # [4] Finding label (CODE) with CORNERSTONEFREETEXT
+    group.ContentSequence.extend([finding_site, num, finding])
     return group
 
 
