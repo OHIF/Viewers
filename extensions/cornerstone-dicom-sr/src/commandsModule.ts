@@ -33,7 +33,8 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     measurementData,
     additionalFindingTypes
   );
-
+  console.log('filteredToolState', filteredToolState);
+  console.log('metaData', metaData);
     // After building filteredToolState, before generateReport
   const report = MeasurementReport.generateReport(
     filteredToolState,
@@ -41,6 +42,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
     utilities.worldToImageCoords,
     options
   );
+  console.log('report', report);
   const { dataset } = report;
   // Fallback: ensure SOPClassUID is set (especially for 3D SR when NO_IMAGE_ID is present)
   try {

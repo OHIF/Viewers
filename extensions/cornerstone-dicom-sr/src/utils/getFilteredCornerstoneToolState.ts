@@ -60,6 +60,14 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
     if (measurementDataI.findingSites) {
       findingSites.push(...measurementDataI.findingSites);
     }
+
+    if (measurementDataI.isVisible === false) {
+      findingSites.push({
+        CodeValue: 'HIDDEN',
+        CodingSchemeDesignator: '99MEDICALVIEWER',
+        CodeMeaning: 'Hidden Annotation',
+      });
+    }
     const measurement = Object.assign({}, annotation, {
       finding,
       findingSites,

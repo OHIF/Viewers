@@ -25,7 +25,7 @@ const Probe = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
     const isLocked = getIsLocked(annotationUID);
-    const isVisible = getIsVisible(annotationUID);
+    const isVisible = annotation.isVisible ?? getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('CustomProbe tool: Missing metadata or data');
       return null;
@@ -97,7 +97,7 @@ const Probe = {
       isVisible,
       referenceSeriesUID: displaySet.SeriesInstanceUID,
       referenceStudyUID: displaySet.StudyInstanceUID,
-      referencedImageId: metadata.referencedImageId,
+      referencedImageId: undefined, //metadata.referencedImageId,
       frameNumber: mappedAnnotations?.[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -176,6 +176,7 @@ function getMappedAnnotations(annotation, displaySetService) {
       unit,
       value,
       isVolumeBasedAnnotation: true,
+      isVisible: annotation.isVisible, // Pass isVisible status to report
     });
   });
   return annotations;

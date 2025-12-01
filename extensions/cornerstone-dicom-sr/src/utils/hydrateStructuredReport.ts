@@ -273,7 +273,7 @@ export default function hydrateStructuredReport(
       const referencedImageId =
         effectiveAnnotationType === 'CustomProbe' && !imageId ? undefined : imageId;
 
-      const annotation = {
+      const annotation: any = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
@@ -298,6 +298,14 @@ export default function hydrateStructuredReport(
 
       const matchingMapping = mappings.find(m => m.annotationType === effectiveAnnotationType);
 
+      // Check if the measurement should be hidden
+      const isHidden = annotation.data.findingSites?.some(
+        site =>
+          site.CodeValue === 'HIDDEN' && site.CodingSchemeDesignator === '99MEDICALVIEWER'
+      );
+
+      annotation.isVisible = !isHidden;
+
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
         effectiveAnnotationType,
@@ -306,6 +314,11 @@ export default function hydrateStructuredReport(
         dataSource
       );
 
+      if (isHidden) {
+        measurementService.toggleVisibilityMeasurement(newAnnotationUID, false);
+      } else {
+        measurementService.toggleVisibilityMeasurement(newAnnotationUID, true);
+      }
 
       commandsManager.runCommand('updateMeasurement', {
         uid: newAnnotationUID,
@@ -313,7 +326,7 @@ export default function hydrateStructuredReport(
       });
       // Jump to CustomProbe in MPR so it becomes visible and recomputes
       try {
-        if (effectiveAnnotationType === 'CustomProbe') {
+        if (effectiveAnnotationType === 'CustomProbe' && !isHidden) {
           commandsManager.runCommand('jumpToCustomProbe', { uid: newAnnotationUID });
         }
       } catch (e) {

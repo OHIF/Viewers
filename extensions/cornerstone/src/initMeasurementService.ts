@@ -518,7 +518,8 @@ const connectMeasurementServiceToTools = ({
       const newAnnotation = {
         annotationUID: measurement.uid,
         highlighted: false,
-        isLocked: false,
+        isLocked: measurement.isLocked ?? false,
+        isVisible: measurement.isVisible ?? true,
         invalidated: false,
         metadata: {
           toolName: measurement.toolName,

@@ -478,6 +478,7 @@ function commandsModule({
       const { code, uid, textLabel, label } = props;
       let { style } = props;
       const measurement = measurementService.getMeasurement(uid);
+      console.log('updateMeasurement', props, measurement);
       if (!measurement) {
         console.warn('No measurement found to update', uid);
         return;
@@ -485,6 +486,7 @@ function commandsModule({
       const updatedMeasurement = {
         ...measurement,
       };
+      // Call it textLabel as the label value
       // Call it textLabel as the label value
       // TODO - remove the label setting when direct rendering of findingSites is enabled
       if (textLabel !== undefined) {
@@ -531,6 +533,7 @@ function commandsModule({
             break;
         }
       }
+      console.log('updateMeasurement', updatedMeasurement);
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
