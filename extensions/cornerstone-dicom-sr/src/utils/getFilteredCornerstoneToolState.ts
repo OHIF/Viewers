@@ -58,7 +58,14 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
     }
 
     if (measurementDataI.findingSites) {
-      findingSites.push(...measurementDataI.findingSites);
+      const existingSites = measurementDataI.findingSites.filter(
+        site =>
+          !(
+            site.CodeValue === 'HIDDEN' &&
+            site.CodingSchemeDesignator === '99MEDICALVIEWER'
+          )
+      );
+      findingSites.push(...existingSites);
     }
 
     if (measurementDataI.isVisible === false) {
