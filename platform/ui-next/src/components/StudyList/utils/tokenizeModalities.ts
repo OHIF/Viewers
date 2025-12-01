@@ -4,4 +4,3 @@ export function tokenizeModalities(value: string): string[] {
     .split(/[\s,\/\\]+/)
     .filter(Boolean);
 }
-

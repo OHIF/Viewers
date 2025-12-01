@@ -4,7 +4,7 @@ import { DataTable } from '../../DataTable';
 import { Icons } from '../../Icons';
 import type { StudyRow } from '../StudyListTypes';
 import { StudyListActionsCell } from '../components/StudyListActionsCell';
-import { tokenizeModalities } from '../../../lib/filters';
+import { tokenizeModalities } from '../utils/tokenizeModalities';
 
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
@@ -32,7 +32,6 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       accessorKey: 'studyDateTime',
-      enableSorting: false,
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => <div className="truncate">{row.getValue('studyDateTime')}</div>,
       sortingFn: (a, b, colId) => {

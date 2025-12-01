@@ -5,7 +5,7 @@ import { Button } from '../../Button';
 import { InputMultiSelect } from '../../InputMultiSelect';
 import type { StudyRow } from '../StudyListTypes';
 import { useStudyList } from '../headless/StudyListProvider';
-import { tokenizeModalities } from '../../../lib/filters';
+import { tokenizeModalities } from '../utils/tokenizeModalities';
 import type { WorkflowId } from '../WorkflowsInfer';
 
 type Props = {
@@ -67,24 +67,6 @@ export function StudyListTable({
         renderOpenPanelButton={renderOpenPanelButton}
       />
     </DataTable>
-  );
-}
-
-function ChevronLeftIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
-      <path
-        d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
-        fill="currentColor"
-      />
-    </svg>
   );
 }
 
@@ -167,18 +149,7 @@ function Content({
             {toolbarRightExtras}
             {typeof onOpenPanel === 'function' && isPanelOpen === false ? (
               <div className="mt-1 ml-2">
-                {renderOpenPanelButton ? (
-                  renderOpenPanelButton({ onOpenPanel })
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Open preview panel"
-                    onClick={onOpenPanel}
-                  >
-                    <ChevronLeftIcon />
-                  </Button>
-                )}
+                {renderOpenPanelButton ? renderOpenPanelButton({ onOpenPanel }) : null}
               </div>
             ) : null}
           </div>

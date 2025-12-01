@@ -140,9 +140,9 @@ import {
   ToolButtonListDivider,
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
+import { ToolSettings } from './OHIFToolSettings';
 export * from './StudyList';
 export * from './PatientSummary';
-import { ToolSettings } from './OHIFToolSettings';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
