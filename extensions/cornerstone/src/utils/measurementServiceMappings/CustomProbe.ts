@@ -70,12 +70,12 @@ const Probe = {
     const firstPoint = points && points[0];
     const resolvedReferencedImageId = firstPoint && displaySet ? getClosestReferencedImageIdForPoint(displaySet, firstPoint) : undefined;
 
-    // Only set referencedImageId when we have a concrete image plane; otherwise remove it
+    // Only set referencedImageId when we have a concrete image plane; otherwise keep existing or remove if strictly volume
     if (resolvedReferencedImageId) {
       metadata.referencedImageId = resolvedReferencedImageId as any;
-    } else {
-      delete metadata.referencedImageId;
     }
+    // If resolution fails (e.g. X-ray without ImagePlane), we should KEEP the existing referencedImageId
+    // instead of deleting it, assuming the tool set it correctly for the stack.
 
     // Check if this is a volume-based annotation
     const isVolumeBasedAnnotation = true;
@@ -128,7 +128,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     // Try volume-based approach first
     let SeriesInstanceUID, SOPInstanceUID, frameNumber;
 
-    if (metadata.referencedImageId !== NO_IMAGE_ID) {
+    if (metadata.referencedImageId && metadata.referencedImageId !== NO_IMAGE_ID) {
       const sopAttributes = getSOPInstanceAttributes(
         metadata.referencedImageId,
         displaySetService,

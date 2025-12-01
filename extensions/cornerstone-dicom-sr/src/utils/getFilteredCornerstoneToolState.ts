@@ -65,7 +65,7 @@ function getFilteredCornerstoneToolState(measurementData, additionalFindingTypes
       findingSites.push({
         CodeValue: 'HIDDEN',
         CodingSchemeDesignator: '99MEDICALVIEWER',
-        CodeMeaning: 'Hidden Annotation',
+        CodeMeaning: '',
       });
     }
     const measurement = Object.assign({}, annotation, {
