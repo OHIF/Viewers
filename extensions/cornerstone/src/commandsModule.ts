@@ -214,83 +214,65 @@ function commandsModule({
     }
   }
 
+  const loadDerivedDisplaySetsForActiveViewport = async (
+    onLoadComplete: (displaySet: any, activeViewportId: string) => Promise<void> | void
+  ): Promise<boolean> => {
+    const activeViewportId = viewportGridService.getActiveViewportId();
+    if (!activeViewportId) {
+      console.warn('No active viewport found');
+      return false;
+    }
+
+    const displaySetInstanceUIDs =
+      viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+    if (!displaySetInstanceUIDs?.length) {
+      console.warn('No display sets found for active viewport');
+      return false;
+    }
+
+    const primaryDisplaySetUID = displaySetInstanceUIDs[0];
+    const derivedDisplaySets = _getDerivedSegmentations(primaryDisplaySetUID);
+    if (!derivedDisplaySets.length) {
+      return false;
+    }
+
+    const headers = userAuthenticationService.getAuthorizationHeader();
+
+    const loadPromises = derivedDisplaySets.map(async displaySet => {
+      try {
+        await displaySet.load({ headers });
+        await onLoadComplete(displaySet, activeViewportId);
+      } catch (error) {
+        console.error(`Failed to load segmentation ${displaySet.displaySetInstanceUID}:`, error);
+      }
+    });
+
+    await Promise.all(loadPromises);
+    return true;
+  };
+
   const actions = {
     loadSRsForActiveViewport: async () => {
       console.info('Loading SRs for active viewport...');
 
-      const activeViewportId = viewportGridService.getActiveViewportId();
-      if (!activeViewportId) {
-        console.warn('No active viewport found');
-        return;
-      }
+      const loaded = await loadDerivedDisplaySetsForActiveViewport(async displaySet => {
+        commandsManager.run('hydrateStructuredReport', {
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+        });
+      });
 
-      const displaySetInstanceUIDs =
-        viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
-      if (!displaySetInstanceUIDs?.length) {
-        console.warn('No display sets found for active viewport');
-        return;
-      }
-
-      const primaryDisplaySetUID = displaySetInstanceUIDs[0];
-      const derivedDisplaySets = _getDerivedSegmentations(primaryDisplaySetUID);
-      if (!derivedDisplaySets.length) {
+      if (!loaded) {
         console.warn('No derived SRs found for active viewport');
         return;
       }
 
-      const headers = userAuthenticationService.getAuthorizationHeader();
-
-      /** Load all segmentations in parallel for better performance */
-      const loadPromises = derivedDisplaySets.map(async displaySet => {
-        try {
-          /** Load the display set */
-          await displaySet.load({ headers });
-
-          /** Hydrate the SR */
-          commandsManager.run('hydrateStructuredReport', {
-            displaySetInstanceUID: displaySet.displaySetInstanceUID,
-          });
-        } catch (error) {
-          console.error(`Failed to load segmentation ${displaySet.displaySetInstanceUID}:`, error);
-          /** Continue with other segmentations even if one fails */
-        }
-      });
-
-      await Promise.all(loadPromises);
       console.info('SRs loaded for active viewport.');
     },
     loadSegmentationsForActiveViewport: async () => {
       console.info('Loading segmentations for active viewport...');
 
-      const activeViewportId = viewportGridService.getActiveViewportId();
-      if (!activeViewportId) {
-        console.warn('No active viewport found');
-        return;
-      }
-
-      const displaySetInstanceUIDs =
-        viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
-      if (!displaySetInstanceUIDs?.length) {
-        console.warn('No display sets found for active viewport');
-        return;
-      }
-
-      const primaryDisplaySetUID = displaySetInstanceUIDs[0];
-      const derivedDisplaySets = _getDerivedSegmentations(primaryDisplaySetUID);
-      if (!derivedDisplaySets.length) {
-        console.warn('No derived segmentations found for active viewport');
-        return;
-      }
-
-      const headers = userAuthenticationService.getAuthorizationHeader();
-
-      /** Load all segmentations in parallel for better performance */
-      const loadPromises = derivedDisplaySets.map(async displaySet => {
-        try {
-          /** Load the display set */
-          await displaySet.load({ headers });
-
-          /** Get the representation type */
+      const loaded = await loadDerivedDisplaySetsForActiveViewport(
+        async (displaySet, activeViewportId) => {
           const representationType =
             displaySet.Modality === 'SEG'
               ? Enums.SegmentationRepresentations.Labelmap
@@ -300,13 +282,14 @@ function commandsModule({
             segmentationId: displaySet.displaySetInstanceUID,
             type: representationType,
           });
-        } catch (error) {
-          console.error(`Failed to load segmentation ${displaySet.displaySetInstanceUID}:`, error);
-          /** Continue with other segmentations even if one fails */
         }
-      });
+      );
 
-      await Promise.all(loadPromises);
+      if (!loaded) {
+        console.warn('No derived segmentations found for active viewport');
+        return;
+      }
+
       console.info('Segmentations loaded for active viewport.');
     },
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
