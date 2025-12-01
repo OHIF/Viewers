@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { Button } from '../../Button';
 import { Icons } from '../../Icons';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../DropdownMenu';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../Tooltip';
 import { getAvailableWorkflows, type WorkflowId } from '../WorkflowsInfer';
 
@@ -13,7 +18,7 @@ type Props = {
   align?: 'start' | 'end' | 'center';
 };
 
-export function WorkflowsMenu({
+export function StudyListWorkflowMenu({
   workflows,
   modalities,
   defaultMode,
@@ -27,7 +32,10 @@ export function WorkflowsMenu({
   );
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu
+      open={open}
+      onOpenChange={setOpen}
+    >
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -38,7 +46,7 @@ export function WorkflowsMenu({
                 aria-expanded={open}
                 aria-haspopup="menu"
                 aria-label="Action Menu"
-                className="bg-primary/20 text-primary mt-1 h-6 w-6 transition-opacity hover:bg-primary/30"
+                className="bg-primary/20 text-primary hover:bg-primary/30 mt-1 h-6 w-6 transition-opacity"
               >
                 <Icons.More className="h-6 w-6" />
               </Button>
@@ -47,16 +55,19 @@ export function WorkflowsMenu({
           <TooltipContent side="bottom">Action Menu</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DropdownMenuContent align={align} onClick={(e) => e.stopPropagation()}>
-        <div className="text-muted-foreground border-b border-input py-1 pl-1 pr-4 text-sm my-1.5 mx-1">
+      <DropdownMenuContent
+        align={align}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="text-muted-foreground border-input my-1.5 mx-1 border-b py-1 pl-1 pr-4 text-sm">
           Launch Workflow:
         </div>
-        {items.map((wf) => {
+        {items.map(wf => {
           const isDefault = defaultMode != null && String(defaultMode) === String(wf);
           return (
             <DropdownMenuItem
               key={String(wf)}
-              onSelect={(e) => {
+              onSelect={e => {
                 e.preventDefault();
                 onLaunch?.(wf);
               }}

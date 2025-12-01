@@ -45,7 +45,7 @@ ui-next/src/components/StudyList/
 │   ├── StudyListActionsCell.tsx
 │   ├── StudyListLayout.tsx         # Resizable split layout
 │   ├── StudyListTable.tsx          # Table built on DS DataTable
-│   └── WorkflowsMenu.tsx
+│   └── StudyListWorkflowMenu.tsx
 │
 ├── layouts/                        # Compositions using components/
 │   ├── StudyListLargeLayout.tsx    # Default Study List recipe
@@ -75,7 +75,7 @@ ui-next/src/components/StudyList/
 - `useStudyListState` builds the headless state and is provided via `<StudyListProvider value={...}>`.
 - `StudyListTable` produces selection changes which update `selected`.
 - `StudyListLayout` shows/hides and resizes the preview area; `OpenPreviewButton` reopens it when closed.
-- `StudyListActionsCell` (trailing column) with `WorkflowsMenu` launches workflows per row via `launch(study, workflow)`.
+- `StudyListActionsCell` (trailing column) with `StudyListWorkflowMenu` launches workflows per row via `launch(study, workflow)`.
 - `SettingsPopover` changes the default workflow via `useDefaultWorkflow`.
 
 ---
@@ -127,7 +127,7 @@ ui-next/src/components/StudyList/
 - Always visible and excluded from the View (column visibility) menu.
 - Reads `defaultWorkflow` and calls `launch(study, workflow)` from headless state.
 
-### `components/WorkflowsMenu.tsx`
+### `components/StudyListWorkflowMenu.tsx`
 - Dropdown built with DS `DropdownMenu` listing workflows for a row.
 - Source of truth: `getAvailableWorkflows({ workflows, modalities })`.
 

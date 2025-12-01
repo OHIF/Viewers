@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { Cell } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
-import { WorkflowsMenu } from './WorkflowsMenu';
+import { StudyListWorkflowMenu } from './StudyListWorkflowMenu';
 import { useStudyList } from '../headless/StudyListProvider';
 import type { WorkflowId } from '../WorkflowsInfer';
 
@@ -23,7 +23,7 @@ export function StudyListActionsCell<TData>({ cell }: { cell: Cell<TData, unknow
       </DataTable.ActionOverlayCell.Value>
       <DataTable.ActionOverlayCell.Overlay>
         <div onClick={e => e.stopPropagation()}>
-          <WorkflowsMenu
+          <StudyListWorkflowMenu
             workflows={(original as any).workflows}
             modalities={(original as any).modalities}
             defaultMode={defaultWorkflow}
