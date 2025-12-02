@@ -8,12 +8,7 @@
  * Minimal usage
  *   <PatientSummary data={row}>
  *     <PatientSummary.Patient />
- *     <PatientSummary.Workflows
- *       workflows={availableWorkflowsFor(row)}
- *       defaultMode={defaultWorkflow}
- *       onDefaultModeChange={setDefaultWorkflow}
- *       onLaunchWorkflow={(data, wf) => launch(data, wf)}
- *     />
+ *     <PatientSummary.Workflows />
  *   </PatientSummary>
  *
  * Adapting data shapes
@@ -21,21 +16,22 @@
  *   <PatientSummary data={row} get={{ title: r => r.displayName, subtitle: r => r.patientId }}>
  *
  * Default workflow behavior
- * - Pass `defaultMode` and `onDefaultModeChange` to show a default badge and a clear control.
- * - Workflows render buttons for the rest of the available workflows.
+ * - Workflows component automatically uses StudyListWorkflowProvider context.
+ * - Shows default workflow badge and allows clearing it.
+ * - Renders buttons for other available workflows.
  *
  * Helpful references
  * - platform/ui-next/src/components/StudyList/components/PreviewPanelContent.tsx (in-context example)
  * - platform/ui-next/src/components/StudyList/components/PreviewPanelEmpty.tsx (empty state example)
- * - platform/ui-next/src/components/StudyList/headless/useStudyList.ts (state + availableWorkflowsFor)
- * - platform/ui-next/src/components/StudyList/headless/workflows-registry.ts (workflow ids/utilities)
  */
 import * as React from 'react';
 import type { ElementType } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { cn } from '../../lib/utils';
-import { Icons } from '../Icons/Icons';
-import { Button } from '../Button';
+import { cn } from '../../../lib/utils';
+import { Icons } from '../../Icons/Icons';
+import { Button } from '../../Button';
+import type { StudyRow } from '../StudyListTypes';
+import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
 
 /** Public getters to adapt arbitrary data shapes to the PatientSummary defaults */
 export type PatientSummaryGetters<T> = {
@@ -75,12 +71,7 @@ type RootProps<T = any> = {
  *
  * Use `get` to adapt arbitrary data shapes (e.g., map `displayName` → name, `patientId` → mrn).
  */
-function Root<T = any>({
-  data: dataProp,
-  get,
-  className,
-  children,
-}: RootProps<T>) {
+function Root<T = any>({ data: dataProp, get, className, children }: RootProps<T>) {
   const data = dataProp ?? null;
 
   const resolvedGetters = React.useMemo<ResolvedGetters<T>>(
@@ -461,64 +452,79 @@ type ActionComponentType = <T = any>(
 const Action = React.forwardRef(ActionInner) as ActionComponentType;
 Action.displayName = 'PatientSummaryAction';
 
-type WorkflowButtonProps<T = any, M extends string = string> = {
+type WorkflowButtonProps<T = any> = {
   label?: React.ReactNode;
   onClick?: (data: T) => void;
-  /** Called with (data, workflow) when a workflow is launched */
-  onLaunchWorkflow?: (data: T, workflow: M) => void;
   disabled?: boolean;
   disabledReason?: string;
   className?: string;
   icon?: React.ReactNode;
   iconPosition?: 'start' | 'end';
   iconSize?: number;
-  /** Selected default workflow label (managed via SettingsPopover) */
-  defaultMode?: M | null;
-  /** Update the default workflow label (managed via SettingsPopover) */
-  onDefaultModeChange?: (value: M | null) => void;
-  /** Explicit list of workflows to render */
-  workflows?: readonly (M | string)[];
 } & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
 
-const WorkflowButtonInner = <T = any, M extends string = string>(
+const WorkflowButtonInner = <T = any,>(
   {
     label = 'Launch workflow',
     onClick,
-    onLaunchWorkflow,
     disabled,
     disabledReason,
     className,
     icon = <Icons.Info />,
     iconPosition = 'end',
     iconSize = 18,
-    defaultMode,
-    onDefaultModeChange,
-    workflows,
     style,
     ...rest
-  }: WorkflowButtonProps<T, M>,
+  }: WorkflowButtonProps<T>,
   ref: React.ForwardedRef<HTMLElement>
 ) => {
   const { data } = useSummaryContext<T>();
+  const workflowContext = useStudyListWorkflows();
   const computedDisabled = disabled ?? false;
   const id = React.useId();
   const reasonId = `${id}-reason`;
-  const workflowButtons = React.useMemo(() => {
-    return Array.isArray(workflows) ? Array.from(new Set(workflows.map(String))) : [];
-  }, [workflows]);
-  const hasDefault = !!(defaultMode && String(defaultMode).trim().length > 0);
-  const filteredWorkflows = React.useMemo(() => {
-    if (!hasDefault) return workflowButtons;
-    return workflowButtons.filter(wf => String(wf) !== String(defaultMode));
-  }, [workflowButtons, hasDefault, defaultMode]);
 
-  const handleLaunch = (wfLabel: string) => {
+  // Get workflows for the current study (or all workflows if no study)
+  const studyRow = data as StudyRow | null;
+  const availableWorkflows = React.useMemo(() => {
+    if (studyRow) {
+      return workflowContext.getWorkflowsForStudy(studyRow);
+    }
+    return workflowContext.workflows;
+  }, [studyRow, workflowContext]);
+
+  const defaultWorkflow = React.useMemo(() => {
+    if (studyRow) {
+      return workflowContext.getDefaultWorkflowForStudy(studyRow);
+    }
+    return workflowContext.workflows.find(w => w.isDefault);
+  }, [studyRow, workflowContext]);
+
+  const workflowButtons = React.useMemo(() => {
+    return availableWorkflows.map(w => w.displayName);
+  }, [availableWorkflows]);
+
+  const hasDefault = !!defaultWorkflow;
+  const filteredWorkflows = React.useMemo(() => {
+    if (!hasDefault) {
+      return workflowButtons;
+    }
+    return workflowButtons.filter(wf => wf !== defaultWorkflow.displayName);
+  }, [workflowButtons, hasDefault, defaultWorkflow]);
+
+  const handleLaunch = (wfDisplayName: string) => {
     if (computedDisabled || !data) {
       return;
     }
-    // Generic handler fallback:
-    onLaunchWorkflow?.(data, wfLabel as unknown as M);
+    const wf = availableWorkflows.find(w => w.displayName === wfDisplayName);
+    if (wf && studyRow) {
+      wf.launchWithStudy(studyRow);
+    }
     onClick?.(data);
+  };
+
+  const handleDefaultModeChange = () => {
+    workflowContext.setDefaultWorkflowId();
   };
 
   const iconNode = icon ? (
@@ -562,7 +568,7 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
         size="icon"
         aria-label="Clear default mode"
         className="text-primary focus-visible:ring-ring focus-visible:ring-offset-background ml-1.5 mb-1 opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2"
-        onClick={() => onDefaultModeChange?.(null)}
+        onClick={handleDefaultModeChange}
       >
         <Cross2Icon
           className="text-primary h-3.5 w-3.5"
@@ -599,32 +605,32 @@ const WorkflowButtonInner = <T = any, M extends string = string>(
       </div>
 
       {/* Default workflow badge + other workflows */}
-      {hasDefault && renderDefaultWorkflow(String(defaultMode))}
+      {hasDefault && renderDefaultWorkflow(defaultWorkflow.displayName)}
       {hasDefault && data && filteredWorkflows.length > 0 && (
         <div className="text-muted-foreground mt-2 text-sm">Other Available Workflows</div>
       )}
       {data && filteredWorkflows.length > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
           {filteredWorkflows.map(wf => (
-              <Button
-                key={String(wf)}
-                variant="ghost"
-                size="sm"
-                className="bg-primary/20 ml-1 mb-1 h-6 w-32"
-                disabled={computedDisabled}
-                onClick={() => handleLaunch(String(wf))}
-              >
-                {wf}
-              </Button>
-            ))}
+            <Button
+              key={wf}
+              variant="ghost"
+              size="sm"
+              className="bg-primary/20 ml-1 mb-1 h-6 w-32"
+              disabled={computedDisabled}
+              onClick={() => handleLaunch(wf)}
+            >
+              {wf}
+            </Button>
+          ))}
         </div>
       )}
     </div>
   );
 };
 
-type WorkflowButtonComponent = <T = any, M extends string = string>(
-  props: WorkflowButtonProps<T, M> & { ref?: React.Ref<HTMLElement> }
+type WorkflowButtonComponent = <T = any>(
+  props: WorkflowButtonProps<T> & { ref?: React.Ref<HTMLElement> }
 ) => React.ReactElement | null;
 
 const WorkflowButton = React.forwardRef(WorkflowButtonInner) as WorkflowButtonComponent;
@@ -673,7 +679,7 @@ function Patient({
           )}
         </Icon>
       )}
-      <div className="flex min-w-0 flex-col gap-px h-[38px] justify-center">
+      <div className="flex h-[38px] min-w-0 flex-col justify-center gap-px">
         {!hideTitle && <Title placeholder={placeholder} />}
         {!hideSubtitle && <Subtitle />}
       </div>
@@ -686,12 +692,12 @@ function Patient({
  *
  * Usage:
  * - Must be used inside `<PatientSummary>` so it can read the current `data` from context.
- * - Pass `workflows` (typically from headless `availableWorkflowsFor(row)`).
- * - Optionally pass `defaultMode` and `onDefaultModeChange` to show the default badge and allow clearing it.
- * - Handle launches with `onLaunchWorkflow(data, workflow)`.
+ * - Must be used inside `<StudyListWorkflowProvider>` to access workflow context.
+ * - Automatically gets workflows for the current study and handles launching.
+ * - Shows default workflow badge and allows clearing it.
  */
-function Workflows<T = any, M extends string = string>(props: WorkflowButtonProps<T, M>) {
-  return <WorkflowButton<T, M> {...props} />;
+function Workflows<T = any>(props: WorkflowButtonProps<T>) {
+  return <WorkflowButton<T> {...props} />;
 }
 
 type EmptyProps = {
@@ -722,7 +728,7 @@ function Empty({ children, icon, section }: EmptyProps) {
           />
         </Icon>
       )}
-      <div className="flex items-center h-[38px]">
+      <div className="flex h-[38px] items-center">
         <span className="text-muted-foreground text-base font-medium leading-tight">
           {children ?? 'Select a study'}
         </span>

@@ -2,19 +2,10 @@ import * as React from 'react';
 import type { Cell } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
 import { StudyListWorkflowMenu } from './StudyListWorkflowMenu';
-import { useStudyList } from '../headless/StudyListProvider';
-import type { WorkflowId } from '../WorkflowsInfer';
+import type { StudyRow } from '../StudyListTypes';
 
 export function StudyListActionsCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
-  const { defaultWorkflow, launch } = useStudyList<TData, WorkflowId>();
-  const original = cell.row.original as TData;
-
-  const handleLaunch = React.useCallback(
-    (wf: WorkflowId) => {
-      launch(original, wf);
-    },
-    [launch, original]
-  );
+  const original = cell.row.original as TData & StudyRow;
 
   return (
     <DataTable.ActionOverlayCell cell={cell}>
@@ -23,12 +14,7 @@ export function StudyListActionsCell<TData>({ cell }: { cell: Cell<TData, unknow
       </DataTable.ActionOverlayCell.Value>
       <DataTable.ActionOverlayCell.Overlay>
         <div onClick={e => e.stopPropagation()}>
-          <StudyListWorkflowMenu
-            workflows={(original as any).workflows}
-            modalities={(original as any).modalities}
-            defaultMode={defaultWorkflow}
-            onLaunch={handleLaunch}
-          />
+          <StudyListWorkflowMenu studyRow={original} />
         </div>
       </DataTable.ActionOverlayCell.Overlay>
     </DataTable.ActionOverlayCell>

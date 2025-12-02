@@ -4,9 +4,8 @@ import { DataTable, useDataTable } from '../../DataTable';
 import { Button } from '../../Button';
 import { InputMultiSelect } from '../../InputMultiSelect';
 import type { StudyRow } from '../StudyListTypes';
-import { useStudyList } from '../headless/StudyListProvider';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
-import type { WorkflowId } from '../WorkflowsInfer';
+import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[];
@@ -77,8 +76,8 @@ function StudyListTableContent({
     const tokens = rows.flatMap(r => tokenizeModalities(String(r.modalities ?? '')));
     return Array.from(new Set(tokens)).sort();
   }, [table.options?.data]);
-  // Access headless state for default workflow + launch
-  const { defaultWorkflow, launch } = useStudyList<StudyRow, WorkflowId>();
+  // Access workflow provider for default workflow + launch
+  const { getDefaultWorkflowForStudy } = useStudyListWorkflows();
 
   // Responsive column visibility based on viewport width
   React.useEffect(() => {
@@ -182,6 +181,8 @@ function StudyListTableContent({
           rowProps={{
             className: 'group cursor-pointer',
             onClick: row => {
+              const original = row.original as StudyRow;
+              const defaultWorkflow = getDefaultWorkflowForStudy(original);
               // When a default workflow is set, do not allow a second click to unselect.
               // Always select on click; otherwise toggle selection.
               if (defaultWorkflow) {
@@ -193,6 +194,8 @@ function StudyListTableContent({
               }
             },
             onDoubleClick: row => {
+              const original = row.original as StudyRow;
+              const defaultWorkflow = getDefaultWorkflowForStudy(original);
               if (!defaultWorkflow) {
                 return;
               }
@@ -200,8 +203,7 @@ function StudyListTableContent({
               if (!row.getIsSelected()) {
                 row.toggleSelected(true);
               }
-              const original = row.original as StudyRow;
-              launch(original, defaultWorkflow as WorkflowId);
+              defaultWorkflow.launchWithStudy(original);
             },
           }}
         />
