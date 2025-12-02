@@ -104,6 +104,8 @@ function PanelStudyBrowser({
   const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
   const [isSegmenting, setIsSegmenting] = useState(false);
+  const [segmentationProgress, setSegmentationProgress] = useState<number>(0);
+  const [segmentationStage, setSegmentationStage] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadStage, setUploadStage] = useState<string>('');
 
@@ -261,6 +263,8 @@ function PanelStudyBrowser({
     const { uiNotificationService } = servicesManager.services;
 
     setIsSegmenting(true);
+    setSegmentationProgress(0);
+    setSegmentationStage('Requesting segmentation from backend...');
     try {
       uiNotificationService.show({
         title: 'Segmentation',
@@ -287,6 +291,9 @@ function PanelStudyBrowser({
         3000, // 3 seconds delay
         true // suppressWarnings
       );
+
+      setSegmentationStage('Downloading segmentation archive...');
+      setSegmentationProgress(25);
 
       const blob = await response.blob();
       const zipReader = new ZipReader(new BlobReader(blob));
@@ -318,6 +325,9 @@ function PanelStudyBrowser({
         return;
       }
 
+      setSegmentationStage('Integrating segmentation into viewer...');
+      setSegmentationProgress(60);
+
       const existingSeriesMap = new Map();
       DicomMetadataStore.getStudyInstanceUIDs().forEach(studyUID => {
         const study = DicomMetadataStore.getStudy(studyUID);
@@ -332,6 +342,9 @@ function PanelStudyBrowser({
       const studies = await filesToStudies(files);
 
       if (studies?.length) {
+        setSegmentationStage('Creating display sets...');
+        setSegmentationProgress(75);
+
         // First, create display sets for new series
         studies.forEach(studyInstanceUID => {
           const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
@@ -449,6 +462,9 @@ function PanelStudyBrowser({
 
           setDisplaySets(mappedDisplaySets);
 
+          setSegmentationStage('Segmentation ready');
+          setSegmentationProgress(100);
+
           // Automatically load SEG display sets into different viewports
           setTimeout(async () => {
             const { viewportGridService } = servicesManager.services;
@@ -519,6 +535,8 @@ function PanelStudyBrowser({
       });
     } finally {
       setIsSegmenting(false);
+      setSegmentationProgress(0);
+      setSegmentationStage('');
     }
   }, [
     sessionID,
@@ -963,6 +981,30 @@ function PanelStudyBrowser({
           )}
           {conversionStatus && !isConversionComplete && (
             <div className="text-primary-light px-2 text-xs">{conversionStatus}</div>
+          )}
+          {isSegmenting && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>Loading segmentation...</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div className="bg-primary h-full w-full animate-pulse" />
+              </div>
+            </div>
+          )}
+          {isSegmenting && segmentationProgress > 0 && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>{segmentationStage}</span>
+                <span>{Math.round(segmentationProgress)}%</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-full transition-all duration-300"
+                  style={{ width: `${segmentationProgress}%` }}
+                />
+              </div>
+            </div>
           )}
           <div className="flex gap-2">
             <button
