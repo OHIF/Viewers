@@ -46,9 +46,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/adapters": "4.12.5",
-    "@cornerstonejs/core": "4.12.5",
-    "@kitware/vtk.js": "32.12.0",
+    "@cornerstonejs/adapters": "4.12.6",
+    "@cornerstonejs/core": "4.12.6",
+    "@kitware/vtk.js": "34.15.1",
     "react-color": "2.19.3"
   }
 }
