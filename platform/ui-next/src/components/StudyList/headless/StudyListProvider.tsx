@@ -1,27 +1,23 @@
 import * as React from 'react';
 
-export type StudyListContextValue<T = any, W extends string = string> = {
+export type StudyListContextValue<T = any> = {
   selected: T | null;
   setSelected: (row: T | null) => void;
 
   isPanelOpen: boolean;
   setPanelOpen: (open: boolean) => void;
 
-  defaultWorkflow: W | null;
-  setDefaultWorkflow: (wf: W | null) => void;
-
-  availableWorkflowsFor: (row: Partial<T> | null | undefined) => readonly W[];
-
-  launch: (row: T, wf: W) => void;
+  seriesViewMode: 'thumbnails' | 'list';
+  setSeriesViewMode: (mode: 'thumbnails' | 'list') => void;
 };
 
 export const StudyListContext = React.createContext<StudyListContextValue | undefined>(undefined);
 
-export function StudyListProvider<T = any, W extends string = string>({
+export function StudyListProvider<T = any>({
   value,
   children,
 }: {
-  value: StudyListContextValue<T, W>;
+  value: StudyListContextValue<T>;
   children: React.ReactNode;
 }) {
   return (
@@ -31,10 +27,10 @@ export function StudyListProvider<T = any, W extends string = string>({
   );
 }
 
-export function useStudyList<T = any, W extends string = string>() {
+export function useStudyList<T = any>() {
   const ctx = React.useContext(StudyListContext);
   if (!ctx) {
     throw new Error('useStudyList must be used within <StudyListProvider>');
   }
-  return ctx as StudyListContextValue<T, W>;
+  return ctx as StudyListContextValue<T>;
 }

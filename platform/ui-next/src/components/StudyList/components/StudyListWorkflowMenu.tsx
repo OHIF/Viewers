@@ -8,28 +8,18 @@ import {
   DropdownMenuItem,
 } from '../../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../Tooltip';
-import { getAvailableWorkflows, type WorkflowId } from '../WorkflowsInfer';
+import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
+import type { StudyRow } from '../StudyListTypes';
 
 type Props = {
-  workflows?: readonly (WorkflowId | string)[];
-  modalities?: string;
-  defaultMode?: WorkflowId | null;
-  onLaunch?: (workflow: WorkflowId) => void;
+  studyRow: StudyRow;
   align?: 'start' | 'end' | 'center';
 };
 
-export function StudyListWorkflowMenu({
-  workflows,
-  modalities,
-  defaultMode,
-  onLaunch,
-  align = 'end',
-}: Props) {
+export function StudyListWorkflowMenu({ studyRow, align = 'end' }: Props) {
   const [open, setOpen] = React.useState(false);
-  const items = React.useMemo(
-    () => getAvailableWorkflows({ workflows, modalities }),
-    [workflows, modalities]
-  );
+  const { getWorkflowsForStudy } = useStudyListWorkflows();
+  const workflows = getWorkflowsForStudy(studyRow);
 
   return (
     <DropdownMenu
@@ -62,23 +52,20 @@ export function StudyListWorkflowMenu({
         <div className="text-muted-foreground border-input my-1.5 mx-1 border-b py-1 pl-1 pr-4 text-sm">
           Launch Workflow:
         </div>
-        {items.map(wf => {
-          const isDefault = defaultMode != null && String(defaultMode) === String(wf);
-          return (
-            <DropdownMenuItem
-              key={String(wf)}
-              onSelect={e => {
-                e.preventDefault();
-                onLaunch?.(wf);
-              }}
-              className={isDefault ? 'font-semibold' : undefined}
-              aria-current={isDefault ? 'true' : undefined}
-            >
-              {isDefault ? '✓ ' : null}
-              {wf}
-            </DropdownMenuItem>
-          );
-        })}
+        {workflows.map(workflow => (
+          <DropdownMenuItem
+            key={workflow.id}
+            onSelect={e => {
+              e.preventDefault();
+              workflow.launchWithStudy(studyRow);
+            }}
+            className={workflow.isDefault ? 'font-semibold' : undefined}
+            aria-current={workflow.isDefault ? 'true' : undefined}
+          >
+            {workflow.isDefault ? '✓ ' : null}
+            {workflow.displayName}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

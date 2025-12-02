@@ -10,8 +10,7 @@ import {
 } from '../../Select';
 import { Label } from '../../Label';
 import { Button } from '../../Button';
-import { Icons } from '../../Icons';
-import { ALL_WORKFLOW_OPTIONS, type WorkflowId } from '../WorkflowsInfer';
+import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
 
 /** Context to allow subcomponents to close the popover */
 type SettingsPopoverContextValue = {
@@ -62,11 +61,7 @@ SettingsPopoverTrigger.displayName = 'SettingsPopover.Trigger';
  *   </SettingsPopover.Content>
  * </SettingsPopover>
  */
-function SettingsPopoverComponent({
-  open,
-  onOpenChange,
-  children,
-}: RootProps) {
+function SettingsPopoverComponent({ open, onOpenChange, children }: RootProps) {
   const isControlled = typeof open === 'boolean';
   const [internalOpen, setInternalOpen] = React.useState(false);
 
@@ -98,17 +93,22 @@ function SettingsPopoverComponent({
   }
 
   if (!triggerNode) {
-    throw new Error('<SettingsPopover.Trigger> is required as a direct child of <SettingsPopover>.');
+    throw new Error(
+      '<SettingsPopover.Trigger> is required as a direct child of <SettingsPopover>.'
+    );
   }
   if (!contentNode) {
-    throw new Error('<SettingsPopover.Content> is required as a direct child of <SettingsPopover>.');
+    throw new Error(
+      '<SettingsPopover.Content> is required as a direct child of <SettingsPopover>.'
+    );
   }
 
   return (
-    <Popover open={isOpen} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        {triggerNode}
-      </PopoverTrigger>
+    <Popover
+      open={isOpen}
+      onOpenChange={setOpen}
+    >
+      <PopoverTrigger asChild>{triggerNode}</PopoverTrigger>
 
       <SettingsPopoverContext.Provider value={{ close }}>
         {contentNode}
@@ -131,12 +131,17 @@ type ContentProps = {
  * SettingsPopover.Content
  * Wraps the popover body content.
  */
-function SettingsPopoverContent({ align = 'end', sideOffset = 8, className, children }: ContentProps) {
+function SettingsPopoverContent({
+  align = 'end',
+  sideOffset = 8,
+  className,
+  children,
+}: ContentProps) {
   return (
     <PopoverContent
       align={align}
       sideOffset={sideOffset}
-      className={["w-[315px] p-4", className].filter(Boolean).join(" ")}
+      className={['w-[315px] p-4', className].filter(Boolean).join(' ')}
       // Prevents unwanted focus jumps when opening
       onOpenAutoFocus={e => e.preventDefault()}
     >
@@ -145,50 +150,51 @@ function SettingsPopoverContent({ align = 'end', sideOffset = 8, className, chil
   );
 }
 
-type WorkflowProps = {
-  /** Selected default workflow */
-  defaultMode: WorkflowId | null;
-  /** Handler when default workflow changes */
-  onDefaultModeChange: (value: WorkflowId | null) => void;
-  /** Optional label text, defaults to "Default Workflow" */
-  label?: string;
-};
-
 /**
  * SettingsPopover.Workflow
  * Renders the "Default Workflow" row with a Select.
  * Closes the popover after selection.
  */
-function Workflow({ defaultMode, onDefaultModeChange, label = 'Default Workflow' }: WorkflowProps) {
+function Workflow() {
   const { close } = useSettingsPopoverContext();
+  const { workflows, defaultWorkflowId, setDefaultWorkflowId } = useStudyListWorkflows();
   const selectId = React.useId();
   const NO_DEFAULT_VALUE = '__NO_DEFAULT__';
 
   return (
     <div className="mt-0 flex items-center gap-3">
-      <Label htmlFor={selectId} className="whitespace-nowrap">
-        {label}
+      <Label
+        htmlFor={selectId}
+        className="whitespace-nowrap"
+      >
+        Default Workflow
       </Label>
       <div className="min-w-0 flex-1">
         <Select
-          value={defaultMode ?? undefined}
-          onValueChange={(value) => {
+          value={defaultWorkflowId ?? undefined}
+          onValueChange={value => {
             if (value === NO_DEFAULT_VALUE) {
-              onDefaultModeChange(null);
+              setDefaultWorkflowId();
             } else {
-              onDefaultModeChange(value as WorkflowId);
+              setDefaultWorkflowId(value);
             }
             close();
           }}
         >
-          <SelectTrigger id={selectId} className="w-full">
+          <SelectTrigger
+            id={selectId}
+            className="w-full"
+          >
             <SelectValue placeholder="Select Workflow" />
           </SelectTrigger>
           {/* Keep stopPropagation so the Select's portal doesn't trigger outside interactions on the Popover */}
-          <SelectContent onPointerDown={(e) => e.stopPropagation()}>
-            {ALL_WORKFLOW_OPTIONS.map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
+          <SelectContent onPointerDown={e => e.stopPropagation()}>
+            {workflows.map(workflow => (
+              <SelectItem
+                key={workflow.id}
+                value={workflow.id}
+              >
+                {workflow.displayName}
               </SelectItem>
             ))}
             <SelectSeparator />
@@ -231,7 +237,7 @@ type LinkProps = {
 function Link({ children, href, onClick, target, rel, dataCY }: LinkProps) {
   const { close } = useSettingsPopoverContext();
 
-  const handleClick: React.MouseEventHandler<HTMLElement> = (e) => {
+  const handleClick: React.MouseEventHandler<HTMLElement> = e => {
     onClick?.();
     // Close popover after an action
     close();
@@ -245,10 +251,15 @@ function Link({ children, href, onClick, target, rel, dataCY }: LinkProps) {
         variant="ghost"
         size="default"
         dataCY={dataCY}
-        className="w-full justify-start h-7"
+        className="h-7 w-full justify-start"
       >
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a href={href} target={target} rel={rel} onClick={handleClick}>
+        <a
+          href={href}
+          target={target}
+          rel={rel}
+          onClick={handleClick}
+        >
           {children}
         </a>
       </Button>
@@ -261,7 +272,7 @@ function Link({ children, href, onClick, target, rel, dataCY }: LinkProps) {
       size="default"
       onClick={handleClick}
       dataCY={dataCY}
-      className="w-full justify-start h-7"
+      className="h-7 w-full justify-start"
     >
       {children}
     </Button>

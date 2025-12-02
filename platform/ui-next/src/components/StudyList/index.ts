@@ -7,7 +7,6 @@ export * from './columns/defaultColumns';
 export * from './components/StudyListTable';
 
 // Workflows
-export * from './WorkflowsInfer';
 export * from './components/StudyListWorkflowMenu';
 
 // Dialogs and panels
@@ -17,6 +16,7 @@ export * from './components/StudyListLayout';
 export * from './components/PreviewPanelContent';
 export * from './components/PreviewPanelEmpty';
 export * from './components/SeriesListView';
+export * from './components/PatientSummary';
 
 // Hooks
 export * from './useDefaultWorkflow';
@@ -24,3 +24,4 @@ export * from './useDefaultWorkflow';
 // Headless
 export * from './headless/StudyListProvider';
 export * from './headless/useStudyList';
+export * from './headless/StudyListWorkflowProvider';
