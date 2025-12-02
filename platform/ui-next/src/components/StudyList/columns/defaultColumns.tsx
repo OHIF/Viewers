@@ -5,6 +5,7 @@ import { Icons } from '../../Icons';
 import type { StudyRow } from '../StudyListTypes';
 import { StudyListActionsCell } from '../components/StudyListActionsCell';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
+import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDate';
 
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
@@ -31,12 +32,16 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      accessorKey: 'studyDateTime',
+      id: 'studyDateTime',
+      accessorFn: row => formatStudyDate(row.date, row.time),
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
-      cell: ({ row }) => <div className="truncate">{row.getValue('studyDateTime')}</div>,
-      sortingFn: (a, b, colId) => {
-        const norm = (s: string) => new Date(s.replace(' ', 'T')).getTime() || 0;
-        return norm(a.getValue(colId) as string) - norm(b.getValue(colId) as string);
+      cell: ({ row }) => {
+        return <div className="truncate">{row.getValue('studyDateTime')}</div>;
+      },
+      sortingFn: (a, b) => {
+        const aTimestamp = parseStudyDateTimestamp(a.original.date, a.original.time);
+        const bTimestamp = parseStudyDateTimestamp(b.original.date, b.original.time);
+        return aTimestamp - bTimestamp;
       },
       meta: {
         label: 'Study Date',

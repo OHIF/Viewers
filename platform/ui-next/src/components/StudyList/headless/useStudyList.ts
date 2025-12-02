@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { useDefaultWorkflow } from '../useDefaultWorkflow';
-import {
-  ALL_WORKFLOW_OPTIONS,
-  getAvailableWorkflows,
-  type WorkflowId,
-} from './workflows-registry';
+import { ALL_WORKFLOW_OPTIONS, getAvailableWorkflows, type WorkflowId } from './workflows-registry';
 
 /**
  * Builds the headless state for the Study List.
@@ -12,16 +8,13 @@ import {
  */
 export type SeriesViewMode = 'thumbnails' | 'list';
 
-export function useStudyListState<T = any, W extends string = WorkflowId>(
-  rows: T[],
-  {
-    defaultWorkflowKey = 'studylist.defaultWorkflow',
-    onLaunch,
-  }: {
-    defaultWorkflowKey?: string;
-    onLaunch?: (row: T, wf: W) => void;
-  } = {}
-) {
+export function useStudyListState<T = any, W extends string = WorkflowId>({
+  defaultWorkflowKey = 'studylist.defaultWorkflow',
+  onLaunch,
+}: {
+  defaultWorkflowKey?: string;
+  onLaunch?: (row: T, wf: W) => void;
+} = {}) {
   const [selected, setSelected] = React.useState<T | null>(null);
   const [isPanelOpen, setPanelOpen] = React.useState(true);
   const [seriesViewMode, setSeriesViewMode] = React.useState<SeriesViewMode>('thumbnails');
@@ -38,7 +31,6 @@ export function useStudyListState<T = any, W extends string = WorkflowId>(
   );
 
   return {
-    rows,
     selected,
     setSelected,
     isPanelOpen,
@@ -52,4 +44,3 @@ export function useStudyListState<T = any, W extends string = WorkflowId>(
     launch,
   } as const;
 }
-

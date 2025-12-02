@@ -51,6 +51,7 @@
     "cmdk": "1.1.1",
     "date-fns": "3.6.0",
     "framer-motion": "6.2.4",
+    "moment": "2.30.1",
     "lucide-react": "0.379.0",
     "next-themes": "0.3.0",
     "react": "18.3.1",

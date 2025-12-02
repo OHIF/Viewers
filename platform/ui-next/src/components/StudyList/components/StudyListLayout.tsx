@@ -1,9 +1,5 @@
 import * as React from 'react';
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from '../../Resizable';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../../Resizable';
 import { Button } from '../../Button';
 import { Icons } from '../../Icons';
 
@@ -46,13 +42,22 @@ function StudyListLayoutComponent({
   const closePanel = React.useCallback(() => onIsPanelOpenChange(false), [onIsPanelOpenChange]);
 
   const value = React.useMemo<LayoutContextValue>(
-    () => ({ isPanelOpen, openPanel, closePanel, defaultPreviewSizePercent, minPreviewSizePercent }),
+    () => ({
+      isPanelOpen,
+      openPanel,
+      closePanel,
+      defaultPreviewSizePercent,
+      minPreviewSizePercent,
+    }),
     [isPanelOpen, openPanel, closePanel, defaultPreviewSizePercent, minPreviewSizePercent]
   );
 
   return (
     <LayoutContext.Provider value={value}>
-      <ResizablePanelGroup direction="horizontal" className={className ?? 'h-full w-full'}>
+      <ResizablePanelGroup
+        direction="horizontal"
+        className={className ?? 'h-full w-full'}
+      >
         {children}
       </ResizablePanelGroup>
     </LayoutContext.Provider>
@@ -78,7 +83,9 @@ function Preview({
   children?: React.ReactNode;
 }) {
   const { isPanelOpen, defaultPreviewSizePercent, minPreviewSizePercent } = useStudyListLayout();
-  if (!isPanelOpen) return null;
+  if (!isPanelOpen) {
+    return null;
+  }
   return (
     <>
       <Handle />
@@ -97,7 +104,9 @@ function OpenPreviewButton({
   'aria-label': ariaLabel = 'Open preview panel',
 }: React.HTMLAttributes<HTMLButtonElement> & { 'aria-label'?: string }) {
   const { isPanelOpen, openPanel } = useStudyListLayout();
-  if (isPanelOpen) return null;
+  if (isPanelOpen) {
+    return null;
+  }
   return (
     <Button
       variant="ghost"
@@ -114,10 +123,35 @@ function OpenPreviewButton({
   );
 }
 
+function ClosePreviewButton({
+  className,
+  'aria-label': ariaLabel = 'Close preview panel',
+}: React.HTMLAttributes<HTMLButtonElement> & { 'aria-label'?: string }) {
+  const { isPanelOpen, closePanel } = useStudyListLayout();
+  if (!isPanelOpen) {
+    return null;
+  }
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={ariaLabel}
+      onClick={closePanel}
+      className={className}
+    >
+      <Icons.PanelRight
+        aria-hidden="true"
+        className="h-4 w-4"
+      />
+    </Button>
+  );
+}
+
 StudyListLayoutComponent.displayName = 'StudyListLayout';
 export const StudyListLayout = Object.assign(StudyListLayoutComponent, {
   Table,
   Preview,
   OpenPreviewButton,
+  ClosePreviewButton,
   Handle,
 });
