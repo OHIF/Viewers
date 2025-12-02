@@ -12,82 +12,62 @@ type Props = {
   columns: ColumnDef<StudyRow, unknown>[];
   data: StudyRow[];
   title?: React.ReactNode;
-  getRowId?: (row: StudyRow, index: number) => string;
   initialSorting?: SortingState;
   initialVisibility?: VisibilityState;
   enforceSingleSelection?: boolean;
   showColumnVisibility?: boolean;
   tableClassName?: string;
   onSelectionChange?: (rows: StudyRow[]) => void;
-  isPanelOpen?: boolean;
-  onOpenPanel?: () => void;
-
-  /** Slots to decouple visuals from the table for DS migration */
-  toolbarLeft?: React.ReactNode;
-  toolbarRightExtras?: React.ReactNode;
-  /** Custom "open panel" button renderer (receives onOpenPanel) */
-  renderOpenPanelButton?: (args: { onOpenPanel: () => void }) => React.ReactNode;
+  toolbarLeftComponent?: React.ReactNode;
+  toolbarRightComponent?: React.ReactNode;
 };
 
 export function StudyListTable({
   columns,
   data,
   title,
-  getRowId,
   initialSorting = [],
   initialVisibility = {},
   enforceSingleSelection = true,
   showColumnVisibility = true,
   tableClassName,
   onSelectionChange,
-  isPanelOpen,
-  onOpenPanel,
-  toolbarLeft,
-  toolbarRightExtras,
-  renderOpenPanelButton,
+  toolbarLeftComponent,
+  toolbarRightComponent,
 }: Props) {
   return (
     <DataTable<StudyRow>
       data={data}
       columns={columns}
-      getRowId={getRowId}
+      getRowId={row => row.studyInstanceUid}
       initialSorting={initialSorting}
       initialVisibility={initialVisibility}
       enforceSingleSelection={enforceSingleSelection}
       onSelectionChange={onSelectionChange}
     >
-      <Content
+      <StudyListTableContent
         title={title}
         showColumnVisibility={showColumnVisibility}
         tableClassName={tableClassName}
-        isPanelOpen={isPanelOpen}
-        onOpenPanel={onOpenPanel}
-        toolbarLeft={toolbarLeft}
-        toolbarRightExtras={toolbarRightExtras}
-        renderOpenPanelButton={renderOpenPanelButton}
+        toolbarLeftComponent={toolbarLeftComponent}
+        toolbarRightComponent={toolbarRightComponent}
       />
     </DataTable>
   );
 }
 
-function Content({
+function StudyListTableContent({
   title,
   showColumnVisibility,
   tableClassName,
-  isPanelOpen,
-  onOpenPanel,
-  toolbarLeft,
-  toolbarRightExtras,
-  renderOpenPanelButton,
+  toolbarLeftComponent,
+  toolbarRightComponent,
 }: {
   title?: React.ReactNode;
   showColumnVisibility?: boolean;
   tableClassName?: string;
-  isPanelOpen?: boolean;
-  onOpenPanel?: () => void;
-  toolbarLeft?: React.ReactNode;
-  toolbarRightExtras?: React.ReactNode;
-  renderOpenPanelButton?: (args: { onOpenPanel: () => void }) => React.ReactNode;
+  toolbarLeftComponent?: React.ReactNode;
+  toolbarRightComponent?: React.ReactNode;
 }) {
   const { table } = useDataTable<StudyRow>();
   const modalityOptions = React.useMemo(() => {
@@ -140,18 +120,13 @@ function Content({
     <div className="flex h-full flex-col">
       {(showColumnVisibility || title) && (
         <DataTable.Toolbar>
-          <div className="absolute left-0">{toolbarLeft}</div>
+          <div className="absolute left-0">{toolbarLeftComponent}</div>
           {title ? <DataTable.Title>{title}</DataTable.Title> : null}
           <div className="absolute right-0 flex items-center">
             {/* Pagination appears to the left of the "View" button */}
             <DataTable.Pagination />
             {showColumnVisibility && <DataTable.ViewOptions<StudyRow> />}
-            {toolbarRightExtras}
-            {typeof onOpenPanel === 'function' && isPanelOpen === false ? (
-              <div className="mt-1 ml-2">
-                {renderOpenPanelButton ? renderOpenPanelButton({ onOpenPanel }) : null}
-              </div>
-            ) : null}
+            {toolbarRightComponent}
           </div>
         </DataTable.Toolbar>
       )}
