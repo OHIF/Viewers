@@ -104,6 +104,7 @@ function PanelStudyBrowser({
   const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
   const [isSegmenting, setIsSegmenting] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [segmentationProgress, setSegmentationProgress] = useState<number>(0);
   const [segmentationStage, setSegmentationStage] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -601,6 +602,8 @@ function PanelStudyBrowser({
 
       const { uiNotificationService } = servicesManager.services;
 
+      setIsGeneratingReport(true);
+
       uiNotificationService.show({
         title: 'Report',
         message: `Generating report for study...`,
@@ -652,6 +655,8 @@ function PanelStudyBrowser({
           message: `Failed to fetch report: ${error.message || error.toString()}`,
           type: 'error',
         });
+      } finally {
+        setIsGeneratingReport(false);
       }
     },
     [sessionID, servicesManager]
@@ -986,6 +991,16 @@ function PanelStudyBrowser({
             <div className="flex flex-col gap-1 px-2">
               <div className="flex items-center justify-between text-xs text-white">
                 <span>Loading segmentation...</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div className="bg-primary h-full w-full animate-pulse" />
+              </div>
+            </div>
+          )}
+          {isGeneratingReport && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>Generating report...</span>
               </div>
               <div className="bg-background h-2 w-full overflow-hidden rounded-full">
                 <div className="bg-primary h-full w-full animate-pulse" />
