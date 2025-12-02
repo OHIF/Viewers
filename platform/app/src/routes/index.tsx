@@ -3,8 +3,12 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
+// Study list variants:
+// - Default: StudyListNext2Entry (ui-next, with pre-DS hydration)
+// - Optional: WorkList (legacy)
+import WorkList from './WorkList/WorkList';
+import StudyListNext2Entry from './StudyListNext2/StudyListNext2Entry';
 import DataSourceWrapper from './DataSourceWrapper';
-import WorkList from './WorkList';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
@@ -38,12 +42,17 @@ const NotFoundStudy = () => {
   return (
     <div className="absolute flex h-full w-full items-center justify-center text-white">
       <div>
-        <h4>
-          One or more of the requested studies are not available at this time.
-        </h4>
+        <h4>One or more of the requested studies are not available at this time.</h4>
         {showStudyList && (
           <p className="mt-2">
-            Return to the <Link className="text-primary-light" to="/">study list</Link> to select a different study to view.
+            Return to the{' '}
+            <Link
+              className="text-primary-light"
+              to="/"
+            >
+              study list
+            </Link>{' '}
+            to select a different study to view.
           </p>
         )}
       </div>
@@ -110,11 +119,16 @@ const createRoutes = ({
 
   console.log('Registering worklist route', routerBasename, path);
 
+  // Worklist Route: set `children` (and `props` if using DataSourceWrapper)
+
   const WorkListRoute = {
     path: '/',
-    children: DataSourceWrapper,
+    // Default: StudyListNext2Entry (pre-DS hydration)
+    children: StudyListNext2Entry,
     private: true,
-    props: { children: WorkList, servicesManager, extensionManager },
+    // To use legacy WorkList instead:
+    // children: DataSourceWrapper,
+    // props: { children: WorkList, servicesManager, extensionManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');
