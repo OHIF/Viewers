@@ -26,13 +26,12 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
   await viewportPageObject.getById('mpr-sagittal').pane.hover();
-  await viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay.click();
-  await page.getByTestId('AddSegmentationDataOverlay-mpr-sagittal').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('Segmentation').click();
+  const dataOverlayPageObject = viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
+  await dataOverlayPageObject.addSegmentation('Segmentation');
 
   // Hide the overlay menu.
-  await viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay.click();
+  await dataOverlayPageObject.toggle();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });

@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('should display the bidirectional tool', async ({
   page,
   mainToolbarPageObject,
+  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.bidirectional.click();
@@ -16,7 +17,7 @@ test('should display the bidirectional tool', async ({
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(
     page,
     page,
