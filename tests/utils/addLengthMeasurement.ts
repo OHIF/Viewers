@@ -32,7 +32,6 @@ export async function addLengthMeasurement(
   const [x1, y1] = firstClick;
   const [x2, y2] = secondClick;
 
-  mainToolbarPageObject.measurementTools.length.click();
   const lengthButton = mainToolbarPageObject.measurementTools.selectedTool.button;
   const viewport = viewportPageObject.active;
 
