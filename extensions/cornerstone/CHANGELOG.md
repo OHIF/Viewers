@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.96...v3.12.0-beta.97) (2025-12-03)
+
+
+### Bug Fixes
+
+* skip VOI sync for empty viewports ([#5599](https://github.com/OHIF/Viewers/issues/5599)) ([1aa4431](https://github.com/OHIF/Viewers/commit/1aa443112186851855a638ab974a3060c3e28ea0))
+
+
+
+
+
 # [3.12.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.95...v3.12.0-beta.96) (2025-12-02)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
