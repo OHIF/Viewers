@@ -44,6 +44,7 @@ import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSynchronizersStore,
+  useSelectedSegmentationsForViewportStore,
 } from './stores';
 import { useToggleOneUpViewportGridStore } from '@ohif/extension-default';
 import { useActiveViewportSegmentationRepresentations } from './hooks/useActiveViewportSegmentationRepresentations';
@@ -57,6 +58,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
+import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -102,6 +104,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     });
     unsubscriptions.push(...segmentationUnsubscriptions);
 
+    const annotationUnsubscriptions = setUpAnnotationEventHandlers();
+    unsubscriptions.push(...annotationUnsubscriptions);
+
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
     ]);
@@ -109,6 +114,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(segmentationService, [
       segmentationService.EVENTS.SEGMENTATION_REMOVED,
       segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+      segmentationService.EVENTS.SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
     ]);
 
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
@@ -153,6 +159,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     useSynchronizersStore.getState().clearSynchronizersStore();
     useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
     useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
+    useSelectedSegmentationsForViewportStore
+      .getState()
+      .clearSelectedSegmentationsForViewportStore();
     segmentationService.removeAllSegmentations();
   },
 
@@ -256,6 +265,7 @@ export {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSynchronizersStore,
+  useSelectedSegmentationsForViewportStore,
   Enums,
   useMeasurements,
   useActiveViewportSegmentationRepresentations,

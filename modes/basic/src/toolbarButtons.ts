@@ -659,14 +659,6 @@ const toolbarButtons: Button[] = [
       },
     },
   },
-  // Section containers for the nested toolbox
-  {
-    id: 'SegmentationUtilities',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      buttonSection: true,
-    },
-  },
   {
     id: 'SegmentLabelTool',
     uiType: 'ohif.toolBoxButton',

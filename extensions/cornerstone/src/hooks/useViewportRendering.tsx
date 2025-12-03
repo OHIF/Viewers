@@ -682,7 +682,7 @@ export function useViewportRendering(
 
       const actorEntries = viewport.getActors();
       const actorEntry = actorEntries?.find(entry =>
-        entry.referencedId.includes(activeDisplaySetInstanceUID)
+        entry.referencedId?.includes(activeDisplaySetInstanceUID)
       );
 
       if (!actorEntry) {

@@ -20,7 +20,7 @@ To run the unit test:
 yarn run test:unit:ci
 ```
 
-Note: You should have already installed all the packages with `yarn install`.
+Note: You should have already installed all the packages with `yarn install --frozen-lockfile`.
 
 Running unit test will generate a report at the end showing the successful and
 unsuccessful tests with detailed explanations.

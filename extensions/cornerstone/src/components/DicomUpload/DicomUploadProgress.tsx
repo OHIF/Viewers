@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
-import { Button } from '@ohif/ui';
+import { Button } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import DicomFileUploader, {
   EVENTS,
@@ -276,7 +276,7 @@ function DicomUploadProgress({
 
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
     return (
-      <div className="bg-primary-dark flex h-14 items-center px-1 pb-4 text-lg text-white">
+      <div className="bg-muted flex h-14 items-center px-1 pb-4 text-lg text-white">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
           <>
             <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${dicomFileUploaderArr.length} ${
@@ -308,7 +308,7 @@ function DicomUploadProgress({
 
             <span
               className={
-                'text-primary hover:text-primary-lightactive:text-aqua-pale ml-auto cursor-pointer whitespace-nowrap'
+                'text-primary hover:text-highlight active:text-muted-foreground ml-auto cursor-pointer whitespace-nowrap'
               }
               onClick={cancelAllUploads}
             >
@@ -337,11 +337,11 @@ function DicomUploadProgress({
 
   const getPercentCompleteComponent = (): ReactElement => {
     return (
-      <div className="ohif-scrollbar border-secondary-light overflow-y-scroll border-b px-2">
+      <div className="ohif-scrollbar border-input overflow-y-scroll border-b px-2">
         <div className="min-h-14 flex w-full items-center p-2.5">
           {numFilesCompleted === dicomFileUploaderArr.length ? (
             <>
-              <div className="text-primary-light text-xl">
+              <div className="text-highlight text-xl">
                 {numFails > 0
                   ? `Completed with ${numFails} ${numFails > 1 ? 'errors' : 'error'}!`
                   : 'Completed!'}
@@ -359,7 +359,7 @@ function DicomUploadProgress({
                 ></ProgressLoadingBar>
               </div>
               <div className="ml-1 flex w-24 items-center">
-                <div className="w-10 text-right text-foreground">{`${getPercentCompleteRounded()}%`}</div>
+                <div className="text-foreground w-10 text-right">{`${getPercentCompleteRounded()}%`}</div>
                 {getShowFailedOnlyIconComponent()}
               </div>
             </>

@@ -1,3 +1,4 @@
+import { downloadUrl } from './downloadBlob';
 import { DicomMetadataStore } from '../services/DicomMetadataStore/DicomMetadataStore';
 import formatPN from './formatPN';
 
@@ -97,10 +98,5 @@ function _getCommonRowItems(measurement, seriesMetadata) {
 
 function _createAndDownloadFile(csvContent) {
   const encodedUri = encodeURI(csvContent);
-
-  const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', 'MeasurementReport.csv');
-  document.body.appendChild(link);
-  link.click();
+  downloadUrl(encodedUri, { filename: 'MeasurementReport.csv' });
 }

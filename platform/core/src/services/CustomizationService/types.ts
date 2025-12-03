@@ -45,7 +45,8 @@ export type Customization =
   | CommandCustomization
   | CodeCustomization
   | ComponentCustomization
-  | CallbackCustomization;
+  | CallbackCustomization
+  | string | number | boolean;
 
 export default Customization;
 

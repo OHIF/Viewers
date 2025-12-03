@@ -1,31 +1,23 @@
-import { expect, test } from 'playwright-test-coverage';
-import { visitStudy, simulateClicksOnElement, getSUV, clearAllAnnotations } from './utils/index';
+import { expect, clearAllAnnotations, getSUV, test, visitStudy } from './utils';
 
-test.skip('should update SUV values correctly.', async ({ page }) => {
+test.skip('should update SUV values correctly.', async ({
+  page,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
   // Create ROI
   await page.getByTestId('petSUV-btn').click();
-  await page.getByTestId('MeasurementTools-split-button-secondary').click();
-  await page.getByTestId('EllipticalROI').click();
-  const locator = page.getByTestId('viewport-pane').locator('canvas').first();
+  await mainToolbarPageObject.measurementTools.ellipticalROI.click();
   await clearAllAnnotations(page);
 
-  await simulateClicksOnElement({
-    locator,
-    points: [
-      {
-        x: 100,
-        y: 100,
-      },
-      {
-        x: 150,
-        y: 150,
-      },
-    ],
-  });
+  await viewportPageObject.active.clickAt([
+    { x: 100, y: 100 },
+    { x: 150, y: 150 },
+  ]);
 
   // Get current SUV text
   let oldSUV = await getSUV(page);

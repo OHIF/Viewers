@@ -19,7 +19,7 @@ echo 'Web application built and copied'
 
 # Build && Move Docusaurus Output (for the docs themselves)
 cd platform/docs
-yarn install
+yarn install --frozen-lockfile
 yarn run build
 cd ../..
 mkdir -p ./.netlify/www/docs

@@ -80,7 +80,7 @@ to program in isolation without a complex setup, and has the added benefit of
 producing well-tested business logic.
 
 1. Clone this repository
-2. Navigate to the project directory, and `yarn install`
+2. Navigate to the project directory, and `yarn install --frozen-lockfile`
 3. To begin making changes, `yarn run dev`
 4. To commit changes, run `yarn run cm`
 

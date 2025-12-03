@@ -1,5 +1,4 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy } from './utils';
+import { expect, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
@@ -10,8 +9,11 @@ test.beforeEach(async ({ page }) => {
 
 test('checks basic add, rename, delete segments from panel', async ({ page }) => {
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithTools-btn');
+  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
   await expect(segmentationPanel).toBeVisible();
+
+  // Switch to labelmap tab.
+  segmentationPanel.click();
 
   // Add segmentation
   const addSegmentationBtn = page.getByTestId('addSegmentation');
@@ -52,9 +54,11 @@ test('checks basic add, rename, delete segments from panel', async ({ page }) =>
   await expect(page.getByTestId('data-row')).toHaveCount(0);
 });
 
-test('checks saved segmentations loads and jumps to slices', async ({ page }) => {
-  const viewportInfoBottomRight = page.getByTestId('viewport-overlay-bottom-right');
-
+test('checks saved segmentations loads and jumps to slices', async ({
+  page,
+  viewportPageObject,
+}) => {
+  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight;
   // Image loads on slice 1, confirm on slice 1
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
 
@@ -72,7 +76,7 @@ test('checks saved segmentations loads and jumps to slices', async ({ page }) =>
   await page.getByTestId('yes-hydrate-btn').click();
 
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithTools-btn');
+  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
   await expect(segmentationPanel).toBeVisible();
 
   // Confirm spleen jumps to slice 17

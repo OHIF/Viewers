@@ -13,7 +13,7 @@ COPY ./ /usr/src/app/
 
 # Install node dependencies
 RUN yarn config set workspaces-experimental true
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # Set the environment for the build
 ENV APP_CONFIG=config/docker-nginx-dcm4chee-keycloak.js

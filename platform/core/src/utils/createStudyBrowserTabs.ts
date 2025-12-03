@@ -1,6 +1,21 @@
 import { useSystem } from '../contextProviders/SystemProvider';
 
 /**
+ * Tab properties that drive which tab group is used for thumbnail display.
+ */
+export type TabProp = {
+  name: string,
+  label: string,
+  studies: any[],
+}
+
+/**
+ * Collection of tab properties with studies presorted depending on tab mod.
+ * This is used in deciding what thumbnails to show.
+ */
+export type TabsProps = TabProp[];
+
+/**
  *
  * @param {string[]} primaryStudyInstanceUIDs
  * @param {object[]} studyDisplayList
@@ -11,7 +26,7 @@ import { useSystem } from '../contextProviders/SystemProvider';
  * @param {number} studyDisplayList.numInstances
  * @param {object[]} displaySets
  * @param {number} recentTimeframe - The number of milliseconds to consider a study recent
- * @returns tabs - The prop object expected by the StudyBrowser component
+ * @returns {TabsProps} tabs - The prop object expected by the StudyBrowser component
  */
 
 export function createStudyBrowserTabs(
@@ -19,7 +34,7 @@ export function createStudyBrowserTabs(
   studyDisplayList,
   displaySets,
   recentTimeframeMS = 31536000000
-) {
+): TabsProps {
   const { servicesManager } = useSystem();
   const { displaySetService } = servicesManager.services;
 

@@ -134,7 +134,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
+        if (evt.segDisplaySet?.displaySetInstanceUID === segDisplaySet?.displaySetInstanceUID) {
           setSegIsLoading(false);
         }
 

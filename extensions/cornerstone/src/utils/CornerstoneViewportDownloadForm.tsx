@@ -1,9 +1,12 @@
+import { utils } from '@ohif/core';
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
 import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
 import { useSystem } from '@ohif/core/src';
+
+const { downloadUrl } = utils;
 
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
@@ -218,10 +221,7 @@ const CornerstoneViewportDownloadForm = ({
     }
 
     const canvas = await html2canvas(divForDownloadViewport as HTMLElement);
-    const link = document.createElement('a');
-    link.download = `${filename}.${fileType}`;
-    link.href = canvas.toDataURL(`image/${fileType}`, 1.0);
-    link.click();
+    downloadUrl(canvas.toDataURL(`image/${fileType}`, 1.0));
   };
 
   const ViewportDownloadFormNew = customizationService.getCustomization(

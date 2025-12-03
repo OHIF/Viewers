@@ -21,12 +21,17 @@ export const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   wsiSopClassHandler:
     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
 };
 
 export const cornerstone = {
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+  labelMapSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
+  contourSegmentationPanel:
+    '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
@@ -60,6 +65,11 @@ export const dicomPmap = {
 export const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+};
+
+export const segmentation = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
 
 export const extensionDependencies = {

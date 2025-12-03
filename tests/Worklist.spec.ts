@@ -22,8 +22,18 @@ test('should render scroll bars with the correct look-and-feel', async ({ page }
     'studyRow-1.3.6.1.4.1.14519.5.2.1.5099.8010.217836670708542506360829799868'
   );
 
+  // Wait for the expanded row to be visible and rendered
+  await expandedStudyRow.waitFor({ state: 'visible', timeout: 10000 });
   await expandedStudyRow.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(3000);
+  
+  // Wait for content to load and stabilize, including any lazy-loaded items
+  await page.waitForTimeout(2000);
+  
+  // Wait for network to be idle to ensure all content is loaded
+  await page.waitForLoadState('networkidle');
+  
+  // Additional wait to ensure scrollbar rendering is stable
+  await page.waitForTimeout(1000);
 
   await checkForScreenshot({
     page,
