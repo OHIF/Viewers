@@ -42,12 +42,7 @@ const Clipboard: React.FC<ClipboardProps> = ({ children }) => {
     >
       {copyState === 'idle' && <Icons.Copy className="h-6 w-6" />}
       {copyState === 'success' && <Icons.FeedbackComplete className="h-6 w-6 text-white" />}
-      {copyState === 'error' && (
-        <Icons.ByName
-          name="Error"
-          className="h-6 w-6 text-white"
-        />
-      )}
+      {copyState === 'error' && <Icons.StatusError className="h-6 w-6 text-destructive" />}
     </Button>
   );
 };
