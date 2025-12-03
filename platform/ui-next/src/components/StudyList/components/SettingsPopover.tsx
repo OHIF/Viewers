@@ -10,7 +10,7 @@ import {
 } from '../../Select';
 import { Label } from '../../Label';
 import { Button } from '../../Button';
-import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
+import { useStudyListWorkflows } from './StudyListWorkflowProvider';
 
 /** Context to allow subcomponents to close the popover */
 type SettingsPopoverContextValue = {

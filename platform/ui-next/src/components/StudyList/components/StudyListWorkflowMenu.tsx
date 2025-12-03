@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
 } from '../../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../Tooltip';
-import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
-import type { StudyRow } from '../StudyListTypes';
+import { useStudyListWorkflows } from './StudyListWorkflowProvider';
+import type { StudyRow } from '../types/StudyListTypes';
 
 type Props = {
   studyRow: StudyRow;

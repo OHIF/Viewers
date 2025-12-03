@@ -2,10 +2,10 @@ import * as React from 'react';
 import type { Cell } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
 import { StudyListWorkflowMenu } from './StudyListWorkflowMenu';
-import type { StudyRow } from '../StudyListTypes';
+import type { StudyRow } from '../types/StudyListTypes';
 
-export function StudyListActionsCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
-  const original = cell.row.original as TData & StudyRow;
+export function StudyListActionsCell({ cell }: { cell: Cell<StudyRow, unknown> }) {
+  const original = cell.row.original as StudyRow;
 
   return (
     <DataTable.ActionOverlayCell cell={cell}>

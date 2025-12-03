@@ -30,8 +30,8 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../../lib/utils';
 import { Icons } from '../../Icons/Icons';
 import { Button } from '../../Button';
-import type { StudyRow } from '../StudyListTypes';
-import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
+import type { StudyRow } from '../types/StudyListTypes';
+import { useStudyListWorkflows } from './StudyListWorkflowProvider';
 
 /** Public getters to adapt arbitrary data shapes to the PatientSummary defaults */
 export type PatientSummaryGetters<T> = {
@@ -76,7 +76,7 @@ function Root<T = any>({ data: dataProp, get, className, children }: RootProps<T
 
   const resolvedGetters = React.useMemo<ResolvedGetters<T>>(
     () => ({
-      title: get?.title ?? ((item: T) => ((item as any)?.patient ?? '') as React.ReactNode),
+      title: get?.title ?? ((item: T) => ((item as any)?.patientName ?? '') as React.ReactNode),
       subtitle: get?.subtitle ?? ((item: T) => ((item as any)?.mrn ?? '') as React.ReactNode),
     }),
     [get]

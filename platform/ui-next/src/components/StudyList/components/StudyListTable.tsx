@@ -3,9 +3,9 @@ import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-t
 import { DataTable, useDataTable } from '../../DataTable';
 import { Button } from '../../Button';
 import { InputMultiSelect } from '../../InputMultiSelect';
-import type { StudyRow } from '../StudyListTypes';
+import type { StudyRow } from '../types/StudyListTypes';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
-import { useStudyListWorkflows } from '../headless/StudyListWorkflowProvider';
+import { useStudyListWorkflows } from './StudyListWorkflowProvider';
 
 type Props = {
   columns: ColumnDef<StudyRow, unknown>[];

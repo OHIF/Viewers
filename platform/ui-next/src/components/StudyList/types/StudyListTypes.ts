@@ -1,6 +1,6 @@
 export type StudyRow = {
   studyInstanceUid: string;
-  patient: string;
+  patientName: string;
   mrn: string;
   /** Raw date string (YYYYMMDD or YYYY.MM.DD format) */
   date: string;

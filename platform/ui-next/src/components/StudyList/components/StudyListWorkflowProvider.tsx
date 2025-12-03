@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { StudyRow } from '../StudyListTypes';
-import { useDefaultWorkflow } from '../useDefaultWorkflow';
+import type { StudyRow } from '../types/StudyListTypes';
+import { useDefaultWorkflow } from '../hooks/useDefaultWorkflow';
 
 /**
  * Represents a workflow that can be launched from the study list.
@@ -51,8 +51,6 @@ type Mode = {
 type StudyListWorkflowProviderProps = {
   /** Array of loaded modes from appConfig */
   loadedModes: Mode[];
-  /** Optional storage key for persisting default workflow (defaults to 'studylist.defaultWorkflow') */
-  storageKey?: string;
   /** Optional data path prefix for routes (e.g., '/dicomweb') */
   dataPath?: string;
   /** Function to preserve query parameters when launching workflows */
@@ -66,7 +64,6 @@ type StudyListWorkflowProviderProps = {
  */
 export function StudyListWorkflowProvider({
   loadedModes,
-  storageKey = 'studylist.defaultWorkflow',
   dataPath,
   preserveQueryParameters,
   children,
@@ -79,8 +76,8 @@ export function StudyListWorkflowProvider({
   }, [loadedModes]);
 
   // Use localStorage-backed hook for persistence
-  const [storedDefaultWorkflowId, setStoredDefaultWorkflowId] = useDefaultWorkflow<string>(
-    storageKey,
+  const [storedDefaultWorkflowId, setStoredDefaultWorkflowId] = useDefaultWorkflow(
+    'studylist.defaultWorkflow',
     validWorkflowIds
   );
 
