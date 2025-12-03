@@ -23,7 +23,7 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
       }
     );
   });
-  await rightPanelPageObject.segmentationPanel.menuButton.click();
+  await rightPanelPageObject.segmentationPanel.labelMapMenuButton.click();
 
   await leftPanelPageObject.loadSeriesByModality('SEG');
   // Wait for the segmentation to be loaded.
@@ -79,7 +79,7 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
     );
   });
 
-  await rightPanelPageObject.segmentationPanel.menuButton.click();
+  await rightPanelPageObject.segmentationPanel.labelMapMenuButton.click();
 
   await leftPanelPageObject.loadSeriesByModality('SEG');
   // Wait for the segmentation to be loaded.

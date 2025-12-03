@@ -137,7 +137,7 @@ export class RightPanelPageObject {
         };
       },
       get menuButton() {
-        const button = page.getByTestId(/^panelSegmentation.*-btn$/);
+        const button = page.getByTestId(/^panelSegmentation.*-btn$/).first();
         return {
           button,
           click: async () => {
