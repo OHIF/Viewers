@@ -3,8 +3,8 @@ import isLowPriorityModality from './isLowPriorityModality';
 import calculateScanAxisNormal from './calculateScanAxisNormal';
 import areAllImageOrientationsEqual from './areAllImageOrientationsEqual';
 
-const compare = (a, b) => {
-  if (a === b) return 0;
+export const compare = (a, b) => {
+  if (a == b) return 0;
   if (!a && b) return -1;
   if (!b && a) return 1;
   if (a < b) return -1;
@@ -43,7 +43,7 @@ export function addSameSeriesCompare(name: string, compareF: (a, b) => number, p
  *
  * This provides a configurable well defined sorting order.
  */
-const compareSameSeriesDisplaySet = (a, b) => {
+export const compareSameSeriesDisplaySet = (a, b) => {
   const { compareSameSeries: compareAName = 'default' } = a;
   const { compareSameSeries: compareBName = 'default' } = b;
   const compareA = mapCompareSameSeries.get(compareAName);
@@ -57,20 +57,20 @@ const compareSameSeriesDisplaySet = (a, b) => {
       return compareValue;
     }
   }
-  return compareIdentifiedSeries(a, b) || sortByInstanceNumber(a.instance, b.instance);
+  return sortByInstanceNumber(a.instance, b.instance);
 };
 
-const compareSeriesUID = (a, b) =>
+export const compareSeriesUID = (a, b) =>
   compare(a.SeriesInstanceUID, b.SeriesInstanceUID) || compareSameSeriesDisplaySet(a, b);
 
-const compareSeriesDateTime = (a, b) => {
+export const compareSeriesDateTime = (a, b) => {
   // Natural order of string is good enough here
   const seriesDateA = `${a.seriesDate ?? a.SeriesDate} ${a.seriesTime ?? a.SeriesTime}`;
   const seriesDateB = `${b.seriesDate ?? b.SeriesDate} ${b.seriesTime ?? b.SeriesTime}`;
   return compare(seriesDateA, seriesDateB) || compareSeriesUID(a, b);
 };
 
-const defaultSeriesSort = (a, b) => {
+export const defaultSeriesSort = (a, b) => {
   const seriesNumberA = a.SeriesNumber ?? a.seriesNumber;
   const seriesNumberB = b.SeriesNumber ?? b.seriesNumber;
   return compare(seriesNumberA, seriesNumberB) || compareSeriesDateTime(a, b);
@@ -82,7 +82,7 @@ const defaultSeriesSort = (a, b) => {
  * @param {Object} firstSeries
  * @param {Object} secondSeries
  */
-function seriesInfoSortingCriteria(firstSeries, secondSeries) {
+export function seriesInfoSortingCriteria(firstSeries, secondSeries) {
   const aLowPriority = isLowPriorityModality(firstSeries.Modality ?? firstSeries.modality);
   const bLowPriority = isLowPriorityModality(secondSeries.Modality ?? secondSeries.modality);
 
@@ -97,7 +97,7 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
   return defaultSeriesSort(firstSeries, secondSeries);
 }
 
-const seriesSortCriteria = {
+export const seriesSortCriteria = {
   default: seriesInfoSortingCriteria,
   seriesInfoSortingCriteria,
   compareSameSeries: compareSameSeriesDisplaySet,
@@ -110,7 +110,7 @@ const seriesSortCriteria = {
  * sop and frame numbers.
  * Handles undefined values for use with display set comparison.
  */
-const sortByInstanceNumber = (a, b) => {
+export const sortByInstanceNumber = (a, b) => {
   if (!a || !b) {
     return (!a && !b && 0) || (!a && -1) || 1;
   }
@@ -122,12 +122,12 @@ const sortByInstanceNumber = (a, b) => {
   return compare(a.SOPInstanceUID, b.SOPInstanceUID) || compare(a.frameNumber, b.frameNumber);
 };
 
-const instancesSortCriteria = {
+export const instancesSortCriteria = {
   default: sortByInstanceNumber,
   sortByInstanceNumber,
 };
 
-const sortingCriteria = {
+export const sortingCriteria = {
   seriesSortCriteria,
   instancesSortCriteria,
 };
@@ -140,7 +140,7 @@ const sortingCriteria = {
  * @param seriesSortingCriteria - method for sorting
  * @returns sorted series object
  */
-const sortStudySeries = (
+export const sortStudySeries = (
   series,
   seriesSortingCriteria = seriesSortCriteria.default,
   sortFunction = null
@@ -160,7 +160,7 @@ const sortStudySeries = (
  * @param {function} instancesSortingCriteria method for sorting
  * @returns {Array} sorted instancesList object
  */
-const sortStudyInstances = (
+export const sortStudyInstances = (
   instancesList,
   instancesSortingCriteria = instancesSortCriteria.default
 ) => {
@@ -177,7 +177,7 @@ const sortStudyInstances = (
  * @param {function} [instancesSortingCriteria = instancesSortCriteria.default] method for sorting instances
  * @returns {Object} sorted study object
  */
-export default function sortStudy(
+export function sortStudy(
   study,
   deepSort = true,
   seriesSortingCriteria = seriesSortCriteria.default,
@@ -198,7 +198,7 @@ export default function sortStudy(
   return study;
 }
 
-function isValidForPositionSort(images): boolean {
+export function isValidForPositionSort(images): boolean {
   if (images.length <= 1) {
     return false; // No need to sort if there's only one image
   }
@@ -225,7 +225,7 @@ function isValidForPositionSort(images): boolean {
  *
  * @returns images - reference to images after sorting
  */
-const sortImagesByPatientPosition = images => {
+export const sortImagesByPatientPosition = images => {
   const referenceImagePositionPatient = images[0].ImagePositionPatient;
   const imageOrientationPatient = images[0].ImageOrientationPatient;
 
@@ -252,13 +252,4 @@ const sortImagesByPatientPosition = images => {
   return images;
 };
 
-export {
-  sortStudy,
-  sortStudySeries,
-  sortStudyInstances,
-  sortingCriteria,
-  seriesSortCriteria,
-  instancesSortCriteria,
-  isValidForPositionSort,
-  sortImagesByPatientPosition,
-};
+export default sortStudy;
