@@ -80,29 +80,9 @@ export type DisplaySet = {
   isRehydratable?: boolean;
 
   /**
-   * The sort vector is used to order display sets having the same
-   * series instance UID (ie split out from a single series).  Otherwise
-   * the positioning ends up being somewhat random based on when the items got added.
-   *
-   * By convention, sortVector[0] is used to both identify the overall
-   * sorting order for that "type" of sort vector, as well as to identify
-   * the types of the remaining items since it doesn't make sense to compare
-   * items of different types such as dates and strings.  However, if all your
-   * `getSopClassHandlers` use a different convention, then as long as that is all
-   * you get for that series instance uid, the sort vector is just compared each
-   * element at a time until all elements have been compared.
-   *
-   * For example, the "time sorted" entries might be in considered to be
-   * position `37` and have the next value in seconds.  Other sort vectors
-   * could be created using the `37` starting value, as long as they also put
-   * seconds in the next value.
-   *
-   * Those could have values:
-   * `[37, 0]` and `[37,1.5]` so that the second 1.5 value would sort last
-   * in a default ascending sort.  The might be after the "T1/T2" value sort which
-   * could be defined as overall sort '36' and might have T1/T2 in the second position.
+   * The name of the comparison function to use when comparing same series.
    */
-  sortVector?: (number | string)[];
+  compareSameSeries?: string;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

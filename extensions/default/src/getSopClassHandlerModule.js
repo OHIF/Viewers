@@ -116,11 +116,6 @@ const makeDisplaySet = (instances, index) => {
     isDynamicVolume,
     dynamicVolumeInfo,
     supportsWindowLevel: true,
-    // The sort vector is used to sort display sets for a single series
-    // The first value is a numeric value defining the type of sorting comparison
-    // AS WELL as the format of the rest of hte vector.  These need to be combined
-    // to allow generic sorting.  In this case, the these are all sorted by index
-    sortVector: [DEFAULT_SORT_ORDER_NUMBER, index],
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,

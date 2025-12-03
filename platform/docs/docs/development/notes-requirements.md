@@ -1,9 +1,11 @@
+
 ---
 sidebar_position: 14
 sidebar_label: Notes and Requirements
 title: Notes and Requirements for general OHIF behaviour
 summary: Specifies some of the expected behavior of OHIF generally
 ---
+
 # Notes and Requirements
 
 This document just lists general notes and requirements for how OHIF behaves.
@@ -22,17 +24,26 @@ should occur after the T1.  Or, a single series might contain 4 mammography view
 `LCC`, `RCC`, `LMLO`, `RMLO` with all the `CC` views shown first, and within
 that all the left views first for a given sub-type of CC view.
 
-Generally, imaging studies should be shown in increasing order by series number,
-or by series date/time for identical series numbers as the lowest series numbers
-are often informational/overview series.  Thus, for image containing series, the
-order used is:
+To allow controlling that, the `sortStudy` can register sort functions
+that user used when two display sets come from the same series.  Between
+those display sets, the registration also registers a default ordering
+for that compare function.  Thus, the registration might look like:
 
-- series number
-- series date/time
+```javascript
+   addSameSeriesCompare('mammographyCompare', mammographyCompare, 5)
+   addSameSeriesCompare('mrT1T2Compare', mrT1T2Compare, 7);
+```
 
-As well, there are many types of non-imaging series such as annotations.
-Non-imaging series are usually of interest most recent first, so the normal
-sort order is series date/time descending.
+Then, the display set for mr and mammography need to set the field `compareSameSeries`
+to the value `mammographyCompare`.
+
+```javascript
+   makeDisplaySet
+     ...
+     displaySet = {
+      ...,
+      compareSameSeries: 'mammographyCompare',
+```
 
 ### Specifying Sort Order from Series Split
 

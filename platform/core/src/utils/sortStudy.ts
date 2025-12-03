@@ -11,58 +11,53 @@ const compare = (a, b) => {
   return 1;
 };
 
+type CompareSameSeries = {
+  priority: number;
+  compare: (a, b) => number;
+};
+
+const mapCompareSameSeries = new Map<string, CompareSameSeries>();
+
 /**
- * Compares two sort vectors.  These are arrays of values
- * where the zero element is a number value which should be
- * created uniquely by the sop class handler module, and the
- * remaining values are compared in order.  The typical use case
- * for this is to allow split by various attributes to order by
- * one of the specific attributes.
- *
- * For example, a split by echo time might use sort vector:
- * `[ split echo time defualt order = 37,  echo time = 3.1]`
- * where 37 is an arbitrary assignment of the sorting for this
- * type, and the echo time of 3.1 is from the DICOM instance data.
- *
- * Returns 0 if either a,b don't have sort vectors or a,b are identical.
+ * Adds a comparison for same series display sets.
+ * Supply null for compareF to delete the function.
  */
-function compareSortVector(a, b) {
-  const aV = a.sortVector;
-  const bV = b.sortVector;
-  if( !aV?.length || !bV?.length ) {
-    return 0;
+export function addSameSeriesCompare(name: string, compareF: (a, b) => number, priority: number) {
+  if (!compareF) {
+    mapCompareSameSeries.delete(name);
+  } else {
+    mapCompareSameSeries.set(name, { compare: compareF, priority });
   }
-
-  // Compare element by element
-  for (let i = 0; i < Math.max(aV.length, bV.length); i++) {
-    const aVi = aV[i] ?? 0; // Default to 0 if vector is shorter
-    const bVi = bV[i] ?? 0;
-
-    const c = compare(aVi, bVi);
-    if (c !== 0) {
-      return c;
-    }
-  }
-
-  // If sort vectors are identical, fall back to other criteria
-  return 0;
 }
 
 /**
  * When the "series" sort is used on display sets, it is possible to get the
  * same series twice.  This method compares two display sets from the same series
- * using the sort vector from a,b if it is present or defaulting to the
- * first instance comparison.
  *
- * in both series, or will compare by the sop instance uid of the first
- * instance.
+ * If both display sets have the same compareSameSeries name, then the
+ * function registered for that name will be used.
+ *
+ * If they differ, then the priority between the two functions will be used.
+ *
+ * Otherwise, the instance compare will be used on the default instance.
+ *
+ * This provides a configurable well defined sorting order.
  */
 const compareSameSeriesDisplaySet = (a, b) => {
-  return (
-    compareSortVector(a, b) ||
-    compareSortVector(a, b) ||
-    sortByInstanceNumber(a.instance, b.instance)
-  );
+  const { compareSameSeries: compareAName = 'default' } = a;
+  const { compareSameSeries: compareBName = 'default' } = b;
+  const compareA = mapCompareSameSeries.get(compareAName);
+  const compareB = mapCompareSameSeries.get(compareBName);
+  if (compareA && compareB) {
+    const compareValue =
+      compareA === compareB
+        ? compareA.compare(a, b)
+        : compare(compareA.priority, compareB.priority);
+    if (!compareValue) {
+      return compareValue;
+    }
+  }
+  return compareIdentifiedSeries(a, b) || sortByInstanceNumber(a.instance, b.instance);
 };
 
 const compareSeriesUID = (a, b) =>
