@@ -229,11 +229,12 @@ export class ViewportPageObject {
     function crosshairsFactory(
       locator: Locator,
       increaseLineNumber: number,
+      increaseAxis: 'x' | 'y',
       rotateLineNumber: number
     ) {
       return {
         increase: async () => {
-          await increaseSlabThickness(locator, increaseLineNumber, 'x');
+          await increaseSlabThickness(locator, increaseLineNumber, increaseAxis);
         },
         locator,
         rotate: () => {
@@ -243,9 +244,9 @@ export class ViewportPageObject {
     }
 
     return {
-      axial: crosshairsFactory(page.locator('#svg-layer-mpr-axial'), 0, 3),
-      sagittal: crosshairsFactory(page.locator('#svg-layer-mpr-sagittal'), 2, 0),
-      coronal: crosshairsFactory(page.locator('#svg-layer-mpr-coronal'), 0, 0),
+      axial: crosshairsFactory(page.locator('#svg-layer-mpr-axial'), 0, 'x', 3),
+      sagittal: crosshairsFactory(page.locator('#svg-layer-mpr-sagittal'), 2, 'x', 0),
+      coronal: crosshairsFactory(page.locator('#svg-layer-mpr-coronal'), 0, 'y', 0),
     };
   }
 
