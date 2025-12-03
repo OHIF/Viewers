@@ -26,14 +26,14 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
   await viewportPageObject.getById('mpr-sagittal').pane.hover();
   const dataOverlayPageObject = viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay;
-  await dataOverlayPageObject.toggle();
-  await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
+  await dataOverlayPageObject.toggle('mpr-sagittal');
+  await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets', 'mpr-sagittal');
 
   // Hide the overlay menu.
-  await dataOverlayPageObject.toggle();
+  await dataOverlayPageObject.toggle('mpr-sagittal');
 
   // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+  await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Wait 5 seconds for RT to load. This is necessary in particular when screen shots are added or replaced.
   await page.waitForTimeout(5000);

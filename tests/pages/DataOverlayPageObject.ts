@@ -11,12 +11,12 @@ export class DataOverlayPageObject {
     return this.page.locator('[data-cy^="dataOverlayMenu"]').first();
   }
 
-  async toggle() {
-    await this.button.click();
+  async toggle(viewportId: string = 'default') {
+    await this.page.getByTestId(`dataOverlayMenu-${viewportId}-btn`).click();
   }
 
-  async addSegmentation(segmentation: string) {
-    await this.page.getByTestId('AddSegmentationDataOverlay-default').click();
+  async addSegmentation(segmentation: string, viewportId: string = 'default') {
+    await this.page.getByTestId(`AddSegmentationDataOverlay-${viewportId}`).click();
     await this.page.getByText('SELECT A SEGMENTATION').click();
     await this.page.getByTestId(segmentation).click();
   }
