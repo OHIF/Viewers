@@ -3,12 +3,13 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Thumbnail } from '../../Thumbnail';
 import { TooltipProvider } from '../../Tooltip';
-import type { StudyRow } from '../StudyListTypes';
+import type { StudyRow } from '../types/StudyListTypes';
 import { PatientSummary } from './PatientSummary';
-import { useStudyList } from '../headless/StudyListProvider';
 import { SeriesListView } from './SeriesListView';
 import { ToggleGroup, ToggleGroupItem } from '../../ToggleGroup';
 import { Icons } from '../../Icons';
+
+type SeriesViewMode = 'thumbnails' | 'list';
 
 export function PreviewPanelContent({
   study,
@@ -30,7 +31,7 @@ export function PreviewPanelContent({
   }>;
   thumbs?: Record<string, string | null>;
 }) {
-  const { seriesViewMode, setSeriesViewMode } = useStudyList<StudyRow>();
+  const [seriesViewMode, setSeriesViewMode] = React.useState<SeriesViewMode>('thumbnails');
 
   return (
     <DndProvider backend={HTML5Backend}>

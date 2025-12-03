@@ -1,4 +1,5 @@
-export * from './StudyListTypes';
+// Types
+export * from './types/StudyListTypes';
 
 // Columns
 export * from './columns/defaultColumns';
@@ -19,9 +20,7 @@ export * from './components/SeriesListView';
 export * from './components/PatientSummary';
 
 // Hooks
-export * from './useDefaultWorkflow';
+export * from './hooks/useDefaultWorkflow';
 
-// Headless
-export * from './headless/StudyListProvider';
-export * from './headless/useStudyList';
-export * from './headless/StudyListWorkflowProvider';
+// Providers
+export * from './components/StudyListWorkflowProvider';

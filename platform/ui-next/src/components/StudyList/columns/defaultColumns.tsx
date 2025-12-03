@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
 import { Icons } from '../../Icons';
-import type { StudyRow } from '../StudyListTypes';
+import type { StudyRow } from '../types/StudyListTypes';
 import { StudyListActionsCell } from '../components/StudyListActionsCell';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDate';
@@ -10,7 +10,11 @@ import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDa
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
     {
-      accessorKey: 'patient',
+      id: 'patient',
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return r.patientName ?? '';
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => <div className="truncate">{row.getValue('patient')}</div>,
       meta: {
@@ -21,7 +25,11 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      accessorKey: 'mrn',
+      id: 'mrn',
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return r.mrn ?? '';
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => <div className="truncate">{row.getValue('mrn')}</div>,
       meta: {
@@ -33,14 +41,19 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     {
       id: 'studyDateTime',
-      accessorFn: row => formatStudyDate(row.date, row.time),
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return formatStudyDate(r.date ?? '', r.time ?? '');
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
         return <div className="truncate">{row.getValue('studyDateTime')}</div>;
       },
       sortingFn: (a, b) => {
-        const aTimestamp = parseStudyDateTimestamp(a.original.date, a.original.time);
-        const bTimestamp = parseStudyDateTimestamp(b.original.date, b.original.time);
+        const aRow = a.original as StudyRow;
+        const bRow = b.original as StudyRow;
+        const aTimestamp = parseStudyDateTimestamp(aRow.date ?? '', aRow.time ?? '');
+        const bTimestamp = parseStudyDateTimestamp(bRow.date ?? '', bRow.time ?? '');
         return aTimestamp - bTimestamp;
       },
       meta: {
@@ -51,7 +64,11 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      accessorKey: 'modalities',
+      id: 'modalities',
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return r.modalities ?? '';
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => <div className="truncate">{row.getValue('modalities')}</div>,
       filterFn: (row, colId, filter) => {
@@ -71,7 +88,11 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      accessorKey: 'description',
+      id: 'description',
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return r.description ?? '';
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
         const description = row.getValue('description') as string;
@@ -89,7 +110,11 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      accessorKey: 'accession',
+      id: 'accession',
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return r.accession ?? '';
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => <div className="truncate">{row.getValue('accession')}</div>,
       meta: {
@@ -100,7 +125,11 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      accessorKey: 'instances',
+      id: 'instances',
+      accessorFn: row => {
+        const r = row as StudyRow;
+        return Number(r.instances ?? 0);
+      },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
         const value = row.getValue('instances') as number;
