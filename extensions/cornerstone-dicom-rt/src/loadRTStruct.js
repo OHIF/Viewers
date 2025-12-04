@@ -69,6 +69,39 @@ async function checkAndLoadContourData({
         promisesMap.has(referencedROINumber)
           ? promisesMap.get(referencedROINumber).push(bulkDataPromise)
           : promisesMap.set(referencedROINumber, [bulkDataPromise]);
+      } else if (contourData && contourData.InlineBinary) {
+        const base64String = contourData.InlineBinary;
+        const decodedText =
+          typeof atob === 'function'
+            ? atob(base64String)
+            : Buffer.from(base64String, 'base64').toString('utf-8');
+
+        const rawValues = decodedText.split('\\');
+
+        const result = [];
+        for (let i = 0; i < rawValues.length; i += 3) {
+          // Ensure strictly that we have a full set of 3 coordinates
+          if (i + 2 < rawValues.length) {
+            const x = parseFloat(rawValues[i]);
+            const y = parseFloat(rawValues[i + 1]);
+            const z = parseFloat(rawValues[i + 2]);
+
+            // Only push if all three are valid numbers (filters out trailing empty splits)
+            if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+              //result.push([x, y, z]);
+              result.push(x);
+              result.push(y);
+              result.push(z);
+            } else {
+              // Ignore for now
+              //console.log('NaN');
+            }
+          }
+        }
+
+        promisesMap.has(referencedROINumber)
+          ? promisesMap.get(referencedROINumber).push(result)
+          : promisesMap.set(referencedROINumber, [result]);
       } else {
         return Promise.reject(`Invalid ContourData: ${contourData}`);
       }
