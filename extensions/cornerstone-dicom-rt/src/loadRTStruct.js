@@ -70,6 +70,7 @@ async function checkAndLoadContourData({
           ? promisesMap.get(referencedROINumber).push(bulkDataPromise)
           : promisesMap.set(referencedROINumber, [bulkDataPromise]);
       } else if (contourData && contourData.InlineBinary) {
+        // Contour data is still in binary format, conversion needed
         const base64String = contourData.InlineBinary;
         const decodedText =
           typeof atob === 'function'
@@ -88,7 +89,6 @@ async function checkAndLoadContourData({
 
             // Only push if all three are valid numbers (filters out trailing empty splits)
             if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
-              //result.push([x, y, z]);
               result.push(x);
               result.push(y);
               result.push(z);
