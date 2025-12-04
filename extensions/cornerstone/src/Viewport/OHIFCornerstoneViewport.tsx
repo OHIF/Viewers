@@ -4,12 +4,12 @@ import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService, useViewportRef } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
-
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import CinePlayer from '../components/CinePlayer';
+import Version from '../components/Version';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
@@ -322,6 +322,8 @@ const OHIFCornerstoneViewport = React.memo(
               }
             }}
           ></div>
+          <Version />
+
           <CornerstoneOverlays
             viewportId={viewportId}
             toolBarService={toolbarService}

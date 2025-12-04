@@ -71,7 +71,6 @@ const Component = React.lazy(() => {
 const OHIFCornerstoneViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <Version />
       <Component {...props} />
     </React.Suspense>
   );
