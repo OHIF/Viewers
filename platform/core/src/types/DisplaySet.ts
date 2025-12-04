@@ -80,7 +80,8 @@ export type DisplaySet = {
   isRehydratable?: boolean;
 
   /**
-   * The name of the comparison function to use when comparing same series.
+   * The name of the comparison function (for sort) to use when comparing display
+   * sets that are coming from same series instanceUID.
    */
   compareSameSeries?: string;
 };

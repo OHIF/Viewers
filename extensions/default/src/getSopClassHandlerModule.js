@@ -67,12 +67,6 @@ function getDisplaySetInfo(instances) {
   };
 }
 
-/**
- * This identifies the type of sort ordering so that sorting is consistent/stable
- * between creation of display sets.
- */
-export const DEFAULT_SORT_ORDER_NUMBER = 100;
-
 const makeDisplaySet = (instances, index) => {
   // Need to sort the instances in order to get a consistent instance/thumbnail
   sortStudyInstances(instances);
