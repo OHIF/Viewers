@@ -1,8 +1,10 @@
 import React from 'react';
 import { AboutModal } from '@ohif/ui-next';
 import detect from 'browser-detect';
+import { useTranslation } from 'react-i18next';
 
 function AboutModalDefault() {
+  const { t } = useTranslation('AboutModal');
   const { os, version, name } = detect();
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
   const versionNumber = process.env.VERSION_NUMBER;
@@ -18,11 +20,11 @@ function AboutModalDefault() {
 
       <AboutModal.Body>
         <AboutModal.DetailItem
-          label="Commit Hash"
+          label={t('Commit Hash')}
           value={commitHash}
         />
         <AboutModal.DetailItem
-          label="Current Browser & OS"
+          label={t('Current Browser & OS')}
           value={`${browser}, ${os}`}
         />
         <AboutModal.SocialItem

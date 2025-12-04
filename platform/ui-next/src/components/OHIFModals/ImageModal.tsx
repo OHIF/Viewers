@@ -143,6 +143,11 @@ interface ImageSizeProps {
   className?: string;
   maxWidth?: string;
   maxHeight?: string;
+  /** Optional labels/placeholders for localization */
+  widthLabel?: string;
+  heightLabel?: string;
+  widthPlaceholder?: string;
+  heightPlaceholder?: string;
 }
 
 function ImageSize({
@@ -154,6 +159,10 @@ function ImageSize({
   className,
   maxWidth,
   maxHeight,
+  widthLabel = 'Width',
+  heightLabel = 'Height',
+  widthPlaceholder = 'Width',
+  heightPlaceholder = 'Height',
 }: ImageSizeProps) {
   return (
     <div className={cn('text-foreground space-y-1', className)}>
@@ -163,23 +172,23 @@ function ImageSize({
       <div className="flex items-center space-x-4">
         {/* Width group */}
         <div className="flex items-center space-x-2">
-          <span className="text-foreground text-base">W</span>
+          <span className="text-foreground text-base">{widthLabel}</span>
           <Input
             value={width}
             onChange={onWidthChange ?? (() => {})}
-            placeholder="Width"
+            placeholder={widthPlaceholder}
             className="w-20"
             max={maxWidth}
           />
         </div>
 
-        {/* Height group */}
+        {/* Height/Length group */}
         <div className="text-foreground flex items-center space-x-2 text-base">
-          <span className="text-foreground text-base">H</span>
+          <span className="text-foreground text-base">{heightLabel}</span>
           <Input
             value={height}
             onChange={onHeightChange ?? (() => {})}
-            placeholder="Height"
+            placeholder={heightPlaceholder}
             className="w-20"
             max={maxHeight}
           />

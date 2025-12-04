@@ -611,7 +611,7 @@ const toolbarButtons: Button[] = [
       commands: setToolActiveToolbar,
       evaluate: {
         name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select a 3D viewport to enable this tool',
+        disabledText: i18n.t('Buttons:Select a 3D viewport to enable this tool'),
       },
     },
   },
@@ -655,7 +655,7 @@ const toolbarButtons: Button[] = [
       },
       evaluate: {
         name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select an MPR viewport to enable this tool',
+        disabledText: i18n.t('Buttons:Select an MPR viewport to enable this tool'),
       },
     },
   },

@@ -60,7 +60,7 @@ const Body = () => {
   if (!data || data.length === 0) {
     return (
       <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
-        No tracked measurements
+        {useTranslation('MeasurementTable').t('No tracked measurements')}
       </div>
     );
   }

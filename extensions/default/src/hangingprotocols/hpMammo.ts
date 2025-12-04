@@ -8,6 +8,7 @@ import {
   RMLOPrior,
   LMLOPrior,
 } from './utils/mammoDisplaySetSelector';
+import i18n from 'i18next';
 
 const rightDisplayArea = {
   storeAsInitialCamera: true,
@@ -30,7 +31,7 @@ const leftDisplayArea = {
 const hpMammography = {
   id: '@ohif/hpMammo',
   hasUpdatedPriorsInformation: false,
-  name: 'Mammography Breast Screening',
+  name: i18n.t('Hps:Mammography Breast Screening'),
   protocolMatchingRules: [
     {
       id: 'Mammography',

@@ -6,6 +6,7 @@ import ROIThresholdConfiguration, {
 import * as cs3dTools from '@cornerstonejs/tools';
 import { useSystem } from '@ohif/core';
 import { useSegmentations } from '@ohif/extension-cornerstone';
+import { useTranslation } from 'react-i18next';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -46,6 +47,7 @@ function RectangleROIOptions() {
   const { commandsManager } = useSystem();
   const segmentations = useSegmentations();
   const activeSegmentation = segmentations[0];
+  const { t } = useTranslation('ROIThresholdConfiguration');
 
   const runCommand = useCallback(
     (commandName, commandOptions = {}) => {
@@ -92,7 +94,7 @@ function RectangleROIOptions() {
           className="my-3 mr-auto w-20"
           onClick={handleROIThresholding}
         >
-          Run
+          {t('Run')}
         </Button>
       )}
     </div>

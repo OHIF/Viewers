@@ -95,6 +95,10 @@ function ViewportDownloadFormNew({
           <ImageModal.ImageSize
             width={dimensions.width.toString()}
             height={dimensions.height.toString()}
+            widthLabel={t('Width')}
+            heightLabel={t('Height')}
+            widthPlaceholder={t('Width')}
+            heightPlaceholder={t('Height')}
             onWidthChange={e => {
               onDimensionsChange({
                 ...dimensions,
@@ -110,7 +114,7 @@ function ViewportDownloadFormNew({
             maxWidth={MAX_TEXTURE_SIZE.toString()}
             maxHeight={MAX_TEXTURE_SIZE.toString()}
           >
-            {t('Image size')} <span className="text-muted-foreground">px</span>
+            {t('Image size in pixels')}
           </ImageModal.ImageSize>
 
           <ImageModal.SwitchOption

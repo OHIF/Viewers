@@ -253,10 +253,10 @@ export default function PanelPetSUV() {
                 <Button
                   variant="default"
                   size="sm"
-                  className="w-28 self-end"
+                  className="self-end px-4"
                   onClick={updateMetadata}
                 >
-                  Reload Data
+                  {t('Reload Data')}
                 </Button>
               </div>
             </PanelSection.Content>

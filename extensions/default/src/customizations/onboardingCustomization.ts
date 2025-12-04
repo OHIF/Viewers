@@ -1,3 +1,5 @@
+import i18n from '@ohif/i18n';
+
 function waitForElement(selector, maxAttempts = 20, interval = 25) {
   return new Promise(resolve => {
     let attempts = 0;
@@ -23,8 +25,8 @@ export default {
       steps: [
         {
           id: 'scroll',
-          title: 'Scrolling Through Images',
-          text: 'You can scroll through the images using the mouse wheel or scrollbar.',
+          title: i18n.t('Onboarding:Scrolling Through Images'),
+          text: i18n.t('Onboarding:You can scroll through the images using the mouse wheel or scrollbar.'),
           attachTo: {
             element: '.viewport-element',
             on: 'top',
@@ -37,8 +39,8 @@ export default {
         },
         {
           id: 'zoom',
-          title: 'Zooming In and Out',
-          text: 'You can zoom the images using the right click.',
+          title: i18n.t('Onboarding:Zooming In and Out'),
+          text: i18n.t('Onboarding:You can zoom the images using the right click.'),
           attachTo: {
             element: '.viewport-element',
             on: 'left',
@@ -51,8 +53,8 @@ export default {
         },
         {
           id: 'pan',
-          title: 'Panning the Image',
-          text: 'You can pan the images using the middle click.',
+          title: i18n.t('Onboarding:Panning the Image'),
+          text: i18n.t('Onboarding:You can pan the images using the middle click.'),
           attachTo: {
             element: '.viewport-element',
             on: 'top',
@@ -65,8 +67,8 @@ export default {
         },
         {
           id: 'windowing',
-          title: 'Adjusting Window Level',
-          text: 'You can modify the window level using the left click.',
+          title: i18n.t('Onboarding:Adjusting Window Level'),
+          text: i18n.t('Onboarding:You can modify the window level using the left click.'),
           attachTo: {
             element: '.viewport-element',
             on: 'left',
@@ -79,8 +81,8 @@ export default {
         },
         {
           id: 'length',
-          title: 'Using the Measurement Tools',
-          text: 'You can measure the length of a region using the Length tool.',
+          title: i18n.t('Onboarding:Using the Measurement Tools'),
+          text: i18n.t('Onboarding:You can measure the length of a region using the Length tool.'),
           attachTo: {
             element: '[data-cy="MeasurementTools-split-button-primary"]',
             on: 'bottom',
@@ -90,12 +92,12 @@ export default {
             event: 'click',
           },
           beforeShowPromise: () =>
-            waitForElement('[data-cy="MeasurementTools-split-button-primary]'),
+            waitForElement('[data-cy="MeasurementTools-split-button-primary"]'),
         },
         {
           id: 'drawAnnotation',
-          title: 'Drawing Length Annotations',
-          text: 'Use the length tool on the viewport to measure the length of a region.',
+          title: i18n.t('Onboarding:Drawing Length Annotations'),
+          text: i18n.t('Onboarding:Use the length tool on the viewport to measure the length of a region.'),
           attachTo: {
             element: '.viewport-element',
             on: 'right',
@@ -108,8 +110,8 @@ export default {
         },
         {
           id: 'trackMeasurement',
-          title: 'Tracking Measurements in the Panel',
-          text: 'Click yes to track the measurements in the measurement panel.',
+          title: i18n.t('Onboarding:Tracking Measurements in the Panel'),
+          text: i18n.t('Onboarding:Click yes to track the measurements in the measurement panel.'),
           attachTo: {
             element: '[data-cy="prompt-begin-tracking-yes-btn"]',
             on: 'bottom',
@@ -122,8 +124,8 @@ export default {
         },
         {
           id: 'openMeasurementPanel',
-          title: 'Opening the Measurements Panel',
-          text: 'Click the measurements button to open the measurements panel.',
+          title: i18n.t('Onboarding:Opening the Measurements Panel'),
+          text: i18n.t('Onboarding:Click the measurements button to open the measurements panel.'),
           attachTo: {
             element: '#trackedMeasurements-btn',
             on: 'left-start',
@@ -136,8 +138,8 @@ export default {
         },
         {
           id: 'scrollAwayFromMeasurement',
-          title: 'Scrolling Away from a Measurement',
-          text: 'Scroll the images using the mouse wheel away from the measurement.',
+          title: i18n.t('Onboarding:Scrolling Away from a Measurement'),
+          text: i18n.t('Onboarding:Scroll the images using the mouse wheel away from the measurement.'),
           attachTo: {
             element: '.viewport-element',
             on: 'left',
@@ -150,8 +152,8 @@ export default {
         },
         {
           id: 'jumpToMeasurement',
-          title: 'Jumping to Measurements in the Panel',
-          text: 'Click the measurement in the measurement panel to jump to it.',
+          title: i18n.t('Onboarding:Jumping to Measurements in the Panel'),
+          text: i18n.t('Onboarding:Click the measurement in the measurement panel to jump to it.'),
           attachTo: {
             element: '[data-cy="data-row"]',
             on: 'left-start',
@@ -164,8 +166,8 @@ export default {
         },
         {
           id: 'changeLayout',
-          title: 'Changing Layout',
-          text: 'You can change the layout of the viewer using the layout button.',
+          title: i18n.t('Onboarding:Changing Layout'),
+          text: i18n.t('Onboarding:You can change the layout of the viewer using the layout button.'),
           attachTo: {
             element: '[data-cy="Layout"]',
             on: 'bottom',
@@ -178,8 +180,8 @@ export default {
         },
         {
           id: 'selectLayout',
-          title: 'Selecting the MPR Layout',
-          text: 'Select the MPR layout to view the images in MPR mode.',
+          title: i18n.t('Onboarding:Selecting the MPR Layout'),
+          text: i18n.t('Onboarding:Select the MPR layout to view the images in MPR mode.'),
           attachTo: {
             element: '[data-cy="MPR"]',
             on: 'left-start',
@@ -196,7 +198,7 @@ export default {
         defaultStepOptions: {
           buttons: [
             {
-              text: 'Skip all',
+              text: i18n.t('Onboarding:Skip all'),
               action() {
                 this.complete();
               },
