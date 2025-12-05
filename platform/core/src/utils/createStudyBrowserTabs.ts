@@ -1,13 +1,14 @@
 import { useSystem } from '../contextProviders/SystemProvider';
+import { seriesSortCriteria } from './sortStudy';
 
 /**
  * Tab properties that drive which tab group is used for thumbnail display.
  */
 export type TabProp = {
-  name: string,
-  label: string,
-  studies: any[],
-}
+  name: string;
+  label: string;
+  studies: any[];
+};
 
 /**
  * Collection of tab properties with studies presorted depending on tab mod.
@@ -36,7 +37,7 @@ export function createStudyBrowserTabs(
   recentTimeframeMS = 31536000000
 ): TabsProps {
   const { servicesManager } = useSystem();
-  const { displaySetService } = servicesManager.services;
+  const { displaySetService, customizationService } = servicesManager.services;
 
   const shouldSortBySeriesUID = process.env.TEST_ENV === 'true';
   const primaryStudies = [];
@@ -48,17 +49,16 @@ export function createStudyBrowserTabs(
     );
 
     // sort them by seriesInstanceUID
-    let sortedDisplaySets;
-    if (shouldSortBySeriesUID) {
-      sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
-        const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
-        const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);
+    const sortCriteria = shouldSortBySeriesUID
+      ? seriesSortCriteria.compareSeriesUID
+      : (customizationService.getCustomization('sortingCriteria') as (a, b) => number);
+    const sortedDisplaySets = displaySetsForStudy.sort((a, b) => {
+      const displaySetA = displaySetService.getDisplaySetByUID(a.displaySetInstanceUID);
+      const displaySetB = displaySetService.getDisplaySetByUID(b.displaySetInstanceUID);
+      return sortCriteria(displaySetA, displaySetB);
+    });
 
-        return displaySetA.SeriesInstanceUID.localeCompare(displaySetB.SeriesInstanceUID);
-      });
-    } else {
-      sortedDisplaySets = displaySetsForStudy;
-    }
+    // return displaySetA.SeriesInstanceUID.localeCompare(displaySetB.SeriesInstanceUID);
 
     const tabStudy = Object.assign({}, study, {
       displaySets: sortedDisplaySets,

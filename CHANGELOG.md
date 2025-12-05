@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.98...v3.12.0-beta.99) (2025-12-04)
+
+
+### Bug Fixes
+
+* Initial sort not consistent ([#5224](https://github.com/OHIF/Viewers/issues/5224)) ([77f9f8e](https://github.com/OHIF/Viewers/commit/77f9f8e1c4af6b5d22ecf9332b5edf503cd5b848))
+
+
+
+
+
+# [3.12.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.97...v3.12.0-beta.98) (2025-12-03)
+
+
+### Bug Fixes
+
+* **clipboard:** Adds tooltip clipboard icon feedback when copy fails ([#5609](https://github.com/OHIF/Viewers/issues/5609)) ([6566354](https://github.com/OHIF/Viewers/commit/6566354986583e5d7db01c8734e282faf7a072b9))
+
+
+
+
+
+# [3.12.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.96...v3.12.0-beta.97) (2025-12-03)
+
+
+### Bug Fixes
+
+* skip VOI sync for empty viewports ([#5599](https://github.com/OHIF/Viewers/issues/5599)) ([1aa4431](https://github.com/OHIF/Viewers/commit/1aa443112186851855a638ab974a3060c3e28ea0))
+
+
+
+
+
+# [3.12.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.95...v3.12.0-beta.96) (2025-12-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.94...v3.12.0-beta.95) (2025-12-02)
+
+
+### Bug Fixes
+
+* sculptor tool fixes ([#5595](https://github.com/OHIF/Viewers/issues/5595)) ([4471416](https://github.com/OHIF/Viewers/commit/4471416c30bf80d9f6766660d103f28c83ba7bb3))
+
+
+
+
+
+# [3.12.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.93...v3.12.0-beta.94) (2025-12-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.12.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.92...v3.12.0-beta.93) (2025-11-25)
 
 
