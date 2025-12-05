@@ -5,6 +5,8 @@ export type DataTableContextValue<TData> = {
   table: Table<TData>;
 };
 
+// React Context cannot be generic, so we use 'unknown' as the base type
+// The generic type is properly restored by useDataTable<TData>() via type assertion
 const DataTableContext = React.createContext<DataTableContextValue<unknown> | null>(null);
 
 export function useDataTable<TData>() {

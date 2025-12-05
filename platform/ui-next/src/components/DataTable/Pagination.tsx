@@ -14,8 +14,8 @@ import { useDataTable } from './context';
  * Renders "start-end of total" and ghost chevron buttons for prev/next.
  * Uses the TanStack table instance from DataTable context.
  */
-export function Pagination() {
-  const { table } = useDataTable<any>();
+export function Pagination<TData>() {
+  const { table } = useDataTable<TData>();
   const { pageIndex, pageSize } = table.getState().pagination ?? { pageIndex: 0, pageSize: 50 };
 
   const total = table.getFilteredRowModel().rows.length;

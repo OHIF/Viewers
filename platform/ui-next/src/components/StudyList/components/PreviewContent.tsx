@@ -3,20 +3,20 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Thumbnail } from '../../Thumbnail';
 import { TooltipProvider } from '../../Tooltip';
-import type { StudyRow } from '../types/StudyListTypes';
-import { PatientSummary } from './PatientSummary';
-import { SeriesListView } from './SeriesListView';
+import type { StudyRow } from '../types/types';
+import { PreviewPatientSummary } from './PreviewPatientSummary';
+import { PreviewSeriesList } from './PreviewSeriesList';
 import { ToggleGroup, ToggleGroupItem } from '../../ToggleGroup';
 import { Icons } from '../../Icons';
 
 type SeriesViewMode = 'thumbnails' | 'list';
 
-export function PreviewPanelContent({
+function PreviewContent({
   study,
   series = [],
   thumbs = {},
 }: {
-  study: StudyRow;
+  study?: StudyRow | null;
   series?: Array<{
     seriesInstanceUid?: string;
     SeriesInstanceUID?: string;
@@ -33,14 +33,24 @@ export function PreviewPanelContent({
 }) {
   const [seriesViewMode, setSeriesViewMode] = React.useState<SeriesViewMode>('thumbnails');
 
+  // Handle empty state when no study is provided
+  if (!study) {
+    return (
+      <PreviewPatientSummary>
+        <PreviewPatientSummary.Patient />
+        <PreviewPatientSummary.Workflows />
+      </PreviewPatientSummary>
+    );
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       <TooltipProvider delayDuration={200}>
         <div className="flex flex-col gap-3">
-          <PatientSummary data={study}>
-            <PatientSummary.Patient />
-            <PatientSummary.Workflows />
-          </PatientSummary>
+          <PreviewPatientSummary data={study}>
+            <PreviewPatientSummary.Patient />
+            <PreviewPatientSummary.Workflows />
+          </PreviewPatientSummary>
           <div className="text-muted-foreground flex h-5 w-full items-center justify-between gap-1 px-2 text-base">
             <span className="leading-tight">
               {series?.length ? study?.description || 'No Description' : 'No Series'}
@@ -90,10 +100,12 @@ export function PreviewPanelContent({
               })}
             </div>
           ) : (
-            <SeriesListView series={series} />
+            <PreviewSeriesList series={series} />
           )}
         </div>
       </TooltipProvider>
     </DndProvider>
   );
 }
+
+export { PreviewContent };

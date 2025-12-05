@@ -133,8 +133,8 @@ type TableProps = {
  * Consumers pass <DataTable.Header />, <DataTable.FilterRow />, and <DataTable.Body />
  * as children; this component wires them into the correct structure.
  */
-function Table({ children, className, tableClassName }: TableProps) {
-  const { table } = useDataTable<any>();
+function Table<TData>({ children, className, tableClassName }: TableProps) {
+  const { table } = useDataTable<TData>();
 
   const renderColGroup = React.useCallback(
     () => (

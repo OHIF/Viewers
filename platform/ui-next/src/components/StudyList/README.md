@@ -37,15 +37,15 @@ ui-next/src/components/StudyList/
 │   └── workflows-registry.ts
 │
 ├── components/                     # Building blocks
-│   ├── PreviewPanelContent.tsx
-│   ├── PreviewPanelEmpty.tsx
-│   ├── PreviewPanelShell.tsx       # Preview container (header + scroll)
+│   ├── PreviewContent.tsx
+│   ├── PreviewEmpty.tsx
+│   ├── PreviewContainer.tsx        # Preview container (header + scroll)
 │   ├── SettingsPopover.tsx
 │   ├── StudyListInstancesCell.tsx
-│   ├── StudyListActionsCell.tsx
+│   ├── ActionCell.tsx
 │   ├── StudyListLayout.tsx         # Resizable split layout
 │   ├── StudyListTable.tsx          # Table built on DS DataTable
-│   └── StudyListWorkflowMenu.tsx
+│   └── WorkflowMenu.tsx
 │
 ├── layouts/                        # Compositions using components/
 │   ├── StudyListLargeLayout.tsx    # Default Study List recipe
@@ -55,8 +55,10 @@ ui-next/src/components/StudyList/
 ├── columns/
 │   └── defaultColumns.tsx          # Default columns factory used by the table
 │
+├── types/
+│   └── types.ts                     # Default row type (StudyRow) and related types
+│
 ├── StudyList.tsx                   # Future responsive wrapper; currently renders Large
-├── StudyListTypes.ts               # Default row type (StudyRow) and related types
 ├── WorkflowsInfer.ts               # Re-exports workflow ids + inference utilities
 ├── useDefaultWorkflow.ts           # localStorage-backed default workflow hook
 └── index.ts
@@ -75,7 +77,7 @@ ui-next/src/components/StudyList/
 - `useStudyListState` builds the headless state and is provided via `<StudyListProvider value={...}>`.
 - `StudyListTable` produces selection changes which update `selected`.
 - `StudyListLayout` shows/hides and resizes the preview area; `OpenPreviewButton` reopens it when closed.
-- `StudyListActionsCell` (trailing column) with `StudyListWorkflowMenu` launches workflows per row via `launch(study, workflow)`.
+- `ActionCell` (trailing column) with `WorkflowMenu` launches workflows per row via `launch(study, workflow)`.
 - `SettingsPopover` changes the default workflow via `useDefaultWorkflow`.
 
 ---
@@ -101,18 +103,30 @@ ui-next/src/components/StudyList/
 
 ## Building Blocks
 
-### `components/StudyListLayout.tsx`
+### `components/Layout.tsx`
 - Resizable horizontal split for table and preview.
 - Compound API using slots:
-  - `StudyListLayout.Table` — left panel content (e.g., table).
-  - `StudyListLayout.Preview` — right panel content (renders only when open).
-  - `StudyListLayout.Handle` — optional explicit handle insert (Preview includes one automatically).
-  - `StudyListLayout.OpenPreviewButton` — button to re‑open the preview when closed.
-- Props: `isPanelOpen`, `onIsPanelOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent?`, `className?`.
-- Hook: `useStudyListLayout()` to access `isPanelOpen`, `openPanel`, `closePanel`.
+  - `Layout.Table` — left panel that accepts all `StudyList.Table` props directly, or custom content via `children`.
+  - `Layout.Preview` — right panel content (renders only when open).
+  - `Layout.OpenPreviewButton` — button to re‑open the preview when closed.
+  - `Layout.ClosePreviewButton` — button to close the preview.
+- Props: `isPreviewOpen`, `onIsPreviewOpenChange`, `defaultPreviewSizePercent`, `minPreviewSizePercent?`, `className?`.
+- Hook: `useLayout()` to access `isPreviewOpen`, `openPreview`, `closePreview`.
 
-### `components/PreviewPanelShell.tsx`
-- Light container for preview content (header slot + scroll area).
+### `components/PreviewContainer.tsx`
+- Compound component for preview content with strict typing.
+- **Required children**: Must contain exactly one of `PreviewContent` or `PreviewEmpty`.
+- **Optional children**: `PreviewHeader` for header content.
+- Example:
+  ```tsx
+  <PreviewContainer>
+    <PreviewHeader>
+      <SettingsPopover />
+      <CloseButton />
+    </PreviewHeader>
+    {selected ? <PreviewContent study={selected} /> : <PreviewEmpty />}
+  </PreviewContainer>
+  ```
 
 ### `components/StudyListTable.tsx`
 - Thin wrapper around DS `DataTable` + `Table`.
@@ -122,12 +136,12 @@ ui-next/src/components/StudyList/
 ### `components/StudyListInstancesCell.tsx`
 - Renders the Instances numeric value (right‑aligned).
 
-### `components/StudyListActionsCell.tsx`
+### `components/ActionCell.tsx`
 - Dedicated trailing actions cell showing the “…” menu on hover/selection via DS `DataTableActionOverlayCell`.
 - Always visible and excluded from the View (column visibility) menu.
 - Reads `defaultWorkflow` and calls `launch(study, workflow)` from headless state.
 
-### `components/StudyListWorkflowMenu.tsx`
+### `components/WorkflowMenu.tsx`
 - Dropdown built with DS `DropdownMenu` listing workflows for a row.
 - Source of truth: `getAvailableWorkflows({ workflows, modalities })`.
 
@@ -139,10 +153,10 @@ ui-next/src/components/StudyList/
   - `SettingsPopover.Content` — wraps the popover body; accepts `align`, `sideOffset`, and `className`.
   - `SettingsPopover.Workflow` — renders the “Default Workflow” selector and closes the popover after selection.
   - `SettingsPopover.Divider` — visual separator between sections.
-  - `SettingsPopover.Link` — link‑style action that can navigate or run a custom handler; the popover closes after activation.
+  - `SettingsPopover.Item` — item that can navigate (via href) or run a custom handler (via onClick); the popover closes after activation.
 - Notes:
   - Both `Trigger` and `Content` are required as direct children of `SettingsPopover`.
-  - Place all body items (Workflow/Divider/Link/…) inside `SettingsPopover.Content`.
+  - Place all body items (Workflow/Divider/Item/…) inside `SettingsPopover.Content`.
   - Legacy usage without `Content` is not supported.
 
 Example:
@@ -157,14 +171,14 @@ Example:
   <SettingsPopover.Content>
     <SettingsPopover.Workflow defaultMode={defaultWorkflow} onDefaultModeChange={setDefaultWorkflow} />
     <SettingsPopover.Divider />
-    <SettingsPopover.Link href="/about">About OHIF Viewer</SettingsPopover.Link>
-    <SettingsPopover.Link href="/user-preferences">User Preferences</SettingsPopover.Link>
+    <SettingsPopover.Item href="/about">About OHIF Viewer</SettingsPopover.Item>
+    <SettingsPopover.Item href="/user-preferences">User Preferences</SettingsPopover.Item>
   </SettingsPopover.Content>
   </SettingsPopover>
 ```
 
-### `components/PreviewPanelContent.tsx` and `components/PreviewPanelEmpty.tsx`
-- Default preview content using `PatientSummary`; the former renders thumbnails and workflows for the selected row, the latter renders an empty state.
+### `components/PreviewContent.tsx` and `components/PreviewEmpty.tsx`
+- Default preview content using `PreviewPatientSummary`; the former renders thumbnails and workflows for the selected row, the latter renders an empty state.
 
 ---
 
@@ -172,7 +186,7 @@ Example:
 
 ### `layouts/StudyListLargeLayout.tsx`
 - The default composition used by `StudyList`.
-- Wires `useStudyListState` to `StudyListProvider`, `StudyListLayout`, `StudyListTable`, `SettingsPopover`, `PreviewPanelContent`, and `PreviewPanelEmpty`.
+- Wires `useStudyListState` to `StudyListProvider`, `StudyListLayout`, `StudyListTable`, `SettingsPopover`, `PreviewContent`, and `PreviewEmpty`.
 
 ---
 
@@ -181,7 +195,7 @@ Example:
 ### `columns/defaultColumns.tsx`
 - Factory returning default columns; start here and selectively replace cells/widths/headers.
 
-### `StudyListTypes.ts`
+### `types/types.ts`
 - Exposes `StudyRow` (the default row shape).
 
 ---
@@ -218,7 +232,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
 - Table: `Table`, `TableHeader`, `TableBody`, `TableHead`, `TableRow`, `TableCell`.
 - Inputs & Menus: `Button`, `DropdownMenu`, `Select`, `Popover`, `Label`.
 - Layout & Scroll: `ResizablePanelGroup`, `ResizablePanel`, `ResizableHandle`, `ScrollArea`.
-- Information & Media: `Icons`, `TooltipProvider`, `Thumbnail`, `PatientSummary`.
+- Information & Media: `Icons`, `TooltipProvider`, `Thumbnail`, `PreviewPatientSummary`.
 
 ---
 
@@ -270,15 +284,11 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
           defaultPreviewSizePercent={30}
           className="h-full w-full"
         >
-          <StudyListLayout.Table>
-            <StudyListTable
-              data={rows}
-              columns={defaultColumns()}
-              onSelectionChange={(sel) => state.setSelected(sel[0] ?? null)}
-              isPanelOpen={state.isPanelOpen}
-              onOpenPanel={() => state.setPanelOpen(true)}
-            />
-          </StudyListLayout.Table>
+          <StudyListLayout.Table
+            data={rows}
+            columns={defaultColumns()}
+            onSelectionChange={(sel) => state.setSelected(sel[0] ?? null)}
+          />
           <StudyListLayout.Preview>
             <div>{/* Your preview content */}</div>
           </StudyListLayout.Preview>
@@ -288,34 +298,34 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
   }
   ```
 
-### PatientSummary anywhere
+### PreviewPatientSummary anywhere
 
-  Place `PatientSummary` wherever you need it (preview panel, above the table, or inside a cell).
+  Place `PreviewPatientSummary` wherever you need it (preview panel, above the table, or inside a cell).
   Use the StudyList headless hook to wire workflows and launch behavior.
 
-  Note: `PatientSummary.Workflows` is presentation‑only. It does not infer or fetch workflows.
+  Note: `PreviewPatientSummary.Workflows` is presentation‑only. It does not infer or fetch workflows.
   Always pass an explicit list (e.g., from `useStudyList().availableWorkflowsFor(row)` or `WorkflowsInfer`).
 
   In‑context example (inside a component rendered under `StudyListProvider` or `StudyList*Layout`):
 
   ```tsx
   import React from 'react';
-  import { PatientSummary, useStudyList, type WorkflowId } from '@ohif/ui-next';
+  import { PreviewPatientSummary, useStudyList, type WorkflowId } from '@ohif/ui-next';
 
   function SummaryForRow({ row }: { row: any }) {
     const { availableWorkflowsFor, defaultWorkflow, setDefaultWorkflow, launch } =
       useStudyList<any, WorkflowId>();
 
     return (
-      <PatientSummary data={row}>
-        <PatientSummary.Patient />
-        <PatientSummary.Workflows<WorkflowId>
+      <PreviewPatientSummary data={row}>
+        <PreviewPatientSummary.Patient />
+        <PreviewPatientSummary.Workflows<WorkflowId>
           workflows={availableWorkflowsFor(row)}
           defaultMode={defaultWorkflow}
           onDefaultModeChange={setDefaultWorkflow}
           onLaunchWorkflow={(data, wf) => data && launch(data, wf)}
         />
-      </PatientSummary>
+      </PreviewPatientSummary>
     );
   }
   ```
@@ -324,34 +334,34 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
 
   ```tsx
   import React from 'react';
-  import { PatientSummary, useStudyList, type WorkflowId } from '@ohif/ui-next';
+  import { PreviewPatientSummary, useStudyList, type WorkflowId } from '@ohif/ui-next';
 
   function SummaryWithMapping({ row }: { row: any }) {
     const { availableWorkflowsFor, defaultWorkflow, setDefaultWorkflow, launch } =
       useStudyList<any, WorkflowId>();
 
     return (
-      <PatientSummary
+      <PreviewPatientSummary
         data={row}
         get={{
           title: r => r.description,
           subtitle: r => r.accession,
         }}
       >
-        <PatientSummary.Section variant="row" align="center">
-          <PatientSummary.Icon />
+        <PreviewPatientSummary.Section variant="row" align="center">
+          <PreviewPatientSummary.Icon />
           <div className="min-w-0">
-            <PatientSummary.Title />
-            <PatientSummary.Subtitle prefix="Accession: " />
+            <PreviewPatientSummary.Title />
+            <PreviewPatientSummary.Subtitle prefix="Accession: " />
           </div>
-        </PatientSummary.Section>
-        <PatientSummary.Workflows<WorkflowId>
+        </PreviewPatientSummary.Section>
+        <PreviewPatientSummary.Workflows<WorkflowId>
           workflows={availableWorkflowsFor(row)}
           defaultMode={defaultWorkflow}
           onDefaultModeChange={setDefaultWorkflow}
           onLaunchWorkflow={(data, wf) => data && launch(data, wf)}
         />
-      </PatientSummary>
+      </PreviewPatientSummary>
     );
   }
   ```
@@ -360,7 +370,7 @@ Internal monorepo path (for local development): `platform/ui-next/src/components
   - Pass `row.workflows` (strings in the allowed set) to control the menu per row.
   - Otherwise inference derives from `modalities` (adds US or TMTV where applicable).
   - Workflow ids and inference helpers are exported from `WorkflowsInfer`.
-  - `PatientSummary.Workflows` never computes available workflows; supply them from headless.
+  - `PreviewPatientSummary.Workflows` never computes available workflows; supply them from headless.
 
 ---
 

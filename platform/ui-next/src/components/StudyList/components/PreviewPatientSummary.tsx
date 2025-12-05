@@ -1,28 +1,27 @@
 /**
- * PatientSummary — compound component for patient header + workflow actions
+ * PreviewPatientSummary — compound component for patient header + workflow actions
  *
  * What it is
  * - A small set of primitives composed under a root provider: Patient, Workflows, Title, Subtitle, Meta, Actions, Action, Field, Section, Icon.
- * - All subcomponents read `data` from the nearest <PatientSummary> via context.
+ * - All subcomponents read `data` from the nearest <PreviewPatientSummary> via context.
  *
  * Minimal usage
- *   <PatientSummary data={row}>
- *     <PatientSummary.Patient />
- *     <PatientSummary.Workflows />
- *   </PatientSummary>
+ *   <PreviewPatientSummary data={row}>
+ *     <PreviewPatientSummary.Patient />
+ *     <PreviewPatientSummary.Workflows />
+ *   </PreviewPatientSummary>
  *
  * Adapting data shapes
  * - Use `get` on the root to map custom fields:
- *   <PatientSummary data={row} get={{ title: r => r.displayName, subtitle: r => r.patientId }}>
+ *   <PreviewPatientSummary data={row} get={{ title: r => r.displayName, subtitle: r => r.patientId }}>
  *
  * Default workflow behavior
- * - Workflows component automatically uses StudyListWorkflowProvider context.
+ * - Workflows component automatically uses WorkflowsProvider context.
  * - Shows default workflow badge and allows clearing it.
  * - Renders buttons for other available workflows.
  *
  * Helpful references
- * - platform/ui-next/src/components/StudyList/components/PreviewPanelContent.tsx (in-context example)
- * - platform/ui-next/src/components/StudyList/components/PreviewPanelEmpty.tsx (empty state example)
+ * - platform/ui-next/src/components/StudyList/components/PreviewContent.tsx (in-context example, including empty state handling)
  */
 import * as React from 'react';
 import type { ElementType } from 'react';
@@ -30,11 +29,11 @@ import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../../lib/utils';
 import { Icons } from '../../Icons/Icons';
 import { Button } from '../../Button';
-import type { StudyRow } from '../types/StudyListTypes';
-import { useStudyListWorkflows } from './StudyListWorkflowProvider';
+import type { StudyRow } from '../types/types';
+import { useWorkflows } from './WorkflowsProvider';
 
-/** Public getters to adapt arbitrary data shapes to the PatientSummary defaults */
-export type PatientSummaryGetters<T> = {
+/** Public getters to adapt arbitrary data shapes to the PreviewPatientSummary defaults */
+export type PreviewPatientSummaryGetters<T> = {
   title?: (data: T) => React.ReactNode;
   subtitle?: (data: T) => React.ReactNode;
 };
@@ -54,20 +53,22 @@ const SummaryContext = React.createContext<SummaryContextValue<unknown> | null>(
 function useSummaryContext<T>() {
   const context = React.useContext(SummaryContext);
   if (!context) {
-    throw new Error('PatientSummary.* components must be used within <PatientSummary>');
+    throw new Error(
+      'PreviewPatientSummary.* components must be used within <PreviewPatientSummary>'
+    );
   }
   return context as SummaryContextValue<T>;
 }
 
 type RootProps<T = any> = {
   data?: T | null;
-  get?: PatientSummaryGetters<T>;
+  get?: PreviewPatientSummaryGetters<T>;
   className?: string;
   children?: React.ReactNode;
 };
 
 /**
- * Root context provider for PatientSummary compound components.
+ * Root context provider for PreviewPatientSummary compound components.
  *
  * Use `get` to adapt arbitrary data shapes (e.g., map `displayName` → name, `patientId` → mrn).
  */
@@ -124,7 +125,7 @@ const Section = React.forwardRef<HTMLDivElement, SectionProps>(
     );
   }
 );
-Section.displayName = 'PatientSummarySection';
+Section.displayName = 'PreviewPatientSummarySection';
 
 type IconProps = {
   src?: string;
@@ -294,7 +295,7 @@ const Actions = React.forwardRef<HTMLDivElement, ActionsProps>(
     );
   }
 );
-Actions.displayName = 'PatientSummaryActions';
+Actions.displayName = 'PreviewPatientSummaryActions';
 
 type ActionOwnProps<T = any> = {
   label?: React.ReactNode;
@@ -450,7 +451,7 @@ type ActionComponentType = <T = any>(
 ) => React.ReactElement | null;
 
 const Action = React.forwardRef(ActionInner) as ActionComponentType;
-Action.displayName = 'PatientSummaryAction';
+Action.displayName = 'PreviewPatientSummaryAction';
 
 type WorkflowButtonProps<T = any> = {
   label?: React.ReactNode;
@@ -479,7 +480,7 @@ const WorkflowButtonInner = <T = any,>(
   ref: React.ForwardedRef<HTMLElement>
 ) => {
   const { data } = useSummaryContext<T>();
-  const workflowContext = useStudyListWorkflows();
+  const workflowContext = useWorkflows();
   const computedDisabled = disabled ?? false;
   const id = React.useId();
   const reasonId = `${id}-reason`;
@@ -634,7 +635,7 @@ type WorkflowButtonComponent = <T = any>(
 ) => React.ReactElement | null;
 
 const WorkflowButton = React.forwardRef(WorkflowButtonInner) as WorkflowButtonComponent;
-WorkflowButton.displayName = 'PatientSummaryWorkflowButton';
+WorkflowButton.displayName = 'PreviewPatientSummaryWorkflowButton';
 
 type PatientProps = {
   placeholder?: React.ReactNode;
@@ -691,8 +692,8 @@ function Patient({
  * Public API for the workflow picker.
  *
  * Usage:
- * - Must be used inside `<PatientSummary>` so it can read the current `data` from context.
- * - Must be used inside `<StudyListWorkflowProvider>` to access workflow context.
+ * - Must be used inside `<PreviewPatientSummary>` so it can read the current `data` from context.
+ * - Must be used inside `<WorkflowsProvider>` to access workflow context.
  * - Automatically gets workflows for the current study and handles launching.
  * - Shows default workflow badge and allows clearing it.
  */
@@ -778,7 +779,7 @@ function Field<T = any>({
   );
 }
 
-type PatientSummaryNamespace = typeof Root & {
+type PreviewPatientSummaryNamespace = typeof Root & {
   Section: typeof Section;
   Icon: typeof Icon;
   Title: typeof Title;
@@ -792,7 +793,7 @@ type PatientSummaryNamespace = typeof Root & {
   Field: typeof Field;
 };
 
-export const PatientSummary: PatientSummaryNamespace = Object.assign(Root, {
+export const PreviewPatientSummary: PreviewPatientSummaryNamespace = Object.assign(Root, {
   Section,
   Icon,
   Title,

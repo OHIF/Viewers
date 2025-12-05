@@ -8,17 +8,17 @@ import {
   DropdownMenuItem,
 } from '../../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../Tooltip';
-import { useStudyListWorkflows } from './StudyListWorkflowProvider';
-import type { StudyRow } from '../types/StudyListTypes';
+import { useWorkflows } from './WorkflowsProvider';
+import type { StudyRow } from '../types/types';
 
 type Props = {
   studyRow: StudyRow;
   align?: 'start' | 'end' | 'center';
 };
 
-export function StudyListWorkflowMenu({ studyRow, align = 'end' }: Props) {
+export function WorkflowMenu({ studyRow, align = 'end' }: Props) {
   const [open, setOpen] = React.useState(false);
-  const { getWorkflowsForStudy } = useStudyListWorkflows();
+  const { getWorkflowsForStudy } = useWorkflows();
   const workflows = getWorkflowsForStudy(studyRow);
 
   return (

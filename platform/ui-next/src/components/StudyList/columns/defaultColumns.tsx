@@ -2,8 +2,8 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
 import { Icons } from '../../Icons';
-import type { StudyRow } from '../types/StudyListTypes';
-import { StudyListActionsCell } from '../components/StudyListActionsCell';
+import type { StudyRow } from '../types/types';
+import { ActionCell } from '../components/ActionCell';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDate';
 
@@ -156,7 +156,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       header: () => null,
       enableSorting: false,
       enableHiding: false,
-      cell: ({ cell }) => <StudyListActionsCell cell={cell} />,
+      cell: ({ cell }) => <ActionCell cell={cell} />,
       meta: {
         // No label so it never appears labeled in any UI; also non-hideable
         headerClassName: 'w-[56px] min-w-[56px] max-w-[56px]',
