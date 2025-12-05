@@ -3,11 +3,11 @@ import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-t
 import { DataTable, useDataTable } from '../../DataTable';
 import { Button } from '../../Button';
 import { InputMultiSelect } from '../../InputMultiSelect';
-import type { StudyRow } from '../types/StudyListTypes';
+import type { StudyRow } from '../types/types';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
-import { useStudyListWorkflows } from './StudyListWorkflowProvider';
+import { useWorkflows } from './WorkflowsProvider';
 
-type Props = {
+export type TableProps = {
   columns: ColumnDef<StudyRow, unknown>[];
   data: StudyRow[];
   title?: React.ReactNode;
@@ -21,7 +21,7 @@ type Props = {
   toolbarRightComponent?: React.ReactNode;
 };
 
-export function StudyListTable({
+export function Table({
   columns,
   data,
   title,
@@ -33,7 +33,7 @@ export function StudyListTable({
   onSelectionChange,
   toolbarLeftComponent,
   toolbarRightComponent,
-}: Props) {
+}: TableProps) {
   return (
     <DataTable<StudyRow>
       data={data}
@@ -44,7 +44,7 @@ export function StudyListTable({
       enforceSingleSelection={enforceSingleSelection}
       onSelectionChange={onSelectionChange}
     >
-      <StudyListTableContent
+      <TableContent
         title={title}
         showColumnVisibility={showColumnVisibility}
         tableClassName={tableClassName}
@@ -55,7 +55,7 @@ export function StudyListTable({
   );
 }
 
-function StudyListTableContent({
+function TableContent({
   title,
   showColumnVisibility,
   tableClassName,
@@ -77,7 +77,7 @@ function StudyListTableContent({
     return Array.from(new Set(tokens)).sort();
   }, [table.options?.data]);
   // Access workflow provider for default workflow + launch
-  const { getDefaultWorkflowForStudy } = useStudyListWorkflows();
+  const { getDefaultWorkflowForStudy } = useWorkflows();
 
   // Responsive column visibility based on viewport width
   React.useEffect(() => {
@@ -123,13 +123,13 @@ function StudyListTableContent({
           {title ? <DataTable.Title>{title}</DataTable.Title> : null}
           <div className="absolute right-0 flex items-center">
             {/* Pagination appears to the left of the "View" button */}
-            <DataTable.Pagination />
+            <DataTable.Pagination<StudyRow> />
             {showColumnVisibility && <DataTable.ViewOptions<StudyRow> />}
             {toolbarRightComponent}
           </div>
         </DataTable.Toolbar>
       )}
-      <DataTable.Table tableClassName={tableClassName}>
+      <DataTable.Table<StudyRow> tableClassName={tableClassName}>
         <DataTable.Header<StudyRow> />
         <DataTable.FilterRow<StudyRow>
           excludeColumnIds={['instances']}

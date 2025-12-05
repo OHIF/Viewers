@@ -1,15 +1,8 @@
 import * as React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../../Table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../Table';
 import { Icons } from '../../Icons';
 
-type SeriesData = {
+type Series = {
   seriesInstanceUid?: string;
   SeriesInstanceUID?: string;
   modality?: string;
@@ -22,23 +15,23 @@ type SeriesData = {
   numInstances?: number;
 };
 
-type Props = {
-  series: SeriesData[];
-  onSeriesClick?: (series: SeriesData) => void;
+type PreviewSeriesListProps = {
+  series: Series[];
+  onSeriesClick?: (series: Series) => void;
 };
 
-export function SeriesListView({ series, onSeriesClick }: Props) {
+export function PreviewSeriesList({ series, onSeriesClick }: PreviewSeriesListProps) {
   return (
     <div className="w-full px-2">
       <Table noScroll>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-base font-normal pl-0">
+            <TableHead className="pl-0 text-base font-normal">
               <span className="text-foreground">Modality</span>
               <span className="text-muted-foreground"> / Series</span>
             </TableHead>
-            <TableHead className="text-foreground text-base font-normal text-right w-8 pr-0">
-              <Icons.Series className="h-4 w-4 ml-auto" />
+            <TableHead className="text-foreground w-8 pr-0 text-right text-base font-normal">
+              <Icons.Series className="ml-auto h-4 w-4" />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -52,17 +45,15 @@ export function SeriesListView({ series, onSeriesClick }: Props) {
             return (
               <TableRow
                 key={seriesUID}
-                className="hover:bg-transparent hover:text-muted-foreground cursor-default"
+                className="hover:text-muted-foreground cursor-default hover:bg-transparent"
               >
-                <TableCell className="text-base pl-0">
+                <TableCell className="pl-0 text-base">
                   <div className="flex items-center gap-2">
-                    <span className="font-normal text-foreground">{modality}</span>
+                    <span className="text-foreground font-normal">{modality}</span>
                     <span className="font-normal">{description}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-base text-right w-8 pr-0">
-                  {numInstances}
-                </TableCell>
+                <TableCell className="w-8 pr-0 text-right text-base">{numInstances}</TableCell>
               </TableRow>
             );
           })}

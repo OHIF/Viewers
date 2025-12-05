@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { StudyRow } from '../types/StudyListTypes';
+import type { StudyRow } from '../types/types';
 import { useDefaultWorkflow } from '../hooks/useDefaultWorkflow';
 
 /**
  * Represents a workflow that can be launched from the study list.
  * Each workflow corresponds to a mode from appConfig.loadedModes.
  */
-export interface StudyListWorkflow {
+export interface Workflow {
   /** Unique identifier for the workflow (from mode.id) */
   readonly id: string;
   /** Display name of the workflow (from mode.displayName) */
@@ -20,24 +20,22 @@ export interface StudyListWorkflow {
   readonly isDefault: boolean;
 }
 
-export type StudyListWorkflowContextValue = {
+export type WorkflowsContextValue = {
   /** All available workflows */
-  workflows: readonly StudyListWorkflow[];
+  workflows: readonly Workflow[];
   /** Get workflows that are applicable to a specific study */
-  getWorkflowsForStudy: (studyRow: StudyRow) => StudyListWorkflow[];
+  getWorkflowsForStudy: (studyRow: StudyRow) => Workflow[];
   /** Get the default workflow for a study (only if it's applicable) */
-  getDefaultWorkflowForStudy: (studyRow: StudyRow) => StudyListWorkflow | undefined;
+  getDefaultWorkflowForStudy: (studyRow: StudyRow) => Workflow | undefined;
   /** The current default workflow mode ID */
   defaultWorkflowId: string | undefined;
   /** Set the default workflow ID */
   setDefaultWorkflowId: (workflowId?: string) => void;
 };
 
-const StudyListWorkflowContext = React.createContext<StudyListWorkflowContextValue | undefined>(
-  undefined
-);
+const WorkflowsContext = React.createContext<WorkflowsContextValue | undefined>(undefined);
 
-type Mode = {
+export type Mode = {
   id: string;
   routeName: string;
   displayName: string;
@@ -48,7 +46,7 @@ type Mode = {
   };
 };
 
-type StudyListWorkflowProviderProps = {
+type WorkflowsProviderProps = {
   /** Array of loaded modes from appConfig */
   loadedModes: Mode[];
   /** Optional data path prefix for routes (e.g., '/dicomweb') */
@@ -62,12 +60,12 @@ type StudyListWorkflowProviderProps = {
  * Provider that creates workflows from loaded modes and provides them via context.
  * Each workflow can launch studies and determine applicability based on mode validation.
  */
-export function StudyListWorkflowProvider({
+export function WorkflowsProvider({
   loadedModes,
   dataPath,
   preserveQueryParameters,
   children,
-}: StudyListWorkflowProviderProps) {
+}: WorkflowsProviderProps) {
   const navigate = useNavigate();
 
   // Get valid workflow IDs from loaded modes (for validation)
@@ -93,7 +91,7 @@ export function StudyListWorkflowProvider({
   );
 
   const workflows = React.useMemo(() => {
-    const workflowList: StudyListWorkflow[] = [];
+    const workflowList: Workflow[] = [];
 
     for (const mode of loadedModes) {
       // Filter out hidden modes
@@ -108,7 +106,7 @@ export function StudyListWorkflowProvider({
 
       const isDefault = mode.id === defaultWorkflowId;
 
-      const workflow: StudyListWorkflow = {
+      const workflow: Workflow = {
         get id() {
           return mode.id;
         },
@@ -156,21 +154,21 @@ export function StudyListWorkflowProvider({
   }, [loadedModes, defaultWorkflowId, dataPath, navigate, preserveQueryParameters]);
 
   const getWorkflowsForStudy = React.useCallback(
-    (studyRow: StudyRow): StudyListWorkflow[] => {
+    (studyRow: StudyRow): Workflow[] => {
       return workflows.filter(workflow => workflow.isApplicableToStudy(studyRow));
     },
     [workflows]
   );
 
   const getDefaultWorkflowForStudy = React.useCallback(
-    (studyRow: StudyRow): StudyListWorkflow | undefined => {
+    (studyRow: StudyRow): Workflow | undefined => {
       const applicableWorkflows = getWorkflowsForStudy(studyRow);
       return applicableWorkflows.find(workflow => workflow.isDefault);
     },
     [getWorkflowsForStudy]
   );
 
-  const value: StudyListWorkflowContextValue = React.useMemo(
+  const value: WorkflowsContextValue = React.useMemo(
     () => ({
       workflows,
       getWorkflowsForStudy,
@@ -187,19 +185,17 @@ export function StudyListWorkflowProvider({
     ]
   );
 
-  return (
-    <StudyListWorkflowContext.Provider value={value}>{children}</StudyListWorkflowContext.Provider>
-  );
+  return <WorkflowsContext.Provider value={value}>{children}</WorkflowsContext.Provider>;
 }
 
 /**
  * Hook to access the study list workflow context.
- * Must be used within a StudyListWorkflowProvider.
+ * Must be used within a WorkflowsProvider.
  */
-export function useStudyListWorkflows(): StudyListWorkflowContextValue {
-  const ctx = React.useContext(StudyListWorkflowContext);
+export function useWorkflows(): WorkflowsContextValue {
+  const ctx = React.useContext(WorkflowsContext);
   if (!ctx) {
-    throw new Error('useStudyListWorkflows must be used within <StudyListWorkflowProvider>');
+    throw new Error('useWorkflows must be used within <WorkflowsProvider>');
   }
   return ctx;
 }

@@ -10,7 +10,7 @@ import {
 } from '../../Select';
 import { Label } from '../../Label';
 import { Button } from '../../Button';
-import { useStudyListWorkflows } from './StudyListWorkflowProvider';
+import { useWorkflows } from './WorkflowsProvider';
 
 /** Context to allow subcomponents to close the popover */
 type SettingsPopoverContextValue = {
@@ -27,7 +27,7 @@ function useSettingsPopoverContext() {
   return ctx;
 }
 
-type RootProps = {
+type SettingsPopoverProps = {
   /** Controlled open state (optional). If omitted, component manages its own state. */
   open?: boolean;
   /** onOpenChange for controlled usage (optional). */
@@ -57,11 +57,11 @@ SettingsPopoverTrigger.displayName = 'SettingsPopover.Trigger';
  *   <SettingsPopover.Content>
  *     <SettingsPopover.Workflow ... />
  *     <SettingsPopover.Divider />
- *     <SettingsPopover.Link href="/about">About</SettingsPopover.Link>
+ *     <SettingsPopover.Item href="/about">About</SettingsPopover.Item>
  *   </SettingsPopover.Content>
  * </SettingsPopover>
  */
-function SettingsPopoverComponent({ open, onOpenChange, children }: RootProps) {
+function SettingsPopoverRoot({ open, onOpenChange, children }: SettingsPopoverProps) {
   const isControlled = typeof open === 'boolean';
   const [internalOpen, setInternalOpen] = React.useState(false);
 
@@ -157,7 +157,7 @@ function SettingsPopoverContent({
  */
 function Workflow() {
   const { close } = useSettingsPopoverContext();
-  const { workflows, defaultWorkflowId, setDefaultWorkflowId } = useStudyListWorkflows();
+  const { workflows, defaultWorkflowId, setDefaultWorkflowId } = useWorkflows();
   const selectId = React.useId();
   const NO_DEFAULT_VALUE = '__NO_DEFAULT__';
 
@@ -214,8 +214,8 @@ function Divider() {
   return <div className="bg-muted -mx-2 my-3 h-px" />;
 }
 
-type LinkProps = {
-  /** Link label */
+type ItemProps = {
+  /** Item label */
   children: React.ReactNode;
   /** Optional href for navigation */
   href?: string;
@@ -230,11 +230,11 @@ type LinkProps = {
 };
 
 /**
- * SettingsPopover.Link
- * Generic link-style button that matches existing popover link styling.
- * Supports href or onClick and closes the popover afterwards.
+ * SettingsPopover.Item
+ * Generic item that matches existing popover styling.
+ * Supports href (renders as anchor) or onClick (renders as button) and closes the popover afterwards.
  */
-function Link({ children, href, onClick, target, rel, dataCY }: LinkProps) {
+function Item({ children, href, onClick, target, rel, dataCY }: ItemProps) {
   const { close } = useSettingsPopoverContext();
 
   const handleClick: React.MouseEventHandler<HTMLElement> = e => {
@@ -279,12 +279,12 @@ function Link({ children, href, onClick, target, rel, dataCY }: LinkProps) {
   );
 }
 
-SettingsPopoverComponent.displayName = 'SettingsPopover';
+SettingsPopoverRoot.displayName = 'SettingsPopover';
 
-export const SettingsPopover = Object.assign(SettingsPopoverComponent, {
+export const SettingsPopover = Object.assign(SettingsPopoverRoot, {
   Trigger: SettingsPopoverTrigger,
   Content: SettingsPopoverContent,
   Workflow,
   Divider,
-  Link,
+  Item,
 });
