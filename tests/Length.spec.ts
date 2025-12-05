@@ -10,12 +10,13 @@ test('should display the length tool', async ({
   page,
   mainToolbarPageObject,
   viewportPageObject,
+  overlayPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.length.click();
   await viewportPageObject.active.clickAt([
     { x: 364, y: 234 },
     { x: 544, y: 232 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
 });

@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('should display the circle tool', async ({
   page,
   mainToolbarPageObject,
+  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.circleROI.click();
@@ -16,6 +17,6 @@ test('should display the circle tool', async ({
     { x: 480, y: 205 },
     { x: 488, y: 247 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.circle.circleDisplayedCorrectly);
 });

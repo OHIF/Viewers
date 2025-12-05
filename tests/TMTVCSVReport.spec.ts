@@ -3,21 +3,22 @@ import { downloadAsString } from './utils/download';
 
 test('should create and download the TMTV CSV report correctly', async ({
   page,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
-  await page.getByTestId('addSegmentation').click();
-  await page.getByTestId('Brush-btn').click();
+  await rightPanelPageObject.tmtvPanel.addSegmentationButton.click();
+  await rightPanelPageObject.tmtvPanel.tools.brush.click();
 
   await viewportPageObject.getById('ctAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
   await page.waitForTimeout(5000);
 
   const downloadPromise = page.waitForEvent('download');
-  await page.getByTestId('exportTmtvCsvReport').click();
+  await rightPanelPageObject.tmtvPanel.exportTmtvCsvReport();
   const download = await downloadPromise;
 
   expect(download.suggestedFilename(), 'Not the correct file name for the TMTV CSV report.').toBe(

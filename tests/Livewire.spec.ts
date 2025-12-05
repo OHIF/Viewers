@@ -10,6 +10,7 @@ test('should display the livewire tool', async ({
   page,
   mainToolbarPageObject,
   viewportPageObject,
+  overlayPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.livewireContour.click();
   await viewportPageObject.active.clickAt([
@@ -20,6 +21,6 @@ test('should display the livewire tool', async ({
     { x: 482, y: 493 },
     { x: 383, y: 461 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.livewire.livewireDisplayedCorrectly);
 });

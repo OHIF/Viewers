@@ -16,7 +16,9 @@ test.beforeEach(async ({ page }) => {
 test.describe('3D four up SEG hydration', async () => {
   test('should properly hydrate SEG from 3D four up layout', async ({
     page,
+    leftPanelPageObject,
     mainToolbarPageObject,
+    overlayPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
@@ -30,7 +32,7 @@ test.describe('3D four up SEG hydration', async () => {
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG
     );
 
-    await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+    await leftPanelPageObject.loadSeriesByDescription('SEG');
 
     await page.waitForTimeout(5000);
     await checkForScreenshot(
@@ -39,7 +41,7 @@ test.describe('3D four up SEG hydration', async () => {
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
     );
 
-    await page.getByTestId('yes-hydrate-btn').click();
+    await overlayPageObject.viewport.segmentationHydration.yes.click();
 
     await page.waitForTimeout(5000);
     await checkForScreenshot(

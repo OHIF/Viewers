@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('should display the cobb angle tool', async ({
   page,
   mainToolbarPageObject,
+  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.cobbAngle.click();
@@ -18,6 +19,6 @@ test('should display the cobb angle tool', async ({
     { x: 527, y: 293 },
     { x: 625, y: 291 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.cobbangle.cobbangleDisplayedCorrectly);
 });

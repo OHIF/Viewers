@@ -9,9 +9,11 @@ test.beforeEach(async ({ page }) => {
 test('should display the arrow tool and allow free-form text to be entered', async ({
   page,
   mainToolbarPageObject,
+  overlayPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
-  await page.getByTestId('trackedMeasurements-btn').click();
+  await rightPanelPageObject.measurementsPanel.menuButton.click();
 
   await mainToolbarPageObject.measurementTools.arrowAnnotate.click();
 
@@ -20,10 +22,9 @@ test('should display the arrow tool and allow free-form text to be entered', asy
     { x: 344, y: 232 },
   ]);
 
-  await page.getByTestId('dialog-input').fill('Ringo Starr was the drummer for The Beatles');
-  await page.getByTestId('input-dialog-save-button').click();
+  await overlayPageObject.dialog.input.fillAndSave('Ringo Starr was the drummer for The Beatles');
 
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
 
   await page.waitForTimeout(2000);
 
@@ -37,8 +38,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await viewportPageObject.active.doubleClickAt({ x: 164, y: 234 });
 
-  await page.getByTestId('dialog-input').fill('Neil Peart was the drummer for Rush');
-  await page.getByTestId('input-dialog-save-button').click();
+  await overlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 
   await page.waitForTimeout(2000);
 
@@ -50,11 +50,9 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   // Now edit the label and the text should not change.
 
-  await page.getByTestId('actionsMenuTrigger').click();
-  await page.getByTestId('Rename').click();
-
-  await page.getByTestId('dialog-input').fill('Drummer annotation arrow');
-  await page.getByTestId('input-dialog-save-button').click();
+  await rightPanelPageObject.measurementsPanel.panel
+    .nthMeasurement(0)
+    .actions.rename('Drummer annotation arrow');
 
   await page.waitForTimeout(2000);
 

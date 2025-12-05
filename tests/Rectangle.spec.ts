@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('should display the rectangle tool', async ({
   page,
   mainToolbarPageObject,
+  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.rectangleROI.click();
@@ -16,6 +17,6 @@ test('should display the rectangle tool', async ({
     { x: 476, y: 159 },
     { x: 591, y: 217 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await overlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.rectangle.rectangleDisplayedCorrectly);
 });

@@ -7,6 +7,15 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
+  get crosshairs() {
+    const button = this.page.getByTestId('Crosshairs');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
   get layoutSelection() {
     const page = this.page;
 
@@ -96,6 +105,15 @@ export class MainToolbarPageObject {
 
     return {
       ...measurementTools,
+      get selectedTool() {
+        const button = page.getByTestId('MeasurementTools-split-button-primary');
+        return {
+          button,
+          async click() {
+            await button.click();
+          },
+        };
+      },
       get arrowAnnotate() {
         const button = page.getByTestId('ArrowAnnotate');
         return {
