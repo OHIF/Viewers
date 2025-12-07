@@ -148,6 +148,7 @@ import {
   ToolSegmentLabel,
   ToolSculptor,
   ToolLabelmapEditWithContour,
+  ToolScaleBar,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -746,6 +747,7 @@ export const Icons = {
   'icon-tool-probe': (props: IconProps) => ToolProbe(props),
   'tool-zoom': (props: IconProps) => ToolZoom(props),
   'tool-layout': (props: IconProps) => ToolLayout(props),
+  'tool-scale-bar': (props: IconProps) => ToolScaleBar(props),
   'icon-transferring': (props: IconProps) => IconTransferring(props),
   'icon-alert-small': (props: IconProps) => Alert(props),
   'icon-alert-outline': (props: IconProps) => AlertOutline(props),

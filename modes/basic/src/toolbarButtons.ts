@@ -660,6 +660,18 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'ScaleBar',
+    uiType: 'ohif.toolButton',
+    props: {
+      type: 'toggle',
+      icon: 'tool-scale-bar',
+      label: i18n.t('Buttons:ScaleBar'),
+      tooltip: i18n.t('Buttons:ScaleBar'),
+      commands: 'toggleEnabledDisabledToolbar',
+      evaluate: 'evaluate.cornerstoneTool.toggle',
+    },
+  },
+  {
     id: 'SegmentLabelTool',
     uiType: 'ohif.toolBoxButton',
     props: {
