@@ -188,8 +188,9 @@ const MenuItemRenderer: React.FC<{
         role="menuitem"
         tabIndex={0}
         className={cn(
-          'focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+          'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
           'hover:bg-accent hover:text-accent-foreground',
+          'focus-visible:bg-accent focus-visible:text-accent-foreground',
           'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
         )}
         onClick={handleClick}
