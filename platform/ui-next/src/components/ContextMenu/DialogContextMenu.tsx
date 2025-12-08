@@ -145,7 +145,7 @@ const MenuItemRenderer: React.FC<{
     // Delay closing to allow moving to submenu
     timeoutRef.current = setTimeout(() => {
       setIsSubMenuOpen(false);
-    }, 100);
+    }, 50);
   }, []);
 
   const handleSubMenuMouseEnter = React.useCallback(() => {
