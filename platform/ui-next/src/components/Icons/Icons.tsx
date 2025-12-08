@@ -690,6 +690,7 @@ export const Icons = {
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
   'icon-patient': (props: IconProps) => Patient(props),
   'chevron-down': (props: IconProps) => ChevronOpen(props),
+  'chevron-right': (props: IconProps) => Icons.ChevronRight(props),
   'tool-length': (props: IconProps) => ToolLength(props),
   'tool-3d-rotate': (props: IconProps) => Tool3DRotate(props),
   'tool-angle': (props: IconProps) => ToolAngle(props),
