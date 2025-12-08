@@ -216,7 +216,7 @@ const MenuItemRenderer: React.FC<{
       {hasSubMenu && isSubMenuOpen && subMenuItems && subMenuItems.length > 0 && (
         <div
           className={cn(
-            'bg-popover text-popover-foreground absolute left-full top-0 z-50 ml-1 min-w-[8rem] rounded-md border border-input p-1 shadow-lg',
+            'bg-popover text-popover-foreground absolute left-full top-0 z-50 ml-1 min-w-40 rounded-md border border-input p-1 shadow-lg',
             'animate-in fade-in-0 zoom-in-95 slide-in-from-left-2'
           )}
           onMouseEnter={handleSubMenuMouseEnter}
@@ -272,7 +272,7 @@ export const DialogContextMenu: React.FC<DialogContextMenuProps> = ({
       data-cy="context-menu"
       role="menu"
       className={cn(
-        'bg-popover text-popover-foreground z-50 min-w-[8rem] rounded-md border border-input p-1 shadow-md',
+        'bg-popover text-popover-foreground z-50 min-w-40 rounded-md border border-input p-1 shadow-md',
         'animate-in fade-in-0 zoom-in-95'
       )}
       onContextMenu={e => e.preventDefault()}
