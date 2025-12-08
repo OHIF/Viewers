@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useFloating, flip, shift, offset } from '@floating-ui/react-dom';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons';
 import type { ContextMenuItem as ContextMenuItemType } from '../../types/ContextMenuItem';
@@ -63,7 +64,13 @@ export interface DialogContextMenuProps {
   /** Callback to close the menu */
   onClose?: () => void;
 
-  /** Callback to show a submenu (used for legacy submenu handling when menus is not provided) */
+  /**
+   * LEGACY: Callback to show a submenu by closing current menu and opening a new one.
+   * This is only used when `menus` prop is NOT provided, falling back to the old
+   * "close and reopen" submenu behavior instead of inline Floating UI submenus.
+   *
+   * TODO: Review with team - can this be removed if all implementations use `menus` prop?
+   */
   onShowSubMenu?: (
     item: DialogContextMenuItem,
     itemRef: DialogContextMenuItem,
@@ -90,11 +97,24 @@ const MenuItemRenderer: React.FC<{
 }> = ({ item, menuProps, menus, selectorProps, event }) => {
   const [isSubMenuOpen, setIsSubMenuOpen] = React.useState(false);
   const [subMenuItems, setSubMenuItems] = React.useState<DialogContextMenuItem[] | null>(null);
-  const itemRef = React.useRef<HTMLDivElement>(null);
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Only intercept submenu handling if menus is provided.
-  // If menus is not available, fall back to legacy onShowSubMenu behavior.
+  // Floating UI for smart submenu positioning
+  const { refs, floatingStyles } = useFloating({
+    placement: 'right-start',
+    middleware: [
+      offset(4), // 4px gap between parent and submenu
+      flip({
+        fallbackPlacements: ['left-start', 'right-end', 'left-end'],
+        padding: 8,
+      }),
+      shift({
+        padding: 8,
+      }),
+    ],
+  });
+
+  // Determine if this item should show a nested submenu
   const hasSubMenu =
     !!menus && item.subMenu && item.actionType === 'ShowSubMenu' && !item.delegating;
 
@@ -178,7 +198,7 @@ const MenuItemRenderer: React.FC<{
 
   return (
     <div
-      ref={itemRef}
+      ref={refs.setReference}
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -212,12 +232,14 @@ const MenuItemRenderer: React.FC<{
         </span>
       </div>
 
-      {/* Submenu - rendered when menus is available and item has submenu */}
+      {/* Submenu - positioned by Floating UI for viewport-aware placement */}
       {hasSubMenu && isSubMenuOpen && subMenuItems && subMenuItems.length > 0 && (
         <div
+          ref={refs.setFloating}
+          style={floatingStyles}
           className={cn(
-            'bg-popover text-popover-foreground absolute left-full top-0 z-50 ml-1 min-w-40 rounded-md border border-input p-1 shadow-lg',
-            'animate-in fade-in-0 zoom-in-95 slide-in-from-left-2'
+            'bg-popover text-popover-foreground z-50 min-w-40 rounded-md border border-input p-1 shadow-lg',
+            'animate-in fade-in-0 zoom-in-95'
           )}
           onMouseEnter={handleSubMenuMouseEnter}
           onMouseLeave={handleSubMenuMouseLeave}
@@ -241,17 +263,17 @@ const MenuItemRenderer: React.FC<{
 /**
  * DialogContextMenu - A context menu component designed to work with UIDialogService.
  *
- * This component serves as an adapter between the legacy items-array API used by
+ * This component serves as an adapter between the items-array API used by
  * ContextMenuController and the ui-next styling system. It renders menu items
  * with styling consistent with Radix UI context menus while supporting the
  * imperative show/hide pattern used by UIDialogService.
  *
  * Features:
  * - Matches ui-next ContextMenuContent/ContextMenuItem styling
- * - Supports nested submenus via hover (when menus prop is provided)
- * - Falls back to legacy onShowSubMenu behavior when menus is not provided
+ * - Supports nested submenus via hover with Floating UI for smart positioning
+ * - Automatically flips submenu placement when near viewport edges
  * - Maintains data-cy attributes for Cypress testing
- * - Calls item.action(item, props) on click (same contract as legacy)
+ * - Calls item.action(item, props) on click
  * - Supports iconRight for submenu indicators
  */
 export const DialogContextMenu: React.FC<DialogContextMenuProps> = ({

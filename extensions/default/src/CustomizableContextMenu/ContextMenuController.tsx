@@ -103,10 +103,16 @@ export default class ContextMenuController {
         },
 
         /**
-         * Displays a sub-menu, removing this menu
-         * @param {*} item
-         * @param {*} itemRef
-         * @param {*} subProps
+         * LEGACY: Displays a sub-menu by closing current menu and opening a new one.
+         * This is only called when DialogContextMenu's `menus` prop is NOT used,
+         * falling back to the old "close and reopen" behavior.
+         *
+         * With the current implementation, `menus` is always passed (see line 96),
+         * so DialogContextMenu handles submenus inline using Floating UI instead.
+         * This callback exists for backward compatibility with custom implementations
+         * that may not pass the `menus` prop.
+         *
+         * TODO: Review with team - can this be removed if all implementations use `menus` prop?
          */
         onShowSubMenu: (item, itemRef, subProps) => {
           if (!itemRef.subMenu) {
