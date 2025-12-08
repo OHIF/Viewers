@@ -188,7 +188,7 @@ const MenuItemRenderer: React.FC<{
         role="menuitem"
         tabIndex={0}
         className={cn(
-          'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+          'relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-base outline-none',
           'hover:bg-accent hover:text-accent-foreground',
           'focus-visible:bg-accent focus-visible:text-accent-foreground',
           'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
@@ -202,12 +202,14 @@ const MenuItemRenderer: React.FC<{
         }}
       >
         <span className="flex-1">{item.label}</span>
-        {item.iconRight && (
-          <Icons.ByName
-            name={item.iconRight}
-            className="text-muted-foreground ml-2 h-3 w-3"
-          />
-        )}
+        <span className="ml-1 flex h-3 w-3 shrink-0 items-center justify-center">
+          {item.iconRight && (
+            <Icons.ByName
+              name={item.iconRight}
+              className="text-muted-foreground h-3 w-3"
+            />
+          )}
+        </span>
       </div>
 
       {/* Submenu - rendered when menus is available and item has submenu */}
