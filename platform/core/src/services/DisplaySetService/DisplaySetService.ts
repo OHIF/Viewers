@@ -464,12 +464,17 @@ export default class DisplaySetService extends PubSubService {
   /**
    *
    * @param sortFn function to sort the display sets
-   * @param direction direction to sort the display sets
+   * @param direction direction to sort the display sets.  Ascending means
+   *    increasing in value, which will typically put the lowest series numbers
+   *    first, with low priority display sets last with newest first.
+   *    The meaning of this flag may change to leave the image/non-image display
+   *    set sorting alone and only affect sorting within groups, or have additional
+   *    values for specific changes to the sort.
    * @returns void
    */
   public sortDisplaySets(
     sortFn: (a: DisplaySet, b: DisplaySet) => number,
-    direction: string,
+    direction: 'ascending' | 'descending' = 'ascending',
     suppressEvent = false
   ): void {
     this.activeDisplaySets.sort(sortFn);

@@ -34,12 +34,14 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | ---------- | --------------------------------------- |
 | `hide()`   | Hides the specified notification        |
 | `show()`   | Creates and displays a new notification |
+| `customComponent()`   | Overrides the default Notification component |
 
 ## Implementations
 
 | Implementation                           | Consumer                                  |
 | ---------------------------------------- | ----------------------------------------- |
 | [Snackbar Provider][snackbar-provider]\* | [SnackbarContainer][snackbar-container]\* |
+| customComponent | user extensions via `setServiceImplementation({customComponent: Snackbar})` |
 
 `*` - Denotes maintained by OHIF
 
