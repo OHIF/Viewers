@@ -403,6 +403,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (viewportData.viewportType === csEnums.ViewportType.STACK) {
       // check if imageIds is valid
       if (!viewportData.data[0].imageIds?.length) {
+        viewportGridService?.notifyViewportUpdateCompleted?.(viewportId);
         return;
       }
     }
