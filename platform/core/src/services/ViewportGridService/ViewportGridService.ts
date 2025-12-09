@@ -5,6 +5,18 @@ type PresentationIdProvider = (
   { viewport, viewports, isUpdatingSameViewport }
 ) => unknown;
 
+type PendingGridStateChangePayload = {
+  state: AppTypes.ViewportGrid.State;
+  viewports?: AppTypes.ViewportGrid.Viewport[];
+  removedViewportIds: string[];
+};
+
+type PendingGridStateChange = {
+  token: number;
+  payload: PendingGridStateChangePayload;
+  pendingViewportIds: Set<string>;
+};
+
 class ViewportGridService extends PubSubService {
   public static readonly EVENTS = {
     ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
@@ -26,12 +38,24 @@ class ViewportGridService extends PubSubService {
   serviceImplementation = {};
   servicesManager: AppTypes.ServicesManager;
   presentationIdProviders: Map<string, PresentationIdProvider>;
+  pendingGridStateChanges: PendingGridStateChange[];
+  nextGridStateChangeToken: number;
 
   constructor({ servicesManager }) {
     super(ViewportGridService.EVENTS);
     this.servicesManager = servicesManager;
     this.serviceImplementation = {};
     this.presentationIdProviders = new Map();
+    /**
+     * Pending grid state changes waiting for associated viewports
+     * to signal that their data updates completed.
+     */
+    this.pendingGridStateChanges = [];
+    /**
+     * Monotonic token assigned to each queued grid state change to
+     * preserve ordering until every dependent viewport finishes updating.
+     */
+    this.nextGridStateChangeToken = 0;
   }
 
   public addPresentationIdProvider(id: string, provider: PresentationIdProvider): void {
@@ -219,11 +243,14 @@ class ViewportGridService extends PubSubService {
       }
     }
 
-    this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
-      state,
-      viewports: updatedViewports,
-      removedViewportIds,
-    });
+    this._queueGridStateChanged(
+      {
+        state,
+        viewports: updatedViewports,
+        removedViewportIds,
+      },
+      updatedViewports.map(viewport => viewport.viewportId)
+    );
   }
 
   /**
@@ -279,14 +306,18 @@ class ViewportGridService extends PubSubService {
       numRows,
     });
 
-    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
-      state,
-      removedViewportIds,
-    });
+    this._queueGridStateChanged(
+      {
+        state,
+        removedViewportIds,
+      },
+      Array.from(state.viewports.keys())
+    );
   }
 
   public reset() {
     this.serviceImplementation._reset();
+    this.pendingGridStateChanges = [];
   }
 
   /**
@@ -297,6 +328,7 @@ class ViewportGridService extends PubSubService {
    */
   public onModeExit(): void {
     this.serviceImplementation._onModeExit();
+    this.pendingGridStateChanges = [];
   }
 
   public set(newState) {
@@ -309,14 +341,73 @@ class ViewportGridService extends PubSubService {
 
     const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
 
-    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
-      state,
-      removedViewportIds,
-    });
+    this._queueGridStateChanged(
+      {
+        state,
+        removedViewportIds,
+      },
+      Array.from(state.viewports.keys())
+    );
   }
 
   public getNumViewportPanes() {
     return this.serviceImplementation._getNumViewportPanes();
+  }
+
+  /**
+   * Signals that a viewport has finished applying its pending data update so that queued
+   * grid state changes can be published when all dependencies are resolved.
+   */
+  public notifyViewportUpdateCompleted(viewportId: string) {
+    if (!viewportId || !this.pendingGridStateChanges.length) {
+      return;
+    }
+
+    for (let i = 0; i < this.pendingGridStateChanges.length; i++) {
+      const pendingChange = this.pendingGridStateChanges[i];
+      if (pendingChange.pendingViewportIds.delete(viewportId)) {
+        break;
+      }
+    }
+
+    this._flushPendingGridStateChanges();
+  }
+
+  private _queueGridStateChanged(
+    payload: PendingGridStateChangePayload,
+    pendingViewportIds: string[] = []
+  ) {
+    const uniquePendingIds = Array.from(new Set(pendingViewportIds?.filter(Boolean)));
+
+    if (!uniquePendingIds.length) {
+      this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, payload);
+      return;
+    }
+
+    const pendingChange: PendingGridStateChange = {
+      token: this._getNextGridStateChangeToken(),
+      payload,
+      pendingViewportIds: new Set(uniquePendingIds),
+    };
+
+    this.pendingGridStateChanges.push(pendingChange);
+  }
+
+  private _flushPendingGridStateChanges() {
+    while (this.pendingGridStateChanges.length) {
+      const nextChange = this.pendingGridStateChanges[0];
+      if (nextChange.pendingViewportIds.size) {
+        break;
+      }
+
+      this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, nextChange.payload);
+      this.pendingGridStateChanges.shift();
+    }
+  }
+
+  private _getNextGridStateChangeToken() {
+    this.nextGridStateChangeToken += 1;
+    return this.nextGridStateChangeToken;
   }
 
   public getLayoutOptionsFromState(
