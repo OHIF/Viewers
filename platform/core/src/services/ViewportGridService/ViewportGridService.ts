@@ -12,7 +12,6 @@ type PendingGridStateChangePayload = {
 };
 
 type PendingGridStateChange = {
-  token: number;
   payload: PendingGridStateChangePayload;
   pendingViewportIds: Set<string>;
 };
@@ -39,7 +38,6 @@ class ViewportGridService extends PubSubService {
   servicesManager: AppTypes.ServicesManager;
   presentationIdProviders: Map<string, PresentationIdProvider>;
   pendingGridStateChanges: PendingGridStateChange[];
-  nextGridStateChangeToken: number;
 
   constructor({ servicesManager }) {
     super(ViewportGridService.EVENTS);
@@ -51,11 +49,6 @@ class ViewportGridService extends PubSubService {
      * to signal that their data updates completed.
      */
     this.pendingGridStateChanges = [];
-    /**
-     * Monotonic token assigned to each queued grid state change to
-     * preserve ordering until every dependent viewport finishes updating.
-     */
-    this.nextGridStateChangeToken = 0;
   }
 
   public addPresentationIdProvider(id: string, provider: PresentationIdProvider): void {
@@ -207,14 +200,14 @@ class ViewportGridService extends PubSubService {
     });
   }
 
-  public setDisplaySetsForViewport(props, options = { preCallback: () => {} }) {
+  public setDisplaySetsForViewport(props, options: { preCallback?: () => void } = {}) {
     // Just update a single viewport, but use the multi-viewport update for it.
     this.setDisplaySetsForViewports([props], { preCallback: options.preCallback });
   }
 
   public async setDisplaySetsForViewports(
     viewportsToUpdate,
-    { preCallback } = { preCallback: () => {} }
+    { preCallback }: { preCallback?: () => void } = {}
   ) {
     if (preCallback) {
       preCallback();
@@ -385,7 +378,6 @@ class ViewportGridService extends PubSubService {
     }
 
     const pendingChange: PendingGridStateChange = {
-      token: this._getNextGridStateChangeToken(),
       payload,
       pendingViewportIds: new Set(uniquePendingIds),
     };
@@ -403,11 +395,6 @@ class ViewportGridService extends PubSubService {
       this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, nextChange.payload);
       this.pendingGridStateChanges.shift();
     }
-  }
-
-  private _getNextGridStateChangeToken() {
-    this.nextGridStateChangeToken += 1;
-    return this.nextGridStateChangeToken;
   }
 
   public getLayoutOptionsFromState(

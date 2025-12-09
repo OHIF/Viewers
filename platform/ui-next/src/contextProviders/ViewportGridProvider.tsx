@@ -144,235 +144,232 @@ interface ViewportGridProviderProps {
 }
 
 export function ViewportGridProvider({ children, service }: ViewportGridProviderProps) {
-  const viewportGridReducer = useCallback(
-    (state: AppTypes.ViewportGrid.State, action) => {
-      switch (action.type) {
-        case 'SET_ACTIVE_VIEWPORT_ID': {
-          return { ...state, ...{ activeViewportId: action.payload } };
-        }
+  const viewportGridReducer = useCallback((state: AppTypes.ViewportGrid.State, action) => {
+    switch (action.type) {
+      case 'SET_ACTIVE_VIEWPORT_ID': {
+        return { ...state, ...{ activeViewportId: action.payload } };
+      }
 
-        /**
-         * Sets the display sets for multiple viewports.
-         * This is a replacement for the older set display set for viewport (single)
-         * because the old one had race conditions wherein the viewports could
-         * render partially in various ways causing exceptions.
-         */
-        case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
-          const { payload } = action;
-          const viewports = new Map(state.viewports);
+      /**
+       * Sets the display sets for multiple viewports.
+       * This is a replacement for the older set display set for viewport (single)
+       * because the old one had race conditions wherein the viewports could
+       * render partially in various ways causing exceptions.
+       */
+      case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
+        const { payload } = action;
+        const viewports = new Map(state.viewports);
 
-          payload.forEach(updatedViewport => {
-            const { viewportId, displaySetInstanceUIDs } = updatedViewport;
+        payload.forEach(updatedViewport => {
+          const { viewportId, displaySetInstanceUIDs } = updatedViewport;
 
-            if (!viewportId) {
-              throw new Error('ViewportId is required to set display sets for viewport');
+          if (!viewportId) {
+            throw new Error('ViewportId is required to set display sets for viewport');
+          }
+
+          const previousViewport = viewports.get(viewportId);
+
+          // remove options that were meant for one time usage
+          if (previousViewport?.viewportOptions?.initialImageOptions) {
+            const { useOnce } = previousViewport.viewportOptions.initialImageOptions;
+            if (useOnce) {
+              previousViewport.viewportOptions.initialImageOptions = null;
             }
+          }
 
-            const previousViewport = viewports.get(viewportId);
+          // Use the newly provide viewportOptions and display set options
+          // when provided, and otherwise fall back to the previous ones.
+          // That allows for easy updates of just the display set.
+          let viewportOptions = merge(
+            {},
+            previousViewport?.viewportOptions,
+            updatedViewport?.viewportOptions
+          );
 
-            // remove options that were meant for one time usage
-            if (previousViewport?.viewportOptions?.initialImageOptions) {
-              const { useOnce } = previousViewport.viewportOptions.initialImageOptions;
-              if (useOnce) {
-                previousViewport.viewportOptions.initialImageOptions = null;
-              }
+          const displaySetOptions = updatedViewport?.displaySetOptions || [];
+          if (!displaySetOptions.length) {
+            // Copy all the display set options, assuming a full set of displaySet UID's is provided.
+            if (state.isHangingProtocolLayout) {
+              displaySetOptions.push(...(previousViewport.displaySetOptions || []));
             }
-
-            // Use the newly provide viewportOptions and display set options
-            // when provided, and otherwise fall back to the previous ones.
-            // That allows for easy updates of just the display set.
-            let viewportOptions = merge(
-              {},
-              previousViewport?.viewportOptions,
-              updatedViewport?.viewportOptions
-            );
-
-            const displaySetOptions = updatedViewport?.displaySetOptions || [];
             if (!displaySetOptions.length) {
-              // Copy all the display set options, assuming a full set of displaySet UID's is provided.
-              if (state.isHangingProtocolLayout) {
-                displaySetOptions.push(...(previousViewport.displaySetOptions || []));
-              }
-              if (!displaySetOptions.length) {
-                displaySetOptions.push({});
-              }
+              displaySetOptions.push({});
             }
+          }
 
-            // if it is not part of the hanging protocol layout, we should remove the toolGroupId
-            // and viewportType from the viewportOptions so that it doesn't
-            // inherit the hanging protocol layout options, only when
-            // the viewport options is not provided (e.g., when drag and drop)
-            // otherwise, programmatically set options should be preserved
-            if (!updatedViewport.viewportOptions && !state.isHangingProtocolLayout) {
-              viewportOptions = {
-                viewportId: viewportOptions.viewportId,
-              };
-            }
-
-            const newViewport = {
-              ...previousViewport,
-              displaySetInstanceUIDs,
-              viewportOptions,
-              displaySetOptions,
-              // viewportLabel: getViewportLabel(viewports, viewportId),
+          // if it is not part of the hanging protocol layout, we should remove the toolGroupId
+          // and viewportType from the viewportOptions so that it doesn't
+          // inherit the hanging protocol layout options, only when
+          // the viewport options is not provided (e.g., when drag and drop)
+          // otherwise, programmatically set options should be preserved
+          if (!updatedViewport.viewportOptions && !state.isHangingProtocolLayout) {
+            viewportOptions = {
+              viewportId: viewportOptions.viewportId,
             };
-
-            viewportOptions.presentationIds = service.getPresentationIds({
-              viewport: newViewport,
-              viewports,
-            });
-
-            viewports.set(viewportId, {
-              ...viewports.get(viewportId),
-              ...newViewport,
-            });
-          });
-
-          return { ...state, viewports };
-        }
-        case 'SET_LAYOUT': {
-          const {
-            numCols,
-            numRows,
-            layoutOptions,
-            layoutType = 'grid',
-            activeViewportId,
-            findOrCreateViewport,
-            isHangingProtocolLayout,
-          } = action.payload;
-
-          // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
-          const hasOptions = layoutOptions?.length;
-          const viewports = new Map<string, AppTypes.ViewportGrid.Viewport>();
-          // Options is a temporary state store which can be used by the
-          // findOrCreate to store state about already found viewports.  Typically,
-          // it will be used to store the display set UID's which are already
-          // in view so that the find or create can decide which display sets
-          // haven't been viewed yet, and add them in the appropriate order.
-          const options = {};
-
-          let activeViewportIdToSet = activeViewportId;
-          for (let row = 0; row < numRows; row++) {
-            for (let col = 0; col < numCols; col++) {
-              const position = col + row * numCols;
-              const layoutOption = layoutOptions[position];
-
-              let xPos, yPos, w, h;
-              if (layoutOptions && layoutOptions[position]) {
-                ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
-              } else {
-                w = 1 / numCols;
-                h = 1 / numRows;
-                xPos = col * w;
-                yPos = row * h;
-              }
-
-              const colIndex = Math.round(xPos * numCols);
-              const rowIndex = Math.round(yPos * numRows);
-
-              const positionId = layoutOption?.positionId || `${colIndex}-${rowIndex}`;
-
-              if (hasOptions && position >= layoutOptions.length) {
-                continue;
-              }
-
-              const viewport = findOrCreateViewport(position, positionId, options);
-
-              if (!viewport) {
-                continue;
-              }
-
-              viewport.positionId = positionId;
-
-              // If the viewport doesn't have a viewportId, we create one
-              if (!viewport.viewportOptions?.viewportId) {
-                const randomUID = utils.uuidv4().substring(0, 8);
-                viewport.viewportOptions = viewport.viewportOptions || {};
-                viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
-              }
-
-              viewport.viewportId = viewport.viewportOptions.viewportId;
-
-              // Create a new viewport object as it is getting updated here
-              // and it is part of the read only state
-              viewports.set(viewport.viewportId, viewport);
-
-              Object.assign(viewport, {
-                width: w,
-                height: h,
-                x: xPos,
-                y: yPos,
-              });
-
-              viewport.isReady = false;
-
-              if (!viewport.viewportOptions.presentationIds) {
-                const presentationIds = service.getPresentationIds({
-                  viewport,
-                  viewports,
-                });
-                viewport.viewportOptions.presentationIds = presentationIds;
-              }
-            }
           }
 
-          activeViewportIdToSet =
-            activeViewportIdToSet ?? determineActiveViewportId(state, viewports);
+          const newViewport = {
+            ...previousViewport,
+            displaySetInstanceUIDs,
+            viewportOptions,
+            displaySetOptions,
+            // viewportLabel: getViewportLabel(viewports, viewportId),
+          };
 
-          const ret = {
-            ...state,
-            activeViewportId: activeViewportIdToSet,
-            layout: {
-              ...state.layout,
-              numCols,
-              numRows,
-              layoutType,
-            },
+          viewportOptions.presentationIds = service.getPresentationIds({
+            viewport: newViewport,
             viewports,
-            isHangingProtocolLayout,
-          };
-          return ret;
-        }
-        case 'RESET': {
-          return DEFAULT_STATE;
-        }
-
-        case 'SET': {
-          return {
-            ...state,
-            ...action.payload,
-          };
-        }
-
-        case 'VIEWPORT_IS_READY': {
-          const { viewportId, isReady } = action.payload;
-          const viewports = new Map(state.viewports);
-          const viewport = viewports.get(viewportId);
-          if (!viewport) {
-            return;
-          }
+          });
 
           viewports.set(viewportId, {
-            ...viewport,
-            isReady,
+            ...viewports.get(viewportId),
+            ...newViewport,
           });
+        });
 
-          return {
-            ...state,
-            viewports,
-          };
-        }
-
-        case APPLY_VIEWPORT_GRID_STATE: {
-          return action.payload;
-        }
-
-        default:
-          return action.payload;
+        return { ...state, viewports };
       }
-    },
-    [service]
-  );
+      case 'SET_LAYOUT': {
+        const {
+          numCols,
+          numRows,
+          layoutOptions,
+          layoutType = 'grid',
+          activeViewportId,
+          findOrCreateViewport,
+          isHangingProtocolLayout,
+        } = action.payload;
+
+        // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
+        const hasOptions = layoutOptions?.length;
+        const viewports = new Map<string, AppTypes.ViewportGrid.Viewport>();
+        // Options is a temporary state store which can be used by the
+        // findOrCreate to store state about already found viewports.  Typically,
+        // it will be used to store the display set UID's which are already
+        // in view so that the find or create can decide which display sets
+        // haven't been viewed yet, and add them in the appropriate order.
+        const options = {};
+
+        let activeViewportIdToSet = activeViewportId;
+        for (let row = 0; row < numRows; row++) {
+          for (let col = 0; col < numCols; col++) {
+            const position = col + row * numCols;
+            const layoutOption = layoutOptions[position];
+
+            let xPos, yPos, w, h;
+            if (layoutOptions && layoutOptions[position]) {
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
+            } else {
+              w = 1 / numCols;
+              h = 1 / numRows;
+              xPos = col * w;
+              yPos = row * h;
+            }
+
+            const colIndex = Math.round(xPos * numCols);
+            const rowIndex = Math.round(yPos * numRows);
+
+            const positionId = layoutOption?.positionId || `${colIndex}-${rowIndex}`;
+
+            if (hasOptions && position >= layoutOptions.length) {
+              continue;
+            }
+
+            const viewport = findOrCreateViewport(position, positionId, options);
+
+            if (!viewport) {
+              continue;
+            }
+
+            viewport.positionId = positionId;
+
+            // If the viewport doesn't have a viewportId, we create one
+            if (!viewport.viewportOptions?.viewportId) {
+              const randomUID = utils.uuidv4().substring(0, 8);
+              viewport.viewportOptions = viewport.viewportOptions || {};
+              viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
+            }
+
+            viewport.viewportId = viewport.viewportOptions.viewportId;
+
+            // Create a new viewport object as it is getting updated here
+            // and it is part of the read only state
+            viewports.set(viewport.viewportId, viewport);
+
+            Object.assign(viewport, {
+              width: w,
+              height: h,
+              x: xPos,
+              y: yPos,
+            });
+
+            viewport.isReady = false;
+
+            if (!viewport.viewportOptions.presentationIds) {
+              const presentationIds = service.getPresentationIds({
+                viewport,
+                viewports,
+              });
+              viewport.viewportOptions.presentationIds = presentationIds;
+            }
+          }
+        }
+
+        activeViewportIdToSet =
+          activeViewportIdToSet ?? determineActiveViewportId(state, viewports);
+
+        const ret = {
+          ...state,
+          activeViewportId: activeViewportIdToSet,
+          layout: {
+            ...state.layout,
+            numCols,
+            numRows,
+            layoutType,
+          },
+          viewports,
+          isHangingProtocolLayout,
+        };
+        return ret;
+      }
+      case 'RESET': {
+        return DEFAULT_STATE;
+      }
+
+      case 'SET': {
+        return {
+          ...state,
+          ...action.payload,
+        };
+      }
+
+      case 'VIEWPORT_IS_READY': {
+        const { viewportId, isReady } = action.payload;
+        const viewports = new Map(state.viewports);
+        const viewport = viewports.get(viewportId);
+        if (!viewport) {
+          return state;
+        }
+
+        viewports.set(viewportId, {
+          ...viewport,
+          isReady,
+        });
+
+        return {
+          ...state,
+          viewports,
+        };
+      }
+
+      case APPLY_VIEWPORT_GRID_STATE: {
+        return action.payload;
+      }
+
+      default:
+        return state;
+    }
+  }, []);
 
   const [viewportGridState, dispatch] = useReducer(viewportGridReducer, DEFAULT_STATE);
   const viewportGridStateRef = useRef(viewportGridState);
