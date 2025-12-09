@@ -182,12 +182,19 @@ class ViewportGridService extends PubSubService {
     });
   }
 
-  public setDisplaySetsForViewport(props) {
+  public setDisplaySetsForViewport(props, options = { preCallback: () => {} }) {
     // Just update a single viewport, but use the multi-viewport update for it.
-    this.setDisplaySetsForViewports([props]);
+    this.setDisplaySetsForViewports([props], { preCallback: options.preCallback });
   }
 
-  public async setDisplaySetsForViewports(viewportsToUpdate) {
+  public async setDisplaySetsForViewports(
+    viewportsToUpdate,
+    { preCallback } = { preCallback: () => {} }
+  ) {
+    if (preCallback) {
+      preCallback();
+    }
+
     await this.serviceImplementation._setDisplaySetsForViewports(viewportsToUpdate);
     const state = this.getState();
     const updatedViewports = [];
