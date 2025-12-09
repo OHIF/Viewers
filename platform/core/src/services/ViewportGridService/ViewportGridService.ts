@@ -356,14 +356,16 @@ class ViewportGridService extends PubSubService {
       return;
     }
 
+    let didUpdatePendingChange = false;
     for (let i = 0; i < this.pendingGridStateChanges.length; i++) {
       const pendingChange = this.pendingGridStateChanges[i];
-      if (pendingChange.pendingViewportIds.delete(viewportId)) {
-        break;
-      }
+      didUpdatePendingChange =
+        pendingChange.pendingViewportIds.delete(viewportId) || didUpdatePendingChange;
     }
 
-    this._flushPendingGridStateChanges();
+    if (didUpdatePendingChange) {
+      this._flushPendingGridStateChanges();
+    }
   }
 
   private _queueGridStateChanged(
