@@ -148,7 +148,7 @@ class ViewportGridService extends PubSubService {
     if (id === this.getActiveViewportId()) {
       return;
     }
-    this.serviceImplementation._setActiveViewport(id);
+    const state = this.serviceImplementation._setActiveViewport(id);
 
     // Use queueMicrotask to delay the event broadcast
     setTimeout(() => {
@@ -156,6 +156,8 @@ class ViewportGridService extends PubSubService {
         viewportId: id,
       });
     }, 0);
+
+    return state;
   }
 
   public getState(): AppTypes.ViewportGrid.State {
@@ -195,8 +197,7 @@ class ViewportGridService extends PubSubService {
       preCallback();
     }
 
-    await this.serviceImplementation._setDisplaySetsForViewports(viewportsToUpdate);
-    const state = this.getState();
+    const state = await this.serviceImplementation._setDisplaySetsForViewports(viewportsToUpdate);
     const updatedViewports = [];
 
     const removedViewportIds = [];
@@ -260,7 +261,7 @@ class ViewportGridService extends PubSubService {
     const prevState = this.getState();
     const prevViewportIds = new Set(prevState.viewports.keys());
 
-    await this.serviceImplementation._setLayout({
+    const state = await this.serviceImplementation._setLayout({
       numCols,
       numRows,
       layoutOptions,
@@ -270,15 +271,13 @@ class ViewportGridService extends PubSubService {
       isHangingProtocolLayout,
     });
 
+    const currentViewportIds = new Set(state.viewports.keys());
+
+    // Determine which viewport IDs have been removed
+    const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
+
     // Use queueMicrotask to ensure the layout changed event is published after
     setTimeout(() => {
-      // Get the new state after the layout change
-      const state = this.getState();
-      const currentViewportIds = new Set(state.viewports.keys());
-
-      // Determine which viewport IDs have been removed
-      const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
-
       this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
         numCols,
         numRows,
@@ -309,9 +308,8 @@ class ViewportGridService extends PubSubService {
     const prevState = this.getState();
     const prevViewportIds = new Set(prevState.viewports.keys());
 
-    this.serviceImplementation._set(newState);
+    const state = this.serviceImplementation._set(newState);
 
-    const state = this.getState();
     const currentViewportIds = new Set(state.viewports.keys());
 
     const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
