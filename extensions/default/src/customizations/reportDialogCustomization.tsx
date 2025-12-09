@@ -71,7 +71,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
   const showDataSourceSelect = dataSources?.length > 1;
 
   return (
-    <div className="text-foreground flex min-w-[400px] max-w-md flex-col">
+    <div className="text-foreground flex min-w-[400px] flex-col">
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           {showDataSourceSelect && (

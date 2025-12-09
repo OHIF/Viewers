@@ -36,7 +36,15 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
 
   useEffect(() => {
     const load = async () => {
-      setUrl(await renderedUrl);
+      // Handle both direct URLs and Promises that resolve to URLs
+      if (typeof renderedUrl === 'string') {
+        setUrl(renderedUrl);
+      } else if (renderedUrl && typeof renderedUrl.then === 'function') {
+        const resolvedUrl = await renderedUrl;
+        setUrl(resolvedUrl);
+      } else {
+        console.error('Invalid renderedUrl format:', renderedUrl);
+      }
     };
 
     load();
@@ -48,7 +56,9 @@ function OHIFCornerstonePdfViewport({ displaySets, viewportId = 'pdf-viewport' }
       onClick={makePdfScrollable}
       ref={el => {
         viewportElementRef.current = el;
-        if (el) viewportRef.register(el);
+        if (el) {
+          viewportRef.register(el);
+        }
       }}
       data-viewport-id={viewportId}
     >

@@ -209,7 +209,7 @@ function PanelStudyBrowser({
       return;
     }
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     let pollCount = 0;
     const maxPolls = 60; // Poll for up to 60 seconds (60 * 1 second)
@@ -273,13 +273,8 @@ function PanelStudyBrowser({
         type: 'info',
       });
 
-      // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl =
-        process.env.REACT_APP_BACKEND_URL ||
-        'https://backend-ohif-1084552301744.us-central1.run.app';
-      console.log('Backend URL:', backendUrl);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-      // Wrap fetch operation with retry logic
       const response = await retryWithDelay(
         async () => {
           const res = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
@@ -288,9 +283,9 @@ function PanelStudyBrowser({
           }
           return res;
         },
-        3, // maxRetries
-        3000, // 3 seconds delay
-        true // suppressWarnings
+        3,
+        3000,
+        true
       );
 
       setSegmentationStage('Downloading segmentation archive...');
@@ -600,7 +595,7 @@ function PanelStudyBrowser({
         return;
       }
 
-      const { uiNotificationService } = servicesManager.services;
+      const { uiNotificationService, uiModalService } = servicesManager.services;
 
       setIsGeneratingReport(true);
 
@@ -611,7 +606,7 @@ function PanelStudyBrowser({
       });
 
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
         const response = await retryWithDelay(
           async () => {
@@ -631,21 +626,70 @@ function PanelStudyBrowser({
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
 
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        setTimeout(() => {
-          URL.revokeObjectURL(blobUrl);
-        }, 1000);
+        // Open PDF in a modal dialog
+        uiModalService.show({
+          title: 'MRI Report',
+          content: () => {
+            return React.createElement(
+              'div',
+              {
+                style: {
+                  width: '100%',
+                  height: '85vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  margin: '0',
+                  padding: '0',
+                },
+              },
+              [
+                React.createElement(
+                  'object',
+                  {
+                    key: 'pdf-viewer',
+                    data: blobUrl,
+                    type: 'application/pdf',
+                    style: { width: '100%', height: '100%', border: 'none' },
+                  },
+                  React.createElement(
+                    'div',
+                    {
+                      key: 'fallback',
+                      style: { padding: '20px', textAlign: 'center' },
+                    },
+                    [
+                      React.createElement('p', { key: 'msg' }, 'Unable to display PDF. '),
+                      React.createElement(
+                        'a',
+                        {
+                          key: 'link',
+                          href: blobUrl,
+                          target: '_blank',
+                          rel: 'noopener noreferrer',
+                          style: { color: '#5acce6', textDecoration: 'underline' },
+                        },
+                        'Click here to download the PDF.'
+                      ),
+                    ]
+                  )
+                ),
+              ]
+            );
+          },
+          contentProps: {
+            className: 'pdf-modal-content',
+            style: { maxWidth: '90vw', width: '90vw', margin: '0 auto' },
+          },
+          customClassName: 'pdf-report-modal-full-width',
+          onClose: () => {
+            // Clean up the blob URL when modal is closed
+            URL.revokeObjectURL(blobUrl);
+          },
+        });
 
         uiNotificationService.show({
           title: 'Report',
-          message: 'Report opened in new tab',
+          message: 'Report opened',
           type: 'success',
         });
       } catch (error) {
