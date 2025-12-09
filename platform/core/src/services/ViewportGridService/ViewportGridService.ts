@@ -151,11 +151,9 @@ class ViewportGridService extends PubSubService {
     const state = this.serviceImplementation._setActiveViewport(id);
 
     // Use queueMicrotask to delay the event broadcast
-    setTimeout(() => {
-      this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
-        viewportId: id,
-      });
-    }, 0);
+    this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
+      viewportId: id,
+    });
 
     return state;
   }
@@ -220,12 +218,10 @@ class ViewportGridService extends PubSubService {
       }
     }
 
-    setTimeout(() => {
-      this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
-        state,
-        viewports: updatedViewports,
-        removedViewportIds,
-      });
+    this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
+      state,
+      viewports: updatedViewports,
+      removedViewportIds,
     });
   }
 
@@ -277,17 +273,15 @@ class ViewportGridService extends PubSubService {
     const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
 
     // Use queueMicrotask to ensure the layout changed event is published after
-    setTimeout(() => {
-      this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
-        numCols,
-        numRows,
-      });
+    this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
+      numCols,
+      numRows,
+    });
 
-      this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
-        state,
-        removedViewportIds,
-      });
-    }, 0);
+    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+      state,
+      removedViewportIds,
+    });
   }
 
   public reset() {
@@ -314,12 +308,10 @@ class ViewportGridService extends PubSubService {
 
     const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
 
-    setTimeout(() => {
-      this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
-        state,
-        removedViewportIds,
-      });
-    }, 0);
+    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+      state,
+      removedViewportIds,
+    });
   }
 
   public getNumViewportPanes() {
