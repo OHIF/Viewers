@@ -304,7 +304,7 @@ class ViewportGridService extends PubSubService {
         state,
         removedViewportIds,
       },
-      Array.from(state.viewports.keys())
+      this._getViewportIdsWithDisplaySets(state)
     );
   }
 
@@ -339,7 +339,7 @@ class ViewportGridService extends PubSubService {
         state,
         removedViewportIds,
       },
-      Array.from(state.viewports.keys())
+      this._getViewportIdsWithDisplaySets(state)
     );
   }
 
@@ -366,6 +366,22 @@ class ViewportGridService extends PubSubService {
     if (didUpdatePendingChange) {
       this._flushPendingGridStateChanges();
     }
+  }
+
+  private _getViewportIdsWithDisplaySets(state: AppTypes.ViewportGrid.State): string[] {
+    if (!state?.viewports?.size) {
+      return [];
+    }
+
+    const viewportIds: string[] = [];
+
+    state.viewports.forEach(viewport => {
+      if (viewport?.displaySetInstanceUIDs?.length && viewport.viewportId) {
+        viewportIds.push(viewport.viewportId);
+      }
+    });
+
+    return viewportIds;
   }
 
   private _queueGridStateChanged(
