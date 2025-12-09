@@ -153,6 +153,7 @@ class ViewportGridService extends PubSubService {
     // Use queueMicrotask to delay the event broadcast
     this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
       viewportId: id,
+      state,
     });
 
     return state;
