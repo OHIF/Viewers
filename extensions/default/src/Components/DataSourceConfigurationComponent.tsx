@@ -28,9 +28,9 @@ function DataSourceConfigurationComponent({
         return;
       }
 
-      const { factory: configurationAPIFactory } = customizationService.getCustomization(
-        activeDataSourceDef.configuration.configurationAPI
-      ) ?? { factory: () => null };
+      const configurationAPIFactory =
+        customizationService.getCustomization(activeDataSourceDef.configuration.configurationAPI) ??
+        (() => null);
 
       if (!configurationAPIFactory) {
         return;
