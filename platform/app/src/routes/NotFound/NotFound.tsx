@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Icons } from '@ohif/ui-next';
 import { useAppConfig } from '@state';
 
-const NotFound = () => {
+const NotFound = ({
+  message = "We can't find the page you're looking for.",
+  showGoBackButton = true,
+}) => {
   const [appConfig] = useAppConfig();
   const { showStudyList } = appConfig;
   const navigate = useNavigate();
@@ -18,10 +21,8 @@ const NotFound = () => {
         <div className="bg-input h-px" />
         <div className="bg-muted flex flex-col items-center justify-center rounded-b-2xl p-8 text-center">
           <h1 className="text-foreground text-[22px] font-light">Error (404)</h1>
-          <p className="text-muted-foreground mt-1 text-[16px] font-light">
-            We can't find the page you're looking for.
-          </p>
-          {showStudyList && (
+          <p className="text-muted-foreground mt-1 text-[16px] font-light">{message}</p>
+          {showGoBackButton && showStudyList && (
             <Button
               className="mt-8 px-3 text-lg"
               onClick={() => navigate('/')}
@@ -35,6 +36,9 @@ const NotFound = () => {
   );
 };
 
-NotFound.propTypes = {};
+NotFound.propTypes = {
+  message: PropTypes.string,
+  showGoBackButton: PropTypes.bool,
+};
 
 export default NotFound;
