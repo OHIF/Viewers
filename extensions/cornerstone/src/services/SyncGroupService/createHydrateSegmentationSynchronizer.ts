@@ -6,6 +6,8 @@ import {
   Types as ToolsTypes,
 } from '@cornerstonejs/tools';
 
+import { isAnyDisplaySetCommon } from '../../utils/isAnyDisplaySetCommon';
+
 const { createSynchronizer } = SynchronizerManager;
 const { SEGMENTATION_REPRESENTATION_MODIFIED } = Enums.Events;
 const { BlendModes } = CoreEnums;
@@ -34,6 +36,12 @@ export default function createHydrateSegmentationSynchronizer(
   return stackImageSynchronizer;
 }
 
+/**
+ * This method will add the segmentation representation to any target viewports having:
+ *
+ * 1. the same FrameOfReferenceUID (FOR) as the segmentation representation, or
+ * 2. a shared DisplaySet with the source viewport when no FOR is present.
+ */
 const segmentationRepresentationModifiedCallback = async (
   synchronizerInstance: Synchronizer,
   sourceViewport: Types.IViewportId,
@@ -60,10 +68,7 @@ const segmentationRepresentationModifiedCallback = async (
     .getViewportData()
     .data.map(ds => ds.displaySetInstanceUID);
 
-  // Check if any displaySet is shared between source and target.
-  const sharedDisplaySetExists = sourceDisplaySetUIDs.some(uid =>
-    targetDisplaySetUIDs.includes(uid)
-  );
+  const sharedDisplaySetExists = isAnyDisplaySetCommon(sourceDisplaySetUIDs, targetDisplaySetUIDs);
 
   if (!sharedDisplaySetExists && !viewport.getFrameOfReferenceUID()) {
     return;
