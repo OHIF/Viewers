@@ -64,19 +64,6 @@ export interface DialogContextMenuProps {
   /** Callback to close the menu */
   onClose?: () => void;
 
-  /**
-   * LEGACY: Callback to show a submenu by closing current menu and opening a new one.
-   * This is only used when `menus` prop is NOT provided, falling back to the old
-   * "close and reopen" submenu behavior instead of inline Floating UI submenus.
-   *
-   * TODO: Review with team - can this be removed if all implementations use `menus` prop?
-   */
-  onShowSubMenu?: (
-    item: DialogContextMenuItem,
-    itemRef: DialogContextMenuItem,
-    subProps: Record<string, unknown>
-  ) => void;
-
   /** Default action callback */
   onDefault?: (
     item: DialogContextMenuItem,
@@ -188,11 +175,10 @@ const MenuItemRenderer: React.FC<{
 
   const handleClick = React.useCallback(() => {
     if (hasSubMenu) {
-      // For submenu items with menus available, toggle submenu on click (mobile-friendly)
+      // Toggle submenu on click (mobile-friendly)
       setIsSubMenuOpen(prev => !prev);
       return;
     }
-    // For regular items or submenu items without menus (legacy flow), call action
     item.action(item, menuProps);
   }, [hasSubMenu, item, menuProps]);
 

@@ -102,32 +102,23 @@ export default class ContextMenuController {
           this.services.uiDialogService.hide('context-menu');
         },
 
-        /**
-         * LEGACY: Displays a sub-menu by closing current menu and opening a new one.
-         * This is only called when DialogContextMenu's `menus` prop is NOT used,
-         * falling back to the old "close and reopen" behavior.
-         *
-         * With the current implementation, `menus` is always passed (see line 96),
-         * so DialogContextMenu handles submenus inline using Floating UI instead.
-         * This callback exists for backward compatibility with custom implementations
-         * that may not pass the `menus` prop.
-         *
-         * TODO: Review with team - can this be removed if all implementations use `menus` prop?
-         */
-        onShowSubMenu: (item, itemRef, subProps) => {
-          if (!itemRef.subMenu) {
-            console.warn('No submenu defined for', item, itemRef, subProps);
-            return;
-          }
-          this.showContextMenu(
-            {
-              ...contextMenuProps,
-              menuId: itemRef.subMenu,
-            },
-            viewportElement,
-            defaultPointsPosition
-          );
-        },
+        // NOTE: onShowSubMenu removed - DialogContextMenu handles submenus inline
+        // via Floating UI using the `menus` prop passed above.
+        //
+        // onShowSubMenu: (item, itemRef, subProps) => {
+        //   if (!itemRef.subMenu) {
+        //     console.warn('No submenu defined for', item, itemRef, subProps);
+        //     return;
+        //   }
+        //   this.showContextMenu(
+        //     {
+        //       ...contextMenuProps,
+        //       menuId: itemRef.subMenu,
+        //     },
+        //     viewportElement,
+        //     defaultPointsPosition
+        //   );
+        // },
 
         // Default is to run the specified commands.
         onDefault: (item, itemRef, subProps) => {
