@@ -61,12 +61,8 @@ const segmentationRepresentationModifiedCallback = async (
   const sourceViewportInfo = cornerstoneViewportService.getViewportInfo(sourceViewportId);
   const targetViewportInfo = cornerstoneViewportService.getViewportInfo(targetViewportId);
 
-  const sourceDisplaySetUIDs = sourceViewportInfo
-    .getViewportData()
-    .data.map(ds => ds.displaySetInstanceUID);
-  const targetDisplaySetUIDs = targetViewportInfo
-    .getViewportData()
-    .data.map(ds => ds.displaySetInstanceUID);
+  const sourceDisplaySetUIDs = extractDisplaySetUIDs(sourceViewportInfo);
+  const targetDisplaySetUIDs = extractDisplaySetUIDs(targetViewportInfo);
 
   const sharedDisplaySetExists = isAnyDisplaySetCommon(sourceDisplaySetUIDs, targetDisplaySetUIDs);
 
@@ -99,3 +95,10 @@ const segmentationRepresentationModifiedCallback = async (
     },
   });
 };
+
+/**
+ * Extracts the displaySetInstanceUIDs from a viewportInfo.
+ */
+function extractDisplaySetUIDs(viewportInfo) {
+  return viewportInfo.getViewportData().data.map(ds => ds.displaySetInstanceUID);
+}
