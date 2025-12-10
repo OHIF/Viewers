@@ -2,8 +2,8 @@ import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSystem } from '@ohif/core';
-import { Button, InputFilterText } from '@ohif/ui';
-import { Icons } from '@ohif/ui-next';
+import { InputFilterText } from '@ohif/ui';
+import { Button, Icons } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 
 type ItemListComponentProps = {
@@ -72,9 +72,11 @@ function ItemListComponent({
                       <Button
                         onClick={() => onItemClicked(item)}
                         className="invisible group-hover:visible"
-                        endIcon={<Icons.ByName name="arrow-left" />}
+                        variant="default"
+                        size="sm"
                       >
                         {t('Select')}
+                        <Icons.ChevronRight className="ml-2 h-3 w-3" />
                       </Button>
                     </div>
                   );
