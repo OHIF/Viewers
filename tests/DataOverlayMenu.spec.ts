@@ -65,7 +65,7 @@ test('should display added, selected and removed segmentation promptly', async (
   await dataOverlayPageObject.toggle();
 
   // Remove the segmentation overlay and ensure the overlay menu reflects this change.
-  await dataOverlayPageObject.remove();
+  await dataOverlayPageObject.remove('SEGMENTATION');
 
   await page.waitForTimeout(5000);
 

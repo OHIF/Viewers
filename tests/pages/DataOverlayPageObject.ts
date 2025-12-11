@@ -26,8 +26,8 @@ export class DataOverlayPageObject {
     await this.page.getByTestId(`${to}-SEG`).click();
   }
 
-  async remove() {
-    await this.page.getByTestId('overlay-ds-more-button-SEGMENTATION').click();
-    await this.page.getByTestId('overlay-ds-remove-button-SEGMENTATION').click();
+  async remove(segmentation: string) {
+    await this.page.getByTestId(`overlay-ds-more-button-${segmentation}`).click();
+    await this.page.getByTestId(`overlay-ds-remove-button-${segmentation}`).click();
   }
 }
