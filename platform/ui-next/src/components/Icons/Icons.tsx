@@ -162,6 +162,7 @@ import ContentPrev from './Sources/ContentPrev';
 import ContentNext from './Sources/ContentNext';
 import CheckBoxChecked from './Sources/CheckBoxChecked';
 import CheckBoxUnchecked from './Sources/CheckBoxUnChecked';
+import CloudSettings from './Sources/CloudSettings';
 import Close from './Sources/Close';
 import Pause from './Sources/Pause';
 import Play from './Sources/Play';
@@ -429,6 +430,7 @@ export const Icons = {
   OrientationSwitchR,
   Checked,
   Clipboard,
+  CloudSettings,
   ActionNewDialog,
   GroupLayers,
   Database,
@@ -777,6 +779,7 @@ export const Icons = {
   'content-next': (props: IconProps) => ContentNext(props),
   'icon-settings': (props: IconProps) => Settings(props),
   'settings-study-list': (props: IconProps) => SettingsStudyList(props),
+  'cloud-settings': (props: IconProps) => CloudSettings(props),
   close: (props: IconProps) => Close(props),
   pause: (props: IconProps) => Pause(props),
   'icon-pause': (props: IconProps) => Pause(props),
