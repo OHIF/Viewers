@@ -34,6 +34,7 @@ function DataSourceWrapper(props: withAppTypes) {
   const STUDIES_LIMIT = appConfig.queryLimit ?? 101;
   const DEFAULT_DATA = {
     studies: [],
+    dataTotal: 0,
     queryFilterValues: null,
   };
 
@@ -196,6 +197,7 @@ function DataSourceWrapper(props: withAppTypes) {
     <LayoutTemplate
       {...rest}
       data={data.studies}
+      dataTotal={data.studies.length}
       dataPath={dataSourcePath}
       dataSource={dataSource}
       isLoadingData={isLoading}
