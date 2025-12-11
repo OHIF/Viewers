@@ -7,6 +7,7 @@ import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
+import DataRow from './DataRow.json';
 import Messages from './Messages.json';
 import Modals from './Modals.json';
 import Modes from './Modes.json';
@@ -39,6 +40,7 @@ export default {
     Header,
     HotkeysValidators,
     MeasurementTable,
+    DataRow,
     Messages,
     Modals,
     Modes,

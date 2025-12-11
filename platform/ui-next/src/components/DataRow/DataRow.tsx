@@ -136,7 +136,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
     },
     ref
   ) => {
-    const { t } = useTranslation('MeasurementTable');
+    const { t } = useTranslation('DataRow');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const isTitleLong = title?.length > 25;
 
