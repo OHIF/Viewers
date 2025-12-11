@@ -98,6 +98,7 @@ import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from './HoverCard';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 import {
   Table,
@@ -253,6 +254,9 @@ export {
   SegmentationTable,
   StudySummary,
   Header,
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
   Card,
   CardHeader,
   CardFooter,

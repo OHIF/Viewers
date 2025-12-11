@@ -1,6 +1,17 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icons, useModal } from '@ohif/ui-next';
+import {
+  Icons,
+  useModal,
+  Button,
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+  Card,
+  CardHeader,
+  CardDescription,
+  CardContent,
+} from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 import DataSourceConfigurationModalComponent from './DataSourceConfigurationModalComponent';
 
@@ -18,6 +29,8 @@ function DataSourceConfigurationComponent({
   const [configuredItems, setConfiguredItems] =
     useState<Array<Types.BaseDataSourceConfigurationAPIItem>>();
 
+  const [itemLabels, setItemLabels] = useState<Array<string>>([]);
+
   useEffect(() => {
     let shouldUpdate = true;
 
@@ -28,9 +41,9 @@ function DataSourceConfigurationComponent({
         return;
       }
 
-      const { factory: configurationAPIFactory } = customizationService.getCustomization(
-        activeDataSourceDef.configuration.configurationAPI
-      ) ?? { factory: () => null };
+      const configurationAPIFactory =
+        customizationService.getCustomization(activeDataSourceDef.configuration.configurationAPI) ??
+        (() => null);
 
       if (!configurationAPIFactory) {
         return;
@@ -38,6 +51,7 @@ function DataSourceConfigurationComponent({
 
       const configAPI = configurationAPIFactory(activeDataSourceDef.sourceName);
       setConfigurationAPI(configAPI);
+      setItemLabels(configAPI.getItemLabels());
 
       // New configuration API means that the existing configured items must be cleared.
       setConfiguredItems(null);
@@ -86,28 +100,41 @@ function DataSourceConfigurationComponent({
   }, [configurationAPI, configuredItems, showConfigurationModal]);
 
   return configuredItems ? (
-    <div className="text-aqua-pale flex items-center overflow-hidden">
-      <Icons.Settings
-        className="mr-2.5 h-3.5 w-3.5 shrink-0 cursor-pointer"
-        onClick={showConfigurationModal}
-      />
-      {configuredItems.map((item, itemIndex) => {
-        return (
-          <div
-            key={itemIndex}
-            className="flex overflow-hidden"
-          >
-            <div
-              key={itemIndex}
-              className="overflow-hidden text-ellipsis whitespace-nowrap"
-            >
-              {item.name}
-            </div>
-            {itemIndex !== configuredItems.length - 1 && <div className="px-2.5">|</div>}
-          </div>
-        );
-      })}
-    </div>
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1 text-sm"
+          onClick={showConfigurationModal}
+        >
+          <Icons.CloudSettings className="h-5 w-5" />
+          Source
+        </Button>
+      </HoverCardTrigger>
+      <HoverCardContent
+        align="center"
+        className="w-72 p-0"
+      >
+        <Card className="border-0 shadow-none">
+          <CardHeader className="p-3 pb-1">
+            <CardDescription className="text-sm">
+              <span className="text-foreground font-semibold">{t('Data Source')}:</span>{' '}
+              {t('Configure the server connection and storage settings')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 p-3 pt-0 text-sm">
+            <div className="bg-input col-span-2 my-2 h-px" />
+            {itemLabels.map((label, index) => (
+              <React.Fragment key={label}>
+                <span className="text-muted-foreground">{t(label)}</span>
+                <span>{configuredItems[index]?.name ?? '—'}</span>
+              </React.Fragment>
+            ))}
+          </CardContent>
+        </Card>
+      </HoverCardContent>
+    </HoverCard>
   ) : (
     <></>
   );
