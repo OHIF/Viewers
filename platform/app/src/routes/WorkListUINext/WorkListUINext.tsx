@@ -22,7 +22,7 @@ type Props = withAppTypes & {
 // Modalities that should not attempt pixel-based thumbnail rendering
 const NON_IMAGE_MODALITIES = new Set(['RTDOSE', 'RTPLAN', 'RTSTRUCT']);
 
-export default function StudyListNext2({
+export default function WorkListUINext({
   data,
   dataSource,
   isLoadingData,

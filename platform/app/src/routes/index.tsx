@@ -4,10 +4,9 @@ import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
 // Study list variants:
-// - Default: StudyListNext2Entry (ui-next, with pre-DS hydration)
+// - Default: WorkListUINext (ui-next, with pre-DS hydration)
 // - Optional: WorkList (legacy)
 import WorkList from './WorkList/WorkList';
-import StudyListNext2Entry from './StudyListNext2/StudyListNext2Entry';
 import DataSourceWrapper from './DataSourceWrapper';
 import Local from './Local';
 import Debug from './Debug';
@@ -18,6 +17,7 @@ import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
+import WorkListUINext from './WorkListUINext/WorkListUINext';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -119,15 +119,14 @@ const createRoutes = ({
 
   console.log('Registering worklist route', routerBasename, path);
 
-  // Worklist Route: set `children` (and `props` if using DataSourceWrapper)
-
   const WorkListRoute = {
     path: '/',
-    // Default: StudyListNext2Entry (pre-DS hydration)
-    children: StudyListNext2Entry,
+    children: DataSourceWrapper,
     private: true,
+    props: { children: WorkListUINext, servicesManager, extensionManager },
     // To use legacy WorkList instead:
     // children: DataSourceWrapper,
+    // private: true,
     // props: { children: WorkList, servicesManager, extensionManager },
   };
 
