@@ -4,6 +4,7 @@ const serviceImplementation = {
     console.debug('show() NOT IMPLEMENTED');
     return null;
   },
+  _customComponent: null,
 };
 
 type ToastType = 'success' | 'error' | 'info' | 'warning' | 'loading';
@@ -18,19 +19,36 @@ class UINotificationService {
   };
 
   /**
+   * This provides flexibility in customizing the Notification default component
+   *
+   * @returns {React.Component}
+   */
+  getCustomComponent() {
+    return serviceImplementation._customComponent;
+  }
+
+  /**
    *
    *
    * @param {*} {
    *   hide: hideImplementation,
    *   show: showImplementation,
+   *   component: componentImplementation
    * }
    */
-  public setServiceImplementation({ hide: hideImplementation, show: showImplementation }): void {
+  public setServiceImplementation({
+    hide: hideImplementation,
+    show: showImplementation,
+    customComponent: customComponentImplementation,
+  }): void {
     if (hideImplementation) {
       serviceImplementation._hide = hideImplementation;
     }
     if (showImplementation) {
       serviceImplementation._show = showImplementation;
+    }
+    if (customComponentImplementation) {
+      serviceImplementation._customComponent = customComponentImplementation;
     }
   }
 

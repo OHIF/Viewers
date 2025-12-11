@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.101...v3.12.0-beta.102) (2025-12-10)
+
+
+### Bug Fixes
+
+* **DataSource:** migrate configuration dialog to ui-next components ([#5626](https://github.com/OHIF/Viewers/issues/5626)) ([c0f39ae](https://github.com/OHIF/Viewers/commit/c0f39aeb51dc5abad6381706eaa0ac69a54979f2))
+* **routes:** display 404 feedback page for unmatched URLs ([#5627](https://github.com/OHIF/Viewers/issues/5627)) ([eef755e](https://github.com/OHIF/Viewers/commit/eef755ef05e38d5271b1c79e4dd191d723895470))
+
+
+
+
+
+# [3.12.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.100...v3.12.0-beta.101) (2025-12-09)
+
+
+### Bug Fixes
+
+* **seg-viewport:** add guard for missing reference display set handler to prevent viewport crash ([#5618](https://github.com/OHIF/Viewers/issues/5618)) ([8dde223](https://github.com/OHIF/Viewers/commit/8dde2237a2c1123fc448ae8b68e2f59af376b294))
+
+
+
+
+
+# [3.12.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.99...v3.12.0-beta.100) (2025-12-05)
+
+
+### Features
+
+* **notification:** add custom notification component support ([#5605](https://github.com/OHIF/Viewers/issues/5605)) ([c4e5a46](https://github.com/OHIF/Viewers/commit/c4e5a4616db87b39df5e16b75f1ba3c18407468f))
+
+
+
+
+
+# [3.12.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.98...v3.12.0-beta.99) (2025-12-04)
+
+
+### Bug Fixes
+
+* Initial sort not consistent ([#5224](https://github.com/OHIF/Viewers/issues/5224)) ([77f9f8e](https://github.com/OHIF/Viewers/commit/77f9f8e1c4af6b5d22ecf9332b5edf503cd5b848))
+
+
+
+
+
+# [3.12.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.97...v3.12.0-beta.98) (2025-12-03)
+
+
+### Bug Fixes
+
+* **clipboard:** Adds tooltip clipboard icon feedback when copy fails ([#5609](https://github.com/OHIF/Viewers/issues/5609)) ([6566354](https://github.com/OHIF/Viewers/commit/6566354986583e5d7db01c8734e282faf7a072b9))
+
+
+
+
+
+# [3.12.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.96...v3.12.0-beta.97) (2025-12-03)
+
+
+### Bug Fixes
+
+* skip VOI sync for empty viewports ([#5599](https://github.com/OHIF/Viewers/issues/5599)) ([1aa4431](https://github.com/OHIF/Viewers/commit/1aa443112186851855a638ab974a3060c3e28ea0))
+
+
+
+
+
 # [3.12.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.95...v3.12.0-beta.96) (2025-12-02)
 
 **Note:** Version bump only for package ohif-monorepo-root
