@@ -51,7 +51,7 @@ export class RightPanelPageObject {
       },
       locator: row,
       toggleVisibility: async () => {
-        await row.getByTestId('visibilityToggle').click();
+        await row.getByTestId('data-row-visibility-toggle').click();
       },
     };
   }

@@ -313,7 +313,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
                 isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
               }`}
               aria-label={isVisible ? 'Hide' : 'Show'}
-              dataCY="visibilityToggle"
+              dataCY="data-row-visibility-toggle"
               onClick={e => {
                 e.stopPropagation();
                 onToggleVisibility(e);
