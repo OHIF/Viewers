@@ -23,7 +23,7 @@ import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
-import SegmentationTable from './SegmentationTable.json';
+import SegmentationPanel from './SegmentationPanel.json';
 import Onboarding from './Onboarding.json';
 import Colormaps from './Colormaps.json';
 import PanelSUV from './PanelSUV.json';
@@ -56,7 +56,7 @@ export default {
     WindowLevelActionMenu,
     CaptureViewportModal,
     Tools,
-    SegmentationTable,
+    SegmentationPanel,
     Onboarding,
     Colormaps,
     PanelSUV,

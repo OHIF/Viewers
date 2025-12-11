@@ -9,7 +9,7 @@ import { Input } from '../Input';
 import { useSegmentationTableContext } from './contexts';
 
 export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     renderFill,
     renderOutline,

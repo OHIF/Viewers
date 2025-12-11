@@ -31,7 +31,7 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
 }
 
 export const SegmentationTableRoot = (props: SegmentationTableProps) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     data = [],
     mode,

@@ -4,7 +4,7 @@ import { useSegmentationTableContext, useSegmentationExpanded } from './contexts
 import { useTranslation } from 'react-i18next';
 
 export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ children = null }) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     activeRepresentation,
     disableEditing,

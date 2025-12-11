@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 function SmoothContoursOptions() {
   const runCommand = useRunCommand();
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
 
   return (
     <div className="flex w-auto w-[245px] flex-col gap-[8px] text-base font-normal leading-none">

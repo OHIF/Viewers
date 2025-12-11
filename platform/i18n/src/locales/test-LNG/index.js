@@ -11,7 +11,7 @@ import Messages from './Messages.json';
 import Modals from './Modals.json';
 import Modes from './Modes.json';
 import PatientInfo from './PatientInfo.json';
-import SegmentationTable from './SegmentationTable.json';
+import SegmentationPanel from './SegmentationPanel.json';
 import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
 import StudyItem from './StudyItem.json';
@@ -43,7 +43,7 @@ export default {
     Modals,
     Modes,
     PatientInfo,
-    SegmentationTable,
+    SegmentationPanel,
     SidePanel,
     StudyBrowser,
     StudyItem,

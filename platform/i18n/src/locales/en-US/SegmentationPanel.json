@@ -58,6 +58,7 @@
   "Intersect": "Intersect",
   "Subtract": "Subtract",
   "Select a segment": "Select a segment",
+  "Select a segmentation": "Select a segmentation",
   "Create a new segment": "Create a new segment",
   "New segment name": "New segment name"
 }

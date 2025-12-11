@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function SegmentationToolConfig() {
   const { commandsManager } = useSystem();
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
 
   // Get initial states based on current configuration
   const [previewEdits, setPreviewEdits] = useState(false);

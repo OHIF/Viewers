@@ -61,7 +61,7 @@ function SegmentSelector({
   segments: Segment[];
   placeholder?: string;
 }) {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   return (
     <div className="flex justify-between gap-6">
       <div>{label}</div>
@@ -91,7 +91,7 @@ function SegmentSelector({
 function LogicalContourOperationOptions() {
   const { servicesManager } = useSystem();
   const { segmentationService } = servicesManager.services;
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const { segmentationsWithRepresentations } = useActiveViewportSegmentationRepresentations();
 
   const activeRepresentation = segmentationsWithRepresentations?.find(
