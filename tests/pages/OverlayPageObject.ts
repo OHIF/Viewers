@@ -40,8 +40,8 @@ export class OverlayPageObject {
 
     return {
       get confirmation() {
-        const cancelButton = page.getByTestId('cancel-button');
-        const confirmButton = page.getByTestId('confirm-button');
+        const cancelButton = page.getByTestId('untracked-series-modal-cancel-button');
+        const confirmButton = page.getByTestId('untracked-series-modal-confirm-button');
         return {
           cancel: {
             button: cancelButton,

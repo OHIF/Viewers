@@ -13,13 +13,13 @@ export function UntrackSeriesModal({ hide, onConfirm, message }) {
       <FooterAction className="mt-4">
         <FooterAction.Right>
           <FooterAction.Secondary
-            dataCY="cancel-button"
+            dataCY="untracked-series-modal-cancel-button"
             onClick={hide}
           >
             Cancel
           </FooterAction.Secondary>
           <FooterAction.Primary
-            dataCY="confirm-button"
+            dataCY="untracked-series-modal-confirm-button"
             onClick={() => {
               onConfirm();
               hide();
