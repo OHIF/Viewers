@@ -58,5 +58,8 @@
   "Subtract": "Aftrekken",
   "Select a segment": "Selecteer een segment",
   "Create a new segment": "Nieuw segment aanmaken",
-  "New segment name": "Nieuw segment naam"
+  "New segment name": "Nieuw segment naam",
+  "No segmentations available": "Geen segmentaties beschikbaar",
+  "Not available on the current viewport": "Niet beschikbaar op de huidige viewport",
+  "Add segment to enable this tool": "Voeg een segment toe om dit gereedschap in te schakelen"
 }

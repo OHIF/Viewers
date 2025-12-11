@@ -22,5 +22,8 @@
   "Rename": "Test Rename",
   "Segmentation": "Test Segmentation",
   "Segmentation not supported": "Test Segmentation not supported",
-  "Size": "Test Size"
+  "Size": "Test Size",
+  "No segmentations available": "Test No segmentations available",
+  "Not available on the current viewport": "Test Not available on the current viewport",
+  "Add segment to enable this tool": "Test Add segment to enable this tool"
 }

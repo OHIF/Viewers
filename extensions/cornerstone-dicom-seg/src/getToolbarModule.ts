@@ -47,7 +47,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!segmentations?.length) {
           return {
             disabled: true,
-            disabledText: i18n.t('Buttons:No segmentations available'),
+            disabledText: i18n.t('SegmentationPanel:No segmentations available'),
           };
         }
 
@@ -74,7 +74,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!segmentations?.length) {
           return {
             disabled: true,
-            disabledText: disabledText ?? i18n.t('Buttons:No segmentations available'),
+            disabledText: disabledText ?? i18n.t('SegmentationPanel:No segmentations available'),
           };
         }
 
@@ -82,7 +82,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!Object.keys(activeSegmentation.segments).length) {
           return {
             disabled: true,
-            disabledText: 'Add segment to enable this tool',
+            disabledText: i18n.t('SegmentationPanel:Add segment to enable this tool'),
           };
         }
 
@@ -91,7 +91,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!toolGroup) {
           return {
             disabled: true,
-            disabledText: disabledText ?? i18n.t('Buttons:Not available on the current viewport'),
+            disabledText: disabledText ?? i18n.t('SegmentationPanel:Not available on the current viewport'),
           };
         }
 
@@ -107,7 +107,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!toolGroup.hasTool(toolName) && !toolNames) {
           return {
             disabled: true,
-            disabledText: disabledText ?? i18n.t('Buttons:Not available on the current viewport'),
+            disabledText: disabledText ?? i18n.t('SegmentationPanel:Not available on the current viewport'),
           };
         }
 

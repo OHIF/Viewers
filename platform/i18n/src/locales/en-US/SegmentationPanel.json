@@ -60,5 +60,8 @@
   "Select a segment": "Select a segment",
   "Select a segmentation": "Select a segmentation",
   "Create a new segment": "Create a new segment",
-  "New segment name": "New segment name"
+  "New segment name": "New segment name",
+  "No segmentations available": "No segmentations available",
+  "Not available on the current viewport": "Not available on the current viewport",
+  "Add segment to enable this tool": "Add segment to enable this tool"
 }

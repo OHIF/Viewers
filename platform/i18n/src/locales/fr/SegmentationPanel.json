@@ -45,5 +45,8 @@
   "Subtract": "Soustraire",
   "Select a segment": "Sélectionner un segment",
   "Create a new segment": "Créer un nouveau segment",
-  "New segment name": "Nom du nouveau segment"
+  "New segment name": "Nom du nouveau segment",
+  "No segmentations available": "Aucune segmentation disponible",
+  "Not available on the current viewport": "Non disponible sur la fenêtre d'affichage actuelle",
+  "Add segment to enable this tool": "Ajoutez un segment pour activer cet outil"
 }
