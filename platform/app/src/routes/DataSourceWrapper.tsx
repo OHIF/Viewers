@@ -5,19 +5,8 @@ import { Enums, ExtensionManager, MODULE_TYPES, log } from '@ohif/core';
 //
 import { extensionManager } from '../App';
 import { useParams, useLocation } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 import useSearchParams from '../hooks/useSearchParams';
-
-/**
- * Determines if two React Router location objects are the same.
- */
-const areLocationsTheSame = (location0, location1) => {
-  return (
-    location0.pathname === location1.pathname &&
-    location0.search === location1.search &&
-    location0.hash === location1.hash
-  );
-};
+import { useAppConfig } from '@state';
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -29,32 +18,30 @@ const areLocationsTheSame = (location0, location1) => {
  */
 function DataSourceWrapper(props: withAppTypes) {
   const { servicesManager } = props;
-  const navigate = useNavigate();
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
   const location = useLocation();
   const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
   const query = useSearchParams();
+  const [appConfig] = useAppConfig();
+
   // Route props --> studies.mapParams
   // mapParams --> studies.search
   // studies.search --> studies.processResults
   // studies.processResults --> <LayoutTemplate studies={} />
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
-  const STUDIES_LIMIT = 101;
+  const STUDIES_LIMIT = appConfig.queryLimit ?? 101;
   const DEFAULT_DATA = {
     studies: [],
-    total: 0,
-    resultsPerPage: 25,
-    pageNumber: 1,
-    location: 'Not a valid location, causes first load to occur',
+    queryFilterValues: null,
   };
 
   const getInitialDataSourceName = useCallback(() => {
     // TODO - get the variable from the props all the time...
     let dataSourceName = lowerCaseSearchParams.get('datasources');
 
-    if (!dataSourceName && window.config.defaultDataSourceName) {
+    if (!dataSourceName && appConfig.defaultDataSourceName) {
       return '';
     }
 
@@ -155,10 +142,7 @@ function DataSourceWrapper(props: withAppTypes) {
 
       setData({
         studies: studies || [],
-        total: studies.length,
-        resultsPerPage: queryFilterValues.resultsPerPage,
-        pageNumber: queryFilterValues.pageNumber,
-        location,
+        queryFilterValues,
       });
       log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
       log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
@@ -167,24 +151,11 @@ function DataSourceWrapper(props: withAppTypes) {
     }
 
     try {
-      // Cache invalidation :thinking:
-      // - Anytime change is not just next/previous page
-      // - And we didn't cross a result offset range
-      const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
-      const previousOffset =
-        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) * (STUDIES_LIMIT - 1);
-      const newOffset =
-        Math.floor(
-          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) / STUDIES_LIMIT
-        ) *
-        (STUDIES_LIMIT - 1);
-      // Simply checking data.location !== location is not sufficient because even though the location href (i.e. entire URL)
-      // has not changed, the React Router still provides a new location reference and would result in two study queries
-      // on initial load. Alternatively, window.location.href could be used.
-      const isLocationUpdated =
-        typeof data.location === 'string' || !areLocationsTheSame(data.location, location);
-      const isDataInvalid =
-        !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
+      // Check if query filters have changed
+      // Data is invalid if filters changed (filters, sorting, search terms, etc.)
+      // Pagination changes alone should not trigger a refetch since we're using manual pagination
+      const filtersChanged = !areQueryFiltersEqual(data.queryFilterValues, queryFilterValues);
+      const isDataInvalid = !isLoading && filtersChanged;
 
       if (isDataInvalid) {
         getData().catch(e => {
@@ -226,7 +197,6 @@ function DataSourceWrapper(props: withAppTypes) {
       {...rest}
       data={data.studies}
       dataPath={dataSourcePath}
-      dataTotal={data.total}
       dataSource={dataSource}
       isLoadingData={isLoading}
       // To refresh the data, simply reset it to DEFAULT_DATA which invalidates it and triggers a new query to fetch the data.
@@ -243,6 +213,43 @@ DataSourceWrapper.propTypes = {
 export default DataSourceWrapper;
 
 /**
+ * Compares two queryFilterValues objects
+ * Returns true if they are the same, false otherwise.
+ * @param {object} query1 - First query filter values object
+ * @param {object} query2 - Second query filter values object
+ * @returns {boolean} - True if filters are equal, false otherwise
+ */
+function areQueryFiltersEqual(query1, query2) {
+  if (!query1 || !query2) {
+    return query1 === query2; // Both null/undefined or one is null
+  }
+
+  // Get all keys from both objects
+  const allKeys = new Set([...Object.keys(query1), ...Object.keys(query2)]);
+
+  for (const key of allKeys) {
+    const val1 = query1[key];
+    const val2 = query2[key];
+
+    // Handle array comparison (e.g., modalitiesInStudy)
+    if (Array.isArray(val1) && Array.isArray(val2)) {
+      if (val1.length !== val2.length) {
+        return false;
+      }
+      const sorted1 = [...val1].sort().join(',');
+      const sorted2 = [...val2].sort().join(',');
+      if (sorted1 !== sorted2) {
+        return false;
+      }
+    } else if (val1 !== val2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Duplicated in `workList`
  * Need generic that can be shared? Isn't this what qs is for?
  * @param {*} query
@@ -255,9 +262,6 @@ function _getQueryFilterValues(query, queryLimit) {
   }
   query = newParams;
 
-  const pageNumber = _tryParseInt(query.get('pagenumber'), 1);
-  const resultsPerPage = _tryParseInt(query.get('resultsperpage'), 25);
-
   const queryFilterValues = {
     // DCM
     patientId: query.get('mrn'),
@@ -268,14 +272,14 @@ function _getQueryFilterValues(query, queryLimit) {
     //
     startDate: query.get('startdate'),
     endDate: query.get('enddate'),
-    page: _tryParseInt(query.get('page'), undefined),
-    pageNumber,
-    resultsPerPage,
     // Rarely supported server-side
     sortBy: query.get('sortby'),
     sortDirection: query.get('sortdirection'),
-    // Offset...
-    offset: Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
+    // So many different servers out there that we can't rely on them to support offset/limit.
+    // So we just query for everything up to the queryLimit for those that support it.
+    // For those that don't we will just assume we get everything back.
+    offset: 0,
+    limit: queryLimit,
     config: query.get('configurl'),
   };
 
@@ -289,16 +293,4 @@ function _getQueryFilterValues(query, queryLimit) {
   );
 
   return queryFilterValues;
-
-  function _tryParseInt(str, defaultValue) {
-    let retValue = defaultValue;
-    if (str !== null) {
-      if (str.length > 0) {
-        if (!isNaN(str)) {
-          retValue = parseInt(str);
-        }
-      }
-    }
-    return retValue;
-  }
 }

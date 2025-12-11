@@ -7,16 +7,45 @@ import { ActionCell } from '../components/ActionCell';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDate';
 
+// Column ID constants - shared across the codebase
+export const COLUMN_IDS = {
+  PATIENT: 'patient',
+  MRN: 'mrn',
+  STUDY_DATE_TIME: 'studyDateTime',
+  MODALITIES: 'modalities',
+  DESCRIPTION: 'description',
+  ACCESSION: 'accession',
+  INSTANCES: 'instances',
+  ACTIONS: 'actions',
+} as const;
+
+// Filterable column IDs (columns that support filtering)
+export const FILTERABLE_COLUMN_IDS = [
+  COLUMN_IDS.PATIENT,
+  COLUMN_IDS.MRN,
+  COLUMN_IDS.MODALITIES,
+  COLUMN_IDS.DESCRIPTION,
+  COLUMN_IDS.ACCESSION,
+] as const;
+
+// Text filter column IDs (columns that use text-based filtering)
+export const TEXT_FILTER_COLUMN_IDS = [
+  COLUMN_IDS.PATIENT,
+  COLUMN_IDS.MRN,
+  COLUMN_IDS.ACCESSION,
+  COLUMN_IDS.DESCRIPTION,
+] as const;
+
 export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
   return [
     {
-      id: 'patient',
+      id: COLUMN_IDS.PATIENT,
       accessorFn: row => {
         const r = row as StudyRow;
         return r.patientName ?? '';
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
-      cell: ({ row }) => <div className="truncate">{row.getValue('patient')}</div>,
+      cell: ({ row }) => <div className="truncate">{row.getValue(COLUMN_IDS.PATIENT)}</div>,
       meta: {
         label: 'Patient',
         headerClassName: 'min-w-[165px]',
@@ -25,13 +54,13 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      id: 'mrn',
+      id: COLUMN_IDS.MRN,
       accessorFn: row => {
         const r = row as StudyRow;
         return r.mrn ?? '';
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
-      cell: ({ row }) => <div className="truncate">{row.getValue('mrn')}</div>,
+      cell: ({ row }) => <div className="truncate">{row.getValue(COLUMN_IDS.MRN)}</div>,
       meta: {
         label: 'MRN',
         headerClassName: 'min-w-[120px]',
@@ -40,14 +69,14 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      id: 'studyDateTime',
+      id: COLUMN_IDS.STUDY_DATE_TIME,
       accessorFn: row => {
         const r = row as StudyRow;
         return formatStudyDate(r.date ?? '', r.time ?? '');
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
-        return <div className="truncate">{row.getValue('studyDateTime')}</div>;
+        return <div className="truncate">{row.getValue(COLUMN_IDS.STUDY_DATE_TIME)}</div>;
       },
       sortingFn: (a, b) => {
         const aRow = a.original as StudyRow;
@@ -64,13 +93,13 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      id: 'modalities',
+      id: COLUMN_IDS.MODALITIES,
       accessorFn: row => {
         const r = row as StudyRow;
         return r.modalities ?? '';
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
-      cell: ({ row }) => <div className="truncate">{row.getValue('modalities')}</div>,
+      cell: ({ row }) => <div className="truncate">{row.getValue(COLUMN_IDS.MODALITIES)}</div>,
       filterFn: (row, colId, filter) => {
         const selected = Array.isArray(filter) ? (filter as string[]) : [];
         if (!selected.length) {
@@ -88,14 +117,14 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      id: 'description',
+      id: COLUMN_IDS.DESCRIPTION,
       accessorFn: row => {
         const r = row as StudyRow;
         return r.description ?? '';
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
-        const description = row.getValue('description') as string;
+        const description = row.getValue(COLUMN_IDS.DESCRIPTION) as string;
         return (
           <div className={!description ? 'text-muted-foreground/40' : ''}>
             {description || 'No Description'}
@@ -110,13 +139,13 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      id: 'accession',
+      id: COLUMN_IDS.ACCESSION,
       accessorFn: row => {
         const r = row as StudyRow;
         return r.accession ?? '';
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
-      cell: ({ row }) => <div className="truncate">{row.getValue('accession')}</div>,
+      cell: ({ row }) => <div className="truncate">{row.getValue(COLUMN_IDS.ACCESSION)}</div>,
       meta: {
         label: 'Accession',
         headerClassName: 'min-w-[140px]',
@@ -125,14 +154,14 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
     },
     {
-      id: 'instances',
+      id: COLUMN_IDS.INSTANCES,
       accessorFn: row => {
         const r = row as StudyRow;
         return Number(r.instances ?? 0);
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {
-        const value = row.getValue('instances') as number;
+        const value = row.getValue(COLUMN_IDS.INSTANCES) as number;
         return <div className="text-right">{value}</div>;
       },
       sortingFn: (a, b, colId) => (a.getValue(colId) as number) - (b.getValue(colId) as number),
@@ -152,7 +181,7 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
     },
     // Non-hideable trailing actions column to keep the menu at row end
     {
-      id: 'actions',
+      id: COLUMN_IDS.ACTIONS,
       header: () => null,
       enableSorting: false,
       enableHiding: false,

@@ -1,32 +1,32 @@
-import * as React from 'react';
-import type { ColumnDef, SortingState, VisibilityState } from '@tanstack/react-table';
+import React, { type ReactNode, useMemo, useEffect } from 'react';
 import { DataTable, useDataTable } from '../../DataTable';
+import type { DataTableProps } from '../../DataTable/DataTable';
 import { Button } from '../../Button';
 import { InputMultiSelect } from '../../InputMultiSelect';
 import type { StudyRow } from '../types/types';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { useWorkflows } from './WorkflowsProvider';
+import { COLUMN_IDS } from '../columns/defaultColumns';
 
-export type TableProps = {
-  columns: ColumnDef<StudyRow, unknown>[];
-  data: StudyRow[];
-  title?: React.ReactNode;
-  initialSorting?: SortingState;
-  initialVisibility?: VisibilityState;
-  enforceSingleSelection?: boolean;
+export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'> & {
+  title?: ReactNode;
   showColumnVisibility?: boolean;
   tableClassName?: string;
-  onSelectionChange?: (rows: StudyRow[]) => void;
-  toolbarLeftComponent?: React.ReactNode;
-  toolbarRightComponent?: React.ReactNode;
+  toolbarLeftComponent?: ReactNode;
+  toolbarRightComponent?: ReactNode;
 };
 
 export function Table({
   columns,
   data,
   title,
-  initialSorting = [],
   initialVisibility = {},
+  sorting,
+  pagination,
+  filters,
+  onSortingChange,
+  onPaginationChange,
+  onFiltersChange,
   enforceSingleSelection = true,
   showColumnVisibility = true,
   tableClassName,
@@ -39,8 +39,13 @@ export function Table({
       data={data}
       columns={columns}
       getRowId={row => row.studyInstanceUid}
-      initialSorting={initialSorting}
       initialVisibility={initialVisibility}
+      sorting={sorting}
+      pagination={pagination}
+      filters={filters}
+      onSortingChange={onSortingChange}
+      onPaginationChange={onPaginationChange}
+      onFiltersChange={onFiltersChange}
       enforceSingleSelection={enforceSingleSelection}
       onSelectionChange={onSelectionChange}
     >
@@ -62,14 +67,14 @@ function TableContent({
   toolbarLeftComponent,
   toolbarRightComponent,
 }: {
-  title?: React.ReactNode;
+  title?: ReactNode;
   showColumnVisibility?: boolean;
   tableClassName?: string;
-  toolbarLeftComponent?: React.ReactNode;
-  toolbarRightComponent?: React.ReactNode;
+  toolbarLeftComponent?: ReactNode;
+  toolbarRightComponent?: ReactNode;
 }) {
   const { table } = useDataTable<StudyRow>();
-  const modalityOptions = React.useMemo(() => {
+  const modalityOptions = useMemo(() => {
     const rows = (table.options?.data as StudyRow[]) ?? [];
     // Build a flat list of modality tokens across all rows.
     // tokenizeModalities uppercases and splits on whitespace/slash/comma to produce unique modality codes for filtering.
@@ -80,7 +85,7 @@ function TableContent({
   const { getDefaultWorkflowForStudy } = useWorkflows();
 
   // Responsive column visibility based on viewport width
-  React.useEffect(() => {
+  useEffect(() => {
     const updateVisibility = () => {
       const width = window.innerWidth;
       const isMobile = width < 768;
@@ -88,25 +93,25 @@ function TableContent({
 
       if (isMobile) {
         // Mobile: Show only Patient, Description, Actions
-        table.getColumn('mrn')?.toggleVisibility(false);
-        table.getColumn('studyDateTime')?.toggleVisibility(false);
-        table.getColumn('modalities')?.toggleVisibility(false);
-        table.getColumn('accession')?.toggleVisibility(false);
-        table.getColumn('instances')?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.MRN)?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.STUDY_DATE_TIME)?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.MODALITIES)?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.ACCESSION)?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.INSTANCES)?.toggleVisibility(false);
       } else if (isTablet) {
         // Tablet: Add Study Date, Modalities
-        table.getColumn('mrn')?.toggleVisibility(false);
-        table.getColumn('studyDateTime')?.toggleVisibility(true);
-        table.getColumn('modalities')?.toggleVisibility(true);
-        table.getColumn('accession')?.toggleVisibility(false);
-        table.getColumn('instances')?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.MRN)?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.STUDY_DATE_TIME)?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.MODALITIES)?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.ACCESSION)?.toggleVisibility(false);
+        table.getColumn(COLUMN_IDS.INSTANCES)?.toggleVisibility(false);
       } else {
         // Desktop: Show all
-        table.getColumn('mrn')?.toggleVisibility(true);
-        table.getColumn('studyDateTime')?.toggleVisibility(true);
-        table.getColumn('modalities')?.toggleVisibility(true);
-        table.getColumn('accession')?.toggleVisibility(true);
-        table.getColumn('instances')?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.MRN)?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.STUDY_DATE_TIME)?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.MODALITIES)?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.ACCESSION)?.toggleVisibility(true);
+        table.getColumn(COLUMN_IDS.INSTANCES)?.toggleVisibility(true);
       }
     };
 
@@ -132,9 +137,9 @@ function TableContent({
       <DataTable.Table<StudyRow> tableClassName={tableClassName}>
         <DataTable.Header<StudyRow> />
         <DataTable.FilterRow<StudyRow>
-          excludeColumnIds={['instances']}
+          excludeColumnIds={[COLUMN_IDS.INSTANCES]}
           renderFilterCell={({ columnId, value, setValue }) => {
-            if (columnId === 'actions') {
+            if (columnId === COLUMN_IDS.ACTIONS) {
               return (
                 <div className="text-right">
                   <Button
@@ -148,7 +153,7 @@ function TableContent({
                 </div>
               );
             }
-            if (columnId === 'modalities') {
+            if (columnId === COLUMN_IDS.MODALITIES) {
               const selected = Array.isArray(value) ? (value as string[]) : [];
               return (
                 <InputMultiSelect
