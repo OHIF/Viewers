@@ -7,10 +7,6 @@ export class DataOverlayPageObject {
     this.page = page;
   }
 
-  get button() {
-    return this.page.locator('[data-cy^="dataOverlayMenu"]').first();
-  }
-
   async toggle(viewportId: string = 'default') {
     await this.page.getByTestId(`dataOverlayMenu-${viewportId}-btn`).click();
   }
