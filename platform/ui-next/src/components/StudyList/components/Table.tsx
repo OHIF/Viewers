@@ -13,6 +13,7 @@ export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'>
   showColumnVisibility?: boolean;
   tableClassName?: string;
   toolbarLeftComponent?: ReactNode;
+  toolbarRightActionsComponent?: ReactNode;
   toolbarRightComponent?: ReactNode;
 };
 
@@ -32,6 +33,7 @@ export function Table({
   tableClassName,
   onSelectionChange,
   toolbarLeftComponent,
+  toolbarRightActionsComponent,
   toolbarRightComponent,
 }: TableProps) {
   return (
@@ -54,6 +56,7 @@ export function Table({
         showColumnVisibility={showColumnVisibility}
         tableClassName={tableClassName}
         toolbarLeftComponent={toolbarLeftComponent}
+        toolbarRightActionsComponent={toolbarRightActionsComponent}
         toolbarRightComponent={toolbarRightComponent}
       />
     </DataTable>
@@ -65,12 +68,14 @@ function TableContent({
   showColumnVisibility,
   tableClassName,
   toolbarLeftComponent,
+  toolbarRightActionsComponent,
   toolbarRightComponent,
 }: {
   title?: ReactNode;
   showColumnVisibility?: boolean;
   tableClassName?: string;
   toolbarLeftComponent?: ReactNode;
+  toolbarRightActionsComponent?: ReactNode;
   toolbarRightComponent?: ReactNode;
 }) {
   const { table } = useDataTable<StudyRow>();
@@ -127,6 +132,7 @@ function TableContent({
           <div className="absolute left-0">{toolbarLeftComponent}</div>
           {title ? <DataTable.Title>{title}</DataTable.Title> : null}
           <div className="absolute right-0 flex items-center">
+            {toolbarRightActionsComponent}
             {/* Pagination appears to the left of the "View" button */}
             <DataTable.Pagination<StudyRow> />
             {showColumnVisibility && <DataTable.ViewOptions<StudyRow> />}
