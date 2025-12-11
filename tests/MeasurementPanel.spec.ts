@@ -31,7 +31,7 @@ test('checks if Measurements right panel can be hidden/displayed', async ({
   await expect(segmentationPanel).toBeHidden();
 
   // Switch back to segmentations panel
-  await rightPanelPageObject.labelMapSegmentationPanel.select();
+  await rightPanelPageObject.noToolsSegmentationPanel.select();
 
   // Assert the segmentations panel is now visible, measurements panel invisible
   await expect(segmentationPanel).toBeVisible();

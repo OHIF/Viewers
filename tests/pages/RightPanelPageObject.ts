@@ -129,6 +129,21 @@ export class RightPanelPageObject {
     };
   }
 
+  get contourSegmentationPanel() {
+    const page = this.page;
+    const addSegmentationButton = this.addSegmentationButton;
+    const panel = this.segmentationPanel;
+    const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+
+    return {
+      addSegmentationButton,
+      menuButton,
+      panel,
+      select: async () => {
+        await menuButton.click();
+      },
+    };
+  }
   get labelMapSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
@@ -189,14 +204,12 @@ export class RightPanelPageObject {
     };
   }
 
-  get contourSegmentationPanel() {
+  get noToolsSegmentationPanel() {
     const page = this.page;
-    const addSegmentationButton = this.addSegmentationButton;
     const panel = this.segmentationPanel;
-    const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+    const menuButton = page.getByTestId(/^panelSegmentation.*-btn$/).first();
 
     return {
-      addSegmentationButton,
       menuButton,
       panel,
       select: async () => {
