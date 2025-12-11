@@ -364,7 +364,7 @@ const toolbarButtons = [
           commands: 'setToolActiveToolbar',
         },
         {
-          name: 'ThresholdRange',
+          name: i18n.t('ROIThresholdConfiguration:ThresholdRange'),
           type: 'double-range',
           id: 'threshold-range',
           min: 0,
