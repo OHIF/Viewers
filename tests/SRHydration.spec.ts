@@ -13,7 +13,7 @@ test('should hydrate SR reports correctly', async ({
   overlayPageObject,
 }) => {
   await rightPanelPageObject.toggle();
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);

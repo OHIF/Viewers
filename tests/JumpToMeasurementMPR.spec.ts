@@ -15,7 +15,7 @@ test('should hydrate in MPR correctly', async ({
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
 
   await leftPanelPageObject.loadSeriesByDescription('Body 4.0 CE', 1);
 

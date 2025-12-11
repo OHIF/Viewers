@@ -13,7 +13,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
 
   await mainToolbarPageObject.measurementTools.arrowAnnotate.click();
 

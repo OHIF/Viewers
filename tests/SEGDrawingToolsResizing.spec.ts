@@ -9,7 +9,7 @@ test.beforeEach(async ({ page, rightPanelPageObject }) => {
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await rightPanelPageObject.segmentationPanel.addSegmentationButton.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
   await page.waitForTimeout(500);
 });
@@ -20,7 +20,7 @@ async function performDrawingToolInteraction(
   rightPanelPageObject: RightPanelPageObject,
   viewportPageObject: ViewportPageObject
 ) {
-  const brushRadiusInput = rightPanelPageObject.segmentationPanel.tools[toolName].input;
+  const brushRadiusInput = rightPanelPageObject.labelMapSegmentationPanel.tools[toolName].input;
   const circle = viewportPageObject.active.svg('circle').first();
 
   await expect(brushRadiusInput).toHaveValue('25');

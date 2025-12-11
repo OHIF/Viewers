@@ -23,7 +23,7 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
       }
     );
   });
-  await rightPanelPageObject.segmentationPanel.labelMapMenuButton.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.select();
 
   await leftPanelPageObject.loadSeriesByModality('SEG');
   // Wait for the segmentation to be loaded.
@@ -40,10 +40,10 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   await checkForScreenshot(page, page, screenShotPaths.labelMapSegLocking.globalLockedSegPreEdit);
 
   // Attempt to erase the segmentations.
-  await rightPanelPageObject.segmentationPanel.tools.eraser.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.click();
 
   // Use the largest eraser radius to help ensure the entire image is erased.
-  await rightPanelPageObject.segmentationPanel.tools.eraser.setRadius(1000);
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.setRadius(1000);
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await viewportPageObject.getById('default').normalizedDragAt({
@@ -79,7 +79,7 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
     );
   });
 
-  await rightPanelPageObject.segmentationPanel.labelMapMenuButton.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.select();
 
   await leftPanelPageObject.loadSeriesByModality('SEG');
   // Wait for the segmentation to be loaded.
@@ -95,10 +95,10 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   await checkForScreenshot(page, page, screenShotPaths.labelMapSegLocking.globalUnlockedSegPreEdit);
 
   // Attempt to erase the segmentations.
-  await rightPanelPageObject.segmentationPanel.tools.eraser.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.click();
 
   // Use the largest eraser radius to help ensure the eraser passes over the entire image.
-  await rightPanelPageObject.segmentationPanel.tools.eraser.setRadius(1000);
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.setRadius(1000);
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await viewportPageObject.getById('default').normalizedDragAt({

@@ -31,7 +31,7 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
 
   // Navigate to the tracked measurements panel
   await rightPanelPageObject.toggle();
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
 
   // Double-click on the study browser thumbnail to load the SR
   await leftPanelPageObject.loadSeriesByModality('SR');
@@ -148,7 +148,7 @@ test('should display SCOORD3D probe measurements correctly', async ({
 
   // First hydrate the SR to load the measurements
   await rightPanelPageObject.toggle();
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
 

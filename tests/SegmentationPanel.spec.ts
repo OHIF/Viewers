@@ -9,18 +9,18 @@ test.beforeEach(async ({ page }) => {
 
 test('checks basic add, rename, delete segments from panel', async ({ rightPanelPageObject }) => {
   // Segmentation Panel should already be open
-  const segmentationPanel = rightPanelPageObject.segmentationPanel.labelMapMenuButton.button;
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to labelmap tab.
   segmentationPanel.click();
 
   // Add segmentation
-  await rightPanelPageObject.segmentationPanel.addSegmentationButton.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
   // Expect new segmentation and blank segment named "Segment 1"
-  const segment1 = rightPanelPageObject.segmentationPanel.panel.nthSegmentation(0);
-  expect(await rightPanelPageObject.segmentationPanel.panel.getSegmentationCount()).toBe(1);
+  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegmentation(0);
+  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(1);
   await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
@@ -32,7 +32,7 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   // Delete
   await segment1.actions.delete();
 
-  expect(await rightPanelPageObject.segmentationPanel.panel.getSegmentationCount()).toBe(0);
+  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(0);
 });
 
 test('checks saved segmentations loads and jumps to slices', async ({
@@ -56,23 +56,25 @@ test('checks saved segmentations loads and jumps to slices', async ({
   await overlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Segmentation Panel should already be open
-  const segmentationPanel = rightPanelPageObject.segmentationPanel.labelMapMenuButton.button;
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;
   await expect(segmentationPanel).toBeVisible();
 
   // Confirm spleen jumps to slice 17
   // First iteration repeat to account for segmentation loading delays
   await expect(async () => {
-    await rightPanelPageObject.segmentationPanel.panel.segmentationByText('Spleen').click();
+    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Spleen').click();
     await expect(viewportInfoBottomRight).toContainText('17/');
   }).toPass({
     timeout: 10000,
   });
 
   // Esophagus - 5
-  await rightPanelPageObject.segmentationPanel.panel.segmentationByText('Esophagus').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel
+    .segmentationByText('Esophagus')
+    .click();
   await expect(viewportInfoBottomRight).toContainText('5/');
 
   // Pancreas - 22
-  await rightPanelPageObject.segmentationPanel.panel.segmentationByText('Pancreas').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Pancreas').click();
   await expect(viewportInfoBottomRight).toContainText('22/');
 });

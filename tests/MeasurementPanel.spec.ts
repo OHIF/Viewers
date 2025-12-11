@@ -11,7 +11,7 @@ test('checks if Measurements right panel can be hidden/displayed', async ({
   rightPanelPageObject,
 }) => {
   const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
-  const segmentationPanel = rightPanelPageObject.segmentationPanel.panel.locator;
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.panel.locator;
 
   // Assert the measurements panel and segmentation panel is hidden initially
   await expect(measurementsPanel).toBeHidden();
@@ -24,14 +24,14 @@ test('checks if Measurements right panel can be hidden/displayed', async ({
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to the measurements tab
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
 
   // Assert the measurements panel is visible, and segmentation invisible
   await expect(measurementsPanel).toBeVisible();
   await expect(segmentationPanel).toBeHidden();
 
   // Switch back to segmentations panel
-  await rightPanelPageObject.segmentationPanel.menuButton.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.select();
 
   // Assert the segmentations panel is now visible, measurements panel invisible
   await expect(segmentationPanel).toBeVisible();
@@ -60,7 +60,7 @@ test('checks if measurement item can be relabeled under Measurements panel', asy
   await overlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Open measurement panel confirm default empty
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).locator;
   await expect(measurementRow).toContainText('(empty)');
 
@@ -89,7 +89,7 @@ test('checks if measurement item can be relabeled through the context menu on th
   await overlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Open measurement panel confirm default empty
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   const measurementRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).locator;
   await expect(measurementRow).toContainText('(empty)');
 
@@ -133,7 +133,7 @@ test('checks if image would jump when clicked on a measurement item', async ({
   await addLengthMeasurement(page);
 
   // Open measurement panel and click first measurement
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   // Confirm jumped to slice 1
@@ -156,7 +156,7 @@ test('checks if measurement item can be deleted under Measurements panel', async
   await addLengthMeasurement(page, { firstClick: [190, 100], secondClick: [170, 170] });
 
   // Open measurement panel, confirm 3 measurements
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(3);
 
   // Delete from measurement
@@ -204,7 +204,7 @@ test('checks if measurement item can be deleted through the context menu on the 
   await overlayPageObject.contextMenu.delete.click();
 
   // Open measurement panel and confirm measurement is gone
-  await rightPanelPageObject.measurementsPanel.menuButton.click();
+  await rightPanelPageObject.measurementsPanel.select();
   await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeHidden();
   expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
 });

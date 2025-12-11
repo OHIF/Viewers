@@ -74,17 +74,10 @@ export class RightPanelPageObject {
     const page = this.page;
     const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
     const getMeasurementByText = (text: string) => this.getPanelRowByText(text);
+    const menuButton = page.getByTestId('trackedMeasurements-btn');
 
     return {
-      get menuButton() {
-        const button = page.getByTestId('trackedMeasurements-btn');
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
-      },
+      menuButton,
       panel: {
         deleteAll: async () => {
           await page.getByRole('button', { name: 'Delete' }).click();
@@ -100,63 +93,54 @@ export class RightPanelPageObject {
           return getMeasurementByText(text);
         },
       },
+      select: async () => {
+        await menuButton.click();
+      },
     };
   }
 
-  get segmentationPanel() {
+  private get addSegmentationButton() {
+    const button = this.page.getByTestId('addSegmentation');
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
+  private get segmentationPanel() {
     const page = this.page;
     const getSegmentationByIdx = (index: number) => this.getPanelRowByIdx(index);
     const getSegmentationByText = (text: string) => this.getPanelRowByText(text);
 
     return {
-      get addSegmentationButton() {
-        const button = page.getByTestId('addSegmentation');
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
+      getSegmentationCount: async () => {
+        return await page.getByTestId('data-row').count();
       },
-      get contourMenuButton() {
-        const button = page.getByTestId('panelSegmentationWithToolsContour-btn');
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
+      // No data-cy exists in this panel, using Segmentation header button
+      locator: page.getByRole('button', { name: 'Segmentations' }),
+      nthSegmentation(index: number) {
+        return getSegmentationByIdx(index);
       },
-      get labelMapMenuButton() {
-        const button = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
+      segmentationByText(text: string) {
+        return getSegmentationByText(text);
       },
-      get menuButton() {
-        const button = page.getByTestId(/^panelSegmentation.*-btn$/).first();
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
-      },
-      panel: {
-        getSegmentationCount: async () => {
-          return await page.getByTestId('data-row').count();
-        },
-        // No data-cy exists in this panel, using Segmentation header button
-        locator: page.getByRole('button', { name: 'Segmentations' }),
-        nthSegmentation(index: number) {
-          return getSegmentationByIdx(index);
-        },
-        segmentationByText(text: string) {
-          return getSegmentationByText(text);
-        },
+    };
+  }
+
+  get labelMapSegmentationPanel() {
+    const page = this.page;
+    const addSegmentationButton = this.addSegmentationButton;
+    const panel = this.segmentationPanel;
+    const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+
+    return {
+      addSegmentationButton,
+      menuButton,
+      panel,
+      select: async () => {
+        await menuButton.click();
       },
       tools: {
         get brush() {
@@ -202,14 +186,21 @@ export class RightPanelPageObject {
           };
         },
       },
-      getSegmentationByText(text: string) {
-        const segmentation = page.getByTestId('data-row').filter({ hasText: text });
-        return {
-          locator: segmentation,
-          click: async () => {
-            await segmentation.click();
-          },
-        };
+    };
+  }
+
+  get contourSegmentationPanel() {
+    const page = this.page;
+    const addSegmentationButton = this.addSegmentationButton;
+    const panel = this.segmentationPanel;
+    const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+
+    return {
+      addSegmentationButton,
+      menuButton,
+      panel,
+      select: async () => {
+        await menuButton.click();
       },
     };
   }

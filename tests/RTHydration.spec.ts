@@ -21,7 +21,9 @@ test('should hydrate RT reports correctly', async ({
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
 
-  await rightPanelPageObject.segmentationPanel.getSegmentationByText('Small Sphere').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel
+    .segmentationByText('Small Sphere')
+    .click();
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtJumpToStructure);
 });
