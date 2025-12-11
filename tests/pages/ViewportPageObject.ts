@@ -83,7 +83,7 @@ export class ViewportPageObject {
       },
       contextMenu: {
         open: async () => {
-          floatingElementsPageObject.contextMenu.open(annotation);
+          await floatingElementsPageObject.viewport.annotationContextMenu.open(annotation);
         },
       },
     };

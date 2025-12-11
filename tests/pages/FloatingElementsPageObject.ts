@@ -7,34 +7,6 @@ export class FloatingElementsPageObject {
     this.page = page;
   }
 
-  get contextMenu() {
-    const page = this.page;
-    return {
-      get addLabel() {
-        const button = page.getByTestId('context-menu-item').filter({ hasText: 'Add Label' });
-
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
-      },
-      get delete() {
-        const button = page.getByTestId('context-menu-item').filter({ hasText: 'Delete' });
-        return {
-          button,
-          click: async () => {
-            await button.click();
-          },
-        };
-      },
-      open: async (element: Locator) => {
-        await element.click({ button: 'right', force: true });
-      },
-    };
-  }
-
   get dialog() {
     const page = this.page;
 
@@ -82,6 +54,31 @@ export class FloatingElementsPageObject {
     const page = this.page;
 
     return {
+      get annotationContextMenu() {
+        return {
+          get addLabel() {
+            const button = page.getByTestId('context-menu-item').filter({ hasText: 'Add Label' });
+            return {
+              locator: button,
+              click: async () => {
+                await button.click();
+              },
+            };
+          },
+          get delete() {
+            const button = page.getByTestId('context-menu-item').filter({ hasText: 'Delete' });
+            return {
+              locator: button,
+              click: async () => {
+                await button.click();
+              },
+            };
+          },
+          open: async (annotation: Locator) => {
+            await annotation.click({ button: 'right', force: true });
+          },
+        };
+      },
       get measurementTracking() {
         const cancelButton = page.getByTestId('prompt-begin-tracking-cancel-btn');
         const noAndNotAskAgainButton = page.getByTestId(

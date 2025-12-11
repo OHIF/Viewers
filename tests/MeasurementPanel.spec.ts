@@ -98,8 +98,9 @@ test('checks if measurement item can be relabeled through the context menu on th
   await viewportPageObject.active.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
-  await expect(floatingElementsPageObject.contextMenu.addLabel.button).toBeVisible();
-  await floatingElementsPageObject.contextMenu.addLabel.click();
+  const addLabelButton = floatingElementsPageObject.viewport.annotationContextMenu.addLabel;
+  await expect(addLabelButton.locator).toBeVisible();
+  await addLabelButton.click();
 
   // Interact with dialog
   await expect(floatingElementsPageObject.dialog.title).toHaveText('Edit Measurement Label');
@@ -200,8 +201,9 @@ test('checks if measurement item can be deleted through the context menu on the 
   await viewportPageObject.active.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
-  await expect(floatingElementsPageObject.contextMenu.delete.button).toBeVisible();
-  await floatingElementsPageObject.contextMenu.delete.click();
+  const deleteButton = floatingElementsPageObject.viewport.annotationContextMenu.delete;
+  await expect(deleteButton.locator).toBeVisible();
+  await deleteButton.click();
 
   // Open measurement panel and confirm measurement is gone
   await rightPanelPageObject.measurementsPanel.select();
