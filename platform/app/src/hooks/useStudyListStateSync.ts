@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { SortingState, PaginationState, ColumnFiltersState } from '@tanstack/react-table';
 import qs from 'query-string';
 import useSearchParams from './useSearchParams';
 import useDebounce from './useDebounce';
 import { useSessionStorage, COLUMN_IDS, TEXT_FILTER_COLUMN_IDS } from '@ohif/ui-next';
+import { preserveQueryStrings } from '../utils/preserveQueryParameters';
 
 export type StudyListState = {
   sorting: SortingState;
   pagination: PaginationState;
   filters: ColumnFiltersState;
+  dataSources?: string;
 };
 
 /**
@@ -40,26 +42,12 @@ export function useStudyListStateSync() {
     sessionState.sorting || parseSortingFromURL(searchParams)
   );
 
-  // Track if we're the ones causing the URL navigation to prevent feedback loop
-  // We ignore the first navigation because the initial state is properly set above.
-  const ignoreLocationChange = React.useRef(true);
+  const dataSources = sessionState.dataSources || searchParams.get('datasources');
 
-  useEffect(() => {
-    if (ignoreLocationChange.current) {
-      ignoreLocationChange.current = false;
-      return;
-    }
-
-    const urlPagination = parsePaginationFromURL(searchParams);
-    const urlFilters = parseFiltersFromURL(searchParams);
-    const urlSorting = parseSortingFromURL(searchParams);
-
-    setPagination(urlPagination);
-    setFilters(urlFilters);
-    setSorting(urlSorting);
-  }, [location.search, location.hash]);
-
-  const state = useMemo(() => ({ sorting, pagination, filters }), [sorting, pagination, filters]);
+  const state = useMemo(
+    () => ({ sorting, pagination, filters, dataSources }),
+    [sorting, pagination, filters, dataSources]
+  );
 
   // Debounce state for URL updates
   const debouncedState = useDebounce(state, 200);
@@ -76,7 +64,6 @@ export function useStudyListStateSync() {
 
     // Only navigate if the search string actually changed
     if (newSearch !== location.search) {
-      ignoreLocationChange.current = true;
       navigate(
         {
           pathname: location.pathname,
@@ -164,7 +151,7 @@ function parseFiltersFromURL(params: URLSearchParams): ColumnFiltersState {
 }
 
 /**
- * Build URL query string from study list state
+ * Build URL query string from study list state preserving key query parameters.
  */
 function buildQueryFromState(state: StudyListState): string {
   const query: Record<string, string> = {};
@@ -194,6 +181,12 @@ function buildQueryFromState(state: StudyListState): string {
       query[urlKey] = filter.value;
     }
   });
+
+  if (state.dataSources) {
+    query.dataSources = state.dataSources;
+  }
+
+  preserveQueryStrings(query);
 
   return qs.stringify(query, { skipNull: true, skipEmptyString: true });
 }

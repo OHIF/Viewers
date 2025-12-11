@@ -131,6 +131,7 @@ function Table({
   filters,
   toolbarLeftComponent,
   toolbarRightComponent,
+  toolbarRightActionsComponent,
   children,
 }: TableProps) {
   const { defaultPreviewSizePercent } = useLayout();
@@ -154,6 +155,7 @@ function Table({
             onSelectionChange={onSelectionChange}
             toolbarLeftComponent={toolbarLeftComponent}
             toolbarRightComponent={toolbarRightComponent}
+            toolbarRightActionsComponent={toolbarRightActionsComponent}
             onSortingChange={onSortingChange}
             onPaginationChange={onPaginationChange}
             onFiltersChange={onFiltersChange}

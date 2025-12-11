@@ -280,7 +280,6 @@ function _getQueryFilterValues(query, queryLimit) {
     // For those that don't we will just assume we get everything back.
     offset: 0,
     limit: queryLimit,
-    config: query.get('configurl'),
   };
 
   // patientName: good
