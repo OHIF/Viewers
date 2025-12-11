@@ -1,4 +1,13 @@
-import * as React from 'react';
+import React, {
+  type ReactNode,
+  type ReactElement,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Children,
+  isValidElement,
+} from 'react';
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -37,16 +46,24 @@ import {
 import { ScrollArea } from '../ScrollArea';
 import { cn } from '../../lib/utils';
 
+// Type for state update functions that accept either a value or an updater function
+type Updater<T> = T | ((prev: T) => T);
+type OnChangeFn<T> = (updater: Updater<T>) => void;
+
 export type DataTableProps<TData> = {
   data: TData[];
   columns: ColumnDef<TData, unknown>[];
   getRowId?: (row: TData, index: number) => string;
-  initialSorting?: SortingState;
   initialVisibility?: VisibilityState;
-  initialFilters?: ColumnFiltersState;
+  sorting?: SortingState;
+  pagination?: PaginationState;
+  filters?: ColumnFiltersState;
+  onSortingChange?: OnChangeFn<SortingState>;
+  onPaginationChange?: OnChangeFn<PaginationState>;
+  onFiltersChange?: OnChangeFn<ColumnFiltersState>;
   enforceSingleSelection?: boolean;
   onSelectionChange?: (rows: TData[]) => void;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 /**
@@ -57,32 +74,29 @@ function DataTableRoot<TData>({
   data,
   columns,
   getRowId,
-  initialSorting = [],
   initialVisibility = {},
-  initialFilters = [],
+  sorting = [],
+  pagination = { pageIndex: 0, pageSize: 50 },
+  filters = [],
+  onSortingChange,
+  onPaginationChange,
+  onFiltersChange,
   enforceSingleSelection = true,
   onSelectionChange,
   children,
 }: DataTableProps<TData>) {
-  const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>(initialVisibility);
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(initialFilters);
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 50,
-  });
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialVisibility);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const table = useReactTable<TData>({
     data,
     columns,
-    state: { sorting, columnVisibility, rowSelection, columnFilters, pagination },
-    onSortingChange: setSorting,
+    state: { sorting, columnVisibility, rowSelection, columnFilters: filters, pagination },
+    onSortingChange: onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    onPaginationChange: setPagination,
+    onColumnFiltersChange: onFiltersChange,
+    onPaginationChange: onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -90,15 +104,25 @@ function DataTableRoot<TData>({
     enableRowSelection: true,
     enableMultiRowSelection: !enforceSingleSelection,
     getRowId,
+    autoResetPageIndex: false,
   });
 
-  // When filters, sorting, or incoming data change, go back to the first page.
-  React.useEffect(() => {
-    setPagination(p => ({ ...p, pageIndex: 0 }));
-  }, [columnFilters, sorting, data]);
+  // After rendering non-empty data once, any updates to the data will
+  // reset the pagination to the first page. This takes care of returning to
+  // the first page when sorting or filtering changes for now. Might need to
+  // revisit this later.
+  const nonEmptyDataRenderedRef = useRef(!!data?.length);
+  useEffect(() => {
+    if (!nonEmptyDataRenderedRef.current) {
+      nonEmptyDataRenderedRef.current = !!data?.length;
+      return;
+    }
+
+    onPaginationChange(pagination => ({ ...pagination, pageIndex: 0 }));
+  }, [data, onPaginationChange]);
 
   // Surface selection changes to consumers.
-  React.useEffect(() => {
+  useEffect(() => {
     if (!onSelectionChange) {
       return;
     }
@@ -114,7 +138,7 @@ function DataTableRoot<TData>({
 }
 
 type TableProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   /**
    * Optional className applied to the outer bordered container.
    */
@@ -136,7 +160,7 @@ type TableProps = {
 function Table<TData>({ children, className, tableClassName }: TableProps) {
   const { table } = useDataTable<TData>();
 
-  const renderColGroup = React.useCallback(
+  const renderColGroup = useCallback(
     () => (
       <colgroup>
         {table.getVisibleLeafColumns().map(col => {
@@ -158,12 +182,12 @@ function Table<TData>({ children, className, tableClassName }: TableProps) {
     [table]
   );
 
-  let headerChild: React.ReactElement | null = null;
-  let filterRowChild: React.ReactElement | null = null;
-  let bodyChild: React.ReactElement | null = null;
+  let headerChild: ReactElement | null = null;
+  let filterRowChild: ReactElement | null = null;
+  let bodyChild: ReactElement | null = null;
 
-  React.Children.forEach(children, child => {
-    if (!React.isValidElement(child)) {
+  Children.forEach(children, child => {
+    if (!isValidElement(child)) {
       return;
     }
     if (child.type === Header) {
@@ -248,7 +272,7 @@ function Header<TData>() {
 }
 
 type RowProps<TData> = {
-  render?: (row: Row<TData>) => React.ReactNode;
+  render?: (row: Row<TData>) => ReactNode;
   onClick?: (row: Row<TData>) => void;
   onDoubleClick?: (row: Row<TData>) => void;
   className?: string | ((row: Row<TData>) => string);

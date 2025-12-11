@@ -118,12 +118,17 @@ function Table({
   columns,
   data,
   title,
-  initialSorting,
   initialVisibility,
   enforceSingleSelection,
   showColumnVisibility,
   tableClassName,
   onSelectionChange,
+  onSortingChange,
+  onPaginationChange,
+  onFiltersChange,
+  sorting,
+  pagination,
+  filters,
   toolbarLeftComponent,
   toolbarRightComponent,
   children,
@@ -142,7 +147,6 @@ function Table({
             columns={columns}
             data={data}
             title={title}
-            initialSorting={initialSorting}
             initialVisibility={initialVisibility}
             enforceSingleSelection={enforceSingleSelection}
             showColumnVisibility={showColumnVisibility}
@@ -150,6 +154,12 @@ function Table({
             onSelectionChange={onSelectionChange}
             toolbarLeftComponent={toolbarLeftComponent}
             toolbarRightComponent={toolbarRightComponent}
+            onSortingChange={onSortingChange}
+            onPaginationChange={onPaginationChange}
+            onFiltersChange={onFiltersChange}
+            sorting={sorting}
+            pagination={pagination}
+            filters={filters}
           />
         </div>
       </div>

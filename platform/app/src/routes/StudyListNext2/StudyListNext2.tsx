@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@state';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
+import { useStudyListStateSync } from '../../hooks';
 
 import { StudyList, Icons, Button, useModal } from '@ohif/ui-next';
 
@@ -23,7 +24,6 @@ const NON_IMAGE_MODALITIES = new Set(['RTDOSE', 'RTPLAN', 'RTSTRUCT']);
 
 export default function StudyListNext2({
   data,
-  dataTotal,
   dataSource,
   isLoadingData,
   dataPath,
@@ -33,19 +33,19 @@ export default function StudyListNext2({
 }: Props) {
   const [appConfig] = useAppConfig();
 
-  // Pass data directly - columns will handle the transformation
-  const rows = React.useMemo(() => {
-    return (Array.isArray(data) ? data : []) as StudyRow[];
-  }, [data]);
+  // Sync table state (sorting, pagination, filters) with URL and sessionStorage
+  const { sorting, pagination, filters, setSorting, setPagination, setFilters } =
+    useStudyListStateSync();
 
-  // URL rehydration is handled by StudyListNext2Entry before DataSourceWrapper mounts
+  // Default sorting if no URL state exists
+  const defaultSorting = useMemo(() => [{ id: 'studyDateTime', desc: true }], []);
 
-  const [selected, setSelected] = React.useState<StudyRow | null>(null);
-  const [isPreviewOpen, setPreviewOpen] = React.useState(true);
+  const [selected, setSelected] = useState<StudyRow | null>(null);
+  const [isPreviewOpen, setPreviewOpen] = useState(true);
 
-  const columns = React.useMemo(() => StudyList.defaultColumns(), []);
+  const columns = useMemo(() => StudyList.defaultColumns(), []);
 
-  const previewDefaultSize = React.useMemo(() => {
+  const previewDefaultSize = useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
       const percent = (325 / window.innerWidth) * 100;
       return Math.min(Math.max(percent, 15), 50);
@@ -68,8 +68,13 @@ export default function StudyListNext2({
           >
             <StudyList.Table
               columns={columns}
-              data={rows as StudyRow[]}
-              initialSorting={[{ id: 'studyDateTime', desc: true }]}
+              data={data as StudyRow[]}
+              sorting={sorting.length > 0 ? sorting : defaultSorting}
+              pagination={pagination}
+              filters={filters}
+              onSortingChange={setSorting}
+              onPaginationChange={setPagination}
+              onFiltersChange={setFilters}
               enforceSingleSelection
               showColumnVisibility
               title={'Study List'}
@@ -168,11 +173,11 @@ function SidePanelPreview({
   extensionManager: any;
   selected: StudyRow | null;
 }) {
-  const [series, setSeries] = React.useState<any[]>([]);
-  const [thumbs, setThumbs] = React.useState<Record<string, string | null>>({});
+  const [series, setSeries] = useState<any[]>([]);
+  const [thumbs, setThumbs] = useState<Record<string, string | null>>({});
   const { sortBySeriesDate } = utils as any;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const run = async () => {
       const sid = (selected as any)?.studyInstanceUid;
       if (!sid) {
@@ -193,7 +198,7 @@ function SidePanelPreview({
     run();
   }, [dataSource, selected]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const sid = (selected as any)?.studyInstanceUid;
     if (!sid || !series?.length) {
       setThumbs({});

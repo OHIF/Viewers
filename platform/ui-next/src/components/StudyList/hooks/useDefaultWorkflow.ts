@@ -5,9 +5,9 @@ import * as React from 'react';
  * If `allowed` is provided, the returned value is guaranteed to be from the allowed list (or null).
  */
 export function useDefaultWorkflow(
-  storageKey: string = 'studylist.defaultWorkflow',
   allowed?: readonly string[]
 ): [string | null, (next: string | null) => void] {
+  const storageKey = 'studyList.defaultWorkflow';
   const [value, setValue] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -25,7 +25,7 @@ export function useDefaultWorkflow(
     } catch {
       // no-op
     }
-  }, [storageKey, allowed]);
+  }, [allowed]);
 
   const setAndPersist = React.useCallback(
     (next: string | null) => {
@@ -44,7 +44,7 @@ export function useDefaultWorkflow(
         // no-op
       }
     },
-    [storageKey, allowed]
+    [allowed]
   );
 
   return [value, setAndPersist] as const;

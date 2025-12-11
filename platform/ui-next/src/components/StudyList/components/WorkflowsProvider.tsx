@@ -74,10 +74,8 @@ export function WorkflowsProvider({
   }, [loadedModes]);
 
   // Use localStorage-backed hook for persistence
-  const [storedDefaultWorkflowId, setStoredDefaultWorkflowId] = useDefaultWorkflow(
-    'studylist.defaultWorkflow',
-    validWorkflowIds
-  );
+  const [storedDefaultWorkflowId, setStoredDefaultWorkflowId] =
+    useDefaultWorkflow(validWorkflowIds);
 
   // Convert null to undefined for consistency with context type
   const defaultWorkflowId = storedDefaultWorkflowId ?? undefined;

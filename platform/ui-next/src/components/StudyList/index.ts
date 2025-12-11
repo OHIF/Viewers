@@ -1,5 +1,10 @@
 // Import components for StudyList namespace
-import { defaultColumns } from './columns/defaultColumns';
+import {
+  defaultColumns,
+  COLUMN_IDS,
+  FILTERABLE_COLUMN_IDS,
+  TEXT_FILTER_COLUMN_IDS,
+} from './columns/defaultColumns';
 import { SettingsPopover } from './components/SettingsPopover';
 import { PreviewContainer } from './components/PreviewContainer';
 import { PreviewHeader } from './components/PreviewHeader';
@@ -10,6 +15,9 @@ import { WorkflowsProvider } from './components/WorkflowsProvider';
 
 // Types
 export * from './types/types';
+
+// Column ID constants
+export { COLUMN_IDS, FILTERABLE_COLUMN_IDS, TEXT_FILTER_COLUMN_IDS };
 
 // StudyList compound component namespace
 type StudyListNamespace = typeof Layout & {
