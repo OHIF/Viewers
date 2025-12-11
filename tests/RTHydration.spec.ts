@@ -8,16 +8,16 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate RT reports correctly', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPreHydration);
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
 

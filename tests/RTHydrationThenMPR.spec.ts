@@ -8,15 +8,15 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate an RTSTRUCT and then launch MPR', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
-  overlayPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
 

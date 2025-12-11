@@ -8,10 +8,10 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate in MPR correctly', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
@@ -50,7 +50,7 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(2000);
 
-  await overlayPageObject.viewport.measurementTracking.confirm.click();
+  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
 
   // scroll away
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);

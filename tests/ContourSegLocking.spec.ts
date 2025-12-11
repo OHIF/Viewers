@@ -5,9 +5,9 @@ const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
 test('should not allow contours to be edited in basic viewer mode', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   const mode = 'viewer';
@@ -18,7 +18,7 @@ test('should not allow contours to be edited in basic viewer mode', async ({
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
@@ -49,9 +49,9 @@ test('should not allow contours to be edited in basic viewer mode', async ({
 
 test('should not allow contours to be edited when panelSegmentation.disableEditing is true', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   const mode = 'segmentation';
@@ -72,7 +72,7 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
     );
   });
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
@@ -103,9 +103,9 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
 
 test('should allow contours to be edited when panelSegmentation.disableEditing is false', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   const mode = 'segmentation';
@@ -126,7 +126,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
     );
   });
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);

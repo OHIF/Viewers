@@ -8,9 +8,9 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate SEG reports correctly', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByDescription('SEG');
@@ -37,7 +37,7 @@ test('should hydrate SEG reports correctly', async ({
     }
   });
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydration.segPostHydration);

@@ -9,9 +9,9 @@ test.beforeEach(async ({ page }) => {
 
 test('should prevent editing of label map segmentations when panelSegmentation.disableEditing is true', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   // disable editing of segmentations via the customization service
@@ -29,7 +29,7 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
@@ -64,9 +64,9 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
 
 test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   // disable editing of segmentations via the customization service
@@ -85,7 +85,7 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 

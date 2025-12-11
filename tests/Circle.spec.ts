@@ -8,8 +8,8 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the circle tool', async ({
   page,
+  floatingElementsPageObject,
   mainToolbarPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.circleROI.click();
@@ -17,6 +17,6 @@ test('should display the circle tool', async ({
     { x: 480, y: 205 },
     { x: 488, y: 247 },
   ]);
-  await overlayPageObject.viewport.measurementTracking.confirm.click();
+  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.circle.circleDisplayedCorrectly);
 });

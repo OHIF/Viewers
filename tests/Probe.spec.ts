@@ -8,12 +8,12 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the probe tool', async ({
   page,
+  floatingElementsPageObject,
   mainToolbarPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.probe.click();
   await viewportPageObject.active.clickAt([{ x: 550, y: 200 }]);
-  await overlayPageObject.viewport.measurementTracking.confirm.click();
+  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.probe.probeDisplayedCorrectly);
 });

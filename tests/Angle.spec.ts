@@ -8,8 +8,8 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the angle tool', async ({
   page,
+  floatingElementsPageObject,
   mainToolbarPageObject,
-  overlayPageObject,
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.moreTools.angle.click();
@@ -18,6 +18,6 @@ test('should display the angle tool', async ({
     { x: 450, y: 250 },
     { x: 550, y: 300 },
   ]);
-  await overlayPageObject.viewport.measurementTracking.confirm.click();
+  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.angle.angleDisplayedCorrectly);
 });

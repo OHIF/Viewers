@@ -7,7 +7,7 @@ import {
   simulateNormalizedDragOnElement,
 } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
-import { OverlayPageObject } from './OverlayPageObject';
+import { FloatingElementsPageObject } from './FloatingElementsPageObject';
 
 type SvgInnerElement = 'circle' | 'path' | 'd';
 
@@ -73,7 +73,7 @@ export class ViewportPageObject {
 
   private getAnnotation(viewport: Locator, nth: number) {
     const page = this.page;
-    const overlayPageObject = new OverlayPageObject(page);
+    const floatingElementsPageObject = new FloatingElementsPageObject(page);
     const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
 
     return {
@@ -83,7 +83,7 @@ export class ViewportPageObject {
       },
       contextMenu: {
         open: async () => {
-          overlayPageObject.contextMenu.open(annotation);
+          floatingElementsPageObject.contextMenu.open(annotation);
         },
       },
     };

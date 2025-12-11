@@ -1,14 +1,14 @@
 import { Locator, Page } from '@playwright/test';
 
-import { OverlayPageObject } from './OverlayPageObject';
+import { FloatingElementsPageObject } from './FloatingElementsPageObject';
 
 export class RightPanelPageObject {
   readonly page: Page;
-  private readonly overlayPageObject: OverlayPageObject;
+  private readonly floatingElementsPageObject: FloatingElementsPageObject;
 
   constructor(page: Page) {
     this.page = page;
-    this.overlayPageObject = new OverlayPageObject(page);
+    this.floatingElementsPageObject = new FloatingElementsPageObject(page);
   }
 
   private getActionsMenu(row: Locator) {
@@ -34,7 +34,7 @@ export class RightPanelPageObject {
       rename: async (text: string) => {
         await actionsButton.click();
         await this.page.getByTestId('Rename').click();
-        await this.overlayPageObject.dialog.input.fillAndSave(text);
+        await this.floatingElementsPageObject.dialog.input.fillAndSave(text);
       },
     };
   }

@@ -8,10 +8,10 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate an RTSTRUCT from MPR', async ({
   page,
+  floatingElementsPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
-  overlayPageObject,
 }) => {
   await rightPanelPageObject.toggle();
 
@@ -27,7 +27,7 @@ test('should hydrate an RTSTRUCT from MPR', async ({
 
   await checkForScreenshot(page, page, screenShotPaths.rtHydrationFromMPR.mprAfterRT);
 
-  await overlayPageObject.viewport.segmentationHydration.yes.click();
+  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
 
