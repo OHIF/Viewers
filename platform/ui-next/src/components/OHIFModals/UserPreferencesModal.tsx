@@ -1,7 +1,113 @@
 import * as React from 'react';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { Label } from '../Label';
 import { Input } from '../Input';
 import { cn } from '../../lib/utils';
+
+const HOTKEY_TOKEN_TRANSLATIONS: Record<
+  string,
+  {
+    i18nKey: string;
+    defaultValue: string;
+  }
+> = {
+  ctrl: { i18nKey: 'HotkeyKeys.ctrl', defaultValue: 'Ctrl' },
+  control: { i18nKey: 'HotkeyKeys.ctrl', defaultValue: 'Ctrl' },
+  shift: { i18nKey: 'HotkeyKeys.shift', defaultValue: 'Shift' },
+  alt: { i18nKey: 'HotkeyKeys.alt', defaultValue: 'Alt' },
+  option: { i18nKey: 'HotkeyKeys.option', defaultValue: 'Option' },
+  meta: { i18nKey: 'HotkeyKeys.meta', defaultValue: 'Cmd' },
+  command: { i18nKey: 'HotkeyKeys.meta', defaultValue: 'Cmd' },
+  cmd: { i18nKey: 'HotkeyKeys.meta', defaultValue: 'Cmd' },
+  enter: { i18nKey: 'HotkeyKeys.enter', defaultValue: 'Enter' },
+  return: { i18nKey: 'HotkeyKeys.enter', defaultValue: 'Enter' },
+  esc: { i18nKey: 'HotkeyKeys.esc', defaultValue: 'Esc' },
+  escape: { i18nKey: 'HotkeyKeys.esc', defaultValue: 'Esc' },
+  space: { i18nKey: 'HotkeyKeys.space', defaultValue: 'Space' },
+  spacebar: { i18nKey: 'HotkeyKeys.space', defaultValue: 'Space' },
+  tab: { i18nKey: 'HotkeyKeys.tab', defaultValue: 'Tab' },
+  backspace: { i18nKey: 'HotkeyKeys.backspace', defaultValue: 'Backspace' },
+  delete: { i18nKey: 'HotkeyKeys.delete', defaultValue: 'Delete' },
+  del: { i18nKey: 'HotkeyKeys.delete', defaultValue: 'Delete' },
+  insert: { i18nKey: 'HotkeyKeys.insert', defaultValue: 'Insert' },
+  ins: { i18nKey: 'HotkeyKeys.insert', defaultValue: 'Insert' },
+  home: { i18nKey: 'HotkeyKeys.home', defaultValue: 'Home' },
+  end: { i18nKey: 'HotkeyKeys.end', defaultValue: 'End' },
+  pageup: { i18nKey: 'HotkeyKeys.pageup', defaultValue: 'Page Up' },
+  pagedown: { i18nKey: 'HotkeyKeys.pagedown', defaultValue: 'Page Down' },
+  up: { i18nKey: 'HotkeyKeys.up', defaultValue: 'Up Arrow' },
+  down: { i18nKey: 'HotkeyKeys.down', defaultValue: 'Down Arrow' },
+  left: { i18nKey: 'HotkeyKeys.left', defaultValue: 'Left Arrow' },
+  right: { i18nKey: 'HotkeyKeys.right', defaultValue: 'Right Arrow' },
+  capslock: { i18nKey: 'HotkeyKeys.capslock', defaultValue: 'Caps Lock' },
+  plus: { i18nKey: 'HotkeyKeys.plus', defaultValue: 'Plus' },
+  minus: { i18nKey: 'HotkeyKeys.minus', defaultValue: 'Minus' },
+  comma: { i18nKey: 'HotkeyKeys.comma', defaultValue: 'Comma' },
+  period: { i18nKey: 'HotkeyKeys.period', defaultValue: 'Period' },
+  slash: { i18nKey: 'HotkeyKeys.slash', defaultValue: 'Slash' },
+  backslash: { i18nKey: 'HotkeyKeys.backslash', defaultValue: 'Backslash' },
+  semicolon: { i18nKey: 'HotkeyKeys.semicolon', defaultValue: 'Semicolon' },
+  quote: { i18nKey: 'HotkeyKeys.quote', defaultValue: 'Quote' },
+  apostrophe: { i18nKey: 'HotkeyKeys.quote', defaultValue: 'Quote' },
+  backquote: { i18nKey: 'HotkeyKeys.backquote', defaultValue: 'Backtick' },
+  tilde: { i18nKey: 'HotkeyKeys.backquote', defaultValue: 'Backtick' },
+  bracketleft: { i18nKey: 'HotkeyKeys.bracketleft', defaultValue: 'Left Bracket' },
+  bracketright: { i18nKey: 'HotkeyKeys.bracketright', defaultValue: 'Right Bracket' },
+};
+
+const formatFallbackToken = (token: string) => {
+  if (!token) {
+    return '';
+  }
+
+  if (/^f\d{1,2}$/i.test(token)) {
+    return token.toUpperCase();
+  }
+
+  if (token.length === 1) {
+    return token.toUpperCase();
+  }
+
+  return token.charAt(0).toUpperCase() + token.slice(1);
+};
+
+const normalizeHotkeyValue = (value?: string | string[]) => {
+  if (!value) {
+    return '';
+  }
+
+  if (Array.isArray(value)) {
+    return value.join('+');
+  }
+
+  return value;
+};
+
+const translateHotkeyValue = (value: string | string[] | undefined, t: TFunction) => {
+  const normalizedValue = normalizeHotkeyValue(value);
+  if (!normalizedValue) {
+    return '';
+  }
+
+  return normalizedValue
+    .split('+')
+    .map(rawToken => {
+      const trimmed = rawToken.trim();
+      if (!trimmed) {
+        return '';
+      }
+
+      const lower = trimmed.toLowerCase();
+      const config = HOTKEY_TOKEN_TRANSLATIONS[lower];
+      if (config) {
+        return t(config.i18nKey, { defaultValue: config.defaultValue });
+      }
+
+      return formatFallbackToken(trimmed);
+    })
+    .join('+');
+};
 
 interface UserPreferencesModalProps {
   children: React.ReactNode;
@@ -72,6 +178,12 @@ interface HotkeyProps {
 
 function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: HotkeyProps) {
   const [isRecording, setIsRecording] = React.useState(false);
+  const { t } = useTranslation('UserPreferencesModal');
+  const translatedValue = React.useMemo(() => translateHotkeyValue(value, t), [value, t]);
+  const translatedPlaceholder = React.useMemo(
+    () => translateHotkeyValue(placeholder, t),
+    [placeholder, t]
+  );
 
   const onInputKeyDown = (event: React.KeyboardEvent) => {
     event.preventDefault();
@@ -95,15 +207,15 @@ function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: Hot
   };
 
   return (
-    <div className={cn('flex items-center justify-between space-x-2', className)}>
-      <Label className="whitespace-nowrap">{label}</Label>
+    <div className={cn('flex items-start justify-between gap-2', className)}>
+      <Label className="flex-1 whitespace-normal break-words text-sm">{label}</Label>
       <Input
         className={cn(
           'w-16 text-center transition-colors',
           isRecording && 'bg-accent text-accent-foreground caret-accent-foreground'
         )}
-        placeholder={isRecording ? 'Press keys...' : placeholder}
-        value={value}
+        placeholder={isRecording ? t('Press keys') : translatedPlaceholder || ''}
+        value={isRecording ? normalizeHotkeyValue(value) : translatedValue}
         onKeyDown={onInputKeyDown}
         onFocus={onFocus}
         onBlur={onBlur}

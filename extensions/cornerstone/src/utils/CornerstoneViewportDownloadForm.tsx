@@ -67,7 +67,12 @@ const CornerstoneViewportDownloadForm = ({
     return () => {
       Object.keys(toolModeAndBindings).forEach(toolName => {
         const { mode, bindings } = toolModeAndBindings[toolName];
-        toolGroup.setToolMode(toolName, mode, { bindings });
+        try {
+          toolGroup.setToolMode(toolName, mode, { bindings });
+        } catch (error) {
+          // Handle errors when restoring tool mode during cleanup (e.g., when tool state is undefined)
+          console.debug('Error restoring tool mode during cleanup:', toolName, error);
+        }
       });
     };
   }, []);
