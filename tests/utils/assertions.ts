@@ -13,8 +13,8 @@ export async function assertNumberOfModalityLoadBadges({
   page: Page;
   expectedCount: number;
 }) {
-  const DOMOverlayPageObject = new DOMOverlayPageObject(page);
-  const count = await DOMOverlayPageObject.viewport.getModalityLoadBadgeCount();
+  const domOverlayPageObject = new DOMOverlayPageObject(page);
+  const count = await domOverlayPageObject.viewport.getModalityLoadBadgeCount();
 
   expect(count).toBe(expectedCount);
 }

@@ -73,7 +73,7 @@ export class ViewportPageObject {
 
   private getAnnotation(viewport: Locator, nth: number) {
     const page = this.page;
-    const DOMOverlayPageObject = new DOMOverlayPageObject(page);
+    const domOverlayPageObject = new DOMOverlayPageObject(page);
     const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
 
     return {
@@ -83,7 +83,7 @@ export class ViewportPageObject {
       },
       contextMenu: {
         open: async () => {
-          await DOMOverlayPageObject.viewport.annotationContextMenu.open(annotation);
+          await domOverlayPageObject.viewport.annotationContextMenu.open(annotation);
         },
       },
     };
