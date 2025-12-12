@@ -36,6 +36,7 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
+import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -613,6 +614,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * case where the user is in MPR and a viewport other than active should be
    * the one to change to display the iamge.
    *
+   * Third choice is to use a viewport whose orientation best matches the
+   * measurement when no other viewport qualifies.
+   *
    * Final choice is to use the provide activeViewportId.  This will cover
    * changes to/from video and wsi viewports and other cases where no
    * viewport is really even close to being able to display the measurement.
@@ -665,6 +669,30 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           viewportId: id,
           displaySetInstanceUID,
           viewportOptions: { viewportType },
+        };
+      }
+    }
+
+    // Use a viewport with matching orientation when no displaySet match is found.
+    const closestOrientation = getClosestOrientationFromIOP(
+      displaySetService,
+      displaySetInstanceUID
+    );
+
+    for (const id of this.viewportsById.keys()) {
+      const viewportOptions = this.getViewportOptions(id);
+
+      if (!viewportOptions) {
+        continue;
+      }
+
+      const { orientation } = viewportOptions;
+
+      if (closestOrientation === orientation) {
+        return {
+          viewportId: id,
+          displaySetInstanceUID,
+          viewportOptions: { orientation: closestOrientation, viewportType },
         };
       }
     }
