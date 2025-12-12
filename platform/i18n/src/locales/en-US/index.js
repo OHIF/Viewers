@@ -30,6 +30,7 @@ import Onboarding from './Onboarding.json';
 import Colormaps from './Colormaps.json';
 import PanelSUV from './PanelSUV.json';
 import ROIThresholdConfiguration from './ROIThresholdConfiguration.json';
+import USAnnotationPanel from './USAnnotationPanel.json';
 
 export default {
   'en-US': {
@@ -65,5 +66,6 @@ export default {
     Colormaps,
     PanelSUV,
     ROIThresholdConfiguration,
+    USAnnotationPanel,
   },
 };

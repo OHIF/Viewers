@@ -33,6 +33,7 @@ import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
 import Hps from './Hps.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import USAnnotationPanel from './USAnnotationPanel.json';
 
 export default {
   'test-LNG': {
@@ -71,5 +72,6 @@ export default {
     Tools,
     Hps,
     ToolbarLayoutSelector,
+    USAnnotationPanel,
   },
 };
