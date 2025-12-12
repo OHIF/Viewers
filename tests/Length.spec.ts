@@ -8,6 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the length tool', async ({
   page,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -16,6 +17,6 @@ test('should display the length tool', async ({
     { x: 364, y: 234 },
     { x: 544, y: 232 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
 });

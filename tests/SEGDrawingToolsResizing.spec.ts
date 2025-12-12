@@ -1,16 +1,15 @@
 import { Page } from '@playwright/test';
 
-import { ViewportPageObject } from './pages';
+import { RightPanelPageObject, ViewportPageObject } from './pages';
 import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, rightPanelPageObject }) => {
   const studyInstanceUID = '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046';
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
-  await page.getByTestId('addSegmentation').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
   await page.waitForTimeout(500);
 });
@@ -18,9 +17,10 @@ test.beforeEach(async ({ page }) => {
 async function performDrawingToolInteraction(
   page: Page,
   toolName: string,
+  rightPanelPageObject: RightPanelPageObject,
   viewportPageObject: ViewportPageObject
 ) {
-  const brushRadiusInput = page.getByTestId(`${toolName}-radius`).locator('input');
+  const brushRadiusInput = rightPanelPageObject.labelMapSegmentationPanel.tools[toolName].input;
   const circle = viewportPageObject.active.svg('circle').first();
 
   await expect(brushRadiusInput).toHaveValue('25');
@@ -57,10 +57,14 @@ async function performDrawingToolInteraction(
   await page.waitForTimeout(500);
 }
 
-test('should resize segmentation brush tool', async ({ page, viewportPageObject }) => {
+test('should resize segmentation brush tool', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
   await page.getByTestId('Brush-btn').click();
 
-  await performDrawingToolInteraction(page, 'brush', viewportPageObject);
+  await performDrawingToolInteraction(page, 'brush', rightPanelPageObject, viewportPageObject);
 
   await checkForScreenshot(
     page,
@@ -69,7 +73,11 @@ test('should resize segmentation brush tool', async ({ page, viewportPageObject 
   );
 });
 
-test('should resize segmentation eraser tool', async ({ page, viewportPageObject }) => {
+test('should resize segmentation eraser tool', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
   await page.getByTestId('Brush-btn').click();
 
   await page.getByTestId('brush-radius').locator('input').fill('99.5');
@@ -82,7 +90,7 @@ test('should resize segmentation eraser tool', async ({ page, viewportPageObject
 
   await page.waitForTimeout(500);
 
-  await performDrawingToolInteraction(page, 'eraser', viewportPageObject);
+  await performDrawingToolInteraction(page, 'eraser', rightPanelPageObject, viewportPageObject);
 
   await checkForScreenshot(
     page,
@@ -91,8 +99,12 @@ test('should resize segmentation eraser tool', async ({ page, viewportPageObject
   );
 });
 
-test('should resize segmentation threshold tool', async ({ page, viewportPageObject }) => {
+test('should resize segmentation threshold tool', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
   await page.getByTestId('Threshold-btn').click();
 
-  await performDrawingToolInteraction(page, 'threshold', viewportPageObject);
+  await performDrawingToolInteraction(page, 'threshold', rightPanelPageObject, viewportPageObject);
 });
