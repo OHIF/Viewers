@@ -60,15 +60,26 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   // In such cases, we attempt to handle this scenario gracefully by
   // invoking a custom handler. Ideally, if a user tries to launch a series that isn't viewable,
   // (eg.: we can prompt them with an explanation and provide a link to the full study).
+
+  // Additional guard: If no customization handler is registered for missing
+  // referenced display sets, skip SEG rendering to avoid a viewport crash.
   if (!referencedDisplaySetInstanceUID) {
     const missingReferenceDisplaySetHandler = customizationService.getCustomization(
       'missingReferenceDisplaySetHandler'
     );
-    const { handled } = missingReferenceDisplaySetHandler();
-    if (handled) {
+    if (typeof missingReferenceDisplaySetHandler === 'function') {
+      const { handled } = missingReferenceDisplaySetHandler();
+      if (handled) {
+        return;
+      }
+    } else {
+      console.log(
+        "No customization 'missingReferenceDisplaySetHandler' registered. Skipping SEG rendering."
+      );
       return;
     }
   }
+
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(
     referencedDisplaySetInstanceUID
   );
