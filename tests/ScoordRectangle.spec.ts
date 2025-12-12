@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
 //
 test('should hydrate SCOORD rectangle measurements correctly', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
   viewportPageObject,
@@ -72,13 +72,13 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   await page.waitForTimeout(1000);
 
   // Wait for the hydrate button to be visible and clickable
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.button.waitFor({
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
     state: 'visible',
     timeout: 15000,
   });
 
   // Click the hydrate button to load the SCOORD rectangle measurements
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for hydration to complete and rendering to stabilize
   await page.waitForTimeout(3000);
@@ -136,7 +136,7 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
 
 test('should display SCOORD rectangle measurements correctly', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
   viewportPageObject,
@@ -151,11 +151,11 @@ test('should display SCOORD rectangle measurements correctly', async ({
   await page.waitForTimeout(2000);
 
   // Wait for the hydrate button to be visible and clickable
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.button.waitFor({
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
     state: 'visible',
     timeout: 15000,
   });
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
 
   // Zoom to show the rectangle measurements clearly

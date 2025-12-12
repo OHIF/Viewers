@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate RT reports correctly', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
 }) => {
@@ -39,6 +39,6 @@ test('should hydrate RT reports correctly', async ({
   await page.waitForTimeout(3000);
 
   // should preserve zoom and pan and scroll position after hydration
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
 });

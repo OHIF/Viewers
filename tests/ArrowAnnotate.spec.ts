@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the arrow tool and allow free-form text to be entered', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
   viewportPageObject,
@@ -22,11 +22,11 @@ test('should display the arrow tool and allow free-form text to be entered', asy
     { x: 344, y: 232 },
   ]);
 
-  await floatingElementsPageObject.dialog.input.fillAndSave(
+  await DOMOverlayPageObject.dialog.input.fillAndSave(
     'Ringo Starr was the drummer for The Beatles'
   );
 
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   await page.waitForTimeout(2000);
 
@@ -40,7 +40,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await viewportPageObject.active.doubleClickAt({ x: 164, y: 234 });
 
-  await floatingElementsPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
+  await DOMOverlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 
   await page.waitForTimeout(2000);
 

@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 
-export class FloatingElementsPageObject {
+export class DOMOverlayPageObject {
   readonly page: Page;
 
   constructor(page: Page) {

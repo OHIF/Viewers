@@ -37,7 +37,7 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
 
 test('checks saved segmentations loads and jumps to slices', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
   viewportPageObject,
@@ -52,8 +52,8 @@ test('checks saved segmentations loads and jumps to slices', async ({
   await page.waitForTimeout(3000);
 
   // Confirm open segmentation
-  await expect(floatingElementsPageObject.viewport.segmentationHydration.locator).toBeVisible();
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Segmentation Panel should already be open
   const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;

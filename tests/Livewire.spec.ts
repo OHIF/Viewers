@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the livewire tool', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -21,6 +21,6 @@ test('should display the livewire tool', async ({
     { x: 482, y: 493 },
     { x: 383, y: 461 },
   ]);
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.livewire.livewireDisplayedCorrectly);
 });

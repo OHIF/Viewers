@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import { expect } from 'playwright-test-coverage';
 
-import { FloatingElementsPageObject } from '../pages';
+import { DOMOverlayPageObject } from '../pages';
 
 /**
  * Asserts the number of Modality Load Badges present on the page.
@@ -13,8 +13,8 @@ export async function assertNumberOfModalityLoadBadges({
   page: Page;
   expectedCount: number;
 }) {
-  const floatingElementsPageObject = new FloatingElementsPageObject(page);
-  const count = await floatingElementsPageObject.viewport.getModalityLoadBadgeCount();
+  const DOMOverlayPageObject = new DOMOverlayPageObject(page);
+  const count = await DOMOverlayPageObject.viewport.getModalityLoadBadgeCount();
 
   expect(count).toBe(expectedCount);
 }

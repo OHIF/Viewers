@@ -47,17 +47,17 @@ test('checks if Measurements right panel can be hidden/displayed', async ({
 
 test('checks if measurement item can be relabeled under Measurements panel', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   rightPanelPageObject,
 }) => {
   const relabelText = 'Relabel 12345';
   // Add measurement
   await addLengthMeasurement(page);
 
-  const viewportNotification = floatingElementsPageObject.viewport.measurementTracking.locator;
+  const viewportNotification = DOMOverlayPageObject.viewport.measurementTracking.locator;
   await expect(viewportNotification).toBeVisible();
 
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Open measurement panel confirm default empty
   await rightPanelPageObject.measurementsPanel.select();
@@ -68,13 +68,13 @@ test('checks if measurement item can be relabeled under Measurements panel', asy
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.rename(relabelText);
 
   // Check dialog closed and renamed
-  await expect(floatingElementsPageObject.dialog.input.locator).toBeHidden();
+  await expect(DOMOverlayPageObject.dialog.input.locator).toBeHidden();
   await expect(measurementRow).toContainText(relabelText);
 });
 
 test('checks if measurement item can be relabeled through the context menu on the viewport', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
@@ -83,10 +83,10 @@ test('checks if measurement item can be relabeled through the context menu on th
   // Add measurement
   await addLengthMeasurement(page);
 
-  const viewportNotification = floatingElementsPageObject.viewport.measurementTracking.locator;
+  const viewportNotification = DOMOverlayPageObject.viewport.measurementTracking.locator;
   await expect(viewportNotification).toBeVisible();
 
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Open measurement panel confirm default empty
   await rightPanelPageObject.measurementsPanel.select();
@@ -98,22 +98,22 @@ test('checks if measurement item can be relabeled through the context menu on th
   await viewportPageObject.active.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
-  const addLabelButton = floatingElementsPageObject.viewport.annotationContextMenu.addLabel;
+  const addLabelButton = DOMOverlayPageObject.viewport.annotationContextMenu.addLabel;
   await expect(addLabelButton.locator).toBeVisible();
   await addLabelButton.click();
 
   // Interact with dialog
-  await expect(floatingElementsPageObject.dialog.title).toHaveText('Edit Measurement Label');
-  await floatingElementsPageObject.dialog.input.fillAndSave(relabelText);
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Edit Measurement Label');
+  await DOMOverlayPageObject.dialog.input.fillAndSave(relabelText);
 
   // Check dialog closed and renamed
-  await expect(floatingElementsPageObject.dialog.title).toBeHidden();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
   await expect(measurementRow).toContainText(relabelText);
 });
 
 test('checks if image would jump when clicked on a measurement item', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
@@ -123,8 +123,8 @@ test('checks if image would jump when clicked on a measurement item', async ({
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
   await addLengthMeasurement(page);
 
-  await expect(floatingElementsPageObject.viewport.measurementTracking.locator).toBeVisible();
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Change to slice 2
   await scrollVolumeViewport(page, 'default', 1);
@@ -144,14 +144,14 @@ test('checks if image would jump when clicked on a measurement item', async ({
 
 test('checks if measurement item can be deleted under Measurements panel', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   rightPanelPageObject,
 }) => {
   // Add 3 measurements
   await addLengthMeasurement(page);
 
-  await expect(floatingElementsPageObject.viewport.measurementTracking.locator).toBeVisible();
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   await addLengthMeasurement(page, { firstClick: [170, 100], secondClick: [150, 170] });
   await addLengthMeasurement(page, { firstClick: [190, 100], secondClick: [170, 170] });
@@ -171,14 +171,14 @@ test('checks if measurement item can be deleted under Measurements panel', async
   await rightPanelPageObject.measurementsPanel.panel.deleteAll();
 
   // Interact with dialog
-  await expect(floatingElementsPageObject.dialog.title).toHaveText('Untrack Study');
+  await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
 
-  await expect(floatingElementsPageObject.dialog.confirmation.confirm.button).toBeEnabled();
+  await expect(DOMOverlayPageObject.dialog.confirmation.confirm.button).toBeEnabled();
 
-  await floatingElementsPageObject.dialog.confirmation.confirm.click();
+  await DOMOverlayPageObject.dialog.confirmation.confirm.click();
 
   // Check dialog closed and measurements gone
-  await expect(floatingElementsPageObject.dialog.title).toBeHidden();
+  await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
   expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
 
   const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
@@ -187,21 +187,21 @@ test('checks if measurement item can be deleted under Measurements panel', async
 
 test('checks if measurement item can be deleted through the context menu on the viewport', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
   // Add measurement
   await addLengthMeasurement(page);
-  await expect(floatingElementsPageObject.viewport.measurementTracking.locator).toBeVisible();
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu
   await viewportPageObject.active.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
-  const deleteButton = floatingElementsPageObject.viewport.annotationContextMenu.delete;
+  const deleteButton = DOMOverlayPageObject.viewport.annotationContextMenu.delete;
   await expect(deleteButton.locator).toBeVisible();
   await deleteButton.click();
 

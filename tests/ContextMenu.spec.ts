@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should the context menu completely on screen and is not clipped for a point near the bottom edge of the screen', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -18,7 +18,7 @@ test('should the context menu completely on screen and is not clipped for a poin
     { x: 0.55, y: 0.98 },
   ]);
 
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   await checkForScreenshot(page, page, screenShotPaths.contextMenu.preContextMenuNearBottomEdge);
 

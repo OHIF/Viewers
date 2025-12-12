@@ -1,6 +1,6 @@
 import { test as base } from 'playwright-test-coverage';
 import {
-  FloatingElementsPageObject,
+  DOMOverlayPageObject,
   MainToolbarPageObject,
   LeftPanelPageObject,
   RightPanelPageObject,
@@ -8,7 +8,7 @@ import {
 } from '../pages';
 
 type PageObjects = {
-  floatingElementsPageObject: FloatingElementsPageObject;
+  DOMOverlayPageObject: DOMOverlayPageObject;
   mainToolbarPageObject: MainToolbarPageObject;
   leftPanelPageObject: LeftPanelPageObject;
   rightPanelPageObject: RightPanelPageObject;
@@ -16,8 +16,8 @@ type PageObjects = {
 };
 
 export const test = base.extend<PageObjects>({
-  floatingElementsPageObject: async ({ page }, use) => {
-    await use(new FloatingElementsPageObject(page));
+  DOMOverlayPageObject: async ({ page }, use) => {
+    await use(new DOMOverlayPageObject(page));
   },
   mainToolbarPageObject: async ({ page }, use) => {
     await use(new MainToolbarPageObject(page));

@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should properly display MPR for MR', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -16,7 +16,7 @@ test('should properly display MPR for MR', async ({
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationThenMPR.segPostHydration);

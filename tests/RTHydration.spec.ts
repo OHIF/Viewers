@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate RT reports correctly', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   leftPanelPageObject,
   rightPanelPageObject,
 }) => {
@@ -17,7 +17,7 @@ test('should hydrate RT reports correctly', async ({
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPreHydration);
 
-  await floatingElementsPageObject.viewport.segmentationHydration.yes.click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
 

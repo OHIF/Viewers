@@ -1,11 +1,11 @@
-import { FloatingElementsPageObject } from './FloatingElementsPageObject';
+import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 import { MainToolbarPageObject } from './MainToolbarPageObject';
 import { LeftPanelPageObject } from './LeftPanelPageObject';
 import { RightPanelPageObject } from './RightPanelPageObject';
 import { ViewportPageObject } from './ViewportPageObject';
 
 export {
-  FloatingElementsPageObject,
+  DOMOverlayPageObject,
   MainToolbarPageObject,
   LeftPanelPageObject,
   RightPanelPageObject,

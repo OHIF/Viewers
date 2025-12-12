@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the ellipse tool', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -17,6 +17,6 @@ test('should display the ellipse tool', async ({
     { x: 446, y: 245 },
     { x: 508, y: 281 },
   ]);
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.ellipse.ellipseDisplayedCorrectly);
 });

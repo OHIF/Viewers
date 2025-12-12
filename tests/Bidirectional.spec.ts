@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the bidirectional tool', async ({
   page,
-  floatingElementsPageObject,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -17,7 +17,7 @@ test('should display the bidirectional tool', async ({
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);
-  await floatingElementsPageObject.viewport.measurementTracking.confirm.click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(
     page,
     page,
