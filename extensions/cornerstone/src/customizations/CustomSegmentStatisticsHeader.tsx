@@ -19,7 +19,7 @@ export const CustomSegmentStatisticsHeader = ({
 }: CustomSegmentStatisticsHeaderProps) => {
   const { servicesManager, commandsManager } = useSystem();
   const { segmentationService } = servicesManager.services;
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
 
   const segmentation = segmentationService.getSegmentation(segmentationId);
   const segment = segmentation.segments[segmentIndex];

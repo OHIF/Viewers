@@ -80,6 +80,7 @@ function DataSourceConfigurationComponent({
     show({
       content: DataSourceConfigurationModalComponent,
       title: t('Configure Data Source'),
+      containerClassName: 'max-w-3xl',
       contentProps: {
         configurationAPI,
         configuredItems,

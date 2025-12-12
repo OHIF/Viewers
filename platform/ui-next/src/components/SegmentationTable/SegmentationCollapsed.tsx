@@ -49,7 +49,7 @@ const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.React
 
 // Selector component - for the segmentation selection dropdown
 const SegmentationCollapsedSelector = () => {
-  const { t } = useTranslation('SegmentationTable.HeaderCollapsed');
+  const { t } = useTranslation('SegmentationPanel.HeaderCollapsed');
   const { data, onSegmentationClick, segmentationRepresentationType } = useSegmentationTableContext(
     'SegmentationCollapsedSelector'
   );
