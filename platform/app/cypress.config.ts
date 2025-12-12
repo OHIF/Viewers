@@ -33,5 +33,9 @@ export default defineConfig({
       mochaFile: 'cypress/results/test-output.xml',
       toConsole: true,
     },
+
+    // We go back two levels up to the repository root folder
+    videosFolder: '../../cypress/videos',
+    screenshotsFolder: '../../cypress/screenshots',
   },
 });
