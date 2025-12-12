@@ -218,6 +218,7 @@ export const toolbarSections = {
     'Capture',
     'Layout',
     'Crosshairs',
+    'ScaleBar',
     'MoreTools',
   ],
 
