@@ -186,6 +186,9 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             onClick={() => {
               if (state.languageValue !== currentLanguage.value) {
                 i18n.changeLanguage(state.languageValue);
+                // Force page reload after language change to ensure all translations are applied
+                window.location.reload();
+                return; // Exit early since we're reloading
               }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hotkeysModule.stopRecord();
