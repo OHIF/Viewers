@@ -25,13 +25,13 @@ test('should render scroll bars with the correct look-and-feel', async ({ page }
   // Wait for the expanded row to be visible and rendered
   await expandedStudyRow.waitFor({ state: 'visible', timeout: 10000 });
   await expandedStudyRow.scrollIntoViewIfNeeded();
-  
+
   // Wait for content to load and stabilize, including any lazy-loaded items
   await page.waitForTimeout(2000);
-  
+
   // Wait for network to be idle to ensure all content is loaded
   await page.waitForLoadState('networkidle');
-  
+
   // Additional wait to ensure scrollbar rendering is stable
   await page.waitForTimeout(1000);
 

@@ -1,0 +1,15 @@
+{
+  "Grayscale": "Grijstinten",
+  "X Ray": "Röntgen",
+  "Isodose": "Isodose",
+  "hsv": "HSV",
+  "hot_iron": "Hete ijzer",
+  "red_hot": "Rood heet",
+  "s_pet": "PET",
+  "perfusion": "Perfusie",
+  "rainbow_2": "Regenboog 2",
+  "suv": "SUV",
+  "ge_256": "GE 256",
+  "ge": "GE",
+  "siemens": "Siemens"
+}

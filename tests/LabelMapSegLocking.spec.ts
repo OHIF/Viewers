@@ -9,6 +9,9 @@ test.beforeEach(async ({ page }) => {
 
 test('should prevent editing of label map segmentations when panelSegmentation.disableEditing is true', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   // disable editing of segmentations via the customization service
@@ -20,13 +23,13 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
       }
     );
   });
-  await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.select();
 
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await leftPanelPageObject.loadSeriesByModality('SEG');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
@@ -37,10 +40,10 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   await checkForScreenshot(page, page, screenShotPaths.labelMapSegLocking.globalLockedSegPreEdit);
 
   // Attempt to erase the segmentations.
-  await page.getByTestId('Eraser-btn').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.click();
 
   // Use the largest eraser radius to help ensure the entire image is erased.
-  await page.locator(`css=div[data-cy="eraser-radius"] input`).fill('1000');
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.setRadius(1000);
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await viewportPageObject.getById('default').normalizedDragAt({
@@ -61,6 +64,9 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
 
 test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   // disable editing of segmentations via the customization service
@@ -73,13 +79,13 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
     );
   });
 
-  await page.getByTestId('panelSegmentationWithToolsLabelMap-btn').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.select();
 
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await leftPanelPageObject.loadSeriesByModality('SEG');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
@@ -89,10 +95,10 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   await checkForScreenshot(page, page, screenShotPaths.labelMapSegLocking.globalUnlockedSegPreEdit);
 
   // Attempt to erase the segmentations.
-  await page.getByTestId('Eraser-btn').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.click();
 
   // Use the largest eraser radius to help ensure the eraser passes over the entire image.
-  await page.locator(`css=div[data-cy="eraser-radius"] input`).fill('1000');
+  await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.setRadius(1000);
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
   await viewportPageObject.getById('default').normalizedDragAt({
