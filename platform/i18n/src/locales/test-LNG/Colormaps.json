@@ -1,0 +1,15 @@
+{
+  "Grayscale": "Test Grayscale",
+  "X Ray": "Test X Ray",
+  "Isodose": "Test Isodose",
+  "hsv": "Test HSV",
+  "hot_iron": "Test Hot Iron",
+  "red_hot": "Test Red Hot",
+  "s_pet": "Test PET",
+  "perfusion": "Test Perfusion",
+  "rainbow_2": "Test Rainbow 2",
+  "suv": "Test SUV",
+  "ge_256": "Test GE 256",
+  "ge": "Test GE",
+  "siemens": "Test Siemens"
+}

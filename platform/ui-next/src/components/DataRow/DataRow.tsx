@@ -9,6 +9,7 @@ import {
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 /**
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
@@ -135,6 +136,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
     },
     ref
   ) => {
+    const { t } = useTranslation('DataRow');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const isTitleLong = title?.length > 25;
 
@@ -312,7 +314,8 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               className={`h-6 w-6 transition-opacity ${
                 isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
               }`}
-              aria-label={isVisible ? 'Hide' : 'Show'}
+              aria-label={isVisible ? t('Hide') : t('Show')}
+              dataCY="data-row-visibility-toggle"
               onClick={e => {
                 e.stopPropagation();
                 onToggleVisibility(e);
@@ -361,7 +364,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
                         className="pl-2"
                         data-cy="Rename"
                       >
-                        Rename
+                        {t('Rename')}
                       </span>
                     </DropdownMenuItem>
                     {onCopy && (
@@ -371,7 +374,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
                           className="pl-2"
                           data-cy="Duplicate"
                         >
-                          Duplicate
+                          {t('Duplicate')}
                         </span>
                       </DropdownMenuItem>
                     )}
@@ -381,7 +384,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
                         className="pl-2"
                         data-cy="Delete"
                       >
-                        Delete
+                        {t('Delete')}
                       </span>
                     </DropdownMenuItem>
                     {onColor && (
@@ -391,7 +394,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
                           className="pl-2"
                           data-cy="Change Color"
                         >
-                          Change Color
+                          {t('Change Color')}
                         </span>
                       </DropdownMenuItem>
                     )}
@@ -401,7 +404,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
                         className="pl-2"
                         data-cy="LockToggle"
                       >
-                        {isLocked ? 'Unlock' : 'Lock'}
+                        {isLocked ? t('Unlock') : t('Lock')}
                       </span>
                     </DropdownMenuItem>
                   </>

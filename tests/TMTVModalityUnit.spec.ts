@@ -2,6 +2,7 @@ import { expect, clearAllAnnotations, getTMTVModalityUnit, test, visitStudy } fr
 
 test.skip('pets where SUV cannot be calculated should show same unit in TMTV as in Basic Viewer.', async ({
   page,
+  leftPanelPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -10,7 +11,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
   // Show sidebar
-  await page.getByTestId('side-panel-header-left').click();
+  await leftPanelPageObject.toggle();
 
   // Change to image where SUV cannot be calculated
   await viewportPageObject.getNth(3).normalizedClickAt([{ x: 0.5, y: 0.5 }]);

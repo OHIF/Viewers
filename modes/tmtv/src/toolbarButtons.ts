@@ -220,7 +220,7 @@ const toolbarButtons = [
       ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'brush-radius',
           type: 'range',
           explicitRunOnly: true,
@@ -234,13 +234,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'brush-mode',
           value: 'CircularBrush',
           values: [
-            { value: 'CircularBrush', label: 'Circle' },
-            { value: 'SphereBrush', label: 'Sphere' },
+            { value: 'CircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -265,7 +265,7 @@ const toolbarButtons = [
       ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'eraser-radius',
           type: 'range',
           explicitRunOnly: true,
@@ -279,13 +279,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'CircularEraser',
           values: [
-            { value: 'CircularEraser', label: 'Circle' },
-            { value: 'SphereEraser', label: 'Sphere' },
+            { value: 'CircularEraser', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereEraser', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -310,7 +310,7 @@ const toolbarButtons = [
       ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'threshold-radius',
           type: 'range',
           explicitRunOnly: true,
@@ -330,13 +330,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Threshold',
+          name: i18n.t('Buttons:Threshold'),
           type: 'radio',
           id: 'dynamic-mode',
           value: 'ThresholdRange',
           values: [
-            { value: 'ThresholdDynamic', label: 'Dynamic' },
-            { value: 'ThresholdRange', label: 'Range' },
+            { value: 'ThresholdDynamic', label: i18n.t('Buttons:Dynamic') },
+            { value: 'ThresholdRange', label: i18n.t('Buttons:Range') },
           ],
           commands: ({ value, commandsManager }) => {
             if (value === 'ThresholdDynamic') {
@@ -351,20 +351,20 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'ThresholdCircularBrush',
           values: [
-            { value: 'ThresholdCircularBrush', label: 'Circle' },
-            { value: 'ThresholdSphereBrush', label: 'Sphere' },
+            { value: 'ThresholdCircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'ThresholdSphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           condition: ({ options }) =>
             options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
           commands: 'setToolActiveToolbar',
         },
         {
-          name: 'ThresholdRange',
+          name: i18n.t('ROIThresholdConfiguration:ThresholdRange'),
           type: 'double-range',
           id: 'threshold-range',
           min: 0,

@@ -28,9 +28,9 @@ function DataSourceConfigurationComponent({
         return;
       }
 
-      const { factory: configurationAPIFactory } = customizationService.getCustomization(
-        activeDataSourceDef.configuration.configurationAPI
-      ) ?? { factory: () => null };
+      const configurationAPIFactory =
+        customizationService.getCustomization(activeDataSourceDef.configuration.configurationAPI) ??
+        (() => null);
 
       if (!configurationAPIFactory) {
         return;
@@ -66,6 +66,7 @@ function DataSourceConfigurationComponent({
     show({
       content: DataSourceConfigurationModalComponent,
       title: t('Configure Data Source'),
+      containerClassName: 'max-w-3xl',
       contentProps: {
         configurationAPI,
         configuredItems,

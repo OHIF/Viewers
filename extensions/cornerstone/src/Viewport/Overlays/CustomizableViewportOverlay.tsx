@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { metaData, Enums, utilities, eventTarget } from '@cornerstonejs/core';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
-import { ViewportOverlay } from '@ohif/ui-next';
+import { ViewportOverlay, formatDICOMDate } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
-import { formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
+import { formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 

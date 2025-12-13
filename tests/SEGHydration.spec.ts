@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -7,9 +6,14 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate SEG reports correctly', async ({ page }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+test('should hydrate SEG reports correctly', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByDescription('SEG');
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydration.segPreHydration);
@@ -33,7 +37,7 @@ test('should hydrate SEG reports correctly', async ({ page }) => {
     }
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydration.segPostHydration);

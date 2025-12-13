@@ -9,7 +9,7 @@ import { Input } from '../Input';
 import { useSegmentationTableContext } from './contexts';
 
 export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const { t } = useTranslation('SegmentationTable.AppearanceSettings');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     renderFill,
     renderOutline,
@@ -84,7 +84,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
       <div className="space-y-2">
         <div className="my-2 flex items-center">
           <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
-            Opacity
+            {t('Opacity')}
           </Label>
           <Slider
             className="mx-1 flex-1"
@@ -143,7 +143,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
       {renderInactiveSegmentations && (
         <div className="my-2 flex items-center">
           <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
-            Opacity
+            {t('Opacity')}
           </Label>
           <Slider
             className="mx-1 flex-1"

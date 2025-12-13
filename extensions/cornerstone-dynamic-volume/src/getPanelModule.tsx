@@ -22,7 +22,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
       <>
         <Toolbox
           buttonSectionId={toolbarService.sections.dynamicToolbox}
-          title="Threshold Tools"
+          title="Buttons:Threshold Tools"
         />
         <PanelSegmentation
           servicesManager={servicesManager}

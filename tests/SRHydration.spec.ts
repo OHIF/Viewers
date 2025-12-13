@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7695.4007.324475281161490036195179843543';
@@ -7,10 +6,15 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate SR reports correctly', async ({ page }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('trackedMeasurements-btn').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+test('should hydrate SR reports correctly', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
+  await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
 
@@ -33,7 +37,7 @@ test('should hydrate SR reports correctly', async ({ page }) => {
     }
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
 
@@ -56,7 +60,7 @@ test('should hydrate SR reports correctly', async ({ page }) => {
     }
   });
 
-  await page.getByTestId('data-row').first().click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
 });

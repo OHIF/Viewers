@@ -19,6 +19,7 @@ import {
 } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import { contourSegmentation } from '@cornerstonejs/tools/utilities';
+import { useTranslation } from 'react-i18next';
 import { Segment } from '@cornerstonejs/tools/types';
 
 const { LogicalOperation } = contourSegmentation;
@@ -60,6 +61,7 @@ function SegmentSelector({
   segments: Segment[];
   placeholder?: string;
 }) {
+  const { t } = useTranslation('SegmentationPanel');
   return (
     <div className="flex justify-between gap-6">
       <div>{label}</div>
@@ -69,7 +71,7 @@ function SegmentSelector({
         value={value}
       >
         <SelectTrigger className="overflow-hidden">
-          <SelectValue placeholder={placeholder} />
+          <SelectValue placeholder={t(placeholder)} />
         </SelectTrigger>
         <SelectContent>
           {segments.map(segment => (
@@ -89,6 +91,7 @@ function SegmentSelector({
 function LogicalContourOperationOptions() {
   const { servicesManager } = useSystem();
   const { segmentationService } = servicesManager.services;
+  const { t } = useTranslation('SegmentationPanel');
   const { segmentationsWithRepresentations } = useActiveViewportSegmentationRepresentations();
 
   const activeRepresentation = segmentationsWithRepresentations?.find(
@@ -184,7 +187,7 @@ function LogicalContourOperationOptions() {
               })}
             </TabsList>
           </Tabs>
-          <div>{operation.label}</div>
+          <div>{t(operation.label)}</div>
         </div>
         <div className="bg-primary-dark flex h-[62px] w-[88px] items-center justify-center rounded-lg">
           <Icons.ByName name={operation.helperIcon}></Icons.ByName>
@@ -210,7 +213,7 @@ function LogicalContourOperationOptions() {
             applyLogicalContourOperation();
           }}
         >
-          {operation.label}
+          {t(operation.label)}
         </Button>
       </div>
       <Separator className="bg-input mt-2 h-[1px]" />
@@ -221,7 +224,7 @@ function LogicalContourOperationOptions() {
             onCheckedChange={setCreateNewSegment}
           ></Switch>
           <Label htmlFor="logical-contour-operations-create-new-segment-switch">
-            Create a new segment
+            {t('Create a new segment')}
           </Label>
         </div>
         <div className="pl-9">
@@ -230,7 +233,7 @@ function LogicalContourOperationOptions() {
             disabled={!createNewSegment}
             id="logical-contour-operations-create-new-segment-input"
             type="text"
-            placeholder="New segment name"
+            placeholder={t('New segment name')}
             value={newSegmentName}
             onChange={e => setNewSegmentName(e.target.value)}
           />

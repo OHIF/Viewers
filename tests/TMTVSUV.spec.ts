@@ -2,6 +2,7 @@ import { expect, test, visitStudy } from './utils';
 
 test('should restrict the percentage of max SUV to be between 0 and 1', async ({
   page,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
@@ -10,49 +11,51 @@ test('should restrict the percentage of max SUV to be between 0 and 1', async ({
 
   await viewportPageObject.getById('ptAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
-  await page.getByTestId('addSegmentation').click();
-  await page.getByTestId('RectangleROIStartEndThreshold-btn').click();
+  await rightPanelPageObject.tmtvPanel.addSegmentationButton.click();
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('0');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0');
+  const rectangleROIThreshold = rightPanelPageObject.tmtvPanel.tools.rectangleROIThreshold;
+  await rectangleROIThreshold.click();
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('0.27');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.27');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('0');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('0.9467');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.9467');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('0.27');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.27');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('.');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('0.9467');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.9467');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('1');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('1');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('.');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('1.1');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('1');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('1');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('1');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('1806');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('1');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('1.1');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('1');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('1806');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('1');
+
+  await rectangleROIThreshold.setPercentageOfMaxSUV('');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('');
 
   // Add some valid input for the tests that follow. Note that when invalid input is
   // entered the previous valid input is retained.
-  await page.getByTestId('percentage-of-max-suv-input').fill('0.275');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('0.275');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('9');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.275');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('9');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.275');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('-678');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.275');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('-678');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.275');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('+');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.275');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('+');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.275');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('-');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.275');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('-');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.275');
 
-  await page.getByTestId('percentage-of-max-suv-input').fill('e');
-  expect(await page.getByTestId('percentage-of-max-suv-input').inputValue()).toBe('0.275');
+  await rectangleROIThreshold.setPercentageOfMaxSUV('e');
+  expect(await rectangleROIThreshold.getPercentageOfMaxSUV()).toBe('0.275');
 });

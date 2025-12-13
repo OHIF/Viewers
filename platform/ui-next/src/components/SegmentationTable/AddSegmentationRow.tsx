@@ -6,7 +6,7 @@ import { useSegmentationTableContext } from './contexts';
 export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
 }) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
 
   const {
     onSegmentationAdd,

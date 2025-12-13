@@ -78,6 +78,12 @@ export type DisplaySet = {
   isLoaded?: boolean;
   isHydrated?: boolean;
   isRehydratable?: boolean;
+
+  /**
+   * The name of the comparison function (for sort) to use when comparing display
+   * sets that are coming from same series instanceUID.
+   */
+  compareSameSeries?: string;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

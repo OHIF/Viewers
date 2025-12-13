@@ -6,11 +6,17 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate an RTSTRUCT and then launch MPR', async ({ page, mainToolbarPageObject }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+test('should hydrate an RTSTRUCT and then launch MPR', async ({
+  page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  mainToolbarPageObject,
+  rightPanelPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   await page.waitForTimeout(5000);
 

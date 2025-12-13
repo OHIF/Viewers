@@ -9,8 +9,9 @@ import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
 import InvestigationalUseDialog from './InvestigationalUseDialog.json';
 import MeasurementTable from './MeasurementTable.json';
+import DataRow from './DataRow.json';
 import Modes from './Modes.json';
-import SegmentationTable from './SegmentationTable.json';
+import SegmentationPanel from './SegmentationPanel.json';
 import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
 import StudyItem from './StudyItem.json';
@@ -36,8 +37,9 @@ export default {
     HotkeysValidators,
     InvestigationalUseDialog,
     MeasurementTable,
+    DataRow,
     Modes,
-    SegmentationTable,
+    SegmentationPanel,
     SidePanel,
     StudyBrowser,
     StudyItem,

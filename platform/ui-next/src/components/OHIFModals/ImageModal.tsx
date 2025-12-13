@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '../Input/Input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../Select/Select';
 import { Switch } from '../Switch/Switch';
@@ -143,6 +144,13 @@ interface ImageSizeProps {
   className?: string;
   maxWidth?: string;
   maxHeight?: string;
+  /** Optional translation namespace. Defaults to 'CaptureViewportModal'. */
+  translationNamespace?: string;
+  /** Optional labels/placeholders to override translations */
+  widthLabel?: string;
+  heightLabel?: string;
+  widthPlaceholder?: string;
+  heightPlaceholder?: string;
 }
 
 function ImageSize({
@@ -154,7 +162,19 @@ function ImageSize({
   className,
   maxWidth,
   maxHeight,
+  translationNamespace = 'CaptureViewportModal',
+  widthLabel,
+  heightLabel,
+  widthPlaceholder,
+  heightPlaceholder,
 }: ImageSizeProps) {
+  const { t } = useTranslation(translationNamespace);
+
+  // Use translations as defaults, but allow props to override
+  const finalWidthLabel = widthLabel ?? t('Width', { defaultValue: 'Width' });
+  const finalHeightLabel = heightLabel ?? t('Height', { defaultValue: 'Height' });
+  const finalWidthPlaceholder = widthPlaceholder ?? t('Width', { defaultValue: 'Width' });
+  const finalHeightPlaceholder = heightPlaceholder ?? t('Height', { defaultValue: 'Height' });
   return (
     <div className={cn('text-foreground space-y-1', className)}>
       <label className="block text-base">{children}</label>
@@ -163,23 +183,23 @@ function ImageSize({
       <div className="flex items-center space-x-4">
         {/* Width group */}
         <div className="flex items-center space-x-2">
-          <span className="text-foreground text-base">W</span>
+          <span className="text-foreground text-base">{finalWidthLabel}</span>
           <Input
             value={width}
             onChange={onWidthChange ?? (() => {})}
-            placeholder="Width"
+            placeholder={finalWidthPlaceholder}
             className="w-20"
             max={maxWidth}
           />
         </div>
 
-        {/* Height group */}
+        {/* Height/Length group */}
         <div className="text-foreground flex items-center space-x-2 text-base">
-          <span className="text-foreground text-base">H</span>
+          <span className="text-foreground text-base">{finalHeightLabel}</span>
           <Input
             value={height}
             onChange={onHeightChange ?? (() => {})}
-            placeholder="Height"
+            placeholder={finalHeightPlaceholder}
             className="w-20"
             max={maxHeight}
           />
