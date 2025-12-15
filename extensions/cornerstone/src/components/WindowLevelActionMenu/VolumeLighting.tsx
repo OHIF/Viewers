@@ -2,6 +2,7 @@ import React, { ReactElement, useState, useEffect, useCallback } from 'react';
 import { VolumeLightingProps } from '../../types/ViewportPresets';
 import { Numeric } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeLighting({ viewportId, hasShade }: VolumeLightingProps): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
@@ -11,6 +12,7 @@ export function VolumeLighting({ viewportId, hasShade }: VolumeLightingProps): R
     diffuse: null,
     specular: null,
   });
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   // Single callback to handle all lighting property changes
   const onLightingChange = useCallback(
@@ -45,9 +47,9 @@ export function VolumeLighting({ viewportId, hasShade }: VolumeLightingProps): R
 
   // Configuration for our lighting properties
   const lightingProperties = [
-    { key: 'ambient', label: 'Ambient' },
-    { key: 'diffuse', label: 'Diffuse' },
-    { key: 'specular', label: 'Specular' },
+    { key: 'ambient', label: t('Ambient') },
+    { key: 'diffuse', label: t('Diffuse') },
+    { key: 'specular', label: t('Specular') },
   ];
 
   return (

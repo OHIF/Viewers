@@ -5,17 +5,20 @@ const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
 test('should not allow contours to be edited in basic viewer mode', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
@@ -46,13 +49,16 @@ test('should not allow contours to be edited in basic viewer mode', async ({
 
 test('should not allow contours to be edited when panelSegmentation.disableEditing is true', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
@@ -66,7 +72,7 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
     );
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
@@ -97,13 +103,16 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
 
 test('should allow contours to be edited when panelSegmentation.disableEditing is false', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   // Wait for the segmentation to be loaded.
   await page.waitForTimeout(5000);
 
@@ -117,7 +126,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
     );
   });
 
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);

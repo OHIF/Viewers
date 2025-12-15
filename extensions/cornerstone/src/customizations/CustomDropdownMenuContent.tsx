@@ -17,7 +17,7 @@ import { ExportSegmentationSubMenuItem } from '../components/ExportSegmentationS
  */
 export const CustomDropdownMenuContent = () => {
   const { commandsManager } = useSystem();
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     onSegmentationAdd,
     onSegmentationRemoveFromViewport,

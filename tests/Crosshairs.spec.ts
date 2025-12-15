@@ -1,43 +1,10 @@
-import { Page } from '@playwright/test';
 import {
   checkForScreenshot,
-  getMousePosition,
   initializeMousePositionTracker,
   screenShotPaths,
   test,
   visitStudy,
 } from './utils/index.js';
-
-const rotateCrosshairs = async (page: Page, id: string, lineNumber: number) => {
-  const locator = page.locator(id).locator('line').nth(lineNumber);
-  await locator.click({ force: true });
-  await locator.hover({ force: true });
-  const circleLocator = page.locator(id).locator('circle').nth(1);
-  await circleLocator.hover({ force: true });
-  await page.mouse.down();
-  const position = await getMousePosition(page);
-  await page.mouse.move(position.x, position.y + 100);
-  await page.mouse.up();
-};
-
-const increaseSlabThickness = async (page: Page, id: string, lineNumber: number, axis: string) => {
-  const locator = page.locator(id).locator('line').nth(lineNumber);
-  await locator.click({ force: true });
-  await locator.hover({ force: true });
-  const circleLocator = page.locator(id).locator('rect').first();
-  await circleLocator.hover({ force: true });
-  await page.mouse.down();
-  const position = await getMousePosition(page);
-  switch (axis) {
-    case 'x':
-      await page.mouse.move(position.x + 100, position.y);
-      break;
-    case 'y':
-      await page.mouse.move(position.x, position.y + 100);
-      break;
-  }
-  await page.mouse.up();
-};
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';
@@ -49,7 +16,7 @@ test.beforeEach(async ({ page }) => {
 test.describe('Crosshairs Test', async () => {
   test('should render the crosshairs correctly.', async ({ page, mainToolbarPageObject }) => {
     await mainToolbarPageObject.layoutSelection.MPR.click();
-    await page.getByTestId('Crosshairs').click();
+    await mainToolbarPageObject.crosshairs.click();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRendered);
   });
@@ -57,13 +24,14 @@ test.describe('Crosshairs Test', async () => {
   test('should allow the user to rotate the crosshairs', async ({
     page,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.MPR.click();
-    await page.getByTestId('Crosshairs').click();
+    await mainToolbarPageObject.crosshairs.click();
 
-    await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
-    await rotateCrosshairs(page, '#svg-layer-mpr-sagittal', 0);
-    await rotateCrosshairs(page, '#svg-layer-mpr-coronal', 0);
+    await viewportPageObject.crosshairs.axial.rotate();
+    await viewportPageObject.crosshairs.sagittal.rotate();
+    await viewportPageObject.crosshairs.coronal.rotate();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRotated);
   });
@@ -71,13 +39,14 @@ test.describe('Crosshairs Test', async () => {
   test('should allow the user to adjust the slab thickness', async ({
     page,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.MPR.click();
-    await page.getByTestId('Crosshairs').click();
+    await mainToolbarPageObject.crosshairs.click();
 
-    await increaseSlabThickness(page, '#svg-layer-mpr-axial', 0, 'x');
-    await increaseSlabThickness(page, '#svg-layer-mpr-sagittal', 2, 'x');
-    await increaseSlabThickness(page, '#svg-layer-mpr-coronal', 0, 'y');
+    await viewportPageObject.crosshairs.axial.increase();
+    await viewportPageObject.crosshairs.sagittal.increase();
+    await viewportPageObject.crosshairs.coronal.increase();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsSlabThickness);
   });
@@ -85,15 +54,16 @@ test.describe('Crosshairs Test', async () => {
   test('should reset the crosshairs to the initial position when reset is clicked', async ({
     page,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.MPR.click();
-    await page.getByTestId('Crosshairs').click();
+    await mainToolbarPageObject.crosshairs.click();
 
-    await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
-    await rotateCrosshairs(page, '#svg-layer-mpr-sagittal', 0);
-    await rotateCrosshairs(page, '#svg-layer-mpr-coronal', 0);
+    await viewportPageObject.crosshairs.axial.rotate();
+    await viewportPageObject.crosshairs.sagittal.rotate();
+    await viewportPageObject.crosshairs.coronal.rotate();
 
-    await page.getByTestId('MoreTools-split-button-primary').click();
+    await mainToolbarPageObject.moreTools.reset.click();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsResetToolbar);
   });
@@ -101,15 +71,17 @@ test.describe('Crosshairs Test', async () => {
   test('should reset the crosshairs when a new displayset is loaded', async ({
     page,
     mainToolbarPageObject,
+    leftPanelPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.MPR.click();
-    await page.getByTestId('Crosshairs').click();
+    await mainToolbarPageObject.crosshairs.click();
 
-    await rotateCrosshairs(page, '#svg-layer-mpr-axial', 0);
-    await rotateCrosshairs(page, '#svg-layer-mpr-sagittal', 0);
-    await rotateCrosshairs(page, '#svg-layer-mpr-coronal', 3);
+    await viewportPageObject.crosshairs.axial.rotate();
+    await viewportPageObject.crosshairs.sagittal.rotate();
+    await viewportPageObject.crosshairs.coronal.rotate();
 
-    await page.getByTestId('study-browser-thumbnail').nth(1).dblclick();
+    await leftPanelPageObject.loadSeriesByDescription('Recon 3: LIVER 3 PHASE (AP)');
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsNewDisplayset);
   });

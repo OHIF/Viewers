@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSegmentationTableContext, useSegmentationExpanded } from './contexts';
+import { useTranslation } from 'react-i18next';
 
 export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ children = null }) => {
+  const { t } = useTranslation('SegmentationPanel');
   const {
     activeRepresentation,
     disableEditing,
@@ -56,7 +58,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
             onClick={() => onSegmentAdd(segmentationId)}
           >
             <Icons.Add />
-            Add Segment
+            {t('Add Segment')}
           </Button>
         ) : null}
       </div>

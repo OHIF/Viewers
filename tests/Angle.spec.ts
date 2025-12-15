@@ -8,6 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should display the angle tool', async ({
   page,
+  DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
@@ -17,6 +18,6 @@ test('should display the angle tool', async ({
     { x: 450, y: 250 },
     { x: 550, y: 300 },
   ]);
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
   await checkForScreenshot(page, page, screenShotPaths.angle.angleDisplayedCorrectly);
 });

@@ -10,19 +10,19 @@ test.beforeEach(async ({ page }) => {
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
-  await page.getByTestId('AddSegmentationDataOverlay-default').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('ARIA RadOnc Structure Sets').click();
+  await rightPanelPageObject.toggle();
+  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
+  await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
+  await dataOverlayPageObject.toggle();
 
   await page.waitForTimeout(5000);
 
