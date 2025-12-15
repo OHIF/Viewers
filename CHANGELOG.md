@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.104...v3.12.0-beta.105) (2025-12-15)
+
+
+### Bug Fixes
+
+* seg sync for data without FOR ([#5565](https://github.com/OHIF/Viewers/issues/5565)) ([6c628e0](https://github.com/OHIF/Viewers/commit/6c628e09376a0371a84ea55bcecfd25368ee43e8))
+
+
+
+
+
 # [3.12.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.103...v3.12.0-beta.104) (2025-12-12)
 
 **Note:** Version bump only for package ohif-monorepo-root
