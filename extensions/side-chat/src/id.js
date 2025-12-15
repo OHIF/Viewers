@@ -1,3 +1,5 @@
-const id = 'semenoflabs.extension.side-chat';
+import packageJson from '../package.json';
+
+const id = packageJson.name;
 
 export { id };

@@ -16,6 +16,10 @@ const cornerstone = {
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
+const sideChat = {
+  chat: '@semenoflabs/extension-side-chat.panelModule.sideChat',
+};
+
 const segmentation = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
@@ -34,6 +38,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
+  '@semenoflabs/extension-side-chat': '^1.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -193,7 +198,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool],
+              rightPanels: [cornerstone.panelTool, sideChat.chat],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

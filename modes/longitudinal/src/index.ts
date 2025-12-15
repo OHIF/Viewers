@@ -5,11 +5,10 @@ import { initToolGroups, toolbarButtons, cornerstone,
   dicomsr,
   dicomvideo,
   basicLayout,
-  basicRoute,
   extensionDependencies as basicDependencies,
-  mode as basicMode,
   modeInstance as basicModeInstance,
- } from '@ohif/mode-basic';
+  layoutTemplate as basicLayoutTemplate,
+} from '@ohif/mode-basic';
 
 export const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
@@ -18,56 +17,71 @@ export const tracked = {
 };
 
 export const extensionDependencies = {
-  // Can derive the versions at least process.env.from npm_package_version
   ...basicDependencies,
   '@ohif/extension-measurement-tracking': '^3.0.0',
+  '@semenoflabs/extension-side-chat': '^1.0.0',
 };
 
-export const longitudinalInstance = {
+export const sideChat = {
+  chat: '@semenoflabs/extension-side-chat.panelModule.sideChat',
+};
+
+// Define the right panels array with both segmentation and chat
+const rightPanelsArray = [cornerstone.segmentation, sideChat.chat];
+console.log('[Longitudinal] Setting up rightPanels:', rightPanelsArray);
+
+export const longitudinalLayout = {
   ...basicLayout,
   id: ohif.layout,
   props: {
     ...basicLayout.props,
     leftPanels: [tracked.thumbnailList],
-    rightPanels: [cornerstone.segmentation, tracked.measurements, '@semenoflabs/extension-side-chat.panelModule.sideChat'],
+    rightPanels: rightPanelsArray,
+    rightPanelClosed: false,
     viewports: [
       {
         namespace: tracked.viewport,
-        // Re-use the display sets from basic
         displaySetsToDisplay: basicLayout.props.viewports[0].displaySetsToDisplay,
       },
       ...basicLayout.props.viewports,
-      ],
-    }
-  };
+    ],
+  },
+};
 
+// Create our own layout template function - use direct reference instead of 'this'
+function longitudinalLayoutTemplate() {
+  console.log('[Longitudinal] layoutTemplate called');
+  console.log('[Longitudinal] longitudinalLayout.props.rightPanels:', longitudinalLayout?.props?.rightPanels);
+  // Deep clone the layout instance
+  const cloned = JSON.parse(JSON.stringify(longitudinalLayout));
+  console.log('[Longitudinal] Returning cloned rightPanels:', cloned?.props?.rightPanels);
+  return cloned;
+}
 
-export const longitudinalRoute =
-    {
-      ...basicRoute,
-      path: 'longitudinal',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
-      layoutInstance: longitudinalInstance,
-    };
+export const longitudinalRoute = {
+  path: 'viewer',
+  layoutTemplate: longitudinalLayoutTemplate,
+  layoutInstance: longitudinalLayout,
+};
 
 export const modeInstance = {
-    ...basicModeInstance,
-    // TODO: We're using this as a route segment
-    // We should not be.
-    id,
-    routeName: 'viewer',
-    displayName: i18n.t('Modes:Basic Viewer'),
-    routes: [
-      longitudinalRoute
-    ],
-    extensions: extensionDependencies,
-  };
+  ...basicModeInstance,
+  id,
+  routeName: 'viewer',
+  displayName: i18n.t('Modes:Basic Viewer'),
+  routes: [longitudinalRoute],
+  extensions: extensionDependencies,
+};
+
+// Override modeFactory to ensure our modeInstance is used
+function modeFactory({ modeConfiguration }) {
+  console.log('[Longitudinal] modeFactory called');
+  return modeInstance;
+}
 
 const mode = {
-  ...basicMode,
   id,
+  modeFactory,
   modeInstance,
   extensionDependencies,
 };

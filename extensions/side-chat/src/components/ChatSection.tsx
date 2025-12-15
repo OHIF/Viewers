@@ -8,7 +8,7 @@ interface Message {
   timestamp: Date;
 }
 
-function SideChatPanel({ servicesManager, commandsManager }) {
+function ChatSection() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -50,15 +50,13 @@ function SideChatPanel({ servicesManager, commandsManager }) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-black p-4">
-      <h2 className="text-foreground mb-4 text-lg font-medium">Chat</h2>
-
+    <div className="flex flex-col gap-3 p-2">
       {/* Messages area */}
-      <ScrollArea className="mb-4 flex-1">
-        <div className="flex flex-col gap-3 pr-2">
+      <div className="bg-background max-h-64 min-h-32 overflow-y-auto rounded border p-2">
+        <div className="flex flex-col gap-2">
           {messages.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center text-sm">
-              No messages yet. Start the conversation!
+            <div className="text-muted-foreground py-4 text-center text-xs">
+              Start a conversation...
             </div>
           ) : (
             messages.map(msg => (
@@ -67,15 +65,15 @@ function SideChatPanel({ servicesManager, commandsManager }) {
                 className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-lg px-3 py-2 ${
+                  className={`max-w-[85%] rounded px-2 py-1 ${
                     msg.role === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-foreground'
                   }`}
                 >
-                  <div className="text-sm">{msg.text}</div>
+                  <div className="text-xs">{msg.text}</div>
                 </div>
-                <span className="text-muted-foreground mt-1 text-xs">
+                <span className="text-muted-foreground mt-0.5 text-[10px]">
                   {msg.role === 'user' ? 'You' : 'Bot'} • {msg.timestamp.toLocaleTimeString()}
                 </span>
               </div>
@@ -83,7 +81,7 @@ function SideChatPanel({ servicesManager, commandsManager }) {
           )}
           <div ref={messagesEndRef} />
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Input area */}
       <div className="flex gap-2">
@@ -93,11 +91,12 @@ function SideChatPanel({ servicesManager, commandsManager }) {
           onChange={e => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="flex-1"
+          className="flex-1 text-xs"
         />
         <Button
           onClick={handleSend}
           disabled={!inputValue.trim()}
+          size="sm"
         >
           Send
         </Button>
@@ -106,4 +105,4 @@ function SideChatPanel({ servicesManager, commandsManager }) {
   );
 }
 
-export default SideChatPanel;
+export default ChatSection;

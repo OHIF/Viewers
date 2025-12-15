@@ -136,18 +136,33 @@ export default function ModeRoute({
     }
 
     const retrieveLayoutData = async () => {
+      console.log('[Mode] route object:', route);
+      console.log('[Mode] route.path:', route.path);
+      console.log('[Mode] route.layoutInstance:', route.layoutInstance);
+      console.log('[Mode] route.layoutInstance.props.rightPanels:', route.layoutInstance?.props?.rightPanels);
       const layoutData = await route.layoutTemplate({
         location,
         servicesManager,
         studyInstanceUIDs,
       });
+      console.log('[Mode] layoutData received:', layoutData);
+      console.log('[Mode] layoutData.props.rightPanels:', layoutData?.props?.rightPanels);
 
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
+        console.log('[Mode] Adding panels - Left:', leftPanels, 'Right:', rightPanels);
         panelService.reset();
-        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
-        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+        try {
+          panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
+        } catch (err) {
+          console.error('[Mode] Error adding left panels:', err);
+        }
+        try {
+          panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+        } catch (err) {
+          console.error('[Mode] Error adding right panels:', err);
+        }
 
         // layoutProps contains all props but leftPanels and rightPanels
         layoutData.props = layoutProps;
