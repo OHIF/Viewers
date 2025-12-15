@@ -1,3 +1,4 @@
+import { Badge, badgeVariants } from './Badge';
 import { Button, buttonVariants } from './Button';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
@@ -37,6 +38,7 @@ import { Toggle, toggleVariants } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { Input } from './Input';
 import { InputNumber } from './InputNumber';
+import { InputMultiSelect } from './InputMultiSelect';
 import { Label } from './Label';
 import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
@@ -96,7 +98,18 @@ import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from './HoverCard';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from './Table';
 import {
   ViewportActionButton,
   PatientInfo,
@@ -119,6 +132,7 @@ import {
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
+export * from './StudyList';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
@@ -134,6 +148,8 @@ export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatist
 export {
   Numeric,
   ErrorBoundary,
+  Badge,
+  badgeVariants,
   Button,
   buttonVariants,
   ThemeWrapper,
@@ -169,6 +185,7 @@ export {
   DatePickerWithRange,
   Input,
   InputNumber,
+  InputMultiSelect,
   Label,
   Tabs,
   TabsContent,
@@ -184,6 +201,14 @@ export {
   ToggleGroup,
   ToggleGroupItem,
   ScrollBar,
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -229,6 +254,9 @@ export {
   SegmentationTable,
   StudySummary,
   Header,
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
   Card,
   CardHeader,
   CardFooter,
@@ -269,5 +297,5 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
-  LayoutSelector
+  LayoutSelector,
 };
