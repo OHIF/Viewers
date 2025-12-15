@@ -600,70 +600,112 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   /**
    * Figures out which viewport to update when the viewport type needs to change.
-   * This may not be the active viewport if there is already a viewport showing
-   * the display set, but in the wrong orientation.
-   *
-   * The viewport will need to update the viewport type and/or display set to
-   * display the resulting data.
-   *
-   * The first choice will be a viewport already showing the correct display set,
-   * but showing it as a stack.
-   *
-   * Second choice is to see if there is a viewport already showing the right
-   * orientation for the image, but the wrong display set.  This fixes the
-   * case where the user is in MPR and a viewport other than active should be
-   * the one to change to display the iamge.
-   *
-   * Third choice is to use a viewport whose orientation best matches the
-   * measurement when no other viewport qualifies.
-   *
-   * Final choice is to use the provide activeViewportId.  This will cover
-   * changes to/from video and wsi viewports and other cases where no
-   * viewport is really even close to being able to display the measurement.
+   * Orchestrates the search strategies in order of preference.
    */
   public findUpdateableViewportConfiguration(activeViewportId: string, measurement) {
     const { metadata, displaySetInstanceUID } = measurement;
-    const { volumeId, referencedImageId } = metadata;
-    const { displaySetService, viewportGridService } = this.servicesManager.services;
+    const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+    // 1. Determine the target Viewport Type (Stack vs Volume)
+    const viewportType = this._determineTargetViewportType(displaySet, metadata);
+
+    // 2. Strategy: Find viewport already showing this volume
+    const volumeMatch = this._findViewportShowingVolume(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (volumeMatch) {
+      return volumeMatch;
+    }
+
+    // 3. Strategy: Find viewport with compatible orientation (even if different display set)
+    const compatibleMatch = this._findViewportWithCompatibleOrientation(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (compatibleMatch) {
+      return compatibleMatch;
+    }
+
+    // 4. Strategy: Find viewport with matching orientation via IOP
+    const orientationMatch = this._findViewportWithMatchingOrientation(
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (orientationMatch) {
+      return orientationMatch;
+    }
+
+    // 5. Fallback: Use the active viewport
+    return {
+      viewportId: activeViewportId,
+      displaySetInstanceUID,
+      viewportOptions: { viewportType },
+    };
+  }
+
+  /**
+   * Determines if the viewport should be a STACK or VOLUME
+   */
+  private _determineTargetViewportType(displaySet, metadata): string {
     let { viewportType } = displaySet;
+
     if (!viewportType) {
-      if (referencedImageId && !displaySet.isReconstructable) {
+      if (metadata.referencedImageId && !displaySet.isReconstructable) {
         viewportType = csEnums.ViewportType.STACK;
-      } else if (volumeId) {
+      } else if (metadata.volumeId) {
         viewportType = 'volume';
       }
     }
+    return viewportType;
+  }
 
-    // Find viewports that could be updated to be volumes to show this view
-    // That prefers a viewport already showing the right display set.
-    if (volumeId) {
-      for (const id of this.viewportsById.keys()) {
-        const viewport = this.getCornerstoneViewport(id);
-        if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
-          return {
-            viewportId: id,
-            displaySetInstanceUID,
-            viewportOptions: { viewportType },
-          };
-        }
-      }
+  /**
+   * Find viewports that could be updated to be volumes to show this view.
+   * Prefers a viewport already showing the right display set.
+   */
+  private _findViewportShowingVolume(metadata, displaySetInstanceUID, viewportType) {
+    if (!metadata.volumeId) {
+      return null;
     }
 
-    // Find a viewport in the correct orientation showing a different display set
-    // which could be used to display the annotation.
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
+        return {
+          viewportId: id,
+          displaySetInstanceUID,
+          viewportOptions: { viewportType },
+        };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a viewport in the correct orientation showing a different display set
+   * which could be used to display the annotation.
+   */
+  private _findViewportWithCompatibleOrientation(metadata, displaySetInstanceUID, viewportType) {
+    const { viewportGridService } = this.servicesManager.services;
     const altMetadata = { ...metadata, volumeId: null, referencedImageId: null };
+
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
       const viewportDisplaySetUID = viewportGridService.getDisplaySetsUIDsForViewport(id)?.[0];
+
       if (!viewportDisplaySetUID || !viewport) {
         continue;
       }
-      if (volumeId) {
+
+      if (metadata.volumeId) {
         altMetadata.volumeId = viewportDisplaySetUID;
       }
       altMetadata.FrameOfReferenceUID = this._getFrameOfReferenceUID(viewportDisplaySetUID);
+
       if (viewport.isReferenceViewable(altMetadata, { asVolume: true, withNavigation: true })) {
         return {
           viewportId: id,
@@ -672,8 +714,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         };
       }
     }
+    return null;
+  }
 
-    // Use a viewport with matching orientation when no displaySet match is found.
+  /**
+   * Use a viewport with matching orientation (IOP) when no direct displaySet match is found.
+   */
+  private _findViewportWithMatchingOrientation(displaySetInstanceUID, viewportType) {
+    const { displaySetService } = this.servicesManager.services;
+
     const closestOrientation = getClosestOrientationFromIOP(
       displaySetService,
       displaySetInstanceUID
@@ -696,13 +745,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         };
       }
     }
-
-    // Just display in the active viewport
-    return {
-      viewportId: activeViewportId,
-      displaySetInstanceUID,
-      viewportOptions: { viewportType },
-    };
+    return null;
   }
 
   /**
