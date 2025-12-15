@@ -14,5 +14,8 @@
   "Outline": "حدود",
   "Rename": "إعادة تسمية",
   "Segmentation": "تجزئة",
-  "Size": "الحجم"
+  "Size": "الحجم",
+  "No segmentations available": "لا توجد تجزئات متاحة",
+  "Not available on the current viewport": "غير متاح في نافذة العرض الحالية",
+  "Add segment to enable this tool": "أضف مقطعًا لتمكين هذه الأداة"
 }

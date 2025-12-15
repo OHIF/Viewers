@@ -1,4 +1,5 @@
 import { Enums } from '@cornerstonejs/tools';
+import i18n from '@ohif/i18n';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -14,7 +15,7 @@ import AdvancedRenderingControls from './components/AdvancedRenderingControls';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
-  disabledText: disabledText ?? 'Not available on the current viewport',
+  disabledText: disabledText ?? i18n.t('Buttons:Not available on the current viewport'),
 });
 
 export default function getToolbarModule({ servicesManager, extensionManager }: withAppTypes) {
@@ -396,7 +397,9 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           );
 
           if (!hasAnySupportedModality) {
-            return getDisabledState(disabledText || 'Tool not available for this modality');
+            return getDisabledState(
+              disabledText || i18n.t('Buttons:Tool not available for this modality')
+            );
           }
         }
       },

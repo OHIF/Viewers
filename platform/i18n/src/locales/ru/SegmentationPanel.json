@@ -14,5 +14,8 @@
   "Outline": "Контур",
   "Rename": "Переименовать",
   "Segmentation": "Сегментация",
-  "Size": "Размер"
+  "Size": "Размер",
+  "No segmentations available": "Нет доступных сегментаций",
+  "Not available on the current viewport": "Недоступно в текущем окне просмотра",
+  "Add segment to enable this tool": "Добавьте сегмент, чтобы включить этот инструмент"
 }

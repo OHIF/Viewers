@@ -638,7 +638,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
     const { ValueType } = ContentSequence;
-    if (!ValueType === 'SCOORD') {
+    if (ValueType !== 'SCOORD' && ValueType !== 'SCOORD3D') {
       console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
       return;
     }

@@ -6,9 +6,14 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should launch MPR with unhydrated RTSTRUCT', async ({ page, mainToolbarPageObject }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+test('should launch MPR with unhydrated RTSTRUCT', async ({
+  page,
+  leftPanelPageObject,
+  mainToolbarPageObject,
+  rightPanelPageObject,
+}) => {
+  await rightPanelPageObject.toggle();
+  await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
 
   await page.waitForTimeout(5000);
 
