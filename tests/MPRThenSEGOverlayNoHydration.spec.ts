@@ -9,10 +9,11 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG chosen from the data overlay menu', async ({
   page,
+  rightPanelPageObject,
   mainToolbarPageObject,
   viewportPageObject,
 }) => {
-  await page.getByTestId('side-panel-header-right').click();
+  await rightPanelPageObject.toggle();
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
@@ -25,17 +26,16 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
   );
 
   // Hover over the middle/sagittal viewport so that the data overlay menu is available.
-  await viewportPageObject.getById('mpr-sagittal').pane.hover();
-  await viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay.click();
-  await page.getByTestId('AddSegmentationDataOverlay-mpr-sagittal').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('Segmentation').click();
+  await viewportPageObject.getById('mpr-axial').pane.hover();
+  const dataOverlayPageObject = viewportPageObject.getById('mpr-axial').overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle('mpr-axial');
+  await dataOverlayPageObject.addSegmentation('Segmentation', 'mpr-axial');
 
   // Hide the overlay menu.
-  await viewportPageObject.getById('mpr-sagittal').overlayMenu.dataOverlay.click();
+  await dataOverlayPageObject.toggle('mpr-axial');
 
   // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+  await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await page.waitForTimeout(5000);
 

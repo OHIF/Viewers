@@ -7,55 +7,39 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('checks basic add, rename, delete segments from panel', async ({ page }) => {
+test('checks basic add, rename, delete segments from panel', async ({ rightPanelPageObject }) => {
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;
   await expect(segmentationPanel).toBeVisible();
 
   // Switch to labelmap tab.
   segmentationPanel.click();
 
   // Add segmentation
-  const addSegmentationBtn = page.getByTestId('addSegmentation');
-  await addSegmentationBtn.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
   // Expect new segmentation and blank segment named "Segment 1"
-  await expect(page.getByTestId('data-row')).toHaveCount(1);
-  await expect(page.getByTestId('data-row')).toContainText('Segment 1');
+  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegmentation(0);
+  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(1);
+  await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
-  const segment1Dropdown = page
-    .getByTestId('data-row')
-    .first()
-    .getByRole('button', { name: 'Actions' });
-  await segment1Dropdown.click();
+  await segment1.actions.rename('Segment One');
 
-  const renameButton = page.getByRole('menuitem', { name: 'Rename' });
-  await expect(renameButton).toBeVisible();
-  await renameButton.click();
-
-  const renameDialog = page.getByRole('dialog', { name: 'Edit Segment Label' });
-  await expect(renameDialog).toBeVisible();
-
-  const renameInput = page.getByRole('textbox', { name: 'Enter new label' });
-  await renameInput.fill('Segment One');
-
-  await page.getByTestId('input-dialog-save-button').click();
-
-  await expect(page.getByTestId('data-row')).toContainText('Segment One');
-  await expect(page.getByTestId('data-row')).not.toContainText('Segment 1');
+  await expect(segment1.locator).toContainText('Segment One');
+  await expect(segment1.locator).not.toContainText('Segment 1');
 
   // Delete
-  await segment1Dropdown.click();
-  const deleteButton = page.getByRole('menuitem', { name: 'Delete' });
-  await expect(deleteButton).toBeVisible();
-  await deleteButton.click();
+  await segment1.actions.delete();
 
-  await expect(page.getByTestId('data-row')).toHaveCount(0);
+  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(0);
 });
 
 test('checks saved segmentations loads and jumps to slices', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight;
@@ -63,39 +47,34 @@ test('checks saved segmentations loads and jumps to slices', async ({
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
 
   // Add Segmentations
-  const segmentationsThumbnail = page
-    .getByTestId('study-browser-thumbnail-no-image')
-    .getByRole('button', { name: 'Segmentation' });
-  await segmentationsThumbnail.dblclick();
+  await leftPanelPageObject.loadSeriesByModality('SEG');
 
   await page.waitForTimeout(3000);
 
   // Confirm open segmentation
-  const viewportNotification = page.getByTestId('viewport-notification');
-  await expect(viewportNotification).toBeVisible();
-  await page.getByTestId('yes-hydrate-btn').click();
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Segmentation Panel should already be open
-  const segmentationPanel = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+  const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.menuButton;
   await expect(segmentationPanel).toBeVisible();
 
   // Confirm spleen jumps to slice 17
   // First iteration repeat to account for segmentation loading delays
-  const spleenRow = page.getByTestId('data-row').filter({ hasText: 'Spleen' });
   await expect(async () => {
-    await spleenRow.click();
+    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Spleen').click();
     await expect(viewportInfoBottomRight).toContainText('17/');
   }).toPass({
     timeout: 10000,
   });
 
   // Esophagus - 5
-  const esophagusRow = page.getByTestId('data-row').filter({ hasText: 'Esophagus' });
-  await esophagusRow.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel
+    .segmentationByText('Esophagus')
+    .click();
   await expect(viewportInfoBottomRight).toContainText('5/');
 
   // Pancreas - 22
-  const pancreasRow = page.getByTestId('data-row').filter({ hasText: 'Pancreas' });
-  await pancreasRow.click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Pancreas').click();
   await expect(viewportInfoBottomRight).toContainText('22/');
 });

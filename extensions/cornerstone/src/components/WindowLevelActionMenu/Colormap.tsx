@@ -98,7 +98,7 @@ export function Colormap({ viewportId }: { viewportId?: string } = {}): ReactEle
             {colormaps.map((colormap, index) => (
               <AllInOneMenu.Item
                 key={index}
-                label={colormap.description}
+                label={t(`Colormaps:${colormap.Name}`, { defaultValue: colormap.Name })}
                 useIconSpace={false}
                 onClick={() => {
                   setCurrentColormap(colormap);

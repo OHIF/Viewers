@@ -14,13 +14,13 @@ import { useTranslation } from 'react-i18next';
 export const ROI_STAT = 'roi_stat';
 const RANGE = 'range';
 
-const options = [
-  { value: ROI_STAT, label: 'Max', placeHolder: 'Max' },
-  { value: RANGE, label: 'Range', placeHolder: 'Range' },
-];
-
 function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
+
+  const options = [
+    { value: ROI_STAT, label: t('Max'), placeHolder: t('Max') },
+    { value: RANGE, label: t('Range'), placeHolder: t('Range') },
+  ];
 
   const handlePercentageOfMaxSUVChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -101,7 +101,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
         <div className="mr-2 text-sm">
           <div className="flex flex-col space-y-2">
             {/* Header */}
-            <Label>Lower & Upper Ranges</Label>
+            <Label>{t('Lower & Upper Ranges')}</Label>
 
             {/* CT Row */}
             <div className="flex items-center">

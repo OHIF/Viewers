@@ -11,7 +11,6 @@ export const Patient = (props: IconProps) => (
     xmlnsXlink="http://www.w3.org/1999/xlink"
     {...props}
   >
-    <title>icon-patient</title>
     <g
       id="Production"
       stroke="none"
