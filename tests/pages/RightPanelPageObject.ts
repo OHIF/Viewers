@@ -66,6 +66,24 @@ export class RightPanelPageObject {
     return this.getPanelRowDataObject(row);
   }
 
+  private getSegmentationHeaderActions() {
+    // Locate the header row with below elements
+    // 1. 'combobox' (the dropdown)
+    // 2. The 'icon-more' SVG
+    // >> This should probably be improved by giving a test ID
+    const header = this.page.locator('div:has(> button[role="combobox"])').locator('visible=true');
+    const moreButton = header.locator('button:has(#icon-more)');
+
+    return {
+      button: moreButton,
+      open: async () => await moreButton.click(),
+      delete: async () => {
+        await moreButton.click();
+        await this.page.getByRole('menuitem', { name: 'Delete' }).click();
+      },
+    };
+  }
+
   async toggle() {
     await this.page.getByTestId('side-panel-header-right').click();
   }
@@ -142,6 +160,7 @@ export class RightPanelPageObject {
       select: async () => {
         await menuButton.click();
       },
+      segmentationActions: this.getSegmentationHeaderActions(),
     };
   }
   get labelMapSegmentationPanel() {
@@ -157,6 +176,7 @@ export class RightPanelPageObject {
       select: async () => {
         await menuButton.click();
       },
+      segmentationActions: this.getSegmentationHeaderActions(),
       tools: {
         get brush() {
           const button = page.getByTestId('Brush-btn');

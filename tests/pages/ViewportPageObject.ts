@@ -60,6 +60,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  viewportId: Promise<string>;
 }
 
 export class ViewportPageObject {
@@ -170,6 +171,13 @@ export class ViewportPageObject {
           delay: params.config?.delay,
           steps: params.config?.steps,
         });
+      },
+      get viewportId() {
+        return viewport
+          .locator('[data-viewportid]')
+          .first()
+          .getAttribute('data-viewportid')
+          .then(id => id || 'default'); // Fallback to 'default' if attribute is missing
       },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
