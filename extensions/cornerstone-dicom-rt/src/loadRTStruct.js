@@ -77,8 +77,13 @@ async function checkAndLoadContourData({
         const rawValues = decodedText.split('\\');
 
         const result = [];
+
+        // Ensure strictly that we have a full set of 3 coordinates
+        if (rawValues.length % 3 !== 0) {
+          return Promise.reject('ContourData raw values not divisibe by 3');
+        }
+
         for (let i = 0; i < rawValues.length; i += 3) {
-          // Ensure strictly that we have a full set of 3 coordinates
           if (i + 2 < rawValues.length) {
             const x = parseFloat(rawValues[i]);
             const y = parseFloat(rawValues[i + 1]);
@@ -90,8 +95,7 @@ async function checkAndLoadContourData({
               result.push(y);
               result.push(z);
             } else {
-              // Ignore for now, log error to console
-              console.log('Error parsing contourData from InlineBinary format');
+              return Promise.reject('Error parsing contourData from InlineBinary format');
             }
           }
         }
