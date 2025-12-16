@@ -580,6 +580,121 @@ function PanelStudyBrowser({
     }
   }, [sessionID, servicesManager, isSegmented, fetchSegmentationFromBackend]);
 
+
+
+  /**
+   * Alternative function that generates report, uploads PDF to parse text,
+   * prints contents to console, and focuses the user on the Chat section
+   */
+  const generateReportForChatConsole = useCallback(async () => {
+    if (!sessionID) {
+      console.warn('No session ID available');
+      return null;
+    }
+
+    const { uiNotificationService, panelService } = servicesManager.services;
+
+    setIsGeneratingReport(true);
+    try {
+      // Check if segmentation has been done, if not, call it first
+      if (!isSegmented) {
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Segmentation not done yet. Running segmentation first...',
+          type: 'info',
+        });
+
+        await fetchSegmentationFromBackend();
+      }
+
+      uiNotificationService.show({
+        title: 'Report',
+        message: 'Generating report for chat...',
+        type: 'info',
+      });
+
+      // @ts-ignore - BACKEND_API_URL is injected at build time
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+
+      // Step 1: Fetch the PDF report from backend
+      const response = await retryWithDelay(
+        async () => {
+          const res = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
+          if (!res.ok) {
+            throw new Error(`Backend responded with status: ${res.status}`);
+          }
+          return res;
+        },
+        3, // maxRetries
+        3000, // 3 seconds delay
+        true // suppressWarnings
+      );
+
+      const pdfBlob = await response.blob();
+
+      // Step 2: Upload PDF to /api/upload to parse text and save to Supabase
+      uiNotificationService.show({
+        title: 'Report',
+        message: 'Parsing report and saving to database...',
+        type: 'info',
+      });
+
+      const pdfFile = new File([pdfBlob], `report_${sessionID}.pdf`, { type: 'application/pdf' });
+      const formData = new FormData();
+      formData.append('file', pdfFile);
+
+      // @ts-ignore - CHAT_API_URL is injected at build time
+      const chatApiUrl = process.env.REACT_APP_CHAT_API_URL || '';
+      const uploadUrl = chatApiUrl ? `${chatApiUrl}/api/upload` : '/api/upload';
+
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(`Upload failed with status: ${uploadResponse.status}`);
+      }
+
+      const uploadData = await uploadResponse.json();
+      const reportContent = uploadData.pdf?.text || uploadData.text || '[Report uploaded successfully]';
+      const chatSessionId = uploadData.sessionId;
+
+      // Print contents to console
+      console.log('='.repeat(60));
+      console.log('GENERATED REPORT CONTENT');
+      console.log('='.repeat(60));
+      console.log(reportContent);
+      console.log('='.repeat(60));
+      console.log('Chat Session ID:', chatSessionId);
+
+      // Focus user on Chat section
+      if (panelService) {
+        const chatPanelId = '@semenoflabs/extension-side-chat.panelModule.sideChat';
+        panelService.activatePanel(chatPanelId, true);
+      }
+
+      uiNotificationService.show({
+        title: 'Report',
+        message: 'Report parsed and saved. Chat panel activated.',
+        type: 'success',
+      });
+
+      return { text: reportContent, sessionId: chatSessionId };
+    } catch (error) {
+      console.error('Failed to generate report for chat:', error);
+      uiNotificationService.show({
+        title: 'Report',
+        message: `Failed to generate report: ${error.message || error.toString()}`,
+        type: 'error',
+      });
+      return null;
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  }, [sessionID, servicesManager, isSegmented, fetchSegmentationFromBackend]);
+
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
       const customHandler = customizationService.getCustomization(
@@ -949,7 +1064,7 @@ function PanelStudyBrowser({
                     : 'Segmentation'}
             </button>
             <button
-              onClick={openReportFromBackend}
+              onClick={generateReportForChatConsole}
               disabled={
                 !sessionID ||
                 isUploadingDicom ||
