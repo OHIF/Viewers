@@ -334,3 +334,26 @@ MIT © [OHIF](https://github.com/OHIF)
 <!-- prettier-ignore-end -->
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large&issueType=license)
+
+
+# HOW TO RUN
+
+
+## Fully local with mocked backend
+
+```sh
+yarn install
+yarn run dev
+```
+
+```sh
+cd mock_backend
+docker compose up
+```
+
+## Local but connecting to the backend on GCP
+
+```sh
+docker build -t ohif/viewer:latest .
+docker run -p 3000:80 ohif/viewer:latest
+```
