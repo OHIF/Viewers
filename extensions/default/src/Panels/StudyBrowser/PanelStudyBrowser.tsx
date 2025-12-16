@@ -661,6 +661,12 @@ function PanelStudyBrowser({
       const reportContent = uploadData.pdf?.text || uploadData.text || '[Report uploaded successfully]';
       const chatSessionId = uploadData.sessionId;
 
+      // Store chat session ID in sessionStorage for ChatSection to use
+      if (chatSessionId) {
+        sessionStorage.setItem('chat_session_id', chatSessionId);
+        console.log('[Report] Chat session ID stored:', chatSessionId);
+      }
+
       // Print contents to console
       console.log('='.repeat(60));
       console.log('GENERATED REPORT CONTENT');
@@ -677,7 +683,7 @@ function PanelStudyBrowser({
 
       uiNotificationService.show({
         title: 'Report',
-        message: 'Report parsed and saved. Chat panel activated.',
+        message: 'Report ready! You can now chat about it.',
         type: 'success',
       });
 
