@@ -124,7 +124,7 @@ function ModalityLoadBadge({ viewportId }: { viewportId: string }) {
           data-cy={`ModalityLoadBadge-${viewportId}`}
           className="flex h-6 cursor-default text-sm leading-6 text-white"
         >
-          <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
+          <div className="bg-popover flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
             <StatusIcon />
             <span className="ml-1">{statusInfo.type}</span>
           </div>
