@@ -80,7 +80,7 @@ async function checkAndLoadContourData({
 
         // Ensure strictly that we have a full set of 3 coordinates
         if (rawValues.length % 3 !== 0) {
-          return Promise.reject('ContourData raw values not divisibe by 3');
+          return Promise.reject('ContourData raw values not divisible by 3');
         }
 
         for (let i = 0; i < rawValues.length; i += 3) {
