@@ -18,7 +18,7 @@ export function StudyBrowserViewOptions({ tabs, onSelectTab, activeTabName }: wi
     <DropdownMenu>
       <Tooltip>
         <TooltipTrigger className="w-full w-[50%] overflow-hidden">
-          <DropdownMenuTrigger className="border-input focus:border-input flex h-[26px] w-full items-center justify-start rounded border bg-black p-2 text-base text-white">
+          <DropdownMenuTrigger className="border-input focus:border-input text-foreground flex h-[26px] w-full items-center justify-start rounded border bg-black p-2 text-base">
             {activeTab?.label}
           </DropdownMenuTrigger>
         </TooltipTrigger>
@@ -37,7 +37,7 @@ export function StudyBrowserViewOptions({ tabs, onSelectTab, activeTabName }: wi
           return (
             <DropdownMenuItem
               key={name}
-              className={`text-white ${isActive ? 'font-bold' : ''}`}
+              className={`text-foreground ${isActive ? 'font-bold' : ''}`}
               onClick={() => handleTabChange(name)}
             >
               {label}

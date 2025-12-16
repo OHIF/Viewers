@@ -155,7 +155,7 @@ export default function USAnnotationPanel() {
    * Render helpers so the JSX doesn’t become spaghetti.     */
   const renderWorkflowToggles = () => (
     <PanelSection.Content>
-      <div className="space-y-3 p-2 text-sm text-white">
+      <div className="text-foreground space-y-3 p-2 text-sm">
         <div className="flex items-center">
           <Switch
             id="depth-guide-switch"
@@ -396,7 +396,7 @@ export default function USAnnotationPanel() {
    *  🖼  Final Render                                      */
   return (
     <div
-      className="h-full bg-black text-white"
+      className="text-foreground h-full bg-black"
       style={{ minWidth: 240, maxWidth: 480, width: '100%' }}
     >
       {/* Workflow */}

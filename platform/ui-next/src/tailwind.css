@@ -220,11 +220,11 @@
 }
 
 h2.section-header {
-  @apply py-4 text-2xl font-normal text-white;
+  @apply text-foreground py-4 text-2xl font-normal;
 }
 
 h3.section-header {
-  @apply py-3 text-xl text-white;
+  @apply text-foreground py-3 text-xl;
 }
 
 .row {

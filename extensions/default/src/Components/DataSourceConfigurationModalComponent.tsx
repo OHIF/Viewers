@@ -159,7 +159,12 @@ function DataSourceConfigurationModalComponent({
                 <div className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES)}>{t(itemLabel)}</div>
               </div>
               {itemLabelIndex < selectedItems.length ? (
-                <div className={classNames('text-[14px] text-white', NO_WRAP_ELLIPSIS_CLASS_NAMES)}>
+                <div
+                  className={classNames(
+                    'text-foreground text-[14px]',
+                    NO_WRAP_ELLIPSIS_CLASS_NAMES
+                  )}
+                >
                   {selectedItems[itemLabelIndex].name}
                 </div>
               ) : (

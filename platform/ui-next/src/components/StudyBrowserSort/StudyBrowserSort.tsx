@@ -55,7 +55,7 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
       <DropdownMenu>
         <Tooltip>
           <TooltipTrigger className="w-full overflow-hidden">
-            <DropdownMenuTrigger className="border-input focus:border-input flex h-[26px] w-full items-center justify-start overflow-hidden whitespace-nowrap rounded border bg-black p-2 text-base text-white">
+            <DropdownMenuTrigger className="border-input focus:border-input text-foreground flex h-[26px] w-full items-center justify-start overflow-hidden whitespace-nowrap rounded border bg-black p-2 text-base">
               {selectedSort.label}
             </DropdownMenuTrigger>
           </TooltipTrigger>
@@ -65,7 +65,7 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
           {sortFunctions.map(sort => (
             <DropdownMenuItem
               key={sort.label}
-              className="text-white"
+              className="text-foreground"
               onClick={() => handleSortChange(sort)}
             >
               {sort.label}

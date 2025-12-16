@@ -111,7 +111,7 @@ const getTabClassNames = (
   isActiveTab: boolean,
   isTabDisabled: boolean
 ) =>
-  classnames('h-[28px] mb-[2px] cursor-pointer text-white bg-primary/10 hover:bg-primary/20', {
+  classnames('h-[28px] mb-[2px] cursor-pointer text-foreground bg-primary/10 hover:bg-primary/20', {
     'hover:text-primary': !isActiveTab && !isTabDisabled,
     'rounded-l': tabIndex % numColumns === 0,
     'rounded-r': (tabIndex + 1) % numColumns === 0 || tabIndex === numTabs - 1,
@@ -162,7 +162,9 @@ const getToolTipContent = (label: string, disabled: boolean) => {
   return (
     <>
       <div>{label}</div>
-      {disabled && <div className="text-white">{'Not available based on current context'}</div>}
+      {disabled && (
+        <div className="text-foreground">{'Not available based on current context'}</div>
+      )}
     </>
   );
 };

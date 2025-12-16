@@ -276,7 +276,7 @@ function DicomUploadProgress({
 
   const getNumCompletedAndTimeRemainingComponent = (): ReactElement => {
     return (
-      <div className="bg-muted flex h-14 items-center px-1 pb-4 text-lg text-white">
+      <div className="bg-muted text-foreground flex h-14 items-center px-1 pb-4 text-lg">
         {numFilesCompleted === dicomFileUploaderArr.length ? (
           <>
             <span className={NO_WRAP_ELLIPSIS_CLASS_NAMES}>{`${dicomFileUploaderArr.length} ${

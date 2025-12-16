@@ -94,7 +94,7 @@ const ProgressDropdown = ({
   return (
     <div
       ref={element}
-      className="relative grow select-none text-[0px] text-white"
+      className="text-foreground relative grow select-none text-[0px]"
     >
       <div>
         <div className="mb-1.5 flex h-[26px]">
@@ -117,8 +117,8 @@ const ProgressDropdown = ({
             })}
           >
             <Icons.ArrowRight
-              className={classnames('relative left-0.5 h-6 w-6 text-white', {
-                'text-white': canMoveNext,
+              className={classnames('text-foreground relative left-0.5 h-6 w-6', {
+                'text-foreground': canMoveNext,
                 'text-': !canMoveNext,
               })}
               onClick={handleNextButtonClick}
