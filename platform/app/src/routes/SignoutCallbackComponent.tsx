@@ -1,24 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 function SignoutCallbackComponent({ userManager }) {
   const navigate = useNavigate();
 
-  const onRedirectSuccess = (/* user */) => {
-    const { pathname, search = '' } = JSON.parse(sessionStorage.getItem('ohif-redirect-to'));
+  useEffect(() => {
+    const onRedirectSuccess = (/* user */) => {
+      const { pathname, search = '' } = JSON.parse(
+        sessionStorage.getItem('ohif-redirect-to')
+      );
 
-    navigate(`${pathname}?${search}`);
-  };
+      navigate(`${pathname}?${search}`);
+    };
 
-  const onRedirectError = error => {
-    throw new Error(error);
-  };
+    const onRedirectError = error => {
+      throw new Error(error);
+    };
 
-  userManager
-    .signoutRedirectCallback()
-    .then(user => onRedirectSuccess(user))
-    .catch(error => onRedirectError(error));
+    userManager
+      .signoutRedirectCallback()
+      .then(user => onRedirectSuccess(user))
+      .catch(error => onRedirectError(error));
+  }, [navigate, userManager]);
 
   return null;
 }

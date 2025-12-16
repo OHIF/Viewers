@@ -1,4 +1,7 @@
 import { toolGroupIds } from './initToolGroups';
+import i18n from 'i18next';
+
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -41,8 +44,8 @@ const toolbarButtons = [
     uiType: 'ohif.modalityLoadBadge',
     props: {
       icon: 'Status',
-      label: 'Status',
-      tooltip: 'Status',
+      label: i18n.t('Buttons:Status'),
+      tooltip: i18n.t('Buttons:Status'),
       evaluate: {
         name: 'evaluate.modalityLoadBadge',
         hideWhenDisabled: true,
@@ -54,7 +57,7 @@ const toolbarButtons = [
     uiType: 'ohif.colorbar',
     props: {
       type: 'tool',
-      label: 'Colorbar',
+      label: i18n.t('Buttons:Colorbar'),
     },
   },
   {
@@ -62,8 +65,8 @@ const toolbarButtons = [
     uiType: 'ohif.navigationComponent',
     props: {
       icon: 'Navigation',
-      label: 'Navigation',
-      tooltip: 'Navigate between segments/measurements and manage their visibility',
+      label: i18n.t('Buttons:Navigation'),
+      tooltip: i18n.t('Buttons:Navigate between segments/measurements and manage their visibility'),
       evaluate: {
         name: 'evaluate.navigationComponent',
         hideWhenDisabled: true,
@@ -75,8 +78,8 @@ const toolbarButtons = [
     uiType: 'ohif.windowLevelMenuEmbedded',
     props: {
       icon: 'WindowLevel',
-      label: 'Window Level',
-      tooltip: 'Adjust window/level presets and customize image contrast settings',
+      label: i18n.t('Buttons:Window Level'),
+      tooltip: i18n.t('Buttons:Adjust window/level presets and customize image contrast settings'),
       evaluate: {
         name: 'evaluate.windowLevelMenuEmbedded',
         hideWhenDisabled: true,
@@ -88,8 +91,8 @@ const toolbarButtons = [
     uiType: 'ohif.trackingStatus',
     props: {
       icon: 'TrackingStatus',
-      label: 'Tracking Status',
-      tooltip: 'View and manage tracking status of measurements and annotations',
+      label: i18n.t('Buttons:Tracking Status'),
+      tooltip: i18n.t('Buttons:View and manage tracking status of measurements and annotations'),
       evaluate: {
         name: 'evaluate.trackingStatus',
         hideWhenDisabled: true,
@@ -101,8 +104,8 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-length',
-      label: 'Length',
-      tooltip: 'Length Tool',
+      label: i18n.t('Buttons:Length'),
+      tooltip: i18n.t('Buttons:Length Tool'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -112,8 +115,8 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-bidirectional',
-      label: 'Bidirectional',
-      tooltip: 'Bidirectional Tool',
+      label: i18n.t('Buttons:Bidirectional'),
+      tooltip: i18n.t('Buttons:Bidirectional Tool'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -123,8 +126,8 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-annotate',
-      label: 'Arrow Annotate',
-      tooltip: 'Arrow Annotate Tool',
+      label: i18n.t('Buttons:Arrow Annotate'),
+      tooltip: i18n.t('Buttons:Arrow Annotate Tool'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -134,8 +137,8 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-ellipse',
-      label: 'Ellipse',
-      tooltip: 'Ellipse Tool',
+      label: i18n.t('Buttons:Ellipse'),
+      tooltip: i18n.t('Buttons:Ellipse Tool'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -145,7 +148,7 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
-      label: 'Zoom',
+      label: i18n.t('Buttons:Zoom'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -155,7 +158,7 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
-      label: 'Window Level',
+      label: i18n.t('Buttons:Window Level'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -165,7 +168,7 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-crosshair',
-      label: 'Crosshairs',
+      label: i18n.t('Buttons:Crosshairs'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -175,7 +178,7 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
-      label: 'Pan',
+      label: i18n.t('Buttons:Pan'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -185,13 +188,13 @@ const toolbarButtons = [
     uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'tool-create-threshold',
-      label: 'Rectangle ROI Threshold',
+      label: i18n.t('Buttons:Rectangle ROI Threshold'),
       commands: setToolActiveToolbar,
       evaluate: [
         'evaluate.cornerstone.segmentation',
         {
           name: 'evaluate.cornerstoneTool',
-          disabledText: 'Select the PT Axial to enable this tool',
+          disabledText: i18n.t('Buttons:Select the PT Axial to enable this tool'),
         },
       ],
       options: 'tmtv.RectangleROIThresholdOptions',
@@ -203,19 +206,26 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-brush',
-      label: 'Brush',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularBrush', 'SphereBrush'],
-        disabledText: 'Create new segmentation to enable this tool.',
-      },
+      label: i18n.t('Buttons:Brush'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularBrush', 'SphereBrush'],
+          disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'brush-radius',
+        },
+      ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'brush-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -224,13 +234,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'brush-mode',
           value: 'CircularBrush',
           values: [
-            { value: 'CircularBrush', label: 'Circle' },
-            { value: 'SphereBrush', label: 'Sphere' },
+            { value: 'CircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -242,18 +252,25 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-eraser',
-      label: 'Eraser',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularEraser', 'SphereEraser'],
-      },
+      label: i18n.t('Buttons:Eraser'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularEraser', 'SphereEraser'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'eraser-radius',
+        },
+      ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'eraser-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -262,13 +279,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'CircularEraser',
           values: [
-            { value: 'CircularEraser', label: 'Circle' },
-            { value: 'SphereEraser', label: 'Sphere' },
+            { value: 'CircularEraser', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereEraser', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -280,18 +297,25 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-threshold',
-      label: 'Threshold Tool',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
-      },
+      label: i18n.t('Buttons:Threshold Tool'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'threshold-radius',
+        },
+      ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'threshold-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -306,13 +330,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Threshold',
+          name: i18n.t('Buttons:Threshold'),
           type: 'radio',
           id: 'dynamic-mode',
           value: 'ThresholdRange',
           values: [
-            { value: 'ThresholdDynamic', label: 'Dynamic' },
-            { value: 'ThresholdRange', label: 'Range' },
+            { value: 'ThresholdDynamic', label: i18n.t('Buttons:Dynamic') },
+            { value: 'ThresholdRange', label: i18n.t('Buttons:Range') },
           ],
           commands: ({ value, commandsManager }) => {
             if (value === 'ThresholdDynamic') {
@@ -327,20 +351,20 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'ThresholdCircularBrush',
           values: [
-            { value: 'ThresholdCircularBrush', label: 'Circle' },
-            { value: 'ThresholdSphereBrush', label: 'Sphere' },
+            { value: 'ThresholdCircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'ThresholdSphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           condition: ({ options }) =>
             options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
           commands: 'setToolActiveToolbar',
         },
         {
-          name: 'ThresholdRange',
+          name: i18n.t('ROIThresholdConfiguration:ThresholdRange'),
           type: 'double-range',
           id: 'threshold-range',
           min: 0,
@@ -364,8 +388,10 @@ const toolbarButtons = [
     uiType: 'ohif.dataOverlayMenu',
     props: {
       icon: 'ViewportViews',
-      label: 'Data Overlay',
-      tooltip: 'Configure data overlay options and manage foreground/background display sets',
+      label: i18n.t('Buttons:Data Overlay'),
+      tooltip: i18n.t(
+        'Buttons:Configure data overlay options and manage foreground/background display sets'
+      ),
       evaluate: 'evaluate.dataOverlayMenu',
     },
   },
@@ -374,8 +400,10 @@ const toolbarButtons = [
     uiType: 'ohif.orientationMenu',
     props: {
       icon: 'OrientationSwitch',
-      label: 'Orientation',
-      tooltip: 'Change viewport orientation between axial, sagittal, coronal and reformat planes',
+      label: i18n.t('Buttons:Orientation'),
+      tooltip: i18n.t(
+        'Buttons:Change viewport orientation between axial, sagittal, coronal and reformat planes'
+      ),
       evaluate: {
         name: 'evaluate.orientationMenu',
         // hideWhenDisabled: true,
@@ -387,8 +415,8 @@ const toolbarButtons = [
     uiType: 'ohif.windowLevelMenu',
     props: {
       icon: 'WindowLevel',
-      label: 'Window Level',
-      tooltip: 'Adjust window/level presets and customize image contrast settings',
+      label: i18n.t('Buttons:Window Level'),
+      tooltip: i18n.t('Buttons:Adjust window/level presets and customize image contrast settings'),
       evaluate: 'evaluate.windowLevelMenu',
     },
   },
@@ -397,8 +425,8 @@ const toolbarButtons = [
     uiType: 'ohif.voiManualControlMenu',
     props: {
       icon: 'WindowLevelAdvanced',
-      label: 'Advanced Window Level',
-      tooltip: 'Advanced window/level settings with manual controls and presets',
+      label: i18n.t('Buttons:Advanced Window Level'),
+      tooltip: i18n.t('Buttons:Advanced window/level settings with manual controls and presets'),
       evaluate: 'evaluate.voiManualControlMenu',
     },
   },
@@ -407,8 +435,8 @@ const toolbarButtons = [
     uiType: 'ohif.thresholdMenu',
     props: {
       icon: 'Threshold',
-      label: 'Threshold',
-      tooltip: 'Image threshold settings',
+      label: i18n.t('Buttons:Threshold'),
+      tooltip: i18n.t('Buttons:Image threshold settings'),
       evaluate: {
         name: 'evaluate.thresholdMenu',
         hideWhenDisabled: true,
@@ -420,8 +448,8 @@ const toolbarButtons = [
     uiType: 'ohif.opacityMenu',
     props: {
       icon: 'Opacity',
-      label: 'Opacity',
-      tooltip: 'Image opacity settings',
+      label: i18n.t('Buttons:Opacity'),
+      tooltip: i18n.t('Buttons:Image opacity settings'),
       evaluate: {
         name: 'evaluate.opacityMenu',
         hideWhenDisabled: true,

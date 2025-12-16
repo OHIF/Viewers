@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
-import { Button } from '@ohif/ui';
+import { Button } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import DicomFileUploader, {
   EVENTS,
@@ -308,7 +308,7 @@ function DicomUploadProgress({
 
             <span
               className={
-                'text-primary hover:text-highlightactive:text-muted-foreground ml-auto cursor-pointer whitespace-nowrap'
+                'text-primary hover:text-highlight active:text-muted-foreground ml-auto cursor-pointer whitespace-nowrap'
               }
               onClick={cancelAllUploads}
             >

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Enums as csToolsEnums, UltrasoundPleuraBLineTool } from '@cornerstonejs/tools';
 import { eventTarget, utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 import {
   /* Layout */
@@ -29,6 +30,7 @@ import {
  * @returns The USAnnotationPanel component
  */
 export default function USAnnotationPanel() {
+  const { t } = useTranslation('USAnnotationPanel');
   const { servicesManager, commandsManager } = useSystem();
 
   /** ──────────────────────────────────────────────────────
@@ -166,7 +168,7 @@ export default function USAnnotationPanel() {
             className="cursor-pointer"
             onClick={() => setDepthGuideCommand(!depthGuide)}
           >
-            Depth guide toggle
+            {t('Depth guide toggle')}
           </label>
         </div>
 
@@ -198,7 +200,7 @@ export default function USAnnotationPanel() {
             className="cursor-pointer"
             onClick={() => setShowPleuraPercentageCommand(!showPleuraPct)}
           >
-            Show pleura percentage
+            {t('Show pleura percentage')}
           </label>
         </div>
       </div>
@@ -208,7 +210,7 @@ export default function USAnnotationPanel() {
   const renderSectorAnnotations = () => (
     <PanelSection.Content>
       <div className="flex flex-col gap-4 p-2">
-        <Label>Sector Annotations</Label>
+        <Label>{t('Sector Annotations')}</Label>
         <div className="flex items-center gap-2">
           <Tabs
             defaultValue={UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE}
@@ -216,10 +218,10 @@ export default function USAnnotationPanel() {
           >
             <TabsList>
               <TabsTrigger value={UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.PLEURA}>
-                <Icons.Plus /> Pleura line
+                <Icons.Plus /> {t('Pleura line')}
               </TabsTrigger>
               <TabsTrigger value={UltrasoundPleuraBLineTool.USPleuraBLineAnnotationType.BLINE}>
-                <Icons.Plus /> B-line
+                <Icons.Plus /> {t('B-line')}
               </TabsTrigger>
               <Separator orientation="vertical" />
               <Separator orientation="vertical" />
@@ -239,7 +241,7 @@ export default function USAnnotationPanel() {
                 }
               >
                 <Icons.Delete className="text-foreground" />
-                <span className="pl-2">B-line annotation</span>
+                <span className="pl-2">{t('B-line annotation')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
@@ -247,7 +249,7 @@ export default function USAnnotationPanel() {
                 }
               >
                 <Icons.Delete className="text-foreground" />
-                <span className="pl-2">Pleura annotation</span>
+                <span className="pl-2">{t('Pleura annotation')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -261,7 +263,7 @@ export default function USAnnotationPanel() {
             className="data-[state=checked]:bg-blue-500"
           />
           <label htmlFor="show-overlay-switch" className="cursor-pointer text-blue-300">
-            Show Overlay
+            {t('Show Overlay')}
           </label>
         </div>
 
@@ -286,7 +288,7 @@ export default function USAnnotationPanel() {
           </Button> */}
           <Button variant="ghost" onClick={() => downloadJSON()}>
             <Icons.Download className="h-5 w-5" />
-            <span>JSON</span>
+            <span>{t('JSON')}</span>
           </Button>
           <Button variant="ghost" onClick={() => setShowOverlayCommand(!showOverlay)}>
             {showOverlay ? <Icons.Hide className="h-5 w-5" /> : <Icons.Show className="h-5 w-5" />}
@@ -297,9 +299,9 @@ export default function USAnnotationPanel() {
             <thead>
               <tr className="border-b border-blue-900 text-blue-300">
                 <th></th>
-                <th className="py-2 px-3 text-left">Frame</th>
-                <th className="py-2 px-3 text-center">Pleura lines</th>
-                <th className="py-2 px-3 text-center">B-lines</th>
+                <th className="py-2 px-3 text-left">{t('Frame')}</th>
+                <th className="py-2 px-3 text-center">{t('Pleura lines')}</th>
+                <th className="py-2 px-3 text-center">{t('B-lines')}</th>
                 <th className="w-10"></th>
               </tr>
             </thead>
@@ -399,7 +401,7 @@ export default function USAnnotationPanel() {
     >
       {/* Workflow */}
       <PanelSection>
-        <PanelSection.Header>Workflow</PanelSection.Header>
+        <PanelSection.Header>{t('Workflow')}</PanelSection.Header>
         {renderWorkflowToggles()}
       </PanelSection>
 
@@ -411,13 +413,13 @@ export default function USAnnotationPanel() {
 
       {/* Annotations */}
       <PanelSection>
-        <PanelSection.Header> Annotations </PanelSection.Header>
+        <PanelSection.Header>{t('Annotations')}</PanelSection.Header>
         {renderSectorAnnotations()}
       </PanelSection>
 
       {/* Annotated frames */}
       <PanelSection className="flex-1">
-        <PanelSection.Header> Annotated Frames </PanelSection.Header>
+        <PanelSection.Header>{t('Annotated Frames')}</PanelSection.Header>
         {renderAnnotatedFrames()}
       </PanelSection>
     </div>

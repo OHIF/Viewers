@@ -67,7 +67,7 @@ function getDisplaySetInfo(instances) {
   };
 }
 
-const makeDisplaySet = instances => {
+const makeDisplaySet = (instances, index) => {
   // Need to sort the instances in order to get a consistent instance/thumbnail
   sortStudyInstances(instances);
   const instance = instances[0];
@@ -87,16 +87,6 @@ const makeDisplaySet = instances => {
 
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
-
-  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
-  let imageId = imageIds[Math.floor(imageIds.length / 2)];
-  let thumbnailInstance = instances[Math.floor(instances.length / 2)];
-  if (isDynamicVolume) {
-    const timePoints = dynamicVolumeInfo.timePoints;
-    const middleIndex = Math.floor(timePoints.length / 2);
-    const middleTimePointImageIds = timePoints[middleIndex];
-    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
-  }
 
   imageSet.setAttributes({
     volumeLoaderSchema,
@@ -119,12 +109,25 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
-    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
     supportsWindowLevel: true,
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
+  });
+
+  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
+  let imageId = imageIds[Math.floor(imageIds.length / 2)];
+  let thumbnailInstance = instances[Math.floor(instances.length / 2)];
+  if (isDynamicVolume) {
+    const timePoints = dynamicVolumeInfo.timePoints;
+    const middleIndex = Math.floor(timePoints.length / 2);
+    const middleTimePointImageIds = timePoints[middleIndex];
+    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
+  }
+
+  imageSet.setAttributes({
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
   });
 
   const { servicesManager } = appContext;
@@ -187,7 +190,7 @@ function getDisplaySetsFromSeries(instances) {
   // into their own specific display sets. Place the rest of each
   // series into another display set.
   const stackableInstances = [];
-  instances.forEach(instance => {
+  instances.forEach((instance, instanceIndex) => {
     // All imaging modalities must have a valid value for sopClassUid (x00080016) or rows (x00280010)
     if (!isImage(instance.SOPClassUID) && !instance.Rows) {
       return;
@@ -195,7 +198,7 @@ function getDisplaySetsFromSeries(instances) {
 
     let displaySet;
     if (isMultiFrame(instance)) {
-      displaySet = makeDisplaySet([instance]);
+      displaySet = makeDisplaySet([instance], instanceIndex);
       displaySet.setAttributes({
         sopClassUids,
         numImageFrames: instance.NumberOfFrames,
@@ -204,7 +207,7 @@ function getDisplaySetsFromSeries(instances) {
       });
       displaySets.push(displaySet);
     } else if (isSingleImageModality(instance.Modality)) {
-      displaySet = makeDisplaySet([instance]);
+      displaySet = makeDisplaySet([instance], instanceIndex);
       displaySet.setAttributes({
         sopClassUids,
         instanceNumber: instance.InstanceNumber,
@@ -217,7 +220,7 @@ function getDisplaySetsFromSeries(instances) {
   });
 
   if (stackableInstances.length) {
-    const displaySet = makeDisplaySet(stackableInstances);
+    const displaySet = makeDisplaySet(stackableInstances, displaySets.length);
     displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
     displaySet.setAttributes({
       sopClassUids,

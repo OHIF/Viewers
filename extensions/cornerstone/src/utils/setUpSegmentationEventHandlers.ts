@@ -1,4 +1,7 @@
+import { Enums as csToolsEnums } from '@cornerstonejs/tools';
+
 import {
+  setUpSelectedSegmentationsForViewportHandler,
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
 } from './segmentationHandlers';
@@ -27,8 +30,10 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
       }
 
       const segmentation = segmentationService.getSegmentation(segmentationId);
-      const label = segmentation.cachedStats.info;
-      const imageIds = segmentation.representationData.Labelmap.imageIds;
+      const label = segmentation.label;
+      const imageIds =
+        segmentation.representationData?.Labelmap?.imageIds ??
+        segmentation.representationData?.Contour?.imageIds;
 
       // Create a display set for the segmentation
       const segmentationDisplaySet = {
@@ -36,7 +41,9 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
         SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
         SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
         SeriesDescription: label,
-        Modality: 'SEG',
+        Modality: segmentation.representationData[csToolsEnums.SegmentationRepresentations.Contour]
+          ? 'RTSTRUCT'
+          : 'SEG',
         numImageFrames: imageIds.length,
         imageIds,
         isOverlayDisplaySet: true,
@@ -50,10 +57,16 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
     }
   );
 
+  const { unsubscribeSelectedSegmentationsForViewportEvents } =
+    setUpSelectedSegmentationsForViewportHandler({
+      segmentationService,
+    });
+
   const unsubscriptions = [
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
     unsubscribeSegmentationCreated,
+    ...unsubscribeSelectedSegmentationsForViewportEvents,
   ];
 
   return { unsubscriptions };

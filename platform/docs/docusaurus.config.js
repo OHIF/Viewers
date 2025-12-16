@@ -4,6 +4,11 @@ const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const ArchivedVersionsDropdownItems = [
   {
+    version: '3.10',
+    href: 'https://v3p10.docs.ohif.org',
+    isExternal: true,
+  },
+  {
     version: '3.9',
     href: 'https://v3p9.docs.ohif.org',
     isExternal: true,

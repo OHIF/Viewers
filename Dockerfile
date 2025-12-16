@@ -49,8 +49,8 @@ RUN apt-get update && apt-get install -y build-essential python3
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
-RUN npm install -g bun
-# RUN npm install -g lerna@7.4.2
+RUN npm install -g bun@1.2.23
+RUN npm install -g lerna@7.4.2
 ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
 # Do an initial install and then a final install
@@ -60,6 +60,7 @@ COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/pa
 
 RUN bun pm cache rm
 RUN bun install
+RUN bun add ajv@8.12.0
 # Copy the local directory
 COPY --link --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .
 
@@ -98,7 +99,7 @@ COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root
-RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 666 /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 777 /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

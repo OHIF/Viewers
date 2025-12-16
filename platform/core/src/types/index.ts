@@ -8,6 +8,7 @@ import type {
   BaseDataSourceConfigurationAPIItem,
 } from './DataSourceConfigurationAPI';
 
+export type * from '../services/ToolBarService/types';
 export type * from '../services/ViewportGridService';
 export type * from '../services/CustomizationService/types';
 // Separate out some generic types
