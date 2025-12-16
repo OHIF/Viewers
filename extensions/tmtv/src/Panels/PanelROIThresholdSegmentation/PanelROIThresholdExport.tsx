@@ -81,7 +81,6 @@ export default function PanelRoiThresholdSegmentation() {
               dataCY="exportTmtvCsvReport"
               size="sm"
               variant="ghost"
-              className="text-blue-500"
               onClick={handleExportCSV}
             >
               <span className="pl-1">CSV</span>
