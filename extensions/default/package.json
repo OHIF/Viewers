@@ -49,6 +49,7 @@
   "dependencies": {
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/calculate-suv": "1.1.0",
+    "@cornerstonejs/nifti-volume-loader": "4.10.0",
     "lodash.get": "4.4.2",
     "lodash.uniqby": "4.7.0"
   }

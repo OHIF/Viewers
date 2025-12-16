@@ -9,6 +9,7 @@ import {
   EVENTS,
   metaData,
   volumeLoader,
+  imageLoader,
   imageLoadPoolManager,
   getEnabledElement,
   Settings,
@@ -163,6 +164,9 @@ export default async function init({
     'cornerstoneStreamingDynamicImageVolume',
     cornerstoneStreamingDynamicImageVolumeLoader
   );
+
+  imageLoader.registerImageLoader('nifti', cornerstoneNiftiImageLoader);
+
 
   // Register strategies using the wrapper
   const imageLoadStrategies = {
