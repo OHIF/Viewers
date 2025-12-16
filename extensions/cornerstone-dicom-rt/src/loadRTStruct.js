@@ -72,10 +72,7 @@ async function checkAndLoadContourData({
       } else if (contourData && contourData.InlineBinary) {
         // Contour data is still in binary format, conversion needed
         const base64String = contourData.InlineBinary;
-        const decodedText =
-          typeof atob === 'function'
-            ? atob(base64String)
-            : Buffer.from(base64String, 'base64').toString('utf-8');
+        const decodedText = atob(base64String);
 
         const rawValues = decodedText.split('\\');
 
@@ -93,8 +90,8 @@ async function checkAndLoadContourData({
               result.push(y);
               result.push(z);
             } else {
-              // Ignore for now
-              //console.log('NaN');
+              // Ignore for now, log error to console
+              console.log('Error parsing contourData from InlineBinary format');
             }
           }
         }
