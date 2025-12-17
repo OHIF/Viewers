@@ -104,7 +104,7 @@ export function DatePickerWithRange({
           align="start"
         >
           <Calendar
-            autoFocus
+            initialFocus
             mode="single"
             defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
             selected={start ? parse(start, 'yyyy-MM-dd', new Date()) : undefined}
@@ -141,7 +141,7 @@ export function DatePickerWithRange({
           align="start"
         >
           <Calendar
-            autoFocus
+            initialFocus
             mode="single"
             defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
             selected={end ? parse(end, 'yyyy-MM-dd', new Date()) : undefined}
