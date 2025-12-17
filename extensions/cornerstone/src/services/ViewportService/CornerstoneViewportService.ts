@@ -1,3 +1,4 @@
+import { vec3 } from 'gl-matrix';
 import { PubSubService } from '@ohif/core';
 import { Types as OhifTypes } from '@ohif/core';
 import {
@@ -538,8 +539,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * viewport to display the image in where it matches, in order:
    *   * Active viewport that can be navigated to the given image without orientation change
    *   * Other viewport that can be navigated to the given image without orientation change
-   *   * Active viewport that can change orientation to display the image
-   *   * Other viewport that can change orientation to display the image
+   *   * Best-aligned viewport that can display the image with an orientation change
    *
    * It returns `null` otherwise, indicating that a viewport needs display set/type
    * changes in order to display the image.
@@ -562,7 +562,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (!activeViewport) {
       console.warn('No active viewport found for', activeViewportId);
     }
-    if (activeViewport?.isReferenceViewable(metadata, { withNavigation: true })) {
+    if (activeViewport?.isReferenceViewable(metadata, WITH_NAVIGATION)) {
       return activeViewportId;
     }
 
@@ -570,25 +570,33 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // without considering orientation changes.
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
-      if (viewport?.isReferenceViewable(metadata, { withNavigation: true })) {
+      if (viewport?.isReferenceViewable(metadata, WITH_NAVIGATION)) {
         return id;
       }
     }
 
-    // No viewport is in the right display set/orientation to show this, so see if
-    // the active viewport could change orientations to show this
-    if (
-      activeViewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
-    ) {
-      return activeViewportId;
-    }
+    // Compute view-plane alignment scores for all viewports to prefer the one
+    // requiring the least orientation change when navigation-only is not possible.
+    const viewportAlignmentData = [];
 
-    // See if any viewport could show this with an orientation change
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
-      if (
-        viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
-      ) {
+      const { viewPlaneNormal } = viewport.getCamera();
+      const { viewPlaneNormal: refViewPlaneNormal } = metadata;
+
+      if (viewPlaneNormal && refViewPlaneNormal) {
+        const alignmentScore = Math.abs(vec3.dot(viewPlaneNormal, refViewPlaneNormal));
+        viewportAlignmentData.push({ viewportId: id, alignmentScore });
+      }
+    }
+
+    // Try best-aligned viewports first
+    viewportAlignmentData.sort((a, b) => b.alignmentScore - a.alignmentScore);
+
+    // See if any viewport could show this with an orientation change
+    for (const { viewportId: id } of viewportAlignmentData) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, WITH_ORIENTATION)) {
         return id;
       }
     }
