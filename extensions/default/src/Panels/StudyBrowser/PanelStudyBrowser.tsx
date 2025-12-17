@@ -152,7 +152,12 @@ function PanelStudyBrowser({
 
   useEffect(() => {
     const sendDicomToBackend = async () => {
-      if (!sessionID || !uploadKey) {
+      const primaryStudyInstanceUID = StudyInstanceUIDs.length > 0 ? StudyInstanceUIDs[0] : null;
+      const uploadKey = primaryStudyInstanceUID
+        ? `dicom_uploaded_${primaryStudyInstanceUID}`
+        : null;
+
+      if (!primaryStudyInstanceUID || !uploadKey) {
         return;
       }
 
@@ -173,7 +178,7 @@ function PanelStudyBrowser({
       setUploadStage('Preparing files...');
       try {
         await commandsManager.runCommand('sendDicomZipToBackend', {
-          sessionID,
+          studyInstanceUIDs: StudyInstanceUIDs,
           onProgress: (progress: number, stage: string) => {
             setUploadProgress(progress);
             setUploadStage(stage);
@@ -195,7 +200,7 @@ function PanelStudyBrowser({
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [sessionID, uploadKey, commandsManager]);
+  }, [StudyInstanceUIDs, commandsManager]);
 
   // Poll conversion status after DICOM upload
   useEffect(() => {

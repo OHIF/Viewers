@@ -848,10 +848,10 @@ function commandsModule({
       }
     },
 
-    sendDicomZipToBackend: async ({ sessionID, onProgress }) => {
+    sendDicomZipToBackend: async ({ studyInstanceUIDs, onProgress }) => {
       try {
-        if (!sessionID) {
-          console.error('No sessionID provided');
+        if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
+          console.error('No studyInstanceUIDs provided');
           return null;
         }
 
@@ -872,19 +872,10 @@ function commandsModule({
         const zipFileWriter = new BlobWriter('application/zip');
         const zipWriter = new ZipWriter(zipFileWriter);
 
+        const studyInstanceUIDsString = studyInstanceUIDs.join(',');
+
         let fileCount = 0;
         const fileManager = dicomImageLoader.wadouri.fileManager;
-
-        const studyInstanceUIDs = DicomMetadataStore.getStudyInstanceUIDs();
-
-        if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
-          uiNotificationService.show({
-            title: 'DICOM ZIP',
-            message: 'No DICOM studies found to send',
-            type: 'warning',
-          });
-          return null;
-        }
 
         let totalFiles = 0;
         for (const studyInstanceUID of studyInstanceUIDs) {
@@ -977,7 +968,7 @@ function commandsModule({
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              sessionID: sessionID,
+              studyInstanceUIDs: studyInstanceUIDsString,
               filename: zipFileName,
             }),
           });
@@ -1009,7 +1000,7 @@ function commandsModule({
             },
             body: JSON.stringify({
               signed_url: download_url,
-              sessionID: sessionID,
+              studyInstanceUIDs: studyInstanceUIDsString,
               filename: zipFileName,
             }),
           });
@@ -1027,10 +1018,10 @@ function commandsModule({
           // Direct upload for files <= 30MB or localhost
           const url = `${backendUrl}/upload_dicom`;
 
-          // Create FormData to send the ZIP file and sessionID
+          // Create FormData to send the ZIP file and studyInstanceUIDs
           const formData = new FormData();
           formData.append('file', zipBlob, zipFileName);
-          formData.append('sessionID', sessionID);
+          formData.append('studyInstanceUIDs', studyInstanceUIDsString);
 
           reportProgress(25, 'Uploading to server...');
 
@@ -1075,7 +1066,7 @@ function commandsModule({
           });
         }
 
-        return sessionID;
+        return studyInstanceUIDsString;
       } catch (error) {
         console.error('Error sending DICOM ZIP to backend:', error);
         uiNotificationService.show({
