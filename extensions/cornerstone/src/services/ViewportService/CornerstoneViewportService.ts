@@ -643,10 +643,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
     // 1. Determine the target Viewport Type (Stack vs Volume)
-    const viewportType = this._determineTargetViewportType(displaySet, metadata);
+    const viewportType = this.determineTargetViewportType(displaySet, metadata);
 
     // 2. Strategy: Find viewport already showing this volume
-    const volumeMatch = this._findViewportShowingVolume(
+    const volumeMatch = this.findViewportShowingVolume(
       metadata,
       displaySetInstanceUID,
       viewportType
@@ -656,7 +656,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     // 3. Strategy: Find viewport with compatible orientation (even if different display set)
-    const compatibleMatch = this._findViewportWithCompatibleOrientation(
+    const compatibleMatch = this.findViewportConvertibleToVolume(
       metadata,
       displaySetInstanceUID,
       viewportType
@@ -666,7 +666,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     // 4. Strategy: Find viewport with matching orientation via IOP
-    const orientationMatch = this._findViewportWithMatchingOrientation(
+    const orientationMatch = this.findViewportWithMatchingOrientation(
       displaySetInstanceUID,
       viewportType
     );
@@ -683,9 +683,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * Determines if the viewport should be a STACK or VOLUME
+   * Determines if the viewport should be what is specified in
+   * the viewportType of the display set, or stack if the display
+   * set isn't reconstructable and there is a referenced image id, otherwise
+   * volume.
+   *
+   * Expect there to be more rules in the future for different types of annotations/settings
+   * such as 3d annotations.
    */
-  private _determineTargetViewportType(displaySet, metadata): string {
+  public determineTargetViewportType(displaySet, metadata): string {
     let { viewportType } = displaySet;
 
     if (!viewportType) {
@@ -702,7 +708,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * Find viewports that could be updated to be volumes to show this view.
    * Prefers a viewport already showing the right display set.
    */
-  private _findViewportShowingVolume(metadata, displaySetInstanceUID, viewportType) {
+  public findViewportShowingVolume(metadata, displaySetInstanceUID, viewportType) {
     if (!metadata.volumeId) {
       return null;
     }
@@ -721,10 +727,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * Find a viewport in the correct orientation showing a different display set
-   * which could be used to display the annotation.
+   * Find a viewport that could be converted to a volume to show this annotation,
+   * already showing the right display set.
    */
-  private _findViewportWithCompatibleOrientation(metadata, displaySetInstanceUID, viewportType) {
+  public findViewportConvertibleToVolume(metadata, displaySetInstanceUID, viewportType) {
     const { viewportGridService } = this.servicesManager.services;
     const altMetadata = { ...metadata, volumeId: null, referencedImageId: null };
 
@@ -753,32 +759,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * Use a viewport with matching orientation (IOP) when no direct displaySet match is found.
+   * Find a viewport with the closest orientation but on a different display set.
    */
-  private _findViewportWithMatchingOrientation(displaySetInstanceUID, viewportType) {
-    const { displaySetService } = this.servicesManager.services;
-
-    const closestOrientation = getClosestOrientationFromIOP(
-      displaySetService,
-      displaySetInstanceUID
-    );
-
-    for (const id of this.viewportsById.keys()) {
-      const viewportOptions = this.getViewportOptions(id);
-
-      if (!viewportOptions) {
-        continue;
-      }
-
-      const { orientation } = viewportOptions;
-
-      if (closestOrientation === orientation) {
-        return {
-          viewportId: id,
-          displaySetInstanceUID,
-          viewportOptions: { orientation: closestOrientation, viewportType },
-        };
-      }
+  public findViewportWithMatchingOrientation(metadata, displaySetInstanceUID, viewportType) {
+    const viewportAlignmentData = this.getViewportAlignmentData(metadata);
+    if (viewportAlignmentData?.length) {
+      return {
+        ...viewportAlignmentData[0],
+        displaySetInstanceUID,
+        viewportOptions: { viewportType },
+      };
     }
     return null;
   }
