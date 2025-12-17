@@ -255,297 +255,301 @@ function PanelStudyBrowser({
     return () => clearTimeout(timeoutId);
   }, [sessionID, isUploadingDicom, isConversionComplete, conversionKey]);
 
-  const fetchSegmentationFromBackend = useCallback(async () => {
-    if (!sessionID) {
-      console.warn('No session ID available');
-      return;
-    }
-
-    const { uiNotificationService } = servicesManager.services;
-
-    setIsSegmenting(true);
-    setSegmentationProgress(0);
-    setSegmentationStage('Requesting segmentation from backend...');
-    try {
-      uiNotificationService.show({
-        title: 'Segmentation',
-        message: 'Fetching segmentation files from backend...',
-        type: 'info',
-      });
-
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
-
-      const response = await retryWithDelay(
-        async () => {
-          const res = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
-          if (!res.ok) {
-            throw new Error(`Backend responded with status: ${res.status}`);
-          }
-          return res;
-        },
-        3,
-        3000,
-        true
-      );
-
-      setSegmentationStage('Downloading segmentation archive...');
-      setSegmentationProgress(25);
-
-      const blob = await response.blob();
-      const zipReader = new ZipReader(new BlobReader(blob));
-      const entries = await zipReader.getEntries();
-
-      const files = [];
-      for (const entry of entries) {
-        if (!entry.directory) {
-          // @ts-expect-error - getData exists on Entry but TypeScript typing may be incomplete
-          const uint8Array = await entry.getData(new Uint8ArrayWriter());
-          // Extract just the filename without any directory path
-          const filename = entry.filename.split('/').pop() || entry.filename;
-          console.log(`Extracted file: ${filename}, size: ${uint8Array.byteLength} bytes`);
-          // Create a blob from the Uint8Array to ensure proper binary data handling
-          const blob = new Blob([uint8Array], { type: 'application/dicom' });
-          const file = new File([blob], filename, { type: 'application/dicom' });
-          files.push(file);
-        }
-      }
-
-      await zipReader.close();
-
-      if (files.length === 0) {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'No segmentation files found in the archive',
-          type: 'warning',
-        });
+  const fetchSegmentationFromBackend = useCallback(
+    async (studyInstanceUID: string) => {
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
         return;
       }
 
-      setSegmentationStage('Integrating segmentation into viewer...');
-      setSegmentationProgress(60);
+      const { uiNotificationService } = servicesManager.services;
 
-      const existingSeriesMap = new Map();
-      DicomMetadataStore.getStudyInstanceUIDs().forEach(studyUID => {
-        const study = DicomMetadataStore.getStudy(studyUID);
-        if (study?.series) {
-          study.series.forEach(series => {
-            existingSeriesMap.set(`${studyUID}_${series.SeriesInstanceUID}`, true);
-          });
+      setIsSegmenting(true);
+      setSegmentationProgress(0);
+      setSegmentationStage('Requesting segmentation from backend...');
+      try {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Fetching segmentation files from backend...',
+          type: 'info',
+        });
+
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+
+        const response = await retryWithDelay(
+          async () => {
+            const res = await fetch(
+              `${backendUrl}/segmentation?studyInstanceUID=${studyInstanceUID}`
+            );
+            if (!res.ok) {
+              throw new Error(`Backend responded with status: ${res.status}`);
+            }
+            return res;
+          },
+          3,
+          3000,
+          true
+        );
+
+        setSegmentationStage('Downloading segmentation archive...');
+        setSegmentationProgress(25);
+
+        const blob = await response.blob();
+        const zipReader = new ZipReader(new BlobReader(blob));
+        const entries = await zipReader.getEntries();
+
+        const files = [];
+        for (const entry of entries) {
+          if (!entry.directory) {
+            // @ts-expect-error - getData exists on Entry but TypeScript typing may be incomplete
+            const uint8Array = await entry.getData(new Uint8ArrayWriter());
+            // Extract just the filename without any directory path
+            const filename = entry.filename.split('/').pop() || entry.filename;
+            console.log(`Extracted file: ${filename}, size: ${uint8Array.byteLength} bytes`);
+            // Create a blob from the Uint8Array to ensure proper binary data handling
+            const blob = new Blob([uint8Array], { type: 'application/dicom' });
+            const file = new File([blob], filename, { type: 'application/dicom' });
+            files.push(file);
+          }
         }
-      });
 
-      // Process the segmentation files and add them to the study list
-      const studies = await filesToStudies(files);
+        await zipReader.close();
 
-      if (studies?.length) {
-        setSegmentationStage('Creating display sets...');
-        setSegmentationProgress(75);
+        if (files.length === 0) {
+          uiNotificationService.show({
+            title: 'Segmentation',
+            message: 'No segmentation files found in the archive',
+            type: 'warning',
+          });
+          return;
+        }
 
-        // First, create display sets for new series
-        studies.forEach(studyInstanceUID => {
-          const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
-          if (studyMetadata?.series) {
-            studyMetadata.series.forEach(series => {
-              const seriesKey = `${studyInstanceUID}_${series.SeriesInstanceUID}`;
-              // Only process series that didn't exist before
-              if (!existingSeriesMap.has(seriesKey)) {
-                // Trigger display set creation for new series
-                displaySetService.makeDisplaySets(series.instances, { madeInClient: true });
-              }
+        setSegmentationStage('Integrating segmentation into viewer...');
+        setSegmentationProgress(60);
+
+        const existingSeriesMap = new Map();
+        DicomMetadataStore.getStudyInstanceUIDs().forEach(studyUID => {
+          const study = DicomMetadataStore.getStudy(studyUID);
+          if (study?.series) {
+            study.series.forEach(series => {
+              existingSeriesMap.set(`${studyUID}_${series.SeriesInstanceUID}`, true);
             });
           }
         });
 
-        // Wait a bit for display sets to be created, then update UI
-        setTimeout(() => {
-          // Update study display list for all affected studies
+        // Process the segmentation files and add them to the study list
+        const studies = await filesToStudies(files);
+
+        if (studies?.length) {
+          setSegmentationStage('Creating display sets...');
+          setSegmentationProgress(75);
+
+          // First, create display sets for new series
           studies.forEach(studyInstanceUID => {
             const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
+            if (studyMetadata?.series) {
+              studyMetadata.series.forEach(series => {
+                const seriesKey = `${studyInstanceUID}_${series.SeriesInstanceUID}`;
+                // Only process series that didn't exist before
+                if (!existingSeriesMap.has(seriesKey)) {
+                  // Trigger display set creation for new series
+                  displaySetService.makeDisplaySets(series.instances, { madeInClient: true });
+                }
+              });
+            }
+          });
 
-            if (studyMetadata) {
-              setStudyDisplayList(prevArray => {
-                const existingIndex = prevArray.findIndex(
-                  s => s.studyInstanceUid === studyInstanceUID
-                );
+          // Wait a bit for display sets to be created, then update UI
+          setTimeout(() => {
+            // Update study display list for all affected studies
+            studies.forEach(studyInstanceUID => {
+              const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
 
-                if (existingIndex !== -1) {
-                  // Study exists - update only modalities and numInstances
-                  const updated = [...prevArray];
-                  const existingStudy = updated[existingIndex];
+              if (studyMetadata) {
+                setStudyDisplayList(prevArray => {
+                  const existingIndex = prevArray.findIndex(
+                    s => s.studyInstanceUid === studyInstanceUID
+                  );
 
-                  // Collect all modalities including new ones
-                  // existingStudy.modalities might be a string (e.g., "CT/MR"), so split it first
-                  const existingModalities =
-                    typeof existingStudy.modalities === 'string'
-                      ? existingStudy.modalities.split('/').filter(Boolean)
-                      : existingStudy.modalities || [];
+                  if (existingIndex !== -1) {
+                    // Study exists - update only modalities and numInstances
+                    const updated = [...prevArray];
+                    const existingStudy = updated[existingIndex];
 
-                  const modalitiesSet = new Set(existingModalities);
+                    // Collect all modalities including new ones
+                    // existingStudy.modalities might be a string (e.g., "CT/MR"), so split it first
+                    const existingModalities =
+                      typeof existingStudy.modalities === 'string'
+                        ? existingStudy.modalities.split('/').filter(Boolean)
+                        : existingStudy.modalities || [];
 
-                  // Extract modalities from series
-                  studyMetadata.series?.forEach(series => {
-                    if (series.Modality) {
-                      modalitiesSet.add(series.Modality);
-                    }
-                  });
+                    const modalitiesSet = new Set(existingModalities);
 
-                  updated[existingIndex] = {
-                    ...existingStudy,
-                    modalities: Array.from(modalitiesSet).join('/'),
-                    numInstances:
-                      studyMetadata.series?.reduce(
-                        (sum, s) => sum + (s.instances?.length || 0),
-                        0
-                      ) || existingStudy.numInstances,
-                  };
-                  return updated;
-                } else {
-                  // New study - add it
-                  // Extract modalities from series
-                  const modalitiesSet = new Set();
-                  let studyDate = studyMetadata.StudyDate;
+                    // Extract modalities from series
+                    studyMetadata.series?.forEach(series => {
+                      if (series.Modality) {
+                        modalitiesSet.add(series.Modality);
+                      }
+                    });
 
-                  // If study-level data is missing, extract from series/instances
-                  studyMetadata.series?.forEach(series => {
-                    if (series.Modality) {
-                      modalitiesSet.add(series.Modality);
-                    }
-                    // Try to get date from series if not available at study level
-                    if (!studyDate && series.instances?.[0]) {
-                      studyDate = series.instances[0].StudyDate;
-                    }
-                  });
-
-                  return [
-                    ...prevArray,
-                    {
-                      studyInstanceUid: studyMetadata.StudyInstanceUID,
-                      date: formatDate(studyDate) || '',
-                      description: studyMetadata.StudyDescription || '',
+                    updated[existingIndex] = {
+                      ...existingStudy,
                       modalities: Array.from(modalitiesSet).join('/'),
                       numInstances:
                         studyMetadata.series?.reduce(
                           (sum, s) => sum + (s.instances?.length || 0),
                           0
-                        ) || 0,
-                    },
-                  ];
-                }
-              });
-            }
+                        ) || existingStudy.numInstances,
+                    };
+                    return updated;
+                  } else {
+                    // New study - add it
+                    // Extract modalities from series
+                    const modalitiesSet = new Set();
+                    let studyDate = studyMetadata.StudyDate;
 
-            // Expand the study to show the new series
-            setExpandedStudyInstanceUIDs(prev => {
-              if (!prev.includes(studyInstanceUID)) {
-                return [...prev, studyInstanceUID];
+                    // If study-level data is missing, extract from series/instances
+                    studyMetadata.series?.forEach(series => {
+                      if (series.Modality) {
+                        modalitiesSet.add(series.Modality);
+                      }
+                      // Try to get date from series if not available at study level
+                      if (!studyDate && series.instances?.[0]) {
+                        studyDate = series.instances[0].StudyDate;
+                      }
+                    });
+
+                    return [
+                      ...prevArray,
+                      {
+                        studyInstanceUid: studyMetadata.StudyInstanceUID,
+                        date: formatDate(studyDate) || '',
+                        description: studyMetadata.StudyDescription || '',
+                        modalities: Array.from(modalitiesSet).join('/'),
+                        numInstances:
+                          studyMetadata.series?.reduce(
+                            (sum, s) => sum + (s.instances?.length || 0),
+                            0
+                          ) || 0,
+                      },
+                    ];
+                  }
+                });
               }
-              return prev;
+
+              // Expand the study to show the new series
+              setExpandedStudyInstanceUIDs(prev => {
+                if (!prev.includes(studyInstanceUID)) {
+                  return [...prev, studyInstanceUID];
+                }
+                return prev;
+              });
             });
-          });
 
-          // Force refresh of display sets to update UI
-          const currentDisplaySets = displaySetService.activeDisplaySets;
-          const mappedDisplaySets = mapDisplaySetsWithState(
-            currentDisplaySets,
-            displaySetsLoadingState,
-            thumbnailImageSrcMap,
-            viewports
-          );
-
-          if (!customMapDisplaySets) {
-            sortStudyInstances(mappedDisplaySets);
-          }
-
-          setDisplaySets(mappedDisplaySets);
-
-          setSegmentationStage('Segmentation ready');
-          setSegmentationProgress(100);
-
-          // Automatically load SEG display sets into different viewports
-          setTimeout(async () => {
-            const { viewportGridService } = servicesManager.services;
-            const gridState = viewportGridService.getState();
-
-            // Get all available viewport IDs from the Map
-            const allViewportIds = Array.from(gridState.viewports.keys());
-
-            if (allViewportIds.length === 0) {
-              console.warn('No viewports available for segmentation loading');
-              return;
-            }
-
-            console.log('Available viewports:', allViewportIds);
-
-            // Find newly created SEG display sets
+            // Force refresh of display sets to update UI
             const currentDisplaySets = displaySetService.activeDisplaySets;
-            const segDisplaySets = currentDisplaySets.filter(
-              ds =>
-                ds.Modality === 'SEG' &&
-                !existingSeriesMap.has(`${ds.StudyInstanceUID}_${ds.SeriesInstanceUID}`)
+            const mappedDisplaySets = mapDisplaySetsWithState(
+              currentDisplaySets,
+              displaySetsLoadingState,
+              thumbnailImageSrcMap,
+              viewports
             );
 
-            console.log(`Found ${segDisplaySets.length} new segmentation(s) to load`);
-
-            // Load each segmentation into a different viewport
-            for (let i = 0; i < segDisplaySets.length; i++) {
-              const segDisplaySet = segDisplaySets[i];
-              // Cycle through viewports if there are more segmentations than viewports
-              const viewportId = allViewportIds[i % allViewportIds.length];
-
-              try {
-                await commandsManager.run('hydrateSecondaryDisplaySet', {
-                  displaySet: segDisplaySet,
-                  viewportId: viewportId,
-                });
-                console.log(
-                  `✓ Auto-loaded segmentation ${i + 1}/${segDisplaySets.length}: ${segDisplaySet.SeriesInstanceUID} into viewport ${viewportId}`
-                );
-              } catch (error) {
-                console.warn(
-                  `Failed to auto-load segmentation ${segDisplaySet.SeriesInstanceUID}:`,
-                  error
-                );
-              }
+            if (!customMapDisplaySets) {
+              sortStudyInstances(mappedDisplaySets);
             }
-          }, 500);
-        }, 200);
-      }
 
-      uiNotificationService.show({
-        title: 'Segmentation',
-        message: `Successfully loaded ${files.length} segmentation file(s) from ${studies?.length || 0} study(ies)`,
-        type: 'success',
-      });
+            setDisplaySets(mappedDisplaySets);
 
-      // Mark segmentation as completed
-      setIsSegmented(true);
-      if (segmentationKey) {
-        sessionStorage.setItem(segmentationKey, 'true');
+            setSegmentationStage('Segmentation ready');
+            setSegmentationProgress(100);
+
+            // Automatically load SEG display sets into different viewports
+            setTimeout(async () => {
+              const { viewportGridService } = servicesManager.services;
+              const gridState = viewportGridService.getState();
+
+              // Get all available viewport IDs from the Map
+              const allViewportIds = Array.from(gridState.viewports.keys());
+
+              if (allViewportIds.length === 0) {
+                console.warn('No viewports available for segmentation loading');
+                return;
+              }
+
+              console.log('Available viewports:', allViewportIds);
+
+              // Find newly created SEG display sets
+              const currentDisplaySets = displaySetService.activeDisplaySets;
+              const segDisplaySets = currentDisplaySets.filter(
+                ds =>
+                  ds.Modality === 'SEG' &&
+                  !existingSeriesMap.has(`${ds.StudyInstanceUID}_${ds.SeriesInstanceUID}`)
+              );
+
+              console.log(`Found ${segDisplaySets.length} new segmentation(s) to load`);
+
+              // Load each segmentation into a different viewport
+              for (let i = 0; i < segDisplaySets.length; i++) {
+                const segDisplaySet = segDisplaySets[i];
+                // Cycle through viewports if there are more segmentations than viewports
+                const viewportId = allViewportIds[i % allViewportIds.length];
+
+                try {
+                  await commandsManager.run('hydrateSecondaryDisplaySet', {
+                    displaySet: segDisplaySet,
+                    viewportId: viewportId,
+                  });
+                  console.log(
+                    `✓ Auto-loaded segmentation ${i + 1}/${segDisplaySets.length}: ${segDisplaySet.SeriesInstanceUID} into viewport ${viewportId}`
+                  );
+                } catch (error) {
+                  console.warn(
+                    `Failed to auto-load segmentation ${segDisplaySet.SeriesInstanceUID}:`,
+                    error
+                  );
+                }
+              }
+            }, 500);
+          }, 200);
+        }
+
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: `Successfully loaded ${files.length} segmentation file(s) from ${studies?.length || 0} study(ies)`,
+          type: 'success',
+        });
+
+        // Mark segmentation as completed
+        setIsSegmented(true);
+        if (studyInstanceUID) {
+          const key = `dicom_segmented_${studyInstanceUID}`;
+          sessionStorage.setItem(key, 'true');
+        }
+      } catch (error) {
+        console.error('Failed to fetch segmentation from backend:', error);
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      } finally {
+        setIsSegmenting(false);
+        setSegmentationProgress(0);
+        setSegmentationStage('');
       }
-    } catch (error) {
-      console.error('Failed to fetch segmentation from backend:', error);
-      uiNotificationService.show({
-        title: 'Segmentation',
-        message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
-        type: 'error',
-      });
-    } finally {
-      setIsSegmenting(false);
-      setSegmentationProgress(0);
-      setSegmentationStage('');
-    }
-  }, [
-    sessionID,
-    servicesManager,
-    displaySetService,
-    mapDisplaySetsWithState,
-    displaySetsLoadingState,
-    thumbnailImageSrcMap,
-    viewports,
-    customMapDisplaySets,
-    segmentationKey,
-    commandsManager,
-  ]);
+    },
+    [
+      servicesManager,
+      displaySetService,
+      mapDisplaySetsWithState,
+      displaySetsLoadingState,
+      thumbnailImageSrcMap,
+      viewports,
+      customMapDisplaySets,
+      commandsManager,
+    ]
+  );
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -1067,8 +1071,19 @@ function PanelStudyBrowser({
           )}
           <div className="flex gap-2">
             <button
-              onClick={fetchSegmentationFromBackend}
-              disabled={!sessionID || isUploadingDicom || !isConversionComplete || isSegmenting}
+              onClick={() => {
+                const primaryStudyInstanceUID =
+                  StudyInstanceUIDs.length > 0 ? StudyInstanceUIDs[0] : null;
+                if (primaryStudyInstanceUID) {
+                  fetchSegmentationFromBackend(primaryStudyInstanceUID);
+                }
+              }}
+              disabled={
+                StudyInstanceUIDs.length === 0 ||
+                isUploadingDicom ||
+                !isConversionComplete ||
+                isSegmenting
+              }
               className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
               title={
                 !isConversionComplete
