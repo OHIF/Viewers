@@ -632,10 +632,31 @@ function PanelStudyBrowser({
 
       const pdfBlob = await response.blob();
 
-      // Step 2: Upload PDF to /api/upload to parse text and save to Supabase
+      // Step 2: Open PDF in new tab for user to view
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+
       uiNotificationService.show({
         title: 'Report',
-        message: 'Parsing report and saving to database...',
+        message: 'Report opened in new tab',
+        type: 'success',
+      });
+
+      // Step 3: Upload PDF to /api/upload to parse text for chat
+      uiNotificationService.show({
+        title: 'Report',
+        message: 'Parsing report for chat...',
         type: 'info',
       });
 
