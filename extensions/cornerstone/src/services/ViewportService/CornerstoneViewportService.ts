@@ -577,21 +577,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // Compute view-plane alignment scores for all viewports to prefer the one
     // requiring the least orientation change when navigation-only is not possible.
-    const viewportAlignmentData = [];
-
-    for (const id of this.viewportsById.keys()) {
-      const viewport = this.getCornerstoneViewport(id);
-      const { viewPlaneNormal } = viewport.getCamera();
-      const { viewPlaneNormal: refViewPlaneNormal } = metadata;
-
-      if (viewPlaneNormal && refViewPlaneNormal) {
-        const alignmentScore = Math.abs(vec3.dot(viewPlaneNormal, refViewPlaneNormal));
-        viewportAlignmentData.push({ viewportId: id, alignmentScore });
-      }
-    }
-
-    // Try best-aligned viewports first
-    viewportAlignmentData.sort((a, b) => b.alignmentScore - a.alignmentScore);
+    const viewportAlignmentData = this.getViewportAlignmentData(metadata);
 
     // See if any viewport could show this with an orientation change
     for (const { viewportId: id } of viewportAlignmentData) {
@@ -603,6 +589,47 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // No luck, need to update the viewport itself
     return null;
+  }
+
+  /**
+   * Given a metadata instance containing a planeRestriction, returns the
+   * ordered list of best orientation match viewport ids.
+   *
+   * This uses the planeRestriction preferentially as that one is more reliably
+   * filled than the viewport normal since it is created from data points on
+   * rehydration.
+   */
+  public getViewportAlignmentData(metadata) {
+    const viewportAlignmentData = [];
+    const { viewPlaneNormal: refViewPlaneNormal, planeRestriction } = metadata;
+    const inPlaneVector1 = planeRestriction?.inPlaneVector1;
+    const inPlaneVector2 = planeRestriction?.inPlaneVector2;
+
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      const { viewPlaneNormal } = viewport.getCamera();
+
+      if (!viewPlaneNormal) {
+        continue;
+      }
+      let alignmentScore = 0;
+      if (inPlaneVector1 || inPlaneVector2) {
+        const inPlane1Score = inPlaneVector1
+          ? -Math.abs(vec3.dot(viewPlaneNormal, inPlaneVector1))
+          : 0;
+        const inPlane2Score = inPlaneVector2
+          ? -Math.abs(vec3.dot(viewPlaneNormal, inPlaneVector2))
+          : 0;
+        alignmentScore = inPlane1Score + inPlane2Score;
+      } else if (refViewPlaneNormal) {
+        alignmentScore = Math.abs(vec3.dot(viewPlaneNormal, refViewPlaneNormal));
+      }
+      viewportAlignmentData.push({ viewportId: id, alignmentScore });
+    }
+
+    // Try best-aligned viewports first
+    viewportAlignmentData.sort((a, b) => b.alignmentScore - a.alignmentScore);
+    return viewportAlignmentData;
   }
 
   /**
