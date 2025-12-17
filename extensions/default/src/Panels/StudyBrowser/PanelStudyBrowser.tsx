@@ -590,8 +590,8 @@ function PanelStudyBrowser({
 
   const handleReportClick = useCallback(
     async (studyInstanceUID: string) => {
-      if (!sessionID) {
-        console.warn('No session ID available');
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
         return;
       }
 
@@ -606,12 +606,12 @@ function PanelStudyBrowser({
       });
 
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
         const response = await retryWithDelay(
           async () => {
             const res = await fetch(
-              `${backendUrl}/generate_report?sessionID=${sessionID}&studyInstanceUID=${studyInstanceUID}`
+              `${backendUrl}/generate_report?studyInstanceUID=${studyInstanceUID}`
             );
             if (!res.ok) {
               throw new Error(`Backend responded with status: ${res.status}`);
@@ -703,7 +703,7 @@ function PanelStudyBrowser({
         setIsGeneratingReport(false);
       }
     },
-    [sessionID, servicesManager]
+    [servicesManager]
   );
 
   // ~~ studyDisplayList
