@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.107...v3.12.0-beta.108) (2025-12-17)
+
+
+### Bug Fixes
+
+* Jump to measurement from measurement panel after rotating viewport ([#5090](https://github.com/OHIF/Viewers/issues/5090)) ([ef98516](https://github.com/OHIF/Viewers/commit/ef98516b4fcd76f796bfd5560f98c968e48df645))
+
+
+
+
+
 # [3.12.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.106...v3.12.0-beta.107) (2025-12-16)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
