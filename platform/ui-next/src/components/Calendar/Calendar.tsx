@@ -85,7 +85,7 @@ function Calendar({
         ...formatters,
       }}
       classNames={{
-        root: cn('w-fit', defaultClassNames.root),
+        root: cn('w-fit min-w-[255px]', defaultClassNames.root),
         months: cn('relative flex flex-col gap-4 md:flex-row', defaultClassNames.months),
         month: cn('flex w-full flex-col gap-4', defaultClassNames.month),
         nav: cn(
@@ -94,12 +94,12 @@ function Calendar({
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          'h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
+          'size-[--cell-size] select-none p-0 aria-disabled:opacity-50',
           defaultClassNames.button_previous
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          'h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50',
+          'size-[--cell-size] select-none p-0 aria-disabled:opacity-50',
           defaultClassNames.button_next
         ),
         month_caption: cn(
@@ -111,10 +111,10 @@ function Calendar({
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          'has-focus:border-ring border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] relative rounded-md border',
+          'relative rounded-md border border-input',
           defaultClassNames.dropdown_root
         ),
-        dropdown: cn('bg-popover absolute inset-0 opacity-0', defaultClassNames.dropdown),
+        dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
         caption_label: cn(
           'select-none font-medium',
           captionLayout === 'label'
@@ -125,7 +125,7 @@ function Calendar({
         table: 'w-full border-collapse',
         weekdays: cn('flex', defaultClassNames.weekdays),
         weekday: cn(
-          'text-muted-foreground flex-1 select-none rounded-md text-[0.8rem] font-normal',
+          'text-muted-foreground flex-1 rounded-md text-[0.8rem] font-normal',
           defaultClassNames.weekday
         ),
         week: cn('mt-2 flex w-full', defaultClassNames.week),
