@@ -179,6 +179,31 @@ function commandsModule({
     }
   }
 
+  /**
+   * Creates a command function that sets a style property for segmentation types.
+   * If type is provided, sets the property for that type only.
+   * If type is not provided, sets the property for both Labelmap and Contour types.
+   * @param propertyName - The name of the style property to set
+   * @returns A command function that takes { type, value }
+   */
+  const createSetStyleCommand = (propertyName: string) => {
+    return ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      if (type) {
+        segmentationService.setStyle({ type }, { [propertyName]: value });
+      } else {
+        segmentationService.setStyle(
+          { type: SegmentationRepresentations.Labelmap },
+          { [propertyName]: value }
+        );
+        segmentationService.setStyle(
+          { type: SegmentationRepresentations.Contour },
+          { [propertyName]: value }
+        );
+      }
+    };
+  };
+
   const actions = {
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
@@ -1730,63 +1755,51 @@ function commandsModule({
 
     /**
      * Sets the fill alpha value for a segmentation type
+     * If no type is provided, the fill alpha for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - The alpha value to set
      */
-    setFillAlphaCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { fillAlpha: value });
-    },
+    setFillAlphaCommand: createSetStyleCommand('fillAlpha'),
 
     /**
      * Sets the outline width for a segmentation type
+     * If no type is provided, the outline width for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - The width value to set
      */
-    setOutlineWidthCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { outlineWidth: value });
-    },
+    setOutlineWidthCommand: createSetStyleCommand('outlineWidth'),
 
     /**
      * Sets whether to render fill for a segmentation type
+     * If no type is provided, the fill for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - Whether to render fill
      */
-    setRenderFillCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderFill: value });
-    },
+    setRenderFillCommand: createSetStyleCommand('renderFill'),
 
     /**
      * Sets whether to render fill for inactive segmentations of a segmentation type
+     * If no type is provided, the fill for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - Whether to render fill for inactive segmentations
      */
-    setRenderFillInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderFillInactive: value });
-    },
+    setRenderFillInactiveCommand: createSetStyleCommand('renderFillInactive'),
 
     /**
      * Sets whether to render outline for a segmentation type
+     * If no type is provided, the outline for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - Whether to render outline
      */
-    setRenderOutlineCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderOutline: value });
-    },
+    setRenderOutlineCommand: createSetStyleCommand('renderOutline'),
 
     /**
      * Sets whether to render outline for inactive segmentations of a segmentation type
+     * If no type is provided, the outline for all types will be set.
      * @param props.type - The type of segmentation
      * @param props.value - Whether to render outline for inactive segmentations
      */
-    setRenderOutlineInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderOutlineInactive: value });
-    },
+    setRenderOutlineInactiveCommand: createSetStyleCommand('renderOutlineInactive'),
 
     /**
      * Sets the fill alpha for inactive segmentations.
@@ -1794,22 +1807,7 @@ function commandsModule({
      * @param props.type - The type of segmentation
      * @param props.value - The alpha value to set
      */
-    setFillAlphaInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-
-      if (type) {
-        segmentationService.setStyle({ type }, { fillAlphaInactive: value });
-      } else {
-        segmentationService.setStyle(
-          { type: SegmentationRepresentations.Labelmap },
-          { fillAlphaInactive: value }
-        );
-        segmentationService.setStyle(
-          { type: SegmentationRepresentations.Contour },
-          { fillAlphaInactive: value }
-        );
-      }
-    },
+    setFillAlphaInactiveCommand: createSetStyleCommand('fillAlphaInactive'),
 
     editSegmentLabel: async ({ segmentationId, segmentIndex }) => {
       const { segmentationService, uiDialogService } = servicesManager.services;
