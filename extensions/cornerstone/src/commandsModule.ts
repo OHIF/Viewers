@@ -1753,62 +1753,6 @@ function commandsModule({
       segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
     },
 
-    /**
-     * Sets the fill alpha value for a segmentation type
-     * If no type is provided, the fill alpha for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - The alpha value to set
-     */
-    setFillAlphaCommand: createSetStyleCommand('fillAlpha'),
-
-    /**
-     * Sets the outline width for a segmentation type
-     * If no type is provided, the outline width for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - The width value to set
-     */
-    setOutlineWidthCommand: createSetStyleCommand('outlineWidth'),
-
-    /**
-     * Sets whether to render fill for a segmentation type
-     * If no type is provided, the fill for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render fill
-     */
-    setRenderFillCommand: createSetStyleCommand('renderFill'),
-
-    /**
-     * Sets whether to render fill for inactive segmentations of a segmentation type
-     * If no type is provided, the fill for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render fill for inactive segmentations
-     */
-    setRenderFillInactiveCommand: createSetStyleCommand('renderFillInactive'),
-
-    /**
-     * Sets whether to render outline for a segmentation type
-     * If no type is provided, the outline for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render outline
-     */
-    setRenderOutlineCommand: createSetStyleCommand('renderOutline'),
-
-    /**
-     * Sets whether to render outline for inactive segmentations of a segmentation type
-     * If no type is provided, the outline for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render outline for inactive segmentations
-     */
-    setRenderOutlineInactiveCommand: createSetStyleCommand('renderOutlineInactive'),
-
-    /**
-     * Sets the fill alpha for inactive segmentations.
-     * If no type is provided, the fill alpha for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - The alpha value to set
-     */
-    setFillAlphaInactiveCommand: createSetStyleCommand('fillAlphaInactive'),
-
     editSegmentLabel: async ({ segmentationId, segmentIndex }) => {
       const { segmentationService, uiDialogService } = servicesManager.services;
       const segmentation = segmentationService.getSegmentation(segmentationId);
@@ -2729,25 +2673,25 @@ function commandsModule({
       commandFn: actions.toggleRenderInactiveSegmentationsCommand,
     },
     setFillAlpha: {
-      commandFn: actions.setFillAlphaCommand,
+      commandFn: createSetStyleCommand('fillAlpha'),
     },
     setOutlineWidth: {
-      commandFn: actions.setOutlineWidthCommand,
+      commandFn: createSetStyleCommand('outlineWidth'),
     },
     setRenderFill: {
-      commandFn: actions.setRenderFillCommand,
+      commandFn: createSetStyleCommand('renderFill'),
     },
     setRenderFillInactive: {
-      commandFn: actions.setRenderFillInactiveCommand,
+      commandFn: createSetStyleCommand('renderFillInactive'),
     },
     setRenderOutline: {
-      commandFn: actions.setRenderOutlineCommand,
+      commandFn: createSetStyleCommand('renderOutline'),
     },
     setRenderOutlineInactive: {
-      commandFn: actions.setRenderOutlineInactiveCommand,
+      commandFn: createSetStyleCommand('renderOutlineInactive'),
     },
     setFillAlphaInactive: {
-      commandFn: actions.setFillAlphaInactiveCommand,
+      commandFn: createSetStyleCommand('fillAlphaInactive'),
     },
     editSegmentLabel: {
       commandFn: actions.editSegmentLabel,
