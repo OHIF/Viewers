@@ -37,6 +37,7 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
+import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -634,67 +635,118 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   /**
    * Figures out which viewport to update when the viewport type needs to change.
-   * This may not be the active viewport if there is already a viewport showing
-   * the display set, but in the wrong orientation.
-   *
-   * The viewport will need to update the viewport type and/or display set to
-   * display the resulting data.
-   *
-   * The first choice will be a viewport already showing the correct display set,
-   * but showing it as a stack.
-   *
-   * Second choice is to see if there is a viewport already showing the right
-   * orientation for the image, but the wrong display set.  This fixes the
-   * case where the user is in MPR and a viewport other than active should be
-   * the one to change to display the iamge.
-   *
-   * Final choice is to use the provide activeViewportId.  This will cover
-   * changes to/from video and wsi viewports and other cases where no
-   * viewport is really even close to being able to display the measurement.
+   * Orchestrates the search strategies in order of preference.
    */
   public findUpdateableViewportConfiguration(activeViewportId: string, measurement) {
     const { metadata, displaySetInstanceUID } = measurement;
-    const { volumeId, referencedImageId } = metadata;
-    const { displaySetService, viewportGridService } = this.servicesManager.services;
+    const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+    // 1. Determine the target Viewport Type (Stack vs Volume)
+    const viewportType = this.determineTargetViewportType(displaySet, metadata);
+
+    // 2. Strategy: Find viewport already showing this volume
+    const volumeMatch = this.findViewportShowingVolume(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (volumeMatch) {
+      return volumeMatch;
+    }
+
+    // 3. Strategy: Find viewport with compatible orientation (even if different display set)
+    const compatibleMatch = this.findViewportConvertibleToVolume(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (compatibleMatch) {
+      return compatibleMatch;
+    }
+
+    // 4. Strategy: Find viewport with matching orientation via IOP
+    const orientationMatch = this.findViewportWithMatchingOrientation(
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (orientationMatch) {
+      return orientationMatch;
+    }
+
+    // 5. Fallback: Use the active viewport
+    return {
+      viewportId: activeViewportId,
+      displaySetInstanceUID,
+      viewportOptions: { viewportType },
+    };
+  }
+
+  /**
+   * Determines if the viewport should be what is specified in
+   * the viewportType of the display set, or stack if the display
+   * set isn't reconstructable and there is a referenced image id, otherwise
+   * volume.
+   *
+   * Expect there to be more rules in the future for different types of annotations/settings
+   * such as 3d annotations.
+   */
+  public determineTargetViewportType(displaySet, metadata): string {
     let { viewportType } = displaySet;
+
     if (!viewportType) {
-      if (referencedImageId && !displaySet.isReconstructable) {
+      if (metadata.referencedImageId && !displaySet.isReconstructable) {
         viewportType = csEnums.ViewportType.STACK;
-      } else if (volumeId) {
+      } else if (metadata.volumeId) {
         viewportType = 'volume';
       }
     }
+    return viewportType;
+  }
 
-    // Find viewports that could be updated to be volumes to show this view
-    // That prefers a viewport already showing the right display set.
-    if (volumeId) {
-      for (const id of this.viewportsById.keys()) {
-        const viewport = this.getCornerstoneViewport(id);
-        if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
-          return {
-            viewportId: id,
-            displaySetInstanceUID,
-            viewportOptions: { viewportType },
-          };
-        }
-      }
+  /**
+   * Find viewports that could be updated to be volumes to show this view.
+   * Prefers a viewport already showing the right display set.
+   */
+  public findViewportShowingVolume(metadata, displaySetInstanceUID, viewportType) {
+    if (!metadata.volumeId) {
+      return null;
     }
 
-    // Find a viewport in the correct orientation showing a different display set
-    // which could be used to display the annotation.
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
+        return {
+          viewportId: id,
+          displaySetInstanceUID,
+          viewportOptions: { viewportType },
+        };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a viewport that could be converted to a volume to show this annotation,
+   * already showing the right display set.
+   */
+  public findViewportConvertibleToVolume(metadata, displaySetInstanceUID, viewportType) {
+    const { viewportGridService } = this.servicesManager.services;
     const altMetadata = { ...metadata, volumeId: null, referencedImageId: null };
+
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
       const viewportDisplaySetUID = viewportGridService.getDisplaySetsUIDsForViewport(id)?.[0];
+
       if (!viewportDisplaySetUID || !viewport) {
         continue;
       }
-      if (volumeId) {
+
+      if (metadata.volumeId) {
         altMetadata.volumeId = viewportDisplaySetUID;
       }
       altMetadata.FrameOfReferenceUID = this._getFrameOfReferenceUID(viewportDisplaySetUID);
+
       if (viewport.isReferenceViewable(altMetadata, { asVolume: true, withNavigation: true })) {
         return {
           viewportId: id,
@@ -703,13 +755,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         };
       }
     }
+    return null;
+  }
 
-    // Just display in the active viewport
-    return {
-      viewportId: activeViewportId,
-      displaySetInstanceUID,
-      viewportOptions: { viewportType },
-    };
+  /**
+   * Find a viewport with the closest orientation but on a different display set.
+   */
+  public findViewportWithMatchingOrientation(metadata, displaySetInstanceUID, viewportType) {
+    const viewportAlignmentData = this.getViewportAlignmentData(metadata);
+    if (viewportAlignmentData?.length) {
+      return {
+        ...viewportAlignmentData[0],
+        displaySetInstanceUID,
+        viewportOptions: { viewportType },
+      };
+    }
+    return null;
   }
 
   /**
