@@ -600,6 +600,17 @@ The `onLayoutChange` callback is executed before the layout change is started. Y
 
 The `onViewportDataInitialized` callback is executed after the initial viewport grid data is set and all viewport data includes a designated display set. This callback runs during the initial layout setup for each stage. You can use it to perform actions or apply settings to the viewports at the start.
 
+### `onViewportDataChanged`
+
+The `onViewportDataChanged` callback is executed whenever a viewport's data changes (for example, when a different display set is assigned to a viewport). This is useful for reacting to runtime changes like drag/drop swaps, layout tools that reassign data, etc.
+
+Commands in `onViewportDataChanged` will receive an options object including:
+
+- `viewportId`
+- `viewportData`
+- `protocol`
+- `stageIndex`
+
 Here is an example of how you can add these callbacks to your hanging protocol configuration:
 
 ```javascript
@@ -620,7 +631,11 @@ const protocol = {
     onViewportDataInitialized: [
       // Array of commands or actions to execute on viewport data initialization
     ],
+    onViewportDataChanged: [
+      // Array of commands or actions to execute when viewport data changes
+    ],
   },
   // protocolMatchingRules
   // the rest
 };
+```
