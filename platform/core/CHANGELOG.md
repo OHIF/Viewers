@@ -3,6 +3,387 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.109...v3.12.0-beta.110) (2025-12-18)
+
+
+### Bug Fixes
+
+* prevent annotation from appearing in active viewport when switching series with different Frame of Reference UID ([#5630](https://github.com/OHIF/Viewers/issues/5630)) ([658994c](https://github.com/OHIF/Viewers/commit/658994c854a03203054168dcfd383c0a6e320df0))
+
+
+
+
+
+# [3.12.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.108...v3.12.0-beta.109) (2025-12-18)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.107...v3.12.0-beta.108) (2025-12-17)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.106...v3.12.0-beta.107) (2025-12-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.105...v3.12.0-beta.106) (2025-12-16)
+
+
+### Bug Fixes
+
+* preclinical mode not working ([#5631](https://github.com/OHIF/Viewers/issues/5631)) ([2de81ef](https://github.com/OHIF/Viewers/commit/2de81efa7e6be534972cd763271c038b293d86f0))
+
+
+
+
+
+# [3.12.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.104...v3.12.0-beta.105) (2025-12-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.103...v3.12.0-beta.104) (2025-12-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.102...v3.12.0-beta.103) (2025-12-12)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.101...v3.12.0-beta.102) (2025-12-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.100...v3.12.0-beta.101) (2025-12-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.99...v3.12.0-beta.100) (2025-12-05)
+
+
+### Features
+
+* **notification:** add custom notification component support ([#5605](https://github.com/OHIF/Viewers/issues/5605)) ([c4e5a46](https://github.com/OHIF/Viewers/commit/c4e5a4616db87b39df5e16b75f1ba3c18407468f))
+
+
+
+
+
+# [3.12.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.98...v3.12.0-beta.99) (2025-12-04)
+
+
+### Bug Fixes
+
+* Initial sort not consistent ([#5224](https://github.com/OHIF/Viewers/issues/5224)) ([77f9f8e](https://github.com/OHIF/Viewers/commit/77f9f8e1c4af6b5d22ecf9332b5edf503cd5b848))
+
+
+
+
+
+# [3.12.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.97...v3.12.0-beta.98) (2025-12-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.96...v3.12.0-beta.97) (2025-12-03)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.95...v3.12.0-beta.96) (2025-12-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.94...v3.12.0-beta.95) (2025-12-02)
+
+
+### Bug Fixes
+
+* sculptor tool fixes ([#5595](https://github.com/OHIF/Viewers/issues/5595)) ([4471416](https://github.com/OHIF/Viewers/commit/4471416c30bf80d9f6766660d103f28c83ba7bb3))
+
+
+
+
+
+# [3.12.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.93...v3.12.0-beta.94) (2025-12-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.92...v3.12.0-beta.93) (2025-11-25)
+
+
+### Features
+
+* tooltips for tool settings ([#5586](https://github.com/OHIF/Viewers/issues/5586)) ([411553e](https://github.com/OHIF/Viewers/commit/411553ee916b8a63b2a934a7e1274bc449041016))
+
+
+
+
+
+# [3.12.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.91...v3.12.0-beta.92) (2025-11-24)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.90...v3.12.0-beta.91) (2025-11-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.89...v3.12.0-beta.90) (2025-11-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.88...v3.12.0-beta.89) (2025-11-20)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.87...v3.12.0-beta.88) (2025-11-20)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.86...v3.12.0-beta.87) (2025-11-19)
+
+
+### Bug Fixes
+
+* **SegmentationStyle:** Fix inactive contour visibility and styling. ([#5563](https://github.com/OHIF/Viewers/issues/5563)) ([5c17c26](https://github.com/OHIF/Viewers/commit/5c17c262eaa5c1229033cfff4b3e7709e874611f))
+
+
+
+
+
+# [3.12.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.85...v3.12.0-beta.86) (2025-11-13)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.84...v3.12.0-beta.85) (2025-11-11)
+
+
+### Bug Fixes
+
+* **interpolation:** Auto accept interpolation when the interpolation process is completed. ([#5555](https://github.com/OHIF/Viewers/issues/5555)) ([834ae3c](https://github.com/OHIF/Viewers/commit/834ae3c762ca309187afebdf77bad1ad9a57f03f))
+
+
+
+
+
+# [3.12.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.83...v3.12.0-beta.84) (2025-11-10)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.82...v3.12.0-beta.83) (2025-11-06)
+
+
+### Features
+
+* **metadata:** metadata access improvement ([#5292](https://github.com/OHIF/Viewers/issues/5292)) ([16233d9](https://github.com/OHIF/Viewers/commit/16233d980f17abfc30461b46c6b1888be10c7840))
+
+
+
+
+
+# [3.12.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.81...v3.12.0-beta.82) (2025-11-05)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.80...v3.12.0-beta.81) (2025-11-05)
+
+
+### Bug Fixes
+
+* **SegmentationTools:** [Bug] Changes of brush/eraser radius with hotkey do not reflect on segmentation tool ([#5535](https://github.com/OHIF/Viewers/issues/5535)) ([29bd87c](https://github.com/OHIF/Viewers/commit/29bd87c8c0592a9a1350e687b862f5452627aece))
+
+
+
+
+
+# [3.12.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.79...v3.12.0-beta.80) (2025-11-05)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.78...v3.12.0-beta.79) (2025-10-30)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.77...v3.12.0-beta.78) (2025-10-29)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.76...v3.12.0-beta.77) (2025-10-28)
+
+
+### Bug Fixes
+
+* **3DSegmentation:** [Bug] The viewports become blank when loading the seg file in advanced layout after closing the seg file from any other advanced layout ([#5505](https://github.com/OHIF/Viewers/issues/5505)) ([76f7d4e](https://github.com/OHIF/Viewers/commit/76f7d4e23aa359a3397b10adf0bf09df3763f190))
+
+
+
+
+
+# [3.12.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.75...v3.12.0-beta.76) (2025-10-27)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.74...v3.12.0-beta.75) (2025-10-24)
+
+
+### Bug Fixes
+
+* **security:** For bun, enforce frozen lockfile. For yarn, strongly suggest using frozen lockfile. ([#5508](https://github.com/OHIF/Viewers/issues/5508)) ([1009c60](https://github.com/OHIF/Viewers/commit/1009c6091107d2db0768622120f916208a391343))
+
+
+
+
+
+# [3.12.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.73...v3.12.0-beta.74) (2025-10-23)
+
+
+### Features
+
+* **jpeg2000:** Add 16-bit RGB support to JPEG2000 decoder  ([#5519](https://github.com/OHIF/Viewers/issues/5519)) ([a154443](https://github.com/OHIF/Viewers/commit/a1544432db42bf77864bb7df2f757cae819a4b4d))
+
+
+
+
+
+# [3.12.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.72...v3.12.0-beta.73) (2025-10-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.71...v3.12.0-beta.72) (2025-10-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.70...v3.12.0-beta.71) (2025-10-21)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [3.12.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.69...v3.12.0-beta.70) (2025-10-20)
+
+
+### Bug Fixes
+
+* **rendering:** Fix palette color LUT conversion causing black images ([#5509](https://github.com/OHIF/Viewers/issues/5509)) ([ffd9ec3](https://github.com/OHIF/Viewers/commit/ffd9ec32730580e266ffae365a10ac3e524dd6cf))
+
+
+
+
+
+# [3.12.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.68...v3.12.0-beta.69) (2025-10-20)
+
+
+### Bug Fixes
+
+* Pass the correct sop uid + frame for rehydration to prevent associating rehydrated measurements with the wrong data ([#5506](https://github.com/OHIF/Viewers/issues/5506)) ([5037802](https://github.com/OHIF/Viewers/commit/503780247ce7228c602a539fd88ea374e7d0d42f)), closes [#2404](https://github.com/OHIF/Viewers/issues/2404)
+
+
+
+
+
 # [3.12.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.67...v3.12.0-beta.68) (2025-10-18)
 
 

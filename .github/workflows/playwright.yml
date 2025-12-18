@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   pull_request:
-    branches: [master]
+    branches: [master, release/*]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install Yarn
+        run: npm install -g yarn@1.22.22
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Install Playwright browsers

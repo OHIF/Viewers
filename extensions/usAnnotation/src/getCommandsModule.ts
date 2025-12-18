@@ -1,8 +1,10 @@
 import { UltrasoundPleuraBLineTool, Enums as csToolsEnums } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes, utils } from '@ohif/core';
 import { eventTarget, triggerEvent, utilities } from '@cornerstonejs/core';
 import getInstanceByImageId from './getInstanceByImageId';
 import { setShowPercentage } from './PleuraBlinePercentage';
+
+const { downloadBlob } = utils;
 
 const { transformWorldToIndex } = utilities;
 
@@ -13,7 +15,6 @@ const { transformWorldToIndex } = utilities;
  */
 function commandsModule({
   servicesManager,
-  commandsManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const { viewportGridService, toolGroupService, cornerstoneViewportService } =
     servicesManager.services as AppTypes.Services;
@@ -275,14 +276,9 @@ function commandsModule({
 
       // Create a blob with the JSON data
       const blob = new Blob([jsonString], { type: 'application/json' });
-
-      // Create a URL for the blob
-      const url = URL.createObjectURL(blob);
-
-      // Create an anchor element
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ultrasound_annotations_${new Date().toISOString().slice(0, 10)}.json`;
+      downloadBlob(blob, {
+        filename: `ultrasound_annotations_${new Date().toISOString().slice(0, 10)}.json`,
+      });
 
       // Append to the document, click to download, and remove
       document.body.appendChild(a);

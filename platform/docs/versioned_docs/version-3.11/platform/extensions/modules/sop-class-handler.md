@@ -39,6 +39,31 @@ return {
 }
 ```
 
+## Replacing Instances in Series
+
+Series such as segmentations and annotations often have the concept of replacing
+an earlier instance with a newer one.  The official way to do this is using the
+`predecessor document sequence` to reference the old object in the new one.
+It isn't that the old one is deleted (never delete data), but rather that the new
+one is used in preference to the old one.  This results in code that looks like:
+
+```
+  utils.sortStudyInstances(instances);
+  // Choose the LAST instance in the list as the most recently created one.
+  const instance = instances[instances.length - 1];
+
+  ...
+  const displaySet = {
+    ...
+    predecessorImageId: instance.imageId,
+    numImageFrames: instances.length,
+  }
+```
+
+so that the last/latest SOP instance is used by default, and that it is
+recorded what imageId was used to load that instance.  This then allows saving
+new instances in the same series by using a new predecessor sequence.
+
 ## Example SOP Class Handler Module
 
 ```js

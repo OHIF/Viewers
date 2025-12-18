@@ -69,6 +69,40 @@ async function checkAndLoadContourData({
         promisesMap.has(referencedROINumber)
           ? promisesMap.get(referencedROINumber).push(bulkDataPromise)
           : promisesMap.set(referencedROINumber, [bulkDataPromise]);
+      } else if (contourData && contourData.InlineBinary) {
+        // Contour data is still in binary format, conversion needed
+        const base64String = contourData.InlineBinary;
+        const decodedText = atob(base64String);
+
+        const rawValues = decodedText.split('\\');
+
+        const result = [];
+
+        // Ensure strictly that we have a full set of 3 coordinates
+        if (rawValues.length % 3 !== 0) {
+          return Promise.reject('ContourData raw values not divisible by 3');
+        }
+
+        for (let i = 0; i < rawValues.length; i += 3) {
+          if (i + 2 < rawValues.length) {
+            const x = parseFloat(rawValues[i]);
+            const y = parseFloat(rawValues[i + 1]);
+            const z = parseFloat(rawValues[i + 2]);
+
+            // Only push if all three are valid numbers (filters out trailing empty splits)
+            if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+              result.push(x);
+              result.push(y);
+              result.push(z);
+            } else {
+              return Promise.reject('Error parsing contourData from InlineBinary format');
+            }
+          }
+        }
+
+        promisesMap.has(referencedROINumber)
+          ? promisesMap.get(referencedROINumber).push(result)
+          : promisesMap.set(referencedROINumber, [result]);
       } else {
         return Promise.reject(`Invalid ContourData: ${contourData}`);
       }
@@ -89,9 +123,12 @@ async function checkAndLoadContourData({
         ROIContour.ContourSequence.forEach((Contour, index) => {
           const promise = resolvedPromises[index];
           if (promise.status === 'fulfilled') {
-            if (Array.isArray(promise.value) && promise.value.every(Number.isFinite)) {
+            if (
+              Array.isArray(promise.value) &&
+              promise.value.every(it => Number.isFinite(Number(it)))
+            ) {
               // If promise.value is already an array of numbers, use it directly
-              Contour.ContourData = promise.value;
+              Contour.ContourData = promise.value.map(Number);
             } else {
               // If the resolved promise value is a byte array (Blob), it needs to be decoded
               const uint8Array = new Uint8Array(promise.value);

@@ -2,8 +2,10 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { AllInOneMenu, ScrollArea, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import { WindowLevelPreset } from '../../types/WindowLevel';
+import { useTranslation } from 'react-i18next';
 
 export function WindowLevel({ viewportId }: { viewportId?: string } = {}): ReactElement {
+  const { t } = useTranslation('WindowLevelActionMenu');
   const { viewportDisplaySets } = useViewportRendering(viewportId);
   const [activeDisplaySetUID, setActiveDisplaySetUID] = useState<string | undefined>(
     viewportDisplaySets?.[0]?.displaySetInstanceUID
@@ -68,7 +70,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
         className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
         onClick={() => setShowPreview(!showPreview)}
       >
-        <span className="flex-shrink-0">Preview in viewport</span>
+        <span className="flex-shrink-0">{t('Preview in viewport')}</span>
         <Switch
           className="ml-auto flex-shrink-0"
           checked={showPreview}
@@ -91,7 +93,7 @@ export function WindowLevel({ viewportId }: { viewportId?: string } = {}): React
             {windowLevelPresets.map((preset, index) => (
               <AllInOneMenu.Item
                 key={index}
-                label={preset.description}
+                label={t(preset.description)}
                 secondaryLabel={`${preset.window} / ${preset.level}`}
                 useIconSpace={false}
                 onClick={() => {

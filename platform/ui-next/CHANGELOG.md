@@ -3,6 +3,363 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.109...v3.12.0-beta.110) (2025-12-18)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.108...v3.12.0-beta.109) (2025-12-18)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.107...v3.12.0-beta.108) (2025-12-17)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.106...v3.12.0-beta.107) (2025-12-16)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.105...v3.12.0-beta.106) (2025-12-16)
+
+
+### Bug Fixes
+
+* preclinical mode not working ([#5631](https://github.com/OHIF/Viewers/issues/5631)) ([2de81ef](https://github.com/OHIF/Viewers/commit/2de81efa7e6be534972cd763271c038b293d86f0))
+
+
+
+
+
+# [3.12.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.104...v3.12.0-beta.105) (2025-12-15)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.103...v3.12.0-beta.104) (2025-12-12)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.102...v3.12.0-beta.103) (2025-12-12)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.101...v3.12.0-beta.102) (2025-12-10)
+
+
+### Bug Fixes
+
+* **routes:** display 404 feedback page for unmatched URLs ([#5627](https://github.com/OHIF/Viewers/issues/5627)) ([eef755e](https://github.com/OHIF/Viewers/commit/eef755ef05e38d5271b1c79e4dd191d723895470))
+
+
+
+
+
+# [3.12.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.100...v3.12.0-beta.101) (2025-12-09)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.99...v3.12.0-beta.100) (2025-12-05)
+
+
+### Features
+
+* **notification:** add custom notification component support ([#5605](https://github.com/OHIF/Viewers/issues/5605)) ([c4e5a46](https://github.com/OHIF/Viewers/commit/c4e5a4616db87b39df5e16b75f1ba3c18407468f))
+
+
+
+
+
+# [3.12.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.98...v3.12.0-beta.99) (2025-12-04)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.97...v3.12.0-beta.98) (2025-12-03)
+
+
+### Bug Fixes
+
+* **clipboard:** Adds tooltip clipboard icon feedback when copy fails ([#5609](https://github.com/OHIF/Viewers/issues/5609)) ([6566354](https://github.com/OHIF/Viewers/commit/6566354986583e5d7db01c8734e282faf7a072b9))
+
+
+
+
+
+# [3.12.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.96...v3.12.0-beta.97) (2025-12-03)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.95...v3.12.0-beta.96) (2025-12-02)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.94...v3.12.0-beta.95) (2025-12-02)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.93...v3.12.0-beta.94) (2025-12-02)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.92...v3.12.0-beta.93) (2025-11-25)
+
+
+### Features
+
+* tooltips for tool settings ([#5586](https://github.com/OHIF/Viewers/issues/5586)) ([411553e](https://github.com/OHIF/Viewers/commit/411553ee916b8a63b2a934a7e1274bc449041016))
+
+
+
+
+
+# [3.12.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.91...v3.12.0-beta.92) (2025-11-24)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.90...v3.12.0-beta.91) (2025-11-21)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.89...v3.12.0-beta.90) (2025-11-21)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.88...v3.12.0-beta.89) (2025-11-20)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.87...v3.12.0-beta.88) (2025-11-20)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.86...v3.12.0-beta.87) (2025-11-19)
+
+
+### Bug Fixes
+
+* **SegmentationStyle:** Fix inactive contour visibility and styling. ([#5563](https://github.com/OHIF/Viewers/issues/5563)) ([5c17c26](https://github.com/OHIF/Viewers/commit/5c17c262eaa5c1229033cfff4b3e7709e874611f))
+
+
+
+
+
+# [3.12.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.85...v3.12.0-beta.86) (2025-11-13)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.84...v3.12.0-beta.85) (2025-11-11)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.83...v3.12.0-beta.84) (2025-11-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.82...v3.12.0-beta.83) (2025-11-06)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.81...v3.12.0-beta.82) (2025-11-05)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.80...v3.12.0-beta.81) (2025-11-05)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.79...v3.12.0-beta.80) (2025-11-05)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.78...v3.12.0-beta.79) (2025-10-30)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.77...v3.12.0-beta.78) (2025-10-29)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.76...v3.12.0-beta.77) (2025-10-28)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.75...v3.12.0-beta.76) (2025-10-27)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.74...v3.12.0-beta.75) (2025-10-24)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.73...v3.12.0-beta.74) (2025-10-23)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.72...v3.12.0-beta.73) (2025-10-22)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.71...v3.12.0-beta.72) (2025-10-22)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.70...v3.12.0-beta.71) (2025-10-21)
+
+
+### Bug Fixes
+
+* **segmentation:** Fixed the manual scrolling of the segments list and implemented automatic scrolling to the active segment. ([#5510](https://github.com/OHIF/Viewers/issues/5510)) ([1df4f84](https://github.com/OHIF/Viewers/commit/1df4f843fe3c377643938563ff9e2e4f930d8537))
+
+
+
+
+
+# [3.12.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.69...v3.12.0-beta.70) (2025-10-20)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.12.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.68...v3.12.0-beta.69) (2025-10-20)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
 # [3.12.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.67...v3.12.0-beta.68) (2025-10-18)
 
 

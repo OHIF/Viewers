@@ -256,3 +256,11 @@ input[type='number']::-webkit-outer-spin-button {
 input[type='number'] {
   -moz-appearance: textfield; /* For Firefox */
 }
+
+/* disabled class - used for icons and divs based on context */
+.ohif-disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  user-select: none;
+  opacity: 0.5;
+}
