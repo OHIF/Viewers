@@ -8,6 +8,7 @@ import {
   Icons,
   Button,
   ToolButton,
+  ColorPicker,
 } from '../';
 import { IconPresentationProvider } from '@ohif/ui-next';
 
@@ -75,6 +76,7 @@ function Header({
                 {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
               </div>
             </div>
+            <ColorPicker />
           </div>
           <div className="absolute top-1/2 left-[250px] h-8 -translate-y-1/2">{Secondary}</div>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
