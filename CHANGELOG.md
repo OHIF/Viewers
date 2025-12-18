@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.108...v3.12.0-beta.109) (2025-12-18)
+
+
+### Bug Fixes
+
+* **segmentation:** When setting the segmentation style and the representation type is not provided, apply the style to all representation types. ([#5662](https://github.com/OHIF/Viewers/issues/5662)) ([f3beb8e](https://github.com/OHIF/Viewers/commit/f3beb8e7115429bdb0e37f4c61491d0b28a2f6b6))
+
+
+
+
+
 # [3.12.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.107...v3.12.0-beta.108) (2025-12-17)
 
 
