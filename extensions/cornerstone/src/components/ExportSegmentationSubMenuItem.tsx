@@ -31,7 +31,7 @@ export const ExportSegmentationSubMenuItem: React.FC<ExportSegmentationSubMenuIt
   allowExport,
   actions,
 }) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
 
   return (
     <DropdownMenuSub>

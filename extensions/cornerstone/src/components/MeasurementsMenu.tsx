@@ -8,9 +8,11 @@ import {
   DropdownMenuItem,
   Icons,
 } from '@ohif/ui-next';
+import { useTranslation } from 'react-i18next';
 
 export function MeasumentsMenu(props) {
   const { group, classNames } = props;
+  const { t } = useTranslation('MeasurementTable');
   if (!group.items?.length) {
     console.log('No items to iterate', group.items);
     return null;
@@ -44,7 +46,7 @@ export function MeasumentsMenu(props) {
         className={`h-6 w-6 transition-opacity ${
           isSelected || !isVisible ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'
         }`}
-        aria-label={isVisible ? 'Hide' : 'Show'}
+        aria-label={isVisible ? t('Hide') : t('Show')}
         onClick={e => {
           e.stopPropagation();
           onAction(e, ['jumpToMeasurement', 'toggleVisibilityMeasurement']);
@@ -70,7 +72,7 @@ export function MeasumentsMenu(props) {
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={e => onAction(e, 'removeMeasurement')}>
             <Icons.Delete className="text-foreground" />
-            <span className="pl-2">Delete</span>
+            <span className="pl-2">{t('Delete')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

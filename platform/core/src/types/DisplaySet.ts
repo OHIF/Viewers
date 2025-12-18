@@ -80,11 +80,10 @@ export type DisplaySet = {
   isRehydratable?: boolean;
 
   /**
-   * Loads the display set.
-   * @param headers - The headers to use for the request.
-   * @returns A promise that resolves when the display set is loaded.
+   * The name of the comparison function (for sort) to use when comparing display
+   * sets that are coming from same series instanceUID.
    */
-  load: ({ headers }: { headers?: unknown }) => Promise<void>;
+  compareSameSeries?: string;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Switch } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 export default function SegmentationToolConfig() {
   const { commandsManager } = useSystem();
+  const { t } = useTranslation('SegmentationPanel');
 
   // Get initial states based on current configuration
   const [previewEdits, setPreviewEdits] = useState(false);
@@ -38,7 +40,7 @@ export default function SegmentationToolConfig() {
           checked={previewEdits}
           onCheckedChange={handlePreviewEditsChange}
         />
-        <span className="text-foreground text-base">Preview edits before creating</span>
+        <span className="text-foreground text-base">{t('Preview edits before creating')}</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -46,7 +48,7 @@ export default function SegmentationToolConfig() {
           checked={useCenterAsSegmentIndex}
           onCheckedChange={handleUseCenterAsSegmentIndexChange}
         />
-        <span className="text-foreground text-base">Use center as segment index</span>
+        <span className="text-foreground text-base">{t('Use center as segment index')}</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -54,7 +56,7 @@ export default function SegmentationToolConfig() {
           checked={toggleSegmentEnabled}
           onCheckedChange={handleToggleSegmentEnabledChange}
         />
-        <span className="text-foreground text-base">Hover on segment border to activate</span>
+        <span className="text-foreground text-base">{t('Hover on segment border to activate')}</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -62,7 +64,7 @@ export default function SegmentationToolConfig() {
           checked={segmentLabelEnabled}
           onCheckedChange={handleSegmentLabelEnabledChange}
         />
-        <span className="text-foreground text-base">Show segment name on hover</span>
+        <span className="text-foreground text-base">{t('Show segment name on hover')}</span>
       </div>
     </div>
   );

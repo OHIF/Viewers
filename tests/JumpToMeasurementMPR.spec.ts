@@ -8,15 +8,16 @@ test.beforeEach(async ({ page }) => {
 
 test('should hydrate in MPR correctly', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
   mainToolbarPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('trackedMeasurements-btn').click();
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
 
-  // get the div that has Body 4.0 Lung I and double click it
-
-  await page.locator(':text("S:7")').first().dblclick();
+  await leftPanelPageObject.loadSeriesByDescription('Body 4.0 CE', 1);
 
   await page.waitForTimeout(5000);
 
@@ -47,10 +48,9 @@ test('should hydrate in MPR correctly', async ({
     { x: 515, y: 339 },
   ]);
 
-  // wait 2 seconds
   await page.waitForTimeout(2000);
 
-  await page.getByTestId('prompt-begin-tracking-yes-btn').click();
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // scroll away
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
@@ -75,34 +75,32 @@ test('should hydrate in MPR correctly', async ({
     }
   });
 
-  // wait 5 seconds
   await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.scrollAway);
 
-  await page.getByTestId('data-row').first().click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  // wait 5 seconds
   await page.waitForTimeout(5000);
 
   // jump in viewport again
-  await page.getByTestId('data-row').first().click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   await page.waitForTimeout(3000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpInMPR);
 
-  await page.locator(':text("S:3")').first().dblclick();
+  await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
   await page.waitForTimeout(5000);
 
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR);
 
-  await page.getByTestId('data-row').first().click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   await checkForScreenshot(
     page,

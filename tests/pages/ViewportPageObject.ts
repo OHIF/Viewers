@@ -1,10 +1,13 @@
 import { Locator, Page } from '@playwright/test';
 import {
+  getMousePosition,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
 } from '../utils';
+import { DataOverlayPageObject } from './DataOverlayPageObject';
+import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
 type SvgInnerElement = 'circle' | 'path' | 'd';
 
@@ -15,11 +18,18 @@ type NormalizedDragParams = {
 };
 
 export interface IViewportPageObject {
-  doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
+  nthAnnotation(nth: number): {
+    locator: Locator;
+    click: () => Promise<void>;
+    contextMenu: {
+      open: () => Promise<void>;
+    };
+  };
   clickAt: (
     points: { x: number; y: number }[],
     button?: 'left' | 'right' | 'middle'
   ) => Promise<void>;
+  doubleClickAt: (point: { x: number; y: number }) => Promise<void>;
   normalizedClickAt: (
     normalizedPoints: { x: number; y: number }[],
     button?: 'left' | 'right' | 'middle'
@@ -38,10 +48,7 @@ export interface IViewportPageObject {
     bottomRight: Locator;
   };
   overlayMenu: {
-    dataOverlay: {
-      button: Locator;
-      click: () => Promise<void>;
-    };
+    dataOverlay: DataOverlayPageObject;
     orientation: {
       button: Locator;
       click: () => Promise<void>;
@@ -57,9 +64,29 @@ export interface IViewportPageObject {
 
 export class ViewportPageObject {
   readonly page: Page;
+  private readonly dataOverlayPageObject: DataOverlayPageObject;
 
   constructor(page: Page) {
     this.page = page;
+    this.dataOverlayPageObject = new DataOverlayPageObject(page);
+  }
+
+  private getAnnotation(viewport: Locator, nth: number) {
+    const page = this.page;
+    const domOverlayPageObject = new DOMOverlayPageObject(page);
+    const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
+
+    return {
+      locator: annotation,
+      click: async () => {
+        await annotation.click();
+      },
+      contextMenu: {
+        open: async () => {
+          await domOverlayPageObject.viewport.annotationContextMenu.open(annotation);
+        },
+      },
+    };
   }
 
   private getOrientationMarkers(viewport: Locator) {
@@ -82,15 +109,7 @@ export class ViewportPageObject {
 
   private getOverlayMenu(viewport: Locator) {
     return {
-      get dataOverlay() {
-        const button = viewport.locator('[data-cy^="dataOverlayMenu"]').first();
-        return {
-          button,
-          async click() {
-            await button.click();
-          },
-        };
-      },
+      dataOverlay: this.dataOverlayPageObject,
       get orientation() {
         const button = viewport.locator('[data-cy^="orientationMenu"]');
         return {
@@ -118,6 +137,7 @@ export class ViewportPageObject {
 
   private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
     return {
+      nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
       doubleClickAt: async (point: { x: number; y: number }) => {
         await simulateDoubleClickOnElement({
           locator: viewport,
@@ -164,6 +184,70 @@ export class ViewportPageObject {
   get active(): IViewportPageObject {
     const viewport = this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
     return this.viewportPageObjectFactory(viewport);
+  }
+
+  get crosshairs() {
+    const page = this.page;
+
+    async function increaseSlabThickness(locator: Locator, lineNumber: number, axis: string) {
+      const lineLocator = locator.locator('line').nth(lineNumber);
+      await lineLocator.click({ force: true });
+      await lineLocator.hover({ force: true });
+
+      const circleLocator = locator.locator('rect').first();
+      await circleLocator.hover({ force: true });
+
+      await page.mouse.down();
+
+      const position = await getMousePosition(page);
+      switch (axis) {
+        case 'x':
+          await page.mouse.move(position.x + 100, position.y);
+          break;
+        case 'y':
+          await page.mouse.move(position.x, position.y + 100);
+          break;
+      }
+      await page.mouse.up();
+    }
+
+    async function rotateCrosshairs(locator: Locator, lineNumber: number) {
+      const lineLocator = locator.locator('line').nth(lineNumber);
+      await lineLocator.click({ force: true });
+      await lineLocator.hover({ force: true });
+
+      const circleLocator = locator.locator('circle').nth(1);
+      await circleLocator.hover({ force: true });
+
+      await page.mouse.down();
+
+      const position = await getMousePosition(page);
+      await page.mouse.move(position.x, position.y + 100);
+      await page.mouse.up();
+    }
+
+    function crosshairsFactory(
+      locator: Locator,
+      increaseLineNumber: number,
+      increaseAxis: 'x' | 'y',
+      rotateLineNumber: number
+    ) {
+      return {
+        increase: async () => {
+          await increaseSlabThickness(locator, increaseLineNumber, increaseAxis);
+        },
+        locator,
+        rotate: () => {
+          return rotateCrosshairs(locator, rotateLineNumber);
+        },
+      };
+    }
+
+    return {
+      axial: crosshairsFactory(page.locator('#svg-layer-mpr-axial'), 0, 'x', 3),
+      sagittal: crosshairsFactory(page.locator('#svg-layer-mpr-sagittal'), 2, 'x', 0),
+      coronal: crosshairsFactory(page.locator('#svg-layer-mpr-coronal'), 0, 'y', 0),
+    };
   }
 
   async getAll(): Promise<IViewportPageObject[]> {
