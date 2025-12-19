@@ -667,6 +667,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // 4. Strategy: Find viewport with matching orientation via IOP
     const orientationMatch = this.findViewportWithMatchingOrientation(
+      metadata,
       displaySetInstanceUID,
       viewportType
     );
