@@ -190,9 +190,14 @@ function PanelStudyBrowser({
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
-      const imageIds = dataSource.getImageIdsForDisplaySet(dSet);
 
-      const imageId = getImageIdForThumbnail(displaySet, imageIds);
+      // Wait for imageIds if NIFTI is detected and imageIds are not yet loaded
+      let imageId;
+      if (displaySet.niftiURL && (!imageIds || imageIds.length === 0)) {
+        await displaySet.loadImageIds();
+        imageIds = displaySet.imageIds;
+      }
+      imageId = getImageIdForThumbnail(displaySet, imageIds);
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (displaySet?.unsupported) {

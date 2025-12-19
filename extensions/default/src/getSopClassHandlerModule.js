@@ -1,9 +1,12 @@
 import { utils, classes } from '@ohif/core';
+import { createNiftiImageIdsAndCacheMetadata } from '@cornerstonejs/nifti-volume-loader';
+
 import i18n from '@ohif/i18n';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
+import { joinUrl, isAbsolutePathOrUrl } from './utils/urlUtils';
 
 const {
   isImage,
@@ -87,6 +90,37 @@ const makeDisplaySet = (instances, index) => {
 
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
+
+  const { niftiPrivateTagName, niftiBaseUrl } = dataSource.getConfig?.() || {};
+  let niftiURL;
+  const niftiPath = instance[niftiPrivateTagName];
+  if (niftiPath) {
+    if (typeof niftiPath === 'string' && !niftiPath.includes('dedupped')) {
+      if (isAbsolutePathOrUrl(niftiPath)) {
+        niftiURL = niftiPath;
+      } else {
+        niftiURL = joinUrl(niftiBaseUrl, niftiPath);
+      }
+    }
+  }
+
+  if (niftiURL) {
+    imageSet.setAttributes({
+      niftiURL,
+      loadImageIds: async () => {
+        try {
+          const imageIds = await createNiftiImageIdsAndCacheMetadata({ url: niftiURL });
+          imageSet.setAttributes({ imageIds });
+          imageSet.setAttributes({
+            numImageFrames: Array.isArray(imageIds) ? imageIds.length : 0,
+          });
+          imageSet.setAttributes({ isReconstructable: true });
+        } catch (e) {
+          console.error('Error loading niftiURL:', e);
+        }
+      },
+    });
+  }
 
   imageSet.setAttributes({
     volumeLoaderSchema,

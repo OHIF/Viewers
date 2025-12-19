@@ -79,6 +79,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "@cornerstonejs/nifti-volume-loader": "^4.10.0",
     "execa": "8.0.1"
   },
   "optionalDependencies": {
