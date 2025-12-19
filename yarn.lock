@@ -1361,6 +1361,20 @@
     "@itk-wasm/morphological-contour-interpolation" "1.1.0"
     itk-wasm "1.0.0-b.165"
 
+"@cornerstonejs/nifti-volume-loader@4.14.6":
+  version "4.14.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/nifti-volume-loader/-/nifti-volume-loader-4.14.6.tgz#8d22858f48d736076bf52c8951b5d9db60c54968"
+  integrity sha512-KmLt3kP3DdwjlKMEFGb2hn0IjMP4P/WzHrkVGFFf2V6V9l3AWlJjwrlV1kFSr9vsQSesBEwWM60j9Km1jGL0qA==
+  dependencies:
+    nifti-reader-js "0.6.9"
+
+"@cornerstonejs/nifti-volume-loader@^4.10.0":
+  version "4.15.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/nifti-volume-loader/-/nifti-volume-loader-4.15.0.tgz#7119c14801a7222507de786475af667e3df9b8fa"
+  integrity sha512-mbpdPB8zzfJ7Gnq0cx3ka1hE9VcWKU/So9OQQqk0HrQl03yB9uIIDu9GnvvNtX+IDZN7jkZWMbYHUJu7I2+BxA==
+  dependencies:
+    nifti-reader-js "0.6.9"
+
 "@cornerstonejs/polymorphic-segmentation@4.14.6":
   version "4.14.6"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-4.14.6.tgz#26154ddd0b1edceca9e6136e264d2d7b34df7c4f"
@@ -8833,6 +8847,11 @@ fetch-blob@^3.1.2, fetch-blob@^3.1.4:
     node-domexception "^1.0.0"
     web-streams-polyfill "^3.0.3"
 
+fflate@*:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.8.2.tgz#fc8631f5347812ad6028bbe4a2308b2792aa1dea"
+  integrity sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==
+
 fflate@0.7.3:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.7.3.tgz#288b034ff0e9c380eaa2feff48c787b8371b7fa5"
@@ -13354,6 +13373,13 @@ next-themes@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/next-themes/-/next-themes-0.3.0.tgz#b4d2a866137a67d42564b07f3a3e720e2ff3871a"
   integrity sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==
+
+nifti-reader-js@0.6.9:
+  version "0.6.9"
+  resolved "https://registry.yarnpkg.com/nifti-reader-js/-/nifti-reader-js-0.6.9.tgz#737b88eb951c6b98841ce888204a9370214b17e5"
+  integrity sha512-oEC35cuYFR0i+KeXhaK0hJz4oSj511Vo7LmO/6iqbxzwek6XWnBi77VURlk4jsnJ86tlJNpYv6ujmSDpPP46Tw==
+  dependencies:
+    fflate "*"
 
 no-case@^3.0.4:
   version "3.0.4"
