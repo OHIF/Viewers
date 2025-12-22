@@ -74,6 +74,10 @@ export type DicomWebConfig = {
   staticWado?: boolean;
   /** User authentication service */
   userAuthenticationService: Record<string, unknown>;
+  /** Additional request options for DICOMweb requests */
+  requestOptions?: {
+    headers?: HeadersInterface;
+  };
 };
 
 export type BulkDataURIConfig = {
@@ -126,6 +130,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     qidoDicomWebClient,
     wadoDicomWebClient,
     getAuthorizationHeader,
+    getCustomHeaders,
+    getBaseHeaders,
     generateWadoHeader;
   // Default to enabling bulk data retrieves, with no other customization as
   // this is part of hte base standard.
@@ -150,6 +156,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         }
         return xhrRequestHeaders;
       };
+      getCustomHeaders = () => dicomWebConfig.requestOptions?.headers || {};
+      getBaseHeaders = () => ({
+        ...getCustomHeaders(),
+        ...getAuthorizationHeader(),
+      });
 
       /**
        * Generates the wado header for requesting resources from DICOMweb.
@@ -157,6 +168,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        * and those that aren't, as defined by the include transfer syntax attribute.
        */
       generateWadoHeader = (options: HeaderOptions): HeadersInterface => {
+        const customHeaders = getCustomHeaders();
         const authorizationHeader = getAuthorizationHeader();
         if (options?.includeTransferSyntax!==false) {
           //Generate accept header depending on config params
@@ -166,6 +178,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             dicomWebConfig.omitQuotationForMultipartRequest
           );
           return {
+            ...customHeaders,
             ...authorizationHeader,
             Accept: formattedAcceptHeader,
           };
@@ -175,6 +188,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           // which the server expects Accept: application/dicom+json will still include that in the
           // header.
           return {
+            ...customHeaders,
             ...authorizationHeader
           };
         }
@@ -184,7 +198,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         url: dicomWebConfig.qidoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
-        headers: userAuthenticationService.getAuthorizationHeader(),
+        headers: getBaseHeaders(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
@@ -193,7 +207,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         url: dicomWebConfig.wadoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
-        headers: userAuthenticationService.getAuthorizationHeader(),
+        headers: getBaseHeaders(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
@@ -212,7 +226,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
-          qidoDicomWebClient.headers = getAuthorizationHeader();
+          qidoDicomWebClient.headers = getBaseHeaders();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
@@ -228,7 +242,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
-          qidoDicomWebClient.headers = getAuthorizationHeader();
+          qidoDicomWebClient.headers = getBaseHeaders();
           const results = await seriesInStudy(qidoDicomWebClient, studyInstanceUid);
 
           return processSeriesResults(results);
@@ -237,7 +251,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
-          qidoDicomWebClient.headers = getAuthorizationHeader();
+          qidoDicomWebClient.headers = getBaseHeaders();
           return qidoSearch.call(
             undefined,
             qidoDicomWebClient,
@@ -344,7 +358,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       getWadoDicomWebClient: () => wadoDicomWebClient,
 
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
-        qidoDicomWebClient.headers = getAuthorizationHeader();
+        qidoDicomWebClient.headers = getBaseHeaders();
         const options = {
           multipart: false,
           BulkDataURI,
@@ -392,7 +406,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
     store: {
       dicom: async (dataset, request, dicomDict) => {
-        wadoDicomWebClient.headers = getAuthorizationHeader();
+        wadoDicomWebClient.headers = getBaseHeaders();
         if (dataset instanceof ArrayBuffer) {
           const options = {
             datasets: [dataset],
