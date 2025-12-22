@@ -7,7 +7,7 @@ function Debug() {
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <div className="flex h-screen w-screen items-center justify-center">
-        <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
+        <div className="bg-popover mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
           <img
             className="mx-auto block h-14"
             src="./ohif-logo.svg"
@@ -17,7 +17,7 @@ function Debug() {
             <div className="flex flex-col items-center justify-center">
               <p className="text-primary mt-4 text-xl font-semibold">Debug Information</p>
               <div className="mt-4 flex items-center space-x-2">
-                <p className="text-md text-white">Cross Origin Isolated (COOP/COEP)</p>
+                <p className="text-md text-foreground">Cross Origin Isolated (COOP/COEP)</p>
                 <Icons.ByName
                   name={
                     window.crossOriginIsolated ? 'notifications-success' : 'notifications-error'
