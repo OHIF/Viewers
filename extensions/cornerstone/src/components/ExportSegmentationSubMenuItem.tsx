@@ -97,14 +97,10 @@ export const ExportSegmentationSubMenuItem: React.FC<ExportSegmentationSubMenuIt
               <DropdownMenuItem onClick={() => actions.onSegmentationDownload(segmentationId)}>
                 {t('Download DICOM SEG')}
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => actions.onSendToGlasses(segmentationId)}
-              >
+              <DropdownMenuItem onClick={() => actions.onSendToGlasses(segmentationId)}>
                 <span className="pl-2">{t('Export to Smart Glasses')}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => actions.onDownloadObj(segmentationId)}
-              >
+              <DropdownMenuItem onClick={() => actions.onDownloadObj(segmentationId)}>
                 <span className="pl-2">{t('Convert to OBJ and download')}</span>
               </DropdownMenuItem>
             </DropdownMenuSub>
