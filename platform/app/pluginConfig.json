@@ -99,6 +99,10 @@
     {
       "packageName": "@ohif/mode-ultrasound-pleura-bline",
       "version": "3.0.0"
+    },
+    {
+      "packageName": "yurii-test-mode",
+      "version": "0.0.1"
     }
   ],
   "public": [
