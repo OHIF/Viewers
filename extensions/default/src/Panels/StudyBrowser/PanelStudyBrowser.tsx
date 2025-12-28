@@ -11,7 +11,8 @@ import { BlobReader, Uint8ArrayWriter, ZipReader } from '@zip.js/zip.js';
 import filesToStudies from '../../../../../platform/app/src/routes/Local/filesToStudies.js';
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
-const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
+const thumbnailNoImageModalities = ['SR', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
+const hiddenModalities = ['SEG'];
 
 /**
  * Retry utility function that attempts an async operation up to maxRetries times
@@ -104,6 +105,10 @@ function PanelStudyBrowser({
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
   const [isSegmenting, setIsSegmenting] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [segmentationProgress, setSegmentationProgress] = useState<number>(0);
+  const [segmentationStage, setSegmentationStage] = useState<string>('');
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadStage, setUploadStage] = useState<string>('');
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -124,12 +129,35 @@ function PanelStudyBrowser({
     setViewPresets(newViewPresets);
   };
 
-  const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
+  const segmentationMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    const allDisplaySets = displaySetService.activeDisplaySets;
+    allDisplaySets
+      .filter(ds => ds.Modality === 'SEG' && ds.referencedSeriesInstanceUID)
+      .forEach(segDs => {
+        map.set(segDs.referencedSeriesInstanceUID, segDs.displaySetInstanceUID);
+      });
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displaySets]);
+
+  const mapDisplaySetsWithState = useCallback(
+    (dsSets, loadingState, thumbMap, vps) => {
+      const baseFn = customMapDisplaySets || _mapDisplaySets;
+      return baseFn(dsSets, loadingState, thumbMap, vps, segmentationMap);
+    },
+    [customMapDisplaySets, segmentationMap]
+  );
   const uploadInProgressRef = useRef(false);
 
   useEffect(() => {
     const sendDicomToBackend = async () => {
-      if (!sessionID || !uploadKey) {
+      const primaryStudyInstanceUID = StudyInstanceUIDs.length > 0 ? StudyInstanceUIDs[0] : null;
+      const uploadKey = primaryStudyInstanceUID
+        ? `dicom_uploaded_${primaryStudyInstanceUID}`
+        : null;
+
+      if (!primaryStudyInstanceUID || !uploadKey) {
         return;
       }
 
@@ -146,13 +174,23 @@ function PanelStudyBrowser({
 
       uploadInProgressRef.current = true;
       setIsUploadingDicom(true);
+      setUploadProgress(0);
+      setUploadStage('Preparing files...');
       try {
-        await commandsManager.runCommand('sendDicomZipToBackend', { sessionID });
+        await commandsManager.runCommand('sendDicomZipToBackend', {
+          studyInstanceUIDs: StudyInstanceUIDs,
+          onProgress: (progress: number, stage: string) => {
+            setUploadProgress(progress);
+            setUploadStage(stage);
+          },
+        });
         sessionStorage.setItem(uploadKey, 'true');
       } catch (error) {
         console.error('Failed to send DICOM to backend:', error);
       } finally {
         setIsUploadingDicom(false);
+        setUploadProgress(0);
+        setUploadStage('');
         uploadInProgressRef.current = false;
       }
     };
@@ -162,7 +200,7 @@ function PanelStudyBrowser({
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [sessionID, uploadKey, commandsManager]);
+  }, [StudyInstanceUIDs, commandsManager]);
 
   // Poll conversion status after DICOM upload
   useEffect(() => {
@@ -176,7 +214,7 @@ function PanelStudyBrowser({
       return;
     }
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     let pollCount = 0;
     const maxPolls = 60; // Poll for up to 60 seconds (60 * 1 second)
@@ -222,346 +260,441 @@ function PanelStudyBrowser({
     return () => clearTimeout(timeoutId);
   }, [sessionID, isUploadingDicom, isConversionComplete, conversionKey]);
 
-  const fetchSegmentationFromBackend = useCallback(async () => {
-    if (!sessionID) {
-      console.warn('No session ID available');
-      return;
-    }
-
-    const { uiNotificationService } = servicesManager.services;
-
-    setIsSegmenting(true);
-    try {
-      uiNotificationService.show({
-        title: 'Segmentation',
-        message: 'Fetching segmentation files from backend...',
-        type: 'info',
-      });
-
-      // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://backend-ohif-1084552301744.us-central1.run.app';
-      console.log('Backend URL:', backendUrl);
-
-      // Wrap fetch operation with retry logic
-      const response = await retryWithDelay(
-        async () => {
-          const res = await fetch(`${backendUrl}/segmentation?sessionID=${sessionID}`);
-          if (!res.ok) {
-            throw new Error(`Backend responded with status: ${res.status}`);
-          }
-          return res;
-        },
-        3, // maxRetries
-        3000, // 3 seconds delay
-        true // suppressWarnings
-      );
-
-      const blob = await response.blob();
-      const zipReader = new ZipReader(new BlobReader(blob));
-      const entries = await zipReader.getEntries();
-
-      const files = [];
-      for (const entry of entries) {
-        if (!entry.directory) {
-          // @ts-expect-error - getData exists on Entry but TypeScript typing may be incomplete
-          const uint8Array = await entry.getData(new Uint8ArrayWriter());
-          // Extract just the filename without any directory path
-          const filename = entry.filename.split('/').pop() || entry.filename;
-          console.log(`Extracted file: ${filename}, size: ${uint8Array.byteLength} bytes`);
-          // Create a blob from the Uint8Array to ensure proper binary data handling
-          const blob = new Blob([uint8Array], { type: 'application/dicom' });
-          const file = new File([blob], filename, { type: 'application/dicom' });
-          files.push(file);
-        }
-      }
-
-      await zipReader.close();
-
-      if (files.length === 0) {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'No segmentation files found in the archive',
-          type: 'warning',
-        });
+  const fetchSegmentationFromBackend = useCallback(
+    async (studyInstanceUID: string) => {
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
         return;
       }
 
-      const existingSeriesMap = new Map();
-      DicomMetadataStore.getStudyInstanceUIDs().forEach(studyUID => {
-        const study = DicomMetadataStore.getStudy(studyUID);
-        if (study?.series) {
-          study.series.forEach(series => {
-            existingSeriesMap.set(`${studyUID}_${series.SeriesInstanceUID}`, true);
-          });
+      const { uiNotificationService } = servicesManager.services;
+
+      setIsSegmenting(true);
+      setSegmentationProgress(0);
+      setSegmentationStage('Requesting segmentation from backend...');
+      try {
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Fetching segmentation files from backend...',
+          type: 'info',
+        });
+
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+
+        const response = await retryWithDelay(
+          async () => {
+            const res = await fetch(
+              `${backendUrl}/segmentation?studyInstanceUID=${studyInstanceUID}`
+            );
+            if (!res.ok) {
+              throw new Error(`Backend responded with status: ${res.status}`);
+            }
+            return res;
+          },
+          3,
+          3000,
+          true
+        );
+
+        setSegmentationStage('Downloading segmentation archive...');
+        setSegmentationProgress(25);
+
+        const blob = await response.blob();
+        const zipReader = new ZipReader(new BlobReader(blob));
+        const entries = await zipReader.getEntries();
+
+        const files = [];
+        for (const entry of entries) {
+          if (!entry.directory) {
+            // @ts-expect-error - getData exists on Entry but TypeScript typing may be incomplete
+            const uint8Array = await entry.getData(new Uint8ArrayWriter());
+            // Extract just the filename without any directory path
+            const filename = entry.filename.split('/').pop() || entry.filename;
+            console.log(`Extracted file: ${filename}, size: ${uint8Array.byteLength} bytes`);
+            // Create a blob from the Uint8Array to ensure proper binary data handling
+            const blob = new Blob([uint8Array], { type: 'application/dicom' });
+            const file = new File([blob], filename, { type: 'application/dicom' });
+            files.push(file);
+          }
         }
-      });
 
-      // Process the segmentation files and add them to the study list
-      const studies = await filesToStudies(files);
+        await zipReader.close();
 
-      if (studies?.length) {
-        // First, create display sets for new series
-        studies.forEach(studyInstanceUID => {
-          const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
-          if (studyMetadata?.series) {
-            studyMetadata.series.forEach(series => {
-              const seriesKey = `${studyInstanceUID}_${series.SeriesInstanceUID}`;
-              // Only process series that didn't exist before
-              if (!existingSeriesMap.has(seriesKey)) {
-                // Trigger display set creation for new series
-                displaySetService.makeDisplaySets(series.instances, { madeInClient: true });
-              }
+        if (files.length === 0) {
+          uiNotificationService.show({
+            title: 'Segmentation',
+            message: 'No segmentation files found in the archive',
+            type: 'warning',
+          });
+          return;
+        }
+
+        setSegmentationStage('Integrating segmentation into viewer...');
+        setSegmentationProgress(60);
+
+        const existingSeriesMap = new Map();
+        DicomMetadataStore.getStudyInstanceUIDs().forEach(studyUID => {
+          const study = DicomMetadataStore.getStudy(studyUID);
+          if (study?.series) {
+            study.series.forEach(series => {
+              existingSeriesMap.set(`${studyUID}_${series.SeriesInstanceUID}`, true);
             });
           }
         });
 
-        // Wait a bit for display sets to be created, then update UI
-        setTimeout(() => {
-          // Update study display list for all affected studies
+        // Process the segmentation files and add them to the study list
+        const studies = await filesToStudies(files);
+
+        if (studies?.length) {
+          setSegmentationStage('Creating display sets...');
+          setSegmentationProgress(75);
+
+          // First, create display sets for new series
           studies.forEach(studyInstanceUID => {
             const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
+            if (studyMetadata?.series) {
+              studyMetadata.series.forEach(series => {
+                const seriesKey = `${studyInstanceUID}_${series.SeriesInstanceUID}`;
+                // Only process series that didn't exist before
+                if (!existingSeriesMap.has(seriesKey)) {
+                  // Trigger display set creation for new series
+                  displaySetService.makeDisplaySets(series.instances, { madeInClient: true });
+                }
+              });
+            }
+          });
 
-            if (studyMetadata) {
-              setStudyDisplayList(prevArray => {
-                const existingIndex = prevArray.findIndex(
-                  s => s.studyInstanceUid === studyInstanceUID
-                );
+          // Wait a bit for display sets to be created, then update UI
+          setTimeout(() => {
+            // Update study display list for all affected studies
+            studies.forEach(studyInstanceUID => {
+              const studyMetadata = DicomMetadataStore.getStudy(studyInstanceUID);
 
-                if (existingIndex !== -1) {
-                  // Study exists - update only modalities and numInstances
-                  const updated = [...prevArray];
-                  const existingStudy = updated[existingIndex];
+              if (studyMetadata) {
+                setStudyDisplayList(prevArray => {
+                  const existingIndex = prevArray.findIndex(
+                    s => s.studyInstanceUid === studyInstanceUID
+                  );
 
-                  // Collect all modalities including new ones
-                  // existingStudy.modalities might be a string (e.g., "CT/MR"), so split it first
-                  const existingModalities =
-                    typeof existingStudy.modalities === 'string'
-                      ? existingStudy.modalities.split('/').filter(Boolean)
-                      : existingStudy.modalities || [];
+                  if (existingIndex !== -1) {
+                    // Study exists - update only modalities and numInstances
+                    const updated = [...prevArray];
+                    const existingStudy = updated[existingIndex];
 
-                  const modalitiesSet = new Set(existingModalities);
+                    // Collect all modalities including new ones
+                    // existingStudy.modalities might be a string (e.g., "CT/MR"), so split it first
+                    const existingModalities =
+                      typeof existingStudy.modalities === 'string'
+                        ? existingStudy.modalities.split('/').filter(Boolean)
+                        : existingStudy.modalities || [];
 
-                  // Extract modalities from series
-                  studyMetadata.series?.forEach(series => {
-                    if (series.Modality) {
-                      modalitiesSet.add(series.Modality);
-                    }
-                  });
+                    const modalitiesSet = new Set(existingModalities);
 
-                  updated[existingIndex] = {
-                    ...existingStudy,
-                    modalities: Array.from(modalitiesSet).join('/'),
-                    numInstances:
-                      studyMetadata.series?.reduce(
-                        (sum, s) => sum + (s.instances?.length || 0),
-                        0
-                      ) || existingStudy.numInstances,
-                  };
-                  return updated;
-                } else {
-                  // New study - add it
-                  // Extract modalities from series
-                  const modalitiesSet = new Set();
-                  let studyDate = studyMetadata.StudyDate;
+                    // Extract modalities from series
+                    studyMetadata.series?.forEach(series => {
+                      if (series.Modality) {
+                        modalitiesSet.add(series.Modality);
+                      }
+                    });
 
-                  // If study-level data is missing, extract from series/instances
-                  studyMetadata.series?.forEach(series => {
-                    if (series.Modality) {
-                      modalitiesSet.add(series.Modality);
-                    }
-                    // Try to get date from series if not available at study level
-                    if (!studyDate && series.instances?.[0]) {
-                      studyDate = series.instances[0].StudyDate;
-                    }
-                  });
-
-                  return [
-                    ...prevArray,
-                    {
-                      studyInstanceUid: studyMetadata.StudyInstanceUID,
-                      date: formatDate(studyDate) || '',
-                      description: studyMetadata.StudyDescription || '',
+                    updated[existingIndex] = {
+                      ...existingStudy,
                       modalities: Array.from(modalitiesSet).join('/'),
                       numInstances:
                         studyMetadata.series?.reduce(
                           (sum, s) => sum + (s.instances?.length || 0),
                           0
-                        ) || 0,
-                    },
-                  ];
-                }
-              });
-            }
+                        ) || existingStudy.numInstances,
+                    };
+                    return updated;
+                  } else {
+                    // New study - add it
+                    // Extract modalities from series
+                    const modalitiesSet = new Set();
+                    let studyDate = studyMetadata.StudyDate;
 
-            // Expand the study to show the new series
-            setExpandedStudyInstanceUIDs(prev => {
-              if (!prev.includes(studyInstanceUID)) {
-                return [...prev, studyInstanceUID];
+                    // If study-level data is missing, extract from series/instances
+                    studyMetadata.series?.forEach(series => {
+                      if (series.Modality) {
+                        modalitiesSet.add(series.Modality);
+                      }
+                      // Try to get date from series if not available at study level
+                      if (!studyDate && series.instances?.[0]) {
+                        studyDate = series.instances[0].StudyDate;
+                      }
+                    });
+
+                    return [
+                      ...prevArray,
+                      {
+                        studyInstanceUid: studyMetadata.StudyInstanceUID,
+                        date: formatDate(studyDate) || '',
+                        description: studyMetadata.StudyDescription || '',
+                        modalities: Array.from(modalitiesSet).join('/'),
+                        numInstances:
+                          studyMetadata.series?.reduce(
+                            (sum, s) => sum + (s.instances?.length || 0),
+                            0
+                          ) || 0,
+                      },
+                    ];
+                  }
+                });
               }
-              return prev;
+
+              // Expand the study to show the new series
+              setExpandedStudyInstanceUIDs(prev => {
+                if (!prev.includes(studyInstanceUID)) {
+                  return [...prev, studyInstanceUID];
+                }
+                return prev;
+              });
             });
-          });
 
-          // Force refresh of display sets to update UI
-          const currentDisplaySets = displaySetService.activeDisplaySets;
-          const mappedDisplaySets = mapDisplaySetsWithState(
-            currentDisplaySets,
-            displaySetsLoadingState,
-            thumbnailImageSrcMap,
-            viewports
-          );
-
-          if (!customMapDisplaySets) {
-            sortStudyInstances(mappedDisplaySets);
-          }
-
-          setDisplaySets(mappedDisplaySets);
-
-          // Automatically load SEG display sets into different viewports
-          setTimeout(async () => {
-            const { viewportGridService } = servicesManager.services;
-            const gridState = viewportGridService.getState();
-
-            // Get all available viewport IDs from the Map
-            const allViewportIds = Array.from(gridState.viewports.keys());
-
-            if (allViewportIds.length === 0) {
-              console.warn('No viewports available for segmentation loading');
-              return;
-            }
-
-            console.log('Available viewports:', allViewportIds);
-
-            // Find newly created SEG display sets
+            // Force refresh of display sets to update UI
             const currentDisplaySets = displaySetService.activeDisplaySets;
-            const segDisplaySets = currentDisplaySets.filter(
-              ds =>
-                ds.Modality === 'SEG' &&
-                !existingSeriesMap.has(`${ds.StudyInstanceUID}_${ds.SeriesInstanceUID}`)
+            const mappedDisplaySets = mapDisplaySetsWithState(
+              currentDisplaySets,
+              displaySetsLoadingState,
+              thumbnailImageSrcMap,
+              viewports
             );
 
-            console.log(`Found ${segDisplaySets.length} new segmentation(s) to load`);
-
-            // Load each segmentation into a different viewport
-            for (let i = 0; i < segDisplaySets.length; i++) {
-              const segDisplaySet = segDisplaySets[i];
-              // Cycle through viewports if there are more segmentations than viewports
-              const viewportId = allViewportIds[i % allViewportIds.length];
-
-              try {
-                await commandsManager.run('hydrateSecondaryDisplaySet', {
-                  displaySet: segDisplaySet,
-                  viewportId: viewportId,
-                });
-                console.log(
-                  `✓ Auto-loaded segmentation ${i + 1}/${segDisplaySets.length}: ${segDisplaySet.SeriesInstanceUID} into viewport ${viewportId}`
-                );
-              } catch (error) {
-                console.warn(
-                  `Failed to auto-load segmentation ${segDisplaySet.SeriesInstanceUID}:`,
-                  error
-                );
-              }
+            if (!customMapDisplaySets) {
+              sortStudyInstances(mappedDisplaySets);
             }
-          }, 500);
-        }, 200);
-      }
 
-      uiNotificationService.show({
-        title: 'Segmentation',
-        message: `Successfully loaded ${files.length} segmentation file(s) from ${studies?.length || 0} study(ies)`,
-        type: 'success',
-      });
+            setDisplaySets(mappedDisplaySets);
 
-      // Mark segmentation as completed
-      setIsSegmented(true);
-      if (segmentationKey) {
-        sessionStorage.setItem(segmentationKey, 'true');
-      }
-    } catch (error) {
-      console.error('Failed to fetch segmentation from backend:', error);
-      uiNotificationService.show({
-        title: 'Segmentation',
-        message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
-        type: 'error',
-      });
-    } finally {
-      setIsSegmenting(false);
-    }
-  }, [
-    sessionID,
-    servicesManager,
-    displaySetService,
-    mapDisplaySetsWithState,
-    displaySetsLoadingState,
-    thumbnailImageSrcMap,
-    viewports,
-    customMapDisplaySets,
-    segmentationKey,
-    commandsManager,
-  ]);
+            setSegmentationStage('Segmentation ready');
+            setSegmentationProgress(100);
 
-  const openReportFromBackend = useCallback(async () => {
-    if (!sessionID) {
-      console.warn('No session ID available');
-      return;
-    }
+            // Automatically load SEG display sets into different viewports
+            setTimeout(async () => {
+              const { viewportGridService } = servicesManager.services;
+              const gridState = viewportGridService.getState();
 
-    const { uiNotificationService } = servicesManager.services;
+              // Get all available viewport IDs from the Map
+              const allViewportIds = Array.from(gridState.viewports.keys());
 
-    setIsGeneratingReport(true);
-    try {
-      // Check if segmentation has been done, if not, call it first
-      if (!isSegmented) {
+              if (allViewportIds.length === 0) {
+                console.warn('No viewports available for segmentation loading');
+                return;
+              }
+
+              console.log('Available viewports:', allViewportIds);
+
+              // Find newly created SEG display sets
+              const currentDisplaySets = displaySetService.activeDisplaySets;
+              const segDisplaySets = currentDisplaySets.filter(
+                ds =>
+                  ds.Modality === 'SEG' &&
+                  !existingSeriesMap.has(`${ds.StudyInstanceUID}_${ds.SeriesInstanceUID}`)
+              );
+
+              console.log(`Found ${segDisplaySets.length} new segmentation(s) to load`);
+
+              // Load each segmentation into a different viewport
+              for (let i = 0; i < segDisplaySets.length; i++) {
+                const segDisplaySet = segDisplaySets[i];
+                // Cycle through viewports if there are more segmentations than viewports
+                const viewportId = allViewportIds[i % allViewportIds.length];
+
+                try {
+                  await commandsManager.run('hydrateSecondaryDisplaySet', {
+                    displaySet: segDisplaySet,
+                    viewportId: viewportId,
+                  });
+                  console.log(
+                    `✓ Auto-loaded segmentation ${i + 1}/${segDisplaySets.length}: ${segDisplaySet.SeriesInstanceUID} into viewport ${viewportId}`
+                  );
+                } catch (error) {
+                  console.warn(
+                    `Failed to auto-load segmentation ${segDisplaySet.SeriesInstanceUID}:`,
+                    error
+                  );
+                }
+              }
+            }, 500);
+          }, 200);
+        }
+
         uiNotificationService.show({
-          title: 'Report',
-          message: 'Segmentation not done yet. Running segmentation first...',
-          type: 'info',
+          title: 'Segmentation',
+          message: `Successfully loaded ${files.length} segmentation file(s) from ${studies?.length || 0} study(ies)`,
+          type: 'success',
         });
 
-        await fetchSegmentationFromBackend();
+        // Mark segmentation as completed
+        setIsSegmented(true);
+        if (studyInstanceUID) {
+          const key = `dicom_segmented_${studyInstanceUID}`;
+          sessionStorage.setItem(key, 'true');
+        }
+      } catch (error) {
+        console.error('Failed to fetch segmentation from backend:', error);
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      } finally {
+        setIsSegmenting(false);
+        setSegmentationProgress(0);
+        setSegmentationStage('');
       }
+    },
+    [
+      servicesManager,
+      displaySetService,
+      mapDisplaySetsWithState,
+      displaySetsLoadingState,
+      thumbnailImageSrcMap,
+      viewports,
+      customMapDisplaySets,
+      commandsManager,
+    ]
+  );
+
+  const onDoubleClickThumbnailHandler = useCallback(
+    async displaySetInstanceUID => {
+      const customHandler = customizationService.getCustomization(
+        'studyBrowser.thumbnailDoubleClickCallback'
+      ) as CallbackCustomization;
+
+      const setupArgs = {
+        activeViewportId,
+        commandsManager,
+        servicesManager,
+        isHangingProtocolLayout,
+        appConfig: extensionManager._appConfig,
+      };
+
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
+
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
+      }
+      onDoubleClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
+    },
+    [
+      activeViewportId,
+      commandsManager,
+      servicesManager,
+      isHangingProtocolLayout,
+      customizationService,
+      extensionManager,
+      onDoubleClickThumbnailHandlerCallBack,
+    ]
+  );
+
+  const handleSegmentationClick = useCallback(
+    (segDisplaySetInstanceUID: string) => {
+      if (segDisplaySetInstanceUID) {
+        onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
+      }
+    },
+    [onDoubleClickThumbnailHandler]
+  );
+
+  const handleReportClick = useCallback(
+    async (studyInstanceUID: string) => {
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
+        return;
+      }
+
+      const { uiNotificationService, uiModalService } = servicesManager.services;
+
+      setIsGeneratingReport(true);
 
       uiNotificationService.show({
         title: 'Report',
-        message: 'Fetching report from backend...',
+        message: `Generating report for study...`,
         type: 'info',
       });
 
-      // @ts-ignore - BACKEND_API_URL is injected at build time\
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
+      try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
-      // Wrap fetch operation with retry logic
-      const response = await retryWithDelay(
-        async () => {
-          const res = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
-          if (!res.ok) {
-            throw new Error(`Backend responded with status: ${res.status}`);
-          }
-          return res;
-        },
-        3, // maxRetries
-        3000, // 3 seconds delay
-        true // suppressWarnings
-      );
+        const response = await retryWithDelay(
+          async () => {
+            const res = await fetch(
+              `${backendUrl}/generate_report?studyInstanceUID=${studyInstanceUID}`
+            );
+            if (!res.ok) {
+              throw new Error(`Backend responded with status: ${res.status}`);
+            }
+            return res;
+          },
+          3,
+          3000,
+          true
+        );
 
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
 
-      // Create a temporary anchor element to open PDF in new tab
-      // This method is more reliable and bypasses popup blockers
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the blob URL after a short delay
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-      }, 1000);
+        // Open PDF in a modal dialog
+        uiModalService.show({
+          title: 'MRI Report',
+          content: () => {
+            return React.createElement(
+              'div',
+              {
+                style: {
+                  width: '100%',
+                  height: '85vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  margin: '0',
+                  padding: '0',
+                },
+              },
+              [
+                React.createElement(
+                  'object',
+                  {
+                    key: 'pdf-viewer',
+                    data: blobUrl,
+                    type: 'application/pdf',
+                    style: { width: '100%', height: '100%', border: 'none' },
+                  },
+                  React.createElement(
+                    'div',
+                    {
+                      key: 'fallback',
+                      style: { padding: '20px', textAlign: 'center' },
+                    },
+                    [
+                      React.createElement('p', { key: 'msg' }, 'Unable to display PDF. '),
+                      React.createElement(
+                        'a',
+                        {
+                          key: 'link',
+                          href: blobUrl,
+                          target: '_blank',
+                          rel: 'noopener noreferrer',
+                          style: { color: '#5acce6', textDecoration: 'underline' },
+                        },
+                        'Click here to download the PDF.'
+                      ),
+                    ]
+                  )
+                ),
+              ]
+            );
+          },
+          contentProps: {
+            className: 'pdf-modal-content',
+            style: { maxWidth: '90vw', width: '90vw', margin: '0 auto' },
+          },
+          customClassName: 'pdf-report-modal-full-width',
+          onClose: () => {
+            // Clean up the blob URL when modal is closed
+            URL.revokeObjectURL(blobUrl);
+          },
+        });
 
       uiNotificationService.show({
         title: 'Report',
@@ -1062,24 +1195,77 @@ function PanelStudyBrowser({
           thickness="2px"
         />
         <div className="flex flex-col gap-2 p-2">
+          {isUploadingDicom && uploadProgress > 0 && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>{uploadStage}</span>
+                <span>{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
           {conversionStatus && !isConversionComplete && (
             <div className="text-primary-light px-2 text-xs">{conversionStatus}</div>
           )}
+          {isSegmenting && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>Loading segmentation...</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div className="bg-primary h-full w-full animate-pulse" />
+              </div>
+            </div>
+          )}
+          {isGeneratingReport && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>Generating report...</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div className="bg-primary h-full w-full animate-pulse" />
+              </div>
+            </div>
+          )}
+          {isSegmenting && segmentationProgress > 0 && (
+            <div className="flex flex-col gap-1 px-2">
+              <div className="flex items-center justify-between text-xs text-white">
+                <span>{segmentationStage}</span>
+                <span>{Math.round(segmentationProgress)}%</span>
+              </div>
+              <div className="bg-background h-2 w-full overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-full transition-all duration-300"
+                  style={{ width: `${segmentationProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
           <div className="flex gap-2">
             <button
-              onClick={fetchSegmentationFromBackend}
+              onClick={() => {
+                const primaryStudyInstanceUID =
+                  StudyInstanceUIDs.length > 0 ? StudyInstanceUIDs[0] : null;
+                if (primaryStudyInstanceUID) {
+                  fetchSegmentationFromBackend(primaryStudyInstanceUID);
+                }
+              }}
               disabled={
-                !sessionID ||
+                StudyInstanceUIDs.length === 0 ||
                 isUploadingDicom ||
                 !isConversionComplete ||
-                isSegmenting ||
-                isGeneratingReport
+                isSegmenting
               }
               className="bg-primary rounded px-3 py-1 text-white disabled:cursor-not-allowed disabled:opacity-50"
               title={
                 !isConversionComplete
                   ? 'Waiting for DICOM to NIfTI conversion...'
-                  : 'Run segmentation'
+                  : 'Load segmentation'
               }
             >
               {isUploadingDicom
@@ -1087,7 +1273,7 @@ function PanelStudyBrowser({
                 : !isConversionComplete
                   ? 'Converting...'
                   : isSegmenting
-                    ? 'Segmenting...'
+                    ? 'Loading...'
                     : 'Segmentation'}
             </button>
             <button
@@ -1130,6 +1316,8 @@ function PanelStudyBrowser({
         onClickUntrack={onClickUntrack}
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        onSegmentationClick={handleSegmentationClick}
+        onReportClick={handleReportClick}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
@@ -1172,11 +1360,17 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcMap, viewports) {
+function _mapDisplaySets(
+  displaySets,
+  displaySetLoadingState,
+  thumbnailImageSrcMap,
+  viewports,
+  segmentationMap?: Map<string, string>
+) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets
-    .filter(ds => !ds.excludeFromThumbnailBrowser)
+    .filter(ds => !ds.excludeFromThumbnailBrowser && !hiddenModalities.includes(ds.Modality))
     .forEach(ds => {
       const { thumbnailSrc, displaySetInstanceUID } = ds;
       const componentType = _getComponentType(ds);
@@ -1185,11 +1379,13 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
       const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
+      const segDisplaySetUID = segmentationMap?.get(ds.SeriesInstanceUID);
 
       array.push({
         displaySetInstanceUID,
         description: ds.SeriesDescription || '',
         seriesNumber: ds.SeriesNumber,
+        seriesInstanceUID: ds.SeriesInstanceUID,
         modality: ds.Modality,
         seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames,
@@ -1202,9 +1398,9 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         dragData: {
           type: 'displayset',
           displaySetInstanceUID,
-          // .. Any other data to pass
         },
         isHydratedForDerivedDisplaySet: ds.isHydrated,
+        segDisplaySetInstanceUID: segDisplaySetUID || null,
       });
     });
 

@@ -29,9 +29,11 @@ const Thumbnail = ({
   isHydratedForDerivedDisplaySet = false,
   isTracked = false,
   canReject = false,
+  segDisplaySetInstanceUID = null,
   dragData = {},
   onReject = () => {},
   onClickUntrack = () => {},
+  onSegmentationClick = null,
   ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
@@ -135,7 +137,7 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="flex h-[52px] w-[128px] flex-col justify-start pt-px">
+        <div className="flex w-[128px] flex-col justify-start pt-px">
           <Tooltip>
             <TooltipContent>{description}</TooltipContent>
             <TooltipTrigger>
@@ -157,6 +159,17 @@ const Thumbnail = ({
               </div>
             </div>
           </div>
+          {segDisplaySetInstanceUID && onSegmentationClick && (
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                onSegmentationClick(segDisplaySetInstanceUID);
+              }}
+              className="bg-primary hover:bg-primary/80 mt-1 w-full rounded py-1 text-[11px] font-semibold text-white"
+            >
+              SEG
+            </button>
+          )}
         </div>
       </div>
     );
@@ -239,6 +252,17 @@ const Thumbnail = ({
               </TooltipContent>
             </Tooltip>
           )}
+          {segDisplaySetInstanceUID && onSegmentationClick && (
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                onSegmentationClick(segDisplaySetInstanceUID);
+              }}
+              className="bg-primary hover:bg-primary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+            >
+              SEG
+            </button>
+          )}
           <ThumbnailMenuItems
             displaySetInstanceUID={displaySetInstanceUID}
             canReject={canReject}
@@ -254,7 +278,7 @@ const Thumbnail = ({
       className={classnames(
         className,
         'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
-        viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
+        viewPreset === 'thumbnails' && 'min-h-[170px] w-[135px]',
         viewPreset === 'list' && 'h-[40px] w-full'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}

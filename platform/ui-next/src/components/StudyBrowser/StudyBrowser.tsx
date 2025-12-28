@@ -17,6 +17,8 @@ const StudyBrowser = ({
   onClickThumbnail = noop,
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
+  onSegmentationClick = noop,
+  onReportClick = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
   showSettings,
@@ -46,6 +48,8 @@ const StudyBrowser = ({
               onClickThumbnail={onClickThumbnail}
               onDoubleClickThumbnail={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
+              onSegmentationClick={onSegmentationClick}
+              onReportClick={onReportClick}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
               viewPreset={viewPreset}
