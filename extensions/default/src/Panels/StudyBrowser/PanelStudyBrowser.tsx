@@ -66,7 +66,7 @@ function PanelStudyBrowser({
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
 
   const internalImageViewer = useImageViewer();
-  const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
+  const StudyInstanceUIDs = internalImageViewer?.StudyInstanceUIDs || [];
   const fetchedStudiesRef = useRef(new Set());
 
   const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
@@ -89,27 +89,37 @@ function PanelStudyBrowser({
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
   
-  // Use the primary StudyInstanceUID as the session identifier for backend API calls
-  const primaryStudyInstanceUID = StudyInstanceUIDs.length > 0 ? StudyInstanceUIDs[0] : null;
+  // Use primary StudyInstanceUID for tracking instead of sessionID
+  const primaryStudyInstanceUID = StudyInstanceUIDs?.length > 0 ? StudyInstanceUIDs[0] : null;
 
+  // Memoize keys to avoid recalculating on every render
   const uploadKey = primaryStudyInstanceUID ? `dicom_uploaded_${primaryStudyInstanceUID}` : null;
-  const hasSentDicom = uploadKey ? sessionStorage.getItem(uploadKey) === 'true' : false;
-  const [isUploadingDicom, setIsUploadingDicom] = useState(!hasSentDicom);
-
   const conversionKey = primaryStudyInstanceUID ? `nifti_converted_${primaryStudyInstanceUID}` : null;
-  const hasConverted = conversionKey ? sessionStorage.getItem(conversionKey) === 'true' : false;
-  const [isConversionComplete, setIsConversionComplete] = useState(hasConverted);
-  const [conversionStatus, setConversionStatus] = useState<string>('');
-
   const segmentationKey = primaryStudyInstanceUID ? `dicom_segmented_${primaryStudyInstanceUID}` : null;
-  const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
-  const [isSegmented, setIsSegmented] = useState(hasSegmented);
+
+  const [isUploadingDicom, setIsUploadingDicom] = useState(true);
+  const [isConversionComplete, setIsConversionComplete] = useState(false);
+  const [conversionStatus, setConversionStatus] = useState<string>('');
+  const [isSegmented, setIsSegmented] = useState(false);
   const [isSegmenting, setIsSegmenting] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [segmentationProgress, setSegmentationProgress] = useState<number>(0);
   const [segmentationStage, setSegmentationStage] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadStage, setUploadStage] = useState<string>('');
+
+  // Update states when primaryStudyInstanceUID becomes available
+  useEffect(() => {
+    if (primaryStudyInstanceUID) {
+      const hasSentDicom = sessionStorage.getItem(`dicom_uploaded_${primaryStudyInstanceUID}`) === 'true';
+      const hasConverted = sessionStorage.getItem(`nifti_converted_${primaryStudyInstanceUID}`) === 'true';
+      const hasSegmented = sessionStorage.getItem(`dicom_segmented_${primaryStudyInstanceUID}`) === 'true';
+      
+      setIsUploadingDicom(!hasSentDicom);
+      setIsConversionComplete(hasConverted);
+      setIsSegmented(hasSegmented);
+    }
+  }, [primaryStudyInstanceUID]);
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -151,7 +161,6 @@ function PanelStudyBrowser({
   );
   const uploadInProgressRef = useRef(false);
 
-  // Upload each study separately to backend
   useEffect(() => {
     const sendStudiesToBackend = async () => {
       if (StudyInstanceUIDs.length === 0) {
@@ -230,7 +239,7 @@ function PanelStudyBrowser({
       return;
     }
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
     const pollCountRef: Record<string, number> = {};
     const maxPolls = 60;
 
@@ -239,6 +248,10 @@ function PanelStudyBrowser({
       
       // Skip if already converted
       if (sessionStorage.getItem(convKey) === 'true') {
+        // Update UI if this is the primary study
+        if (studyUID === primaryStudyInstanceUID) {
+          setIsConversionComplete(true);
+        }
         return;
       }
 
@@ -268,6 +281,9 @@ function PanelStudyBrowser({
             setTimeout(() => checkConversionStatusForStudy(studyUID), 1000);
           } else {
             console.error(`Conversion status polling timed out for study ${studyUID}`);
+            if (studyUID === primaryStudyInstanceUID) {
+              setConversionStatus('Conversion taking longer than expected. Please try refreshing.');
+            }
           }
         }
       } catch (error) {
@@ -797,164 +813,24 @@ function PanelStudyBrowser({
           },
         });
 
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Report opened in new tab',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error('Failed to fetch report from backend:', error);
-      uiNotificationService.show({
-        title: 'Report',
-        message: `Failed to fetch report: ${error.message || error.toString()}`,
-        type: 'error',
-      });
-    } finally {
-      setIsGeneratingReport(false);
-    }
-  }, [sessionID, servicesManager, isSegmented, fetchSegmentationFromBackend]);
-
-
-
-  /**
-   * Alternative function that generates report, uploads PDF to parse text,
-   * prints contents to console, and focuses the user on the Chat section
-   */
-  const generateReportForChatConsole = useCallback(async () => {
-    if (!sessionID) {
-      console.warn('No session ID available');
-      return null;
-    }
-
-    const { uiNotificationService, panelService } = servicesManager.services;
-
-    setIsGeneratingReport(true);
-    try {
-      // Check if segmentation has been done, if not, call it first
-      if (!isSegmented) {
         uiNotificationService.show({
           title: 'Report',
-          message: 'Segmentation not done yet. Running segmentation first...',
-          type: 'info',
+          message: 'Report opened',
+          type: 'success',
         });
-
-        await fetchSegmentationFromBackend();
+      } catch (error) {
+        console.error('Failed to fetch report from backend:', error);
+        uiNotificationService.show({
+          title: 'Report',
+          message: `Failed to fetch report: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      } finally {
+        setIsGeneratingReport(false);
       }
-
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Generating report for chat...',
-        type: 'info',
-      });
-
-      // @ts-ignore - BACKEND_API_URL is injected at build time
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000';
-
-      // Step 1: Fetch the PDF report from backend
-      const response = await retryWithDelay(
-        async () => {
-          const res = await fetch(`${backendUrl}/generate_report?sessionID=${sessionID}`);
-          if (!res.ok) {
-            throw new Error(`Backend responded with status: ${res.status}`);
-          }
-          return res;
-        },
-        3, // maxRetries
-        3000, // 3 seconds delay
-        true // suppressWarnings
-      );
-
-      const pdfBlob = await response.blob();
-
-      // Step 2: Open PDF in new tab for user to view
-      const blobUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the blob URL after a short delay
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-      }, 1000);
-
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Report opened in new tab',
-        type: 'success',
-      });
-
-      // Step 3: Upload PDF to /api/upload to parse text for chat
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Parsing report for chat...',
-        type: 'info',
-      });
-
-      const pdfFile = new File([pdfBlob], `report_${sessionID}.pdf`, { type: 'application/pdf' });
-      const formData = new FormData();
-      formData.append('file', pdfFile);
-
-      // @ts-ignore - CHAT_API_URL is injected at build time
-      const chatApiUrl = process.env.REACT_APP_CHAT_API_URL || '';
-      const uploadUrl = chatApiUrl ? `${chatApiUrl}/api/upload` : '/api/upload';
-
-      const uploadResponse = await fetch(uploadUrl, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload failed with status: ${uploadResponse.status}`);
-      }
-
-      const uploadData = await uploadResponse.json();
-      const reportContent = uploadData.pdf?.text || uploadData.text || '[Report uploaded successfully]';
-      const chatSessionId = uploadData.sessionId;
-
-      // Store chat session ID in sessionStorage for ChatSection to use
-      if (chatSessionId) {
-        sessionStorage.setItem('chat_session_id', chatSessionId);
-        console.log('[Report] Chat session ID stored:', chatSessionId);
-      }
-
-      // Print contents to console
-      console.log('='.repeat(60));
-      console.log('GENERATED REPORT CONTENT');
-      console.log('='.repeat(60));
-      console.log(reportContent);
-      console.log('='.repeat(60));
-      console.log('Chat Session ID:', chatSessionId);
-
-      // Focus user on Chat section
-      if (panelService) {
-        const chatPanelId = '@semenoflabs/extension-side-chat.panelModule.sideChat';
-        panelService.activatePanel(chatPanelId, true);
-      }
-
-      uiNotificationService.show({
-        title: 'Report',
-        message: 'Report ready! You can now chat about it.',
-        type: 'success',
-      });
-
-      return { text: reportContent, sessionId: chatSessionId };
-    } catch (error) {
-      console.error('Failed to generate report for chat:', error);
-      uiNotificationService.show({
-        title: 'Report',
-        message: `Failed to generate report: ${error.message || error.toString()}`,
-        type: 'error',
-      });
-      return null;
-    } finally {
-      setIsGeneratingReport(false);
-    }
-  }, [sessionID, servicesManager, isSegmented, fetchSegmentationFromBackend]);
+    },
+    [servicesManager, fetchSegmentationFromBackend]
+  );
 
   // ~~ studyDisplayList
   useEffect(() => {

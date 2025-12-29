@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import filesToStudies from './Local/filesToStudies';
 
 const NotFoundServer = ({
@@ -139,6 +139,11 @@ const Home = () => {
       const query = new URLSearchParams();
       studyInstanceUIDs.forEach(id => query.append('StudyInstanceUIDs', id));
       query.append('datasources', 'dicomlocal');
+
+      if (target === 'segmentation') {
+        const sessionID = utils.uuidv4();
+        query.append('sessionID', sessionID);
+      }
 
       setErrorMessage('');
       setQueuedFilesCount(0);
