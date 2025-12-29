@@ -1,12 +1,13 @@
 import requests
 import zipfile
 from pathlib import Path
-import uuid
 
 # Base URL
 BASE_URL = "http://localhost:8000"
 
-SESSION_ID = str(uuid.uuid4())
+# Example Study Instance UID (in real usage, this would be from actual DICOM files)
+STUDY_INSTANCE_UID = "1.2.840.113619.2.55.3.604688119.969.1255545756.914"
+
 def test_upload_dicom():
     """Test uploading a DICOM zip file"""
     # Create a dummy zip file for testing
@@ -14,14 +15,12 @@ def test_upload_dicom():
     with zipfile.ZipFile(test_zip, 'w') as zf:
         zf.writestr("dummy.dcm", "dummy dicom content")
     
-    # Generate a test session ID
+    print(f"Using Study Instance UID: {STUDY_INSTANCE_UID}")
     
-    print(f"Using session ID: {SESSION_ID}")
-    
-    # Upload the file with session ID
+    # Upload the file with studyInstanceUIDs
     with open(test_zip, 'rb') as f:
         files = {'file': ('test_dicom.zip', f, 'application/zip')}
-        data = {'sessionID': SESSION_ID}
+        data = {'studyInstanceUIDs': STUDY_INSTANCE_UID}
         response = requests.post(f"{BASE_URL}/upload_dicom", files=files, data=data)
     
     print("Upload Response:", response.json())
@@ -29,11 +28,9 @@ def test_upload_dicom():
 
 def test_download_segmentation():
     """Test downloading segmentations.zip"""
-    # Generate a test session ID
-    SESSION_ID
-    print(f"Using session ID: {SESSION_ID}")
+    print(f"Using Study Instance UID: {STUDY_INSTANCE_UID}")
     
-    response = requests.get(f"{BASE_URL}/segmentation", params={"sessionID": SESSION_ID})
+    response = requests.get(f"{BASE_URL}/segmentation", params={"studyInstanceUIDs": STUDY_INSTANCE_UID})
     
     if response.status_code == 200:
         # Save the downloaded file
@@ -45,11 +42,9 @@ def test_download_segmentation():
 
 def test_download_report():
     """Test downloading mri_report.pdf"""
-    # Generate a test session ID
+    print(f"Using Study Instance UID: {STUDY_INSTANCE_UID}")
     
-    print(f"Using session ID: {SESSION_ID}")
-    
-    response = requests.get(f"{BASE_URL}/generate_report", params={"sessionID": SESSION_ID})
+    response = requests.get(f"{BASE_URL}/generate_report", params={"studyInstanceUIDs": STUDY_INSTANCE_UID})
     
     if response.status_code == 200:
         # Save the downloaded file
@@ -59,9 +54,23 @@ def test_download_report():
     else:
         print("Download Response:", response.json())
 
+def test_check_conversion_status():
+    """Test checking conversion status"""
+    print(f"Using Study Instance UID: {STUDY_INSTANCE_UID}")
+    
+    response = requests.get(f"{BASE_URL}/check_conversion_status/{STUDY_INSTANCE_UID}")
+    
+    if response.status_code == 200:
+        print("Conversion Status:", response.json())
+    else:
+        print("Error Response:", response.json())
+
 if __name__ == "__main__":
     print("Testing DICOM upload...")
     test_upload_dicom()
+    
+    print("\nTesting conversion status check...")
+    test_check_conversion_status()
     
     print("\nTesting segmentation download...")
     test_download_segmentation()

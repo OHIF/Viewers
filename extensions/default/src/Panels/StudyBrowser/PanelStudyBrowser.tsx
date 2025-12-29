@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils, DicomMetadataStore } from '@ohif/core';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
@@ -63,7 +63,6 @@ function PanelStudyBrowser({
   const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
 
   const internalImageViewer = useImageViewer();
@@ -89,18 +88,20 @@ function PanelStudyBrowser({
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
-  const sessionID = searchParams.get('sessionID');
+  
+  // Use the primary StudyInstanceUID as the session identifier for backend API calls
+  const primaryStudyInstanceUID = StudyInstanceUIDs.length > 0 ? StudyInstanceUIDs[0] : null;
 
-  const uploadKey = sessionID ? `dicom_uploaded_${sessionID}` : null;
+  const uploadKey = primaryStudyInstanceUID ? `dicom_uploaded_${primaryStudyInstanceUID}` : null;
   const hasSentDicom = uploadKey ? sessionStorage.getItem(uploadKey) === 'true' : false;
   const [isUploadingDicom, setIsUploadingDicom] = useState(!hasSentDicom);
 
-  const conversionKey = sessionID ? `nifti_converted_${sessionID}` : null;
+  const conversionKey = primaryStudyInstanceUID ? `nifti_converted_${primaryStudyInstanceUID}` : null;
   const hasConverted = conversionKey ? sessionStorage.getItem(conversionKey) === 'true' : false;
   const [isConversionComplete, setIsConversionComplete] = useState(hasConverted);
   const [conversionStatus, setConversionStatus] = useState<string>('');
 
-  const segmentationKey = sessionID ? `dicom_segmented_${sessionID}` : null;
+  const segmentationKey = primaryStudyInstanceUID ? `dicom_segmented_${primaryStudyInstanceUID}` : null;
   const hasSegmented = segmentationKey ? sessionStorage.getItem(segmentationKey) === 'true' : false;
   const [isSegmented, setIsSegmented] = useState(hasSegmented);
   const [isSegmenting, setIsSegmenting] = useState(false);
@@ -204,7 +205,7 @@ function PanelStudyBrowser({
 
   // Poll conversion status after DICOM upload
   useEffect(() => {
-    if (!sessionID || isUploadingDicom || isConversionComplete) {
+    if (!primaryStudyInstanceUID || isUploadingDicom || isConversionComplete) {
       return;
     }
 
@@ -221,7 +222,7 @@ function PanelStudyBrowser({
 
     const checkConversionStatus = async () => {
       try {
-        const response = await fetch(`${backendUrl}/check_conversion_status/${sessionID}`);
+        const response = await fetch(`${backendUrl}/check_conversion_status/${primaryStudyInstanceUID}`);
         const data = await response.json();
 
         console.log('Conversion status:', data);
@@ -258,13 +259,13 @@ function PanelStudyBrowser({
     }, 2000); // Wait 2 seconds after upload before starting to poll
 
     return () => clearTimeout(timeoutId);
-  }, [sessionID, isUploadingDicom, isConversionComplete, conversionKey]);
+  }, [primaryStudyInstanceUID, isUploadingDicom, isConversionComplete, conversionKey]);
 
   const fetchSegmentationFromBackend = useCallback(
-    async (studyInstanceUID: string) => {
+    async (studyInstanceUID: string): Promise<boolean> => {
       if (!studyInstanceUID) {
         console.warn('No StudyInstanceUID available');
-        return;
+        return false;
       }
 
       const { uiNotificationService } = servicesManager.services;
@@ -284,7 +285,7 @@ function PanelStudyBrowser({
         const response = await retryWithDelay(
           async () => {
             const res = await fetch(
-              `${backendUrl}/segmentation?studyInstanceUID=${studyInstanceUID}`
+              `${backendUrl}/segmentation?studyInstanceUIDs=${studyInstanceUID}`
             );
             if (!res.ok) {
               throw new Error(`Backend responded with status: ${res.status}`);
@@ -326,7 +327,7 @@ function PanelStudyBrowser({
             message: 'No segmentation files found in the archive',
             type: 'warning',
           });
-          return;
+          return false;
         }
 
         setSegmentationStage('Integrating segmentation into viewer...');
@@ -531,6 +532,7 @@ function PanelStudyBrowser({
           const key = `dicom_segmented_${studyInstanceUID}`;
           sessionStorage.setItem(key, 'true');
         }
+        return true;
       } catch (error) {
         console.error('Failed to fetch segmentation from backend:', error);
         uiNotificationService.show({
@@ -538,6 +540,7 @@ function PanelStudyBrowser({
           message: `Failed to fetch segmentation: ${error.message || error.toString()}`,
           type: 'error',
         });
+        return false;
       } finally {
         setIsSegmenting(false);
         setSegmentationProgress(0);
@@ -606,6 +609,36 @@ function PanelStudyBrowser({
 
       const { uiNotificationService, uiModalService } = servicesManager.services;
 
+      // Check if segmentation has been done for this study
+      const segKey = `dicom_segmented_${studyInstanceUID}`;
+      const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
+
+      if (!isStudySegmented) {
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Segmentation required. Running segmentation first...',
+          type: 'info',
+        });
+
+        // Run segmentation first and wait for it to complete
+        const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+        
+        if (!segmentationSuccess) {
+          uiNotificationService.show({
+            title: 'Report',
+            message: 'Cannot generate report: Segmentation failed',
+            type: 'error',
+          });
+          return;
+        }
+
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Segmentation complete. Now generating report...',
+          type: 'info',
+        });
+      }
+
       setIsGeneratingReport(true);
 
       uiNotificationService.show({
@@ -620,7 +653,7 @@ function PanelStudyBrowser({
         const response = await retryWithDelay(
           async () => {
             const res = await fetch(
-              `${backendUrl}/generate_report?studyInstanceUID=${studyInstanceUID}`
+              `${backendUrl}/generate_report?studyInstanceUIDs=${studyInstanceUID}`
             );
             if (!res.ok) {
               throw new Error(`Backend responded with status: ${res.status}`);
@@ -712,7 +745,7 @@ function PanelStudyBrowser({
         setIsGeneratingReport(false);
       }
     },
-    [servicesManager]
+    [servicesManager, fetchSegmentationFromBackend]
   );
 
   // ~~ studyDisplayList
