@@ -20,6 +20,7 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   onSegmentationClick,
+  onRunSegmentation,
   onReportClick,
   viewPreset = 'thumbnails',
   ThumbnailMenuItems,
@@ -69,6 +70,17 @@ const StudyItem = ({
                 <div>{numInstances}</div>
               </div>
               <div className="ml-2 flex items-center gap-2">
+                {onRunSegmentation && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      onRunSegmentation(StudyInstanceUID);
+                    }}
+                    className="bg-primary hover:bg-primary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                  >
+                    Segment
+                  </button>
+                )}
                 {onReportClick && (
                   <button
                     onClick={e => {
