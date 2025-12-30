@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.112...v3.12.0-beta.113) (2025-12-19)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.111...v3.12.0-beta.112) (2025-12-19)
+
+
+### Bug Fixes
+
+* pass metadata to viewport orientation matching ([#5667](https://github.com/OHIF/Viewers/issues/5667)) ([cd253f2](https://github.com/OHIF/Viewers/commit/cd253f20bde68f33a01ac1fe5e1cf6b987d9d5e2))
+
+
+
+
+
 # [3.12.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.110...v3.12.0-beta.111) (2025-12-18)
 
 
