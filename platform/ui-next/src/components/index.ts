@@ -91,6 +91,7 @@ import {
   useSegmentationTableContext,
   useSegmentationExpanded,
   useSegmentStatistics,
+  SegmentationTableProvider,
 } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
@@ -127,9 +128,15 @@ export * from './AllInOneMenu';
 export { default as LineChart } from './LineChart';
 export { default as InvestigationalUseDialog } from './InvestigationalUseDialog';
 export { default as LabellingFlow } from './Labelling';
+export type { SegmentationTableContextType } from './SegmentationTable';
 
 // Segmentation Context Exports
-export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
+export {
+  useSegmentationTableContext,
+  useSegmentationExpanded,
+  useSegmentStatistics,
+  SegmentationTableProvider,
+};
 
 export {
   Numeric,
@@ -269,5 +276,5 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
-  LayoutSelector
+  LayoutSelector,
 };
