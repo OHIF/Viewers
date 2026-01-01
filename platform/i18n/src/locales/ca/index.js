@@ -2,14 +2,20 @@ import AboutModal from './AboutModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
+import ContextMenu from './ContextMenu.json';
 import DataSourceConfiguration from './DataSourceConfiguration.json';
 import DatePicker from './DatePicker.json';
+import Dialog from './Dialog.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
+import Local from './Local.json';
 import MeasurementTable from './MeasurementTable.json';
 import DataRow from './DataRow.json';
+import Modals from './Modals.json';
 import Modes from './Modes.json';
+import Notification from './Notification.json';
+import PatientInfo from './PatientInfo.json';
 import SegmentationPanel from './SegmentationPanel.json';
 import SidePanel from './SidePanel.json';
 import StudyBrowser from './StudyBrowser.json';
@@ -38,14 +44,20 @@ export default {
     Buttons,
     CineDialog,
     Common,
+    ContextMenu,
     DataSourceConfiguration,
     DatePicker,
+    Dialog,
     ErrorBoundary,
     Header,
     HotkeysValidators,
+    Local,
     MeasurementTable,
     DataRow,
+    Modals,
     Modes,
+    Notification,
+    PatientInfo,
     SegmentationPanel,
     SidePanel,
     StudyBrowser,

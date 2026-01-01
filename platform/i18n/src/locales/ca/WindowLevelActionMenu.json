@@ -15,5 +15,10 @@
   "Ambient": "Ambiental",
   "Diffuse": "Difús",
   "Specular": "Especular",
-  "Shift": "Desplaçament"
+  "Shift": "Desplaçament",
+  "Soft tissue": "Teixit tou",
+  "Lung": "Pulmó",
+  "Liver": "Fetge",
+  "Bone": "Os",
+  "Brain": "Cervell"
 }

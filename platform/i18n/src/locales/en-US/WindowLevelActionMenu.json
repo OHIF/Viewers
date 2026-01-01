@@ -15,5 +15,10 @@
   "Ambient": "Ambient",
   "Diffuse": "Diffuse",
   "Specular": "Specular",
-  "Shift": "Shift"
+  "Shift": "Shift",
+  "Soft tissue": "Soft tissue",
+  "Lung": "Lung",
+  "Liver": "Liver",
+  "Bone": "Bone",
+  "Brain": "Brain"
 }
