@@ -11,6 +11,7 @@ import ru from './ru/';
 import vi from './vi/';
 import zh from './zh/';
 import test_lng from './test-LNG/';
+import ca from './ca/';
 
 export default {
   ...ar,
@@ -26,4 +27,5 @@ export default {
   ...vi,
   ...zh,
   ...test_lng,
+  ...ca,
 };

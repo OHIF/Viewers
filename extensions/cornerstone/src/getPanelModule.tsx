@@ -110,7 +110,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       name: 'panelSegmentationWithToolsContour',
       iconName: 'tab-contours',
       iconLabel: 'Segmentation',
-      label: i18n.t('SegmentationPanel:Contour'),
+      label: i18n.t('SegmentationPanel:Contours segmentations'),
       component: props =>
         wrappedPanelSegmentationWithTools({
           ...props,
