@@ -27,6 +27,7 @@ const StudyItem = ({
   ThumbnailMenuItems,
   StudyMenuItems,
   StudyInstanceUID,
+  isProcessing = false,
 }: withAppTypes) => {
   return (
     <Accordion
@@ -77,7 +78,8 @@ const StudyItem = ({
                       e.stopPropagation();
                       onRunSegmentation(StudyInstanceUID);
                     }}
-                    className="bg-primary hover:bg-primary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    disabled={isProcessing}
+                    className="bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Segment
                   </button>
@@ -88,7 +90,8 @@ const StudyItem = ({
                       e.stopPropagation();
                       onReportClick(StudyInstanceUID);
                     }}
-                    className="bg-secondary hover:bg-secondary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    disabled={isProcessing}
+                    className="bg-secondary hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Report
                   </button>
@@ -99,7 +102,8 @@ const StudyItem = ({
                       e.stopPropagation();
                       onChatWithReportClick(StudyInstanceUID);
                     }}
-                    className="bg-accent hover:bg-accent/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    disabled={isProcessing}
+                    className="bg-accent hover:bg-accent/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Chat
                   </button>
@@ -148,6 +152,7 @@ StudyItem.propTypes = {
   viewPreset: PropTypes.string,
   StudyMenuItems: PropTypes.func,
   StudyInstanceUID: PropTypes.string,
+  isProcessing: PropTypes.bool,
 };
 
 export { StudyItem };

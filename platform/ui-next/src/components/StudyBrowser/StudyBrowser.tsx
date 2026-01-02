@@ -27,6 +27,7 @@ const StudyBrowser = ({
   viewPresets,
   ThumbnailMenuItems,
   StudyMenuItems,
+  processingStudyUID,
 }: withAppTypes) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -36,6 +37,7 @@ const StudyBrowser = ({
     return tabData?.studies?.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
+        const isProcessing = processingStudyUID === studyInstanceUid;
         return (
           <React.Fragment key={studyInstanceUid}>
             <StudyItem
@@ -60,6 +62,7 @@ const StudyBrowser = ({
               ThumbnailMenuItems={ThumbnailMenuItems}
               StudyMenuItems={StudyMenuItems}
               StudyInstanceUID={studyInstanceUid}
+              isProcessing={isProcessing}
             />
           </React.Fragment>
         );

@@ -107,6 +107,12 @@ function PanelStudyBrowser({
   const [segmentationStage, setSegmentationStage] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadStage, setUploadStage] = useState<string>('');
+  
+  // Cache for generated reports (studyUID -> blob URL)
+  const reportCacheRef = useRef<Map<string, string>>(new Map());
+  
+  // Track which study is currently being processed
+  const [processingStudyUID, setProcessingStudyUID] = useState<string | null>(null);
 
   // Update states when primaryStudyInstanceUID becomes available
   useEffect(() => {
@@ -120,6 +126,18 @@ function PanelStudyBrowser({
       setIsSegmented(hasSegmented);
     }
   }, [primaryStudyInstanceUID]);
+
+  // Cleanup cached blob URLs on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Revoke all cached blob URLs
+      reportCacheRef.current.forEach((blobUrl, studyUID) => {
+        URL.revokeObjectURL(blobUrl);
+        console.log(`Cleaned up cached report for study ${studyUID}`);
+      });
+      reportCacheRef.current.clear();
+    };
+  }, []);
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -318,6 +336,7 @@ function PanelStudyBrowser({
       const { uiNotificationService } = servicesManager.services;
 
       setIsSegmenting(true);
+      setProcessingStudyUID(studyInstanceUID);
       setSegmentationProgress(0);
       setSegmentationStage('Requesting segmentation from backend...');
       try {
@@ -590,6 +609,7 @@ function PanelStudyBrowser({
         return false;
       } finally {
         setIsSegmenting(false);
+        setProcessingStudyUID(null);
         setSegmentationProgress(0);
         setSegmentationStage('');
       }
@@ -693,6 +713,83 @@ function PanelStudyBrowser({
 
       const { uiNotificationService, uiModalService } = servicesManager.services;
 
+      // Check if we have a cached report for this study
+      const cachedBlobUrl = reportCacheRef.current.get(studyInstanceUID);
+      
+      if (cachedBlobUrl) {
+        console.log(`Using cached report for study ${studyInstanceUID}`);
+        
+        // Open cached PDF in modal immediately
+        uiModalService.show({
+          title: 'MRI Report',
+          content: () => {
+            return React.createElement(
+              'div',
+              {
+                style: {
+                  width: '100%',
+                  height: '85vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  margin: '0',
+                  padding: '0',
+                },
+              },
+              [
+                React.createElement(
+                  'object',
+                  {
+                    key: 'pdf-viewer',
+                    data: cachedBlobUrl,
+                    type: 'application/pdf',
+                    style: { width: '100%', height: '100%', border: 'none' },
+                  },
+                  React.createElement(
+                    'div',
+                    {
+                      key: 'fallback',
+                      style: { padding: '20px', textAlign: 'center' },
+                    },
+                    [
+                      React.createElement('p', { key: 'msg' }, 'Unable to display PDF. '),
+                      React.createElement(
+                        'a',
+                        {
+                          key: 'link',
+                          href: cachedBlobUrl,
+                          target: '_blank',
+                          rel: 'noopener noreferrer',
+                          style: { color: '#5acce6', textDecoration: 'underline' },
+                        },
+                        'Click here to download the PDF.'
+                      ),
+                    ]
+                  )
+                ),
+              ]
+            );
+          },
+          contentProps: {
+            className: 'pdf-modal-content',
+            style: { maxWidth: '90vw', width: '90vw', margin: '0 auto' },
+          },
+          customClassName: 'pdf-report-modal-full-width',
+          onClose: () => {
+            // Note: We don't revoke the cached blob URL here
+            // It will be cleaned up when the component unmounts
+          },
+        });
+
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Report opened from cache',
+          type: 'success',
+        });
+        
+        return;
+      }
+
+      // No cached report, proceed with generation
       // Check if segmentation has been done for this study
       const segKey = `dicom_segmented_${studyInstanceUID}`;
       const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
@@ -724,6 +821,7 @@ function PanelStudyBrowser({
       }
 
       setIsGeneratingReport(true);
+      setProcessingStudyUID(studyInstanceUID);
 
       uiNotificationService.show({
         title: 'Report',
@@ -751,6 +849,10 @@ function PanelStudyBrowser({
 
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
+        
+        // Cache the blob URL for this study
+        reportCacheRef.current.set(studyInstanceUID, blobUrl);
+        console.log(`Cached report for study ${studyInstanceUID}`);
 
         // Open PDF in a modal dialog
         uiModalService.show({
@@ -808,14 +910,14 @@ function PanelStudyBrowser({
           },
           customClassName: 'pdf-report-modal-full-width',
           onClose: () => {
-            // Clean up the blob URL when modal is closed
-            URL.revokeObjectURL(blobUrl);
+            // Note: We don't revoke the cached blob URL here
+            // It will be cleaned up when the component unmounts
           },
         });
 
         uiNotificationService.show({
           title: 'Report',
-          message: 'Report opened',
+          message: 'Report generated and opened',
           type: 'success',
         });
       } catch (error) {
@@ -827,6 +929,7 @@ function PanelStudyBrowser({
         });
       } finally {
         setIsGeneratingReport(false);
+        setProcessingStudyUID(null);
       }
     },
     [servicesManager, fetchSegmentationFromBackend]
@@ -867,33 +970,58 @@ function PanelStudyBrowser({
       }
 
       setIsGeneratingReport(true);
+      setProcessingStudyUID(studyInstanceUID);
 
       try {
-        uiNotificationService.show({
-          title: 'Chat',
-          message: 'Generating report for chat...',
-          type: 'info',
-        });
+        let pdfBlob: Blob;
+        
+        // Check if we have a cached report
+        const cachedBlobUrl = reportCacheRef.current.get(studyInstanceUID);
+        
+        if (cachedBlobUrl) {
+          console.log(`Using cached report for chat (study ${studyInstanceUID})`);
+          uiNotificationService.show({
+            title: 'Chat',
+            message: 'Using cached report for chat...',
+            type: 'info',
+          });
+          
+          // Fetch the blob from the cached URL
+          const response = await fetch(cachedBlobUrl);
+          pdfBlob = await response.blob();
+        } else {
+          // No cache, fetch from backend
+          uiNotificationService.show({
+            title: 'Chat',
+            message: 'Generating report for chat...',
+            type: 'info',
+          });
 
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
-        // Step 1: Fetch the PDF report from backend
-        const response = await retryWithDelay(
-          async () => {
-            const res = await fetch(
-              `${backendUrl}/generate_report?studyInstanceUIDs=${studyInstanceUID}`
-            );
-            if (!res.ok) {
-              throw new Error(`Backend responded with status: ${res.status}`);
-            }
-            return res;
-          },
-          3,
-          3000,
-          true
-        );
+          // Step 1: Fetch the PDF report from backend
+          const response = await retryWithDelay(
+            async () => {
+              const res = await fetch(
+                `${backendUrl}/generate_report?studyInstanceUIDs=${studyInstanceUID}`
+              );
+              if (!res.ok) {
+                throw new Error(`Backend responded with status: ${res.status}`);
+              }
+              return res;
+            },
+            3,
+            3000,
+            true
+          );
 
-        const pdfBlob = await response.blob();
+          pdfBlob = await response.blob();
+          
+          // Cache the blob URL for future use
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          reportCacheRef.current.set(studyInstanceUID, blobUrl);
+          console.log(`Cached report for study ${studyInstanceUID}`);
+        }
 
         // Step 2: Upload PDF to /api/upload to parse text for chat
         uiNotificationService.show({
@@ -955,6 +1083,7 @@ function PanelStudyBrowser({
         });
       } finally {
         setIsGeneratingReport(false);
+        setProcessingStudyUID(null);
       }
     },
     [servicesManager, fetchSegmentationFromBackend]
@@ -1341,6 +1470,7 @@ function PanelStudyBrowser({
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
+        processingStudyUID={processingStudyUID}
         ThumbnailMenuItems={MoreDropdownMenu({
           commandsManager,
           servicesManager,
