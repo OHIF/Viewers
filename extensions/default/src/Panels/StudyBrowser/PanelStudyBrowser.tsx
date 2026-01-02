@@ -912,7 +912,7 @@ function PanelStudyBrowser({
         sessionStorage.setItem('current_chat_study_uid', studyInstanceUID);
 
         const chatApiUrl = process.env.REACT_APP_CHAT_API_URL || '';
-        const uploadUrl = chatApiUrl ? `${chatApiUrl}/api/upload` : '/api/upload';
+        const uploadUrl = chatApiUrl ? `${chatApiUrl}/upload` : '/upload';
         // console.log('[Chat] Upload URL:', uploadUrl);
 
         const uploadResponse = await fetch(uploadUrl, {
