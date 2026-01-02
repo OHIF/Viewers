@@ -80,7 +80,18 @@ function Local({ modePath }: LocalProps) {
   );
 
   const onDrop = async acceptedFiles => {
-    const studies = await filesToStudies(acceptedFiles, dataSource);
+    // Filter out DICOMDIR files and PDFs
+    const filteredFiles = acceptedFiles.filter(file => {
+      const fileName = file.name.toUpperCase();
+      return fileName !== 'DICOMDIR' && !fileName.endsWith('.PDF');
+    });
+
+    if (!filteredFiles.length) {
+      console.warn('No valid DICOM files found (DICOMDIR and PDF files are ignored).');
+      return;
+    }
+
+    const studies = await filesToStudies(filteredFiles, dataSource);
 
     const query = new URLSearchParams();
 

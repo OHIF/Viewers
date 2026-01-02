@@ -83,11 +83,22 @@ const Home = () => {
         return;
       }
 
+      // Filter out DICOMDIR files and PDFs
+      const filteredFiles = acceptedFiles.filter(file => {
+        const fileName = file.name.toUpperCase();
+        return fileName !== 'DICOMDIR' && !fileName.endsWith('.PDF');
+      });
+
+      if (!filteredFiles.length) {
+        setErrorMessage('No valid DICOM files found (DICOMDIR and PDF files are ignored).');
+        return;
+      }
+
       setErrorMessage('');
       setIsProcessing(true);
 
       try {
-        const studies = await filesToStudies(acceptedFiles);
+        const studies = await filesToStudies(filteredFiles);
 
         if (!studies?.length) {
           setErrorMessage('Nie udało się wczytać plików DICOM.');

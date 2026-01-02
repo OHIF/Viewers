@@ -19,8 +19,19 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
+    // Filter out DICOMDIR files and PDFs
+    const filteredFiles = acceptedFiles.filter(file => {
+      const fileName = file.name.toUpperCase();
+      return fileName !== 'DICOMDIR' && !fileName.endsWith('.PDF');
+    });
+
+    if (!filteredFiles.length) {
+      console.warn('No valid DICOM files found (DICOMDIR and PDF files are ignored).');
+      return;
+    }
+
     onStarted();
-    setDicomFileUploaderArr(acceptedFiles.map(file => new DicomFileUploader(file, dataSource)));
+    setDicomFileUploaderArr(filteredFiles.map(file => new DicomFileUploader(file, dataSource)));
   }, []);
 
   const getDropZoneComponent = (): ReactElement => {

@@ -832,6 +832,134 @@ function PanelStudyBrowser({
     [servicesManager, fetchSegmentationFromBackend]
   );
 
+  // Handler for "Chat with Report" - generates report and uploads to chat
+  const handleChatWithReport = useCallback(
+    async (studyInstanceUID: string) => {
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
+        return;
+      }
+
+      const { uiNotificationService, panelService } = servicesManager.services;
+
+      // Check if segmentation has been done for this study
+      const segKey = `dicom_segmented_${studyInstanceUID}`;
+      const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
+
+      if (!isStudySegmented) {
+        uiNotificationService.show({
+          title: 'Chat',
+          message: 'Segmentation required. Running segmentation first...',
+          type: 'info',
+        });
+
+        // Run segmentation first and wait for it to complete
+        const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+        
+        if (!segmentationSuccess) {
+          uiNotificationService.show({
+            title: 'Chat',
+            message: 'Cannot generate report: Segmentation failed',
+            type: 'error',
+          });
+          return;
+        }
+      }
+
+      setIsGeneratingReport(true);
+
+      try {
+        uiNotificationService.show({
+          title: 'Chat',
+          message: 'Generating report for chat...',
+          type: 'info',
+        });
+
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+
+        // Step 1: Fetch the PDF report from backend
+        const response = await retryWithDelay(
+          async () => {
+            const res = await fetch(
+              `${backendUrl}/generate_report?studyInstanceUIDs=${studyInstanceUID}`
+            );
+            if (!res.ok) {
+              throw new Error(`Backend responded with status: ${res.status}`);
+            }
+            return res;
+          },
+          3,
+          3000,
+          true
+        );
+
+        const pdfBlob = await response.blob();
+
+        // Step 2: Upload PDF to /api/upload to parse text for chat
+        uiNotificationService.show({
+          title: 'Chat',
+          message: 'Parsing report for chat...',
+          type: 'info',
+        });
+
+        const pdfFile = new File([pdfBlob], `report_${studyInstanceUID}.pdf`, { 
+          type: 'application/pdf' 
+        });
+        const formData = new FormData();
+        formData.append('file', pdfFile);
+
+        // Store which study this chat session is for
+        sessionStorage.setItem('current_chat_study_uid', studyInstanceUID);
+
+        const chatApiUrl = process.env.REACT_APP_CHAT_API_URL || '';
+        const uploadUrl = chatApiUrl ? `${chatApiUrl}/api/upload` : '/api/upload';
+        // console.log('[Chat] Upload URL:', uploadUrl);
+
+        const uploadResponse = await fetch(uploadUrl, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed with status: ${uploadResponse.status}`);
+        }
+
+        const uploadData = await uploadResponse.json();
+        const chatSessionId = uploadData.sessionId;
+
+        // Store chat session ID in sessionStorage for ChatSection to use
+        if (chatSessionId) {
+          sessionStorage.setItem('chat_session_id', chatSessionId);
+          console.log('[Chat] Chat session ID stored:', chatSessionId);
+          console.log('[Chat] Study UID:', studyInstanceUID);
+        }
+
+        // Focus user on Chat panel
+        if (panelService) {
+          const chatPanelId = '@semenoflabs/extension-side-chat.panelModule.sideChat';
+          panelService.activatePanel(chatPanelId, true);
+        }
+
+        uiNotificationService.show({
+          title: 'Chat',
+          message: 'Report ready! You can now chat about it.',
+          type: 'success',
+        });
+      } catch (error) {
+        console.error('Failed to generate report for chat:', error);
+        uiNotificationService.show({
+          title: 'Chat',
+          message: `Failed to generate report: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      } finally {
+        setIsGeneratingReport(false);
+      }
+    },
+    [servicesManager, fetchSegmentationFromBackend]
+  );
+
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
@@ -1209,6 +1337,7 @@ function PanelStudyBrowser({
         onSegmentationClick={handleSegmentationClick}
         onRunSegmentation={handleRunSegmentation}
         onReportClick={handleReportClick}
+        onChatWithReportClick={handleChatWithReport}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}

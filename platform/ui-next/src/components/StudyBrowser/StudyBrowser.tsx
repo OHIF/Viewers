@@ -20,6 +20,7 @@ const StudyBrowser = ({
   onSegmentationClick = noop,
   onRunSegmentation = noop,
   onReportClick = noop,
+  onChatWithReportClick = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
   showSettings,
@@ -52,6 +53,7 @@ const StudyBrowser = ({
               onSegmentationClick={onSegmentationClick}
               onRunSegmentation={onRunSegmentation}
               onReportClick={onReportClick}
+              onChatWithReportClick={onChatWithReportClick}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
               viewPreset={viewPreset}

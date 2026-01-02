@@ -69,7 +69,7 @@ except Exception as e:
 
 @app.post("/generate_signed_url")
 async def generate_signed_url(
-    sessionID: str = Body(..., description="Session ID (UUID) for file organization", embed=True),
+    studyInstanceUIDs: str = Body(..., description="Session ID (UUID) for file organization", embed=True),
     filename: str = Body(..., description="Filename for the upload", embed=True)
 ):
     """
@@ -89,7 +89,7 @@ async def generate_signed_url(
             )
 
         bucket = storage_client.bucket(BUCKET_NAME)
-        blob_name = f"uploads/{sessionID}/{filename}"
+        blob_name = f"uploads/{studyInstanceUIDs}/{filename}"
         blob = bucket.blob(blob_name)
 
         # Generate signed URL for upload (PUT) - valid for 1 hour
@@ -111,7 +111,7 @@ async def generate_signed_url(
             "upload_url": upload_signed_url,
             "download_url": download_signed_url,
             "blob_name": blob_name,
-            "sessionID": sessionID,
+            "studyInstanceUIDs": studyInstanceUIDs,
             "expires_in": 3600
         })
     except HTTPException:
@@ -123,7 +123,7 @@ async def generate_signed_url(
 @app.post("/upload_dicom_from_url")
 async def upload_dicom_from_url(
     signed_url: str = Body(..., description="Google Cloud Storage signed URL for the DICOM ZIP file", embed=True),
-    sessionID: str = Body(..., description="Session ID (UUID) for file organization", embed=True),
+    studyInstanceUIDs: str = Body(..., description="Study Instance UID for file organization", embed=True),
     filename: Optional[str] = Body(None, description="Optional filename for the downloaded file", embed=True)
 ):
     """
@@ -134,8 +134,8 @@ async def upload_dicom_from_url(
 
     Args:
         signed_url: The pre-signed Google Cloud Storage URL
-        sessionID: The UUID session identifier
-        filename: Optional custom filename (defaults to dicom_files_{sessionID}.zip)
+        studyInstanceUIDs: The UUID session identifier
+        filename: Optional custom filename (defaults to dicom_files_{studyInstanceUIDs}.zip)
 
     Returns:
         Success response with the path where the file was saved
@@ -149,11 +149,11 @@ async def upload_dicom_from_url(
             )
 
         # Create session directory
-        session_dir = UPLOAD_DIR / sessionID
+        session_dir = UPLOAD_DIR / studyInstanceUIDs
         session_dir.mkdir(parents=True, exist_ok=True)
 
         # Determine filename
-        zip_filename = filename or f"dicom_files_{sessionID}.zip"
+        zip_filename = filename or f"dicom_files_{studyInstanceUIDs}.zip"
         if not zip_filename.endswith('.zip'):
             zip_filename += '.zip'
 
@@ -191,7 +191,7 @@ async def upload_dicom_from_url(
             "status": "success",
             "message": f"DICOM ZIP file downloaded and processed successfully",
             "path": str(zip_path),
-            "sessionID": sessionID,
+            "studyInstanceUIDs": studyInstanceUIDs,
             "size_bytes": total_size,
             "filename": zip_filename
         })
@@ -211,7 +211,7 @@ async def upload_dicom_from_url(
 @app.post("/upload_dicom")
 async def upload_dicom(
     file: UploadFile = File(..., description="ZIP file containing DICOM files"),
-    sessionID: str = Form(..., description="Session ID (UUID) for file organization")
+    studyInstanceUIDs: str = Form(..., description="Study Instance UID for file organization")
 ):
     """
     Direct upload endpoint (works with HTTP/2 for unlimited size).
@@ -221,7 +221,7 @@ async def upload_dicom(
     - OR use /generate_signed_url endpoint for Cloud Storage uploads
     """
     try:
-        print(f"Session ID: {sessionID}")
+        print(f"Session ID: {studyInstanceUIDs}")
         print(f"Receiving file: {file.filename}")
 
         # Save the uploaded file
@@ -236,7 +236,7 @@ async def upload_dicom(
             "filename": file.filename,
             "message": "File uploaded successfully",
             "size": file_size,
-            "sessionID": sessionID
+            "studyInstanceUIDs": studyInstanceUIDs
         }
     except Exception as e:
         print(f"Upload error: {str(e)}")
@@ -246,13 +246,12 @@ async def upload_dicom(
 
 @app.get("/segmentation")
 async def get_segmentation(
-    sessionID: str = Query(..., description="Session ID (UUID) for tracking")
-):
+    studyInstanceUIDs: str = Query(..., description="Study Instance UID for tracking")):
     """
     Serve the segmentations.zip file
     """
     # Print session ID
-    print(f"Session ID: {sessionID}")
+    print(f"Study Instance UID: {studyInstanceUIDs}")
 
     file_path = Path("segmentations.zip")
 
@@ -267,13 +266,13 @@ async def get_segmentation(
 
 @app.get("/generate_report")
 async def generate_report(
-    sessionID: str = Query(..., description="Session ID (UUID) for tracking")
+    studyInstanceUIDs: str = Query(..., description="Study Instance UID for tracking")
 ):
     """
     Serve the mri_report.pdf file
     """
     # Print session ID
-    print(f"Session ID: {sessionID}")
+    print(f"studyInstanceUIDs: {studyInstanceUIDs}")
 
     file_path = Path("mri_report.pdf")
 
@@ -301,7 +300,7 @@ async def root():
 
 
 @app.get(
-    "/check_conversion_status/{session_id}",
+    "/check_conversion_status/{studyInstanceUIDs}",
     summary="Check NIfTI Conversion Status",
     description="Check if DICOM to NIfTI conversion is complete for a session",
     response_description="Conversion status information",
@@ -311,7 +310,7 @@ async def root():
             "content": {
                 "application/json": {
                     "example": {
-                        "session_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "studyInstanceUIDs": "123e4567-e89b-12d3-a456-426614174000",
                         "conversion_complete": True,
                         "nifti_dir_exists": True,
                         "body_part": "lumbar",
@@ -324,7 +323,7 @@ async def root():
     },
     tags=["File Management"]
 )
-async def check_conversion_status(session_id: str):
+async def check_conversion_status(studyInstanceUIDs: str):
     """
     Check the status of DICOM to NIfTI conversion for a session.
 
@@ -332,7 +331,7 @@ async def check_conversion_status(session_id: str):
     before allowing segmentation to proceed.
 
     Args:
-        session_id: The UUID session identifier
+        studyInstanceUIDs: The UUID session identifier
 
     Returns:
         JSON with conversion status information
@@ -344,7 +343,7 @@ async def check_conversion_status(session_id: str):
     message = f"Conversion complete - {body_part} spine detected with {nifti_files_count} volumes"
 
     return JSONResponse({
-        "session_id": session_id,
+        "studyInstanceUIDs": studyInstanceUIDs,
         "conversion_complete": conversion_complete,
         "nifti_dir_exists": nifti_dir_exists,
         "body_part": body_part,

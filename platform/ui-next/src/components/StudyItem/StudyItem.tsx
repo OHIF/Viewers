@@ -22,6 +22,7 @@ const StudyItem = ({
   onSegmentationClick,
   onRunSegmentation,
   onReportClick,
+  onChatWithReportClick,
   viewPreset = 'thumbnails',
   ThumbnailMenuItems,
   StudyMenuItems,
@@ -90,6 +91,17 @@ const StudyItem = ({
                     className="bg-secondary hover:bg-secondary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Report
+                  </button>
+                )}
+                {onChatWithReportClick && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      onChatWithReportClick(StudyInstanceUID);
+                    }}
+                    className="bg-accent hover:bg-accent/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                  >
+                    Chat
                   </button>
                 )}
                 {StudyMenuItems && <StudyMenuItems StudyInstanceUID={StudyInstanceUID} />}
