@@ -9,6 +9,7 @@ import Dialog from './Dialog.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
 import HotkeysValidators from './HotkeysValidators.json';
+import InvestigationalUseDialog from './InvestigationalUseDialog.json';
 import Local from './Local.json';
 import MeasurementTable from './MeasurementTable.json';
 import DataRow from './DataRow.json';
@@ -51,6 +52,7 @@ export default {
     ErrorBoundary,
     Header,
     HotkeysValidators,
+    InvestigationalUseDialog,
     Local,
     MeasurementTable,
     DataRow,
