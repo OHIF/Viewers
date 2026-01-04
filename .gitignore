@@ -63,3 +63,6 @@ tests/playwright-report/
 
 # Backup files
 *~
+
+# Config files (local changes should not be pushed)
+platform/app/public/config/default.js

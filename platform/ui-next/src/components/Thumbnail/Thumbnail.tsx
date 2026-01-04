@@ -47,7 +47,21 @@ const Thumbnail = ({
 
   const [lastTap, setLastTap] = useState(0);
 
+  const hasDistinctDoubleClick = onDoubleClick && onDoubleClick !== onClick;
+
+  const handleClick = e => {
+    if (!hasDistinctDoubleClick && e?.detail > 1) {
+      return;
+    }
+    onClick(e);
+  };
+
   const handleTouchEnd = e => {
+    if (!hasDistinctDoubleClick) {
+      onClick(e);
+      return;
+    }
+
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
     if (tapLength < 300 && tapLength > 0) {
@@ -62,21 +76,23 @@ const Thumbnail = ({
     return (
       <div
         className={classnames(
-          'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
+          'flex w-full flex-col gap-[2px] p-[4px]',
+          'items-stretch',
+          'md:h-full md:items-center md:justify-center',
           isActive && 'bg-popover rounded'
         )}
       >
-        <div className="h-[114px] w-[128px]">
+        <div className="h-[114px] w-full md:w-[128px]">
           <div className="relative bg-black">
             {imageSrc ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
-                className="h-[114px] w-[128px] rounded object-contain"
+                className="h-[114px] w-full rounded object-contain md:w-[128px]"
                 crossOrigin="anonymous"
               />
             ) : (
-              <div className="bg-background h-[114px] w-[128px] rounded"></div>
+              <div className="bg-background h-[114px] w-full rounded md:w-[128px]"></div>
             )}
 
             {/* bottom left */}
@@ -135,11 +151,11 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="flex h-[52px] w-[128px] flex-col justify-start pt-px">
+        <div className="flex w-full flex-col justify-start pt-px md:h-[52px] md:w-[128px]">
           <Tooltip>
             <TooltipContent>{description}</TooltipContent>
             <TooltipTrigger>
-              <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white">
+              <div className="min-h-[18px] w-full overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white md:w-[128px]">
                 {description}
               </div>
             </TooltipTrigger>
@@ -254,7 +270,7 @@ const Thumbnail = ({
       className={classnames(
         className,
         'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
-        viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
+        viewPreset === 'thumbnails' && 'w-full md:h-[170px] md:w-[135px]',
         viewPreset === 'list' && 'h-[40px] w-full'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
@@ -264,8 +280,8 @@ const Thumbnail = ({
           : 'study-browser-thumbnail'
       }
       data-series={seriesNumber}
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
+      onClick={handleClick}
+      onDoubleClick={hasDistinctDoubleClick ? onDoubleClick : undefined}
       onTouchEnd={handleTouchEnd}
       role="button"
     >

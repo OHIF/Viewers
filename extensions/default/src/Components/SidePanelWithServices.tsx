@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { SidePanel } from '@ohif/ui-next';
-import { Types } from '@ohif/core';
+import { Types, useIsMobile } from '@ohif/core';
 
 export type SidePanelWithServicesProps = {
   servicesManager: AppTypes.ServicesManager;
@@ -16,6 +16,7 @@ export type SidePanelWithServicesProps = {
   expandedInsideBorderSize?: number;
   collapsedInsideBorderSize?: number;
   collapsedOutsideBorderSize?: number;
+  shouldForceFullWidth?: boolean;
 };
 
 const SidePanelWithServices = ({
@@ -29,6 +30,7 @@ const SidePanelWithServices = ({
   ...props
 }: SidePanelWithServicesProps) => {
   const { panelService, toolbarService, viewportGridService } = servicesManager.services;
+  const isMobile = useIsMobile(768);
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
@@ -115,6 +117,7 @@ const SidePanelWithServices = ({
       onOpen={handleOpen}
       onClose={handleClose}
       onActiveTabIndexChange={handleActiveTabIndexChange}
+      shouldForceFullWidth={props.shouldForceFullWidth ?? isMobile}
     />
   );
 };

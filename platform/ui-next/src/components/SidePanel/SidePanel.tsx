@@ -28,6 +28,7 @@ type SidePanelProps = {
   collapsedInsideBorderSize: number;
   collapsedOutsideBorderSize: number;
   tabs: any;
+  shouldForceFullWidth?: boolean;
 };
 
 type StyleMap = {
@@ -193,6 +194,7 @@ const SidePanel = ({
   expandedInsideBorderSize = 4,
   collapsedInsideBorderSize = 8,
   collapsedOutsideBorderSize = 4,
+  shouldForceFullWidth = false,
 }: SidePanelProps) => {
   const [panelOpen, setPanelOpen] = useState(isExpanded);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
@@ -215,7 +217,21 @@ const SidePanel = ({
 
   const [gridWidth, setGridWidth] = useState(getGridWidth(tabs.length, gridAvailableWidth));
   const openStatus = panelOpen ? 'open' : 'closed';
-  const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
+  const overlayActive = shouldForceFullWidth && panelOpen;
+  const overlayStyle = overlayActive
+    ? {
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        marginLeft: '0px',
+        marginRight: '0px',
+        width: '100%',
+        maxWidth: '100%',
+        height: '100%',
+        zIndex: 40,
+      }
+    : {};
+  const style = Object.assign({}, styleMap[openStatus][side], baseStyle, overlayStyle);
 
   const updatePanelOpen = useCallback(
     (isOpen: boolean) => {

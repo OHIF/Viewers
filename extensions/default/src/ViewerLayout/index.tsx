@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { InvestigationalUseDialog } from '@ohif/ui-next';
-import { HangingProtocolService, CommandsManager } from '@ohif/core';
+import { HangingProtocolService, CommandsManager, useIsMobile } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
@@ -30,6 +30,7 @@ function ViewerLayout({
   rightPanelMinimumExpandedWidth,
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
+  const isMobile = useIsMobile(768);
 
   const { panelService, hangingProtocolService, customizationService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
@@ -42,7 +43,7 @@ function ViewerLayout({
   const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
   const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
   const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
-  const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
+  const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed || isMobile);
 
   const [
     leftPanelProps,
@@ -148,6 +149,27 @@ function ViewerLayout({
   }, [panelService, hasPanels]);
 
   const viewportComponents = viewports.map(getViewportComponentData);
+  const rightPanelForcedClosed = isMobile;
+  const rightPanelIsExpanded = !rightPanelClosedState && !rightPanelForcedClosed;
+  const rightPanelLayoutProps = rightPanelForcedClosed
+    ? {
+        ...rightPanelProps,
+        expandedWidth: 0,
+        collapsedWidth: 0,
+        collapsedInsideBorderSize: 0,
+        collapsedOutsideBorderSize: 0,
+        expandedInsideBorderSize: 0,
+      }
+    : rightPanelProps;
+  const resizableRightPanelLayoutProps = rightPanelForcedClosed
+    ? {
+        ...resizableRightPanelProps,
+        defaultSize: 0,
+        minSize: 0,
+        collapsedSize: 0,
+        className: 'hidden md:flex',
+      }
+    : resizableRightPanelProps;
 
   return (
     <div>
@@ -201,15 +223,15 @@ function ViewerLayout({
               <>
                 <ResizableHandle
                   onDragging={onHandleDragging}
-                  disabled={!rightPanelResizable}
+                  disabled={!rightPanelResizable || rightPanelForcedClosed}
                   className={resizableHandleClassName}
                 />
-                <ResizablePanel {...resizableRightPanelProps}>
+                <ResizablePanel {...resizableRightPanelLayoutProps}>
                   <SidePanelWithServices
                     side="right"
-                    isExpanded={!rightPanelClosedState}
+                    isExpanded={rightPanelIsExpanded}
                     servicesManager={servicesManager}
-                    {...rightPanelProps}
+                    {...rightPanelLayoutProps}
                   />
                 </ResizablePanel>
               </>

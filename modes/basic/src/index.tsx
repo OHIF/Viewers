@@ -123,8 +123,13 @@ export function onModeEnter({
   panelService,
   segmentationService,
 }: withAppTypes) {
-  const { measurementService, toolbarService, toolGroupService, customizationService, viewportGridService } =
-    servicesManager.services;
+  const {
+    measurementService,
+    toolbarService,
+    toolGroupService,
+    customizationService,
+    viewportGridService,
+  } = servicesManager.services;
 
   measurementService.clearMeasurements();
 
@@ -293,6 +298,7 @@ export const basicLayout = {
   props: {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
+    leftPanelClosed: true,
     rightPanels: [cornerstone.segmentation, cornerstone.measurements],
     rightPanelClosed: true,
     rightPanelResizable: true,

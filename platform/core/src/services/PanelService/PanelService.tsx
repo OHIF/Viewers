@@ -220,4 +220,28 @@ export default class PanelService extends PubSubService {
       )
       .flat();
   }
+
+  /**
+   * Updates the closed/open state for a given side panel by broadcasting a PANELS_CHANGED event.
+   * @param position Which side panel to update
+   * @param isClosed Whether the panel should be considered closed
+   */
+  public setPanelClosedState(position: PanelPosition, isClosed: boolean): void {
+    let optionKey: string | null = null;
+
+    if (position === PanelPosition.Left) {
+      optionKey = 'leftPanelClosed';
+    } else if (position === PanelPosition.Right) {
+      optionKey = 'rightPanelClosed';
+    }
+
+    if (!optionKey) {
+      return;
+    }
+
+    this._broadcastEvent(EVENTS.PANELS_CHANGED, {
+      position,
+      options: { [optionKey]: isClosed },
+    });
+  }
 }

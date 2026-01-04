@@ -1,6 +1,9 @@
 import i18n from 'i18next';
 import { id } from './id';
-import { initToolGroups, toolbarButtons, cornerstone,
+import {
+  initToolGroups,
+  toolbarButtons,
+  cornerstone,
   ohif,
   dicomsr,
   dicomvideo,
@@ -9,7 +12,7 @@ import { initToolGroups, toolbarButtons, cornerstone,
   extensionDependencies as basicDependencies,
   mode as basicMode,
   modeInstance as basicModeInstance,
- } from '@ohif/mode-basic';
+} from '@ohif/mode-basic';
 
 export const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
@@ -37,33 +40,29 @@ export const longitudinalInstance = {
         displaySetsToDisplay: basicLayout.props.viewports[0].displaySetsToDisplay,
       },
       ...basicLayout.props.viewports,
-      ],
-    }
-  };
+    ],
+  },
+};
 
-
-export const longitudinalRoute =
-    {
-      ...basicRoute,
-      path: 'longitudinal',
-        /*init: ({ servicesManager, extensionManager }) => {
+export const longitudinalRoute = {
+  ...basicRoute,
+  path: 'longitudinal',
+  /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-      layoutInstance: longitudinalInstance,
-    };
+  layoutInstance: longitudinalInstance,
+};
 
 export const modeInstance = {
-    ...basicModeInstance,
-    // TODO: We're using this as a route segment
-    // We should not be.
-    id,
-    routeName: 'viewer',
-    displayName: i18n.t('Modes:Basic Viewer'),
-    routes: [
-      longitudinalRoute
-    ],
-    extensions: extensionDependencies,
-  };
+  ...basicModeInstance,
+  // TODO: We're using this as a route segment
+  // We should not be.
+  id,
+  routeName: 'viewer',
+  displayName: i18n.t('Modes:Basic Viewer'),
+  routes: [longitudinalRoute],
+  extensions: extensionDependencies,
+};
 
 const mode = {
   ...basicMode,

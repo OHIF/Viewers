@@ -88,7 +88,7 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'orthanc',
+  defaultDataSourceName: 'ohif',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -216,9 +216,9 @@ window.config = {
       configuration: {
         friendlyName: 'local Orthanc DICOMWeb Server',
         name: 'DCM4CHEE',
-        wadoUriRoot: 'http://85.208.253.242:8080/dicom-web',
-        qidoRoot: 'http://85.208.253.242:8080/dicom-web',
-        wadoRoot: 'http://85.208.253.242:8080/dicom-web',
+        wadoUriRoot: 'http://localhost/pacs/dicom-web',
+        qidoRoot: 'http://localhost/pacs/dicom-web',
+        wadoRoot: 'http://localhost/pacs/dicom-web',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         dicomUploadEnabled: true,

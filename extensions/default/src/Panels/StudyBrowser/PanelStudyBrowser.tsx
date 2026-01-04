@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
-import { useSystem, utils } from '@ohif/core';
+import { useSystem, utils, useIsMobile } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
@@ -26,9 +26,11 @@ function PanelStudyBrowser({
   onDoubleClickThumbnailHandlerCallBack,
 }) {
   const { servicesManager, commandsManager, extensionManager } = useSystem();
-  const { displaySetService, customizationService } = servicesManager.services;
+  const { displaySetService, customizationService, panelService } = servicesManager.services;
   const navigate = useNavigate();
-  const studyMode = (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
+  const studyMode =
+    (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
+  const isMobile = useIsMobile(768);
 
   const internalImageViewer = useImageViewer();
   const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
@@ -75,7 +77,7 @@ function PanelStudyBrowser({
 
   const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
 
-  const onDoubleClickThumbnailHandler = useCallback(
+  const onThumbnailActivateHandler = useCallback(
     async displaySetInstanceUID => {
       const customHandler = customizationService.getCustomization(
         'studyBrowser.thumbnailDoubleClickCallback'
@@ -95,6 +97,9 @@ function PanelStudyBrowser({
         await handler(displaySetInstanceUID);
       }
       onDoubleClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
+      if (isMobile && panelService) {
+        panelService.setPanelClosedState(panelService.PanelPosition.Left, true);
+      }
     },
     [
       activeViewportId,
@@ -102,6 +107,9 @@ function PanelStudyBrowser({
       servicesManager,
       isHangingProtocolLayout,
       customizationService,
+      panelService,
+      isMobile,
+      extensionManager,
     ]
   );
 
@@ -384,7 +392,11 @@ function PanelStudyBrowser({
 
     const displaySetInstanceUID = jumpToDisplaySet;
     // It is possible to navigate to a study not currently in view
-    const thumbnailLocation = _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs, activeTabName);
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
+      displaySetInstanceUID,
+      tabs,
+      activeTabName
+    );
     if (!thumbnailLocation) {
       return;
     }
@@ -425,8 +437,8 @@ function PanelStudyBrowser({
           setActiveTabName(clickedTabName);
         }}
         onClickUntrack={onClickUntrack}
-        onClickThumbnail={() => {}}
-        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        onClickThumbnail={onThumbnailActivateHandler}
+        onDoubleClickThumbnail={onThumbnailActivateHandler}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
@@ -538,11 +550,13 @@ function _findTabAndStudyOfDisplaySet(
   tabs: TabsProps,
   currentTabName: string
 ) {
-  const current = tabs.find(tab => tab.name===currentTabName) || tabs[0];
+  const current = tabs.find(tab => tab.name === currentTabName) || tabs[0];
   const biasedTabs = [current, ...tabs];
 
   for (let t = 0; t < biasedTabs.length; t++) {
-    const study = biasedTabs[t].studies.find(study => study.displaySets.find(ds => ds.displaySetInstanceUID ===displaySetInstanceUID));
+    const study = biasedTabs[t].studies.find(study =>
+      study.displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID)
+    );
     if (study) {
       return {
         tabName: biasedTabs[t].name,

@@ -82,9 +82,11 @@ function Header({
           </div>
           <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
             {UndoRedo}
-            <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
-            {PatientInfo}
-            <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+            <div className="border-primary-dark mx-1.5 h-[25px] border-r hidden md:block"></div>
+            <div className="hidden md:flex items-center">
+              {PatientInfo}
+            </div>
+            <div className="border-primary-dark mx-1.5 h-[25px] border-r hidden md:block"></div>
             <div className="flex-shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
