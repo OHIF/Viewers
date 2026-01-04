@@ -160,14 +160,14 @@ function SideChatPanel({ servicesManager, commandsManager }) {
         <div className="flex flex-col gap-3 pr-2">
           {/* Welcome message */}
           <div className="flex flex-col items-start">
-            <div className="bg-muted text-foreground max-w-[85%] rounded-lg px-3 py-2">
+            <div className="bg-orange-900/50 text-orange-100 max-w-[85%] rounded-lg px-3 py-2">
               <div className="text-sm">
                 {isReportReady
                   ? "Hello! I'm your MRI Assistant. Your report is ready - ask me anything about it!"
                   : "Hello! I'm your MRI Assistant. Please click the 'Report' button in the Study Browser to generate a report first."}
               </div>
             </div>
-            <span className="text-muted-foreground mt-1 text-xs">Assistant</span>
+            <span className="text-orange-400/70 mt-1 text-xs">Assistant</span>
           </div>
 
           {messages.map(msg => (
@@ -179,12 +179,12 @@ function SideChatPanel({ servicesManager, commandsManager }) {
                 className={`max-w-[85%] rounded-lg px-3 py-2 ${
                   msg.role === 'user'
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground'
+                    : 'bg-orange-900/50 text-orange-100'
                 }`}
               >
                 <div className="text-sm">{msg.text}</div>
               </div>
-              <span className="text-muted-foreground mt-1 text-xs">
+              <span className={`mt-1 text-xs ${msg.role === 'user' ? 'text-muted-foreground' : 'text-orange-400/70'}`}>
                 {msg.role === 'user' ? 'You' : 'Assistant'} • {msg.timestamp.toLocaleTimeString()}
               </span>
             </div>
@@ -193,8 +193,8 @@ function SideChatPanel({ servicesManager, commandsManager }) {
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex flex-col items-start">
-              <div className="bg-muted text-foreground flex max-w-[85%] items-center gap-2 rounded-lg px-3 py-2">
-                <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
+              <div className="bg-orange-900/50 text-orange-100 flex max-w-[85%] items-center gap-2 rounded-lg px-3 py-2">
+                <Icons.LoadingSpinner className="h-4 w-4 animate-spin text-orange-400" />
                 <div className="text-sm">Thinking...</div>
               </div>
             </div>

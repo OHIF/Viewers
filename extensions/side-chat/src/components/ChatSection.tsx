@@ -173,15 +173,15 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
         <div className="flex flex-col gap-2">
           {/* Initial welcome message */}
           <div className="flex flex-col items-start">
-            <div className="bg-muted text-foreground flex max-w-[85%] items-start gap-2 rounded px-2 py-1">
-              <Icons.Info className="mt-0.5 h-3 w-3 shrink-0" />
+            <div className="bg-orange-900/50 text-orange-100 flex max-w-[85%] items-start gap-2 rounded px-2 py-1">
+              <Icons.Info className="mt-0.5 h-3 w-3 shrink-0 text-orange-400" />
               <div className="text-xs">
                 {isReportReady
                   ? "Hello! I'm your MRI Assistant. Your report is ready - ask me anything about it!"
                   : "Hello! I'm your MRI Assistant. Please click the 'Report' button in the Study Browser to generate a report first, then we can discuss it."}
               </div>
             </div>
-            <span className="text-muted-foreground mt-0.5 text-[10px]">Assistant</span>
+            <span className="text-orange-400/70 mt-0.5 text-[10px]">Assistant</span>
           </div>
 
           {messages.map(msg => (
@@ -193,12 +193,12 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
                 className={`max-w-[85%] rounded px-2 py-1 ${
                   msg.role === 'user'
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground'
+                    : 'bg-orange-900/50 text-orange-100'
                 }`}
               >
                 <div className="text-xs">{msg.text}</div>
               </div>
-              <span className="text-muted-foreground mt-0.5 text-[10px]">
+              <span className={`mt-0.5 text-[10px] ${msg.role === 'user' ? 'text-muted-foreground' : 'text-orange-400/70'}`}>
                 {msg.role === 'user' ? 'You' : 'Assistant'} • {msg.timestamp.toLocaleTimeString()}
               </span>
             </div>
@@ -207,8 +207,8 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex flex-col items-start">
-              <div className="bg-muted text-foreground flex max-w-[85%] items-center gap-2 rounded px-2 py-1">
-                <Icons.LoadingSpinner className="h-3 w-3 animate-spin" />
+              <div className="bg-orange-900/50 text-orange-100 flex max-w-[85%] items-center gap-2 rounded px-2 py-1">
+                <Icons.LoadingSpinner className="h-3 w-3 animate-spin text-orange-400" />
                 <div className="text-xs">Thinking...</div>
               </div>
             </div>
