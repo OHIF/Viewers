@@ -13,6 +13,10 @@ type PanelData = {
   id: string;
   iconName: string;
   iconLabel: string;
+  iconColor?: string;
+  iconActiveColor?: string;
+  iconBgColor?: string;
+  iconActiveBgColor?: string;
   label: string;
   name: string;
   content: unknown;
@@ -123,6 +127,10 @@ export default class PanelService extends PubSubService {
       id: entry.id,
       iconName: entry.iconName,
       iconLabel: entry.iconLabel,
+      iconColor: entry.iconColor,
+      iconActiveColor: entry.iconActiveColor,
+      iconBgColor: entry.iconBgColor,
+      iconActiveBgColor: entry.iconActiveBgColor,
       label: entry.label,
       name: entry.name,
       content,

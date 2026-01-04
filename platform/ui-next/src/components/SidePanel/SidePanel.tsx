@@ -123,9 +123,9 @@ const getTabStyle = (numTabs: number) => {
   };
 };
 
-const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
+const getTabIconClassNames = (numTabs: number, isActiveTab: boolean, hasCustomColors = false) => {
   return classnames('h-full w-full flex items-center justify-center', {
-    'bg-customblue-40': isActiveTab,
+    'bg-customblue-40': isActiveTab && !hasCustomColors,
     rounded: isActiveTab,
   });
 };
@@ -298,20 +298,26 @@ const SidePanel = ({
           />
         </div>
         <div className={classnames('mt-3 flex flex-col space-y-3')}>
-          {_childComponents.map((childComponent, index) => (
+          {_childComponents.map((childComponent, index) => {
+            const hasCustomBg = childComponent.iconBgColor || childComponent.iconActiveBgColor;
+            return (
             <Tooltip key={index}>
               <TooltipTrigger>
                 <div
                   id={`${childComponent.name}-btn`}
                   data-cy={`${childComponent.name}-btn`}
-                  className="text-primary hover:cursor-pointer"
+                  className={classnames(
+                    'hover:cursor-pointer',
+                    hasCustomBg ? 'rounded-md p-1' : '',
+                    hasCustomBg ? childComponent.iconBgColor : 'text-primary'
+                  )}
                   onClick={() => {
                     return childComponent.disabled ? null : updateActiveTabIndex(index, true);
                   }}
                 >
                   {React.createElement(Icons[childComponent.iconName] || Icons.MissingIcon, {
                     className: classnames({
-                      'text-primary': true,
+                      [childComponent.iconColor || 'text-primary']: true,
                       'ohif-disabled': childComponent.disabled,
                     }),
                     style: {
@@ -332,7 +338,8 @@ const SidePanel = ({
                 </div>
               </TooltipContent>
             </Tooltip>
-          ))}
+          );
+          })}
         </div>
       </>
     );
@@ -368,6 +375,19 @@ const SidePanel = ({
           <div className={classnames('bg-primary-dark text-primary flex flex-wrap')}>
             {tabs.map((tab, tabIndex) => {
               const { disabled } = tab;
+              const isActive = tabIndex === activeTabIndex;
+              const hasCustomColors = tab.iconBgColor || tab.iconActiveBgColor;
+
+              // Determine icon color based on active state and custom colors
+              const iconColorClass = hasCustomColors
+                ? (isActive ? (tab.iconActiveColor || 'text-white') : (tab.iconColor || 'text-primary'))
+                : (tab.iconColor || 'text-primary');
+
+              // Determine background color based on active state
+              const bgColorClass = hasCustomColors
+                ? (isActive ? (tab.iconActiveBgColor || '') : (tab.iconBgColor || ''))
+                : '';
+
               return (
                 <React.Fragment key={tabIndex}>
                   {tabIndex % numCols !== 0 && (
@@ -387,7 +407,7 @@ const SidePanel = ({
                           numCols,
                           tabs.length,
                           tabIndex,
-                          tabIndex === activeTabIndex,
+                          isActive,
                           disabled
                         )}
                         style={getTabStyle(tabs.length)}
@@ -397,11 +417,14 @@ const SidePanel = ({
                         data-cy={`${tab.name}-btn`}
                       >
                         <div
-                          className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
+                          className={classnames(
+                            getTabIconClassNames(tabs.length, isActive, hasCustomColors),
+                            hasCustomColors && bgColorClass
+                          )}
                         >
                           {React.createElement(Icons[tab.iconName] || Icons.MissingIcon, {
                             className: classnames({
-                              'text-primary': true,
+                              [iconColorClass]: true,
                               'ohif-disabled': disabled,
                             }),
                             style: {

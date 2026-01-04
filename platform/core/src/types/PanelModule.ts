@@ -5,6 +5,10 @@ type Panel = {
   name: string;
   iconName: string;
   iconLabel: string;
+  iconColor?: string;
+  iconActiveColor?: string;
+  iconBgColor?: string;
+  iconActiveBgColor?: string;
   label: string;
   component: React.FC;
 };

@@ -103,7 +103,7 @@ const StudyItem = ({
                       onChatWithReportClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-accent hover:bg-accent/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Chat
                   </button>

@@ -7,9 +7,13 @@ function getPanelModule({ servicesManager, commandsManager, extensionManager }):
   return [
     {
       name: 'sideChat',
-      iconName: 'tab-patient-info',
+      iconName: 'ai-chat',
       iconLabel: 'Chat',
-      label: 'Side Chat',
+      label: 'AI Chat',
+      iconColor: 'text-orange-500',
+      iconActiveColor: 'text-white',
+      iconBgColor: 'bg-orange-900/50',
+      iconActiveBgColor: 'bg-orange-500',
       component: props => (
         <SideChatPanel
           {...props}
