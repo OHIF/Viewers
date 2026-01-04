@@ -178,13 +178,13 @@ function SideChatPanel({ servicesManager, commandsManager }) {
               <div
                 className={`max-w-[85%] rounded-lg px-3 py-2 ${
                   msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-orange-500 text-white'
                     : 'bg-orange-900/50 text-orange-100'
                 }`}
               >
                 <div className="text-sm">{msg.text}</div>
               </div>
-              <span className={`mt-1 text-xs ${msg.role === 'user' ? 'text-muted-foreground' : 'text-orange-400/70'}`}>
+              <span className={`mt-1 text-xs ${msg.role === 'user' ? 'text-orange-400/70' : 'text-orange-400/70'}`}>
                 {msg.role === 'user' ? 'You' : 'Assistant'} • {msg.timestamp.toLocaleTimeString()}
               </span>
             </div>

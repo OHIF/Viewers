@@ -192,13 +192,13 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
               <div
                 className={`max-w-[85%] rounded px-2 py-1 ${
                   msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-orange-500 text-white'
                     : 'bg-orange-900/50 text-orange-100'
                 }`}
               >
                 <div className="text-xs">{msg.text}</div>
               </div>
-              <span className={`mt-0.5 text-[10px] ${msg.role === 'user' ? 'text-muted-foreground' : 'text-orange-400/70'}`}>
+              <span className="mt-0.5 text-[10px] text-orange-400/70">
                 {msg.role === 'user' ? 'You' : 'Assistant'} • {msg.timestamp.toLocaleTimeString()}
               </span>
             </div>
