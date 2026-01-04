@@ -2,6 +2,7 @@ import React from 'react';
 import Actions from './Sources/Actions';
 import Add from './Sources/Add';
 import AIChat from './Sources/AIChat';
+import Send from './Sources/Send';
 import Cancel from './Sources/Cancel';
 import ChevronClosed from './Sources/ChevronClosed';
 import ChevronOpen from './Sources/ChevronOpen';
@@ -794,6 +795,8 @@ export const Icons = {
   JumpToSlice,
   'ai-chat': (props: IconProps) => AIChat(props),
   AIChat,
+  send: (props: IconProps) => Send(props),
+  Send,
 
   /** Adds an icon to the set of icons */
   addIcon: (name: string, icon) => {

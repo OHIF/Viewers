@@ -213,13 +213,18 @@ function SideChatPanel({ servicesManager, commandsManager }) {
           onKeyDown={handleKeyDown}
           placeholder={isReportReady ? 'Ask about the MRI report...' : 'Generate a report first...'}
           disabled={isLoading || !isReportReady}
-          className="flex-1"
+          className="flex-1 border-orange-500/50 bg-orange-900/20 text-orange-100 placeholder:text-orange-400/50 focus:border-orange-500 focus:ring-orange-500/30"
         />
         <Button
           onClick={handleSend}
           disabled={!inputValue.trim() || isLoading || !isReportReady}
+          className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white"
         >
-          {isLoading ? <Icons.LoadingSpinner className="h-4 w-4 animate-spin" /> : 'Send'}
+          {isLoading ? (
+            <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
+          ) : (
+            <Icons.Send className="h-5 w-5" />
+          )}
         </Button>
       </div>
     </div>

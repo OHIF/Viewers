@@ -228,14 +228,19 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
           placeholder={isReportReady ? 'Ask about the MRI report...' : 'Generate a report first...'}
           disabled={isLoading || disabled || !isReportReady}
           maxLength={500}
-          className="flex-1 text-xs"
+          className="flex-1 text-xs border-orange-500/50 bg-orange-900/20 text-orange-100 placeholder:text-orange-400/50 focus:border-orange-500 focus:ring-orange-500/30"
         />
         <Button
           onClick={handleSend}
           disabled={!inputValue.trim() || isLoading || disabled || !isReportReady}
           size="sm"
+          className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white"
         >
-          {isLoading ? <Icons.LoadingSpinner className="h-4 w-4 animate-spin" /> : 'Send'}
+          {isLoading ? (
+            <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
+          ) : (
+            <Icons.Send className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </div>
