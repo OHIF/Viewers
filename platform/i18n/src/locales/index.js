@@ -14,9 +14,10 @@ import test_lng from './test-LNG/';
 import ca from './ca/';
 
 export default {
+  ...ca,
   ...ar,
   ...tr_TR,
-  ...de,
+  ...zh,
   ...en_US,
   ...es,
   ...fr,
@@ -25,7 +26,6 @@ export default {
   ...pt_BR,
   ...ru,
   ...vi,
-  ...zh,
   ...test_lng,
-  ...ca,
+  ...de,
 };
