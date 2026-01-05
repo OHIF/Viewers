@@ -5,48 +5,20 @@ window.config = {
   modes: [],
   showStudyList: true,
   
-  // --- OPTIMIZACIONES VISUALES Y DE CARGA ---
+  // Optimizaciones básicas
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   strictZSpacingForVolumeViewport: true,
+  
+  // DataSource por defecto
   defaultDataSourceName: 'dicomweb',
 
-  // --- PERSONALIZACIÓN (LOGO) ---
-  whiteLabeling: {
-    createLogoComponentFn: function(React) {
-      return React.createElement(
-        'a',
-        {
-          target: '_self',
-          rel: 'noopener noreferrer',
-          className: 'header-brand',
-          href: '/',
-          style: { 
-            display: 'flex', 
-            alignItems: 'center',
-            textDecoration: 'none',
-            color: '#9CC7F7' 
-          }
-        },
-        React.createElement('img', {
-          // Asegúrate que este archivo esté en platform/app/public/
-          src: '/logo-institucion-gray.png', 
-          style: { 
-            maxWidth: '180px',
-            height: '45px',
-            marginRight: '10px'
-          }
-        })
-      );
-    }
-  },
-  
-  // --- AUTENTICACIÓN (KEYCLOAK) ---
-  // Ruta relativa '/realms/' -> Nginx Proxy -> Keycloak:8843
+  // --- AUTENTICACIÓN (Rutas Relativas) ---
+  // '/auth/' será capturado por Nginx y enviado a Keycloak
   oidc: [
     {
-      authority: '/realms/dcm4che', 
+      authority: '/auth/realms/dcm4che', 
       client_id: 'ohif-viewer',
       redirect_uri: '/callback',
       response_type: 'code',
@@ -56,8 +28,8 @@ window.config = {
     },
   ],
 
-  // --- FUENTES DE DATOS (DCM4CHEE) ---
-  // Ruta relativa '/dcm4chee-arc/' -> Nginx Proxy -> PACS:8443
+  // --- FUENTES DE DATOS (Rutas Relativas) ---
+  // '/dcm4chee-arc/' será capturado por Nginx y enviado al PACS
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
@@ -66,20 +38,19 @@ window.config = {
         friendlyName: 'DCM4CHEE Proxy',
         name: 'DCM4CHEE',
         
+        // Rutas relativas
         wadoUriRoot: '/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: '/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: '/dcm4chee-arc/aets/DCM4CHEE/rs',
         
         qidoSupportsIncludeField: true,
-        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
-        
-        // Configuraciones críticas para compatibilidad con DCM4CHEE
         omitQuotationForMultipartRequest: true,
+        
         singlepart: 'video', 
         bulkDataURI: {
             enabled: true,

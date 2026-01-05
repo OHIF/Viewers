@@ -1,0 +1,6 @@
+docker run -d \
+  --name ohif-prod-test \
+  --restart always \
+  -p 4443:443 \
+  -v $(pwd)/platform/app/public/config/dicomweb-server.js:/usr/share/nginx/html/app-config.js \
+  ohif-prod:0.1.1
