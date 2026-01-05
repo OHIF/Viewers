@@ -169,7 +169,11 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
         "@cornerstonejs/codec-openjpeg": "1.3.0",
         "@cornerstonejs/codec-openjph": "2.4.7",
+<<<<<<< HEAD
         "@cornerstonejs/dicom-image-loader": "4.15.2",
+=======
+        "@cornerstonejs/dicom-image-loader": "4.14.6",
+>>>>>>> origin/master
         "@ohif/core": "3.12.0-beta.113",
         "@ohif/ui": "3.12.0-beta.113",
         "dcmjs": "0.45.0",
@@ -383,8 +387,13 @@
         "xstate": "4.38.3",
       },
       "peerDependencies": {
+<<<<<<< HEAD
         "@cornerstonejs/core": "4.15.2",
         "@cornerstonejs/tools": "4.15.2",
+=======
+        "@cornerstonejs/core": "4.14.6",
+        "@cornerstonejs/tools": "4.14.6",
+>>>>>>> origin/master
         "@ohif/core": "3.12.0-beta.113",
         "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.113",
         "@ohif/extension-default": "3.12.0-beta.113",
@@ -424,8 +433,8 @@
         "classnames": "2.5.1",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.93",
-        "@ohif/ui": "3.12.0-beta.93",
+        "@ohif/core": "3.12.0-beta.113",
+        "@ohif/ui": "3.12.0-beta.113",
         "dcmjs": "0.45.0",
         "dicom-parser": "1.8.21",
         "hammerjs": "2.0.8",
@@ -438,8 +447,13 @@
       "version": "3.12.0-beta.113",
       "dependencies": {
         "@babel/runtime": "7.28.2",
+<<<<<<< HEAD
         "@cornerstonejs/core": "4.15.2",
         "@cornerstonejs/tools": "4.15.2",
+=======
+        "@cornerstonejs/core": "4.14.6",
+        "@cornerstonejs/tools": "4.14.6",
+>>>>>>> origin/master
         "@ohif/core": "3.12.0-beta.113",
         "@ohif/extension-cornerstone": "3.12.0-beta.113",
         "@ohif/extension-default": "3.12.0-beta.113",
@@ -595,12 +609,12 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone-dynamic-volume": "3.12.0-beta.93",
-        "@ohif/extension-default": "3.12.0-beta.93",
-        "@ohif/extension-tmtv": "3.12.0-beta.93",
+        "@ohif/core": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone-dynamic-volume": "3.12.0-beta.113",
+        "@ohif/extension-default": "3.12.0-beta.113",
+        "@ohif/extension-tmtv": "3.12.0-beta.113",
       },
     },
     "modes/segmentation": {
@@ -637,15 +651,15 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.93",
-        "@ohif/extension-default": "3.12.0-beta.93",
-        "@ohif/extension-dicom-pdf": "3.12.0-beta.93",
-        "@ohif/extension-dicom-video": "3.12.0-beta.93",
-        "@ohif/mode-basic": "3.12.0-beta.93",
+        "@ohif/core": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.113",
+        "@ohif/extension-default": "3.12.0-beta.113",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.113",
+        "@ohif/extension-dicom-video": "3.12.0-beta.113",
+        "@ohif/mode-basic": "3.12.0-beta.113",
       },
     },
     "modes/tmtv": {
@@ -660,13 +674,13 @@
         "webpack-merge": "5.10.0",
       },
       "peerDependencies": {
-        "@ohif/core": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone": "3.12.0-beta.93",
-        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.93",
-        "@ohif/extension-default": "3.12.0-beta.93",
-        "@ohif/extension-dicom-pdf": "3.12.0-beta.93",
-        "@ohif/extension-dicom-video": "3.12.0-beta.93",
-        "@ohif/extension-measurement-tracking": "3.12.0-beta.93",
+        "@ohif/core": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone": "3.12.0-beta.113",
+        "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.113",
+        "@ohif/extension-default": "3.12.0-beta.113",
+        "@ohif/extension-dicom-pdf": "3.12.0-beta.113",
+        "@ohif/extension-dicom-video": "3.12.0-beta.113",
+        "@ohif/extension-measurement-tracking": "3.12.0-beta.113",
       },
     },
     "modes/usAnnotation": {
@@ -674,8 +688,13 @@
       "version": "3.12.0-beta.113",
       "dependencies": {
         "@babel/runtime": "7.28.2",
+<<<<<<< HEAD
         "@cornerstonejs/core": "4.15.2",
         "@cornerstonejs/tools": "4.15.2",
+=======
+        "@cornerstonejs/core": "4.14.6",
+        "@cornerstonejs/tools": "4.14.6",
+>>>>>>> origin/master
         "@ohif/core": "3.12.0-beta.113",
         "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.113",
         "@ohif/extension-ultrasound-pleura-bline": "3.12.0-beta.113",
@@ -838,8 +857,13 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
         "@cornerstonejs/codec-openjpeg": "1.3.0",
         "@cornerstonejs/codec-openjph": "2.4.7",
+<<<<<<< HEAD
         "@cornerstonejs/core": "4.15.2",
         "@cornerstonejs/dicom-image-loader": "4.15.2",
+=======
+        "@cornerstonejs/core": "4.14.6",
+        "@cornerstonejs/dicom-image-loader": "4.14.6",
+>>>>>>> origin/master
         "@ohif/ui": "3.12.0-beta.113",
         "cornerstone-math": "0.1.9",
         "dicom-parser": "1.8.21",
@@ -981,6 +1005,7 @@
     "nth-check": "2.1.1",
     "package-json": "8.1.1",
     "path-to-regexp": "0.1.12",
+    "qs": "6.14.1",
     "rollup": "2.79.2",
     "tapable": "2.2.2",
     "trim": "1.0.1",
@@ -4383,7 +4408,7 @@
 
     "pure-rand": ["pure-rand@6.1.0", "", {}, "sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA=="],
 
-    "qs": ["qs@6.14.0", "", { "dependencies": { "side-channel": "^1.1.0" } }, "sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w=="],
+    "qs": ["qs@6.14.1", "", { "dependencies": { "side-channel": "^1.1.0" } }, "sha512-4EK3+xJl8Ts67nLYNwqw/dsFVnCf+qR7RgXSK9jEEm9unao3njwMDdmsdvoKBKHzxd7tCYz5e5M+SnMjdtXGQQ=="],
 
     "query-string": ["query-string@6.14.1", "", { "dependencies": { "decode-uri-component": "^0.2.0", "filter-obj": "^1.1.0", "split-on-first": "^1.0.0", "strict-uri-encode": "^2.0.0" } }, "sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw=="],
 
@@ -5449,8 +5474,6 @@
 
     "body-parser/iconv-lite": ["iconv-lite@0.4.24", "", { "dependencies": { "safer-buffer": ">= 2.1.2 < 3" } }, "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA=="],
 
-    "body-parser/qs": ["qs@6.13.0", "", { "dependencies": { "side-channel": "^1.0.6" } }, "sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg=="],
-
     "boxen/camelcase": ["camelcase@7.0.1", "", {}, "sha512-xlx1yCK2Oc1APsPXDL2LdlNP6+uu8OCDdhOBSVT279M/S+y75O30C2VuD8T2ogdePBBl7PfPF4504tnLgX3zfw=="],
 
     "boxen/string-width": ["string-width@5.1.2", "", { "dependencies": { "eastasianwidth": "^0.2.0", "emoji-regex": "^9.2.2", "strip-ansi": "^7.0.1" } }, "sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA=="],
@@ -5630,8 +5653,6 @@
     "express/content-disposition": ["content-disposition@0.5.4", "", { "dependencies": { "safe-buffer": "5.2.1" } }, "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ=="],
 
     "express/debug": ["debug@2.6.9", "", { "dependencies": { "ms": "2.0.0" } }, "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="],
-
-    "express/qs": ["qs@6.13.0", "", { "dependencies": { "side-channel": "^1.0.6" } }, "sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg=="],
 
     "express/range-parser": ["range-parser@1.2.1", "", {}, "sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg=="],
 
