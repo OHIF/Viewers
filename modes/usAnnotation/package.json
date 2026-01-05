@@ -34,8 +34,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/core": "4.14.6",
-    "@cornerstonejs/tools": "4.14.6",
+    "@cornerstonejs/core": "4.15.2",
+    "@cornerstonejs/tools": "4.15.2",
     "@ohif/core": "3.12.0-beta.114",
     "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.114",
     "@ohif/extension-ultrasound-pleura-bline": "3.12.0-beta.114",
