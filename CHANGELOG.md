@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.113...v3.12.0-beta.114) (2026-01-05)
+
+
+### Bug Fixes
+
+* **security:** update qs package to fix vulnerability CVE-2025-15284 ([#5686](https://github.com/OHIF/Viewers/issues/5686)) ([ca364a3](https://github.com/OHIF/Viewers/commit/ca364a3af7a29dc98d5c5b8e4c73abebc107c7ce))
+
+
+
+
+
 # [3.12.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.112...v3.12.0-beta.113) (2025-12-19)
 
 **Note:** Version bump only for package ohif-monorepo-root
