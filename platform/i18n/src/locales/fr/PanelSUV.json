@@ -1,0 +1,10 @@
+{
+  "Patient Information": "Informations patient",
+  "Patient Sex": "Sexe du patient",
+  "Weight": "Poids",
+  "Total Dose": "Dose totale",
+  "Half Life": "Demi-vie",
+  "Injection Time": "Heure d'injection",
+  "Acquisition Time": "Heure d'acquisition",
+  "Reload Data": "Recharger les données"
+}

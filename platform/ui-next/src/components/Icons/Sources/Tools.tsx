@@ -10,7 +10,6 @@ export const ToolLayout = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <title>tool-layout</title>
     <g
       id="tool-layout"
       stroke="none"
@@ -394,7 +393,6 @@ export const ToolBidirectional = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <title>tool-bidirectional</title>
     <g
       id="tool-bidirectional"
       stroke="none"
@@ -615,7 +613,6 @@ export const ToolCapture = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <title>tool-</title>
     <g
       id="tool-"
       stroke="none"

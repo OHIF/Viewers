@@ -1,11 +1,11 @@
-import moment from 'moment';
-
 /**
  * Formats DICOM date.
+ * Re-exported from @ohif/ui-next for backward compatibility.
  *
  * @param {string} date
  * @param {string} strFormat
  */
-export default function formatDICOMDate(date, strFormat = 'MMM D, YYYY') {
-  return moment(date, 'YYYYMMDD').format(strFormat);
-}
+import { formatDICOMDate } from '@ohif/ui-next';
+
+export { formatDICOMDate };
+export default formatDICOMDate;

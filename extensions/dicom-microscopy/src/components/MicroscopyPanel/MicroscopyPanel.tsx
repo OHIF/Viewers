@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { callInputDialog } from '@ohif/extension-default';
-import { ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
+import { ExtensionManager, CommandsManager, DicomMetadataStore, utils } from '@ohif/core';
 import { DataRow } from '@ohif/ui-next';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
 import constructSR from '../../utils/constructSR';
-import { saveByteArray } from '../../utils/saveByteArray';
+
+const { downloadDicom } = utils;
 
 let saving = false;
 const { datasetToBuffer } = dcmjs.data;
@@ -197,7 +198,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
         if (dataSource.wadoRoot == 'saveDicom') {
           // download as DICOM file
           const part10Buffer = datasetToBuffer(dataset);
-          saveByteArray(part10Buffer, `sr-microscopy.dcm`);
+          downloadDicom(part10Buffer, { filename: `sr-microscopy.dcm` });
         } else {
           // Save into Web Data source
           const { StudyInstanceUID } = dataset;
@@ -277,11 +278,11 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
    * Handler for "Edit" action of an annotation item
    * @param param0
    */
-  const onMeasurementItemEditHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
+  const onMeasurementItemEditHandler = ({ uid }: { uid: string; isActive: boolean }) => {
     props.commandsManager.runCommand('setLabel', { uid }, 'MICROSCOPY');
   };
 
-  const onMeasurementDeleteHandler = ({ uid, isActive }: { uid: string; isActive: boolean }) => {
+  const onMeasurementDeleteHandler = ({ uid }: { uid: string; isActive: boolean }) => {
     const roiAnnotation = microscopyService.getAnnotation(uid);
     microscopyService.removeAnnotation(roiAnnotation);
   };

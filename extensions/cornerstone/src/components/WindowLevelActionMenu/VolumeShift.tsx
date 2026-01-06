@@ -2,6 +2,7 @@ import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'r
 import { VolumeShiftProps } from '../../types/ViewportPresets';
 import { Numeric } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
@@ -19,6 +20,7 @@ export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement {
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const { actor } = viewport.getActors()[0];
   const ofun = actor.getProperty().getScalarOpacity(0);
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   useEffect(() => {
     if (isBlocking) {
@@ -65,7 +67,7 @@ export function VolumeShift({ viewportId }: VolumeShiftProps): ReactElement {
             onMouseUp={() => setIsBlocking(false)}
           >
             <div className="flex flex-row items-center">
-              <Numeric.Label className="w-16">Shift</Numeric.Label>
+              <Numeric.Label className="w-16">{t('Shift')}</Numeric.Label>
               <Numeric.SingleRange sliderClassName="mx-2 flex-grow" />
             </div>
           </Numeric.Container>

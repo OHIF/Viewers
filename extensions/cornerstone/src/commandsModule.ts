@@ -179,6 +179,31 @@ function commandsModule({
     }
   }
 
+  /**
+   * Creates a command function that sets a style property for segmentation types.
+   * If type is provided, sets the property for that type only.
+   * If type is not provided, sets the property for both Labelmap and Contour types.
+   * @param propertyName - The name of the style property to set
+   * @returns A command function that takes { type, value }
+   */
+  const createSetStyleCommand = (propertyName: string) => {
+    return ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      if (type) {
+        segmentationService.setStyle({ type }, { [propertyName]: value });
+      } else {
+        segmentationService.setStyle(
+          { type: SegmentationRepresentations.Labelmap },
+          { [propertyName]: value }
+        );
+        segmentationService.setStyle(
+          { type: SegmentationRepresentations.Contour },
+          { [propertyName]: value }
+        );
+      }
+    };
+  };
+
   const actions = {
     jumpToMeasurementViewport: ({ annotationUID, measurement }) => {
       cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
@@ -1647,15 +1672,13 @@ function commandsModule({
      * Stores a segmentation and shows it in the viewport
      * @param props.segmentationId - The ID of the segmentation to store
      */
-    storeSegmentationCommand: async ({ segmentationId }) => {
+    storeSegmentationCommand: async args => {
+      const { segmentationId } = args;
       const { segmentationService, viewportGridService } = servicesManager.services;
 
       const displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
-        getReport: () =>
-          commandsManager.runCommand('storeSegmentation', {
-            segmentationId,
-          }),
+        getReport: () => commandsManager.runCommand('storeSegmentation', args),
         reportType: 'Segmentation',
       });
 
@@ -1728,89 +1751,6 @@ function commandsModule({
       const viewportId = viewportGridService.getActiveViewportId();
       const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
       segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
-    },
-
-    /**
-     * Sets the fill alpha value for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - The alpha value to set
-     */
-    setFillAlphaCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { fillAlpha: value });
-    },
-
-    /**
-     * Sets the outline width for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - The width value to set
-     */
-    setOutlineWidthCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { outlineWidth: value });
-    },
-
-    /**
-     * Sets whether to render fill for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render fill
-     */
-    setRenderFillCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderFill: value });
-    },
-
-    /**
-     * Sets whether to render fill for inactive segmentations of a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render fill for inactive segmentations
-     */
-    setRenderFillInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderFillInactive: value });
-    },
-
-    /**
-     * Sets whether to render outline for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render outline
-     */
-    setRenderOutlineCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderOutline: value });
-    },
-
-    /**
-     * Sets whether to render outline for inactive segmentations of a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render outline for inactive segmentations
-     */
-    setRenderOutlineInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderOutlineInactive: value });
-    },
-
-    /**
-     * Sets the fill alpha for inactive segmentations.
-     * If no type is provided, the fill alpha for all types will be set.
-     * @param props.type - The type of segmentation
-     * @param props.value - The alpha value to set
-     */
-    setFillAlphaInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-
-      if (type) {
-        segmentationService.setStyle({ type }, { fillAlphaInactive: value });
-      } else {
-        segmentationService.setStyle(
-          { type: SegmentationRepresentations.Labelmap },
-          { fillAlphaInactive: value }
-        );
-        segmentationService.setStyle(
-          { type: SegmentationRepresentations.Contour },
-          { fillAlphaInactive: value }
-        );
-      }
     },
 
     editSegmentLabel: async ({ segmentationId, segmentIndex }) => {
@@ -2733,25 +2673,25 @@ function commandsModule({
       commandFn: actions.toggleRenderInactiveSegmentationsCommand,
     },
     setFillAlpha: {
-      commandFn: actions.setFillAlphaCommand,
+      commandFn: createSetStyleCommand('fillAlpha'),
     },
     setOutlineWidth: {
-      commandFn: actions.setOutlineWidthCommand,
+      commandFn: createSetStyleCommand('outlineWidth'),
     },
     setRenderFill: {
-      commandFn: actions.setRenderFillCommand,
+      commandFn: createSetStyleCommand('renderFill'),
     },
     setRenderFillInactive: {
-      commandFn: actions.setRenderFillInactiveCommand,
+      commandFn: createSetStyleCommand('renderFillInactive'),
     },
     setRenderOutline: {
-      commandFn: actions.setRenderOutlineCommand,
+      commandFn: createSetStyleCommand('renderOutline'),
     },
     setRenderOutlineInactive: {
-      commandFn: actions.setRenderOutlineInactiveCommand,
+      commandFn: createSetStyleCommand('renderOutlineInactive'),
     },
     setFillAlphaInactive: {
-      commandFn: actions.setFillAlphaInactiveCommand,
+      commandFn: createSetStyleCommand('fillAlphaInactive'),
     },
     editSegmentLabel: {
       commandFn: actions.editSegmentLabel,
