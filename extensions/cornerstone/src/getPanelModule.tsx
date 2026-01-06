@@ -4,6 +4,10 @@ import { Toolbox } from '@ohif/extension-default';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
+import ServerSideSegmentationPanel from './panels/ServerSideSegmentationPanel';
+import LocalSegmentationPanel from './panels/LocalSegmentationPanel';
+import LocalSegmentation3DPanel from './panels/LocalSegmentation3DPanel';
+import { PanelSection } from '@ohif/ui-next';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 
@@ -48,12 +52,41 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     const tKey = `${props.segmentationRepresentationType ?? 'Segmentation'} tools`;
     const tValue = t(tKey);
 
+    const isLabelmap = props.segmentationRepresentationType === SegmentationRepresentations.Labelmap;
+
     return (
       <>
         <Toolbox
           buttonSectionId={toolSectionMap[props.segmentationRepresentationType]}
           title={tValue}
         />
+        {isLabelmap && (
+          <>
+            {/*<LocalSegmentation3DPanel*/}
+            {/*  commandsManager={commandsManager}*/}
+            {/*  servicesManager={servicesManager}*/}
+            {/*  extensionManager={extensionManager}*/}
+            {/*/>*/}
+            {/*<LocalSegmentationPanel*/}
+            {/*  commandsManager={commandsManager}*/}
+            {/*  servicesManager={servicesManager}*/}
+            {/*  extensionManager={extensionManager}*/}
+            {/*/>*/}
+            <PanelSection defaultOpen={false}>
+              <PanelSection.Header>
+                <span>Server-side segmentation</span>
+              </PanelSection.Header>
+              <PanelSection.Content>
+                <ServerSideSegmentationPanel
+                  commandsManager={commandsManager}
+                  servicesManager={servicesManager}
+                  extensionManager={extensionManager}
+                  {...props}
+                />
+              </PanelSection.Content>
+            </PanelSection>
+          </>
+        )}
         <PanelSegmentation
           commandsManager={commandsManager}
           servicesManager={servicesManager}

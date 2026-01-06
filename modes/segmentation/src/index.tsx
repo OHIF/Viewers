@@ -232,9 +232,9 @@ function modeFactory({ modeConfiguration }) {
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocol used by the mode */
-    // Commented out to just use the most applicable registered hanging protocol
-    // The example is used for a grid layout to specify that as a preferred layout
-    hangingProtocol: ['@ohif/mnGrid'],
+    // Use MPR (Multi-Planar Reconstruction) which uses volume viewports
+    // Required for segmentation tools including Local Segmentation (Brush, Threshold, Magic Wand)
+    hangingProtocol: ['mpr'],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
   };

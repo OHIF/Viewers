@@ -6,3 +6,4 @@ export * from './useViewportHover';
 export * from './useViewportDisplaySets';
 export * from './useMeasurementTracking';
 export * from './useViewportRendering';
+export * from './useMagicWandSegmentation';

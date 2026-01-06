@@ -7,6 +7,7 @@ import {
   Types as CoreTypes,
   BaseVolumeViewport,
   getRenderingEngines,
+  cache,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -15,7 +16,11 @@ import {
   annotation,
   Types as ToolTypes,
   SplineContourSegmentationTool,
+  segmentation,
 } from '@cornerstonejs/tools';
+import {
+  setSegmentationDirty,
+} from '@cornerstonejs/tools/utilities/segmentation/utilities';
 import {
   SegmentInfo,
   LogicalOperation,
@@ -2429,6 +2434,917 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
+
+    // ========== Local Segmentation Commands ==========
+
+    /**
+     * Ensure an active labelmap segmentation exists
+     */
+    ensureActiveLabelmapSegmentation: async ({ label, segmentIndex }) => {
+      const { ensureActiveLabelmapSegmentation } = await import('./utils/localSegmentationUtils');
+      return ensureActiveLabelmapSegmentation(servicesManager, commandsManager, label, segmentIndex);
+    },
+
+    /**
+     * Apply threshold to current slice
+     */
+    applyThresholdToCurrentSlice: async ({ min, max, segmentIndex }) => {
+      const { applyThresholdToSlice } = await import('./utils/localSegmentationUtils');
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+      if (!viewport) {
+        console.error('[LocalSegmentation] No active viewport');
+        uiNotificationService.show({
+          title: 'Threshold Error',
+          message: 'No active viewport found',
+          type: 'error',
+        });
+        return;
+      }
+
+      // Check if it's a volume viewport
+      if (!(viewport instanceof BaseVolumeViewport)) {
+        console.error('[LocalSegmentation] Not a volume viewport');
+        uiNotificationService.show({
+          title: 'Threshold Error',
+          message: 'Local segmentation requires a volume viewport. Please switch to volume rendering.',
+          type: 'error',
+          duration: 5000,
+        });
+        return;
+      }
+
+      const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+      if (!activeSegmentation) {
+        console.error('[LocalSegmentation] No active segmentation');
+        uiNotificationService.show({
+          title: 'Threshold Error',
+          message: 'No active segmentation. Please create one first.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const success = await applyThresholdToSlice(
+        viewport,
+        activeSegmentation.segmentationId,
+        segmentIndex,
+        min,
+        max
+      );
+
+      if (success) {
+        uiNotificationService.show({
+          title: 'Threshold Applied',
+          message: `Threshold applied to current slice`,
+          type: 'success',
+          duration: 2000,
+        });
+      } else {
+        uiNotificationService.show({
+          title: 'Threshold Error',
+          message: 'Failed to apply threshold',
+          type: 'error',
+        });
+      }
+    },
+
+    /**
+     * Activate Magic Wand mode (waits for user click)
+     */
+    activateMagicWandMode: ({ tolerance, connectivity, maxPixels, segmentIndex, onComplete, onCancel }) => {
+      console.log('[LocalSegmentation] Activating Magic Wand mode');
+
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+
+      // Create a click listener for the viewport
+      const element = document.querySelector(`[data-viewport-uid="${viewportId}"]`);
+      if (!element) {
+        console.error('[LocalSegmentation] Could not find viewport element');
+        onCancel?.();
+        return;
+      }
+
+      const clickHandler = async (evt: MouseEvent) => {
+        console.log('[LocalSegmentation] Magic Wand click detected');
+
+        // Remove listener immediately
+        element.removeEventListener('click', clickHandler);
+
+        try {
+          const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!viewport) {
+            throw new Error('No active viewport');
+          }
+
+          // Check if it's a volume viewport
+          if (!(viewport instanceof BaseVolumeViewport)) {
+            throw new Error('Local segmentation requires a volume viewport. Please switch to volume rendering.');
+          }
+
+          const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+          if (!activeSegmentation) {
+            throw new Error('No active segmentation');
+          }
+
+          // Get canvas position
+          const rect = (evt.target as HTMLElement).getBoundingClientRect();
+          const canvasPos: csTypes.Point2 = [
+            evt.clientX - rect.left,
+            evt.clientY - rect.top,
+          ];
+
+          // Convert to world coordinates
+          const worldPos = viewport.canvasToWorld(canvasPos);
+
+          // Get slice data
+          const { getActiveSliceScalarData, worldToImageIndex, apply2DMaskToLabelmap } = await import('./utils/localSegmentationUtils');
+          const sliceData = getActiveSliceScalarData(viewport);
+
+          if (!sliceData) {
+            throw new Error('Could not get slice data');
+          }
+
+          const { scalarData, width, height, sliceIndex, volumeId } = sliceData;
+
+          // Get the volume to convert world to index
+          const volume = cache.getVolume(volumeId);
+          if (!volume) {
+            throw new Error('Could not get volume');
+          }
+
+          const indexCoords = worldToImageIndex(worldPos, volume);
+          if (!indexCoords) {
+            throw new Error('Could not convert coordinates');
+          }
+
+          const { i, j } = indexCoords;
+
+          console.log('[LocalSegmentation] Seed point:', { i, j, sliceIndex });
+
+          // Get seed value to calculate threshold range
+          const seedIndex = j * width + i;
+          const seedValue = scalarData[seedIndex];
+          const minIntensity = seedValue - tolerance;
+          const maxIntensity = seedValue + tolerance;
+
+          console.log('[LocalSegmentation] Starting Magic Wand worker', {
+            seedValue,
+            minIntensity,
+            maxIntensity,
+            tolerance,
+          });
+
+          // Create inline worker
+          const workerCode = `
+            self.onmessage = function(e) {
+              const {
+                scalarData,
+                width,
+                height,
+                seedX,
+                seedY,
+                minIntensity,
+                maxIntensity,
+                connectivity,
+                maxPixels,
+              } = e.data;
+
+              console.log('[MagicWandWorker] Starting region growing');
+
+              try {
+                const mask = new Uint8Array(width * height);
+
+                if (seedX < 0 || seedX >= width || seedY < 0 || seedY >= height) {
+                  console.error('[MagicWandWorker] Seed point out of bounds');
+                  self.postMessage({ mask, pixelCount: 0 });
+                  return;
+                }
+
+                const seedIndex = seedY * width + seedX;
+                const seedValue = scalarData[seedIndex];
+
+                if (seedValue < minIntensity || seedValue > maxIntensity) {
+                  console.warn('[MagicWandWorker] Seed value outside threshold range');
+                  self.postMessage({ mask, pixelCount: 0 });
+                  return;
+                }
+
+                const queue = [[seedX, seedY]];
+                const visited = new Uint8Array(width * height);
+                visited[seedIndex] = 1;
+                mask[seedIndex] = 1;
+                let pixelCount = 1;
+
+                const offsets = connectivity === 4
+                  ? [[0, 1], [1, 0], [0, -1], [-1, 0]]
+                  : [[0, 1], [1, 0], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+
+                while (queue.length > 0 && pixelCount < maxPixels) {
+                  const [x, y] = queue.shift();
+
+                  for (const [dx, dy] of offsets) {
+                    const nx = x + dx;
+                    const ny = y + dy;
+
+                    if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
+                      continue;
+                    }
+
+                    const nIndex = ny * width + nx;
+
+                    if (visited[nIndex]) {
+                      continue;
+                    }
+
+                    visited[nIndex] = 1;
+
+                    const nValue = scalarData[nIndex];
+                    if (nValue >= minIntensity && nValue <= maxIntensity) {
+                      mask[nIndex] = 1;
+                      queue.push([nx, ny]);
+                      pixelCount++;
+
+                      if (pixelCount >= maxPixels) {
+                        break;
+                      }
+                    }
+                  }
+                }
+
+                console.log('[MagicWandWorker] Region growing completed. Pixels:', pixelCount);
+                self.postMessage({ mask, pixelCount });
+              } catch (error) {
+                console.error('[MagicWandWorker] Error:', error);
+                self.postMessage({ mask: new Uint8Array(width * height), pixelCount: 0 });
+              }
+            };
+          `;
+          const blob = new Blob([workerCode], { type: 'application/javascript' });
+          const workerUrl = URL.createObjectURL(blob);
+          const worker = new Worker(workerUrl);
+
+          worker.onmessage = async (e: MessageEvent) => {
+            const { mask, pixelCount } = e.data;
+            console.log('[LocalSegmentation] Worker completed. Pixels:', pixelCount);
+
+            worker.terminate();
+            URL.revokeObjectURL(workerUrl);
+
+            if (pixelCount > 0) {
+              // Apply mask to segmentation
+              await apply2DMaskToLabelmap(
+                activeSegmentation.segmentationId,
+                segmentIndex,
+                sliceIndex,
+                mask,
+                width,
+                height
+              );
+
+              uiNotificationService.show({
+                title: 'Magic Wand',
+                message: `Region growing completed: ${pixelCount} pixels`,
+                type: 'success',
+                duration: 2000,
+              });
+
+              onComplete?.();
+            } else {
+              uiNotificationService.show({
+                title: 'Magic Wand',
+                message: 'No pixels matched the criteria',
+                type: 'warning',
+              });
+              onComplete?.();
+            }
+          };
+
+          worker.onerror = (error) => {
+            console.error('[LocalSegmentation] Worker error:', error);
+            worker.terminate();
+            URL.revokeObjectURL(workerUrl);
+
+            uiNotificationService.show({
+              title: 'Magic Wand Error',
+              message: 'Failed to run region growing',
+              type: 'error',
+            });
+            onCancel?.();
+          };
+
+          // Send data to worker (need to clone the typed array for transfer)
+          const scalarDataCopy = new Float32Array(scalarData);
+          worker.postMessage({
+            scalarData: scalarDataCopy,
+            width,
+            height,
+            seedX: i,
+            seedY: j,
+            minIntensity,
+            maxIntensity,
+            connectivity,
+            maxPixels,
+          }, [scalarDataCopy.buffer]);
+
+        } catch (error) {
+          console.error('[LocalSegmentation] Magic Wand error:', error);
+          uiNotificationService.show({
+            title: 'Magic Wand Error',
+            message: error.message || 'Failed to execute magic wand',
+            type: 'error',
+          });
+          onCancel?.();
+        }
+      };
+
+      // Add click listener
+      element.addEventListener('click', clickHandler, { once: true });
+
+      // Store the handler so we can cancel it
+      (commandsManager as any)._magicWandClickHandler = { element, handler: clickHandler };
+    },
+
+    /**
+     * Cancel Magic Wand mode
+     */
+    cancelMagicWandMode: () => {
+      const handler = (commandsManager as any)._magicWandClickHandler;
+      if (handler) {
+        handler.element.removeEventListener('click', handler.handler);
+        delete (commandsManager as any)._magicWandClickHandler;
+      }
+    },
+
+    // ========== Local Segmentation 3D Commands ==========
+
+    /**
+     * Apply threshold to entire volume (3D)
+     */
+    applyThreshold3DToVolume: async ({
+      min,
+      max,
+      segmentIndex,
+      onProgress,
+      onComplete,
+      onError,
+      workerRef,
+    }) => {
+      const { getVolumeScalarData, applyVoxelIndicesToLabelmap } = await import(
+        './utils/localSegmentation3DUtils'
+      );
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+      if (!viewport) {
+        console.error('[LocalSegmentation3D] No active viewport');
+        onError?.(new Error('No active viewport'));
+        return;
+      }
+
+      if (!(viewport instanceof BaseVolumeViewport)) {
+        console.error('[LocalSegmentation3D] Not a volume viewport');
+        onError?.(new Error('Requires volume viewport'));
+        return;
+      }
+
+      const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+      if (!activeSegmentation) {
+        console.error('[LocalSegmentation3D] No active segmentation');
+        onError?.(new Error('No active segmentation'));
+        return;
+      }
+
+      try {
+        // Get volume data
+        const volumeData = getVolumeScalarData(viewport);
+        if (!volumeData) {
+          throw new Error('Could not get volume data');
+        }
+
+        const { scalarData, dimensions } = volumeData;
+
+        console.log('[LocalSegmentation3D] Starting threshold 3D worker');
+        onProgress?.(0, 'Initializing...');
+
+        // Create inline worker
+        const workerCode = `
+          self.onmessage = function(e) {
+            const { scalarData, dimensions, minIntensity, maxIntensity, chunkSize } = e.data;
+            const [width, height, depth] = dimensions;
+            const totalVoxels = scalarData.length;
+            const matchedIndices = [];
+            let processedVoxels = 0;
+            let lastProgressReport = 0;
+
+            for (let start = 0; start < totalVoxels; start += chunkSize) {
+              const end = Math.min(start + chunkSize, totalVoxels);
+
+              for (let i = start; i < end; i++) {
+                const value = scalarData[i];
+                if (value >= minIntensity && value <= maxIntensity) {
+                  matchedIndices.push(i);
+                }
+              }
+
+              processedVoxels = end;
+              const progress = (processedVoxels / totalVoxels) * 100;
+
+              if (progress - lastProgressReport >= 5 || end === totalVoxels) {
+                self.postMessage({
+                  type: 'progress',
+                  progress,
+                  processedVoxels,
+                  totalVoxels,
+                  matchedVoxels: matchedIndices.length,
+                });
+                lastProgressReport = progress;
+              }
+            }
+
+            const matchedIndicesArray = new Uint32Array(matchedIndices);
+            self.postMessage({
+              type: 'complete',
+              matchedIndices: matchedIndicesArray,
+              matchedCount: matchedIndices.length,
+            }, [matchedIndicesArray.buffer]);
+          };
+        `;
+
+        const blob = new Blob([workerCode], { type: 'application/javascript' });
+        const workerUrl = URL.createObjectURL(blob);
+        const worker = new Worker(workerUrl);
+
+        if (workerRef) {
+          workerRef.current = worker;
+        }
+
+        worker.onmessage = async (e: MessageEvent) => {
+          const message = e.data;
+
+          if (message.type === 'progress') {
+            onProgress?.(
+              message.progress,
+              `Processing... ${message.matchedVoxels} voxels matched`
+            );
+          } else if (message.type === 'complete') {
+            console.log('[LocalSegmentation3D] Threshold complete:', message.matchedCount, 'voxels');
+
+            // Use slice-by-slice 2D approach (same as Magic Wand 3D)
+            const { apply2DMaskToLabelmap } = await import('./utils/localSegmentationUtils');
+
+            const [width, height, depth] = dimensions;
+            const sliceMasks = new Map<number, Uint8Array>();
+
+            // Initialize slice masks
+            for (let k = 0; k < depth; k++) {
+              sliceMasks.set(k, new Uint8Array(width * height));
+            }
+
+            // Fill slice masks
+            for (let i = 0; i < message.matchedIndices.length; i++) {
+              const linearIndex = message.matchedIndices[i];
+              const k = Math.floor(linearIndex / (width * height));
+              const remainder = linearIndex % (width * height);
+
+              const mask = sliceMasks.get(k);
+              if (mask) {
+                mask[remainder] = 1;
+              }
+            }
+
+            // Apply each slice
+            let appliedSlices = 0;
+            for (const [sliceIndex, mask] of sliceMasks.entries()) {
+              const hasVoxels = mask.some(v => v !== 0);
+              if (hasVoxels) {
+                await apply2DMaskToLabelmap(
+                  activeSegmentation.segmentationId,
+                  segmentIndex,
+                  sliceIndex,
+                  mask,
+                  width,
+                  height
+                );
+                appliedSlices++;
+              }
+            }
+
+            console.log('[LocalSegmentation3D] Threshold applied to', appliedSlices, 'slices');
+
+            worker.terminate();
+            URL.revokeObjectURL(workerUrl);
+            if (workerRef) {
+              workerRef.current = null;
+            }
+
+            uiNotificationService.show({
+              title: 'Threshold 3D Complete',
+              message: `Segmented ${message.matchedCount} voxels`,
+              type: 'success',
+              duration: 3000,
+            });
+
+            onComplete?.();
+          }
+        };
+
+        worker.onerror = error => {
+          console.error('[LocalSegmentation3D] Worker error:', error);
+          worker.terminate();
+          URL.revokeObjectURL(workerUrl);
+          if (workerRef) {
+            workerRef.current = null;
+          }
+          onError?.(new Error('Worker error'));
+        };
+
+        // Send data to worker
+        const scalarDataCopy = new Float32Array(scalarData);
+        worker.postMessage(
+          {
+            scalarData: scalarDataCopy,
+            dimensions,
+            minIntensity: min,
+            maxIntensity: max,
+            chunkSize: 1000000,
+          },
+          [scalarDataCopy.buffer]
+        );
+      } catch (error) {
+        console.error('[LocalSegmentation3D] Threshold 3D error:', error);
+        onError?.(error);
+      }
+    },
+
+    /**
+     * Activate Magic Wand 3D mode (waits for user click)
+     */
+    activateMagicWand3DMode: ({
+      tolerance,
+      useMinMax,
+      minIntensity,
+      maxIntensity,
+      connectivity,
+      maxRegionVoxels,
+      maxRadiusVoxels,
+      segmentIndex,
+      onProgress,
+      onComplete,
+      onCancel,
+      onError,
+      workerRef,
+    }) => {
+      console.log('[LocalSegmentation3D] Activating Magic Wand 3D mode');
+
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+
+      // Create a click listener for the viewport
+      const element = document.querySelector(`[data-viewport-uid="${viewportId}"]`);
+      if (!element) {
+        console.error('[LocalSegmentation3D] Could not find viewport element');
+        onCancel?.();
+        return;
+      }
+
+      const clickHandler = async (evt: MouseEvent) => {
+        console.log('[LocalSegmentation3D] Magic Wand 3D click detected');
+
+        // Remove listener immediately
+        element.removeEventListener('click', clickHandler);
+
+        try {
+          const { getVolumeScalarData, worldToVoxelIndex, applyVoxelIndicesToLabelmap } =
+            await import('./utils/localSegmentation3DUtils');
+
+          const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          if (!viewport) {
+            throw new Error('No active viewport');
+          }
+
+          if (!(viewport instanceof BaseVolumeViewport)) {
+            throw new Error('Requires volume viewport');
+          }
+
+          const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+          if (!activeSegmentation) {
+            throw new Error('No active segmentation');
+          }
+
+          // Get canvas position and convert to world
+          const rect = (evt.target as HTMLElement).getBoundingClientRect();
+          const canvasPos: csTypes.Point2 = [evt.clientX - rect.left, evt.clientY - rect.top];
+          const worldPos = viewport.canvasToWorld(canvasPos);
+
+          // Get volume data
+          const volumeData = getVolumeScalarData(viewport);
+          if (!volumeData) {
+            throw new Error('Could not get volume data');
+          }
+
+          const { scalarData, dimensions, volumeId } = volumeData;
+
+          // Get the volume to convert world to index
+          const volume = cache.getVolume(volumeId);
+          if (!volume) {
+            throw new Error('Could not get volume');
+          }
+
+          const indexCoords = worldToVoxelIndex(worldPos, volume);
+          if (!indexCoords) {
+            throw new Error('Could not convert coordinates');
+          }
+
+          const { i: seedX, j: seedY, k: seedZ } = indexCoords;
+          console.log('[LocalSegmentation3D] Seed voxel:', { seedX, seedY, seedZ });
+          console.log('[LocalSegmentation3D] Dimensions:', dimensions);
+          console.log('[LocalSegmentation3D] Scalar data length:', scalarData.length);
+
+          // Validate seed is within bounds
+          if (seedX < 0 || seedX >= dimensions[0] || seedY < 0 || seedY >= dimensions[1] || seedZ < 0 || seedZ >= dimensions[2]) {
+            throw new Error(`Seed out of bounds: (${seedX}, ${seedY}, ${seedZ}) not in (${dimensions[0]}, ${dimensions[1]}, ${dimensions[2]})`);
+          }
+
+          const seedIndex = seedZ * dimensions[0] * dimensions[1] + seedY * dimensions[0] + seedX;
+          const seedValue = scalarData[seedIndex];
+          console.log('[LocalSegmentation3D] Seed index:', seedIndex, 'Seed value:', seedValue);
+
+          // Calculate min/max from seed value if using tolerance
+          let finalMin = minIntensity;
+          let finalMax = maxIntensity;
+
+          if (!useMinMax) {
+            const seedIndex = seedZ * dimensions[0] * dimensions[1] + seedY * dimensions[0] + seedX;
+            const seedValue = scalarData[seedIndex];
+            finalMin = seedValue - tolerance;
+            finalMax = seedValue + tolerance;
+            console.log('[LocalSegmentation3D] Seed value:', seedValue, 'Range:', [finalMin, finalMax]);
+          }
+
+          onProgress?.(0, 'Starting region growing...');
+
+          // Create Magic Wand 3D worker (inline)
+          const workerCode = `
+            self.onmessage = function(e) {
+              const { scalarData, dimensions, seedX, seedY, seedZ, minIntensity, maxIntensity, connectivity, maxRegionVoxels, maxRadiusVoxels } = e.data;
+              const [width, height, depth] = dimensions;
+
+              function getNeighborOffsets(connectivity) {
+                if (connectivity === 6) {
+                  return [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]];
+                } else if (connectivity === 18) {
+                  const offsets = [];
+                  for (let dx = -1; dx <= 1; dx++) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                      for (let dz = -1; dz <= 1; dz++) {
+                        const numNonZero = (dx !== 0 ? 1 : 0) + (dy !== 0 ? 1 : 0) + (dz !== 0 ? 1 : 0);
+                        if (numNonZero === 1 || numNonZero === 2) offsets.push([dx, dy, dz]);
+                      }
+                    }
+                  }
+                  return offsets;
+                } else {
+                  const offsets = [];
+                  for (let dx = -1; dx <= 1; dx++) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                      for (let dz = -1; dz <= 1; dz++) {
+                        if (dx === 0 && dy === 0 && dz === 0) continue;
+                        offsets.push([dx, dy, dz]);
+                      }
+                    }
+                  }
+                  return offsets;
+                }
+              }
+
+              function coordsToIndex(x, y, z, w, h) {
+                return z * w * h + y * w + x;
+              }
+
+              function linfinityDistance(x1, y1, z1, x2, y2, z2) {
+                return Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1), Math.abs(z2 - z1));
+              }
+
+              const seedIndex = coordsToIndex(seedX, seedY, seedZ, width, height);
+              const seedValue = scalarData[seedIndex];
+
+              if (seedValue < minIntensity || seedValue > maxIntensity) {
+                self.postMessage({ type: 'complete', voxelIndices: new Uint32Array(0), voxelCount: 0 });
+                return;
+              }
+
+              const totalVoxels = width * height * depth;
+              const visited = new Uint8Array(totalVoxels);
+              const acceptedIndices = [];
+              const queue = [[seedX, seedY, seedZ]];
+              visited[seedIndex] = 1;
+              acceptedIndices.push(seedIndex);
+
+              const neighborOffsets = getNeighborOffsets(connectivity);
+              let processedVoxels = 0;
+              let lastProgressReport = 0;
+
+              while (queue.length > 0 && acceptedIndices.length < maxRegionVoxels) {
+                const [x, y, z] = queue.shift();
+                processedVoxels++;
+
+                for (const [dx, dy, dz] of neighborOffsets) {
+                  const nx = x + dx;
+                  const ny = y + dy;
+                  const nz = z + dz;
+
+                  if (nx < 0 || nx >= width || ny < 0 || ny >= height || nz < 0 || nz >= depth) continue;
+
+                  const nIndex = coordsToIndex(nx, ny, nz, width, height);
+                  if (visited[nIndex]) continue;
+
+                  visited[nIndex] = 1;
+
+                  const distance = linfinityDistance(seedX, seedY, seedZ, nx, ny, nz);
+                  if (distance > maxRadiusVoxels) continue;
+
+                  const nValue = scalarData[nIndex];
+                  if (nValue >= minIntensity && nValue <= maxIntensity) {
+                    acceptedIndices.push(nIndex);
+                    queue.push([nx, ny, nz]);
+                    if (acceptedIndices.length >= maxRegionVoxels) break;
+                  }
+                }
+
+                if (processedVoxels - lastProgressReport >= 1000) {
+                  const progress = Math.min(95, (acceptedIndices.length / maxRegionVoxels) * 100);
+                  self.postMessage({ type: 'progress', progress, processedVoxels, acceptedVoxels: acceptedIndices.length });
+                  lastProgressReport = processedVoxels;
+                }
+              }
+
+              const voxelIndicesArray = new Uint32Array(acceptedIndices);
+              self.postMessage({ type: 'complete', voxelIndices: voxelIndicesArray, voxelCount: acceptedIndices.length }, [voxelIndicesArray.buffer]);
+            };
+          `;
+
+          const blob = new Blob([workerCode], { type: 'application/javascript' });
+          const workerUrl = URL.createObjectURL(blob);
+          const worker = new Worker(workerUrl);
+
+          if (workerRef) {
+            workerRef.current = worker;
+          }
+
+          worker.onmessage = async (e: MessageEvent) => {
+            const message = e.data;
+
+            if (message.type === 'progress') {
+              onProgress?.(
+                message.progress,
+                `Growing... ${message.acceptedVoxels} voxels`
+              );
+            } else if (message.type === 'complete') {
+              console.log('[LocalSegmentation3D] Magic Wand 3D complete:', message.voxelCount);
+              console.log('[LocalSegmentation3D] Voxel indices received:', message.voxelIndices);
+              console.log('[LocalSegmentation3D] Voxel indices type:', message.voxelIndices?.constructor?.name);
+              console.log('[LocalSegmentation3D] Voxel indices length:', message.voxelIndices?.length);
+
+              if (message.voxelCount > 0) {
+                console.log('[LocalSegmentation3D] Applying voxel indices to segmentation...');
+                console.log('[LocalSegmentation3D] Active segmentation ID:', activeSegmentation.segmentationId);
+                console.log('[LocalSegmentation3D] Segment index:', segmentIndex);
+
+                const { applyVoxelIndicesToLabelmap3D } = await import('./utils/localSegmentation3DUtils');
+
+                console.log('[LocalSegmentation3D] Applying voxel indices to 3D labelmap volume...');
+
+                const ok = await applyVoxelIndicesToLabelmap3D(
+                  activeSegmentation.segmentationId,
+                  segmentIndex,
+                  message.voxelIndices,
+                  dimensions
+                );
+
+                setSegmentationDirty(activeSegmentation.segmentationId);
+
+                segmentation.triggerSegmentationEvents.triggerSegmentationModified(
+                  activeSegmentation.segmentationId
+                );
+
+                if (!ok) {
+                  worker.terminate();
+                  URL.revokeObjectURL(workerUrl);
+                  if (workerRef) {
+                    workerRef.current = null;
+                  }
+
+                  uiNotificationService.show({
+                    title: 'Magic Wand 3D Error',
+                    message: 'Failed to apply segmentation to 3D labelmap volume (missing volumeId or volume not cached).',
+                    type: 'error',
+                    duration: 6000,
+                  });
+
+                  onError?.(new Error('Failed to apply segmentation to 3D labelmap volume'));
+                  return;
+                }
+              }
+
+              worker.terminate();
+              URL.revokeObjectURL(workerUrl);
+              if (workerRef) {
+                workerRef.current = null;
+              }
+
+              uiNotificationService.show({
+                title: 'Magic Wand 3D Complete',
+                message: `Region growing completed: ${message.voxelCount} voxels`,
+                type: 'success',
+                duration: 3000,
+              });
+
+              onComplete?.(message.voxelCount);
+            }
+          };
+
+          worker.onerror = error => {
+            console.error('[LocalSegmentation3D] Worker error:', error);
+            worker.terminate();
+            URL.revokeObjectURL(workerUrl);
+            if (workerRef) {
+              workerRef.current = null;
+            }
+            onError?.(new Error('Worker error'));
+          };
+
+          // Send data to worker
+          const scalarDataCopy = new Float32Array(scalarData);
+          worker.postMessage(
+            {
+              scalarData: scalarDataCopy,
+              dimensions,
+              seedX,
+              seedY,
+              seedZ,
+              minIntensity: finalMin,
+              maxIntensity: finalMax,
+              connectivity,
+              maxRegionVoxels,
+              maxRadiusVoxels,
+            },
+            [scalarDataCopy.buffer]
+          );
+        } catch (error) {
+          console.error('[LocalSegmentation3D] Magic Wand 3D error:', error);
+          onError?.(error);
+        }
+      };
+
+      // Add click listener
+      element.addEventListener('click', clickHandler, { once: true });
+
+      // Store the handler so we can cancel it
+      (commandsManager as any)._magicWand3DClickHandler = { element, handler: clickHandler };
+    },
+
+    /**
+     * Cancel Magic Wand 3D mode
+     */
+    cancelMagicWand3DMode: () => {
+      const handler = (commandsManager as any)._magicWand3DClickHandler;
+      if (handler) {
+        handler.element.removeEventListener('click', handler.handler);
+        delete (commandsManager as any)._magicWand3DClickHandler;
+      }
+    },
+
+    /**
+     * Clear a segment from the labelmap (3D)
+     */
+    clearSegment3D: async ({ segmentIndex, onComplete }) => {
+      const { clearSegment3D } = await import('./utils/localSegmentation3DUtils');
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+
+      const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+      if (!activeSegmentation) {
+        console.error('[LocalSegmentation3D] No active segmentation');
+        return;
+      }
+
+      const success = await clearSegment3D(activeSegmentation.segmentationId, segmentIndex);
+
+      if (success) {
+        uiNotificationService.show({
+          title: 'Segment Cleared',
+          message: `Segment ${segmentIndex} cleared`,
+          type: 'success',
+          duration: 2000,
+        });
+        onComplete?.();
+      }
+    },
   };
 
   const definitions = {
@@ -2749,6 +3665,34 @@ function commandsModule({
     decimateContours: actions.decimateContours,
     convertContourHoles: actions.convertContourHoles,
     setInterpolationToolConfiguration: actions.setInterpolationToolConfiguration,
+
+    // Local Segmentation Commands
+    ensureActiveLabelmapSegmentation: {
+      commandFn: actions.ensureActiveLabelmapSegmentation,
+    },
+    applyThresholdToCurrentSlice: {
+      commandFn: actions.applyThresholdToCurrentSlice,
+    },
+    activateMagicWandMode: {
+      commandFn: actions.activateMagicWandMode,
+    },
+    cancelMagicWandMode: {
+      commandFn: actions.cancelMagicWandMode,
+    },
+
+    // Local Segmentation 3D Commands
+    applyThreshold3DToVolume: {
+      commandFn: actions.applyThreshold3DToVolume,
+    },
+    activateMagicWand3DMode: {
+      commandFn: actions.activateMagicWand3DMode,
+    },
+    cancelMagicWand3DMode: {
+      commandFn: actions.cancelMagicWand3DMode,
+    },
+    clearSegment3D: {
+      commandFn: actions.clearSegment3D,
+    },
   };
 
   return {
