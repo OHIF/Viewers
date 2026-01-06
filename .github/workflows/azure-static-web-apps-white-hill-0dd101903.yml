@@ -41,9 +41,10 @@ jobs:
           skip_api_build: true
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: '/' # App source code path
+          # Because we set skip_app_build, app_location must point to the already-built assets.
+          app_location: 'platform/app/dist' # Built app content directory
           api_location: '' # Api source code path - optional
-          output_location: 'platform/app/dist' # Built app content directory - optional
+          output_location: '' # Not used when skip_app_build is true
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
