@@ -37,6 +37,8 @@ jobs:
             ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WHITE_HILL_0DD101903 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: 'upload'
+          skip_app_build: true
+          skip_api_build: true
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: '/' # App source code path
