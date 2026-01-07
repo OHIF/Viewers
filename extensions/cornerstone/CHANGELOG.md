@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.117...v3.12.0-beta.118) (2026-01-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Use active segmentation for navigation. ([#5692](https://github.com/OHIF/Viewers/issues/5692)) ([ecc74a5](https://github.com/OHIF/Viewers/commit/ecc74a53e097b13851ea8f7be0cabab6b0d82b7f))
+
+
+
+
+
 # [3.12.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.116...v3.12.0-beta.117) (2026-01-06)
 
 
