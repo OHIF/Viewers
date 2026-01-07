@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.117...v3.12.0-beta.118) (2026-01-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Use active segmentation for navigation. ([#5692](https://github.com/OHIF/Viewers/issues/5692)) ([ecc74a5](https://github.com/OHIF/Viewers/commit/ecc74a53e097b13851ea8f7be0cabab6b0d82b7f))
+
+
+
+
+
+# [3.12.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.116...v3.12.0-beta.117) (2026-01-06)
+
+
+### Bug Fixes
+
+* **capture:** Ensure download filename has the correct extension. ([#5691](https://github.com/OHIF/Viewers/issues/5691)) ([38a8406](https://github.com/OHIF/Viewers/commit/38a8406a66a5d37c403d1dbd09d7e1a62affff15))
+
+
+
+
+
+# [3.12.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.115...v3.12.0-beta.116) (2026-01-06)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.114...v3.12.0-beta.115) (2026-01-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.12.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.113...v3.12.0-beta.114) (2026-01-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.12.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.112...v3.12.0-beta.113) (2025-12-19)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
