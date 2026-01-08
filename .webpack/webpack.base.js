@@ -201,6 +201,11 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
+        // Local extensions
+        '@semenoflabs/extension-side-chat': path.resolve(
+          __dirname,
+          '../extensions/side-chat/src/index.tsx'
+        ),
       },
       // Which directories to search when resolving modules
       modules: [
