@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Input, ScrollArea, Icons } from '@ohif/ui-next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -160,14 +162,14 @@ function SideChatPanel({ servicesManager, commandsManager }) {
         <div className="flex flex-col gap-3 pr-2">
           {/* Welcome message */}
           <div className="flex flex-col items-start">
-            <div className="bg-orange-900/50 text-orange-100 max-w-[85%] rounded-lg px-3 py-2">
+            <div className="max-w-[85%] rounded-lg bg-orange-900/50 px-3 py-2 text-orange-100">
               <div className="text-sm">
                 {isReportReady
                   ? "Hello! I'm your MRI Assistant. Your report is ready - ask me anything about it!"
                   : "Hello! I'm your MRI Assistant. Please click the 'Report' button in the Study Browser to generate a report first."}
               </div>
             </div>
-            <span className="text-orange-400/70 mt-1 text-xs">Assistant</span>
+            <span className="mt-1 text-xs text-orange-400/70">Assistant</span>
           </div>
 
           {messages.map(msg => (
@@ -182,9 +184,16 @@ function SideChatPanel({ servicesManager, commandsManager }) {
                     : 'bg-orange-900/50 text-orange-100'
                 }`}
               >
-                <div className="text-sm">{msg.text}</div>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  className="prose prose-invert prose-sm max-w-none"
+                >
+                  {msg.text}
+                </ReactMarkdown>
               </div>
-              <span className={`mt-1 text-xs ${msg.role === 'user' ? 'text-orange-400/70' : 'text-orange-400/70'}`}>
+              <span
+                className={`mt-1 text-xs ${msg.role === 'user' ? 'text-orange-400/70' : 'text-orange-400/70'}`}
+              >
                 {msg.role === 'user' ? 'You' : 'Assistant'} • {msg.timestamp.toLocaleTimeString()}
               </span>
             </div>
@@ -193,7 +202,7 @@ function SideChatPanel({ servicesManager, commandsManager }) {
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex flex-col items-start">
-              <div className="bg-orange-900/50 text-orange-100 flex max-w-[85%] items-center gap-2 rounded-lg px-3 py-2">
+              <div className="flex max-w-[85%] items-center gap-2 rounded-lg bg-orange-900/50 px-3 py-2 text-orange-100">
                 <Icons.LoadingSpinner className="h-4 w-4 animate-spin text-orange-400" />
                 <div className="text-sm">Thinking...</div>
               </div>
@@ -218,7 +227,7 @@ function SideChatPanel({ servicesManager, commandsManager }) {
         <Button
           onClick={handleSend}
           disabled={!inputValue.trim() || isLoading || !isReportReady}
-          className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white"
+          className="bg-orange-500 text-white hover:bg-orange-600 disabled:bg-orange-500/50"
         >
           {isLoading ? (
             <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />

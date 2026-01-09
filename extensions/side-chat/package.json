@@ -41,6 +41,8 @@
     "webpack-merge": "5.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.28.2"
+    "@babel/runtime": "7.28.2",
+    "react-markdown": "8.0.7",
+    "remark-gfm": "3.0.1"
   }
 }

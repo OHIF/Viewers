@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Input, Icons } from '@ohif/ui-next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -26,9 +28,8 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
   // Get the API base URL from environment (same as file upload)
   // @ts-ignore - REACT_APP_CHAT_API_URL is injected at build time
   const chatApiUrl = process.env.REACT_APP_CHAT_API_URL || '';
-  const ephemeralChatEndpoint = apiEndpoint || (chatApiUrl
-    ? `${chatApiUrl}/api/ephemeral_chat`
-    : '/api/ephemeral_chat');
+  const ephemeralChatEndpoint =
+    apiEndpoint || (chatApiUrl ? `${chatApiUrl}/api/ephemeral_chat` : '/api/ephemeral_chat');
 
   // Log the endpoint on mount for debugging
   useEffect(() => {
@@ -157,9 +158,7 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
       {/* Status indicator */}
       <div
         className={`flex items-center gap-2 rounded px-2 py-1 text-xs ${
-          isReportReady
-            ? 'bg-green-500/20 text-green-400'
-            : 'bg-yellow-500/20 text-yellow-400'
+          isReportReady ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
         }`}
       >
         <div
@@ -169,11 +168,11 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
       </div>
 
       {/* Messages area */}
-      <div className="bg-background max-h-64 min-h-32 overflow-y-auto rounded border p-2">
+      <div className="bg-background min-h-32 max-h-64 overflow-y-auto rounded border p-2">
         <div className="flex flex-col gap-2">
           {/* Initial welcome message */}
           <div className="flex flex-col items-start">
-            <div className="bg-orange-900/50 text-orange-100 flex max-w-[85%] items-start gap-2 rounded px-2 py-1">
+            <div className="flex max-w-[85%] items-start gap-2 rounded bg-orange-900/50 px-2 py-1 text-orange-100">
               <Icons.Info className="mt-0.5 h-3 w-3 shrink-0 text-orange-400" />
               <div className="text-xs">
                 {isReportReady
@@ -181,7 +180,7 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
                   : "Hello! I'm your MRI Assistant. Please click the 'Report' button in the Study Browser to generate a report first, then we can discuss it."}
               </div>
             </div>
-            <span className="text-orange-400/70 mt-0.5 text-[10px]">Assistant</span>
+            <span className="mt-0.5 text-[10px] text-orange-400/70">Assistant</span>
           </div>
 
           {messages.map(msg => (
@@ -196,7 +195,12 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
                     : 'bg-orange-900/50 text-orange-100'
                 }`}
               >
-                <div className="text-xs">{msg.text}</div>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  className="prose prose-invert prose-xs max-w-none"
+                >
+                  {msg.text}
+                </ReactMarkdown>
               </div>
               <span className="mt-0.5 text-[10px] text-orange-400/70">
                 {msg.role === 'user' ? 'You' : 'Assistant'} • {msg.timestamp.toLocaleTimeString()}
@@ -207,7 +211,7 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex flex-col items-start">
-              <div className="bg-orange-900/50 text-orange-100 flex max-w-[85%] items-center gap-2 rounded px-2 py-1">
+              <div className="flex max-w-[85%] items-center gap-2 rounded bg-orange-900/50 px-2 py-1 text-orange-100">
                 <Icons.LoadingSpinner className="h-3 w-3 animate-spin text-orange-400" />
                 <div className="text-xs">Thinking...</div>
               </div>
@@ -228,13 +232,13 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
           placeholder={isReportReady ? 'Ask about the MRI report...' : 'Generate a report first...'}
           disabled={isLoading || disabled || !isReportReady}
           maxLength={500}
-          className="flex-1 text-xs border-orange-500/50 bg-orange-900/20 text-orange-100 placeholder:text-orange-400/50 focus:border-orange-500 focus:ring-orange-500/30"
+          className="flex-1 border-orange-500/50 bg-orange-900/20 text-xs text-orange-100 placeholder:text-orange-400/50 focus:border-orange-500 focus:ring-orange-500/30"
         />
         <Button
           onClick={handleSend}
           disabled={!inputValue.trim() || isLoading || disabled || !isReportReady}
           size="sm"
-          className="bg-orange-500 hover:bg-orange-600 disabled:bg-orange-500/50 text-white"
+          className="bg-orange-500 text-white hover:bg-orange-600 disabled:bg-orange-500/50"
         >
           {isLoading ? (
             <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
