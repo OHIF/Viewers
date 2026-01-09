@@ -637,15 +637,20 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   NUMContentItems.forEach(item => {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
-    const { ValueType } = ContentSequence;
-    if (ValueType !== 'SCOORD' && ValueType !== 'SCOORD3D') {
-      console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
-      return;
-    }
+    // Handle spatial reference ONLY if ContentSequence exists
+    if (ContentSequence) {
+      const { ValueType } = ContentSequence;
 
-    const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
-    if (coords) {
-      measurement.coords.push(coords);
+      if (ValueType !== 'SCOORD' && ValueType !== 'SCOORD3D') {
+        console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
+        return;
+      }
+
+      const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
+
+      if (coords) {
+        measurement.coords.push(coords);
+      }
     }
 
     if (MeasuredValueSequence) {
