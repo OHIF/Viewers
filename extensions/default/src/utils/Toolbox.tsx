@@ -78,7 +78,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
   const CustomConfigComponent = customizationService.getCustomization(`${buttonSectionId}.config`);
 
   return (
-    <PanelSection>
+    <PanelSection defaultOpen={false}>
       <PanelSection.Header className="flex items-center justify-between">
         <span>{t(title)}</span>
         {CustomConfigComponent && (
