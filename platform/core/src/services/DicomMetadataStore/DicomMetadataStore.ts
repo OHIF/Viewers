@@ -49,6 +49,9 @@ const _model = {
   studies: [],
 };
 
+// Track series with parsing errors (e.g., invalid VR types)
+const _problematicSeries = new Set<string>();
+
 function _getStudyInstanceUIDs() {
   return _model.studies.map(aStudy => aStudy.StudyInstanceUID);
 }
@@ -158,12 +161,36 @@ const BaseImplementation = {
   listeners: {},
   addInstance(dicomJSONDatasetOrP10ArrayBuffer) {
     let dicomJSONDataset;
+    let seriesInstanceUID = null;
+    let invalidVRTypeDetected = false;
 
     // If Arraybuffer, parse to DICOMJSON before naturalizing.
     if (dicomJSONDatasetOrP10ArrayBuffer instanceof ArrayBuffer) {
-      const dicomData = dcmjs.data.DicomMessage.readFile(dicomJSONDatasetOrP10ArrayBuffer);
+      // Intercept console warnings to detect "Invalid vr type" errors
+      const originalWarn = console.warn;
+      const warnings: string[] = [];
+      
+      console.warn = (...args) => {
+        const message = args.join(' ');
+        warnings.push(message);
+        // Check for invalid VR type errors
+        if (message.includes('Invalid vr type') || message.includes('Invalid VR type') || message.includes('using UN')) {
+          invalidVRTypeDetected = true;
+        }
+        // Still call original warn to maintain normal logging
+        originalWarn.apply(console, args);
+      };
 
-      dicomJSONDataset = dicomData.dict;
+      try {
+        const dicomData = dcmjs.data.DicomMessage.readFile(dicomJSONDatasetOrP10ArrayBuffer);
+        dicomJSONDataset = dicomData.dict;
+      } catch (error) {
+        console.warn = originalWarn;
+        throw error;
+      } finally {
+        // Restore original console.warn
+        console.warn = originalWarn;
+      }
     } else {
       dicomJSONDataset = dicomJSONDatasetOrP10ArrayBuffer;
     }
@@ -176,7 +203,21 @@ const BaseImplementation = {
       naturalizedDataset = dicomJSONDataset;
     }
 
-    const { StudyInstanceUID } = naturalizedDataset;
+    const { StudyInstanceUID, SeriesInstanceUID } = naturalizedDataset;
+    seriesInstanceUID = SeriesInstanceUID;
+
+    // Mark series as problematic if invalid VR type was detected during parsing
+    // or if the dataset was flagged by the file loader
+    if ((invalidVRTypeDetected || naturalizedDataset._hasInvalidVRTypes) && seriesInstanceUID) {
+      _problematicSeries.add(SeriesInstanceUID);
+      console.warn(`Series ${SeriesInstanceUID} has invalid VR types and will be rejected`, {
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        detectedDuringParsing: invalidVRTypeDetected,
+        flaggedByFileLoader: naturalizedDataset._hasInvalidVRTypes,
+        warnings: warnings.filter(w => w.includes('Invalid vr type') || w.includes('Invalid VR type') || w.includes('using UN')),
+      });
+    }
 
     let study = _model.studies.find(study => study.StudyInstanceUID === StudyInstanceUID);
 
@@ -279,6 +320,9 @@ const BaseImplementation = {
   getInstance: _getInstance,
   getInstanceByImageId: _getInstanceByImageId,
   updateMetadataForSeries: _updateMetadataForSeries,
+  isSeriesProblematic(SeriesInstanceUID: string): boolean {
+    return _problematicSeries.has(SeriesInstanceUID);
+  },
 };
 const DicomMetadataStore = Object.assign(
   // get study

@@ -357,28 +357,47 @@ export default class DisplaySetService extends PubSubService {
 
         // The instances array still contains some instances, so try
         // creating additional display sets using the sop class handler
-        displaySets = handler.getDisplaySetsFromSeries(instances);
+        try {
+          displaySets = handler.getDisplaySetsFromSeries(instances);
+        } catch (error) {
+          console.error(
+            `Error in SOP class handler "${SOPClassHandlerId}" for series ${instance.SeriesInstanceUID}:`,
+            error
+          );
+          // Mark this series as problematic and skip it
+          // Continue to next handler or mark as unsupported
+          continue;
+        }
 
         if (!displaySets || !displaySets.length) {
           continue;
         }
 
         // applying hp-defined viewport settings to the displaysets
-        displaySets.forEach(ds => {
-          Object.keys(settings).forEach(key => {
-            ds[key] = settings[key];
+        try {
+          displaySets.forEach(ds => {
+            Object.keys(settings).forEach(key => {
+              ds[key] = settings[key];
+            });
           });
-        });
 
-        this._addDisplaySetsToCache(displaySets);
-        this._addActiveDisplaySets(displaySets);
+          this._addDisplaySetsToCache(displaySets);
+          this._addActiveDisplaySets(displaySets);
 
-        // It is possible that this SOP class handler handled some instances
-        // but there may need to be other instances handled by other handlers,
-        // so remove the handled instances
-        instances = filterInstances(instances, displaySets);
+          // It is possible that this SOP class handler handled some instances
+          // but there may need to be other instances handled by other handlers,
+          // so remove the handled instances
+          instances = filterInstances(instances, displaySets);
 
-        allDisplaySets.push(...displaySets);
+          allDisplaySets.push(...displaySets);
+        } catch (error) {
+          console.error(
+            `Error processing display sets from handler "${SOPClassHandlerId}" for series ${instance.SeriesInstanceUID}:`,
+            error
+          );
+          // Continue to next handler
+          continue;
+        }
       }
     }
     // applying the default sopClassUID handler
