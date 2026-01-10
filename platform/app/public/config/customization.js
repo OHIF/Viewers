@@ -19,7 +19,7 @@ window.config = {
 
   defaultDataSourceName: 'e2e',
   investigationalUseDialog: {
-    option: 'never',
+    option: 'always',
   },
   dataSources: [
     {
