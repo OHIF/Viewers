@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { ErrorBoundary } from '@ohif/ui-next';
+import { ErrorBoundary, InvestigationalUseDialog } from '@ohif/ui-next';
 import Dropzone from 'react-dropzone';
 
 // Route Components
@@ -63,6 +63,7 @@ NotFoundStudy.propTypes = {
 
 const Home = () => {
   const navigate = useNavigate();
+  const [appConfig] = useAppConfig();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [queuedStudyInstanceUIDs, setQueuedStudyInstanceUIDs] = useState([]);
@@ -173,8 +174,9 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="flex h-screen items-center justify-center bg-black text-white">
-      <div className="flex flex-col items-center gap-6">
+    <div className="flex min-h-screen flex-col bg-black text-white">
+      <div className="flex flex-1 items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
         <Dropzone
           onDrop={handleDrop}
           multiple
@@ -199,6 +201,9 @@ const Home = () => {
                   <p className="text-lg">Drop a DICOM file or folder of DICOM files here</p>
                   <p className="text-secondary-light mt-2 text-sm">
                     or choose files from your computer
+                  </p>
+                  <p className="text-white mt-4 text-xs italic">
+                    Not FDA approved, not for commercial use, educational use only, upload anonymized dicoms of MRI lumbar/cervical spine
                   </p>
                   <div className="mt-4 flex justify-center gap-3 text-base">
                     <button
@@ -339,6 +344,20 @@ const Home = () => {
             Go to Segmentation Viewer
           </button>
         </div>
+        </div>
+      </div>
+      <footer className="w-full border-t border-secondary-dark px-8 py-4">
+        <p className="text-center text-xs text-white">
+          This software is a prototype version and is not designed or intended for use in the diagnosis or classification of any medical condition or for any other medical use. The user represents and warrants that it will not use or redistribute the Software for such purposes. This prototype is for medical research purposes only. This software is provided "AS IS," without a warranty of any kind.
+        </p>
+      </footer>
+      <style>{`
+        .investigational-dialog-wrapper > div {
+          bottom: 7rem !important;
+        }
+      `}</style>
+      <div className="investigational-dialog-wrapper">
+        <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       </div>
     </div>
   );

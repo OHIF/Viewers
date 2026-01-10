@@ -1417,7 +1417,7 @@ function PanelStudyBrowser({
           {isSegmenting && (
             <div className="flex flex-col gap-1 px-2">
               <div className="flex items-center justify-between text-xs text-white">
-                <span>Loading segmentation...</span>
+                <span>Preparing segmentation...</span>
               </div>
               <div className="bg-background h-2 w-full overflow-hidden rounded-full">
                 <div className="bg-primary h-full w-full animate-pulse" />
