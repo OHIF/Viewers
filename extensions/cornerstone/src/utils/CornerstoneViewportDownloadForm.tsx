@@ -51,8 +51,15 @@ const CornerstoneViewportDownloadForm = ({
   const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
   useEffect(() => {
+    if (!toolGroup || !toolGroup.toolOptions) {
+      return;
+    }
+
     const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce((acc, toolName) => {
       const tool = toolGroup.toolOptions[toolName];
+      if (!tool) {
+        return acc;
+      }
       const { mode, bindings } = tool;
 
       return {
@@ -62,9 +69,20 @@ const CornerstoneViewportDownloadForm = ({
     }, {});
 
     return () => {
+      if (!toolGroup) {
+        return;
+      }
       Object.keys(toolModeAndBindings).forEach(toolName => {
-        const { mode, bindings } = toolModeAndBindings[toolName];
-        toolGroup.setToolMode(toolName, mode, { bindings });
+        try {
+          const { mode, bindings } = toolModeAndBindings[toolName];
+          if (toolGroup.toolOptions[toolName]) {
+            toolGroup.setToolMode(toolName, mode, { bindings });
+          }
+        } catch (error) {
+          // Silently handle errors when restoring tool modes
+          // Some tools may not be properly initialized or may have been removed
+          console.debug(`Error restoring tool mode for ${toolName}:`, error);
+        }
       });
     };
   }, []);
@@ -121,7 +139,7 @@ const CornerstoneViewportDownloadForm = ({
         downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
       }
 
-      if (segmentationRepresentations.length > 0) {
+      if (segmentationRepresentations && segmentationRepresentations.length > 0) {
         segmentationRepresentations.forEach(segRepresentation => {
           const { segmentationId, colorLUTIndex, type } = segRepresentation;
           if (type === Enums.SegmentationRepresentations.Labelmap) {
