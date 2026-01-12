@@ -103,9 +103,39 @@ const commandsModule = (props: withAppTypes) => {
       const srDataset = _generateReport(measurementData, additionalFindingTypes, options);
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
-      //Create a URL for the binary.
-      const objectUrl = URL.createObjectURL(reportBlob);
-      window.location.assign(objectUrl);
+      // Generate a filename from SR metadata: patient_name-series_description.dcm
+      const rawPatientName = srDataset.PatientName?.Alphabetic || srDataset.PatientName || 'Patient';
+      const patientName =
+        utils.formatPN(rawPatientName) || String(rawPatientName).trim() || 'Patient';
+
+      // Prefer the referenced image SeriesDescription (0008,103E) from the first measurement
+      const firstMeasurement = measurementData?.[0];
+      const referencedSeries = firstMeasurement
+        ? DicomMetadataStore.getSeries(
+            firstMeasurement.referenceStudyUID,
+            firstMeasurement.referenceSeriesUID
+          )
+        : null;
+      const referencedFirstInstance = referencedSeries?.instances?.[0];
+
+      const rawSeriesDescription =
+        referencedFirstInstance?.SeriesDescription || srDataset.SeriesDescription || 'Series';
+      const seriesDescription = String(rawSeriesDescription).trim() || 'Series';
+
+      const filename = `${patientName}-${seriesDescription}.dcm`.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+      // Create a download link and trigger download
+      const url = URL.createObjectURL(reportBlob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the object URL after a short delay
+      setTimeout(() => URL.revokeObjectURL(url), 100);
     },
 
     /**
@@ -143,7 +173,9 @@ const commandsModule = (props: withAppTypes) => {
           throw new Error('Invalid report, no content');
         }
 
-        const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
+        const onBeforeDicomStore = customizationService.getCustomization(
+          'onBeforeDicomStore'
+        ) as unknown as ((args: any) => any) | undefined;
         let dicomDict;
         if (typeof onBeforeDicomStore === 'function') {
           dicomDict = onBeforeDicomStore({ dicomDict, measurementData, naturalizedReport });

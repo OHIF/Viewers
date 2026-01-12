@@ -31,6 +31,21 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
         <Button
           size="sm"
           variant="ghost"
+          className="pl-1.5"
+          onClick={() => {
+            commandsManager.runCommand('downloadSRMeasurementsReport', {
+              StudyInstanceUID,
+              measurementFilter,
+            });
+          }}
+        >
+          <Icons.Download className="h-5 w-5" />
+          <span className="pl-1">SR</span>
+        </Button>
+
+        <Button
+          size="sm"
+          variant="ghost"
           className="pl-0.5"
           onClick={e => {
             e.stopPropagation();

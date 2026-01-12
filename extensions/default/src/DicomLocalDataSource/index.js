@@ -176,9 +176,39 @@ function createDicomLocalApi(dicomLocalConfig) {
       dicom: naturalizedReport => {
         const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
 
-        //Create a URL for the binary.
-        var objectUrl = URL.createObjectURL(reportBlob);
-        window.location.assign(objectUrl);
+        // Generate a filename from SR metadata: patient_name-study_name.dcm
+        const rawPatientName =
+          naturalizedReport.PatientName?.Alphabetic || naturalizedReport.PatientName || 'Patient';
+        const patientName = utils.formatPN(rawPatientName) || String(rawPatientName).trim() || 'Patient';
+
+        // Prefer the referenced image SeriesDescription (0008,103E); fall back to SR SeriesDescription
+        const studyUID = naturalizedReport.StudyInstanceUID;
+        const referencedSeriesUID =
+          naturalizedReport?.CurrentRequestedProcedureEvidenceSequence?.[0]
+            ?.ReferencedSeriesSequence?.[0]?.SeriesInstanceUID;
+        const referencedSeries =
+          studyUID && referencedSeriesUID
+            ? DicomMetadataStore.getSeries(studyUID, referencedSeriesUID)
+            : null;
+        const referencedFirstInstance = referencedSeries?.instances?.[0];
+        const rawSeriesDescription =
+          referencedFirstInstance?.SeriesDescription || naturalizedReport.SeriesDescription || 'Series';
+        const seriesDescription = String(rawSeriesDescription).trim() || 'Series';
+
+        const filename = `${patientName}-${seriesDescription}.dcm`.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+        // Create a download link and trigger download
+        const url = URL.createObjectURL(reportBlob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up the object URL after a short delay
+        setTimeout(() => URL.revokeObjectURL(url), 100);
       },
     },
     getImageIdsForDisplaySet(displaySet) {

@@ -19,7 +19,7 @@ import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
 import { ONNXSegmentationController } from '@cornerstonejs/ai';
 
-import { Types as OhifTypes, utils } from '@ohif/core';
+import { Types as OhifTypes, utils, DicomMetadataStore } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import {
   callInputDialogAutoComplete,
@@ -667,6 +667,66 @@ function commandsModule({
      */
     downloadCSVMeasurementsReport: ({ measurementFilter }) => {
       utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
+    },
+
+    /**
+     * Download the SR report for the measurements.
+     */
+    downloadSRMeasurementsReport: ({ measurementFilter, StudyInstanceUID }) => {
+      const measurementData = measurementService.getMeasurements(measurementFilter);
+
+      if (measurementData.length === 0) {
+        uiNotificationService.show({
+          title: 'Download Report',
+          message: 'No measurements to download',
+          type: 'warning',
+        });
+        return;
+      }
+
+      // Get series information from the first measurement
+      const firstMeasurement = measurementData[0];
+      const seriesMetadata = DicomMetadataStore.getSeries(
+        firstMeasurement.referenceStudyUID,
+        firstMeasurement.referenceSeriesUID
+      );
+      const firstInstance = seriesMetadata?.instances?.[0];
+
+      // Get SR series and instance number (create new series for download)
+      // Import dynamically to avoid circular dependencies
+      const getSRSeriesAndInstanceNumber = require('@ohif/extension-default/src/utils/getSRSeriesAndInstanceNumber').getSRSeriesAndInstanceNumber;
+      const { SeriesNumber, InstanceNumber } = getSRSeriesAndInstanceNumber({
+        displaySetService,
+      });
+
+      // Get series date/time
+      const now = new Date();
+      const SeriesDate =
+        now.getFullYear() +
+        ('0' + (now.getMonth() + 1)).slice(-2) +
+        ('0' + now.getDate()).slice(-2);
+      const SeriesTime =
+        ('0' + now.getHours()).slice(-2) +
+        ('0' + now.getMinutes()).slice(-2) +
+        ('0' + now.getSeconds()).slice(-2);
+
+      const SeriesDescription = firstInstance?.SeriesDescription || 'Structured Report';
+
+      commandsManager.runCommand(
+        'downloadReport',
+        {
+          measurementData,
+          additionalFindingTypes: ['ArrowAnnotate'],
+          options: {
+            SeriesDescription,
+            SeriesNumber,
+            InstanceNumber,
+            SeriesDate,
+            SeriesTime,
+          },
+        },
+        'CORNERSTONE_STRUCTURED_REPORT'
+      );
     },
 
     downloadCSVSegmentationReport: ({ segmentationId }) => {
@@ -2059,6 +2119,9 @@ function commandsModule({
     },
     downloadCSVMeasurementsReport: {
       commandFn: actions.downloadCSVMeasurementsReport,
+    },
+    downloadSRMeasurementsReport: {
+      commandFn: actions.downloadSRMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,

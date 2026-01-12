@@ -3,6 +3,11 @@
 Generate an SR report for the CT-axi-postop study based on labels defined
 in a plain-text file. The generated report mirrors the structure of the
 template SR stored under `scripts/SR Saved report/`.
+
+Also supports generating SR reports from the `refdata-template` sheet in an
+XLSX workbook. In that mode, the XLSX describes which annotations should
+exist per case+image; coordinates are generated as deterministic placeholders
+until a doctor annotates the real positions.
 """
 
 from __future__ import annotations
@@ -11,7 +16,7 @@ import argparse
 import copy
 from datetime import datetime
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 import pydicom
 from pydicom.dataset import Dataset
@@ -38,6 +43,8 @@ FINDING_CODE = ("121071", "DCM", "Finding")
 FINDING_SITE_CODE = ("363698007", "SCT", "Finding Site")
 HIDDEN_UNANNOTATED_CODE = ("HIDDEN", "99MEDICALVIEWER", "")
 CORNERSTONE_FREETEXT = ("CORNERSTONEFREETEXT", "CORNERSTONEJS")
+
+DEFAULT_XLSX_SHEET = "refdata-template"
 
 
 def _make_code(code_value: str, scheme: str, meaning: str) -> Dataset:
@@ -219,6 +226,12 @@ def _make_imaging_measurements(
     return container
 
 
+def _default_placeholder_coords(idx: int) -> Tuple[float, float]:
+    col = idx % 5
+    row = idx // 5
+    return (50.0 + col * 25.0, 50.0 + row * 25.0)
+
+
 def _parse_point_labels(path: Path) -> List[Tuple[str, Tuple[float, float]]]:
     labels: List[Tuple[str, Tuple[float, float]]] = []
     with path.open("r", encoding="utf-8") as handle:
@@ -239,14 +252,166 @@ def _parse_point_labels(path: Path) -> List[Tuple[str, Tuple[float, float]]]:
             if len(coords) >= 2:
                 xy = (coords[0], coords[1])
             else:
-                idx = len(labels)
-                col = idx % 5
-                row = idx // 5
-                xy = (50.0 + col * 25.0, 50.0 + row * 25.0)
+                xy = _default_placeholder_coords(len(labels))
             labels.append((label, xy))
     if not labels:
         raise ValueError(f"No point labels found in {path}")
     return labels
+
+
+def _normalize_label(raw: str) -> str:
+    s = raw.strip()
+    if not s:
+        return s
+    return s if s.startswith("pt-") else f"pt-{s}"
+
+
+def _view_from_subfolder(subfolder: str) -> str:
+    up = subfolder.upper()
+    if "LAT" in up:
+        return "LAT"
+    if "AP" in up:
+        return "AP"
+    return "UNKNOWN"
+
+
+def _expand_spec_token(token: str, view: str) -> List[str]:
+    """
+    Expand a single spec token from the XLSX into one or more point labels.
+
+    Rules:
+    - `*-c` => one point
+    - `*-edges` => two points (LAT: ant-sup, pos-sup; AP: left-sup, right-sup)
+    - `*-corners` => four points (LAT: ant/pos x sup/inf; AP: left/right x sup/inf)
+    - `FH1-circle` / `FH2-circle` => mapped to `pt-FH-1` / `pt-FH-2` for consistency
+    - otherwise => one point with `pt-` prefix
+    """
+    t = token.strip()
+    if not t:
+        return []
+
+    # Special-case femoral head circles from the template
+    if t.upper() in {"FH1-CIRCLE", "FH2-CIRCLE"}:
+        n = "1" if t.upper().startswith("FH1") else "2"
+        return [f"pt-FH-{n}"]
+
+    if t.lower().endswith("-edges"):
+        base = t[: -len("-edges")]
+        if view == "AP":
+            suffixes = ["left-sup", "right-sup"]
+        else:  # LAT and unknown fall back to LAT convention
+            suffixes = ["ant-sup", "pos-sup"]
+        return [f"pt-{base}-{s}" for s in suffixes]
+
+    if t.lower().endswith("-corners"):
+        base = t[: -len("-corners")]
+        if view == "AP":
+            suffixes = ["left-sup", "left-inf", "right-sup", "right-inf"]
+        else:  # LAT and unknown fall back to LAT convention
+            suffixes = ["ant-sup", "ant-inf", "pos-sup", "pos-inf"]
+        return [f"pt-{base}-{s}" for s in suffixes]
+
+    return [_normalize_label(t)]
+
+
+def _iter_unique(items: Iterable[str]) -> List[str]:
+    seen = set()
+    out: List[str] = []
+    for item in items:
+        if not item:
+            continue
+        if item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+    return out
+
+
+def _parse_xlsx_specs(
+    xlsx_path: Path,
+    sheet_name: str = DEFAULT_XLSX_SHEET,
+) -> Dict[Tuple[str, str], List[str]]:
+    """
+    Parse the refdata-template XLSX sheet into a mapping:
+        (case_folder, image_subfolder) -> list of pt-* labels
+    """
+    try:
+        import openpyxl  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError(
+            "openpyxl is required for --input-xlsx. "
+            "Install it into your venv: `python -m pip install openpyxl`"
+        ) from exc
+
+    wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+    if sheet_name not in wb.sheetnames:
+        raise ValueError(
+            f"Sheet '{sheet_name}' not found in {xlsx_path}. "
+            f"Available: {wb.sheetnames}"
+        )
+    ws = wb[sheet_name]
+
+    header_row = 1
+    headers = [
+        str(ws.cell(header_row, c).value).strip()
+        if ws.cell(header_row, c).value is not None
+        else ""
+        for c in range(1, ws.max_column + 1)
+    ]
+    if len(headers) < 2:
+        raise ValueError(f"Unexpected header in {xlsx_path}:{sheet_name}")
+
+    folder_col = 1
+    subfolder_col = 2
+
+    result: Dict[Tuple[str, str], List[str]] = {}
+    last_folder: Optional[str] = None
+
+    for r in range(2, ws.max_row + 1):
+        folder_val = ws.cell(r, folder_col).value
+        subfolder_val = ws.cell(r, subfolder_col).value
+
+        folder = (str(folder_val).strip() if folder_val is not None else "") or ""
+        if folder:
+            last_folder = folder
+        elif last_folder:
+            folder = last_folder
+
+        subfolder = (
+            str(subfolder_val).strip() if subfolder_val is not None else ""
+        ).strip()
+
+        if not folder or not subfolder:
+            continue
+
+        view = _view_from_subfolder(subfolder)
+
+        tokens: List[str] = []
+        for c in range(3, ws.max_column + 1):
+            cell = ws.cell(r, c).value
+            if cell is None:
+                continue
+            raw = str(cell).strip()
+            if not raw:
+                continue
+            # Comma-separated tokens like: "S1-c, S1-edges"
+            for part in raw.replace("\n", " ").split(","):
+                part = part.strip()
+                if not part:
+                    continue
+                tokens.extend(_expand_spec_token(part, view))
+
+        key = (folder, subfolder)
+        if key not in result:
+            result[key] = []
+        result[key].extend(tokens)
+
+    # De-duplicate while preserving order
+    for key, labels in list(result.items()):
+        result[key] = _iter_unique(labels)
+        if not result[key]:
+            del result[key]
+    return result
 
 
 def _build_image_reference(ct_ds: Dataset) -> Dataset:
@@ -325,10 +490,20 @@ def _build_content_sequence(
 
 
 def _find_first_ct_instance(ct_folder: Path) -> Path:
+    # Prefer direct files, but also support one level of nesting.
     for path in sorted(ct_folder.iterdir()):
         if path.is_file():
             return path
+    for path in sorted(ct_folder.iterdir()):
+        if path.is_dir():
+            for sub in sorted(path.iterdir()):
+                if sub.is_file():
+                    return sub
     raise FileNotFoundError(f"No DICOM instances found in {ct_folder}")
+
+
+def _labels_with_placeholder_coords(labels: Sequence[str]) -> List[Tuple[str, Tuple[float, float]]]:
+    return [(label, _default_placeholder_coords(i)) for i, label in enumerate(labels)]
 
 
 def main() -> None:
@@ -337,25 +512,126 @@ def main() -> None:
     default_template = scripts_dir / "SR Saved report" / "SR000001.dcm"
     default_ct = scripts_dir / "CT-axi-postop"
     default_output = scripts_dir / "SR Saved report" / "SR_from_txt.dcm"
+    default_xlsx = scripts_dir / "data_J2-4452.xlsx"
+    default_dicom_root = scripts_dir.parent / "testdata"
 
     parser = argparse.ArgumentParser(
         description="Create an SR report from CT-axi-postop annotations."
     )
-    parser.add_argument("--input-txt", type=Path, default=default_txt)
+    in_group = parser.add_mutually_exclusive_group()
+    in_group.add_argument(
+        "--input-txt",
+        type=Path,
+        default=default_txt,
+        help="Plain text label list (legacy mode).",
+    )
+    in_group.add_argument(
+        "--input-xlsx",
+        type=Path,
+        help="XLSX refdata template describing which annotations should exist.",
+    )
+    parser.add_argument(
+        "--xlsx-sheet",
+        default=DEFAULT_XLSX_SHEET,
+        help=f"Sheet name for --input-xlsx (default: {DEFAULT_XLSX_SHEET}).",
+    )
     parser.add_argument("--template", type=Path, default=default_template)
-    parser.add_argument("--ct-folder", type=Path, default=default_ct)
-    parser.add_argument("--output", type=Path, default=default_output)
+    parser.add_argument(
+        "--ct-folder",
+        type=Path,
+        default=default_ct,
+        help="DICOM folder for --input-txt mode.",
+    )
+    parser.add_argument(
+        "--dicom-root",
+        type=Path,
+        default=default_dicom_root,
+        help="Root directory that contains case folders (used for --input-xlsx mode).",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=default_output,
+        help="Output SR file for --input-txt mode, or an output directory for --input-xlsx mode.",
+    )
     parser.add_argument(
         "--observer-name",
         default="unknown^unknown",
         help="Person observer name encoded as CARET-delimited PN.",
     )
+    parser.add_argument(
+        "--case",
+        help="Optional case folder filter for --input-xlsx mode (e.g. obv_case001).",
+    )
+    parser.add_argument(
+        "--subfolder",
+        help="Optional subfolder filter for --input-xlsx mode (e.g. CT-axi-postop).",
+    )
     args = parser.parse_args()
 
-    labels = _parse_point_labels(args.input_txt)
+    template_ds = pydicom.dcmread(str(args.template))
+
+    if args.input_xlsx:
+        # XLSX mode: generate one SR per case/subfolder combination.
+        xlsx_path: Path = args.input_xlsx
+        specs = _parse_xlsx_specs(xlsx_path, sheet_name=args.xlsx_sheet)
+
+        if args.case:
+            specs = {k: v for k, v in specs.items() if k[0] == args.case}
+        if args.subfolder:
+            specs = {k: v for k, v in specs.items() if k[1] == args.subfolder}
+
+        out_base: Path = args.output
+        out_base.mkdir(parents=True, exist_ok=True)
+
+        created = 0
+        for (case_folder, image_subfolder), label_list in sorted(specs.items()):
+            dicom_folder = args.dicom_root / case_folder / image_subfolder
+            if not dicom_folder.exists():
+                print(f"WARNING: Missing DICOM folder, skipping: {dicom_folder}")
+                continue
+
+            first_path = _find_first_ct_instance(dicom_folder)
+            ref_ds = pydicom.dcmread(str(first_path))
+            labels = _labels_with_placeholder_coords(label_list)
+
+            sr_ds = copy.deepcopy(template_ds)
+            _update_patient_and_study(sr_ds, ref_ds)
+            _update_uids(sr_ds)
+            _update_dates(sr_ds)
+            sr_ds.SeriesNumber = str(getattr(ref_ds, "SeriesNumber", 1))
+            sr_ds.InstanceNumber = "1"
+            sr_ds.Modality = "SR"
+
+            sr_ds.SeriesDescription = f"Generated SR from XLSX: {case_folder}/{image_subfolder}"
+            sr_ds.CurrentRequestedProcedureEvidenceSequence = _build_evidence_sequence(ref_ds)
+
+            image_ref = _build_image_reference(ref_ds)
+            sr_ds.ContentSequence = _build_content_sequence(
+                labels, image_ref, observer_name=args.observer_name
+            )
+
+            out_path = out_base / f"{case_folder}__{image_subfolder}.dcm"
+            sr_ds.save_as(str(out_path), write_like_original=False)
+            created += 1
+            print(
+                f"Created SR with {len(labels)} measurement groups -> {out_path} "
+                f"(referencing {first_path.name})"
+            )
+
+        if created == 0:
+            raise RuntimeError("No SR files created (filters too strict or missing DICOM folders).")
+        return
+
+    # TXT mode (legacy, single SR)
+    input_txt: Path = args.input_txt
+    if not input_txt.exists() and default_xlsx.exists():
+        # Backwards-friendly: if the legacy default file isn't present, keep error message useful.
+        print(f"NOTE: {input_txt} not found. If you meant XLSX mode, use --input-xlsx {default_xlsx}")
+
+    labels = _parse_point_labels(input_txt)
     ct_path = _find_first_ct_instance(args.ct_folder)
     ct_ds = pydicom.dcmread(str(ct_path))
-    template_ds = pydicom.dcmread(str(args.template))
 
     sr_ds = copy.deepcopy(template_ds)
     _update_patient_and_study(sr_ds, ct_ds)
@@ -365,7 +641,7 @@ def main() -> None:
     sr_ds.InstanceNumber = "1"
     sr_ds.Modality = "SR"
 
-    sr_ds.SeriesDescription = "Generated SR from CT-axi-postop.txt"
+    sr_ds.SeriesDescription = f"Generated SR from {input_txt.name}"
     sr_ds.CurrentRequestedProcedureEvidenceSequence = _build_evidence_sequence(ct_ds)
 
     image_ref = _build_image_reference(ct_ds)
