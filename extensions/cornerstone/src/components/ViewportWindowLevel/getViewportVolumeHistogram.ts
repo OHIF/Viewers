@@ -17,9 +17,10 @@ const workerFn = () => {
   });
 };
 
-const getViewportVolumeHistogram = async (viewport, volume, options?) => {
-  workerManager.registerWorker('histogram-worker', workerFn, WorkerOptions);
+// Register worker once at module load time
+workerManager.registerWorker('histogram-worker', workerFn, WorkerOptions);
 
+const getViewportVolumeHistogram = async (viewport, volume, options?) => {
   const volumeImageData = viewport.getImageData(volume.volumeId);
 
   if (!volumeImageData) {
@@ -29,8 +30,7 @@ const getViewportVolumeHistogram = async (viewport, volume, options?) => {
   let scalarData = volume.scalarData;
 
   if (volume.numTimePoints > 1) {
-    const targetTimePoint = volume.numTimePoints - 1; // or any other time point you need
-    scalarData = volume.voxelManager.getTimePointScalarData(targetTimePoint);
+    scalarData = volume.voxelManager.getDimensionGroupScalarData(volume.numTimePoints);
   } else {
     scalarData = volume.voxelManager.getCompleteScalarDataArray();
   }

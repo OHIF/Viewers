@@ -309,6 +309,10 @@ function getSortedTags(metadata) {
 function getRows(metadata, depth = 0) {
   // Tag, Type, Value, Keyword
 
+  if (!metadata) {
+    return [];
+  }
+
   const keywords = Object.keys(metadata);
 
   const rows = [];

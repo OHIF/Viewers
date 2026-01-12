@@ -72,16 +72,18 @@ async function checkAndLoadContourData({
       } else if (contourData && contourData.InlineBinary) {
         // Contour data is still in binary format, conversion needed
         const base64String = contourData.InlineBinary;
-        const decodedText =
-          typeof atob === 'function'
-            ? atob(base64String)
-            : Buffer.from(base64String, 'base64').toString('utf-8');
+        const decodedText = atob(base64String);
 
         const rawValues = decodedText.split('\\');
 
         const result = [];
+
+        // Ensure strictly that we have a full set of 3 coordinates
+        if (rawValues.length % 3 !== 0) {
+          return Promise.reject('ContourData raw values not divisible by 3');
+        }
+
         for (let i = 0; i < rawValues.length; i += 3) {
-          // Ensure strictly that we have a full set of 3 coordinates
           if (i + 2 < rawValues.length) {
             const x = parseFloat(rawValues[i]);
             const y = parseFloat(rawValues[i + 1]);
@@ -93,8 +95,7 @@ async function checkAndLoadContourData({
               result.push(y);
               result.push(z);
             } else {
-              // Ignore for now
-              //console.log('NaN');
+              return Promise.reject('Error parsing contourData from InlineBinary format');
             }
           }
         }
