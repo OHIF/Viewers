@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
+import { triggerAnnotationRenderForViewportIds } from '@cornerstonejs/tools/utilities';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService, useViewportRef } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
@@ -347,7 +348,7 @@ const OHIFCornerstoneViewport = React.memo(
         }
 
         const pendingRelocation = getPendingMeasurementRelocation();
-        if (!pendingRelocation || pendingRelocation.toolName !== 'CustomProbe') {
+        if (!pendingRelocation) {
           return;
         }
 
@@ -380,7 +381,8 @@ const OHIFCornerstoneViewport = React.memo(
         const annotationInstance = cs3DTools.annotation.state.getAnnotation(
           pendingRelocation.measurementUID
         );
-        if (!annotationInstance?.data?.handles?.points?.length) {
+        const points = annotationInstance?.data?.handles?.points;
+        if (!annotationInstance || !Array.isArray(points) || points.length === 0) {
           clearMeasurementRelocation();
           return;
         }
@@ -388,7 +390,30 @@ const OHIFCornerstoneViewport = React.memo(
         evt.preventDefault();
         evt.stopPropagation();
 
-        annotationInstance.data.handles.points[0] = worldPosition;
+        // Relocate by translating all handle points so the first handle lands on the clicked position.
+        const anchor = points[0];
+        const delta: csTypes.Point3 = [
+          worldPosition[0] - anchor[0],
+          worldPosition[1] - anchor[1],
+          worldPosition[2] - anchor[2],
+        ];
+
+        annotationInstance.data.handles.points = points.map(p => [
+          p[0] + delta[0],
+          p[1] + delta[1],
+          p[2] + delta[2],
+        ]);
+
+        // Move textbox with the annotation if present
+        const textBoxWorldPosition = annotationInstance.data?.handles?.textBox?.worldPosition;
+        if (Array.isArray(textBoxWorldPosition) && textBoxWorldPosition.length >= 3) {
+          annotationInstance.data.handles.textBox.worldPosition = [
+            textBoxWorldPosition[0] + delta[0],
+            textBoxWorldPosition[1] + delta[1],
+            textBoxWorldPosition[2] + delta[2],
+          ];
+        }
+
         annotationInstance.metadata.referencedImageId =
           viewport.getCurrentImageId?.() ?? annotationInstance.metadata.referencedImageId;
         annotationInstance.invalidated = true;
@@ -398,6 +423,17 @@ const OHIFCornerstoneViewport = React.memo(
           element,
           cs3DTools.Enums.ChangeTypes.HandlesUpdated
         );
+
+        if (pendingRelocation.makeVisibleAfterRelocation) {
+          // Update panel state
+          measurementService.toggleVisibilityMeasurement(pendingRelocation.measurementUID, true);
+          // Ensure Cornerstone annotation itself is visible (some measurements won't sync if not using Cornerstone source)
+          cs3DTools.annotation.visibility.setAnnotationVisibility(pendingRelocation.measurementUID, true);
+        }
+
+        // Ensure the viewport re-renders annotations right away.
+        triggerAnnotationRenderForViewportIds([viewportId]);
+
         consumeMeasurementRelocation();
       };
 

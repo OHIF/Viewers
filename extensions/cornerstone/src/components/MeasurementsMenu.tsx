@@ -47,7 +47,15 @@ export function MeasumentsMenu(props) {
         aria-label={isVisible ? 'Hide' : 'Show'}
         onClick={e => {
           e.stopPropagation();
-          onAction(e, ['jumpToMeasurement', 'toggleVisibilityMeasurement']);
+          // Avoid triggering relocation flow when the user explicitly toggles visibility.
+          // If showing a hidden measurement, show first, then jump.
+          if (isVisible) {
+            onAction(e, 'toggleVisibilityMeasurement');
+          } else {
+            onAction(e, ['toggleVisibilityMeasurement', 'jumpToMeasurement'], {
+              visibility: true,
+            });
+          }
         }}
       >
         {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}

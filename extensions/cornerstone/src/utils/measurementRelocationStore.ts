@@ -2,6 +2,11 @@ type MeasurementRelocationRequest = {
   measurementUID: string;
   frameOfReferenceUID?: string;
   toolName?: string;
+  /**
+   * If true, the annotation should remain hidden until the relocation click is applied.
+   * After applying the relocation, it will be made visible.
+   */
+  makeVisibleAfterRelocation?: boolean;
 };
 
 let pendingRelocation: MeasurementRelocationRequest | null = null;

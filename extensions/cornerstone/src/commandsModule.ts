@@ -542,75 +542,79 @@ function commandsModule({
      * Also marks any provided display measurements isActive value
      */
     jumpToMeasurement: ({ uid, displayMeasurements = [], relocateOnNextClick = false }) => {
-      const measurement = measurementService.getMeasurement(uid);
-      if (!measurement) {
-        console.warn(`No measurement found for uid: ${uid}`);
+      const measurementUID = Array.isArray(uid) ? uid[0] : uid;
+      if (!measurementUID) {
+        console.warn('jumpToMeasurement called without a measurement uid');
         return;
       }
 
-      const isCustomProbe = measurement.toolName === toolNames.CustomProbe;
+      const measurement = measurementService.getMeasurement(measurementUID);
+      if (!measurement) {
+        console.warn(`No measurement found for uid: ${measurementUID}`);
+        return;
+      }
+
       const wasHidden = measurement.isVisible === false;
 
-      if (wasHidden) {
-        measurementService.toggleVisibilityMeasurement(uid, true);
-      }
-
       for (const displayMeasurement of displayMeasurements) {
-        displayMeasurement.isActive = displayMeasurement.uid === uid;
+        displayMeasurement.isActive = displayMeasurement.uid === measurementUID;
       }
 
-      const shouldRelocate = isCustomProbe && (relocateOnNextClick || wasHidden);
+      // If a measurement is hidden, clicking it in the measurement panel should not
+      // immediately unhide it; instead we enter "relocate on next click" mode and only
+      // make it visible after the user places it.
+      const shouldRelocate = relocateOnNextClick || wasHidden;
 
       if (shouldRelocate) {
         queueMeasurementRelocation({
-          measurementUID: uid,
+          measurementUID,
           frameOfReferenceUID: measurement.FrameOfReferenceUID,
           toolName: measurement.toolName,
+          makeVisibleAfterRelocation: wasHidden,
         });
         return;
       }
 
-      if (wasHidden) {
-        return;
-      }
-
       const activeViewportId = viewportGridService.getActiveViewportId();
-      measurementService.jumpToMeasurement(activeViewportId, uid);
+      measurementService.jumpToMeasurement(activeViewportId, measurementUID);
     },
 
     /**
      * Jumps to a CustomProbe measurement in all relevant viewports (similar to segmentations)
      */
     jumpToCustomProbe: ({ uid, displayMeasurements = [], relocateOnNextClick = false }) => {
-      const measurement = measurementService.getMeasurement(uid);
+      const measurementUID = Array.isArray(uid) ? uid[0] : uid;
+      if (!measurementUID) {
+        console.warn('jumpToCustomProbe called without a measurement uid');
+        return;
+      }
+
+      const measurement = measurementService.getMeasurement(measurementUID);
 
       if (!measurement) {
-        console.warn(`No measurement found for uid: ${uid}`);
+        console.warn(`No measurement found for uid: ${measurementUID}`);
         return;
       }
 
       const wasHidden = measurement.isVisible === false;
 
-      if (wasHidden) {
-        measurementService.toggleVisibilityMeasurement(uid, true);
-      }
-
       for (const displayMeasurement of displayMeasurements) {
-        displayMeasurement.isActive = displayMeasurement.uid === uid;
+        displayMeasurement.isActive = displayMeasurement.uid === measurementUID;
       }
 
       if (wasHidden || relocateOnNextClick) {
         queueMeasurementRelocation({
-          measurementUID: uid,
+          measurementUID,
           frameOfReferenceUID: measurement.FrameOfReferenceUID,
           toolName: measurement.toolName,
+          makeVisibleAfterRelocation: wasHidden,
         });
         return;
       }
 
       if (measurement.toolName !== 'CustomProbe') {
         // Fall back to regular jump for non-CustomProbe measurements
-        measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+        measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), measurementUID);
         return;
       }
 
