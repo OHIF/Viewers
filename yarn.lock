@@ -1278,10 +1278,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cornerstonejs/adapters@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-4.15.2.tgz#7d5955f29757b57baf40afc4e8adafefd4f9f31a"
-  integrity sha512-5ZSB/2cXaewn+8pFLZS/o/znkYOdTtgDJ9k5XjOny3gzarTszcaVr7aTiTayN8TkTyra5TgAC4jc6XOkQV+YeQ==
+"@cornerstonejs/adapters@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-4.15.6.tgz#864195f7af7fbfacebcb8726f80b6b474e1f7950"
+  integrity sha512-pl4yKwkJRc9CxYMIKs4XGsXPWeLbrpfFRJmUDE/S8oNhZgqNQ1KsL6I0epN5aU9Igo9kpzNTpFVwIhWScbbZTQ==
   dependencies:
     "@babel/runtime-corejs2" "7.26.10"
     buffer "6.0.3"
@@ -1289,10 +1289,10 @@
     gl-matrix "3.4.3"
     ndarray "1.0.19"
 
-"@cornerstonejs/ai@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-4.15.2.tgz#ff1afd5eb41f3407571539b0bf04543962d07a74"
-  integrity sha512-M7MFgs9YUxeGgSCLghF6kC0Q0slS0M+yWg8N4m+Jv15USuOax5sFLWkV/LFbJoHu+zcnboSVeiMdIzwAlaJp5Q==
+"@cornerstonejs/ai@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-4.15.6.tgz#60d9bfb531364da98b4d813d5124ee089db796c1"
+  integrity sha512-aqsZrO/nDWP8g9PrDantWm4+7IWwbTuqRstxVyGQ6oH+mZYIkcq4IHrISEnnEMrZMQ8GAcz3+ORV3EieO00Ovg==
   dependencies:
     "@babel/runtime-corejs2" "7.26.10"
     buffer "6.0.3"
@@ -1328,20 +1328,20 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.7.tgz#784394d05d8cf735640e9c3baa206535ee8e0376"
   integrity sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w==
 
-"@cornerstonejs/core@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-4.15.2.tgz#5cdc8fcc94caaf36e161d7697d14890741cab352"
-  integrity sha512-99Iz0JQIGjKu+d6SeVi8q5syCGxqLMkkYsBRpIzOuPnI/IiXIbtn+91p6Um6JHsyw5Omyby4rbQ2f+eb0iwKCA==
+"@cornerstonejs/core@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-4.15.6.tgz#1e25a219b469c96f6c5f8fce03dfb9d0ff4d6f98"
+  integrity sha512-7faicjRwUSeVhSRpM1MaLiEdH8daxnQm0BZl7HAnhrbS1zTHSrzKVxtj9zVJJ2SP3QCzBZmMfFan8MgWo61L0A==
   dependencies:
     "@kitware/vtk.js" "34.15.1"
     comlink "4.4.2"
     gl-matrix "3.4.3"
     loglevel "1.9.2"
 
-"@cornerstonejs/dicom-image-loader@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-4.15.2.tgz#5987d475e2f76e0ebcaf74deebe649891678cc78"
-  integrity sha512-k/hzd2xXkHHah2oWo0HGQrvDIIcFotuS9mwblQf5PsMANeLK4VkaQ5FpHm4H/zPkE6cpeygyy1nQgEsaYww0NQ==
+"@cornerstonejs/dicom-image-loader@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-4.15.6.tgz#0e7853dd5e5d9762f7b7776d461493f3cce2a2e4"
+  integrity sha512-VYNMYIcK9EaUYO7pYpr0AiEyTUZqXHJWSGak77MbpjYJ8PWeHgNaQzPHp0gvcaQUT1uwIfU1Wo/rVlu0cALLpA==
   dependencies:
     "@cornerstonejs/codec-charls" "1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "1.2.2"
@@ -1353,25 +1353,25 @@
     pako "2.1.0"
     uuid "9.0.1"
 
-"@cornerstonejs/labelmap-interpolation@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/labelmap-interpolation/-/labelmap-interpolation-4.15.2.tgz#196bba6a6b0008afb8ea05b6d82a4e56be87a464"
-  integrity sha512-d+EnI+W3Q26U2W4QkNHaz+ipwEEe9y//AFY9jrKXMe6UWjyjkWbbQP4TZ9Pm/k/toTr7E8n87zHiQiqeeUDmOQ==
+"@cornerstonejs/labelmap-interpolation@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/labelmap-interpolation/-/labelmap-interpolation-4.15.6.tgz#4973ea030ef551104cc5ab5a2c7e1d4916a164ee"
+  integrity sha512-GtklMlxmlaG1XrzaYrTnFrosWoLEPbZwlMc/kbrdrMZAYe8hXvGrkoIYPM0GnBrfQYL1Pjfqi+VhiSyCFX+ehQ==
   dependencies:
     "@itk-wasm/morphological-contour-interpolation" "1.1.0"
     itk-wasm "1.0.0-b.165"
 
-"@cornerstonejs/polymorphic-segmentation@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-4.15.2.tgz#6d8b76cb254badb2d5b332a11bc13e8c8ad0c6d2"
-  integrity sha512-u9SZLLS6k6h8lOu21obguuVpbxPXUur2xJ8yz4LoJRqPcRo9p82nBgyoJogbg7GloVtH59HbmQvlsecS69Z5gg==
+"@cornerstonejs/polymorphic-segmentation@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-4.15.6.tgz#91066e4172df954585f2c3a236af364480d07caa"
+  integrity sha512-t+OqolPp1DhlOVMtS6D088d3iQGOAjS4O5Sw8gOCZ4C/pg+jHmNJpkrGlFw8qUhnJ1D9JU3+dTJdLL8Xwq9HNg==
   dependencies:
     "@icr/polyseg-wasm" "0.4.0"
 
-"@cornerstonejs/tools@4.15.2":
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-4.15.2.tgz#243f2dfdaa66c6f497a074c28e485388ec014a31"
-  integrity sha512-vf8KMisfUzZMLWr3YH97Pv6DmCZSVg23Qt2GqhnXjLnRqvE+mMFBUXR9GhKlG63cNgbBSbRC2EHWjQM2paVp4A==
+"@cornerstonejs/tools@4.15.6":
+  version "4.15.6"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-4.15.6.tgz#ec2af21acf95d3900f5624808f891e1072d7b6e0"
+  integrity sha512-MPZwkMkZqJVdGXiKqsO4T7jiR9m0KFNfp5DV/KdyUchrz7TPBfbO2r2aBxowo3ARutlJuQWDgPv9hcLRueLhIw==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "4.4.2"
@@ -3298,10 +3298,10 @@
   resolved "https://registry.yarnpkg.com/@react-dnd/shallowequal/-/shallowequal-2.0.0.tgz#a3031eb54129f2c66b2753f8404266ec7bf67f0a"
   integrity sha512-Pc/AFTdwZwEKJxFJvlxrSmGe/di+aAOBn60sremrpLo6VI/6cmiUYNNwlI5KNYttg7uypzA3ILPMPgxB2GYZEg==
 
-"@remix-run/router@1.23.0":
-  version "1.23.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.23.0.tgz#35390d0e7779626c026b11376da6789eb8389242"
-  integrity sha512-O3rHJzAQKamUz1fvE0Qaw0xSFqsA/yafi2iqeE0pvdFtCO1viYx8QL6f3Ln/aCCTLxs68SLf0KPM9eSeM8yBnA==
+"@remix-run/router@1.23.2":
+  version "1.23.2"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.23.2.tgz#156c4b481c0bee22a19f7924728a67120de06971"
+  integrity sha512-Ic6m2U/rMjTkhERIa/0ZtXJP17QUi2CbWE7cqx4J58M8aA3QTfW+2UlQ4psvTX9IO1RfNVhK3pcpdjej7L+t2w==
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
@@ -15714,20 +15714,20 @@ react-resize-detector@10.0.1:
   dependencies:
     lodash "^4.17.21"
 
-react-router-dom@6.30.1:
-  version "6.30.1"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.30.1.tgz#da2580c272ddb61325e435478566be9563a4a237"
-  integrity sha512-llKsgOkZdbPU1Eg3zK8lCn+sjD9wMRZZPuzmdWWX5SUs8OFkN5HnFVC0u5KMeMaC9aoancFI/KoLuKPqN+hxHw==
+react-router-dom@6.30.3:
+  version "6.30.3"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.30.3.tgz#42ae6dc4c7158bfb0b935f162b9621b29dddf740"
+  integrity sha512-pxPcv1AczD4vso7G4Z3TKcvlxK7g7TNt3/FNGMhfqyntocvYKj+GCatfigGDjbLozC4baguJ0ReCigoDJXb0ag==
   dependencies:
-    "@remix-run/router" "1.23.0"
-    react-router "6.30.1"
+    "@remix-run/router" "1.23.2"
+    react-router "6.30.3"
 
-react-router@6.30.1:
-  version "6.30.1"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.30.1.tgz#ecb3b883c9ba6dbf5d319ddbc996747f4ab9f4c3"
-  integrity sha512-X1m21aEmxGXqENEPG3T6u0Th7g0aS4ZmoNynhbs+Cn+q+QGTLt+d5IQ2bHAXKzKcxGJjxACpVbnYQSCRcfxHlQ==
+react-router@6.30.3:
+  version "6.30.3"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.30.3.tgz#994b3ccdbe0e81fe84d4f998100f62584dfbf1cf"
+  integrity sha512-XRnlbKMTmktBkjCLE8/XcZFlnHvr2Ltdr1eJX4idL55/9BbORzyZEaIkBFDhFGCEWBBItsVrDxwx3gnisMitdw==
   dependencies:
-    "@remix-run/router" "1.23.0"
+    "@remix-run/router" "1.23.2"
 
 react-select@5.7.4:
   version "5.7.4"
