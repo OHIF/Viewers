@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.11.0-beta.115",
+  "version": "3.12.0-beta.120",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -32,25 +32,25 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "^3.32.5",
-    "@cornerstonejs/tools": "^3.32.5",
-    "@ohif/core": "3.11.0-beta.115",
-    "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.115",
-    "@ohif/extension-default": "3.11.0-beta.115",
-    "@ohif/ui": "3.11.0-beta.115",
-    "classnames": "^2.3.2",
-    "dcmjs": "0.43.1",
-    "lodash.debounce": "^4.0.8",
-    "prop-types": "^15.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "@cornerstonejs/core": "4.15.2",
+    "@cornerstonejs/tools": "4.15.2",
+    "@ohif/core": "3.12.0-beta.120",
+    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.120",
+    "@ohif/extension-default": "3.12.0-beta.120",
+    "@ohif/ui": "3.12.0-beta.120",
+    "classnames": "2.5.1",
+    "dcmjs": "0.45.0",
+    "lodash.debounce": "4.0.8",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "webpack": "5.89.0",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "5.10.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@ohif/ui": "3.11.0-beta.115",
-    "@xstate/react": "^3.2.2",
-    "xstate": "^4.10.0"
+    "@babel/runtime": "7.28.2",
+    "@ohif/ui": "3.12.0-beta.120",
+    "@xstate/react": "3.2.2",
+    "xstate": "4.38.3"
   }
 }

@@ -37,7 +37,7 @@ This project contains two main components:
 2. **Install Dependencies:**
 
     ```bash
-    yarn install
+    yarn install --frozen-lockfile
     ```
 
 ## Generating Static DICOMweb Files

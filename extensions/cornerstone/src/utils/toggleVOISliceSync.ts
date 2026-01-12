@@ -46,7 +46,7 @@ export default function toggleVOISliceSync({
       }
       syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
         type: 'voi',
-        id: syncIdToUse,
+        id: syncIdToUse as string,
         source: true,
         target: true,
       });
@@ -76,14 +76,18 @@ function groupViewportsByModality(
   viewportGridService: ViewportGridService,
   displaySetService: DisplaySetService
 ) {
-  let { viewports } = viewportGridService.getState();
+  const { viewports } = viewportGridService.getState();
 
-  viewports = [...viewports.values()];
+  const viewportsArray = [...viewports.values()];
 
   // group the viewports by modality
-  return viewports.reduce((acc, viewport) => {
+  return viewportsArray.reduce((acc, viewport) => {
     const { displaySetInstanceUIDs } = viewport;
     // Todo: add proper fusion support
+    // Fix: Skip processing if the viewport is empty.
+    if (!displaySetInstanceUIDs?.length) {
+      return acc;
+    }
     const displaySetInstanceUID = displaySetInstanceUIDs[0];
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 

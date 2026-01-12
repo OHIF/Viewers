@@ -27,6 +27,16 @@ window.config = {
   // Uses the ohif datasource as the default - this requires that KHEOPS be
   // configured with an OHIF path to .../viewer/dicomwebproxy
   defaultDataSourceName: 'ohif',
+  // Show basic as 'Basic' and hide the longiutdinal mode for kheops
+  modesConfiguration: {
+    '@ohif/mode-basic': {
+      hide: { $set: false },
+      displayName: { $set: 'Basic' },
+    },
+    '@ohif/mode-longitudinal': {
+      hide: { $set: true },
+    },
+  },
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -110,6 +120,29 @@ window.config = {
         supportsWildcard: true,
         staticWado: true,
         singlepart: 'video',
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+        },
+      },
+    },
+    {
+      friendlyName: 'StaticWado default data',
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: '/dicomweb',
+        qidoRoot: '/dicomweb',
+        wadoRoot: '/dicomweb',
+        qidoSupportsIncludeField: false,
+        supportsReject: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: false,
+        supportsWildcard: true,
+        staticWado: true,
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',

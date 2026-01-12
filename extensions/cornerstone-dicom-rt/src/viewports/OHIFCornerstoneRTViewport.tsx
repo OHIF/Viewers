@@ -103,7 +103,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
+        if (evt.rtDisplaySet?.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
           setRtIsLoading(false);
         }
 

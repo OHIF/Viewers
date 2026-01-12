@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.11.0-beta.115",
+  "version": "3.12.0-beta.120",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -33,22 +33,22 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.11.0-beta.115",
-    "@ohif/extension-cornerstone": "3.11.0-beta.115",
-    "@ohif/extension-default": "3.11.0-beta.115",
-    "@ohif/i18n": "3.11.0-beta.115",
-    "prop-types": "^15.6.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
-    "react-router": "^6.23.1",
-    "react-router-dom": "^6.23.1"
+    "@ohif/core": "3.12.0-beta.120",
+    "@ohif/extension-cornerstone": "3.12.0-beta.120",
+    "@ohif/extension-default": "3.12.0-beta.120",
+    "@ohif/i18n": "3.12.0-beta.120",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "12.3.1",
+    "react-router": "6.30.3",
+    "react-router-dom": "6.30.3"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^3.32.5",
-    "@cornerstonejs/core": "^3.32.5",
-    "@kitware/vtk.js": "32.12.0",
-    "react-color": "^2.19.3"
+    "@babel/runtime": "7.28.2",
+    "@cornerstonejs/adapters": "4.15.2",
+    "@cornerstonejs/core": "4.15.2",
+    "@kitware/vtk.js": "34.15.1",
+    "react-color": "2.19.3"
   }
 }

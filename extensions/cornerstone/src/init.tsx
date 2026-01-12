@@ -55,6 +55,10 @@ export default async function init({
   extensionManager,
   appConfig,
 }: withAppTypes): Promise<void> {
+  // Use a public library path of PUBLIC_URL plus the component name
+  // This safely separates components that are loaded as-is.
+  window.PUBLIC_LIB_URL ||= './${component}/';
+
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
 
@@ -102,6 +106,12 @@ export default async function init({
     colorbarService.EVENTS.STATE_CHANGED,
   ]);
 
+  toolbarService.registerEventForToolbarUpdate(segmentationService, [
+    segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+    segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+    segmentationService.EVENTS.SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
+  ]);
+
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
@@ -127,10 +137,18 @@ export default async function init({
     getSegmentationPresentationId
   );
 
-  cornerstoneTools.segmentation.config.style.setStyle(
+  segmentationService.setStyle(
     { type: SegmentationRepresentations.Contour },
     {
+      // Declare these alpha values at the Contour type level so that they can be set/changed/inherited for all contour segmentations.
+      fillAlpha: 0.5,
+      fillAlphaInactive: 0.4,
+
+      // In general do not fill contours so that hydrated RTSTRUCTs are not filled in when active or inactive by default.
+      // However, hydrated RTSTRUCTs are filled in when active or inactive if the user chooses to fill ALL contours.
+      // Those Contours created in OHIF (i.e. using the Segmentation Panel) will override both fill properties upon creation.
       renderFill: false,
+      renderFillInactive: false,
     }
   );
 
@@ -194,7 +212,6 @@ export default async function init({
     const { uid: annotationUID } = measurement;
     commandsManager.runCommand('jumpToMeasurementViewport', { measurement, annotationUID, evt });
   });
-
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(

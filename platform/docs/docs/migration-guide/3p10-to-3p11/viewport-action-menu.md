@@ -5,8 +5,6 @@ summary: Migration guide for OHIF 3.11's viewport corners customization changes,
 ---
 
 
-Okay, here's a migration guide based on the provided diff, focusing on the introduction of `TrackingStatus`, `ModalityLoadBadge`, and `NavigationComponent`.
-
 **Key Changes:**
 
 *   **Deprecated `ViewportActionCornersService`**: The `ViewportActionCornersService` and its associated provider (`ViewportActionCornersProvider`) have been removed. UI elements previously managed by this service are now typically handled by dedicated components integrated via the `ToolbarService`.

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, type BrowserRouterProps } from 'react-router-dom';
 
 import Compose from './routes/Mode/Compose';
 import {
@@ -42,6 +42,11 @@ let commandsManager: CommandsManager,
   servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
+
+const routerFutureFlags: BrowserRouterProps['future'] = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
 
 function App({
   config = {
@@ -164,7 +169,10 @@ function App({
 
   return (
     <CombinedProviders>
-      <BrowserRouter basename={routerBasename}>
+      <BrowserRouter
+        basename={routerBasename}
+        future={routerFutureFlags}
+      >
         {authRoutes}
         {appRoutes}
       </BrowserRouter>

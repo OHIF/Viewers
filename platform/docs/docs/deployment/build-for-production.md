@@ -38,7 +38,7 @@ Next run these commands:
 yarn config set workspaces-experimental true
 
 # Restore dependencies
-yarn install
+yarn install --frozen-lockfile
 
 # Build source code for production
 yarn run build

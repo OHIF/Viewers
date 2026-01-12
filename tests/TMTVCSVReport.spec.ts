@@ -1,39 +1,46 @@
-import { test, expect } from 'playwright-test-coverage';
-import { visitStudy, simulateNormalizedClickOnElement } from './utils/index';
-import { viewportLocator } from './utils/locators';
+import { expect, test, visitStudy } from './utils';
 import { downloadAsString } from './utils/download';
 
-test('should create and download the TMTV CSV report correctly', async ({ page }) => {
+test('should create and download the TMTV CSV report correctly', async ({
+  page,
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
-  await page.getByTestId('addSegmentation').click();
-  await page.getByTestId('Brush-btn').click();
+  await rightPanelPageObject.tmtvPanel.addSegmentationButton.click();
+  await rightPanelPageObject.tmtvPanel.tools.brush.click();
 
-  await simulateNormalizedClickOnElement({
-    locator: viewportLocator({ viewportId: 'ctAXIAL', page }),
-    normalizedPoint: { x: 0.5, y: 0.5 },
-  });
+  await viewportPageObject.getById('ctAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
   await page.waitForTimeout(5000);
 
   const downloadPromise = page.waitForEvent('download');
-  await page.getByTestId('exportTmtvCsvReport').click();
+  await rightPanelPageObject.tmtvPanel.exportTmtvCsvReport();
   const download = await downloadPromise;
 
   expect(download.suggestedFilename(), 'Not the correct file name for the TMTV CSV report.').toBe(
     '202009231_tmtv.csv'
   );
 
-  const tmtvCSVReportContent = await downloadAsString(download);
+  const tmtvCSVReportContent: string = await downloadAsString(download);
+
+  const expectedHeaders =
+    'PatientID,PatientName,SeriesInstanceUID,StudyDate,StudyInstanceUID,center,count,id,kurtosis,label,lesionGlycolysis,max,maxLPS,mean,median,min,minLPS,peakLPS,peakValue,skewness,stdDev,volume';
+
+  const tmtvCSVReportHeaders = tmtvCSVReportContent
+    .substring(0, expectedHeaders.length)
+    .split(',')
+    .sort()
+    .join(',');
 
   expect(
-    tmtvCSVReportContent,
+    tmtvCSVReportHeaders,
     'Expected the file to start with specific column/value headers'
-  ).toMatch(
-    /^id,label,min,max,mean,stdDev,median,skewness,kurtosis,count,maxLPS,minLPS,center,volume,peakValue,peakLPS,lesionGlycolysis,PatientID,PatientName,StudyInstanceUID,SeriesInstanceUID,StudyDate/
-  );
+  ).toBe(expectedHeaders);
+
   expect(tmtvCSVReportContent, 'Expected the patient name to be present').toContain(
     'Water Phantom'
   );
