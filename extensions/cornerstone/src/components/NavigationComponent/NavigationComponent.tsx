@@ -87,7 +87,10 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
         return;
       }
 
-      const segmentationId = segmentationsWithRepresentations[0].segmentation.segmentationId;
+      const activeSegmentationWithRepresentation = segmentationsWithRepresentations.find(
+        segmentation => segmentation?.representation?.active
+      );
+      const segmentationId = activeSegmentationWithRepresentation.segmentation.segmentationId;
 
       utils.handleSegmentChange({
         direction,
