@@ -21,37 +21,97 @@
 }
 
 .ohif-scrollbar::-webkit-scrollbar-track {
-  @apply rounded;
+  border-radius: 0.25rem;
 }
 
 .ohif-scrollbar::-webkit-scrollbar-thumb {
-  @apply rounded;
-  @apply bg-secondary-dark;
+  border-radius: 0.25rem;
   background-color: #041c4a;
 }
 
 .ohif-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  @apply bg-secondary-dark;
   background-color: #041c4a;
 }
-
-/* INVISIBLE SCROLLBAR */
-.invisible-scrollbar {
-  scrollbar-width: none;
+.drag-handle {
+  padding-top: 10px !important;
+}
+.drag-handle h2 {
+  text-align: center !important;
+  /* padding-top: 20px !important; */
 }
 
-.invisible-scrollbar::-webkit-scrollbar {
-  @apply hidden;
+.pdf-viewport-root {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-.invisible-scrollbar::-webkit-scrollbar-track {
-  @apply hidden;
+.pdf-viewport-inner {
+  width: 100%;
+  max-width: min(960px, calc(100% - 40px));
+  margin: 0;
+  padding-top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  height: 100%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-.invisible-scrollbar::-webkit-scrollbar-thumb {
-  @apply hidden;
+.pdf-viewport-document {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
+  display: block;
+  object-position: top;
 }
 
-.invisible-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  @apply hidden;
+.pdf-viewport-document.pdf-no-click {
+  pointer-events: none;
+}
+
+.pdf-viewport-document.pdf-yes-click {
+  pointer-events: auto;
+}
+
+div[role='dialog'][data-state='open'] {
+  width: min(1120px, 94vw);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  gap: 0px !important;
+}
+
+@media (max-width: 1280px) {
+  div[role='dialog'][data-state='open'] {
+    width: calc(100vw - 24px);
+  }
+}
+
+.drag-handle h2 {
+  text-align: center !important;
 }
