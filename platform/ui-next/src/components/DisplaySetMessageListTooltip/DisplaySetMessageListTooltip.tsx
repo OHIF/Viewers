@@ -14,7 +14,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
   if (messages?.size()) {
     return (
       <>
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger id={id}>
             <Icons.StatusWarning
               className="h-[20px] w-[20px]"
@@ -53,7 +53,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
               </ol>
             </div>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </>
     );
   }
