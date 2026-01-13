@@ -111,20 +111,20 @@ export class RightPanelPageObject {
 
   private get segmentationPanel() {
     const page = this.page;
-    const getSegmentationByIdx = (index: number) => this.getPanelRowByIdx(index);
-    const getSegmentationByText = (text: string) => this.getPanelRowByText(text);
+    const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
+    const getSegmentByText = (text: string) => this.getPanelRowByText(text);
 
     return {
-      getSegmentationCount: async () => {
+      getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
       // No data-cy exists in this panel, using Segmentation header button
       locator: page.getByRole('button', { name: 'Segmentations' }),
-      nthSegmentation(index: number) {
-        return getSegmentationByIdx(index);
+      nthSegment(index: number) {
+        return getSegmentByIdx(index);
       },
-      segmentationByText(text: string) {
-        return getSegmentationByText(text);
+      segmentByText(text: string) {
+        return getSegmentByText(text);
       },
     };
   }
