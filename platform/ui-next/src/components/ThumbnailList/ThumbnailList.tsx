@@ -10,6 +10,7 @@ const ThumbnailList = ({
   onThumbnailDoubleClick,
   onClickUntrack,
   onSegmentationClick,
+  segmentationVisibility = new Map(),
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
   ThumbnailMenuItems,
@@ -54,6 +55,7 @@ const ThumbnailList = ({
                   onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
                   onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
                   onSegmentationClick={onSegmentationClick}
+                  segmentationVisibility={segmentationVisibility}
                   ThumbnailMenuItems={ThumbnailMenuItems}
                 />
               );
@@ -82,6 +84,7 @@ const ThumbnailList = ({
                   onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
                   onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
                   onSegmentationClick={onSegmentationClick}
+                  segmentationVisibility={segmentationVisibility}
                   ThumbnailMenuItems={ThumbnailMenuItems}
                 />
               );

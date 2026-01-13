@@ -441,6 +441,16 @@ function PanelStudyBrowser({
         if (studyInstanceUID) {
           const key = `dicom_segmented_${studyInstanceUID}`;
           sessionStorage.setItem(key, 'true');
+          
+          // Mark all loaded segmentations as visible
+          setTimeout(() => {
+            const segDisplaySets = displaySetService.activeDisplaySets.filter(
+              ds => ds.Modality === 'SEG' && ds.StudyInstanceUID === studyInstanceUID
+            );
+            segDisplaySets.forEach(segDS => {
+              setSegmentationVisibility(prev => new Map(prev).set(segDS.displaySetInstanceUID, true));
+            });
+          }, 1000);
         }
         return true;
       } catch (error) {
@@ -720,13 +730,78 @@ function PanelStudyBrowser({
     ]
   );
 
+  // Track visibility state for segmentations
+  const [segmentationVisibility, setSegmentationVisibility] = useState<Map<string, boolean>>(new Map());
+
   const handleSegmentationClick = useCallback(
     (segDisplaySetInstanceUID: string) => {
-      if (segDisplaySetInstanceUID) {
+      if (!segDisplaySetInstanceUID) {
+        return;
+      }
+
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      
+      // Check if segmentation is already loaded/hydrated
+      const segmentation = segmentationService.getSegmentation(segDisplaySetInstanceUID);
+      
+      if (!segmentation) {
+        // If not loaded, load it first (original behavior)
+        onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
+        // Assume it will be visible after loading
+        setSegmentationVisibility(prev => new Map(prev).set(segDisplaySetInstanceUID, true));
+        return;
+      }
+
+      // Get all viewports that have this segmentation
+      const viewportIds = segmentationService.getViewportIdsWithSegmentation(segDisplaySetInstanceUID);
+      
+      if (viewportIds.length === 0) {
+        // No viewports have this segmentation, load it
+        onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
+        setSegmentationVisibility(prev => new Map(prev).set(segDisplaySetInstanceUID, true));
+        return;
+      }
+
+      // Toggle visibility in all viewports that have this segmentation
+      const currentVisibility = segmentationVisibility.get(segDisplaySetInstanceUID) ?? true;
+      const newVisibility = !currentVisibility;
+      
+      // Toggle visibility for each viewport that has this segmentation
+      // Add error handling to prevent errors if segmentation data isn't fully loaded
+      try {
+        viewportIds.forEach(viewportId => {
+          try {
+            // Get all representations for this segmentation in this viewport
+            const representations = segmentationService.getSegmentationRepresentations(viewportId, {
+              segmentationId: segDisplaySetInstanceUID,
+            });
+            
+            if (representations && representations.length > 0) {
+              // Use the type from the actual representation (like AddSegmentRow does)
+              const representation = representations[0];
+              if (representation?.type) {
+                segmentationService.toggleSegmentationRepresentationVisibility(
+                  viewportId,
+                  {
+                    segmentationId: segDisplaySetInstanceUID,
+                    type: representation.type,
+                  }
+                );
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to toggle segmentation visibility for viewport ${viewportId}:`, error);
+          }
+        });
+
+        setSegmentationVisibility(prev => new Map(prev).set(segDisplaySetInstanceUID, newVisibility));
+      } catch (error) {
+        console.error('Error toggling segmentation visibility:', error);
+        // Fallback to original behavior if toggle fails
         onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
       }
     },
-    [onDoubleClickThumbnailHandler]
+    [onDoubleClickThumbnailHandler, servicesManager, commandsManager, segmentationVisibility]
   );
 
   // Handler for running segmentation on a specific study (per-study button)
@@ -1939,6 +2014,7 @@ function PanelStudyBrowser({
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         onSegmentationClick={handleSegmentationClick}
+        segmentationVisibility={segmentationVisibility}
         onRunSegmentation={handleRunSegmentation}
         onReportClick={handleReportClick}
         onChatWithReportClick={handleChatWithReport}

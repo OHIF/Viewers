@@ -34,6 +34,7 @@ const Thumbnail = ({
   onReject = () => {},
   onClickUntrack = () => {},
   onSegmentationClick = null,
+  segmentationVisibility = new Map(),
   ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
@@ -159,17 +160,24 @@ const Thumbnail = ({
               </div>
             </div>
           </div>
-          {segDisplaySetInstanceUID && onSegmentationClick && (
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                onSegmentationClick(segDisplaySetInstanceUID);
-              }}
-              className="bg-primary hover:bg-primary/80 mt-1 w-full rounded py-1 text-[11px] font-semibold text-white"
-            >
-              SEG
-            </button>
-          )}
+          {segDisplaySetInstanceUID && onSegmentationClick && (() => {
+            const isVisible = segmentationVisibility.get(segDisplaySetInstanceUID) ?? true;
+            return (
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  onSegmentationClick(segDisplaySetInstanceUID);
+                }}
+                className={`mt-1 w-full rounded py-1 text-[11px] font-semibold ${
+                  isVisible
+                    ? 'bg-primary hover:bg-primary/80 text-white'
+                    : 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+                }`}
+              >
+                SEG
+              </button>
+            );
+          })()}
         </div>
       </div>
     );
@@ -252,17 +260,24 @@ const Thumbnail = ({
               </TooltipContent>
             </Tooltip>
           )}
-          {segDisplaySetInstanceUID && onSegmentationClick && (
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                onSegmentationClick(segDisplaySetInstanceUID);
-              }}
-              className="bg-primary hover:bg-primary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white"
-            >
-              SEG
-            </button>
-          )}
+          {segDisplaySetInstanceUID && onSegmentationClick && (() => {
+            const isVisible = segmentationVisibility.get(segDisplaySetInstanceUID) ?? true;
+            return (
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  onSegmentationClick(segDisplaySetInstanceUID);
+                }}
+                className={`rounded px-2 py-0.5 text-[11px] font-semibold ${
+                  isVisible
+                    ? 'bg-primary hover:bg-primary/80 text-white'
+                    : 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+                }`}
+              >
+                SEG
+              </button>
+            );
+          })()}
           <ThumbnailMenuItems
             displaySetInstanceUID={displaySetInstanceUID}
             canReject={canReject}

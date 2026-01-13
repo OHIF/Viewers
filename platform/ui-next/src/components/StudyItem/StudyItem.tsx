@@ -20,6 +20,7 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   onSegmentationClick,
+  segmentationVisibility = new Map(),
   onRunSegmentation,
   onReportClick,
   onChatWithReportClick,
@@ -165,6 +166,7 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               onSegmentationClick={onSegmentationClick}
+              segmentationVisibility={segmentationVisibility}
               viewPreset={viewPreset}
               ThumbnailMenuItems={ThumbnailMenuItems}
             />
