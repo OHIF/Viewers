@@ -83,7 +83,7 @@ const StudyItem = ({
                       onProcessClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="bg-orange-500 hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Process
                   </button>
