@@ -89,7 +89,7 @@ function Header({
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             {subscriberName && (
               <>
-                <div className="text-primary text-sm px-2">{subscriberName}</div>
+                <div className="text-primary px-2 text-sm">{subscriberName}</div>
                 <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
               </>
             )}
