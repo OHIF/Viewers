@@ -507,20 +507,18 @@ function WorkList({
       title: 'Conferencing',
       icon: '3dslicer',
       onClick: () => {
-        window.open(
-          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/conference-client',
-          '_blank'
-        );
+        const topic = servicesManager.services.castService?.hub?.topic || '';
+        const url = `https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/conference-client${topic ? `?topic=${encodeURIComponent(topic)}` : ''}`;
+        window.open(url, '_blank');
       },
     },
     {
       title: 'Cast Test Cient',
       icon: '3dslicer',
       onClick: () => {
-        window.open(
-          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/test-client',
-          '_blank'
-        );
+        const topic = servicesManager.services.castService?.hub?.topic || '';
+        const url = `https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/test-client${topic ? `?topic=${encodeURIComponent(topic)}` : ''}`;
+        window.open(url, '_blank');
       },
     },
     {
