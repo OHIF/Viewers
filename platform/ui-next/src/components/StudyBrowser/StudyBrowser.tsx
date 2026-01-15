@@ -18,9 +18,12 @@ const StudyBrowser = ({
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
   onSegmentationClick = noop,
+  segmentationVisibility = new Map(),
   onRunSegmentation = noop,
   onReportClick = noop,
   onChatWithReportClick = noop,
+  onProcessClick = noop,
+  studiesWithReports = new Set(),
   activeDisplaySetInstanceUIDs,
   servicesManager,
   showSettings,
@@ -54,8 +57,11 @@ const StudyBrowser = ({
               onClickUntrack={onClickUntrack}
               onSegmentationClick={onSegmentationClick}
               onRunSegmentation={onRunSegmentation}
+              segmentationVisibility={segmentationVisibility}
               onReportClick={onReportClick}
               onChatWithReportClick={onChatWithReportClick}
+              onProcessClick={onProcessClick}
+              studiesWithReports={studiesWithReports}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
               viewPreset={viewPreset}

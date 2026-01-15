@@ -20,9 +20,12 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   onSegmentationClick,
+  segmentationVisibility = new Map(),
   onRunSegmentation,
   onReportClick,
   onChatWithReportClick,
+  onProcessClick,
+  studiesWithReports = new Set(),
   viewPreset = 'thumbnails',
   ThumbnailMenuItems,
   StudyMenuItems,
@@ -33,11 +36,12 @@ const StudyItem = ({
     <Accordion
       type="single"
       collapsible
-      onClick={onClick}
-      onKeyDown={() => {}}
-      role="button"
-      tabIndex={0}
-      defaultValue={isActive ? 'study-item' : undefined}
+      value={isExpanded ? 'study-item' : undefined}
+      onValueChange={(value) => {
+        // Call onClick whenever the accordion state changes
+        // The parent's onClick handler will toggle the expanded state correctly
+        onClick();
+      }}
     >
       <AccordionItem value="study-item">
         <AccordionTrigger className={classnames('hover:bg-accent bg-popover group w-full rounded')}>
@@ -72,19 +76,19 @@ const StudyItem = ({
                 <div>{numInstances}</div>
               </div>
               <div className="ml-2 flex items-center gap-2">
-                {onRunSegmentation && (
+                {onProcessClick && !studiesWithReports.has(StudyInstanceUID) && (
                   <button
                     onClick={e => {
                       e.stopPropagation();
-                      onRunSegmentation(StudyInstanceUID);
+                      onProcessClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="bg-orange-500 hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
-                    Segment
+                    Process
                   </button>
                 )}
-                {onReportClick && (
+                {onProcessClick && studiesWithReports.has(StudyInstanceUID) && onReportClick && (
                   <button
                     onClick={e => {
                       e.stopPropagation();
@@ -96,7 +100,43 @@ const StudyItem = ({
                     Report
                   </button>
                 )}
-                {onChatWithReportClick && (
+                {onProcessClick && studiesWithReports.has(StudyInstanceUID) && onChatWithReportClick && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      onChatWithReportClick(StudyInstanceUID);
+                    }}
+                    disabled={isProcessing}
+                    className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                  >
+                    Chat
+                  </button>
+                )}
+                {!onProcessClick && onRunSegmentation && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      onRunSegmentation(StudyInstanceUID);
+                    }}
+                    disabled={isProcessing}
+                    className="bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                  >
+                    Segment
+                  </button>
+                )}
+                {!onProcessClick && onReportClick && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      onReportClick(StudyInstanceUID);
+                    }}
+                    disabled={isProcessing}
+                    className="bg-secondary hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                  >
+                    Report
+                  </button>
+                )}
+                {!onProcessClick && onChatWithReportClick && (
                   <button
                     onClick={e => {
                       e.stopPropagation();
@@ -126,6 +166,7 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               onSegmentationClick={onSegmentationClick}
+              segmentationVisibility={segmentationVisibility}
               viewPreset={viewPreset}
               ThumbnailMenuItems={ThumbnailMenuItems}
             />

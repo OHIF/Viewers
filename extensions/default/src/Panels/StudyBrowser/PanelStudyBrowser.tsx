@@ -113,50 +113,9 @@ function PanelStudyBrowser({
   
   // Track which study is currently being processed
   const [processingStudyUID, setProcessingStudyUID] = useState<string | null>(null);
-
-  // Update states when primaryStudyInstanceUID becomes available
-  useEffect(() => {
-    if (primaryStudyInstanceUID) {
-      const hasSentDicom = sessionStorage.getItem(`dicom_uploaded_${primaryStudyInstanceUID}`) === 'true';
-      const hasConverted = sessionStorage.getItem(`nifti_converted_${primaryStudyInstanceUID}`) === 'true';
-      const hasSegmented = sessionStorage.getItem(`dicom_segmented_${primaryStudyInstanceUID}`) === 'true';
-      
-      setIsUploadingDicom(!hasSentDicom);
-      setIsConversionComplete(hasConverted);
-      setIsSegmented(hasSegmented);
-    }
-  }, [primaryStudyInstanceUID]);
-
-  // Cleanup cached blob URLs on unmount to prevent memory leaks
-  useEffect(() => {
-    return () => {
-      // Revoke all cached blob URLs
-      reportCacheRef.current.forEach((blobUrl, studyUID) => {
-        URL.revokeObjectURL(blobUrl);
-        console.log(`Cleaned up cached report for study ${studyUID}`);
-      });
-      reportCacheRef.current.clear();
-    };
-  }, []);
-
-  // multiple can be true or false
-  const updateActionIconValue = actionIcon => {
-    actionIcon.value = !actionIcon.value;
-    const newActionIcons = [...actionIcons];
-    setActionIcons(newActionIcons);
-  };
-
-  // only one is true at a time
-  const updateViewPresetValue = viewPreset => {
-    if (!viewPreset) {
-      return;
-    }
-    const newViewPresets = viewPresets.map(preset => {
-      preset.selected = preset.id === viewPreset.id;
-      return preset;
-    });
-    setViewPresets(newViewPresets);
-  };
+  
+  // Track which studies have reports available
+  const [studiesWithReports, setStudiesWithReports] = useState<Set<string>>(new Set());
 
   const segmentationMap = React.useMemo(() => {
     const map = new Map<string, string>();
@@ -177,154 +136,39 @@ function PanelStudyBrowser({
     },
     [customMapDisplaySets, segmentationMap]
   );
-  const uploadInProgressRef = useRef(false);
 
-  useEffect(() => {
-    const sendStudiesToBackend = async () => {
-      if (StudyInstanceUIDs.length === 0) {
-        return;
-      }
-
-      // Check if all studies are already uploaded
-      const allUploaded = StudyInstanceUIDs.every(
-        uid => sessionStorage.getItem(`dicom_uploaded_${uid}`) === 'true'
-      );
-      
-      if (allUploaded) {
-        setIsUploadingDicom(false);
-        return;
-      }
-
-      // Prevent concurrent uploads
-      if (uploadInProgressRef.current) {
-        console.log('Upload already in progress, skipping...');
-        return;
-      }
-
-      uploadInProgressRef.current = true;
-      setIsUploadingDicom(true);
-      setUploadProgress(0);
-
-      try {
-        // Upload each study separately
-        for (let i = 0; i < StudyInstanceUIDs.length; i++) {
-          const studyUID = StudyInstanceUIDs[i];
-          const uploadKey = `dicom_uploaded_${studyUID}`;
-          
-          // Skip if already uploaded
-          if (sessionStorage.getItem(uploadKey) === 'true') {
-            console.log(`Study ${studyUID} already uploaded, skipping...`);
-            continue;
-          }
-
-          setUploadStage(`Uploading study ${i + 1} of ${StudyInstanceUIDs.length}...`);
-          
-          try {
-            await commandsManager.runCommand('sendDicomZipToBackend', {
-              studyInstanceUIDs: [studyUID], // Send single study
-              onProgress: (progress: number, stage: string) => {
-                // Adjust progress to account for multiple studies
-                const baseProgress = (i / StudyInstanceUIDs.length) * 100;
-                const studyProgress = (progress / 100) * (100 / StudyInstanceUIDs.length);
-                setUploadProgress(baseProgress + studyProgress);
-                setUploadStage(`Study ${i + 1}/${StudyInstanceUIDs.length}: ${stage}`);
-              },
-            });
-            sessionStorage.setItem(uploadKey, 'true');
-            console.log(`✓ Study ${studyUID} uploaded successfully`);
-          } catch (error) {
-            console.error(`Failed to upload study ${studyUID}:`, error);
-          }
-        }
-      } finally {
-        setIsUploadingDicom(false);
-        setUploadProgress(0);
-        setUploadStage('');
-        uploadInProgressRef.current = false;
-      }
-    };
-
-    const timeoutId = setTimeout(() => {
-      sendStudiesToBackend();
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
-  }, [StudyInstanceUIDs, commandsManager]);
-
-  // Poll conversion status for each study after DICOM upload
-  useEffect(() => {
-    if (StudyInstanceUIDs.length === 0 || isUploadingDicom) {
-      return;
-    }
-
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
-    const pollCountRef: Record<string, number> = {};
-    const maxPolls = 60;
-
-    const checkConversionStatusForStudy = async (studyUID: string) => {
-      const convKey = `nifti_converted_${studyUID}`;
-      
-      // Skip if already converted
-      if (sessionStorage.getItem(convKey) === 'true') {
-        // Update UI if this is the primary study
-        if (studyUID === primaryStudyInstanceUID) {
-          setIsConversionComplete(true);
-        }
-        return;
-      }
-
-      // Initialize poll count
-      if (!pollCountRef[studyUID]) {
-        pollCountRef[studyUID] = 0;
+  // Check if segmentation files exist on backend
+  const checkSegmentationStatus = useCallback(
+    async (studyInstanceUID: string): Promise<{ exists: boolean; bodyPart?: string; fileCount?: number }> => {
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
+        return { exists: false };
       }
 
       try {
-        const response = await fetch(`${backendUrl}/check_conversion_status/${studyUID}`);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+        const response = await fetch(
+          `${backendUrl}/check_segmentation_status/${studyInstanceUID}`
+        );
+
+        if (!response.ok) {
+          console.warn(`Failed to check segmentation status: ${response.status}`);
+          return { exists: false };
+        }
+
         const data = await response.json();
-
-        console.log(`Conversion status for ${studyUID}:`, data);
-
-        if (data.conversion_complete) {
-          sessionStorage.setItem(convKey, 'true');
-          console.log(`✓ NIfTI conversion complete for study ${studyUID}`);
-          
-          // Update UI if this is the primary study
-          if (studyUID === primaryStudyInstanceUID) {
-            setIsConversionComplete(true);
-            setConversionStatus(data.message || '');
-          }
-        } else {
-          pollCountRef[studyUID]++;
-          if (pollCountRef[studyUID] < maxPolls) {
-            setTimeout(() => checkConversionStatusForStudy(studyUID), 1000);
-          } else {
-            console.error(`Conversion status polling timed out for study ${studyUID}`);
-            if (studyUID === primaryStudyInstanceUID) {
-              setConversionStatus('Conversion taking longer than expected. Please try refreshing.');
-            }
-          }
-        }
+        return {
+          exists: data.segmentation_exists || false,
+          bodyPart: data.body_part,
+          fileCount: data.segmentation_files_found || 0
+        };
       } catch (error) {
-        console.error(`Error checking conversion status for ${studyUID}:`, error);
-        pollCountRef[studyUID]++;
-        if (pollCountRef[studyUID] < maxPolls) {
-          setTimeout(() => checkConversionStatusForStudy(studyUID), 1000);
-        }
+        console.error('Error checking segmentation status:', error);
+        return { exists: false };
       }
-    };
-
-    // Start polling for each study
-    const timeoutId = setTimeout(() => {
-      StudyInstanceUIDs.forEach(studyUID => {
-        // Only poll for studies that have been uploaded
-        if (sessionStorage.getItem(`dicom_uploaded_${studyUID}`) === 'true') {
-          checkConversionStatusForStudy(studyUID);
-        }
-      });
-    }, 2000);
-
-    return () => clearTimeout(timeoutId);
-  }, [StudyInstanceUIDs, isUploadingDicom, primaryStudyInstanceUID]);
+    },
+    []
+  );
 
   const fetchSegmentationFromBackend = useCallback(
     async (studyInstanceUID: string): Promise<boolean> => {
@@ -597,6 +441,16 @@ function PanelStudyBrowser({
         if (studyInstanceUID) {
           const key = `dicom_segmented_${studyInstanceUID}`;
           sessionStorage.setItem(key, 'true');
+          
+          // Mark all loaded segmentations as visible
+          setTimeout(() => {
+            const segDisplaySets = displaySetService.activeDisplaySets.filter(
+              ds => ds.Modality === 'SEG' && ds.StudyInstanceUID === studyInstanceUID
+            );
+            segDisplaySets.forEach(segDS => {
+              setSegmentationVisibility(prev => new Map(prev).set(segDS.displaySetInstanceUID, true));
+            });
+          }, 1000);
         }
         return true;
       } catch (error) {
@@ -625,6 +479,224 @@ function PanelStudyBrowser({
       commandsManager,
     ]
   );
+
+  // Update states when primaryStudyInstanceUID becomes available
+  useEffect(() => {
+    if (primaryStudyInstanceUID) {
+      const hasSentDicom = sessionStorage.getItem(`dicom_uploaded_${primaryStudyInstanceUID}`) === 'true';
+      const hasConverted = sessionStorage.getItem(`nifti_converted_${primaryStudyInstanceUID}`) === 'true';
+      const hasSegmented = sessionStorage.getItem(`dicom_segmented_${primaryStudyInstanceUID}`) === 'true';
+      
+      setIsUploadingDicom(!hasSentDicom);
+      setIsConversionComplete(hasConverted);
+      setIsSegmented(hasSegmented);
+
+      // Check backend for existing segmentation files and load them if they exist
+      // Also check if segmentation is actually in the viewer (might be missing after reload)
+      if (hasConverted) {
+        // Check if segmentation is actually loaded in the viewer
+        const currentDisplaySets = displaySetService.activeDisplaySets;
+        const hasSegmentationInViewer = currentDisplaySets.some(
+          ds => ds.Modality === 'SEG' && ds.StudyInstanceUID === primaryStudyInstanceUID
+        );
+
+        // Load if: not marked as segmented OR marked but not in viewer
+        if (!hasSegmented || (hasSegmented && !hasSegmentationInViewer)) {
+          checkSegmentationStatus(primaryStudyInstanceUID).then(status => {
+            if (status.exists) {
+              // Segmentation files exist on backend - load them automatically
+              console.log(`Found existing segmentation files for study ${primaryStudyInstanceUID}, loading...`);
+              fetchSegmentationFromBackend(primaryStudyInstanceUID).catch(error => {
+                console.error('Failed to auto-load segmentation:', error);
+              });
+            }
+          }).catch(error => {
+            console.error('Failed to check segmentation status:', error);
+          });
+        }
+      }
+    }
+  }, [primaryStudyInstanceUID, checkSegmentationStatus, fetchSegmentationFromBackend, displaySetService]);
+
+  // Cleanup cached blob URLs on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Revoke all cached blob URLs
+      reportCacheRef.current.forEach((blobUrl, studyUID) => {
+        URL.revokeObjectURL(blobUrl);
+        console.log(`Cleaned up cached report for study ${studyUID}`);
+      });
+      reportCacheRef.current.clear();
+    };
+  }, []);
+
+  // multiple can be true or false
+  const updateActionIconValue = actionIcon => {
+    actionIcon.value = !actionIcon.value;
+    const newActionIcons = [...actionIcons];
+    setActionIcons(newActionIcons);
+  };
+
+  // only one is true at a time
+  const updateViewPresetValue = viewPreset => {
+    if (!viewPreset) {
+      return;
+    }
+    const newViewPresets = viewPresets.map(preset => {
+      preset.selected = preset.id === viewPreset.id;
+      return preset;
+    });
+    setViewPresets(newViewPresets);
+  };
+
+  const uploadInProgressRef = useRef(false);
+
+  useEffect(() => {
+    const sendStudiesToBackend = async () => {
+      if (StudyInstanceUIDs.length === 0) {
+        return;
+      }
+
+      // Check if all studies are already uploaded
+      const allUploaded = StudyInstanceUIDs.every(
+        uid => sessionStorage.getItem(`dicom_uploaded_${uid}`) === 'true'
+      );
+      
+      if (allUploaded) {
+        setIsUploadingDicom(false);
+        return;
+      }
+
+      // Prevent concurrent uploads
+      if (uploadInProgressRef.current) {
+        console.log('Upload already in progress, skipping...');
+        return;
+      }
+
+      uploadInProgressRef.current = true;
+      setIsUploadingDicom(true);
+      setUploadProgress(0);
+
+      try {
+        // Upload each study separately
+        for (let i = 0; i < StudyInstanceUIDs.length; i++) {
+          const studyUID = StudyInstanceUIDs[i];
+          const uploadKey = `dicom_uploaded_${studyUID}`;
+          
+          // Skip if already uploaded
+          if (sessionStorage.getItem(uploadKey) === 'true') {
+            console.log(`Study ${studyUID} already uploaded, skipping...`);
+            continue;
+          }
+
+          setUploadStage(`Uploading study ${i + 1} of ${StudyInstanceUIDs.length}...`);
+          
+          try {
+            await commandsManager.runCommand('sendDicomZipToBackend', {
+              studyInstanceUIDs: [studyUID], // Send single study
+              onProgress: (progress: number, stage: string) => {
+                // Adjust progress to account for multiple studies
+                const baseProgress = (i / StudyInstanceUIDs.length) * 100;
+                const studyProgress = (progress / 100) * (100 / StudyInstanceUIDs.length);
+                setUploadProgress(baseProgress + studyProgress);
+                setUploadStage(`Study ${i + 1}/${StudyInstanceUIDs.length}: ${stage}`);
+              },
+            });
+            sessionStorage.setItem(uploadKey, 'true');
+            console.log(`✓ Study ${studyUID} uploaded successfully`);
+          } catch (error) {
+            console.error(`Failed to upload study ${studyUID}:`, error);
+          }
+        }
+      } finally {
+        setIsUploadingDicom(false);
+        setUploadProgress(0);
+        setUploadStage('');
+        uploadInProgressRef.current = false;
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      sendStudiesToBackend();
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [StudyInstanceUIDs, commandsManager]);
+
+  // Poll conversion status for each study after DICOM upload
+  useEffect(() => {
+    if (StudyInstanceUIDs.length === 0 || isUploadingDicom) {
+      return;
+    }
+
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+    const pollCountRef: Record<string, number> = {};
+    const maxPolls = 60;
+
+    const checkConversionStatusForStudy = async (studyUID: string) => {
+      const convKey = `nifti_converted_${studyUID}`;
+      
+      // Skip if already converted
+      if (sessionStorage.getItem(convKey) === 'true') {
+        // Update UI if this is the primary study
+        if (studyUID === primaryStudyInstanceUID) {
+          setIsConversionComplete(true);
+        }
+        return;
+      }
+
+      // Initialize poll count
+      if (!pollCountRef[studyUID]) {
+        pollCountRef[studyUID] = 0;
+      }
+
+      try {
+        const response = await fetch(`${backendUrl}/check_conversion_status/${studyUID}`);
+        const data = await response.json();
+
+        console.log(`Conversion status for ${studyUID}:`, data);
+
+        if (data.conversion_complete) {
+          sessionStorage.setItem(convKey, 'true');
+          console.log(`✓ NIfTI conversion complete for study ${studyUID}`);
+          
+          // Update UI if this is the primary study
+          if (studyUID === primaryStudyInstanceUID) {
+            setIsConversionComplete(true);
+            setConversionStatus(data.message || '');
+          }
+        } else {
+          pollCountRef[studyUID]++;
+          if (pollCountRef[studyUID] < maxPolls) {
+            setTimeout(() => checkConversionStatusForStudy(studyUID), 1000);
+          } else {
+            console.error(`Conversion status polling timed out for study ${studyUID}`);
+            if (studyUID === primaryStudyInstanceUID) {
+              setConversionStatus('Conversion taking longer than expected. Please try refreshing.');
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`Error checking conversion status for ${studyUID}:`, error);
+        pollCountRef[studyUID]++;
+        if (pollCountRef[studyUID] < maxPolls) {
+          setTimeout(() => checkConversionStatusForStudy(studyUID), 1000);
+        }
+      }
+    };
+
+    // Start polling for each study
+    const timeoutId = setTimeout(() => {
+      StudyInstanceUIDs.forEach(studyUID => {
+        // Only poll for studies that have been uploaded
+        if (sessionStorage.getItem(`dicom_uploaded_${studyUID}`) === 'true') {
+          checkConversionStatusForStudy(studyUID);
+        }
+      });
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [StudyInstanceUIDs, isUploadingDicom, primaryStudyInstanceUID]);
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -658,13 +730,78 @@ function PanelStudyBrowser({
     ]
   );
 
+  // Track visibility state for segmentations
+  const [segmentationVisibility, setSegmentationVisibility] = useState<Map<string, boolean>>(new Map());
+
   const handleSegmentationClick = useCallback(
     (segDisplaySetInstanceUID: string) => {
-      if (segDisplaySetInstanceUID) {
+      if (!segDisplaySetInstanceUID) {
+        return;
+      }
+
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      
+      // Check if segmentation is already loaded/hydrated
+      const segmentation = segmentationService.getSegmentation(segDisplaySetInstanceUID);
+      
+      if (!segmentation) {
+        // If not loaded, load it first (original behavior)
+        onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
+        // Assume it will be visible after loading
+        setSegmentationVisibility(prev => new Map(prev).set(segDisplaySetInstanceUID, true));
+        return;
+      }
+
+      // Get all viewports that have this segmentation
+      const viewportIds = segmentationService.getViewportIdsWithSegmentation(segDisplaySetInstanceUID);
+      
+      if (viewportIds.length === 0) {
+        // No viewports have this segmentation, load it
+        onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
+        setSegmentationVisibility(prev => new Map(prev).set(segDisplaySetInstanceUID, true));
+        return;
+      }
+
+      // Toggle visibility in all viewports that have this segmentation
+      const currentVisibility = segmentationVisibility.get(segDisplaySetInstanceUID) ?? true;
+      const newVisibility = !currentVisibility;
+      
+      // Toggle visibility for each viewport that has this segmentation
+      // Add error handling to prevent errors if segmentation data isn't fully loaded
+      try {
+        viewportIds.forEach(viewportId => {
+          try {
+            // Get all representations for this segmentation in this viewport
+            const representations = segmentationService.getSegmentationRepresentations(viewportId, {
+              segmentationId: segDisplaySetInstanceUID,
+            });
+            
+            if (representations && representations.length > 0) {
+              // Use the type from the actual representation (like AddSegmentRow does)
+              const representation = representations[0];
+              if (representation?.type) {
+                segmentationService.toggleSegmentationRepresentationVisibility(
+                  viewportId,
+                  {
+                    segmentationId: segDisplaySetInstanceUID,
+                    type: representation.type,
+                  }
+                );
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to toggle segmentation visibility for viewport ${viewportId}:`, error);
+          }
+        });
+
+        setSegmentationVisibility(prev => new Map(prev).set(segDisplaySetInstanceUID, newVisibility));
+      } catch (error) {
+        console.error('Error toggling segmentation visibility:', error);
+        // Fallback to original behavior if toggle fails
         onDoubleClickThumbnailHandler(segDisplaySetInstanceUID);
       }
     },
-    [onDoubleClickThumbnailHandler]
+    [onDoubleClickThumbnailHandler, servicesManager, commandsManager, segmentationVisibility]
   );
 
   // Handler for running segmentation on a specific study (per-study button)
@@ -677,17 +814,6 @@ function PanelStudyBrowser({
 
       const { uiNotificationService } = servicesManager.services;
 
-      // Check if already segmented
-      const segKey = `dicom_segmented_${studyInstanceUID}`;
-      if (sessionStorage.getItem(segKey) === 'true') {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'This study has already been segmented',
-          type: 'info',
-        });
-        return;
-      }
-
       // Check if conversion is complete for this study
       const convKey = `nifti_converted_${studyInstanceUID}`;
       if (sessionStorage.getItem(convKey) !== 'true') {
@@ -699,9 +825,55 @@ function PanelStudyBrowser({
         return;
       }
 
-      await fetchSegmentationFromBackend(studyInstanceUID);
+      // Check if segmentation files exist on backend
+      const segStatus = await checkSegmentationStatus(studyInstanceUID);
+      const segKey = `dicom_segmented_${studyInstanceUID}`;
+      const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
+
+      // Check if segmentation is actually loaded in the viewer
+      const currentDisplaySets = displaySetService.activeDisplaySets;
+      const hasSegmentationInViewer = currentDisplaySets.some(
+        ds => ds.Modality === 'SEG' && ds.StudyInstanceUID === studyInstanceUID
+      );
+
+      if (segStatus.exists && !isStudySegmented) {
+        // Files exist but haven't been loaded - load them
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Loading existing segmentation files...',
+          type: 'info',
+        });
+        await fetchSegmentationFromBackend(studyInstanceUID);
+      } else if (isStudySegmented && !hasSegmentationInViewer) {
+        // SessionStorage says segmented but not in viewer (e.g., after reload) - load them
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Reloading segmentation files...',
+          type: 'info',
+        });
+        await fetchSegmentationFromBackend(studyInstanceUID);
+      } else if (isStudySegmented && hasSegmentationInViewer) {
+        // Already segmented and loaded in viewer
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'This study has already been segmented and is displayed',
+          type: 'info',
+        });
+        return;
+      } else if (segStatus.exists) {
+        // Files exist on backend but not marked as segmented - load them
+        uiNotificationService.show({
+          title: 'Segmentation',
+          message: 'Loading existing segmentation files...',
+          type: 'info',
+        });
+        await fetchSegmentationFromBackend(studyInstanceUID);
+      } else {
+        // No files exist - run segmentation
+        await fetchSegmentationFromBackend(studyInstanceUID);
+      }
     },
-    [servicesManager, fetchSegmentationFromBackend]
+    [servicesManager, fetchSegmentationFromBackend, checkSegmentationStatus, displaySetService]
   );
 
   const handleReportClick = useCallback(
@@ -717,6 +889,8 @@ function PanelStudyBrowser({
       const cachedBlobUrl = reportCacheRef.current.get(studyInstanceUID);
       
       if (cachedBlobUrl) {
+        // Ensure this study is marked as having a report
+        setStudiesWithReports(prev => new Set(prev).add(studyInstanceUID));
         console.log(`Using cached report for study ${studyInstanceUID}`);
         
         // Open cached PDF in modal immediately
@@ -790,11 +964,12 @@ function PanelStudyBrowser({
       }
 
       // No cached report, proceed with generation
-      // Check if segmentation has been done for this study
+      // Check if segmentation files exist on backend
+      const segStatus = await checkSegmentationStatus(studyInstanceUID);
       const segKey = `dicom_segmented_${studyInstanceUID}`;
       const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
 
-      if (!isStudySegmented) {
+      if (!segStatus.exists && !isStudySegmented) {
         uiNotificationService.show({
           title: 'Report',
           message: 'Segmentation required. Running segmentation first...',
@@ -816,6 +991,30 @@ function PanelStudyBrowser({
         uiNotificationService.show({
           title: 'Report',
           message: 'Segmentation complete. Now generating report...',
+          type: 'info',
+        });
+      } else if (segStatus.exists && !isStudySegmented) {
+        // Segmentation files exist but haven't been loaded yet - load them
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Loading existing segmentation files...',
+          type: 'info',
+        });
+
+        const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+        
+        if (!segmentationSuccess) {
+          uiNotificationService.show({
+            title: 'Report',
+            message: 'Cannot generate report: Failed to load segmentation',
+            type: 'error',
+          });
+          return;
+        }
+
+        uiNotificationService.show({
+          title: 'Report',
+          message: 'Segmentation loaded. Now generating report...',
           type: 'info',
         });
       }
@@ -852,6 +1051,7 @@ function PanelStudyBrowser({
         
         // Cache the blob URL for this study
         reportCacheRef.current.set(studyInstanceUID, blobUrl);
+        setStudiesWithReports(prev => new Set(prev).add(studyInstanceUID));
         console.log(`Cached report for study ${studyInstanceUID}`);
 
         // Open PDF in a modal dialog
@@ -932,7 +1132,7 @@ function PanelStudyBrowser({
         setProcessingStudyUID(null);
       }
     },
-    [servicesManager, fetchSegmentationFromBackend]
+    [servicesManager, fetchSegmentationFromBackend, checkSegmentationStatus]
   );
 
   // Handler for "Chat with Report" - generates report and uploads to chat
@@ -945,11 +1145,12 @@ function PanelStudyBrowser({
 
       const { uiNotificationService, panelService } = servicesManager.services;
 
-      // Check if segmentation has been done for this study
+      // Check if segmentation files exist on backend
+      const segStatus = await checkSegmentationStatus(studyInstanceUID);
       const segKey = `dicom_segmented_${studyInstanceUID}`;
       const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
 
-      if (!isStudySegmented) {
+      if (!segStatus.exists && !isStudySegmented) {
         uiNotificationService.show({
           title: 'Chat',
           message: 'Segmentation required. Running segmentation first...',
@@ -967,6 +1168,24 @@ function PanelStudyBrowser({
           });
           return;
         }
+      } else if (segStatus.exists && !isStudySegmented) {
+        // Segmentation files exist but haven't been loaded yet - load them
+        uiNotificationService.show({
+          title: 'Chat',
+          message: 'Loading existing segmentation files...',
+          type: 'info',
+        });
+
+        const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+        
+        if (!segmentationSuccess) {
+          uiNotificationService.show({
+            title: 'Chat',
+            message: 'Cannot generate report: Failed to load segmentation',
+            type: 'error',
+          });
+          return;
+        }
       }
 
       setIsGeneratingReport(true);
@@ -979,6 +1198,8 @@ function PanelStudyBrowser({
         const cachedBlobUrl = reportCacheRef.current.get(studyInstanceUID);
         
         if (cachedBlobUrl) {
+          // Ensure this study is marked as having a report
+          setStudiesWithReports(prev => new Set(prev).add(studyInstanceUID));
           console.log(`Using cached report for chat (study ${studyInstanceUID})`);
           uiNotificationService.show({
             title: 'Chat',
@@ -1020,6 +1241,7 @@ function PanelStudyBrowser({
           // Cache the blob URL for future use
           const blobUrl = URL.createObjectURL(pdfBlob);
           reportCacheRef.current.set(studyInstanceUID, blobUrl);
+          setStudiesWithReports(prev => new Set(prev).add(studyInstanceUID));
           console.log(`Cached report for study ${studyInstanceUID}`);
         }
 
@@ -1086,7 +1308,335 @@ function PanelStudyBrowser({
         setProcessingStudyUID(null);
       }
     },
-    [servicesManager, fetchSegmentationFromBackend]
+    [servicesManager, fetchSegmentationFromBackend, checkSegmentationStatus]
+  );
+
+  // Combined handler for "Process" button - runs segmentation, processes report, then opens chat
+  const handleProcess = useCallback(
+    async (studyInstanceUID: string) => {
+      if (!studyInstanceUID) {
+        console.warn('No StudyInstanceUID available');
+        return;
+      }
+
+      const { uiNotificationService, uiModalService, panelService } = servicesManager.services;
+
+      try {
+        // Step 1: Run segmentation (if needed)
+        uiNotificationService.show({
+          title: 'Process',
+          message: 'Starting segmentation...',
+          type: 'info',
+        });
+
+        // Check if conversion is complete for this study
+        const convKey = `nifti_converted_${studyInstanceUID}`;
+        if (sessionStorage.getItem(convKey) !== 'true') {
+          uiNotificationService.show({
+            title: 'Process',
+            message: 'Please wait for DICOM to NIfTI conversion to complete',
+            type: 'warning',
+          });
+          return;
+        }
+
+        // Check if segmentation files exist on backend
+        const segStatus = await checkSegmentationStatus(studyInstanceUID);
+        const segKey = `dicom_segmented_${studyInstanceUID}`;
+        const isStudySegmented = sessionStorage.getItem(segKey) === 'true';
+
+        // Check if segmentation is actually loaded in the viewer
+        const currentDisplaySets = displaySetService.activeDisplaySets;
+        const hasSegmentationInViewer = currentDisplaySets.some(
+          ds => ds.Modality === 'SEG' && ds.StudyInstanceUID === studyInstanceUID
+        );
+
+        if (!segStatus.exists && !isStudySegmented) {
+          // No files exist - run segmentation
+          const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+          if (!segmentationSuccess) {
+            uiNotificationService.show({
+              title: 'Process',
+              message: 'Segmentation failed',
+              type: 'error',
+            });
+            return;
+          }
+        } else if (segStatus.exists && !isStudySegmented) {
+          // Files exist but haven't been loaded - load them
+          const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+          if (!segmentationSuccess) {
+            uiNotificationService.show({
+              title: 'Process',
+              message: 'Failed to load segmentation',
+              type: 'error',
+            });
+            return;
+          }
+        } else if (isStudySegmented && !hasSegmentationInViewer) {
+          // SessionStorage says segmented but not in viewer - load them
+          const segmentationSuccess = await fetchSegmentationFromBackend(studyInstanceUID);
+          if (!segmentationSuccess) {
+            uiNotificationService.show({
+              title: 'Process',
+              message: 'Failed to reload segmentation',
+              type: 'error',
+            });
+            return;
+          }
+        } else if (isStudySegmented && hasSegmentationInViewer) {
+          // Already segmented and loaded - skip
+          uiNotificationService.show({
+            title: 'Process',
+            message: 'Segmentation already loaded',
+            type: 'info',
+          });
+        }
+
+        // Step 2: Process report
+        uiNotificationService.show({
+          title: 'Process',
+          message: 'Processing report...',
+          type: 'info',
+        });
+
+        setIsGeneratingReport(true);
+        setProcessingStudyUID(studyInstanceUID);
+
+        let pdfBlob: Blob;
+        let blobUrl: string;
+        
+        // Check if we have a cached report
+        const cachedBlobUrl = reportCacheRef.current.get(studyInstanceUID);
+        
+        if (cachedBlobUrl) {
+          // Ensure this study is marked as having a report
+          setStudiesWithReports(prev => new Set(prev).add(studyInstanceUID));
+          console.log(`Using cached report for study ${studyInstanceUID}`);
+          // Fetch the blob from the cached URL
+          const response = await fetch(cachedBlobUrl);
+          pdfBlob = await response.blob();
+          blobUrl = cachedBlobUrl;
+          
+          // Show the report modal
+          uiModalService.show({
+            title: 'MRI Report',
+            content: () => {
+              return React.createElement(
+                'div',
+                {
+                  style: {
+                    width: '100%',
+                    height: '85vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    margin: '0',
+                    padding: '0',
+                  },
+                },
+                [
+                  React.createElement(
+                    'object',
+                    {
+                      key: 'pdf-viewer',
+                      data: cachedBlobUrl,
+                      type: 'application/pdf',
+                      style: { width: '100%', height: '100%', border: 'none' },
+                    },
+                    React.createElement(
+                      'div',
+                      {
+                        key: 'fallback',
+                        style: { padding: '20px', textAlign: 'center' },
+                      },
+                      [
+                        React.createElement('p', { key: 'msg' }, 'Unable to display PDF. '),
+                        React.createElement(
+                          'a',
+                          {
+                            key: 'link',
+                            href: cachedBlobUrl,
+                            target: '_blank',
+                            rel: 'noopener noreferrer',
+                            style: { color: '#5acce6', textDecoration: 'underline' },
+                          },
+                          'Click here to download the PDF.'
+                        ),
+                      ]
+                    )
+                  ),
+                ]
+              );
+            },
+            contentProps: {
+              className: 'pdf-modal-content',
+              style: { maxWidth: '90vw', width: '90vw', margin: '0 auto' },
+            },
+            customClassName: 'pdf-report-modal-full-width',
+            onClose: () => {},
+          });
+
+          uiNotificationService.show({
+            title: 'Process',
+            message: 'Report opened from cache',
+            type: 'success',
+          });
+        } else {
+          // No cached report, generate it
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+
+          const response = await retryWithDelay(
+            async () => {
+              const res = await fetch(
+                `${backendUrl}/generate_report?studyInstanceUIDs=${studyInstanceUID}`
+              );
+              if (!res.ok) {
+                throw new Error(`Backend responded with status: ${res.status}`);
+              }
+              return res;
+            },
+            3,
+            3000,
+            true
+          );
+
+          pdfBlob = await response.blob();
+          blobUrl = URL.createObjectURL(pdfBlob);
+          
+          // Cache the blob URL for this study
+          reportCacheRef.current.set(studyInstanceUID, blobUrl);
+          setStudiesWithReports(prev => new Set(prev).add(studyInstanceUID));
+          console.log(`Cached report for study ${studyInstanceUID}`);
+
+          // Open PDF in a modal dialog
+          uiModalService.show({
+            title: 'MRI Report',
+            content: () => {
+              return React.createElement(
+                'div',
+                {
+                  style: {
+                    width: '100%',
+                    height: '85vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    margin: '0',
+                    padding: '0',
+                  },
+                },
+                [
+                  React.createElement(
+                    'object',
+                    {
+                      key: 'pdf-viewer',
+                      data: blobUrl,
+                      type: 'application/pdf',
+                      style: { width: '100%', height: '100%', border: 'none' },
+                    },
+                    React.createElement(
+                      'div',
+                      {
+                        key: 'fallback',
+                        style: { padding: '20px', textAlign: 'center' },
+                      },
+                      [
+                        React.createElement('p', { key: 'msg' }, 'Unable to display PDF. '),
+                        React.createElement(
+                          'a',
+                          {
+                            key: 'link',
+                            href: blobUrl,
+                            target: '_blank',
+                            rel: 'noopener noreferrer',
+                            style: { color: '#5acce6', textDecoration: 'underline' },
+                          },
+                          'Click here to download the PDF.'
+                        ),
+                      ]
+                    )
+                  ),
+                ]
+              );
+            },
+            contentProps: {
+              className: 'pdf-modal-content',
+              style: { maxWidth: '90vw', width: '90vw', margin: '0 auto' },
+            },
+            customClassName: 'pdf-report-modal-full-width',
+            onClose: () => {},
+          });
+
+          uiNotificationService.show({
+            title: 'Process',
+            message: 'Report generated and opened',
+            type: 'success',
+          });
+        }
+
+        // Step 3: Open chat
+        uiNotificationService.show({
+          title: 'Process',
+          message: 'Preparing chat...',
+          type: 'info',
+        });
+
+        // Upload PDF to /api/upload to parse text for chat
+        const pdfFile = new File([pdfBlob], `report_${studyInstanceUID}.pdf`, { 
+          type: 'application/pdf' 
+        });
+        const formData = new FormData();
+        formData.append('file', pdfFile);
+
+        // Store which study this chat session is for
+        sessionStorage.setItem('current_chat_study_uid', studyInstanceUID);
+
+        const chatApiUrl = process.env.REACT_APP_CHAT_API_URL || '';
+        const uploadUrl = chatApiUrl ? `${chatApiUrl}/api/upload` : '/api/upload';
+
+        const uploadResponse = await fetch(uploadUrl, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed with status: ${uploadResponse.status}`);
+        }
+
+        const uploadData = await uploadResponse.json();
+        const chatSessionId = uploadData.sessionId;
+
+        // Store chat session ID in sessionStorage for ChatSection to use
+        if (chatSessionId) {
+          sessionStorage.setItem('chat_session_id', chatSessionId);
+          console.log('[Chat] Chat session ID stored:', chatSessionId);
+          console.log('[Chat] Study UID:', studyInstanceUID);
+        }
+
+        // Focus user on Chat panel
+        if (panelService) {
+          const chatPanelId = '@semenoflabs/extension-side-chat.panelModule.sideChat';
+          panelService.activatePanel(chatPanelId, true);
+        }
+
+        uiNotificationService.show({
+          title: 'Process',
+          message: 'Process complete! Report ready and chat opened.',
+          type: 'success',
+        });
+      } catch (error) {
+        console.error('Failed to process:', error);
+        uiNotificationService.show({
+          title: 'Process',
+          message: `Failed to process: ${error.message || error.toString()}`,
+          type: 'error',
+        });
+      } finally {
+        setIsGeneratingReport(false);
+        setProcessingStudyUID(null);
+      }
+    },
+    [servicesManager, fetchSegmentationFromBackend, checkSegmentationStatus, displaySetService]
   );
 
   // ~~ studyDisplayList
@@ -1464,9 +2014,12 @@ function PanelStudyBrowser({
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         onSegmentationClick={handleSegmentationClick}
+        segmentationVisibility={segmentationVisibility}
         onRunSegmentation={handleRunSegmentation}
         onReportClick={handleReportClick}
         onChatWithReportClick={handleChatWithReport}
+        onProcessClick={handleProcess}
+        studiesWithReports={studiesWithReports}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
