@@ -503,6 +503,36 @@ function WorkList({
             UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
+    {
+      title: 'Conferencing',
+      icon: '3dslicer',
+      onClick: () => {
+        window.open(
+          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/conference-client',
+          '_blank'
+        );
+      },
+    },
+    {
+      title: 'Cast Test Cient',
+      icon: '3dslicer',
+      onClick: () => {
+        window.open(
+          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/test-client',
+          '_blank'
+        );
+      },
+    },
+    {
+      title: 'Cast Admin Portal',
+      icon: '3dslicer',
+      onClick: () => {
+        window.open(
+          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/admin',
+          '_blank'
+        );
+      },
+    },
   ];
 
   if (appConfig.oidc) {
@@ -559,6 +589,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
+        subscriberName={servicesManager.services.castService?.hub?.subscriberName}
       />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />

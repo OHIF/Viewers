@@ -219,6 +219,7 @@ import MRDefault from '../../../assets/images/MR-Default.png';
 import MRMIP from '../../../assets/images/MR-MIP.png';
 import MRT2Brain from '../../../assets/images/MR-T2-Brain.png';
 import VolumeRendering from '../../../assets/images/VolumeRendering.png';
+import ThreeDSlicerImg from '../../../assets/images/3dslicer.png';
 import ExternalLink from './Sources/ExternalLink';
 import OHIFLogoColorDarkBackground from './Sources/OHIFLogoColorDarkBackground';
 import Magnifier from './Sources/Magnifier';
@@ -407,6 +408,12 @@ export const Icons = {
   VolumeRendering: (props: ImageIconProps) => (
     <ImageWrapper
       src={VolumeRendering}
+      {...props}
+    />
+  ),
+  '3dslicer': (props: ImageIconProps) => (
+    <ImageWrapper
+      src={ThreeDSlicerImg}
       {...props}
     />
   ),
