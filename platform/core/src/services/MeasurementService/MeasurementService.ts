@@ -100,6 +100,8 @@ enum MeasurementChangeType {
   LabelChange = 'LabelChange',
 }
 
+const unhandledSourceTypes = new Set<string>();
+
 export type MeasurementFilter = (measurement) => boolean;
 
 /**
@@ -493,11 +495,14 @@ class MeasurementService extends PubSubService {
     let measurement = {};
     try {
       const sourceMappings = this.mappings[source.uid];
-      const sourceMapping = sourceMappings.find(
+      const sourceMapping = sourceMappings?.find(
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source.uid, annotationType, source);
+        if (!unhandledSourceTypes.has(annotationType)) {
+          unhandledSourceTypes.add(annotationType);
+          console.log('No source mapping', source.uid, annotationType, source);
+        }
         this.addUnmappedMeasurement(sourceAnnotationDetail, source);
         return;
       }
