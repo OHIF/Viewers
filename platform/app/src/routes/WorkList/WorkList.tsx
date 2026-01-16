@@ -515,7 +515,25 @@ function WorkList({
         if (subscriberName) params.append('subscriberName', subscriberName);
         const queryString = params.toString();
         const url = `${hubEndpoint}/conference-client${queryString ? `?${queryString}` : ''}`;
-        window.open(url, '_blank');
+
+        // Create a component that renders an iframe
+        const ConferenceIframe = () => (
+          <div className="w-[600px] h-[800px] -m-2">
+            <iframe
+              src={url}
+              className="w-full h-full border-0"
+              title="Conference Client"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        );
+
+        show({
+          content: ConferenceIframe,
+          title: undefined,
+          containerClassName: 'w-[500px] p-0',
+        });
       },
     },
     {
