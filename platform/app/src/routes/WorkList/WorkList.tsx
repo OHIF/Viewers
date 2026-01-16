@@ -617,6 +617,7 @@ function WorkList({
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
         subscriberName={servicesManager.services.castService?.hub?.subscriberName}
+        banner="NA-MIC Project Week 44"
       />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />

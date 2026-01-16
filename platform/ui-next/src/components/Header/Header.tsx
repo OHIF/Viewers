@@ -32,6 +32,7 @@ interface HeaderProps {
   Secondary?: ReactNode;
   UndoRedo?: ReactNode;
   subscriberName?: string;
+  banner?: string;
 }
 
 function Header({
@@ -45,6 +46,7 @@ function Header({
   UndoRedo,
   Secondary,
   subscriberName,
+  banner,
   ...props
 }: HeaderProps): ReactNode {
   const onClickReturn = () => {
@@ -87,9 +89,15 @@ function Header({
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             {PatientInfo}
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+            {banner && (
+              <>
+                <div className="text-primary px-2 text-sm">{banner}</div>
+                <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+              </>
+            )}
             {subscriberName && (
               <>
-                <div className="text-primary px-2 text-sm">{subscriberName}</div>
+                <div className="text-primary px-2 text-sm">ID: {subscriberName}</div>
                 <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
               </>
             )}
