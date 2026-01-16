@@ -16,6 +16,7 @@ interface ViewportDownloadFormNewProps {
   onEnableViewport: (element: HTMLElement) => void;
   onDisableViewport: () => void;
   onDownload: (filename: string, fileType: string) => void;
+  onCopyToClipboard: () => void;
   warningState: { enabled: boolean; value: string };
 }
 
@@ -32,6 +33,7 @@ function ViewportDownloadFormNew({
   onEnableViewport,
   onDisableViewport,
   onDownload,
+  onCopyToClipboard,
 }: ViewportDownloadFormNewProps) {
   const [viewportElement, setViewportElement] = useState<HTMLElement | null>(null);
   const [showWarningMessage, setShowWarningMessage] = useState(true);
@@ -137,6 +139,18 @@ function ViewportDownloadFormNew({
             <FooterAction.Right>
               <FooterAction.Secondary onClick={onClose}>
                 {t('Common:Cancel')}
+              </FooterAction.Secondary>
+              <FooterAction.Secondary
+                onClick={async () => {
+                  try {
+                    await onCopyToClipboard();
+                    onClose();
+                  } catch (error) {
+                    console.error('Failed to copy to clipboard:', error);
+                  }
+                }}
+              >
+                {t('Copy to Clipboard')}
               </FooterAction.Secondary>
               <FooterAction.Primary
                 onClick={() => {
