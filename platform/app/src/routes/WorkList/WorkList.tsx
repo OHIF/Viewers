@@ -545,7 +545,7 @@ function WorkList({
         const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
         const params = new URLSearchParams();
         if (topic) params.append('topic', topic);
-        if (subscriberName) params.append('subscriberName', subscriberName);
+    //    if (subscriberName) params.append('subscriberName', subscriberName);
         const queryString = params.toString();
         const url = `${hubEndpoint}/test-client${queryString ? `?${queryString}` : ''}`;
         window.open(url, '_blank');
