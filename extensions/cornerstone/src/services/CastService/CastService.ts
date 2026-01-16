@@ -192,6 +192,13 @@ export default class CastService extends PubSubService {
         return;
       }
 
+      // Filter: Only process ArrowAnnotate annotations
+      const toolName = annotation.metadata?.toolName;
+      if (toolName !== 'ArrowAnnotate') {
+        console.debug('CastService: Skipping annotation-update for non-arrow annotation:', toolName);
+        return;
+      }
+
       const annotationUID = annotation.annotationUID;
 
     //   // Skip publishing if this annotation came from Cast (prevent loop)
@@ -1203,4 +1210,3 @@ export default class CastService extends PubSubService {
     }
   }
 }
-

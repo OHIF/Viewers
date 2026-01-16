@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
+import { utils, DicomMetadataStore } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
