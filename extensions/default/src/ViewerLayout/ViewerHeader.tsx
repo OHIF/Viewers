@@ -134,29 +134,76 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       icon: 'settings',
       onClick: () =>
         show({
-          content: UserPreferencesModal,
+          content: UserPreferencesModal as React.ComponentType,
           title: UserPreferencesModal.title ?? t('UserPreferencesModal:User preferences'),
           containerClassName:
             UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
     {
-      title: 'Cast API',
-      icon: 'external-link',
+      title: 'Conferencing',
+      icon: 'conferencing',
       onClick: () => {
-        window.open(
-          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/admin',
-          '_blank'
+        const topic = servicesManager.services.castService?.hub?.topic || '';
+        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const params = new URLSearchParams();
+        if (topic) params.append('topic', topic);
+        if (subscriberName) params.append('subscriberName', subscriberName);
+        const queryString = params.toString();
+        const url = `${hubEndpoint}/conference-client${queryString ? `?${queryString}` : ''}`;
+
+        // Create a component that renders an iframe
+        const ConferenceIframe = () => (
+          <div className="w-[400px] h-[700px]">
+            <iframe
+              src={url}
+              className="w-full h-full border-0"
+              title="Conference Client"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
         );
+
+        show({
+          content: ConferenceIframe,
+          title: undefined,
+          containerClassName: 'w-[600px] pt-4 pr-4 pb-0 pl-0',
+        });
+      },
+    },
+    {
+      title: 'Cast Test Cient',
+      icon: '3dslicer',
+      onClick: () => {
+        const topic = servicesManager.services.castService?.hub?.topic || '';
+        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const params = new URLSearchParams();
+        if (topic) params.append('topic', topic);
+        if (subscriberName) params.append('subscriberName', subscriberName);
+        const queryString = params.toString();
+        const url = `${hubEndpoint}/test-client${queryString ? `?${queryString}` : ''}`;
+        window.open(url, '_blank');
+      },
+    },
+    {
+      title: 'Cast Admin Portal',
+      icon: '3dslicer',
+      onClick: () => {
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const url = `${hubEndpoint}/admin`;
+        window.open(url, '_blank');
       },
     },
   ];
 
   if (appConfig.oidc) {
     menuOptions.push({
-      title: t('Header:Logout'),
       icon: 'power-off',
-      onClick: async () => {
+      title: t('Header:Logout'),
+      onClick: () => {
         navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
