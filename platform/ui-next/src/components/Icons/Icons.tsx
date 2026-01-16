@@ -76,6 +76,7 @@ import Alert from './Sources/Alert';
 import AlertOutline from './Sources/AlertOutline';
 import Clipboard from './Sources/Clipboard';
 import Checked from './Sources/Checked';
+import Conferencing from './Sources/Conferencing';
 import OrientationSwitch from './Sources/OrientationSwitch';
 import OrientationSwitchA from './Sources/OrientationSwitchA';
 import OrientationSwitchS from './Sources/OrientationSwitchS';
@@ -417,6 +418,7 @@ export const Icons = {
       {...props}
     />
   ),
+  conferencing: (props: IconProps) => Conferencing(props),
   // Icons
   LayerBackground,
   LayerForeground,

@@ -505,7 +505,7 @@ function WorkList({
     },
     {
       title: 'Conferencing',
-      icon: '3dslicer',
+      icon: 'conferencing',
       onClick: () => {
         const topic = servicesManager.services.castService?.hub?.topic || '';
         const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
@@ -518,7 +518,7 @@ function WorkList({
 
         // Create a component that renders an iframe
         const ConferenceIframe = () => (
-          <div className="w-[600px] h-[800px] -m-2">
+          <div className="w-[400px] h-[700px]">
             <iframe
               src={url}
               className="w-full h-full border-0"
@@ -532,7 +532,7 @@ function WorkList({
         show({
           content: ConferenceIframe,
           title: undefined,
-          containerClassName: 'w-[500px] p-0',
+          containerClassName: 'w-[600px] pt-4 pr-4 pb-0 pl-0',
         });
       },
     },
