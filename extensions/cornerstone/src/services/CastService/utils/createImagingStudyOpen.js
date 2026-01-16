@@ -78,3 +78,4 @@ export default function createImagingStudyOpen(studyInstanceUID) {
 
   return message;
 }
+

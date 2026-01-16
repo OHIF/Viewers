@@ -29,7 +29,7 @@ window.config = {
   // filterQueryParam: false,
 
   cast: {
-    defaultHub: 'SLICER-HUB-CLOUD',
+    defaultHub: 'SLICER-HUB',
     autoStart: true,
     autoReconnect: true,
     hubs: [
@@ -39,7 +39,7 @@ window.config = {
         productName: 'SLICER-HUB',
         client_id: '130c3d9c-4157-4dd1-aa1d-slicer',
         client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
-        enabled: true,
+        enabled: false,
         events: ['imagingstudy-open', 'imagingstudy-close', 'annotation-update'],
         lease: 999,
         hub_endpoint: 'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub',
@@ -54,7 +54,7 @@ window.config = {
         productName: 'SLICER-HUB',
         client_id: '130c3d9c-4157-4dd1-aa1d-slicer',
         client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
-        enabled: false,
+        enabled: true,
         events: ['imagingstudy-open', 'imagingstudy-close', 'annotation-update'],
         lease: 999,
         hub_endpoint: 'http://localhost:2017/api/hub',

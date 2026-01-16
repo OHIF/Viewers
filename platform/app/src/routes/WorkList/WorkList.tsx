@@ -508,7 +508,13 @@ function WorkList({
       icon: '3dslicer',
       onClick: () => {
         const topic = servicesManager.services.castService?.hub?.topic || '';
-        const url = `https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/conference-client${topic ? `?topic=${encodeURIComponent(topic)}` : ''}`;
+        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const params = new URLSearchParams();
+        if (topic) params.append('topic', topic);
+        if (subscriberName) params.append('subscriberName', subscriberName);
+        const queryString = params.toString();
+        const url = `${hubEndpoint}/conference-client${queryString ? `?${queryString}` : ''}`;
         window.open(url, '_blank');
       },
     },
@@ -517,7 +523,13 @@ function WorkList({
       icon: '3dslicer',
       onClick: () => {
         const topic = servicesManager.services.castService?.hub?.topic || '';
-        const url = `https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/test-client${topic ? `?topic=${encodeURIComponent(topic)}` : ''}`;
+        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const params = new URLSearchParams();
+        if (topic) params.append('topic', topic);
+        if (subscriberName) params.append('subscriberName', subscriberName);
+        const queryString = params.toString();
+        const url = `${hubEndpoint}/test-client${queryString ? `?${queryString}` : ''}`;
         window.open(url, '_blank');
       },
     },
@@ -525,10 +537,9 @@ function WorkList({
       title: 'Cast Admin Portal',
       icon: '3dslicer',
       onClick: () => {
-        window.open(
-          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub/admin',
-          '_blank'
-        );
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const url = `${hubEndpoint}/admin`;
+        window.open(url, '_blank');
       },
     },
   ];

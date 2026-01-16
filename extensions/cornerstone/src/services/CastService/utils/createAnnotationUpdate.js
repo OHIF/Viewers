@@ -39,3 +39,4 @@ export default function createAnnotationUpdate(annotation, measurement = null, s
 
   return castContext;
 }
+

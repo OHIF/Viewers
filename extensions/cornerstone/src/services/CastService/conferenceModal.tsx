@@ -26,3 +26,4 @@ export function ConferenceModal({ onClose }): ReactElement {
     </div>
   );
 }
+

@@ -44,3 +44,4 @@ export default function createMeasurementUpdate(measurement, studyMeta, annotati
 
   return fhirContext;
 }
+

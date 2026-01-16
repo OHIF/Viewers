@@ -78,3 +78,4 @@ export default function createImagingStudyClose(studyInstanceUID) {
 
   return message;
 }
+
