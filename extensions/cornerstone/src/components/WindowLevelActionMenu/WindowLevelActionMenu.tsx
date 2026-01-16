@@ -11,22 +11,23 @@ import i18n from 'i18next';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
-  element?: HTMLElement;
   align?: 'start' | 'end' | 'center';
   side?: 'top' | 'bottom' | 'left' | 'right';
+  onVisibilityChange?: (isVisible: boolean) => void;
 };
 
 export function WindowLevelActionMenu({
   viewportId,
-  element,
   align,
   side,
+  onVisibilityChange,
 }: WindowLevelActionMenuProps): ReactElement {
   return (
     <WindowLevelActionMenuContent
       viewportId={viewportId}
       align={align}
       side={side}
+      onVisibilityChange={onVisibilityChange}
     />
   );
 }
@@ -35,10 +36,12 @@ export function WindowLevelActionMenuContent({
   viewportId,
   align,
   side,
+  onVisibilityChange,
 }: {
   viewportId: string;
   align?: string;
   side?: string;
+  onVisibilityChange?: (isVisible: boolean) => void;
 }): ReactElement {
   const { t } = useTranslation('WindowLevelActionMenu');
   // Use a stable key for the menu to avoid infinite re-renders
@@ -60,6 +63,7 @@ export function WindowLevelActionMenuContent({
       align={align}
       side={side}
       backLabel={i18n.t('WindowLevelActionMenu:Back to Display Options')}
+      onVisibilityChange={onVisibilityChange}
     >
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && <Colorbar viewportId={viewportId} />}

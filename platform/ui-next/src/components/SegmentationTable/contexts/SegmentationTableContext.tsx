@@ -65,11 +65,12 @@ export interface SegmentationTableContextType {
   showSegmentIndex?: boolean;
   renderInactiveSegmentations?: boolean;
 
-  // The type segmentations displayed/filtered in this table. If undefined, show all types.
-  segmentationRepresentationType?: string;
+  // The types of segmentations displayed/filtered in this table. If undefined, show all types.
+  // The first element is the primary type. Additional elements are secondary types.
+  segmentationRepresentationTypes?: string[];
 
-  // The (last) selected segmentation ID for the representation type above.
-  // If the type above is undefined, then it will store the last active segmentation ID.
+  // The (last) selected segmentation ID for the representation types above.
+  // If the representation types above is undefined, then it will store the last active segmentation ID.
   selectedSegmentationIdForType?: string;
 
   // Function handlers
