@@ -487,22 +487,22 @@ export default class CastService extends PubSubService {
           console.debug('CastService: websocket received data: ', castMessage);
           this._broadcastEvent(CastService.EVENTS.CAST_MESSAGE, {castMessage});
 
-          // Check if the topic is different.  This means we are entering a conference
-          if (castMessage.event['hub.topic'].toLowerCase() !== this.hub.topic.toLowerCase()) {
-            console.debug('CastService:  Conference starting');
-            const { UIModalService } = this._servicesManager.services;
-            if (!this.conferenceApproved && !this.conferenceDeclined) {
-              UIModalService.show({
-                content: ConferenceModal,
-                containerDimensions: 'h-[125px] w-[300px]',
-                title: castMessage.event['hub.topic'] + ' conference starting!',
-                contentProps: {
-                  onClose: UIModalService.hide,
-                },
-              });
-            }
-            this.conferenceApproved = true;
-          }
+          // // Check if the topic is different.  This means we are entering a conference
+          // if (castMessage.event['hub.topic'].toLowerCase() !== this.hub.topic.toLowerCase()) {
+          //   console.debug('CastService:  Conference starting');
+          //   const { UIModalService } = this._servicesManager.services;
+          //   if (!this.conferenceApproved && !this.conferenceDeclined) {
+          //     UIModalService.show({
+          //       content: ConferenceModal,
+          //       containerDimensions: 'h-[125px] w-[300px]',
+          //       title: castMessage.event['hub.topic'] + ' conference starting!',
+          //       contentProps: {
+          //         onClose: UIModalService.hide,
+          //       },
+          //     });
+          //   }
+          //   this.conferenceApproved = true;
+          // }
 
         }
       }
