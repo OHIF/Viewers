@@ -409,7 +409,7 @@ export default class CastService extends PubSubService {
         //   config.topic = 'PW44conf';
         //   this.setTopic('PW44conf');
         // }
-        this.hub.subscriberName = config.user_name;
+        this.hub.subscriberName = config.subscriber_name;
         if (config.topic) {
           console.debug('CastService:  Topic received: ', config.topic);
           this.setTopic(config.topic);
