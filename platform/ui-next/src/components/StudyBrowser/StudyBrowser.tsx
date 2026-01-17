@@ -31,6 +31,7 @@ const StudyBrowser = ({
   ThumbnailMenuItems,
   StudyMenuItems,
   processingStudyUID,
+  isUploadingDicom = false,
 }: withAppTypes) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -69,6 +70,7 @@ const StudyBrowser = ({
               StudyMenuItems={StudyMenuItems}
               StudyInstanceUID={studyInstanceUid}
               isProcessing={isProcessing}
+              isUploadingDicom={isUploadingDicom}
             />
           </React.Fragment>
         );

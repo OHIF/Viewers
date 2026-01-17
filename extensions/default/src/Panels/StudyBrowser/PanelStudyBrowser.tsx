@@ -2024,6 +2024,7 @@ function PanelStudyBrowser({
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
         processingStudyUID={processingStudyUID}
+        isUploadingDicom={isUploadingDicom}
         ThumbnailMenuItems={MoreDropdownMenu({
           commandsManager,
           servicesManager,

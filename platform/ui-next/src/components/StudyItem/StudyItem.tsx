@@ -31,6 +31,7 @@ const StudyItem = ({
   StudyMenuItems,
   StudyInstanceUID,
   isProcessing = false,
+  isUploadingDicom = false,
 }: withAppTypes) => {
   return (
     <Accordion
@@ -82,7 +83,7 @@ const StudyItem = ({
                       e.stopPropagation();
                       onProcessClick(StudyInstanceUID);
                     }}
-                    disabled={isProcessing}
+                    disabled={isProcessing || isUploadingDicom}
                     className="bg-orange-500 hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
                   >
                     Process
@@ -194,6 +195,7 @@ StudyItem.propTypes = {
   StudyMenuItems: PropTypes.func,
   StudyInstanceUID: PropTypes.string,
   isProcessing: PropTypes.bool,
+  isUploadingDicom: PropTypes.bool,
 };
 
 export { StudyItem };
