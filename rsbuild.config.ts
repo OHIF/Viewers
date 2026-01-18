@@ -126,7 +126,7 @@ export default defineConfig({
       // Copy staticwebapp.config.json for Azure Static Web Apps
       {
         from: path.resolve(__dirname, 'staticwebapp.config.json'),
-        to: `${DIST_DIR}/staticwebapp.config.json`,
+        to: 'staticwebapp.config.json',
       },
     ],
   },

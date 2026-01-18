@@ -6,6 +6,12 @@
       "*.{css,scss,js,jsx,ts,tsx,json,wasm,png,jpg,jpeg,gif,svg,ico,woff,woff2,ttf,eot,map,webp}"
     ]
   },
+  "routes": [
+    {
+      "route": "/*",
+      "rewrite": "/index.html"
+    }
+  ],
   "mimeTypes": {
     ".json": "application/json",
     ".wasm": "application/wasm"
