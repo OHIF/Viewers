@@ -6,7 +6,24 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: {
+    'viewportOverlay.topRight': [
+      {
+        id: 'WindowLevel',
+        inheritsFrom: 'ohif.overlayItem.windowLevel',
+      },
+    ],
+    'viewportOverlay.bottomLeft': [
+      {
+        id: 'ZoomLevel',
+        inheritsFrom: 'ohif.overlayItem.zoomLevel',
+        condition: props => {
+          const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
+          return activeToolName === 'Zoom';
+        },
+      },
+    ],
+  },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
