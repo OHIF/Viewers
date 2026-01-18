@@ -1,13 +1,19 @@
 {
   "routes": [
     {
+      "route": "/viewer/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
       "route": "/*",
       "serve": "/index.html",
       "statusCode": 200
     }
   ],
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/api/*", "*.{css,scss,js,png,gif,ico,jpg,svg,woff,woff2,ttf,eot}"]
   },
   "mimeTypes": {
     ".json": "application/json",
