@@ -14,13 +14,13 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
     disableEditing,
     mode,
     disabled,
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
   } = useSegmentationTableContext('AddSegmentationRow');
 
   // Check if we have at least one segmentation of the representation type for the panel this component is contained in.
   const hasRepresentationType =
-    (!segmentationRepresentationType && data.length > 0) ||
-    data.some(info => segmentationRepresentationType === info.representation?.type);
+    (!segmentationRepresentationTypes && data.length > 0) ||
+    data.some(info => segmentationRepresentationTypes?.includes(info.representation?.type));
 
   if (hasRepresentationType && mode === 'collapsed') {
     return null;
@@ -35,7 +35,11 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
       data-cy="addSegmentation"
       className={`group ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
       onClick={() =>
-        !disabled && onSegmentationAdd({ segmentationId: '', segmentationRepresentationType })
+        !disabled &&
+        onSegmentationAdd({
+          segmentationId: '',
+          segmentationRepresentationType: segmentationRepresentationTypes?.[0],
+        })
       }
     >
       {children}

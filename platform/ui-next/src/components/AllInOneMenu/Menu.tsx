@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import DividerItem from './DividerItem';
 import PanelSelector from './PanelSelector';
@@ -108,6 +108,20 @@ const Menu = (props: MenuProps) => {
   ]);
   const [itemPanelLabels, setItemPanelLabels] = useState<Array<string>>([]);
 
+  // Store latest function references in refs so we can use them in effects
+  // without triggering re-runs when they change
+  const onVisibilityChangeRef = useRef(onVisibilityChange);
+  const preventHideMenuRef = useRef(preventHideMenu);
+
+  // Keep refs up to date
+  useEffect(() => {
+    onVisibilityChangeRef.current = onVisibilityChange;
+  }, [onVisibilityChange]);
+
+  useEffect(() => {
+    preventHideMenuRef.current = preventHideMenu;
+  }, [preventHideMenu]);
+
   // If the props change for the this top level menu then we have to update the menu path
   // because the props to be rendered are maintained in the state.
   useEffect(() => {
@@ -118,23 +132,25 @@ const Menu = (props: MenuProps) => {
   }, [activePanelIndex, props]);
 
   const hideMenu = useCallback(() => {
-    if (preventHideMenu) {
+    if (preventHideMenuRef.current) {
       return;
     }
     setMenuPath(path => [path[0]]);
     setItemPanelLabels([]);
     setIsMenuVisible(false);
-    onVisibilityChange?.(false);
-  }, [preventHideMenu, onVisibilityChange]);
+    onVisibilityChangeRef.current?.(false);
+  }, []);
 
+  // Only run this effect when isVisible changes, not when functions change.
+  // Note that hideMenu is stable with no dependencies and thus will not trigger the useEffect to run.
   useEffect(() => {
     if (isVisible) {
       setIsMenuVisible(isVisible);
-      onVisibilityChange?.(isVisible);
+      onVisibilityChangeRef.current?.(isVisible);
     } else {
       hideMenu();
     }
-  }, [hideMenu, isVisible, onVisibilityChange]);
+  }, [isVisible, hideMenu]);
 
   const showSubMenu = useCallback((subMenuProps: MenuProps) => {
     setMenuPath(path => {

@@ -93,7 +93,7 @@ const SegmentationExpandedContent = ({ children }: { children: React.ReactNode }
 
 // Main compound component
 const SegmentationExpandedRoot = ({ children }) => {
-  const { data, activeSegmentationId, onSegmentationClick, mode, segmentationRepresentationType } =
+  const { data, activeSegmentationId, onSegmentationClick, mode, segmentationRepresentationTypes } =
     useSegmentationTableContext('SegmentationExpanded');
 
   const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(data);
@@ -116,8 +116,8 @@ const SegmentationExpandedRoot = ({ children }) => {
         {data
           .filter(
             segmentationInfo =>
-              !segmentationRepresentationType ||
-              segmentationInfo.representation.type === segmentationRepresentationType
+              !segmentationRepresentationTypes ||
+              segmentationRepresentationTypes.includes(segmentationInfo.representation.type)
           )
           .map(segmentationInfo => {
             const isActive = segmentationInfo.segmentation.segmentationId === activeSegmentationId;

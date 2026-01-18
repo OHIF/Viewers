@@ -26,7 +26,7 @@ export const CustomDropdownMenuContent = () => {
     exportOptions,
     activeSegmentation,
     activeSegmentationId,
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
     disableEditing,
   } = useSegmentationTableContext('CustomDropdownMenu');
 
@@ -79,7 +79,12 @@ export const CustomDropdownMenuContent = () => {
     <DropdownMenuContent align="start">
       {!disableEditing && (
         <DropdownMenuItem
-          onClick={() => onSegmentationAdd({ segmentationId, segmentationRepresentationType })}
+          onClick={() =>
+            onSegmentationAdd({
+              segmentationId,
+              segmentationRepresentationType: segmentationRepresentationTypes?.[0],
+            })
+          }
         >
           <Icons.Add className="text-foreground" />
           <span className="pl-2">{t('Create New Segmentation')}</span>
@@ -97,7 +102,7 @@ export const CustomDropdownMenuContent = () => {
       </DropdownMenuItem>
       <ExportSegmentationSubMenuItem
         segmentationId={segmentationId}
-        segmentationRepresentationType={segmentationRepresentationType}
+        segmentationRepresentationType={segmentationRepresentationTypes?.[0]}
         allowExport={allowExport}
         actions={actions}
       />
