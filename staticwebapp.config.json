@@ -1,19 +1,10 @@
 {
-  "routes": [
-    {
-      "route": "/viewer/*",
-      "serve": "/index.html",
-      "statusCode": 200
-    },
-    {
-      "route": "/*",
-      "serve": "/index.html",
-      "statusCode": 200
-    }
-  ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*", "*.{css,scss,js,png,gif,ico,jpg,svg,woff,woff2,ttf,eot}"]
+    "exclude": [
+      "/api/*",
+      "*.{css,scss,js,jsx,ts,tsx,json,wasm,png,jpg,jpeg,gif,svg,ico,woff,woff2,ttf,eot,map,webp}"
+    ]
   },
   "mimeTypes": {
     ".json": "application/json",

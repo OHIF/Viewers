@@ -123,6 +123,11 @@ export default defineConfig({
         from: path.resolve(PUBLIC_DIR, APP_CONFIG),
         to: 'app-config.js',
       },
+      // Copy staticwebapp.config.json for Azure Static Web Apps
+      {
+        from: path.resolve(__dirname, 'staticwebapp.config.json'),
+        to: `${DIST_DIR}/staticwebapp.config.json`,
+      },
     ],
   },
   html: {
