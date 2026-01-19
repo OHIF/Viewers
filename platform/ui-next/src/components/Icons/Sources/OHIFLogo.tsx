@@ -1,7 +1,5 @@
 import React from 'react';
 import type { IconProps } from '../types';
-import mrigeniusLogo from '../../../../../ui/static/mrigenius.png';
-
 
 export const OHIFLogo = (props: IconProps) => (
   <svg
@@ -45,15 +43,6 @@ export const OHIFLogo = (props: IconProps) => (
           >
             MRI Genius
           </text> */}
-
-          <image
-            href={mrigeniusLogo}
-            x="60"
-            y="2"
-            width="180"
-            height="28"
-            preserveAspectRatio="xMidYMid meet"
-          />
 
           <g
             id="RobotronLogo"
