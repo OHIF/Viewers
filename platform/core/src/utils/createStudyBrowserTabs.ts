@@ -6,6 +6,7 @@ import { useSystem } from '../contextProviders/SystemProvider';
  * @param {object[]} studyDisplayList
  * @param {string} studyDisplayList.studyInstanceUid
  * @param {string} studyDisplayList.date
+ * @param {string} studyDisplayList.patientName
  * @param {string} studyDisplayList.description
  * @param {string} studyDisplayList.modalities
  * @param {number} studyDisplayList.numInstances

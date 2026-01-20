@@ -39,13 +39,22 @@ const StudyBrowser = ({
       ? viewPresets.filter(preset => preset.selected)[0]?.id
       : 'thumbnails';
     return tabData?.studies?.map(
-      ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
+      ({
+        studyInstanceUid,
+        date,
+        description,
+        numInstances,
+        modalities,
+        displaySets,
+        patientName,
+      }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         const isProcessing = processingStudyUID === studyInstanceUid;
         return (
           <React.Fragment key={studyInstanceUid}>
             <StudyItem
               date={date}
+              patientName={patientName}
               description={description}
               numInstances={numInstances}
               isExpanded={isExpanded}
@@ -121,6 +130,7 @@ StudyBrowser.propTypes = {
         PropTypes.shape({
           studyInstanceUid: PropTypes.string.isRequired,
           date: PropTypes.string,
+          patientName: PropTypes.string,
           numInstances: PropTypes.number,
           modalities: PropTypes.string,
           description: PropTypes.string,

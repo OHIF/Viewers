@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 const StudyItem = ({
   date,
+  patientName,
   description,
   numInstances,
   modalities,
@@ -33,6 +34,19 @@ const StudyItem = ({
   isProcessing = false,
   isUploadingDicom = false,
 }: withAppTypes) => {
+  const formatPatientName = (name: string) => {
+    if (!name) return { firstName: '', lastName: '' };
+    const parts = name.split('^');
+    if (parts.length >= 2) {
+      return { 
+        firstName: parts[1]?.trim() || '', 
+        lastName: parts[0]?.trim() || '' 
+      };
+    }
+    return { firstName: name, lastName: '' };
+  };
+
+  const { firstName, lastName } = formatPatientName(patientName || '');
   return (
     <Accordion
       type="single"
@@ -50,24 +64,25 @@ const StudyItem = ({
             <div className="flex w-full flex-row items-center justify-between">
               <div className="flex min-w-0 flex-col items-start text-[13px]">
                 <Tooltip>
-                  <TooltipContent>{date}</TooltipContent>
+                  <TooltipContent>{patientName || 'No patient name'}</TooltipContent>
                   <TooltipTrigger
                     className="w-full"
                     asChild
                   >
-                    <div className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left text-white">
-                      {date}
-                    </div>
-                  </TooltipTrigger>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipContent>{description}</TooltipContent>
-                  <TooltipTrigger
-                    className="w-full"
-                    asChild
-                  >
-                    <div className="text-muted-foreground h-[18px] w-full overflow-hidden truncate whitespace-nowrap text-left">
-                      {description}
+                    <div className="flex w-full max-w-[160px] flex-col text-left text-white">
+                      <div className="h-[18px] w-full overflow-hidden truncate whitespace-nowrap">
+                        {firstName || 'No name'}
+                      </div>
+                      {lastName && (
+                        <div className="text-muted-foreground h-[18px] w-full overflow-hidden truncate whitespace-nowrap">
+                          {lastName}
+                        </div>
+                      )}
+                      {!lastName && description && (
+                        <div className="text-muted-foreground h-[18px] w-full overflow-hidden truncate whitespace-nowrap">
+                          {description}
+                        </div>
+                      )}
                     </div>
                   </TooltipTrigger>
                 </Tooltip>
@@ -179,7 +194,8 @@ const StudyItem = ({
 };
 
 StudyItem.propTypes = {
-  date: PropTypes.string.isRequired,
+  date: PropTypes.string,
+  patientName: PropTypes.string,
   description: PropTypes.string,
   modalities: PropTypes.string.isRequired,
   numInstances: PropTypes.number.isRequired,

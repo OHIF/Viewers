@@ -351,6 +351,7 @@ function PanelStudyBrowser({
                             (sum, s) => sum + (s.instances?.length || 0),
                             0
                           ) || 0,
+                        patientName: studyMetadata.PatientName || '',
                       },
                     ];
                   }
@@ -1712,6 +1713,7 @@ function PanelStudyBrowser({
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: Number(qidoStudy.NumInstances),
+          patientName: qidoStudy.PatientName || '',
         };
       });
 
