@@ -5,7 +5,13 @@ import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
+import {
+  Onboarding,
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+  Icons,
+} from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
 
 const resizableHandleClassName = 'mt-[1px] bg-black';
@@ -45,7 +51,7 @@ function ViewerLayout({
 
   const [
     leftPanelProps,
-    rightPanelProps,
+    rightPanelPropsOriginal,
     resizablePanelGroupProps,
     resizableLeftPanelProps,
     resizableViewportGridPanelProps,
@@ -63,6 +69,8 @@ function ViewerLayout({
     leftPanelMinimumExpandedWidth,
     rightPanelMinimumExpandedWidth
   );
+
+  const rightPanelProps = rightPanelPropsOriginal;
 
   const handleMouseEnter = () => {
     (document.activeElement as HTMLElement)?.blur();
@@ -146,6 +154,12 @@ function ViewerLayout({
     };
   }, [panelService, hasPanels]);
 
+  const handleOpenChat = () => {
+    const chatPanelId = '@semenoflabs/extension-side-chat.panelModule.sideChat';
+    panelService.activatePanel(chatPanelId, true);
+    setRightPanelClosed(false);
+  };
+
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
@@ -215,6 +229,16 @@ function ViewerLayout({
             ) : null}
           </ResizablePanelGroup>
         </React.Fragment>
+
+        {rightPanelClosedState && (
+          <button
+            onClick={handleOpenChat}
+            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-lg transition-all hover:bg-orange-600 hover:shadow-xl active:scale-95"
+            aria-label="Open chat"
+          >
+            <Icons.AIChat className="h-7 w-7" />
+          </button>
+        )}
       </div>
       <Onboarding tours={customizationService.getCustomization('ohif.tours')} />
     </div>
