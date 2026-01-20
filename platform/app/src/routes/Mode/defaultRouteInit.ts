@@ -1,6 +1,7 @@
 import { DicomMetadataStore, log, utils, Enums } from '@ohif/core';
 import getStudies from './studiesList';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
+import { withAppTypes } from '../types';
 
 const { seriesSortCriteria, getSplitParam } = utils;
 

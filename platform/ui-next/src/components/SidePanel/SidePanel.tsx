@@ -58,7 +58,8 @@ const closeIconWidth = 30;
 const gridHorizontalPadding = 10;
 const tabSpacerWidth = 2;
 
-const baseClasses = 'bg-black border-black justify-start box-content flex flex-col';
+const baseClasses =
+  'bg-black border-black justify-start box-content flex flex-col transition-all duration-300 ease-in-out';
 
 const openStateIconName = {
   left: 'SidePanelCloseLeft',

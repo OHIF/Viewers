@@ -1,0 +1,10 @@
+﻿      evaluations: featureProperties.evaluations
+    }
+    const uid = feature.getId()
+    if (uid) {
+      return new ROI({ scoord3d, properties, uid })
+    }
+  }
+
+  /**
+   * Toggle overview map.

@@ -1,0 +1,1021 @@
+﻿
+> dicom-microscopy-viewer@0.48.17 build
+> npm run webpack:bundle && npm run webpack:dynamic-import
+
+
+> dicom-microscopy-viewer@0.48.17 webpack:bundle
+> webpack --progress --config ./config/webpack/webpack-bundle
+
+node.exe : <s> 
+[webpack.Progress] 
+0% 
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (<s> [we   
+ bpack.Progress]     
+0% :String) [],     
+RemoteException
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+
+<s> 
+[webpack.Progress] 
+1% setup before run
+<s> 
+[webpack.Progress] 
+1% setup before run 
+NodeEnvironmentPlugin
+<s> 
+[webpack.Progress] 
+1% setup before run
+<s> 
+[webpack.Progress] 
+2% setup run
+<s> 
+[webpack.Progress] 
+2% setup run 
+webpack-cli
+<s> 
+[webpack.Progress] 
+2% setup run
+<s> 
+[webpack.Progress] 
+4% setup normal 
+module factory
+<s> 
+[webpack.Progress] 
+4% setup normal 
+module factory
+<s> 
+[webpack.Progress] 
+5% setup context 
+module factory
+<s> 
+[webpack.Progress] 
+5% setup context 
+module factory
+<s> 
+[webpack.Progress] 
+6% setup before 
+compile
+<s> 
+[webpack.Progress] 
+6% setup before 
+compile 
+ProgressPlugin
+<s> 
+[webpack.Progress] 
+6% setup before 
+compile
+<s> 
+[webpack.Progress] 
+7% setup compile
+<s> 
+[webpack.Progress] 
+7% setup compile 
+ExternalsPlugin
+<s> 
+[webpack.Progress] 
+7% setup compile
+<s> 
+[webpack.Progress] 
+8% setup compilation
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+ArrayPushCallbackChun
+kFormatPlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+JsonpChunkLoadingPlug
+in
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+StartupChunkDependenc
+iesPlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+ImportScriptsChunkLoa
+dingPlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+FetchCompileAsyncWasm
+Plugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+ExportPropertyLibrary
+Plugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+UmdLibraryPlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+WorkerPlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+SplitChunksPlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation 
+ResolverCachePlugin
+<s> 
+[webpack.Progress] 
+8% setup compilation
+<s> 
+[webpack.Progress] 
+9% setup compilation
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ProgressPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ExternalsPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ChunkPrefetchPreloadP
+lugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+SourceMapDevToolPlugi
+n
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+JavascriptModulesPlug
+in
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+JsonModulesPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+AssetModulesPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+AsyncWebAssemblyModul
+esPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+EntryPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+EntryPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RuntimePlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+InferAsyncModulesPlug
+in
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DataUriPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+FileUriPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+CompatibilityPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+HarmonyModulesPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+AMDPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RequireJsStuffPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+CommonJsPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+LoaderPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+LoaderPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+NodeStuffPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+APIPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ExportsInfoApiPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+WebpackIsIncludedPlug
+in
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ConstPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+UseStrictPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RequireIncludePlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RequireEnsurePlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RequireContextPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ImportPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ImportMetaContextPlug
+in
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+SystemPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ImportMetaPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+URLPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DefaultStatsFactoryPl
+ugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DefaultStatsPresetPlu
+gin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DefaultStatsPrinterPl
+ugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+JavascriptMetaInfoPlu
+gin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+EnsureChunkConditions
+Plugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RemoveEmptyChunksPlug
+in
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+MergeDuplicateChunksP
+lugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+FlagIncludedChunksPlu
+gin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+SideEffectsFlagPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+FlagDependencyExports
+Plugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+FlagDependencyUsagePl
+ugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+InnerGraphPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+MangleExportsPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+ModuleConcatenationPl
+ugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+NoEmitOnErrorsPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RealContentHashPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+WasmFinalizeExportsPl
+ugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DeterministicModuleId
+sPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DeterministicChunkIds
+Plugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+DefinePlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+TerserPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+TemplatedPathPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+RecordIdsPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation 
+WarnCaseSensitiveModu
+lesPlugin
+<s> 
+[webpack.Progress] 
+9% setup compilation
+<s> 
+[webpack.Progress] 
+10% building
+<s> 
+[webpack.Progress] 
+10% building 0/1 
+entries 0/0 
+dependencies 0/0 
+modules
+<s> 
+[webpack.Progress] 
+10% building 0/2 
+entries 400/546 
+dependencies 17/173 
+modules
+<s> 
+[webpack.Progress] 
+10% building import 
+loader ../node_module
+s/css-loader/dist/cjs
+.js
+<s> 
+[webpack.Progress] 
+10% building 0/2 
+entries 536/546 
+dependencies 23/223 
+modules
+<s> 
+[webpack.Progress] 
+37% building 1/2 
+entries 1093/1115 
+dependencies 238/306 
+modules
+<s> 
+[webpack.Progress] 
+37% building 1/2 
+entries 2780/2800 
+dependencies 
+339/1047 modules
+<s> 
+[webpack.Progress] 
+65% building 2/2 
+entries 4939/4939 
+dependencies 
+1337/1337 modules
+<s> 
+[webpack.Progress] 
+65% building
+<s> 
+[webpack.Progress] 
+69% building finish
+<s> 
+[webpack.Progress] 
+69% building finish
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph 
+ResolverCachePlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph InferAsy
+ncModulesPlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph FlagDepe
+ndencyExportsPlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph 
+InnerGraphPlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph WasmFina
+lizeExportsPlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph ExportPr
+opertyLibraryPlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph 
+UmdLibraryPlugin
+<s> 
+[webpack.Progress] 
+70% sealing finish 
+module graph
+<s> 
+[webpack.Progress] 
+70% sealing plugins
+<s> 
+[webpack.Progress] 
+70% sealing plugins W
+arnCaseSensitiveModul
+esPlugin
+<s> 
+[webpack.Progress] 
+70% sealing plugins
+<s> 
+[webpack.Progress] 
+71% sealing 
+dependencies 
+optimization
+<s> 
+[webpack.Progress] 
+71% sealing 
+dependencies 
+optimization 
+SideEffectsFlagPlugin
+<s> 
+[webpack.Progress] 
+71% sealing 
+dependencies 
+optimization FlagDepe
+ndencyUsagePlugin
+<s> 
+[webpack.Progress] 
+71% sealing 
+dependencies 
+optimization
+<s> 
+[webpack.Progress] 
+71% sealing after 
+dependencies 
+optimization
+<s> 
+[webpack.Progress] 
+71% sealing after 
+dependencies 
+optimization
+<s> 
+[webpack.Progress] 
+72% sealing chunk 
+graph
+<s> 
+[webpack.Progress] 
+72% sealing chunk 
+graph
+<s> 
+[webpack.Progress] 
+73% sealing after 
+chunk graph
+<s> 
+[webpack.Progress] 
+73% sealing after 
+chunk graph
+<s> 
+[webpack.Progress] 
+73% sealing 
+optimizing
+<s> 
+[webpack.Progress] 
+73% sealing 
+optimizing
+<s> 
+[webpack.Progress] 
+74% sealing module 
+optimization
+<s> 
+[webpack.Progress] 
+74% sealing module 
+optimization
+<s> 
+[webpack.Progress] 
+75% sealing after 
+module optimization
+<s> 
+[webpack.Progress] 
+75% sealing after 
+module optimization
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization EnsureCh
+unkConditionsPlugin
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization RemoveEm
+ptyChunksPlugin
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization MergeDup
+licateChunksPlugin
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization 
+SplitChunksPlugin
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization RemoveEm
+ptyChunksPlugin
+<s> 
+[webpack.Progress] 
+75% sealing chunk 
+optimization
+<s> 
+[webpack.Progress] 
+76% sealing after 
+chunk optimization
+<s> 
+[webpack.Progress] 
+76% sealing after 
+chunk optimization
+<s> 
+[webpack.Progress] 
+77% sealing module 
+and chunk tree 
+optimization
+<s> 
+[webpack.Progress] 
+77% sealing module 
+and chunk tree 
+optimization
+<s> 
+[webpack.Progress] 
+77% sealing after 
+module and chunk 
+tree optimization
+<s> 
+[webpack.Progress] 
+77% sealing after 
+module and chunk 
+tree optimization
+<s> 
+[webpack.Progress] 
+78% sealing chunk 
+modules optimization
+<s> 
+[webpack.Progress] 
+78% sealing chunk 
+modules optimization 
+ModuleConcatenationPl
+ugin
+<s> 
+[webpack.Progress] 
+78% sealing chunk 
+modules optimization
+<s> 
+[webpack.Progress] 
+78% sealing after 
+chunk modules 
+optimization
+<s> 
+[webpack.Progress] 
+78% sealing after 
+chunk modules 
+optimization
+<s> 
+[webpack.Progress] 
+79% sealing module 
+reviving
+<s> 
+[webpack.Progress] 
+79% sealing module 
+reviving 
+RecordIdsPlugin
+<s> 
+[webpack.Progress] 
+79% sealing module 
+reviving
+<s> 
+[webpack.Progress] 
+80% sealing before 
+module ids
+<s> 
+[webpack.Progress] 
+80% sealing before 
+module ids
+<s> 
+[webpack.Progress] 
+80% sealing module 
+ids
+<s> 
+[webpack.Progress] 
+80% sealing module 
+ids DeterministicModu
+leIdsPlugin
+<s> 
+[webpack.Progress] 
+80% sealing module 
+ids
+<s> 
+[webpack.Progress] 
+81% sealing module 
+id optimization
+<s> 
+[webpack.Progress] 
+81% sealing module 
+id optimization
+<s> 
+[webpack.Progress] 
+82% sealing module 
+id optimization
+<s> 
+[webpack.Progress] 
+82% sealing module 
+id optimization
+<s> 
+[webpack.Progress] 
+82% sealing chunk 
+reviving
+<s> 
+[webpack.Progress] 
+82% sealing chunk 
+reviving 
+RecordIdsPlugin
+<s> 
+[webpack.Progress] 
+82% sealing chunk 
+reviving
+<s> 
+[webpack.Progress] 
+83% sealing before 
+chunk ids
+<s> 
+[webpack.Progress] 
+83% sealing before 
+chunk ids
+<s> 
+[webpack.Progress] 
+84% sealing chunk ids
+<s> 
+[webpack.Progress] 
+84% sealing chunk 
+ids DeterministicChun
+kIdsPlugin
+<s> 
+[webpack.Progress] 
+84% sealing chunk ids
+<s> 
+[webpack.Progress] 
+84% sealing chunk id 
+optimization
+<s> 
+[webpack.Progress] 
+84% sealing chunk id 
+optimization FlagIncl
+udedChunksPlugin
+<s> 
+[webpack.Progress] 
+84% sealing chunk id 
+optimization
+<s> 
+[webpack.Progress] 
+85% sealing after 
+chunk id optimization
+<s> 
+[webpack.Progress] 
+85% sealing after 
+chunk id optimization
+<s> 
+[webpack.Progress] 
+87% sealing module 
+hashing
+<s> 
+[webpack.Progress] 
+87% sealing module 
+hashing
+<s> 
+[webpack.Progress] 
+87% sealing code 
+generation
+<s> 
+[webpack.Progress] 
+87% sealing code 
+generation
+<s> 
+[webpack.Progress] 
+88% sealing runtime 
+requirements
+<s> 
+[webpack.Progress] 
+88% sealing runtime 
+requirements
+<s> 
+[webpack.Progress] 
+89% sealing hashing
+<s> 
+[webpack.Progress] 
+89% sealing hashing
+<s> 
+[webpack.Progress] 
+89% sealing after 
+hashing
+<s> 
+[webpack.Progress] 
+89% sealing after 
+hashing
+<s> 
+[webpack.Progress] 
+91% sealing module 
+assets processing
+<s> 
+[webpack.Progress] 
+91% sealing module 
+assets processing
+<s> 
+[webpack.Progress] 
+91% sealing chunk 
+assets processing
+<s> 
+[webpack.Progress] 
+91% sealing chunk 
+assets processing
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing 
+TerserPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dicomMic
+roscopyViewer.bundle.
+min.js generate 
+SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dicomMic
+roscopyViewer.bundle.
+min.js generated 
+SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dataLoad
+er.worker.bundle.min.
+js generate SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dataLoad
+er.worker.bundle.min.
+js generated 
+SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin resolve 
+sources
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dicomMic
+roscopyViewer.bundle.
+min.js attach 
+SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dicomMic
+roscopyViewer.bundle.
+min.js attached 
+SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dataLoad
+er.worker.bundle.min.
+js attach SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin dataLoad
+er.worker.bundle.min.
+js attached SourceMap
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin resolve 
+sources
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing SourceMapD
+evToolPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing 
+RealContentHashPlugin
+<s> 
+[webpack.Progress] 
+92% sealing asset 
+processing
+<s> 
+[webpack.Progress] 
+93% sealing after 
+asset optimization
+<s> 
+[webpack.Progress] 
+93% sealing after 
+asset optimization
+<s> 
+[webpack.Progress] 
+94% sealing after 
+seal
+<s> 
+[webpack.Progress] 
+94% sealing after 
+seal
+<s> 
+[webpack.Progress] 
+99% done plugins
+<s> 
+[webpack.Progress] 
+99% done plugins
+<s> 
+[webpack.Progress] 
+99% 
+
+<s> 
+[webpack.Progress] 
+99% cache begin idle
+<s> 
+[webpack.Progress] 
+99% cache begin idle
+<s> 
+[webpack.Progress] 
+100% 
+
+<s> 
+[webpack.Progress] 
+99% cache shutdown
+<s> 
+[webpack.Progress] 
+99% cache shutdown
+<s> 
+[webpack.Progress] 
+100% 
+
+assets by status 3.22 MiB [1m[32m[cached][39m[22m 6 assets
+orphan modules 6.73 MiB [1m[33m[orphan][39m[22m 1306 modules
+runtime modules 3.7 KiB 14 modules
+cacheable modules 6.79 MiB (javascript) 773 KiB (asset)
+  javascript modules 6.79 MiB
+    modules by path [1m../node_modules/[39m[22m 935 KiB 24 modules
+    modules by path [1m./[39m[22m 5.87 MiB
+      [1m./dicom-microscopy-viewer.js + 598 modules[39m[22m 5.86 MiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+      [1m./webWorker/dataLoader.worker.js + 9 modules[39m[22m 17.5 KiB [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    [1mcrypto (ignored)[39m[22m 15 bytes [1m[33m[optional][39m[22m [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+  asset modules 773 KiB (asset) 168 bytes (javascript)
+    [1m../node_modules/@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.wasm[39m[22m 250 KiB (asset) 42 bytes (javascript) [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    [1m../node_modules/@cornerstonejs/codec-charls/dist/charlswasm_decode.wasm[39m[22m 142 KiB (asset) 42 bytes (javascript) [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    [1m../node_modules/@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowa...(truncated)[39m[22m 175 KiB (asset) 42 bytes (javascript) [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+    [1m../node_modules/dicomicc/dist/dicomiccwasm.wasm[39m[22m 206 KiB (asset) 42 bytes (javascript) [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+  
+
+[1m[31mERROR[39m[22m in [1m./webWorker/webWorkerManager.js[39m[22m [1m[32m150:16-70[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve './dataLoader.worker.min.js' in 'D:\Essential-Logic\EL-ohif-viewers\node_modules\dicom-microscopy-viewer\src\webWorker'[39m[22m
+resolve './dataLoader.worker.min.js' in 'D:\Essential-Logic\EL-ohif-viewers\node_modules\dicom-microscopy-viewer\src\webWorker'
+  using description file: D:\Essential-Logic\EL-ohif-viewers\node_modules\dicom-microscopy-viewer\package.json (relative path: ./src/webWorker)
+    using description file: D:\Essential-Logic\EL-ohif-viewers\node_modules\dicom-microscopy-viewer\package.json (relative path: ./src/webWorker/dataLoader.worker.min.js)
+      no extension
+[1m[31m        D:\Essential-Logic\EL-ohif-viewers\node_modules\dicom-microscopy-viewer\src\webWorker\dataLoader.worker.min.js doesn't exist[39m[22m
+      as directory
+[1m[31m        D:\Essential-Logic\EL-ohif-viewers\node_modules\dicom-microscopy-viewer\src\webWorker\dataLoader.worker.min.js doesn't exist[39m[22m
+ @ ./viewer.js 107:0-62 2564:4-43
+ @ ./dicom-microscopy-viewer.js 38:0-42:20 67:37-54 76:2-18 77:2-21 78:2-19
+
+webpack 5.104.1 compiled with [1m[31m1 error[39m[22m in 15655 ms

@@ -7,6 +7,7 @@ import InputText from '../InputText';
 import InputDateRange from '../InputDateRange';
 import InputMultiSelect from '../InputMultiSelect';
 import InputLabelWrapper from '../InputLabelWrapper';
+import InputCheckbox from '../InputCheckbox';
 
 const InputGroup = ({
   inputMeta,
@@ -110,6 +111,14 @@ const InputGroup = ({
             isSortable={_isSortable}
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
+          />
+        );
+      case 'Checkbox':
+        return (
+          <InputCheckbox
+            label={displayName}
+            value={values[name]}
+            onChange={handleFieldChange}
           />
         );
       default:

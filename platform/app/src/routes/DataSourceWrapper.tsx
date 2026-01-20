@@ -5,19 +5,22 @@ import { Enums, ExtensionManager, MODULE_TYPES, log } from '@ohif/core';
 //
 import { extensionManager } from '../App';
 import { useParams, useLocation } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 import useSearchParams from '../hooks/useSearchParams';
+import { ErrorDisplay } from '@ohif/ui-next';
+import { withAppTypes } from './types';
 
-/**
- * Determines if two React Router location objects are the same.
- */
-const areLocationsTheSame = (location0, location1) => {
-  return (
-    location0.pathname === location1.pathname &&
-    location0.search === location1.search &&
-    location0.hash === location1.hash
-  );
-};
+interface LayoutTemplateProps {
+  data: unknown[];
+  dataPath: string;
+  dataTotal: number;
+  dataSource: unknown;
+  isLoadingData: boolean;
+  onRefresh: () => void;
+}
+
+interface DataSourceWrapperProps {
+  children: React.ComponentType<LayoutTemplateProps>;
+}
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -27,9 +30,7 @@ const areLocationsTheSame = (location0, location1) => {
  * @param {object} props
  * @param {function} props.children - Layout Template React Component
  */
-function DataSourceWrapper(props: withAppTypes) {
-  const { servicesManager } = props;
-  const navigate = useNavigate();
+function DataSourceWrapper(props: withAppTypes<DataSourceWrapperProps>) {
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
   const location = useLocation();
@@ -61,7 +62,7 @@ function DataSourceWrapper(props: withAppTypes) {
     if (!dataSourceName) {
       // Gets the first defined datasource with the right name
       // Mostly for historical reasons - new configs should use the defaultDataSourceName
-      const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
+      const dataSourceModules = extensionManager.getModulesByType(MODULE_TYPES.DATA_SOURCE);
       // TODO: Good usecase for flatmap?
       const webApiDataSources = dataSourceModules.reduce((acc, curr) => {
         const mods = [];
@@ -106,6 +107,8 @@ function DataSourceWrapper(props: withAppTypes) {
   const [data, setData] = useState(DEFAULT_DATA);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [error, setError] = useState(null);
+
   /**
    * The effect to initialize the data source whenever it changes. Similar to
    * whenever a different Mode is entered, the Mode's data source is initialized, so
@@ -116,8 +119,13 @@ function DataSourceWrapper(props: withAppTypes) {
    */
   useEffect(() => {
     const initializeDataSource = async () => {
-      await dataSource.initialize({ params, query });
-      setIsDataSourceInitialized(true);
+      try {
+        await dataSource.initialize({ params, query });
+        setIsDataSourceInitialized(true);
+        setError(null);
+      } catch (err) {
+        setError(err);
+      }
     };
 
     initializeDataSource();
@@ -131,6 +139,7 @@ function DataSourceWrapper(props: withAppTypes) {
       setDataSource(extensionManager.getActiveDataSource()[0]);
       // Setting data to DEFAULT_DATA triggers a new query just like it does for the initial load.
       setData(DEFAULT_DATA);
+      setError(null);
     };
 
     const sub = extensionManager.subscribe(
@@ -150,20 +159,26 @@ function DataSourceWrapper(props: withAppTypes) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-      log.time(Enums.TimingEnum.SEARCH_TO_LIST);
-      const studies = await dataSource.query.studies.search(queryFilterValues);
+      setError(null);
+      try {
+        log.time(Enums.TimingEnum.SEARCH_TO_LIST);
+        const studies = await dataSource.query.studies.search(queryFilterValues);
 
-      setData({
-        studies: studies || [],
-        total: studies.length,
-        resultsPerPage: queryFilterValues.resultsPerPage,
-        pageNumber: queryFilterValues.pageNumber,
-        location,
-      });
-      log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
-      log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
-
-      setIsLoading(false);
+        setData({
+          studies: studies || [],
+          total: studies.length,
+          resultsPerPage: queryFilterValues.resultsPerPage,
+          pageNumber: queryFilterValues.pageNumber,
+          location: location.pathname + location.search + location.hash,
+        });
+        log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
+        log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
+      } catch (err) {
+        setError(err);
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     try {
@@ -182,43 +197,33 @@ function DataSourceWrapper(props: withAppTypes) {
       // has not changed, the React Router still provides a new location reference and would result in two study queries
       // on initial load. Alternatively, window.location.href could be used.
       const isLocationUpdated =
-        typeof data.location === 'string' || !areLocationsTheSame(data.location, location);
+        data.location !== location.pathname + location.search + location.hash;
       const isDataInvalid =
         !isSamePage || (!isLoading && (newOffset !== previousOffset || isLocationUpdated));
 
       if (isDataInvalid) {
-        getData().catch(e => {
-          console.error(e);
-
-          const { configurationAPI, friendlyName } = dataSource.getConfig();
-          // If there is a data source configuration API, then the Worklist will popup the dialog to attempt to configure it
-          // and attempt to resolve this issue.
-          if (configurationAPI) {
-            return;
-          }
-
-          servicesManager.services.uiModalService.show({
-            title: 'Data Source Connection Error',
-            content: () => {
-              return (
-                <div className="text-foreground">
-                  <p className="text-red-600">Error: {e.message}</p>
-                  <p>
-                    Please ensure the following data source is configured correctly or is running:
-                  </p>
-                  <div className="mt-2 font-bold">{friendlyName}</div>
-                </div>
-              );
-            },
-          });
-        });
+        getData();
       }
     } catch (ex) {
       console.warn(ex);
+      setError(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, location, params, isLoading, setIsLoading, dataSource, isDataSourceInitialized]);
   // queryFilterValues
+
+  if (error) {
+    return (
+      <ErrorDisplay
+        error={error}
+        onRetry={() => {
+          setError(null);
+          setData(DEFAULT_DATA); // Trigger reload
+        }}
+        title="Data Source Error"
+      />
+    );
+  }
 
   // TODO: Better way to pass DataSource?
   return (

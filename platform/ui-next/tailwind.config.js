@@ -101,18 +101,24 @@ module.exports = {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       bkg: {
-        low: '#050615',
-        med: '#090C29',
-        full: '#041C4A',
+        low: '#020408', // Deepest blue/black
+        med: '#050a1f', // Dark blue background
+        full: '#0a1636', // Lighter blue for panels
       },
       info: {
         primary: '#FFFFFF',
-        secondary: '#7BB2CE',
+        secondary: '#94a3b8', // Slate 400
+        muted: '#64748b', // Slate 500
       },
       actions: {
-        primary: '#348CFD',
-        highlight: '#5ACCE6',
-        hover: 'rgba(52, 140, 253, 0.2)',
+        primary: '#2563eb', // Blue 600
+        highlight: '#3b82f6', // Blue 500
+        hover: 'rgba(37, 99, 235, 0.1)',
+      },
+      glass: {
+        light: 'rgba(255, 255, 255, 0.1)',
+        dark: 'rgba(0, 0, 0, 0.3)',
+        border: 'rgba(255, 255, 255, 0.05)',
       },
     },
   },

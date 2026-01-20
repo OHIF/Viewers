@@ -9,7 +9,8 @@ import SidePanelWithServices from '../Components/SidePanelWithServices';
 import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
 
-const resizableHandleClassName = 'mt-[1px] bg-black';
+const resizableHandleClassName =
+  'hover:bg-primary-light hover:cursor-col-resize bg-black w-[2px] transition-colors duration-200 z-50';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -41,8 +42,25 @@ function ViewerLayout({
 
   const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
   const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
-  const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
-  const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
+
+  // Load initial state from localStorage or props
+  const [leftPanelClosedState, setLeftPanelClosed] = useState(() => {
+    const saved = localStorage.getItem('leftPanelClosed');
+    return saved !== null ? JSON.parse(saved) : leftPanelClosed;
+  });
+  const [rightPanelClosedState, setRightPanelClosed] = useState(() => {
+    const saved = localStorage.getItem('rightPanelClosed');
+    return saved !== null ? JSON.parse(saved) : rightPanelClosed;
+  });
+
+  // Save state changes
+  useEffect(() => {
+    localStorage.setItem('leftPanelClosed', JSON.stringify(leftPanelClosedState));
+  }, [leftPanelClosedState]);
+
+  useEffect(() => {
+    localStorage.setItem('rightPanelClosed', JSON.stringify(rightPanelClosedState));
+  }, [rightPanelClosedState]);
 
   const [
     leftPanelProps,

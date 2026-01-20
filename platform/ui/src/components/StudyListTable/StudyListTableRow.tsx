@@ -41,6 +41,7 @@ const StudyListTableRow = props => {
                     { 'bg-secondary-dark': isExpanded }
                   )}
                   onClick={onClickRow}
+                  onDoubleClick={tableData.onDoubleClickRow}
                   data-cy={clickableCY}
                 >
                   {row.map((cell, index) => {
@@ -107,6 +108,7 @@ StudyListTableRow.propTypes = {
     ).isRequired,
     expandedContent: PropTypes.node.isRequired,
     onClickRow: PropTypes.func.isRequired,
+    onDoubleClickRow: PropTypes.func,
     isExpanded: PropTypes.bool.isRequired,
     dataCY: PropTypes.string,
     clickableCY: PropTypes.string,

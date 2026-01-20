@@ -7,7 +7,8 @@ import { useIconPresentation } from '../../contextProviders/IconPresentationProv
 
 const baseClasses = '!rounded-lg inline-flex items-center justify-center';
 const defaultClasses = 'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
-const activeClasses = 'bg-highlight text-background hover:!bg-highlight/80';
+const activeClasses =
+  'bg-primary-light text-black hover:!bg-primary-light/80 border-primary-light border';
 const disabledClasses =
   'text-common-bright hover:bg-primary-dark hover:text-primary-light opacity-40 cursor-not-allowed';
 
@@ -30,6 +31,7 @@ interface ToolButtonProps {
   id: string;
   icon?: string;
   label?: string;
+  withLabel?: boolean;
   tooltip?: string;
   size?: 'default' | 'small';
   isActive?: boolean;
@@ -46,6 +48,7 @@ function ToolButton(props: ToolButtonProps) {
     id,
     icon = 'MissingIcon',
     label,
+    withLabel = false,
     tooltip,
     size = 'default',
     disabled = false,
@@ -64,7 +67,8 @@ function ToolButton(props: ToolButtonProps) {
     baseClasses,
     buttonSizeClass,
     disabled ? disabledClasses : isActive ? activeClasses : defaultClasses,
-    className
+    className,
+    withLabel && 'w-auto px-2 h-auto py-1'
   );
 
   const defaultTooltip = label;
@@ -100,10 +104,13 @@ function ToolButton(props: ToolButtonProps) {
             name={id}
           >
             {children || (
-              <Icons.ByName
-                name={icon}
-                className={iconClassName || iconSizeClass}
-              />
+              <div className="flex flex-col items-center justify-center">
+                <Icons.ByName
+                  name={icon}
+                  className={iconClassName || iconSizeClass}
+                />
+                {withLabel && <span className="mt-1 text-[10px] font-medium">{label}</span>}
+              </div>
             )}
           </Button>
         </span>

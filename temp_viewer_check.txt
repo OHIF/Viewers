@@ -1,0 +1,20 @@
+﻿      evaluations: featureProperties.evaluations
+    }
+    let uid = feature.getId();
+    if (!uid) {
+      uid = 'generated-' + Math.random().toString(36).substr(2, 9);
+    }
+    return new ROI({ scoord3d, properties, uid });
+  }
+
+  /**
+   * Toggle overview map.
+   *
+   * @returns {void}
+   */
+  toggleOverviewMap () {
+    if (this[_overviewMap]) {
+      const controls = this[_map].getControls()
+      const overview = controls.getArray().find((c) => c === this[_overviewMap])
+      if (overview) {
+        this[_map].removeControl(this[_overviewMap])

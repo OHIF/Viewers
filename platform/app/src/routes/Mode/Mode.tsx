@@ -10,6 +10,7 @@ import Compose from './Compose';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
+import { withAppTypes } from '../types';
 
 const { getSplitParam } = utils;
 

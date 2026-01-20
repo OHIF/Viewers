@@ -2,18 +2,32 @@ import i18n from 'i18next';
 
 const filtersMeta = [
   {
+    name: 'checkbox',
+    displayName: '',
+    inputType: 'Checkbox',
+    isSortable: false,
+    gridCol: 1,
+  },
+  {
+    name: 'thumbnail',
+    displayName: '',
+    inputType: 'None',
+    isSortable: false,
+    gridCol: 2,
+  },
+  {
     name: 'patientName',
     displayName: i18n.t('StudyList:PatientName'),
     inputType: 'Text',
     isSortable: true,
-    gridCol: 4,
+    gridCol: 3,
   },
   {
     name: 'mrn',
     displayName: i18n.t('StudyList:MRN'),
     inputType: 'Text',
     isSortable: true,
-    gridCol: 3,
+    gridCol: 2,
   },
   {
     name: 'studyDate',
@@ -27,7 +41,7 @@ const filtersMeta = [
     displayName: i18n.t('StudyList:Description'),
     inputType: 'Text',
     isSortable: true,
-    gridCol: 4,
+    gridCol: 3,
   },
   {
     name: 'modalities',
@@ -104,6 +118,7 @@ const filtersMeta = [
         { value: 'US', label: 'US' },
         { value: 'VA', label: 'VA' },
         { value: 'XA', label: 'XA' },
+        { value: 'XC', label: 'XC' },
         { value: 'XC', label: 'XC' },
       ],
     },

@@ -16,16 +16,19 @@ const StudyListFilter = ({
   numOfStudies,
   onUploadClick,
   getDataSourceConfigurationComponent,
+  children,
 }) => {
   const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
+
   const setFilterSorting = sortingValues => {
     onChange({
       ...filterValues,
       ...sortingValues,
     });
   };
+
   const isSortingEnabled = numOfStudies > 0 && numOfStudies <= 100;
 
   return (
@@ -52,7 +55,9 @@ const StudyListFilter = ({
                   </div>
                 )}
               </div>
-              <div className="flex h-[34px] flex-row items-center">
+              <div className="flex h-[34px] flex-row items-center gap-4">
+                {children}
+
                 {/* TODO revisit the completely rounded style of button used for clearing the study list filter - for now use LegacyButton*/}
                 {isFiltering && (
                   <LegacyButton
@@ -79,7 +84,7 @@ const StudyListFilter = ({
                   variant="h6"
                   className="text-primary-light"
                 >
-                  {`${t('Studies')} `}
+                  {`${t('Studies')} `}
                 </Typography>
               </div>
             </div>
@@ -139,6 +144,7 @@ StudyListFilter.propTypes = {
   isFiltering: PropTypes.bool.isRequired,
   onUploadClick: PropTypes.func,
   getDataSourceConfigurationComponent: PropTypes.func,
+  children: PropTypes.node,
 };
 
 export default StudyListFilter;

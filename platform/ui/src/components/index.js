@@ -21,6 +21,7 @@ import Typography from './Typography';
 import Button, { ButtonEnums } from './Button';
 import ContextMenu from './ContextMenu';
 import InputFilterText from './InputFilterText';
+import InputCheckbox from './InputCheckbox';
 
 export {
   ContextMenu,
@@ -48,4 +49,5 @@ export {
   Button,
   ButtonEnums,
   InputFilterText,
+  InputCheckbox,
 };

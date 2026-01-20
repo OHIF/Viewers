@@ -25,6 +25,8 @@ import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewport
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 import promptSaveReport from './utils/promptSaveReport';
 
+import { KeyboardShortcutsModal } from '@ohif/ui-next';
+
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
@@ -42,6 +44,8 @@ const commandsModule = ({
   servicesManager,
   commandsManager,
   extensionManager,
+  // @ts-ignore
+  hotkeysManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
     customizationService,
@@ -66,8 +70,8 @@ const commandsModule = ({
      */
     addDisplaySetAsLayer: ({ viewportId, displaySetInstanceUID, removeFirst = false }) => {
       if (!viewportId) {
-          const { activeViewportId } = servicesManager.services.viewportGridService.getState();
-          viewportId = activeViewportId;
+        const { activeViewportId } = servicesManager.services.viewportGridService.getState();
+        viewportId = activeViewportId;
       }
 
       if (!viewportId || !displaySetInstanceUID) {
@@ -761,6 +765,17 @@ const commandsModule = ({
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },
+    openKeyboardShortcuts: () => {
+      const { UIModalService } = servicesManager.services;
+      UIModalService.show({
+        content: KeyboardShortcutsModal,
+        title: 'Keyboard Shortcuts',
+        contentProps: {
+          hotkeysManager,
+          onClose: UIModalService.hide,
+        },
+      });
+    },
   };
 
   const definitions = {
@@ -789,6 +804,7 @@ const commandsModule = ({
     scrollActiveThumbnailIntoView: actions.scrollActiveThumbnailIntoView,
     addDisplaySetAsLayer: actions.addDisplaySetAsLayer,
     removeDisplaySetLayer: actions.removeDisplaySetLayer,
+    openKeyboardShortcuts: actions.openKeyboardShortcuts,
   };
 
   return {

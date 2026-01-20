@@ -27,6 +27,8 @@ export default function init({
     HotkeysManager.EVENTS.HOTKEY_PRESSED,
   ]);
 
+  hotkeysManager.setHotkeys('openKeyboardShortcuts', ['?']);
+
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handleScalingModules);
 

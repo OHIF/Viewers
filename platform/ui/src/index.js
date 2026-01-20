@@ -1,7 +1,10 @@
 import * as Types from './types';
 
 /** COMPONENTS */
+import InputCheckbox from './components/InputCheckbox';
+
 export {
+  InputCheckbox,
   EmptyStudies,
   Icon,
   InputDateRange,

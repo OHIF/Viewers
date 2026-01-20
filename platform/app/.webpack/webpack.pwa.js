@@ -160,7 +160,7 @@ module.exports = (env, argv) => {
       ],
       static: [
         {
-          directory: '../../testdata',
+          directory: path.join(__dirname, '../../../testdata'),
           staticOptions: {
             extensions: ['gz', 'br', 'mht'],
             index: ['index.json.gz', 'index.mht.gz'],

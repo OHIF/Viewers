@@ -1,7 +1,7 @@
 {
-  "name": "OHIF Viewer",
+  "name": "Essential Logic",
   "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "description": "Essential Logic Medical Imaging Viewer",
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",

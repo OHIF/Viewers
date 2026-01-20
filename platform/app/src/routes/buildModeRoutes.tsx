@@ -1,5 +1,6 @@
 import React from 'react';
 import ModeRoute from '@routes/Mode';
+import { withAppTypes } from './types';
 
 /*
   Routes uniquely define an entry point to:
