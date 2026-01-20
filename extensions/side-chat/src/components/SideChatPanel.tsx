@@ -162,7 +162,7 @@ function SideChatPanel({ servicesManager, commandsManager }) {
   const isReportReady = !!chatSessionId;
 
   return (
-    <div className="flex h-full flex-col bg-black p-4">
+    <div className="flex flex-1 flex-col bg-black p-4">
       <h2 className="text-foreground mb-4 text-lg font-medium">Chat</h2>
 
       {/* Status indicator */}
