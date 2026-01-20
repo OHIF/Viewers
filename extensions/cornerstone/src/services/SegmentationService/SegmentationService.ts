@@ -762,7 +762,15 @@ class SegmentationService extends PubSubService {
       this.updateSegmentationInSource(segmentationId, data as Partial<cstTypes.Segmentation>);
     } else {
       // Add a new segmentation
-      this.addSegmentationToSource(data as cstTypes.SegmentationPublicInput);
+      const spInput = data as cstTypes.SegmentationPublicInput;
+      if (!spInput.representation?.type) {
+        // Safety check to prevent missing representation field error
+        console.warn(
+          `Skipping addOrUpdateSegmentation: ${segmentationId} missing representation field`
+        );
+        return;
+      }
+      this.addSegmentationToSource(spInput);
     }
   }
 
