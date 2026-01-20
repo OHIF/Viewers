@@ -17,9 +17,25 @@ interface ChatSectionProps {
 
 // Storage key for chat session ID (set by report generation)
 const CHAT_SESSION_ID_KEY = 'chat_session_id';
+const CHAT_MESSAGES_KEY = 'chat_messages';
 
 function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    const storedMessages = sessionStorage.getItem(CHAT_MESSAGES_KEY);
+    if (storedMessages) {
+      try {
+        const parsed = JSON.parse(storedMessages);
+        return parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }));
+      } catch (error) {
+        console.error('[ChatSection] Failed to parse stored messages:', error);
+        return [];
+      }
+    }
+    return [];
+  });
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
@@ -65,6 +81,10 @@ function ChatSection({ apiEndpoint, disabled = false }: ChatSectionProps) {
       clearInterval(intervalId);
     };
   }, [chatSessionId]);
+
+  useEffect(() => {
+    sessionStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(messages));
+  }, [messages]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

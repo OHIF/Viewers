@@ -489,13 +489,18 @@ function PanelStudyBrowser({
 
   useEffect(() => {
     sessionStorage.removeItem('chat_session_id');
-    console.log('[Chat] Cleared chat_session_id from sessionStorage on mount');
+    sessionStorage.removeItem('chat_messages');
+    console.log('[Chat] Cleared chat session and messages from sessionStorage on mount');
   }, []);
 
   useEffect(() => {
     if (primaryStudyInstanceUID) {
       sessionStorage.removeItem('chat_session_id');
-      console.log('[Chat] Cleared chat_session_id for new study:', primaryStudyInstanceUID);
+      sessionStorage.removeItem('chat_messages');
+      console.log(
+        '[Chat] Cleared chat session and messages for new study:',
+        primaryStudyInstanceUID
+      );
     }
   }, [primaryStudyInstanceUID]);
 
