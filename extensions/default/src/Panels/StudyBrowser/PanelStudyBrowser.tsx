@@ -771,11 +771,25 @@ function PanelStudyBrowser({
     new Map()
   );
 
+  // Track last segmentation click time to prevent rapid clicks
+  const lastSegmentationClickRef = useRef<number>(0);
+
   const handleSegmentationClick = useCallback(
     (segDisplaySetInstanceUID: string) => {
       if (!segDisplaySetInstanceUID) {
         return;
       }
+
+      // Ignore clicks within 1 second of the last click
+      const now = Date.now();
+      const timeSinceLastClick = now - lastSegmentationClickRef.current;
+      if (timeSinceLastClick < 1000) {
+        console.log('Segmentation click ignored - too soon after previous click');
+        return;
+      }
+
+      // Update last click time
+      lastSegmentationClickRef.current = now;
 
       const { viewportGridService, segmentationService } = servicesManager.services;
 
