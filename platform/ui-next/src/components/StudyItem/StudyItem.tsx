@@ -35,12 +35,14 @@ const StudyItem = ({
   isUploadingDicom = false,
 }: withAppTypes) => {
   const formatPatientName = (name: string) => {
-    if (!name) return { firstName: '', lastName: '' };
+    if (!name) {
+      return { firstName: '', lastName: '' };
+    }
     const parts = name.split('^');
     if (parts.length >= 2) {
-      return { 
-        firstName: parts[1]?.trim() || '', 
-        lastName: parts[0]?.trim() || '' 
+      return {
+        firstName: parts[1]?.trim() || '',
+        lastName: parts[0]?.trim() || '',
       };
     }
     return { firstName: name, lastName: '' };
@@ -52,7 +54,7 @@ const StudyItem = ({
       type="single"
       collapsible
       value={isExpanded ? 'study-item' : undefined}
-      onValueChange={(value) => {
+      onValueChange={value => {
         // Call onClick whenever the accordion state changes
         // The parent's onClick handler will toggle the expanded state correctly
         onClick();
@@ -99,7 +101,7 @@ const StudyItem = ({
                       onProcessClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing || isUploadingDicom}
-                    className="bg-orange-500 hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="hover:bg-primary/80 rounded bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Process
                   </button>
@@ -111,23 +113,25 @@ const StudyItem = ({
                       onReportClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-secondary hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="bg-secondary hover:bg-secondary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Report
                   </button>
                 )}
-                {onProcessClick && studiesWithReports.has(StudyInstanceUID) && onChatWithReportClick && (
-                  <button
-                    onClick={e => {
-                      e.stopPropagation();
-                      onChatWithReportClick(StudyInstanceUID);
-                    }}
-                    disabled={isProcessing}
-                    className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
-                  >
-                    Chat
-                  </button>
-                )}
+                {onProcessClick &&
+                  studiesWithReports.has(StudyInstanceUID) &&
+                  onChatWithReportClick && (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        onChatWithReportClick(StudyInstanceUID);
+                      }}
+                      disabled={isProcessing}
+                      className="rounded bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Chat
+                    </button>
+                  )}
                 {!onProcessClick && onRunSegmentation && (
                   <button
                     onClick={e => {
@@ -135,7 +139,7 @@ const StudyItem = ({
                       onRunSegmentation(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-primary hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="bg-primary hover:bg-primary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Segment
                   </button>
@@ -147,7 +151,7 @@ const StudyItem = ({
                       onReportClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-secondary hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="bg-secondary hover:bg-secondary/80 rounded px-2 py-0.5 text-[11px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Report
                   </button>
@@ -159,7 +163,7 @@ const StudyItem = ({
                       onChatWithReportClick(StudyInstanceUID);
                     }}
                     disabled={isProcessing}
-                    className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed rounded px-2 py-0.5 text-[11px] font-semibold text-white"
+                    className="rounded bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Chat
                   </button>
