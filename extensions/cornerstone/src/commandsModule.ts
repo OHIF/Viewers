@@ -1727,7 +1727,9 @@ function commandsModule({
      * @param props.segmentationId - The ID of the segmentation to delete
      */
     deleteSegmentationCommand: ({ segmentationId }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
+      const { segmentationService, viewportGridService, displaySetService } =
+        servicesManager.services;
+      const seg = segmentationService.getSegmentation(segmentationId);
       segmentationService.remove(segmentationId);
 
       const viewportId = viewportGridService.getActiveViewportId();
@@ -1735,6 +1737,15 @@ function commandsModule({
         viewportId,
         displaySetInstanceUID: segmentationId,
       });
+
+      // Cleanup segmentation from display set if not from image source
+      if (seg && seg.predecessorImageId === undefined) {
+        try {
+          displaySetService.deleteDisplaySet(segmentationId);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
     },
 
     /**
