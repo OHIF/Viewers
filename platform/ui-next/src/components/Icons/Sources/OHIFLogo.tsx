@@ -25,24 +25,16 @@ export const OHIFLogo = (props: IconProps) => (
           id="toolbar-branding-mri-genius"
           transform="translate(74, 297)"
         >
-          {/* <rect
-            id="Rectangle"
-            x="0"
-            y="0"
-            width="180"
-            height="28"
-          ></rect>
           <text
-            id="MRIGenius"
             fontFamily="Arial, sans-serif"
-            fontSize="18"
+            fontSize="16"
             fontWeight="600"
             fill="#FFFFFF"
-            x="80"
-            y="19"
+            x="65"
+            y="18"
           >
             MRI Genius
-          </text> */}
+          </text>
 
           <g
             id="RobotronLogo"
