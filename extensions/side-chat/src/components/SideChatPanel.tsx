@@ -148,12 +148,14 @@ function SideChatPanel({ servicesManager, commandsManager }) {
       {/* Status indicator */}
       <div
         className={`mb-3 flex items-center gap-2 rounded px-2 py-1 text-xs ${
-          isReportReady ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+          isReportReady ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
         }`}
       >
-        <div
-          className={`h-2 w-2 rounded-full ${isReportReady ? 'bg-green-400' : 'bg-yellow-400'}`}
-        />
+        {isReportReady ? (
+          <div className="h-2 w-2 rounded-full bg-green-400" />
+        ) : (
+          <Icons.Cancel className="h-3 w-3 text-red-400" />
+        )}
         {isReportReady ? 'Report ready - you can chat now' : 'Generate a report to start chatting'}
       </div>
 
