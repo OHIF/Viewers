@@ -1,5 +1,6 @@
 import React from 'react';
 import type { IconProps } from '../types';
+import mrigeniusLogo from '../../../../../ui/static/mrigenius.png';
 
 export const OHIFLogo = (props: IconProps) => (
   <svg
@@ -25,16 +26,33 @@ export const OHIFLogo = (props: IconProps) => (
           id="toolbar-branding-mri-genius"
           transform="translate(74, 297)"
         >
+          {/* <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="180"
+            height="28"
+          ></rect>
           <text
+            id="MRIGenius"
             fontFamily="Arial, sans-serif"
-            fontSize="16"
+            fontSize="18"
             fontWeight="600"
             fill="#FFFFFF"
-            x="65"
-            y="18"
+            x="80"
+            y="19"
           >
             MRI Genius
-          </text>
+          </text> */}
+
+          <image
+            href={mrigeniusLogo}
+            x="60"
+            y="2"
+            width="180"
+            height="28"
+            preserveAspectRatio="xMidYMid meet"
+          />
 
           <g
             id="RobotronLogo"
