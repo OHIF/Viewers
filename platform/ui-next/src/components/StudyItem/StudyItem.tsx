@@ -71,7 +71,7 @@ const StudyItem = ({
                     className="w-full"
                     asChild
                   >
-                    <div className="flex w-full max-w-[160px] flex-col text-left text-white">
+                    <div className="flex w-full flex-col text-left text-white">
                       <div className="h-[18px] w-full overflow-hidden truncate whitespace-nowrap">
                         {firstName || 'No name'}
                       </div>
