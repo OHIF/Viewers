@@ -43,7 +43,7 @@
     "@cornerstonejs/dicom-image-loader": "4.15.9",
     "@ohif/core": "3.12.0-beta.125",
     "@ohif/ui": "3.12.0-beta.125",
-    "dcmjs": "0.45.0",
+    "dcmjs": "0.48.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",

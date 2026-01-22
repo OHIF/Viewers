@@ -79,7 +79,7 @@
     "classnames": "2.5.1",
     "core-js": "3.45.1",
     "cornerstone-math": "0.1.10",
-    "dcmjs": "0.45.0",
+    "dcmjs": "0.48.0",
     "detect-gpu": "4.0.50",
     "dicom-parser": "1.8.21",
     "dotenv-webpack": "1.8.0",
