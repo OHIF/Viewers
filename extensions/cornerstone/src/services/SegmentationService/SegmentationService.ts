@@ -15,6 +15,7 @@ import {
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
+  annotation as cstAnnotation,
 } from '@cornerstonejs/tools';
 
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
@@ -24,6 +25,7 @@ import { VOLUME_LOADER_SCHEME } from '../../constants';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 import { SegmentationPresentation, SegmentationPresentationItem } from '../../types/Presentation';
 import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
+import { ViewReference } from '@cornerstonejs/core/types';
 
 const {
   Labelmap: LABELMAP,
@@ -1246,6 +1248,123 @@ class SegmentationService extends PubSubService {
     cstSegmentation.removeSegmentationRepresentations(viewportId, specifier);
   }
 
+  /**
+   * Jumps to the next slice that contains the specified segment in the viewport.
+   * For labelmaps, it jumps to the segment center. For contours, it cycles through
+   * all slices that contain contour data for the segment.
+   *
+   * @param segmentationId - The ID of the segmentation
+   * @param segmentIndex - The index of the segment to jump to
+   * @param viewportId - Optional viewport ID. If not provided, applies to all viewports with this segmentation
+   * @param highlightAlpha - Alpha value for highlighting (0-1)
+   * @param highlightSegment - Whether to highlight the segment after jumping
+   * @param animationLength - Length of highlight animation in milliseconds
+   * @param highlightHideOthers - Whether to hide other segments during highlight
+   * @param animationFunctionType - The easing function to use for animation
+   */
+  public jumpToSegmentNext(
+    segmentationId: string,
+    segmentIndex: number,
+    forViewportId?: string,
+    direction = 1,
+    highlightAlpha = 0.9,
+    highlightSegment = true,
+    animationLength = 750,
+    highlightHideOthers = false,
+    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT
+  ): void {
+    const viewportIds = forViewportId
+      ? [forViewportId]
+      : this.getViewportIdsWithSegmentation(segmentationId);
+
+    viewportIds.forEach(viewportId => {
+      const representations = this.getSegmentationRepresentations(viewportId, {
+        segmentationId,
+      });
+
+      if (!representations || representations.length === 0) {
+        return;
+      }
+
+      const representation = representations[0];
+      const { type } = representation;
+
+      // For labelmaps, use the existing jumpToSegmentCenter method
+      if (type !== CONTOUR) {
+        this.jumpToSegmentCenter(
+          segmentationId,
+          segmentIndex,
+          viewportId,
+          highlightAlpha,
+          highlightSegment,
+          animationLength,
+          highlightHideOthers,
+          animationFunctionType
+        );
+        return;
+      }
+
+      const { viewport } = getEnabledElementByViewportId(viewportId);
+      if (!viewport) {
+        return;
+      }
+
+      const viewRefs = this._getContourViewReferences(segmentationId, viewport, segmentIndex);
+      if (!viewRefs) {
+        return;
+      }
+
+      // Get the current slice index
+      const currentSliceIndex = viewport.getCurrentImageIdIndex();
+      let nearestSliceIndex = null;
+      let loopSliceIndex = null;
+
+      for (const [sliceIndex, viewRef] of viewRefs.entries()) {
+        // Track loop index for wraparound (smallest for forward, largest for backward)
+        if (direction > 0) {
+          if (loopSliceIndex === null || sliceIndex < loopSliceIndex) {
+            loopSliceIndex = sliceIndex;
+          }
+        } else {
+          if (loopSliceIndex === null || sliceIndex > loopSliceIndex) {
+            loopSliceIndex = sliceIndex;
+          }
+        }
+
+        if (direction > 0) {
+          // Forward direction: find nearest slice after current
+          if (sliceIndex <= currentSliceIndex) {
+            continue;
+          }
+          if (nearestSliceIndex === null || sliceIndex < nearestSliceIndex) {
+            nearestSliceIndex = sliceIndex;
+          }
+        } else {
+          // Backward direction: find nearest slice before current
+          if (sliceIndex >= currentSliceIndex) {
+            continue;
+          }
+          if (nearestSliceIndex === null || sliceIndex > nearestSliceIndex) {
+            nearestSliceIndex = sliceIndex;
+          }
+        }
+      }
+
+      // Wraparound: if no slice found in direction, use loop index
+      nearestSliceIndex = nearestSliceIndex ?? loopSliceIndex;
+      if (nearestSliceIndex === null) {
+        return;
+      }
+      const viewRef = viewRefs.get(nearestSliceIndex);
+      viewport.setViewReference(viewRef);
+      viewport.render();
+    });
+  }
+
+  /**
+   * Jumps the viewport to the center of hte given segment.
+   * Only works for labelmaps, and may result in not showing any contours.
+   */
   public jumpToSegmentCenter(
     segmentationId: string,
     segmentIndex: number,
@@ -1943,6 +2062,62 @@ class SegmentationService extends PubSubService {
       segmentationId,
     });
   };
+
+  /**
+   * Gets slice indices for contour segmentations by checking view references from annotation metadata
+   * @private
+   */
+  protected _getContourViewReferences(
+    segmentationId: string,
+    viewport: csTypes.IViewport,
+    segmentIndex?: number
+  ): Map<number, ViewReference> | undefined {
+    const segmentation = cstSegmentation.state.getSegmentation(segmentationId);
+    const contourData = segmentation.representationData[CONTOUR];
+
+    if (!contourData || !contourData.annotationUIDsMap) {
+      return;
+    }
+
+    const viewReferences = new Map<number, ViewReference>();
+    // Iterate through the annotationUIDsMap
+    contourData.annotationUIDsMap.forEach((annotationUIDs, currentSegmentIndex) => {
+      // Filter by segment index if specified
+      if (segmentIndex !== undefined && currentSegmentIndex !== segmentIndex) {
+        return;
+      }
+      // Process each annotation UID
+      annotationUIDs.forEach(annotationUID => {
+        const annotation = cstAnnotation.state.getAnnotation(annotationUID);
+
+        if (!annotation?.metadata) {
+          return;
+        }
+        const { metadata } = annotation;
+        // Check if the viewport can view this annotation's view reference with navigation
+        const isViewable = viewport.isReferenceViewable(metadata, {
+          withNavigation: true,
+        });
+
+        if (!isViewable) {
+          return;
+        }
+
+        const { sliceIndex } = metadata;
+        if (sliceIndex === undefined) {
+          console.warn("Can't find slice index:", metadata);
+          return;
+        }
+
+        viewReferences.set(sliceIndex, metadata);
+      });
+    });
+
+    if (viewReferences.size === 0) {
+      return;
+    }
+    return viewReferences;
+  }
 }
 
 export default SegmentationService;
