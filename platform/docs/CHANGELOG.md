@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.127](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.126...v3.12.0-beta.127) (2026-01-22)
+
+
+### Bug Fixes
+
+* Navigate to contour should work ([#5718](https://github.com/OHIF/Viewers/issues/5718)) ([0fd517d](https://github.com/OHIF/Viewers/commit/0fd517d6ab583652a3667f9af49413648f2755db))
+
+
+
+
+
 # [3.12.0-beta.126](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.125...v3.12.0-beta.126) (2026-01-22)
 
 **Note:** Version bump only for package ohif-docs
