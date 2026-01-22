@@ -632,6 +632,22 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'Print',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-capture',
+      label: i18n.t('Buttons:Print'),
+      commands: 'showPrintViewportModal',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
+    },
+  },
+  {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',
     props: {

@@ -1095,6 +1095,34 @@ function commandsModule({
         });
       }
     },
+    // print viewport
+    showPrintViewportModal: () => {
+      const { activeViewportId } = viewportGridService.getState();
+
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: i18n.t('Tools:Print Image'),
+          message: i18n.t('Tools:Image cannot be printed'),
+          type: 'error',
+        });
+        return;
+      }
+
+      const { uiModalService } = servicesManager.services;
+
+      if (uiModalService) {
+        uiModalService.show({
+          content: CornerstoneViewportDownloadForm,
+          title: i18n.t('Tools:Print Image'),
+          contentProps: {
+            activeViewportId,
+            cornerstoneViewportService,
+          },
+          containerClassName: 'max-w-4xl p-4',
+        });
+      }
+    },
     /**
      * Rotates the viewport by `rotation` relative to its current rotation.
      */

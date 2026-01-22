@@ -230,6 +230,29 @@ const CornerstoneViewportDownloadForm = ({
     downloadUrl(canvas.toDataURL(`image/${fileType}`, 1.0), { filename });
   };
 
+  const handlePrint = async () => {
+    const divForDownloadViewport = document.querySelector(
+      `div[data-viewport-uid="${VIEWPORT_ID}"]`
+    );
+
+    if (!divForDownloadViewport) {
+      console.debug('No viewport found for print');
+      return;
+    }
+
+    const canvas = await html2canvas(divForDownloadViewport as HTMLElement);
+    const dataUrl = canvas.toDataURL('image/png');
+
+    const printWin = window.open('', '', 'width=800,height=600');
+    printWin.document.open();
+    printWin.document.write('<html><head><title>Print</title></head><body>');
+    printWin.document.write(
+      '<img src="' + dataUrl + '" onload="window.print();window.close()" style="width:100%"/>'
+    );
+    printWin.document.write('</body></html>');
+    printWin.document.close();
+  };
+
   const ViewportDownloadFormNew = customizationService.getCustomization(
     'ohif.captureViewportModal'
   );
@@ -247,6 +270,7 @@ const CornerstoneViewportDownloadForm = ({
       onEnableViewport={handleEnableViewport}
       onDisableViewport={handleDisableViewport}
       onDownload={handleDownload}
+      onPrint={handlePrint}
       warningState={warningState}
     />
   );
