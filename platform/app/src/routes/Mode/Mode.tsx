@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation } from 'react-router';
+import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
@@ -30,6 +30,13 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (mode.routeName === 'viewer' && query.toString() === '') {
+      navigate('/', { replace: true });
+    }
+  }, [mode.routeName, query, navigate]);
 
   mode?.onModeInit?.({
     servicesManager,
