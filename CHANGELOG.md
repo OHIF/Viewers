@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.124...v3.12.0-beta.125) (2026-01-21)
+
+
+### Bug Fixes
+
+* **security:** Ignore CVE-2026-23745, CVE-2026-23950 and CVE-2024-28863 because they are limited to build/dev environments. ([#5733](https://github.com/OHIF/Viewers/issues/5733)) ([320f0a7](https://github.com/OHIF/Viewers/commit/320f0a7463ad95251842ece6cd329bba7b6b2a97))
+
+
+
+
+
+# [3.12.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.123...v3.12.0-beta.124) (2026-01-16)
+
+
+### Bug Fixes
+
+* **microscopy:** Update microscope to 0.48.17 to fix a measurement exception. ([#5710](https://github.com/OHIF/Viewers/issues/5710)) ([4a1f509](https://github.com/OHIF/Viewers/commit/4a1f5098654dc7afef4c135f2e2198a0e785f4b9))
+
+
+
+
+
+# [3.12.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.122...v3.12.0-beta.123) (2026-01-14)
+
+
+### Bug Fixes
+
+* **window-level-action-menu:** Window level menu no longer needs two clicks to open after it is used ([#5711](https://github.com/OHIF/Viewers/issues/5711)) ([eb6b814](https://github.com/OHIF/Viewers/commit/eb6b814fc9c35feb6aa5f4378632b53202b0d8a3))
+
+
+
+
+
+# [3.12.0-beta.122](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.121...v3.12.0-beta.122) (2026-01-13)
+
+
+### Bug Fixes
+
+* **segmentation:** List surface representations in the segmentation table for 3D views. ([#5700](https://github.com/OHIF/Viewers/issues/5700)) ([82e6a18](https://github.com/OHIF/Viewers/commit/82e6a18735b2e2278d6b95037d82bd3cb529104d))
+
+
+
+
+
 # [3.12.0-beta.121](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.120...v3.12.0-beta.121) (2026-01-12)
 
 
