@@ -53,7 +53,9 @@ function PanelStudyBrowser({
     customizationService.getCustomization('studyBrowser.viewPresets')
   );
 
-  const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+  const [actionIcons, setActionIcons] = useState(
+    customizationService.getCustomization('studyBrowser.actionIcons') || defaultActionIcons
+  );
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -346,7 +348,11 @@ function PanelStudyBrowser({
     customMapDisplaySets,
   ]);
 
-  const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+  let tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+
+  if (studyMode === 'primary') {
+    tabs = tabs.filter(tab => tab.name === 'primary');
+  }
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
@@ -407,17 +413,21 @@ function PanelStudyBrowser({
   return (
     <>
       <>
-        <PanelStudyBrowserHeader
-          viewPresets={viewPresets}
-          updateViewPresetValue={updateViewPresetValue}
-          actionIcons={actionIcons}
-          updateActionIconValue={updateActionIconValue}
-        />
-        <Separator
-          orientation="horizontal"
-          className="bg-black"
-          thickness="2px"
-        />
+      {!customizationService.getCustomization('studyBrowser.hideHeader') && (
+        <>
+          <PanelStudyBrowserHeader
+            viewPresets={viewPresets}
+            updateViewPresetValue={updateViewPresetValue}
+            actionIcons={actionIcons}
+            updateActionIconValue={updateActionIconValue}
+          />
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       </>
 
       <StudyBrowser
