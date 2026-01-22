@@ -19,9 +19,11 @@ code linking and execution. The method to link locally using `bun` differs sligh
 
 :::tip
 
-Linking locally with `bun` provides for running the [playwright tests](./playwright-testing.md) locally so as to include (and test) local changes from Cornerstone3D!
+Linking locally with `bun` provides for running the [playwright tests](./playwright-testing.md) locally so as to include (and test) local changes from Cornerstone3D and other libraries like dicom-microscopy-viewer.
 
 :::
+
+### Linking Cornerstone3D
 
 In the local Cornerstone3D, simply replace `yarn` with `bun` for each of the commands. For example, in `cornerstone/packages/core` the following would be done.
 
@@ -49,4 +51,29 @@ cornerstone packages to link locally in the `resolutions`.
   ...
 ```
 
-In OHIF, run `bun install -f` and then run OHIF using either `bun dev` or `bun dev:fast`.
+In OHIF, run `bun install -f --config=.\bunfig.update-lockfile.toml` and then run OHIF using either `bun dev` or `bun dev:fast`.
+
+### Linking dicom-microscopy-viewer
+
+The process for linking other libraries such as the dicom-microscopy-viewer is similar to that of linking Cornerstone3D.
+
+```
+# In the local dicom-microscopy-viewer directory
+bun unlink
+bun link
+bun webpack:dynamic-import:watch
+```
+In OHIF, edit the root `package.json` file to include the dicom-microscopy-viewer package in the `resolutions`. The following is an example of this...
+
+```
+  ...
+  "resolutions": {
+    "commander": "8.3.0",
+    "path-to-regexp": "0.1.12",
+    "dicom-microscopy-viewer": "link:dicom-microscopy-viewer",
+    ...
+  },
+  ...
+```
+
+In OHIF, run `bun install -f --config=.\bunfig.update-lockfile.toml` and then run OHIF using either `bun dev` or `bun dev:fast`.

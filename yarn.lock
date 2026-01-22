@@ -7530,10 +7530,10 @@ detective@^5.2.1:
     defined "^1.0.0"
     minimist "^1.2.6"
 
-dicom-microscopy-viewer@0.48.6:
-  version "0.48.6"
-  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.48.6.tgz#dc9e8f7bb86c8aabf6b24d96a46be3a9f5f4f7f1"
-  integrity sha512-cTQ14qE3zqzlH0QOIhxbrIOsLVNCV6/i9qDrIiOnmD3I1R2W6cwRN4iMgQ0c6zas/9+o645Tu37FA6BqQ3fIlg==
+dicom-microscopy-viewer@0.48.17:
+  version "0.48.17"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.48.17.tgz#7e2c9764a13a729f56076b2255c90939b170ac38"
+  integrity sha512-lzl9wXSg5skCp93kUj+VFFydt1wSgVFIrNw/BeUsP+Im+csUukPE0l1KJPC3xbJNAfyqTCU1PZ3aYSEdVD7aCg==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -7545,7 +7545,7 @@ dicom-microscopy-viewer@0.48.6:
     dicomweb-client "^0.10.3"
     image-type "^4.1"
     mathjs "^11.2"
-    ol "^10.4.0"
+    ol "^10.6.0"
     uuid "^9.0"
 
 dicom-parser@1.8.21:
@@ -13867,10 +13867,10 @@ oidc-client@1.11.5:
     crypto-js "^4.0.0"
     serialize-javascript "^4.0.0"
 
-ol@^10.4.0:
-  version "10.6.1"
-  resolved "https://registry.yarnpkg.com/ol/-/ol-10.6.1.tgz#950f3914b4eec978f087b36aa74ce1e18c41ab09"
-  integrity sha512-xp174YOwPeLj7c7/8TCIEHQ4d41tgTDDhdv6SqNdySsql5/MaFJEJkjlsYcvOPt7xA6vrum/QG4UdJ0iCGT1cg==
+ol@^10.6.0:
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/ol/-/ol-10.7.0.tgz#6a072a602cab3a5d9b35356de8b837221d78379b"
+  integrity sha512-122U5gamPqNgLpLOkogFJhgpywvd/5en2kETIDW+Ubfi9lPnZ0G9HWRdG+CX0oP8od2d6u6ky3eewIYYlrVczw==
   dependencies:
     "@types/rbush" "4.0.0"
     earcut "^3.0.0"
