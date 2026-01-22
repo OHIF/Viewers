@@ -38,7 +38,7 @@
     "@ohif/extension-cornerstone": "3.12.0-beta.127",
     "@ohif/extension-measurement-tracking": "3.12.0-beta.127",
     "@ohif/ui": "3.12.0-beta.127",
-    "dcmjs": "0.45.0",
+    "dcmjs": "0.48.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",
@@ -46,9 +46,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/adapters": "4.15.16",
-    "@cornerstonejs/core": "4.15.16",
-    "@cornerstonejs/tools": "4.15.16",
+    "@cornerstonejs/adapters": "4.15.18",
+    "@cornerstonejs/core": "4.15.18",
+    "@cornerstonejs/tools": "4.15.18",
     "classnames": "2.5.1"
   }
 }
