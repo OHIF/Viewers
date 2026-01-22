@@ -541,11 +541,9 @@ function WorkList({
       icon: '3dslicer',
       onClick: () => {
         const topic = servicesManager.services.castService?.hub?.topic || '';
-        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
         const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
         const params = new URLSearchParams();
         if (topic) params.append('topic', topic);
-    //    if (subscriberName) params.append('subscriberName', subscriberName);
         const queryString = params.toString();
         const url = `${hubEndpoint}/test-client${queryString ? `?${queryString}` : ''}`;
         window.open(url, '_blank');
@@ -616,7 +614,7 @@ function WorkList({
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
-        subscriberName={servicesManager.services.castService?.hub?.subscriberName}
+        subscriberName={servicesManager.services.castService?.hub?.topic}
         banner="NA-MIC Project Week 44"
       />
       <Onboarding />
