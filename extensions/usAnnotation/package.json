@@ -42,8 +42,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/core": "4.15.9",
-    "@cornerstonejs/tools": "4.15.9",
+    "@cornerstonejs/core": "4.15.18",
+    "@cornerstonejs/tools": "4.15.18",
     "@ohif/core": "3.12.0-beta.125",
     "@ohif/extension-cornerstone": "3.12.0-beta.125",
     "@ohif/extension-default": "3.12.0-beta.125",
