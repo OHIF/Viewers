@@ -2621,6 +2621,9 @@
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
 
+"@ohif/extension-study-notes@file:extensions/study-notes-extension":
+  version "1.0.0"
+
 "@oozcitak/dom@1.15.10":
   version "1.15.10"
   resolved "https://registry.yarnpkg.com/@oozcitak/dom/-/dom-1.15.10.tgz#dca7289f2b292cff2a901ea4fbbcc0a1ab0b05c2"

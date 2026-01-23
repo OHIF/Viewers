@@ -39,7 +39,7 @@ window.config = {
     },
   },
 
-  extensions: [],
+  extensions: ['@ohif/extension-study-notes'],
   modes: [],
 
   // Customization service for SmartCarePlus-specific UI/UX
@@ -63,6 +63,11 @@ window.config = {
           layoutInstance: {
             props: {
               leftPanels: { $set: ['@ohif/extension-default.panelModule.seriesList'] }, // Restore the series list
+              rightPanels: { $set: [
+                '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+                '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+                '@ohif/extension-study-notes.panelModule.panelStudyNotes'
+              ] },
               leftPanelClosed: { $set: false },
             },
           },
@@ -75,6 +80,11 @@ window.config = {
           layoutInstance: {
             props: {
               leftPanels: { $set: ['@ohif/extension-default.panelModule.seriesList'] }, // Restore the series list
+              rightPanels: { $set: [
+                '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+                '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+                '@ohif/extension-study-notes.panelModule.panelStudyNotes'
+              ] },
               leftPanelClosed: { $set: false },
             },
           },
