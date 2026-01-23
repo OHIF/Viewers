@@ -31,7 +31,7 @@ window.config = {
           title: 'SmartCarePlus - Complete Health Ecosystem'
         },
         React.createElement('img', {
-          src: './assets/smartcareplus-logo.png',
+          src: '/assets/smartcareplus-logo.png',
           alt: 'SmartCarePlus',
           className: 'h-8',
         })
