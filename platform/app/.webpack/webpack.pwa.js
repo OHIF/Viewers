@@ -149,6 +149,7 @@ module.exports = (env, argv) => {
       // http2: true,
       // https: true,
       open,
+      host: '0.0.0.0',
       port: OHIF_PORT,
       client: {
         overlay: { errors: true, warnings: false },
