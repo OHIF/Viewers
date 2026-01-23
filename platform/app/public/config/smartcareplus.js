@@ -34,8 +34,6 @@ window.config = {
           src: './assets/smartcareplus-logo.png',
           alt: 'SmartCarePlus',
           className: 'h-8',
-          // Fallback to text if logo not available
-          onerror: "this.onerror=null; this.outerHTML='<span class=\"text-xl font-bold text-primary-light\">SmartCare<span class=\"text-primary-main\">Plus</span></span>';"
         })
       );
     },
