@@ -6,7 +6,7 @@ frontend:
         - yarn install
     build:
       commands:
-        - APP_CONFIG=config/smartcareplus.js yarn run build:viewer
+        - APP_CONFIG=config/smartcareplus.js yarn run build
   artifacts:
     baseDirectory: platform/app/dist
     files:
