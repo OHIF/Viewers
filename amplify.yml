@@ -1,0 +1,16 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - yarn install
+    build:
+      commands:
+        - APP_CONFIG=config/smartcareplus.js yarn run build:viewer
+  artifacts:
+    baseDirectory: platform/app/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
