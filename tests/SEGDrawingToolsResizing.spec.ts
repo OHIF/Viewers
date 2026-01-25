@@ -26,16 +26,16 @@ async function performDrawingToolInteraction(
   await expect(brushRadiusInput).toHaveValue('25');
   await viewportPageObject.active.clickAt([{ x: 275, y: 300 }]);
   let radius = parseFloat(await circle.getAttribute('r'));
-  expect(radius).toBeGreaterThanOrEqual(45);
-  expect(radius).toBeLessThanOrEqual(47);
+  expect(radius).toBeGreaterThanOrEqual(65);
+  expect(radius).toBeLessThanOrEqual(68);
 
   await page.waitForTimeout(500);
   await press({ page, key: '[', nTimes: 2 });
   await expect(brushRadiusInput).toHaveValue('19');
   await viewportPageObject.active.clickAt([{ x: 500, y: 300 }]);
   radius = parseFloat(await circle.getAttribute('r'));
-  expect(radius).toBeGreaterThanOrEqual(34);
-  expect(radius).toBeLessThanOrEqual(36);
+  expect(radius).toBeGreaterThanOrEqual(49);
+  expect(radius).toBeLessThanOrEqual(52);
 
   await page.waitForTimeout(500);
 
@@ -43,16 +43,16 @@ async function performDrawingToolInteraction(
   await expect(brushRadiusInput).toHaveValue('34');
   await viewportPageObject.active.clickAt([{ x: 275, y: 500 }]);
   radius = parseFloat(await circle.getAttribute('r'));
-  expect(radius).toBeGreaterThanOrEqual(62);
-  expect(radius).toBeLessThanOrEqual(64);
+  expect(radius).toBeGreaterThanOrEqual(87);
+  expect(radius).toBeLessThanOrEqual(90);
 
   await page.waitForTimeout(500);
 
   await brushRadiusInput.fill('42');
   await viewportPageObject.active.clickAt([{ x: 500, y: 500 }]);
   radius = parseFloat(await circle.getAttribute('r'));
-  expect(radius).toBeGreaterThanOrEqual(76);
-  expect(radius).toBeLessThanOrEqual(78);
+  expect(radius).toBeGreaterThanOrEqual(108);
+  expect(radius).toBeLessThanOrEqual(111);
 
   await page.waitForTimeout(500);
 }
