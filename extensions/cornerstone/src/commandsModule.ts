@@ -1729,23 +1729,26 @@ function commandsModule({
     deleteSegmentationCommand: ({ segmentationId }) => {
       const { segmentationService, viewportGridService, displaySetService } =
         servicesManager.services;
-      const seg = segmentationService.getSegmentation(segmentationId);
-      segmentationService.remove(segmentationId);
-
-      const viewportId = viewportGridService.getActiveViewportId();
-      commandsManager.runCommand('removeDisplaySetLayer', {
-        viewportId,
-        displaySetInstanceUID: segmentationId,
-      });
 
       // Cleanup segmentation from display set if not from image source
+      const seg = segmentationService.getSegmentation(segmentationId);
       if (seg && seg.predecessorImageId === undefined) {
         try {
+          // Note: segmentations from display sets handled when removed from
+          // display set layer
+          segmentationService.remove(segmentationId);
           displaySetService.deleteDisplaySet(segmentationId);
         } catch (e) {
           console.warn(e);
         }
       }
+
+      // Cleanup segmentation from display set layer
+      const viewportId = viewportGridService.getActiveViewportId();
+      commandsManager.runCommand('removeDisplaySetLayer', {
+        viewportId,
+        displaySetInstanceUID: segmentationId,
+      });
     },
 
     /**
