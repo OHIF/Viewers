@@ -3,7 +3,7 @@ import { utilities } from '@cornerstonejs/tools';
 
 function _getVolumeFromViewport(viewport: Types.IBaseVolumeViewport) {
   // Handle non-volume viewports that don't have getAllVolumeIds
-  if (!viewport || !viewport.getAllVolumeIds) {
+  if (!viewport?.getAllVolumeIds) {
     return null;
   }
 
