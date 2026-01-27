@@ -469,6 +469,8 @@ export default class CastService extends PubSubService {
   private processEvent(eventData) {
     try {
       const castMessage = JSON.parse(eventData);
+      console.log('CastService: processEvent received message:', castMessage);
+
       if (castMessage['hub.mode']) {
         console.debug('CastService: Subscription acknowledged on the websocket.');
       }
@@ -647,6 +649,87 @@ export default class CastService extends PubSubService {
 
   private _handleCastMessage(castMessage: any) {
     console.log('CastService: cast message received :', castMessage);
+
+    // Handle get-request messages (FHIRcast format)
+    console.log('CastService: Checking get-request conditions:', {
+      hasEvent: !!castMessage.event,
+      hubEvent: castMessage.event?.['hub.event'],
+      isGetRequest: castMessage.event?.['hub.event'] === 'get-request',
+      context: castMessage.event?.context,
+      dataType: castMessage.event?.context?.dataType,
+      isSCENEVIEW: castMessage.event?.context?.dataType === 'SCENEVIEW'
+    });
+
+    if (castMessage.event && castMessage.event['hub.event'] === 'get-request') {
+      const context = castMessage.event.context;
+      console.log('CastService: Inside get-request check, context:', context);
+      if (context && context.dataType === 'SCENEVIEW') {
+        console.log('CastService: Received get-request for SCENEVIEW:', castMessage);
+
+        try {
+          // Extract requestId from the context
+          const requestId = context.requestId;
+
+          console.log('CastService: Extracted from context:', { requestId, dataType: context.dataType });
+          console.log('CastService: WebSocket state:', {
+            exists: !!this.hub.websocket,
+            readyState: this.hub.websocket?.readyState,
+            OPEN: WebSocket.OPEN
+          });
+
+          if (!this.hub.websocket) {
+            console.error('CastService: WebSocket does not exist');
+            return;
+          }
+
+          if (this.hub.websocket.readyState !== WebSocket.OPEN) {
+            console.warn('CastService: WebSocket is not open. ReadyState:', this.hub.websocket.readyState);
+            return;
+          }
+
+          // Get topic from request message or use hub topic
+          const topic = castMessage.event?.['hub.topic'] || this.hub.topic;
+
+          // Create response in FHIRcast event format
+          const timestamp = new Date();
+          const response = {
+            timestamp: timestamp.toJSON(),
+            id: 'OHIF-' + Math.random().toString(36).substring(2, 16),
+            event: {
+              'hub.topic': topic,
+              'hub.event': 'get-response',
+              context: {
+                requestId: requestId,
+                data: { 'SCENEVIEW RESPONSE TBD': 'SCENEVIEW RESPONSE TBD' }
+              }
+            }
+          };
+
+          const responseString = JSON.stringify(response);
+          console.log('CastService: Sending get_response:', responseString);
+          console.log('CastService: Response object:', response);
+
+          try {
+            this.hub.websocket.send(responseString);
+            console.log('CastService: get_response sent successfully');
+          } catch (sendError) {
+            console.error('CastService: Error sending get_response:', sendError);
+            throw sendError;
+          }
+        } catch (err) {
+          console.error('CastService: Error handling get-request:', err);
+        }
+
+        return;
+      } else {
+        console.warn('CastService: get-request received but dataType is not SCENEVIEW:', context?.dataType);
+      }
+    } else {
+      console.log('CastService: Not a get-request or missing event:', {
+        hasEvent: !!castMessage.event,
+        hubEvent: castMessage.event?.['hub.event']
+      });
+    }
 
     const currentLocation = window.location.search;
     if (castMessage.event['hub.event'].toLowerCase() === 'patient-open') {

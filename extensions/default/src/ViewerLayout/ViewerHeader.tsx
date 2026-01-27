@@ -197,6 +197,18 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         window.open(url, '_blank');
       },
     },
+    {
+      title: 'GET SCENEVIEW',
+      icon: '3dslicer',
+      onClick: () => {
+        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+        const url = `${hubEndpoint}/cast-get?subscriber=3DSLICER&dataType=SCENEVIEW`;
+        fetch(url)
+          .then(res => res.json())
+          .then(data => console.log('GET SCENEVIEW response:', data))
+          .catch(err => console.warn('GET SCENEVIEW failed:', err));
+      },
+    },
   ];
 
   if (appConfig.oidc) {
@@ -215,7 +227,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
-      subscriberName={servicesManager.services.castService?.hub?.subscriberName}
+      subscriberName={servicesManager.services.castService?.hub?.topic}
       Secondary={<Toolbar buttonSection="secondary" />}
       PatientInfo={
         appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (

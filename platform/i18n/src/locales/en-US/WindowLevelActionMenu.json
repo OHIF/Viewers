@@ -20,5 +20,17 @@
   "Lung": "Lung",
   "Liver": "Liver",
   "Bone": "Bone",
-  "Brain": "Brain"
+  "Brain": "Brain",
+  "Orientation Controller": "Orientation Controller",
+  "Enable": "Enable",
+  "Color Scheme": "Color Scheme",
+  "Marker": "Marker",
+  "Gray": "Gray",
+  "RGB": "RGB",
+  "Letter Colors": "Letter Colors",
+  "White": "White",
+  "Mixed": "Mixed",
+  "Black": "Black",
+  "Keep Orientation Up": "Keep Orientation Up",
+  "Opacity": "Opacity"
 }

@@ -37,6 +37,7 @@ import {
   SplineROITool,
   LivewireContourTool,
   OrientationMarkerTool,
+  OrientationController,
   WindowLevelRegionTool,
   SegmentSelectTool,
   RegionSegmentPlusTool,
@@ -106,6 +107,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SplineROITool);
   addTool(LivewireContourTool);
   addTool(OrientationMarkerTool);
+  addTool(OrientationController);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
@@ -168,6 +170,7 @@ const toolNames = {
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
   OrientationMarker: OrientationMarkerTool.toolName,
+  OrientationController: OrientationController.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
