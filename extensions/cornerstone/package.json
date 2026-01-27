@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "3.12.0-beta.127",
+  "version": "3.12.0-beta.128",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -59,8 +59,8 @@
     "@cornerstonejs/labelmap-interpolation": "4.15.20",
     "@cornerstonejs/polymorphic-segmentation": "4.15.20",
     "@cornerstonejs/tools": "4.15.20",
-    "@itk-wasm/morphological-contour-interpolation": "1.1.0",
     "@icr/polyseg-wasm": "0.4.0",
+    "@itk-wasm/morphological-contour-interpolation": "1.1.0",
     "@kitware/vtk.js": "34.15.1",
     "html2canvas": "1.4.1",
     "lodash.compact": "3.0.1",
