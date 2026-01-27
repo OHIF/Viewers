@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.129](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.128...v3.12.0-beta.129) (2026-01-27)
+
+
+### Bug Fixes
+
+* Handle optional ContentSequence for NUM content items ([#5703](https://github.com/OHIF/Viewers/issues/5703)) ([6dedf55](https://github.com/OHIF/Viewers/commit/6dedf5573e78a5751bed0b79646700acedfc8a38))
+
+
+
+
+
 # [3.12.0-beta.128](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.127...v3.12.0-beta.128) (2026-01-27)
 
 
