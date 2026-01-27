@@ -83,15 +83,28 @@ async function run() {
     '--no-push',
   ]);
 
-  // Stage any remaining changes that might not have been included
+  // Stage any files that need to be included in the amended commit. Lerna commits the package.json
+  // files it modifies, but may not include other files that were staged before it ran (like
+  // version.json or .npmrc deletion). Since we're amending the commit to combine all version-related
+  // changes into a single commit, we need to ensure these files are included.
+  // 
+  // Note: Peer dependency updates are already in the package.json files that lerna modified,
+  // so they will be included in lerna's commit automatically.
   await execa('git', ['add', '-A']);
 
-  // Amend the last commit to include all changes and update message with version number
+  // Amend the last commit to include all changes. The commit message is already set by lerna
+  // (line 79) and is the same, so we use --no-edit to keep the existing message.
   // This combines the version.json commit and package version updates into one commit
-  await execa('git', ['commit', '--amend', '-m', `chore(version): Update package versions to ${nextVersion} [skip ci]`]);
+  await execa('git', ['commit', '--amend', '--no-edit']);
 
-  console.log('Committing and pushing changes...');
-  await execa('git', ['push', 'origin', branchName, '--force-with-lease']);
+  console.log('Pushing changes...');
+  
+  // Note: Force push is not necessary here because:
+  // 1. Lerna is called with --no-push, so the commit created by lerna is never pushed to remote
+  // 2. We amend the commit locally before pushing, so it's a new commit from the remote's perspective
+  // 3. This script runs on a single branch locally, so there's no history rewrite on the remote
+  // A regular push is sufficient since we're pushing a commit that doesn't exist on the remote yet
+  await execa('git', ['push', 'origin', branchName]);
 
   console.log('Version set using lerna');
 }
