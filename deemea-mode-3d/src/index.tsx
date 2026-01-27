@@ -64,6 +64,7 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
+      toolbarService?.addButtons(segmentationButtons);
 
       toolbarService.createButtonSection('primary', [
         'WindowLevel',
@@ -105,7 +106,6 @@ function modeFactory({ modeConfiguration }) {
         // 'Shapes',
       ]);
       toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
-      toolbarService?.addButtons(segmentationButtons);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

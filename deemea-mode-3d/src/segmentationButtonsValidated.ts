@@ -10,7 +10,7 @@ const callbacks = (toolName: string) => [
   },
 ];
 
-const toolbarButtons: Button[] = [
+const segmentationButtonsValidated: Button[] = [
   // sections
   {
     id: 'BrushTools',
@@ -327,4 +327,4 @@ const toolbarButtons: Button[] = [
   },
 ];
 
-export default toolbarButtons;
+export default segmentationButtonsValidated;

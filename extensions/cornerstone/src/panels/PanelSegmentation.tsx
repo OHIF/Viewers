@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 import { metaData } from '@cornerstonejs/core';
@@ -13,25 +13,64 @@ export default function PanelSegmentation({ children }: withAppTypes) {
       servicesManager,
     });
 
-  // Extract customization options
-  const segmentationTableMode = customizationService.getCustomization(
-    'panelSegmentation.tableMode'
-  ) as unknown as string;
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
-  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
-  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
-  const disableAddSegmentation = customizationService.getCustomization(
-    'panelSegmentation.disableAddSegmentation'
-  );
-  const CustomDropdownMenuContent = customizationService.getCustomization(
-    'panelSegmentation.customDropdownMenuContent'
-  );
+  // Helper function to get all customizations
+  const getCustomizations = useCallback(() => {
+    return {
+      segmentationTableMode: customizationService.getCustomization(
+        'panelSegmentation.tableMode'
+      ) as unknown as string,
+      onSegmentationAdd: customizationService.getCustomization(
+        'panelSegmentation.onSegmentationAdd'
+      ),
+      disableEditing: customizationService.getCustomization('panelSegmentation.disableEditing'),
+      showAddSegment: customizationService.getCustomization('panelSegmentation.showAddSegment'),
+      disableAddSegmentation: customizationService.getCustomization(
+        'panelSegmentation.disableAddSegmentation'
+      ),
+      CustomDropdownMenuContent: customizationService.getCustomization(
+        'panelSegmentation.customDropdownMenuContent'
+      ),
+      CustomSegmentStatisticsHeader: customizationService.getCustomization(
+        'panelSegmentation.customSegmentStatisticsHeader'
+      ),
+    };
+  }, [customizationService]);
 
-  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
-    'panelSegmentation.customSegmentStatisticsHeader'
-  );
+  // State to hold customizations
+  const [customizations, setCustomizations] = useState(getCustomizations);
+
+  // Subscribe to customization changes
+  useEffect(() => {
+    const updateCustomizations = () => {
+      setCustomizations(getCustomizations());
+    };
+
+    const subscriptions = [
+      customizationService.subscribe(
+        customizationService.EVENTS.MODE_CUSTOMIZATION_MODIFIED,
+        updateCustomizations
+      ),
+      customizationService.subscribe(
+        customizationService.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED,
+        updateCustomizations
+      ),
+    ];
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customizationService]);
+
+  // Extract customization options from state
+  const {
+    segmentationTableMode,
+    onSegmentationAdd,
+    disableEditing,
+    showAddSegment,
+    disableAddSegmentation,
+    CustomSegmentStatisticsHeader,
+  } = customizations;
 
   // Create handlers object for all command runs
   const handlers = {

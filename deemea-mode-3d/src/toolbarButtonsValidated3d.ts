@@ -30,98 +30,11 @@ function _createWwwcPreset(preset, title, subtitle) {
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: ['default'],
+    toolGroupIds: ['default', 'mpr', 'volume3d'],
   },
 };
 
-const toolbarButtonsValidated: Button[] = [
-  {
-    id: 'ResetButton',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'icon-transferring',
-      label: 'Reset predictions',
-      commands: {
-        commandName: 'resetPoints',
-        context: 'VIEWER',
-      },
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
-  {
-    id: 'Length',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-length',
-      label: 'Length',
-      commands: setToolActiveToolbar,
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
-  {
-    id: 'RectangleROI',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-rectangle',
-      label: 'Rectangle',
-      commands: setToolActiveToolbar,
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
-  {
-    id: 'Angle',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-angle',
-      label: 'Angle',
-      commands: setToolActiveToolbar,
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
-  {
-    id: 'Probe',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-probe',
-      label: 'Probe',
-      commands: setToolActiveToolbar,
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
-  {
-    id: 'CalibrationLine',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-calibration',
-      label: 'Calibration',
-      commands: setToolActiveToolbar,
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
+const toolbarButtonsValidated3d: Button[] = [
   // Window Level
   {
     id: 'WindowLevel',
@@ -174,22 +87,6 @@ const toolbarButtonsValidated: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'Reset',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-reset',
-      tooltip: 'Reset View',
-      label: 'Reset image position',
-      commands: [
-        {
-          commandName: 'resetViewport',
-          context: 'CORNERSTONE',
-        },
-      ],
-      evaluate: 'evaluate.action',
-    },
-  },
 ];
 
-export default toolbarButtonsValidated;
+export default toolbarButtonsValidated3d;

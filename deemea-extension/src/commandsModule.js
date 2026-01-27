@@ -6,6 +6,7 @@ import toolbarButtons from '../../deemea-mode/src/toolbarButtons';
 import toolbarButtons3d from '../../deemea-mode-3d/src/toolbarButtons3d';
 import segmentationButtonsValidated from '../../deemea-mode-3d/src/segmentationButtonsValidated';
 import segmentationButtons from '../../deemea-mode-3d/src/segmentationButtons';
+import { CustomizationScope } from '@ohif/core/src/services/CustomizationService/CustomizationService';
 
 const commandsModule = ({ servicesManager, commandsManager }) => {
   let segmentationLoaded = false;
@@ -107,37 +108,50 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
               toolbarService?.refreshToolbarState();
             } else {
               toolbarService?.setButtons(toolbarButtonsValidated3d);
-              toolbarService?.addButtons(segmentationButtonsValidated);
-              customizationService.setCustomizations([
-                {
-                  'panelSegmentation.disableEditing': {
-                    $set: true,
-                  },
-                },
-              ]);
               toolbarService?.refreshToolbarState();
+              toolbarService?.addButtons(segmentationButtonsValidated, true);
+              customizationService.setCustomizations(
+                [
+                  {
+                    'panelSegmentation.disableEditing': {
+                      $set: true,
+                    },
+                    'panelSegmentation.showAddSegment': {
+                      $set: false,
+                    },
+                  },
+                ],
+                CustomizationScope.Global
+              );
             }
           } else {
             if (event.data.message.imageType === '2D') {
               const style = document.createElement('style');
               style.textContent = `#svg-layer-default circle {
-                stroke-width: 4px !important;
-                r: 2px !important;
+              stroke-width: 4px !important;
+              r: 2px !important;
               }`;
               document.head.appendChild(style);
               toolbarService?.setButtons(toolbarButtons);
               toolbarService?.refreshToolbarState();
             } else {
               toolbarService?.setButtons(toolbarButtons3d);
-              toolbarService?.addButtons(segmentationButtons);
-              customizationService.setCustomizations([
-                {
-                  'panelSegmentation.disableEditing': {
-                    $set: false,
-                  },
-                },
-              ]);
               toolbarService?.refreshToolbarState();
+              toolbarService?.addButtons(segmentationButtons, true);
+
+              customizationService.setCustomizations(
+                [
+                  {
+                    'panelSegmentation.disableEditing': {
+                      $set: false,
+                    },
+                    'panelSegmentation.showAddSegment': {
+                      $set: true,
+                    },
+                  },
+                ],
+                CustomizationScope.Global
+              );
             }
           }
         }

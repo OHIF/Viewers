@@ -1,13 +1,6 @@
 import type { Button } from '@ohif/core/types';
 import { ViewportGridService } from '@ohif/core';
 
-const setToolActiveToolbar = {
-  commandName: 'setToolActiveToolbar',
-  commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
-  },
-};
-
 const callbacks = (toolName: string) => [
   {
     commandName: 'setViewportForToolConfiguration',
@@ -17,7 +10,7 @@ const callbacks = (toolName: string) => [
   },
 ];
 
-const toolbarButtons: Button[] = [
+const segmentationButtons: Button[] = [
   // sections
   {
     id: 'BrushTools',
@@ -34,6 +27,11 @@ const toolbarButtons: Button[] = [
     props: {
       groupId: 'SegmentationUtilities',
       buttonSection: 'segmentationToolboxUtilitySection',
+      evaluate: () => {
+        return {
+          disabled: false,
+        };
+      },
     },
   },
   {
@@ -42,6 +40,11 @@ const toolbarButtons: Button[] = [
     props: {
       groupId: 'SegmentationTools',
       buttonSection: 'segmentationToolboxToolsSection',
+      evaluate: () => {
+        return {
+          disabled: false,
+        };
+      },
     },
   },
 
@@ -51,10 +54,10 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-brush',
       label: 'Brush',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularBrush', 'SphereBrush'],
-        disabledText: 'Create new segmentation to enable this tool.',
+      evaluate: () => {
+        return {
+          disabled: false,
+        };
       },
       options: [
         {
@@ -391,4 +394,4 @@ const toolbarButtons: Button[] = [
   },
 ];
 
-export default toolbarButtons;
+export default segmentationButtons;

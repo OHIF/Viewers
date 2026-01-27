@@ -320,7 +320,7 @@ export default class CustomizationService extends PubSubService {
     this.modeCustomizations.set(customizationId, result);
 
     this.transformedCustomizations.clear();
-    this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
+    this._broadcastEvent(this.EVENTS.MODE_CUSTOMIZATION_MODIFIED, {
       buttons: this.modeCustomizations,
       button: this.modeCustomizations.get(customizationId),
     });
@@ -334,9 +334,9 @@ export default class CustomizationService extends PubSubService {
     this.globalCustomizations.set(id, this._update(sourceCustomization, value));
 
     this.transformedCustomizations.clear();
-    this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
-      buttons: this.defaultCustomizations,
-      button: this.defaultCustomizations.get(id),
+    this._broadcastEvent(this.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED, {
+      buttons: this.globalCustomizations,
+      button: this.globalCustomizations.get(id),
     });
   }
 
