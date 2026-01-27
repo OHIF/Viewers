@@ -21,14 +21,14 @@
     "yarn": ">=1.16.0"
   },
   "peerDependencies": {
-    "@ohif/core": "3.12.0-beta.128",
-    "@ohif/extension-cornerstone": "3.12.0-beta.128",
-    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.128",
-    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.128",
-    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.128",
-    "@ohif/extension-default": "3.12.0-beta.128",
-    "@ohif/extension-dicom-pdf": "3.12.0-beta.128",
-    "@ohif/extension-dicom-video": "3.12.0-beta.128"
+    "@ohif/core": "3.12.0-beta.129",
+    "@ohif/extension-cornerstone": "3.12.0-beta.129",
+    "@ohif/extension-cornerstone-dicom-rt": "3.12.0-beta.129",
+    "@ohif/extension-cornerstone-dicom-seg": "3.12.0-beta.129",
+    "@ohif/extension-cornerstone-dicom-sr": "3.12.0-beta.129",
+    "@ohif/extension-default": "3.12.0-beta.129",
+    "@ohif/extension-dicom-pdf": "3.12.0-beta.129",
+    "@ohif/extension-dicom-video": "3.12.0-beta.129"
   },
   "dependencies": {
     "@babel/runtime": "7.28.2"
