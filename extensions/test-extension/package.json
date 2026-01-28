@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-test",
-  "version": "3.12.0-beta.127",
+  "version": "3.12.0-beta.129",
   "description": "OHIF extension used inside e2e testing",
   "author": "OHIF",
   "license": "MIT",
@@ -30,9 +30,9 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.12.0-beta.127",
-    "@ohif/ui": "3.12.0-beta.127",
-    "dcmjs": "0.45.0",
+    "@ohif/core": "3.12.0-beta.129",
+    "@ohif/ui": "3.12.0-beta.129",
+    "dcmjs": "0.48.0",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",
