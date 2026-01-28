@@ -124,6 +124,7 @@ jobs:
               "GHSA-5j98-mcp5-4vw2"  # CVE-2025-64756 - glob is not used on the command line
               "GHSA-8qq5-rm4j-mr97"  # CVE-2026-23745 - limited to build/dev environments
               "GHSA-r6q2-hw4h-h46w"  # CVE-2026-23950 - limited to build/dev environments
+              "GHSA-34x7-hfp2-rc4v"  # CVE-2026-24842 - limited to build/dev environments
             )
 
             # Build ignore flags
