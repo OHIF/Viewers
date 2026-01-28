@@ -39,9 +39,13 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     },
     {
       name: 'panelMedBook',
-      iconName: 'tab-linear',
-      iconLabel: 'MedBook',
-      label: 'MedBook',
+      iconName: 'tab-call-patient',
+      iconLabel: 'Call patient',
+      label: 'Call patient',
+      iconColor: 'text-[#4DC0C0]',
+      iconActiveColor: 'text-white',
+      iconBgColor: 'bg-[#4DC0C0]/20',
+      iconActiveBgColor: 'bg-[#4DC0C0]',
       component: wrappedPanelMedBook,
     },
   ];

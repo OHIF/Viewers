@@ -202,7 +202,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool, defaultExtension.medBook, sideChat.chat],
+              rightPanels: [cornerstone.panelTool, sideChat.chat, defaultExtension.medBook],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

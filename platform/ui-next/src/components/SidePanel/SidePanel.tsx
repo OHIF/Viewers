@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { Icons } from '../Icons';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 import { Separator } from '../Separator';
@@ -66,42 +66,18 @@ const openStateIconName = {
 };
 
 const getTabWidth = (numTabs: number) => {
-  if (numTabs < 3) {
-    return 68;
-  } else {
-    return 40;
-  }
+  // Not used - width is calculated dynamically based on widest tab
+  return 0;
 };
 
 const getGridWidth = (numTabs: number, gridAvailableWidth: number) => {
-  const spacersWidth = (numTabs - 1) * tabSpacerWidth;
-  const tabsWidth = getTabWidth(numTabs) * numTabs;
-
-  if (gridAvailableWidth > tabsWidth + spacersWidth) {
-    return tabsWidth + spacersWidth;
-  }
-
+  // Use available width since tabs are auto-sized
   return gridAvailableWidth;
 };
 
 const getNumGridColumns = (numTabs: number, gridWidth: number) => {
-  if (numTabs === 1) {
-    return 1;
-  }
-
-  // Start by calculating the number of tabs assuming each tab was accompanied by a spacer.
-  const tabWidth = getTabWidth(numTabs);
-  const numTabsWithOneSpacerEach = Math.floor(gridWidth / (tabWidth + tabSpacerWidth));
-
-  // But there is always one less spacer than tabs, so now check if an extra tab with one less spacer fits.
-  if (
-    (numTabsWithOneSpacerEach + 1) * tabWidth + numTabsWithOneSpacerEach * tabSpacerWidth <=
-    gridWidth
-  ) {
-    return numTabsWithOneSpacerEach + 1;
-  }
-
-  return numTabsWithOneSpacerEach;
+  // Show all tabs in a single row with auto width
+  return numTabs;
 };
 
 const getTabClassNames = (
@@ -117,9 +93,16 @@ const getTabClassNames = (
     'rounded-r': (tabIndex + 1) % numColumns === 0 || tabIndex === numTabs - 1,
   });
 
-const getTabStyle = (numTabs: number) => {
+const getTabStyle = (numTabs: number, tabWidthPx?: number) => {
+  if (tabWidthPx && tabWidthPx > 0) {
+    return {
+      width: `${tabWidthPx}px`,
+      minWidth: `${tabWidthPx}px`,
+    };
+  }
   return {
-    width: `${getTabWidth(numTabs)}px`,
+    width: 'auto',
+    minWidth: 'fit-content',
   };
 };
 
@@ -188,7 +171,7 @@ const SidePanel = ({
   onOpen,
   onClose,
   onActiveTabIndexChange,
-  expandedWidth = 280,
+  expandedWidth = 480,
   collapsedWidth = 25,
   expandedInsideBorderSize = 4,
   collapsedInsideBorderSize = 8,
@@ -196,6 +179,8 @@ const SidePanel = ({
 }: SidePanelProps) => {
   const [panelOpen, setPanelOpen] = useState(isExpanded);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
+  const [equalTabWidth, setEqualTabWidth] = useState<number>(0);
+  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [styleMap, setStyleMap] = useState(
     createStyleMap(
@@ -278,6 +263,26 @@ const SidePanel = ({
   useEffect(() => {
     updateActiveTabIndex(activeTabIndexProp ?? 0);
   }, [activeTabIndexProp, updateActiveTabIndex]);
+
+  // Measure tabs and find the widest one to equalize widths
+  useLayoutEffect(() => {
+    if (panelOpen && tabs.length > 1) {
+      // Reset width first to get natural widths
+      setEqualTabWidth(0);
+      
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
+        const widths = tabRefs.current
+          .filter(ref => ref !== null)
+          .map(ref => ref?.getBoundingClientRect().width || 0);
+        
+        if (widths.length > 0) {
+          const maxWidth = Math.ceil(Math.max(...widths));
+          setEqualTabWidth(maxWidth);
+        }
+      });
+    }
+  }, [panelOpen, tabs]);
 
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
@@ -403,6 +408,7 @@ const SidePanel = ({
                   <Tooltip key={tabIndex}>
                     <TooltipTrigger>
                       <div
+                        ref={el => (tabRefs.current[tabIndex] = el)}
                         className={getTabClassNames(
                           numCols,
                           tabs.length,
@@ -410,7 +416,7 @@ const SidePanel = ({
                           isActive,
                           disabled
                         )}
-                        style={getTabStyle(tabs.length)}
+                        style={getTabStyle(tabs.length, equalTabWidth)}
                         onClick={() => {
                           return disabled ? null : updateActiveTabIndex(tabIndex);
                         }}
@@ -419,7 +425,8 @@ const SidePanel = ({
                         <div
                           className={classnames(
                             getTabIconClassNames(tabs.length, isActive, hasCustomColors),
-                            hasCustomColors && bgColorClass
+                            hasCustomColors && bgColorClass,
+                            'flex-row gap-1.5 px-1'
                           )}
                         >
                           {React.createElement(Icons[tab.iconName] || Icons.MissingIcon, {
@@ -428,10 +435,22 @@ const SidePanel = ({
                               'ohif-disabled': disabled,
                             }),
                             style: {
-                              width: '22px',
-                              height: '22px',
+                              width: '18px',
+                              height: '18px',
+                              flexShrink: 0,
                             },
                           })}
+                          <span
+                            className={classnames(
+                              'text-[11px] font-medium whitespace-nowrap',
+                              {
+                                [iconColorClass]: true,
+                                'ohif-disabled': disabled,
+                              }
+                            )}
+                          >
+                            {tab.iconLabel || tab.label}
+                          </span>
                         </div>
                       </div>
                     </TooltipTrigger>
