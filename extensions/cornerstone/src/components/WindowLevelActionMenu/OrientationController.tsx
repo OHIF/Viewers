@@ -18,17 +18,17 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   useEffect(() => {
     const updateToolState = () => {
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      if (!toolGroup || !toolGroup.hasTool('OrientationController')) {
+      if (!toolGroup || !toolGroup.hasTool('OrientationControllerTool')) {
         setIsEnabled(false);
         return;
       }
 
-      const toolOptions = toolGroup.getToolOptions('OrientationController');
+      const toolOptions = toolGroup.getToolOptions('OrientationControllerTool');
       const enabled = toolOptions?.mode === Enums.ToolModes.Enabled;
       setIsEnabled(enabled);
 
       // Get current configuration
-      const config = toolGroup.getToolConfiguration('OrientationController') || {};
+      const config = toolGroup.getToolConfiguration('OrientationControllerTool') || {};
       if (config.colorScheme) {
         setColorScheme(config.colorScheme);
       }
@@ -65,7 +65,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   const onToggleChange = useCallback(
     (checked: boolean) => {
       commandsManager.runCommand('setToolEnabled', {
-        toolName: 'OrientationController',
+        toolName: 'OrientationControllerTool',
         toggle: true,
         toolGroupId: toolGroupId,
       });
@@ -77,17 +77,17 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   const updateConfiguration = useCallback(
     (updates: { colorScheme?: string; letterColorScheme?: string; keepOrientationUp?: boolean; opacity?: number }) => {
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      if (!toolGroup || !toolGroup.hasTool('OrientationController')) {
+      if (!toolGroup || !toolGroup.hasTool('OrientationControllerTool')) {
         return;
       }
 
-      const currentConfig = toolGroup.getToolConfiguration('OrientationController') || {};
+      const currentConfig = toolGroup.getToolConfiguration('OrientationControllerTool') || {};
       const newConfig = { ...currentConfig, ...updates };
-      toolGroup.setToolConfiguration('OrientationController', newConfig);
+      toolGroup.setToolConfiguration('OrientationControllerTool', newConfig);
 
       // Trigger re-render by calling onSetToolConfiguration if tool is enabled
       if (isEnabled) {
-        const toolInstance = toolGroup.getToolInstance('OrientationController');
+        const toolInstance = toolGroup.getToolInstance('OrientationControllerTool');
         if (toolInstance && typeof toolInstance.onSetToolConfiguration === 'function') {
           toolInstance.onSetToolConfiguration();
         }

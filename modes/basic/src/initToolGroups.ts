@@ -300,7 +300,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
     ],
     enabled: [
       {
-        toolName: toolNames.OrientationController,
+        toolName: toolNames.OrientationControllerTool,
         configuration: {
           size: 0.0289, // 15% smaller than 0.034 (0.034 * 0.85 = 0.0289)
           colorScheme: 'gray',
