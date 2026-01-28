@@ -130,10 +130,16 @@ function WorkList({
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
+  const [selectedSeries, setSelectedSeries] = useState({});
+
   const numOfStudies = studiesTotal;
   const querying = useMemo(() => {
     return isLoadingData || expandedRows.length > 0;
   }, [isLoadingData, expandedRows]);
+
+  const handleSeriesSelection = (studyInstanceUid, selectedRows) => {
+    setSelectedSeries(prev => ({ ...prev, [studyInstanceUid]: selectedRows }));
+  };
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -220,6 +226,8 @@ function WorkList({
         const series = await dataSource.query.series.search(studyInstanceUid);
         seriesInStudiesMap.set(studyInstanceUid, sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
+
+        setSelectedSeries(prev => ({ ...prev, [studyInstanceUid]: series.map((_, index) => index) }));
       } catch (ex) {
         // TODO: UI Notification Service
         console.warn(ex);
@@ -370,10 +378,13 @@ function WorkList({
                     seriesNumber: s.seriesNumber ?? '',
                     modality: s.modality || '',
                     instances: s.numSeriesInstances || '',
+                    seriesInstanceUid: s.seriesInstanceUid
                   };
                 })
               : []
           }
+          selectedRows={selectedSeries[studyInstanceUid] || []}
+          onSelectionChange={(selected) => handleSeriesSelection(studyInstanceUid, selected)}
         >
           <div className="flex flex-row gap-2">
             {(appConfig.groupEnabledModesFirst
@@ -417,6 +428,15 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+
+              const seriesData = seriesInStudiesMap.has(studyInstanceUid) ? seriesInStudiesMap.get(studyInstanceUid) : [];
+              const selectedRows = selectedSeries[studyInstanceUid] || [];
+              const isAllSelected = selectedRows.length === seriesData.length && seriesData.length > 0;
+              if (!isAllSelected && selectedRows.length > 0) {
+                const selectedSeriesIds = selectedRows.map(index => seriesData[index].seriesInstanceUid).join(',');
+                query.append('SeriesInstanceUIDs', selectedSeriesIds);
+              }
+
               preserveQueryParameters(query);
 
               return (

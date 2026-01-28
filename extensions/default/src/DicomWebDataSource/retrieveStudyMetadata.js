@@ -41,9 +41,13 @@ export function retrieveStudyMetadata(
   const promiseId = `${dicomWebConfig.name}:${StudyInstanceUID}`;
 
   // Already waiting on result? Return cached promise
-  if (StudyMetaDataPromises.has(promiseId)) {
-    return StudyMetaDataPromises.get(promiseId);
-  }
+
+  // Temporarily commented out to prevent promise reuse on duplicate requests,
+  // which causes data inconsistency
+
+  // if (StudyMetaDataPromises.has(promiseId)) {
+  //   return StudyMetaDataPromises.get(promiseId);
+  // }
 
   let promise;
 

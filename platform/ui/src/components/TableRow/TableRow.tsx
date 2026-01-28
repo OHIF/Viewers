@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const TableRow = ({ children, className = '', isTableHead = false, style = {} }) => {
+const TableRow = ({ children, className = '', isTableHead = false, style = {}, onClick }) => {
   const childrens = React.Children.map(children, child => {
     const isValidReactElement = React.isValidElement(child);
 
@@ -15,6 +15,7 @@ const TableRow = ({ children, className = '', isTableHead = false, style = {} })
     <div
       className={classnames('flex w-full', className)}
       style={style}
+      onClick={onClick}
     >
       {childrens}
     </div>
@@ -43,6 +44,7 @@ TableRow.propTypes = {
   },
   className: PropTypes.string,
   style: PropTypes.object,
+  onClick: PropTypes.func
 };
 
 export default TableRow;
