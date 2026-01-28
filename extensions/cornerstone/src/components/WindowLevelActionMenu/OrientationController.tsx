@@ -204,8 +204,8 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
         <Numeric.Container
           mode="singleRange"
           min={0.02}
-          max={0.15}
-          step={0.01}
+          max={0.04}
+          step={0.005}
           value={size}
           onChange={onSizeChange}
         >
