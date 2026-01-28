@@ -396,6 +396,21 @@ class ViewerManager extends PubSubService {
     }
   }
 
+  /**
+   * Toggles the visibility of a specific ROI.
+   *
+   * @param {string} uid - Unique identifier of the ROI
+   * @param {Object} roiGraphic - ROI graphic object to re-add if making visible
+   * @param {boolean} isVisible - Whether the ROI should be visible or hidden
+   */
+  toggleROIVisibility(uid, roiGraphic, isVisible) {
+    if (isVisible) {
+      this.runSilently(() => this.viewer.addROI(roiGraphic, styles.default));
+    } else {
+      this.runSilently(() => this.viewer.removeROI(uid));
+    }
+  }
+
   _jumpToPoint(coord) {
     const pyramid = this.viewer[this._pyramid].metadata;
 

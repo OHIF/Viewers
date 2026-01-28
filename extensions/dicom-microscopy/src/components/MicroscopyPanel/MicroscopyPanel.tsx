@@ -275,6 +275,14 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
   };
 
   /**
+   * Handler for toggling visibility of an annotation item
+   * @param param0
+   */
+  const onMeasurementItemToggleVisibilityHandler = ({ uid }: { uid: string }) => {
+    props.commandsManager.runCommand('toggleMeasurementVisibility', { uid }, 'MICROSCOPY');
+  };
+
+  /**
    * Handler for "Edit" action of an annotation item
    * @param param0
    */
@@ -295,6 +303,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
     const length = roiAnnotation.getLength();
     const shortAxisLength = roiAnnotation.roiGraphic.properties.shortAxisLength;
     const isSelected: boolean = selectedAnnotation === roiAnnotation;
+    const isVisible = roiAnnotation.isVisible;
 
     // other events
     const { uid } = roiAnnotation;
@@ -318,6 +327,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       index,
       label,
       isActive: isSelected,
+      isVisible,
       displayText,
       roiAnnotation,
     };
@@ -341,8 +351,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
                 primary: item.displayText,
                 secondary: [],
               }}
-              isVisible={true}
-              onToggleVisibility={() => {}}
+              isVisible={item.isVisible}
+              onToggleVisibility={() => onMeasurementItemToggleVisibilityHandler({ uid: item.uid })}
               isLocked={false}
               onToggleLocked={() => {}}
               onRename={() =>
