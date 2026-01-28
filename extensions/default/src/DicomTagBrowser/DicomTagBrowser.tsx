@@ -126,7 +126,7 @@ const DicomTagBrowser = ({
   return (
     <div className="dicom-tag-browser-content bg-muted">
       <div className="mb-6 flex flex-row items-start pl-1">
-        <div className="flex w-full flex-row items-start gap-4">
+        <div className="flex w-full flex-row items-start gap-6">
           <div className="flex w-1/3 flex-col">
             <span className="text-muted-foreground flex h-6 items-center pb-2 text-base">
               Series
@@ -167,7 +167,7 @@ const DicomTagBrowser = ({
                 min={1}
                 max={activeDisplaySet?.images?.length}
                 step={1}
-                className="pt-4"
+                className="pt-3"
               />
             </div>
           )}
