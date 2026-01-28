@@ -26,8 +26,12 @@ export const sideChat = {
   chat: '@semenoflabs/extension-side-chat.panelModule.sideChat',
 };
 
-// Define the right panels array with both segmentation and chat
-const rightPanelsArray = [cornerstone.segmentation, sideChat.chat];
+export const defaultExtension = {
+  medBook: '@ohif/extension-default.panelModule.panelMedBook',
+};
+
+// Define the right panels array with segmentation, medbook, and chat
+const rightPanelsArray = [cornerstone.segmentation, defaultExtension.medBook, sideChat.chat];
 console.log('[Longitudinal] Setting up rightPanels:', rightPanelsArray);
 
 export const longitudinalLayout = {

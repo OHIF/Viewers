@@ -20,6 +20,10 @@ const sideChat = {
   chat: '@semenoflabs/extension-side-chat.panelModule.sideChat',
 };
 
+const defaultExtension = {
+  medBook: '@ohif/extension-default.panelModule.panelMedBook',
+};
+
 const segmentation = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
@@ -198,7 +202,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool, sideChat.chat],
+              rightPanels: [cornerstone.panelTool, defaultExtension.medBook, sideChat.chat],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [
