@@ -205,7 +205,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         const url = `${hubEndpoint}/cast-get?subscriber=3DSLICER&dataType=SCENEVIEW`;
         fetch(url)
           .then(res => res.json())
-          .then(data => console.log('GET SCENEVIEW response:', data))
+          .then(data => {
+            console.log('GET SCENEVIEW response:', data);
+            servicesManager.services.castService?.applySceneView?.(data);
+          })
           .catch(err => console.warn('GET SCENEVIEW failed:', err));
       },
     },

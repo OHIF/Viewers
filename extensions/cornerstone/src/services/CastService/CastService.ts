@@ -21,7 +21,7 @@ import createMeasurementUpdate from './utils/createMeasurementUpdate';
 import createAnnotationUpdate from './utils/createAnnotationUpdate';
 import createImagingStudyOpen from './utils/createImagingStudyOpen';
 import createImagingStudyClose from './utils/createImagingStudyClose';
-
+import { applySceneViewToViewports } from './utils/applySceneViewToViewports';
 
 export default class CastService extends PubSubService {
   private _extensionManager: ExtensionManager;
@@ -357,6 +357,14 @@ export default class CastService extends PubSubService {
     this.hub.topic = topic;
   //  this.hub.subscriberName = 'OHIF-'+ Math.random().toString(36).substring(2, 5);
   }
+
+  /**
+   * Applies sceneview camera/slice poses from a cast-get SCENEVIEW response to current viewports.
+   */
+  public applySceneView(sceneViewData: Parameters<typeof applySceneViewToViewports>[1]): void {
+    applySceneViewToViewports(this._servicesManager, sceneViewData);
+  }
+
   public setConferenceApproved(request: boolean) {}
 
   public async getToken() {
