@@ -87,15 +87,28 @@ export function applySceneViewToViewports(
       const posRas = parseTriple(sv.camera.position);
       const focRas = parseTriple(sv.camera.focalPoint);
       const upRas = parseTriple(sv.camera.viewUp);
+      const fovRas = parseTriple((sv as { fieldOfView?: string }).fieldOfView);
       if (posRas && focRas && upRas) {
         const position = rasToLps(posRas);
         const focalPoint = rasToLps(focRas);
         const viewUp = rasToLps(upRas);
+        const cameraOpts: {
+          position: [number, number, number];
+          focalPoint: [number, number, number];
+          viewUp: [number, number, number];
+          parallelScale?: number;
+        } = { position, focalPoint, viewUp };
+        if (fovRas) {
+          const fovY = fovRas[1];
+          if (!Number.isNaN(fovY) && fovY > 0) {
+            cameraOpts.parallelScale = fovY / 2;
+          }
+        }
         console.debug(LOG_PREFIX, 'View ->', entry.viewportId, {
-          ras: { position: posRas, focalPoint: focRas, viewUp: upRas },
-          lps: { position, focalPoint, viewUp },
+          ras: { position: posRas, focalPoint: focRas, viewUp: upRas, fieldOfView: fovRas },
+          lps: { position, focalPoint, viewUp, parallelScale: cameraOpts.parallelScale },
         });
-        entry.csViewport.setCamera({ position, focalPoint, viewUp });
+        entry.csViewport.setCamera(cameraOpts);
         entry.csViewport.render();
       }
       continue;
