@@ -96,17 +96,22 @@ export function applySceneViewToViewports(
           position: [number, number, number];
           focalPoint: [number, number, number];
           viewUp: [number, number, number];
-          parallelScale?: number;
+          viewAngle?: number;
         } = { position, focalPoint, viewUp };
         if (fovRas) {
           const fovY = fovRas[1];
-          if (!Number.isNaN(fovY) && fovY > 0) {
-            cameraOpts.parallelScale = fovY / 2;
+          const dx = position[0] - focalPoint[0];
+          const dy = position[1] - focalPoint[1];
+          const dz = position[2] - focalPoint[2];
+          const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          if (!Number.isNaN(fovY) && fovY > 0 && distance > 0) {
+            const angleRad = 2 * Math.atan((fovY / 2) / distance);
+            cameraOpts.viewAngle = (angleRad * 180) / Math.PI;
           }
         }
         console.debug(LOG_PREFIX, 'View ->', entry.viewportId, {
           ras: { position: posRas, focalPoint: focRas, viewUp: upRas, fieldOfView: fovRas },
-          lps: { position, focalPoint, viewUp, parallelScale: cameraOpts.parallelScale },
+          lps: { position, focalPoint, viewUp, viewAngle: cameraOpts.viewAngle },
         });
         entry.csViewport.setCamera(cameraOpts);
         entry.csViewport.render();
