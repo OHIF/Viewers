@@ -12,7 +12,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   const [colorScheme, setColorScheme] = useState<'marker' | 'gray' | 'rgb'>('gray');
   const [letterColorScheme, setLetterColorScheme] = useState<'white' | 'mixed' | 'black'>('mixed');
   const [keepOrientationUp, setKeepOrientationUp] = useState(true);
-  const [opacity, setOpacity] = useState(1.0);
+  const [size, setSize] = useState(0.04);
   const toolGroupId = 'volume3d';
 
   useEffect(() => {
@@ -52,8 +52,8 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
       if (config.keepOrientationUp !== undefined) {
         setKeepOrientationUp(config.keepOrientationUp);
       }
-      if (config.opacity !== undefined) {
-        setOpacity(config.opacity);
+      if (config.size !== undefined) {
+        setSize(config.size);
       }
     };
 
@@ -75,7 +75,12 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   );
 
   const updateConfiguration = useCallback(
-    (updates: { colorScheme?: string; letterColorScheme?: string; keepOrientationUp?: boolean; opacity?: number }) => {
+    (updates: {
+      colorScheme?: string;
+      letterColorScheme?: string;
+      keepOrientationUp?: boolean;
+      size?: number;
+    }) => {
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
       if (!toolGroup || !toolGroup.hasTool('OrientationControllerTool')) {
         return;
@@ -120,10 +125,10 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
     [updateConfiguration]
   );
 
-  const onOpacityChange = useCallback(
+  const onSizeChange = useCallback(
     (value: number) => {
-      setOpacity(value);
-      updateConfiguration({ opacity: value });
+      setSize(value);
+      updateConfiguration({ size: value });
     },
     [updateConfiguration]
   );
@@ -198,14 +203,14 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
       <div className="w-full pl-2 pr-1">
         <Numeric.Container
           mode="singleRange"
-          min={0}
-          max={1}
-          step={0.01}
-          value={opacity}
-          onChange={onOpacityChange}
+          min={0.02}
+          max={0.04}
+          step={0.005}
+          value={size}
+          onChange={onSizeChange}
         >
           <div className="flex flex-row items-center">
-            <Numeric.Label className="w-16">{t('Opacity')}</Numeric.Label>
+            <Numeric.Label className="w-16">{t('Size')}</Numeric.Label>
             <Numeric.SingleRange sliderClassName="mx-2 flex-grow" />
           </div>
         </Numeric.Container>
