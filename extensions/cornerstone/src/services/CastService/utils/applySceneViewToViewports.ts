@@ -107,12 +107,18 @@ export function applySceneViewToViewports(
       if (!parsed.position || !parsed.focalPoint || !parsed.viewUp || !parsed.normal) {
         continue;
       }
-      let entry = displayed.find(e => e.effectiveOrientation === svOr);
+
+      // For slice sceneviews, only match against 2D/orthographic viewports (exclude 3D volume).
+      const sliceCandidates = displayed.filter(e => {
+        const type = (e.csViewport.type as string)?.toLowerCase();
+        return type !== 'volume3d';
+      });
+
+      let entry = sliceCandidates.find(e => e.effectiveOrientation === svOr);
       if (!entry && parsed.normal) {
         const normalLps = rasToLps(parsed.normal);
-        const slice2D = displayed.filter(e => e.csViewport.type !== 'VOLUME_3D');
         let best: { entry: ViewportEntry; dot: number } | null = null;
-        for (const e of slice2D) {
+        for (const e of sliceCandidates) {
           const cam = (e.csViewport as { getCamera?: () => { viewPlaneNormal?: number[] } }).getCamera?.();
           const vpn = cam?.viewPlaneNormal as [number, number, number] | undefined;
           if (!vpn || vpn.length < 3) continue;
@@ -141,8 +147,10 @@ export function applySceneViewToViewports(
         lps: { position, focalPoint, viewUp },
       });
       entry.csViewport.setCamera(cameraOpts);
-      // Sagittal ends up mirrored left-right vs 3D Slicer. setCamera applies flip before pose when both are in one call, so apply a horizontal flip in a second call so it uses the pose we just set.
-      if (svOr === 'sagittal') {
+      // Sagittal and coronal end up mirrored left-right vs 3D Slicer. setCamera applies flip
+      // before pose when both are in one call, so apply a horizontal flip in a second call so it
+      // uses the pose we just set.
+      if (svOr === 'sagittal' || svOr === 'coronal') {
         entry.csViewport.setCamera({ flipHorizontal: true });
       }
       entry.csViewport.render();
