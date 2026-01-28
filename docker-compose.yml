@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  ohif-viewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    restart: always
