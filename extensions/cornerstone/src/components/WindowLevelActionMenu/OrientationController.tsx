@@ -9,7 +9,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   const { servicesManager, commandsManager } = useSystem();
   const { toolGroupService } = servicesManager.services;
   const [isEnabled, setIsEnabled] = useState(false);
-  const [colorScheme, setColorScheme] = useState<'marker' | 'gray' | 'rgb'>('gray');
+  const [colorScheme, setColorScheme] = useState<'marker' | 'gray' | 'rgy'>('gray');
   const [letterColorScheme, setLetterColorScheme] = useState<'white' | 'mixed' | 'black'>('mixed');
   const [keepOrientationUp, setKeepOrientationUp] = useState(true);
   const [size, setSize] = useState(0.04);
@@ -36,9 +36,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
         // Map old values to new values for backward compatibility
         const letterScheme = config.letterColorScheme;
         let mappedScheme: 'white' | 'mixed' | 'black';
-        if (letterScheme === 'rgb') {
-          mappedScheme = 'mixed';
-        } else if (letterScheme === 'all-white') {
+        if (letterScheme === 'all-white') {
           mappedScheme = 'white';
         } else if (letterScheme === 'all-black') {
           mappedScheme = 'black';
@@ -102,7 +100,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
   );
 
   const onColorSchemeChange = useCallback(
-    (scheme: 'marker' | 'gray' | 'rgb') => {
+    (scheme: 'marker' | 'gray' | 'rgy') => {
       setColorScheme(scheme);
       updateConfiguration({ colorScheme: scheme });
     },
@@ -162,7 +160,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
       <div className="px-2 mb-2">
         <Select
           value={colorScheme}
-          onValueChange={(value: 'marker' | 'gray' | 'rgb') => onColorSchemeChange(value)}
+          onValueChange={(value: 'marker' | 'gray' | 'rgy') => onColorSchemeChange(value)}
         >
           <SelectTrigger className="w-full">
             <SelectValue />
@@ -170,7 +168,7 @@ export function OrientationController({ viewportId }: { viewportId?: string }): 
           <SelectContent>
             <SelectItem value="marker">{t('Marker')}</SelectItem>
             <SelectItem value="gray">{t('Gray')}</SelectItem>
-            <SelectItem value="rgb">{t('RGB')}</SelectItem>
+            <SelectItem value="rgy">{t('RGY')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
