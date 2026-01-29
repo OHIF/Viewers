@@ -7,7 +7,11 @@ services:
         max-size: '10m'
     ports:
       - '389:389'
-    env_file: docker-compose.env
+    environment:
+      - STORAGE_DIR=/storage/fs1
+      - POSTGRES_DB=pacsdb
+      - POSTGRES_USER=pacs
+      - POSTGRES_PASSWORD=pacs
     volumes:
       - ./dcm4chee-arc/ldap:/var/lib/ldap
       - ./dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
@@ -18,9 +22,11 @@ services:
       driver: json-file
       options:
         max-size: '10m'
-    ports:
-      - '5432:5432'
-    env_file: docker-compose.env
+    environment:
+      - STORAGE_DIR=/storage/fs1
+      - POSTGRES_DB=pacsdb
+      - POSTGRES_USER=pacs
+      - POSTGRES_PASSWORD=pacs
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -41,8 +47,11 @@ services:
       - '2762:2762'
       - '2575:2575'
       - '12575:12575'
-    env_file: docker-compose.env
     environment:
+      STORAGE_DIR: /storage/fs1
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
       WILDFLY_WAIT_FOR: ldap:389 db:5432
     depends_on:
@@ -61,7 +70,6 @@ services:
     image: webapp:latest
     container_name: webapp
     ports:
-      - '443:443' # SSL
       - '80:80' # Web
     depends_on:
       keycloak:
@@ -76,8 +84,6 @@ services:
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy/oauth2-proxy.cfg
-      - ./config/letsencrypt:/etc/letsencrypt
-      - ./config/certbot:/var/www/certbot
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
@@ -142,15 +148,6 @@ services:
     restart: unless-stopped
     networks:
       - default
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./config/letsencrypt:/etc/letsencrypt
-      - ./config/certbot:/var/www/certbot
-    entrypoint:
-      /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
 
 volumes:
   postgres_data:

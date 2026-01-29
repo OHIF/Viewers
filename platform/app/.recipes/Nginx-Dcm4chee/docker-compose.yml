@@ -7,7 +7,11 @@ services:
         max-size: '10m'
     ports:
       - '389:389'
-    env_file: docker-compose.env
+    environment:
+      - STORAGE_DIR=/storage/fs1
+      - POSTGRES_DB=pacsdb
+      - POSTGRES_USER=pacs
+      - POSTGRES_PASSWORD=pacs
     volumes:
       - ./dcm4chee-arc/ldap:/var/lib/ldap
       - ./dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
@@ -17,9 +21,11 @@ services:
       driver: json-file
       options:
         max-size: '10m'
-    ports:
-      - '5432:5432'
-    env_file: docker-compose.env
+    environment:
+      - STORAGE_DIR=/storage/fs1
+      - POSTGRES_DB=pacsdb
+      - POSTGRES_USER=pacs
+      - POSTGRES_PASSWORD=pacs
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -39,8 +45,11 @@ services:
       - '2762:2762'
       - '2575:2575'
       - '12575:12575'
-    env_file: docker-compose.env
     environment:
+      STORAGE_DIR: /storage/fs1
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
       WILDFLY_WAIT_FOR: ldap:389 db:5432
     depends_on:
