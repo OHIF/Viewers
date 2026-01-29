@@ -41,28 +41,10 @@ function CastSubscriberInfo({ servicesManager }: { servicesManager: AppTypes.Ser
       }
     };
 
-    // Initial update
     updateCastInfo();
-
-    // Subscribe to hub events to update when subscription changes
-    const { HUB_SUBSCRIBED, HUB_UNSUBSCRIBED } = castService.EVENTS;
-    const { unsubscribe: unsubscribeSubscribed } = castService.subscribe(
-      HUB_SUBSCRIBED,
-      updateCastInfo
-    );
-    const { unsubscribe: unsubscribeUnsubscribed } = castService.subscribe(
-      HUB_UNSUBSCRIBED,
-      updateCastInfo
-    );
-
-    // Poll for changes (in case events don't fire)
     const interval = setInterval(updateCastInfo, 2000);
 
-    return () => {
-      unsubscribeSubscribed();
-      unsubscribeUnsubscribed();
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [servicesManager]);
 
   if (!castInfo || !castInfo.subscribed) {

@@ -1,26 +1,19 @@
 /*
 CastService
 
-  public async castPublish(castMessage) -returns response.status
-
-  processEvent
-
+  public async castPublish(castMessage) - returns response.status
   public async getToken()
   public async castSubscribe()
   public async castUnsubscribe()
-
-  public setHub(hubName: string) : boolean
-  public getHub() : returns the hub object if set.
+  public setHub(hubName: string): boolean
+  public getHub(): hub object
   public setTopic(topic: string)
-  public getTopic(topic: string) :string
-
+  public applySceneView(sceneViewData)
 */
 import { PubSubService, ServicesManager, CommandsManager, ExtensionManager, DicomMetadataStore } from '@ohif/core';
 import { ConferenceModal } from './conferenceModal';
 import createMeasurementUpdate from './utils/createMeasurementUpdate';
 import createAnnotationUpdate from './utils/createAnnotationUpdate';
-import createImagingStudyOpen from './utils/createImagingStudyOpen';
-import createImagingStudyClose from './utils/createImagingStudyClose';
 import { applySceneViewToViewports } from './utils/applySceneViewToViewports';
 
 export default class CastService extends PubSubService {
@@ -331,11 +324,6 @@ export default class CastService extends PubSubService {
     return this.hub;
   }
 
-  public getTopic(topic: string): string {
-    console.debug('CastService: getTopic called.');
-    return this.hub.topic;
-  }
-
   public setTopic(topic: string) {
     console.debug('CastService: setting topic to ' + topic);
     this.hub.topic = topic;
@@ -348,8 +336,6 @@ export default class CastService extends PubSubService {
   public applySceneView(sceneViewData: Parameters<typeof applySceneViewToViewports>[1]): void {
     applySceneViewToViewports(this._servicesManager, sceneViewData);
   }
-
-  public setConferenceApproved(request: boolean) {}
 
   public async getToken() {
     console.log('CastService: Getting token from:', this.hub.token_endpoint);
@@ -1213,60 +1199,6 @@ export default class CastService extends PubSubService {
       console.debug('CastService: Successfully created annotation directly:', annotationObj.annotationUID);
     } catch (error) {
       console.warn('CastService: Failed to create annotation directly:', error);
-    }
-  }
-
-  /**
-   * Helper function to publish imagingstudy-open event
-   * @param {string} studyInstanceUID - The DICOM Study Instance UID
-   */
-  public publishImagingStudyOpen(studyInstanceUID: string) {
-    try {
-      if (!this.hub || !this.hub.subscribed || !this.hub.name) {
-        console.debug('CastService: Hub not configured or not subscribed, skipping imagingstudy-open');
-        return;
-      }
-
-      // Create the cast message
-      const castMessage = createImagingStudyOpen(studyInstanceUID);
-      if (!castMessage) {
-        console.warn('CastService: Failed to create imagingstudy-open message for study:', studyInstanceUID);
-        return;
-      }
-
-      console.debug('CastService: Publishing imagingstudy-open for study:', studyInstanceUID);
-      this.castPublish(castMessage, this.hub).catch(err => {
-        console.warn('CastService: Failed to publish imagingstudy-open event:', err);
-      });
-    } catch (error) {
-      console.warn('CastService: Error publishing imagingstudy-open event:', error);
-    }
-  }
-
-  /**
-   * Helper function to publish imagingstudy-close event
-   * @param {string} studyInstanceUID - The DICOM Study Instance UID
-   */
-  public publishImagingStudyClose(studyInstanceUID: string) {
-    try {
-      if (!this.hub || !this.hub.subscribed || !this.hub.name) {
-        console.debug('CastService: Hub not configured or not subscribed, skipping imagingstudy-close');
-        return;
-      }
-
-      // Create the cast message
-      const castMessage = createImagingStudyClose(studyInstanceUID);
-      if (!castMessage) {
-        console.warn('CastService: Failed to create imagingstudy-close message for study:', studyInstanceUID);
-        return;
-      }
-
-      console.debug('CastService: Publishing imagingstudy-close for study:', studyInstanceUID);
-      this.castPublish(castMessage, this.hub).catch(err => {
-        console.warn('CastService: Failed to publish imagingstudy-close event:', err);
-      });
-    } catch (error) {
-      console.warn('CastService: Error publishing imagingstudy-close event:', error);
     }
   }
 }

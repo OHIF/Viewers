@@ -6,24 +6,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {
-    'viewportOverlay.topRight': [
-      {
-        id: 'WindowLevel',
-        inheritsFrom: 'ohif.overlayItem.windowLevel',
-      },
-    ],
-    'viewportOverlay.bottomLeft': [
-      {
-        id: 'ZoomLevel',
-        inheritsFrom: 'ohif.overlayItem.zoomLevel',
-        condition: props => {
-          const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
-          return activeToolName === 'Zoom';
-        },
-      },
-    ],
-  },
+
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -44,9 +27,10 @@ window.config = {
   },
   showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
+  measurementTrackingMode: 'simplified',
 
   cast: {
-    defaultHub: 'SLICER-HUB-CLOUD',
+    defaultHub: 'SLICER-HUB',
     autoStart: true,
     autoReconnect: true,
     hubs: [
@@ -56,7 +40,7 @@ window.config = {
         productName: 'SLICER-HUB',
         client_id: '130c3d9c-4157-4dd1-aa1d-slicer',
         client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
-        enabled: true,
+        enabled: false,
         events: ['imagingstudy-open', 'imagingstudy-close', 'annotation-update'],
         lease: 999,
         hub_endpoint: 'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub',
@@ -71,32 +55,12 @@ window.config = {
         productName: 'SLICER-HUB',
         client_id: '130c3d9c-4157-4dd1-aa1d-slicer',
         client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
-        enabled: false,
+        enabled: true,
         events: ['imagingstudy-open', 'imagingstudy-close', 'annotation-update'],
         lease: 999,
         hub_endpoint: 'http://localhost:2017/api/hub',
         authorization_endpoint: 'http://localhost:2017/oauth/authorize',
         token_endpoint: 'http://localhost:2017/oauth/token',
-      },
-      {
-        name: 'RAD-AI',
-        friendlyName: 'RAD-AI hub',
-        productName: 'RAD-AI',
-        client_id: '130c3d9c-4157-4dd1-aa1d-d348512eddef',
-        client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
-        enabled: false,
-        events: [
-          'imagingstudy-open',
-          'imagingstudy-close',
-          'diagnosticreport-open',
-          'diagnosticreport-close',
-          'diagnosticreport-select',
-          'diagnosticreport-update',
-        ],
-        lease: 999,
-        hub_endpoint: 'https://api.medplum.staging.radai.com/fhircast/STU3',
-        authorization_endpoint: 'http://localhost:5000/oauth/authorize',
-        token_endpoint: 'https://api.medplum.staging.radai.com/oauth2/token',
       },
     ],
   },
@@ -162,7 +126,7 @@ window.config = {
       ],
     },
   ],
-  defaultDataSourceName: 'ohif',
+  defaultDataSourceName: 'local5000',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -350,6 +314,18 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
+
+  customizationService: [
+    {
+      'viewportOverlay.topRight': {
+        $set: [
+          { id: 'WindowLevel', inheritsFrom: 'ohif.overlayItem.windowLevel' },
+          { id: 'ZoomLevel', inheritsFrom: 'ohif.overlayItem.zoomLevel' },
+        ],
+      },
+    },
+  ],
+
   // segmentation: {
   //   segmentLabel: {
   //     enabledByDefault: true,
@@ -375,4 +351,5 @@ window.config = {
   //     );
   //   },
   // },
+  investigationalUseDialog: { option: 'never' },
 };
