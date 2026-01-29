@@ -4,41 +4,41 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "389:389"
+      - '389:389'
     env_file: docker-compose.env
     volumes:
-      - ~/dcm4chee-arc/ldap:/var/lib/ldap
-      - ~/dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
+      - ./dcm4chee-arc/ldap:/var/lib/ldap
+      - ./dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
   db:
     image: dcm4che/postgres-dcm4chee:14.5-29
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "5432:5432"
+      - '5432:5432'
     env_file: docker-compose.env
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ~/dcm4chee-arc/db:/var/lib/postgresql/data
+      - ./dcm4chee-arc/db:/var/lib/postgresql/data
   arc:
     image: dcm4che/dcm4chee-arc-psql:5.29.0
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "8080:8080"
-      - "8443:8443"
-      - "9990:9990"
-      - "9993:9993"
-      - "11112:11112"
-      - "2762:2762"
-      - "2575:2575"
-      - "12575:12575"
+      - '8080:8080'
+      - '8443:8443'
+      - '9990:9990'
+      - '9993:9993'
+      - '11112:11112'
+      - '2762:2762'
+      - '2575:2575'
+      - '12575:12575'
     env_file: docker-compose.env
     environment:
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
@@ -49,8 +49,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ~/dcm4chee-arc/wildfly:/opt/wildfly/standalone
-      - ~/dcm4chee-arc/storage:/storage
+      - ./dcm4chee-arc/wildfly:/opt/wildfly/standalone
+      - ./dcm4chee-arc/storage:/storage
   ohif_viewer:
     build:
       # Project root
