@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@ui/*": ["./src/*"],
       "@ohif/core": ["../core/src"],
