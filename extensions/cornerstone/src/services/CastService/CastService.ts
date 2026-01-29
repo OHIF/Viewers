@@ -37,17 +37,6 @@ export default class CastService extends PubSubService {
   private _lastAnnotationStates: Map<string, any> = new Map(); // Track last published annotation state
   private _lastAnnotationUpdateTimes: Map<string, number> = new Map(); // Track last annotation update publish time (timestamp in ms)
 
-  public static EVENTS = {
-    CAST_MESSAGE: 'event::castMessage',
-    HUB_SUBSCRIBED: 'event::hubSubscribed',
-    HUB_UNSUBSCRIBED: 'event::hubUnsubscribed',
-    WEBSOCKET_CLOSE: 'event::websocketClose',
-    TOKEN_ACQUIRED: 'event::tokenAcquired',
-    STUDY_CLOSE: 'event::studyClose',
-  };
-
-
-
   public static REGISTRATION = {
     name: 'castService',
     altName: 'CastService',
@@ -87,7 +76,7 @@ export default class CastService extends PubSubService {
   ) {
     console.debug('CastService: creating service ');
 
-    super(CastService.EVENTS);
+    super({});
     this._extensionManager = extensionManager;
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
@@ -141,11 +130,6 @@ export default class CastService extends PubSubService {
         this._lastMeasurementUpdateTimes.delete(measurement.uid);
         this._measurementsFromCast.delete(measurement.uid);
       }
-    });
-
-    // Subscribe to our own CAST_MESSAGE event to handle incoming messages
-    this.subscribe(CastService.EVENTS.CAST_MESSAGE, ({ castMessage }) => {
-      this._handleCastMessage(castMessage);
     });
 
     // Subscribe to Cornerstone Tools annotation events directly
@@ -409,7 +393,6 @@ export default class CastService extends PubSubService {
         if (config.access_token) {
           console.log('CastService: Token received successfully (length:', config.access_token.length, ')');
           this.hub.token = config.access_token;
-          this._broadcastEvent(CastService.EVENTS.TOKEN_ACQUIRED, {});
         } else {
           console.warn('CastService: Token response missing access_token:', config);
         }
@@ -462,7 +445,6 @@ export default class CastService extends PubSubService {
       if (response.status == 202) {
         const subscriptionResponse = await response.json();
         console.debug('CastService: Unsubscribe successfully from hub ' + this.hub.name);
-        this._broadcastEvent(CastService.EVENTS.HUB_UNSUBSCRIBED, {});
       } else {
         console.debug('CastService: Unsubscribe refused by the hub. ');
       }
@@ -495,7 +477,7 @@ export default class CastService extends PubSubService {
         } else if (castMessage.event) {
 
           console.debug('CastService: websocket received data: ', castMessage);
-          this._broadcastEvent(CastService.EVENTS.CAST_MESSAGE, {castMessage});
+          this._handleCastMessage(castMessage);
 
           // // Check if the topic is different.  This means we are entering a conference
           // if (castMessage.event['hub.topic'].toLowerCase() !== this.hub.topic.toLowerCase()) {
@@ -524,7 +506,6 @@ export default class CastService extends PubSubService {
   private websocketClose() {
     console.debug('CastService: websocket is closed.');
     this.hub.resubscribeRequested = true;
-    this._broadcastEvent(CastService.EVENTS.WEBSOCKET_CLOSE, {});
   }
 
   public async castSubscribe() {
@@ -608,8 +589,6 @@ export default class CastService extends PubSubService {
         this.hub.websocket.onerror = function () {
           console.warn('CastService: Error reported on websocket:');
         };
-
-        this._broadcastEvent(CastService.EVENTS.HUB_SUBSCRIBED, {});
       } else if (response.status == 401) {
         console.warn('CastService: Subscription response 401 - Token refresh needed.');
         this.getToken();
@@ -631,7 +610,6 @@ export default class CastService extends PubSubService {
     castMessage.id = 'OHIF-' + Math.random().toString(36).substring(2, 16);
     // Set on the hub parameter to ensure echo detection works correctly
     hub.lastPublishedMessageID = castMessage.id; // to filter event echo from the hub
-    //castMessage.event['hub.topic'] = this.hub.topic;
     castMessage.event['hub.topic'] = hub.topic;
     const message = JSON.stringify(castMessage);
     const requestOptions = {
@@ -658,15 +636,6 @@ export default class CastService extends PubSubService {
   private _handleCastMessage(castMessage: any) {
     console.log('CastService: cast message received :', castMessage);
 
-    // Handle get-request messages (FHIRcast format)
-    console.log('CastService: Checking get-request conditions:', {
-      hasEvent: !!castMessage.event,
-      hubEvent: castMessage.event?.['hub.event'],
-      isGetRequest: castMessage.event?.['hub.event'] === 'get-request',
-      context: castMessage.event?.context,
-      dataType: castMessage.event?.context?.dataType,
-      isSCENEVIEW: castMessage.event?.context?.dataType === 'SCENEVIEW'
-    });
 
     if (castMessage.event && castMessage.event['hub.event'] === 'get-request') {
       const context = castMessage.event.context;
