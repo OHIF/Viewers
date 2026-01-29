@@ -9,3 +9,4 @@ export * from './VolumeRenderingQuality';
 export * from './VolumeLighting';
 export * from './VolumeShade';
 export * from './VolumeShift';
+export * from './OrientationController';

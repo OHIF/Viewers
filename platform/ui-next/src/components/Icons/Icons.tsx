@@ -76,6 +76,7 @@ import Alert from './Sources/Alert';
 import AlertOutline from './Sources/AlertOutline';
 import Clipboard from './Sources/Clipboard';
 import Checked from './Sources/Checked';
+import Conferencing from './Sources/Conferencing';
 import OrientationSwitch from './Sources/OrientationSwitch';
 import OrientationSwitchA from './Sources/OrientationSwitchA';
 import OrientationSwitchS from './Sources/OrientationSwitchS';
@@ -219,6 +220,7 @@ import MRDefault from '../../../assets/images/MR-Default.png';
 import MRMIP from '../../../assets/images/MR-MIP.png';
 import MRT2Brain from '../../../assets/images/MR-T2-Brain.png';
 import VolumeRendering from '../../../assets/images/VolumeRendering.png';
+import ThreeDSlicerImg from '../../../assets/images/3dslicer.png';
 import ExternalLink from './Sources/ExternalLink';
 import OHIFLogoColorDarkBackground from './Sources/OHIFLogoColorDarkBackground';
 import Magnifier from './Sources/Magnifier';
@@ -410,6 +412,13 @@ export const Icons = {
       {...props}
     />
   ),
+  '3dslicer': (props: ImageIconProps) => (
+    <ImageWrapper
+      src={ThreeDSlicerImg}
+      {...props}
+    />
+  ),
+  conferencing: (props: IconProps) => Conferencing(props),
   // Icons
   LayerBackground,
   LayerForeground,

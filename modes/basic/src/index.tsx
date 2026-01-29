@@ -239,7 +239,7 @@ export const toolbarSections = {
     'navigationComponent',
   ],
 
-  [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],
+  [TOOLBAR_SECTIONS.viewportActionMenu.topRight]: ['windowLevelMenu'],
 
   MeasurementTools: [
     'Length',
