@@ -1757,10 +1757,21 @@ function commandsModule({
      */
     removeSegmentationFromViewportCommand: ({ segmentationId }) => {
       const { segmentationService, viewportGridService } = servicesManager.services;
-      segmentationService.removeSegmentationRepresentations(
-        viewportGridService.getActiveViewportId(),
-        { segmentationId }
-      );
+
+      const seg = segmentationService.getSegmentation(segmentationId);
+      if (seg && seg.predecessorImageId === undefined) {
+        // Only remove segmentation without deleting display set
+        segmentationService.removeSegmentationRepresentations(
+          viewportGridService.getActiveViewportId(),
+          { segmentationId }
+        );
+      } else {
+        const viewportId = viewportGridService.getActiveViewportId();
+        commandsManager.runCommand('removeDisplaySetLayer', {
+          viewportId,
+          displaySetInstanceUID: segmentationId,
+        });
+      }
     },
 
     /**
