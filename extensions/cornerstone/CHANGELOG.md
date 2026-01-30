@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.130...v3.12.0-beta.131) (2026-01-30)
+
+
+### Bug Fixes
+
+* **segmentation:** Use jumpToSegmentNext instead of jumpToSegmentCenter for arrow navigation. ([#5759](https://github.com/OHIF/Viewers/issues/5759)) ([02423c5](https://github.com/OHIF/Viewers/commit/02423c5bf3131006df92c8054994887d1811d821))
+
+
+
+
+
 # [3.12.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.129...v3.12.0-beta.130) (2026-01-28)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
