@@ -1,7 +1,6 @@
 import { DicomMetadataStore, log, utils, Enums } from '@ohif/core';
 import getStudies from './studiesList';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
-import { history } from '../../utils/history';
 
 const { seriesSortCriteria, getSplitParam } = utils;
 
@@ -26,7 +25,6 @@ export async function defaultRouteInit(
 ) {
   const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
     servicesManager.services;
-
   /**
    * Function to apply the hanging protocol when the minimum number of display sets were
    * received or all display sets retrieval were completed

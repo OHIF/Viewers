@@ -133,6 +133,10 @@ export default function ModeRoute({
     };
   }, [location, ExtensionDependenciesLoaded]);
 
+  /**
+   * Validates study existence before loading the viewer.
+   * Moved from PanelStudyBrowser.tsx to ensure validation runs in all modes
+   */
   useEffect(() => {
     if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length || !dataSource) {
       return;
