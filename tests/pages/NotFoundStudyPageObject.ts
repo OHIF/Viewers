@@ -8,9 +8,11 @@ export class NotFoundStudyPageObject {
   }
 
   get errorMessage(): Locator {
-    return this.page.getByText(
-      'One or more of the requested studies are not available at this time.'
-    );
+    return this.page.locator('[data-cy="study-not-found-message"]');
+  }
+
+  get returnMessage(): Locator {
+    return this.page.locator('[data-cy="return-to-study-list-message"]');
   }
 
   get studyListLink(): Locator {
