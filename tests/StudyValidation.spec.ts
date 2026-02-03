@@ -62,7 +62,7 @@ test.describe('Study Validation', () => {
       page,
       notFoundStudyPageObject,
     }) => {
-      await page.goto(`/${mode}/ohif?StudyInstanceUIDs=${invalidStudyUID},${validStudyUID}}`);
+      await page.goto(`/${mode}/ohif?StudyInstanceUIDs=${invalidStudyUID},${validStudyUID}`);
 
       await page.waitForURL('**/notfoundstudy', { timeout: 15000 });
 
