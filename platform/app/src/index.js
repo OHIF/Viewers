@@ -5,6 +5,8 @@ import 'regenerator-runtime/runtime';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';
+import AuthGate from '../auth/AuthGate';
+import LoginPage from '../loginPage';
 
 /**
  * EXTENSIONS AND MODES
@@ -37,7 +39,13 @@ loadDynamicConfig(window.config).then(config_json => {
   };
 
   const container = document.getElementById('root');
-
   const root = createRoot(container);
-  root.render(React.createElement(App, appProps));
+
+  if (window.location.pathname === '/login') {
+    root.render(React.createElement(LoginPage));
+  } else if (process.env.AUTH_GATE_ENABLED === 'true') {
+    root.render(React.createElement(AuthGate, null, React.createElement(App, appProps)));
+  } else {
+    root.render(React.createElement(App, appProps));
+  }
 });
