@@ -139,7 +139,7 @@
     "commander": "8.3.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
-    "dcmjs": "0.45.0",
+    "dcmjs": "0.48.0",
     "path-to-regexp": "0.1.12",
     "nth-check": "2.1.1",
     "trim-newlines": "5.0.0",

@@ -102,6 +102,8 @@ enum MeasurementChangeType {
 
 export type MeasurementFilter = (measurement) => boolean;
 
+const sourceMissing = new Set();
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -497,7 +499,10 @@ class MeasurementService extends PubSubService {
         mapping => mapping.annotationType === annotationType
       );
       if (!sourceMapping) {
-        console.log('No source mapping', source.uid, annotationType, source);
+        if (!sourceMissing.has(source.uid) ) {
+          console.log('No source mapping', source.uid, annotationType, source);
+          sourceMissing.add(source.uid);
+        }
         this.addUnmappedMeasurement(sourceAnnotationDetail, source);
         return;
       }
