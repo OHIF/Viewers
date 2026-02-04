@@ -1329,14 +1329,12 @@
   integrity sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w==
 
 "@cornerstonejs/core@4.15.24":
-  version "4.15.24"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-4.15.24.tgz#525af6afa610719ca7c100ad30563876b9ac6d59"
-  integrity sha512-FFCB46IO03Wy5sJqK0hxmFpI0bNDNGkujK0O3Ef9sKc7nQ+wyn7ZM2JicSuDAzKwCrdHFtaYAIfgdER4HefslA==
-  dependencies:
-    "@kitware/vtk.js" "34.15.1"
-    comlink "4.4.2"
-    gl-matrix "3.4.3"
-    loglevel "1.9.2"
+  version "0.0.0"
+  uid ""
+
+"@cornerstonejs/core@link:@cornerstonejs/core":
+  version "0.0.0"
+  uid ""
 
 "@cornerstonejs/dicom-image-loader@4.15.24":
   version "4.15.24"
@@ -1369,13 +1367,12 @@
     "@icr/polyseg-wasm" "0.4.0"
 
 "@cornerstonejs/tools@4.15.24":
-  version "4.15.24"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-4.15.24.tgz#6a194f8b56de49d922c26944a0d6f7f90dfcd0dc"
-  integrity sha512-1VD0KDq5atDNeWJajl8qjSDFze0SUYnxocrTOpExV0W7+xUroK4knLckguZ5YBQy2tRKS0lHZeTB7rJDx5i/oQ==
-  dependencies:
-    "@types/offscreencanvas" "2019.7.3"
-    comlink "4.4.2"
-    lodash.get "4.4.2"
+  version "0.0.0"
+  uid ""
+
+"@cornerstonejs/tools@link:@cornerstonejs/tools":
+  version "0.0.0"
+  uid ""
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
@@ -4065,11 +4062,6 @@
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
-
-"@types/offscreencanvas@2019.7.3":
-  version "2019.7.3"
-  resolved "https://registry.yarnpkg.com/@types/offscreencanvas/-/offscreencanvas-2019.7.3.tgz#90267db13f64d6e9ccb5ae3eac92786a7c77a516"
-  integrity sha512-ieXiYmgSRXUDeOntE1InxjWyvEelZGP63M+cGuquuRLuIKKT1osnkXjxev9B7d1nXSug5vpunx+gNlbVxMlC9A==
 
 "@types/parse-json@^4.0.0":
   version "4.0.2"
@@ -12284,7 +12276,7 @@ log-update@^4.0.0:
     slice-ansi "^4.0.0"
     wrap-ansi "^6.2.0"
 
-loglevel@1.9.2, loglevel@^1.8.1:
+loglevel@^1.8.1:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.9.2.tgz#c2e028d6c757720107df4e64508530db6621ba08"
   integrity sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==
