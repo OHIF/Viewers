@@ -28,7 +28,7 @@ describe('handleSegmentChange', () => {
   const defaultParameters = {
     direction: 1,
     segmentationId: 'test-segmentation-id',
-    viewportId: 'test-viewport-id',
+    viewportId: undefined,
     selectedSegmentObjectIndex: 0,
     // @ts-expect-error - only part of the SegmentationService is needed
     segmentationService: mockSegmentationService as AppTypes.SegmentationService,
