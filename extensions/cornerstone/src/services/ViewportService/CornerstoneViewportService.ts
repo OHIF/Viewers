@@ -38,6 +38,7 @@ import { usePositionPresentationStore } from '../../stores/usePositionPresentati
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
+import { BlendModes } from '@cornerstonejs/core/enums';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -1191,6 +1192,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       segmentationId,
       predecessorImageId,
       type: representationType,
+      config: {
+        blendMode:
+          viewport?.getBlendMode?.() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
+      },
     });
 
     // store the segmentation presentation id in the viewport info
@@ -1456,6 +1461,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
           type: representationType,
+          config: {
+            blendMode:
+              viewport?.getBlendMode?.() === 1
+                ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+                : undefined,
+          },
         });
       }
     });
