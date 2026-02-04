@@ -3,14 +3,6 @@ import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { api } from 'dicomweb-client';
 import { DICOMWeb, errorHandler } from '@ohif/core';
 
-const getImageId = imageObj => {
-  if (!imageObj) {
-    return;
-  }
-
-  return typeof imageObj.getImageId === 'function' ? imageObj.getImageId() : imageObj.url;
-};
-
 const findImageIdOnStudies = (studies, displaySetInstanceUID) => {
   const study = studies.find(study => {
     const displaySet = study.displaySets.some(
