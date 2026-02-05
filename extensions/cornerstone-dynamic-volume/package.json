@@ -34,7 +34,7 @@
     "@ohif/extension-default": "3.12.0-beta.133",
     "@ohif/i18n": "3.12.0-beta.133",
     "@ohif/ui": "3.12.0-beta.133",
-    "dcmjs": "0.48.0",
+    "dcmjs": "0.49.4",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
     "prop-types": "15.8.1",
@@ -42,8 +42,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/core": "4.15.28",
-    "@cornerstonejs/tools": "4.15.28",
+    "@cornerstonejs/core": "4.15.29",
+    "@cornerstonejs/tools": "4.15.29",
     "classnames": "2.5.1"
   }
 }

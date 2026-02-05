@@ -27,6 +27,8 @@ import { SegmentationPresentation, SegmentationPresentationItem } from '../../ty
 import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import { ViewReference } from '@cornerstonejs/core/types';
 
+const { DefaultHistoryMemo } = csUtils.HistoryMemo;
+
 const {
   Labelmap: LABELMAP,
   Contour: CONTOUR,
@@ -952,10 +954,74 @@ class SegmentationService extends PubSubService {
   }
 
   /**
+   * Creates a memo that records the current state of a segment (segmentationId/segmentIndex)
+   * so that undo can restore it via addSegment and redo can call removeSegment again
+   * without recording history.
+   *
+   * @param segmentationId - The ID of the segmentation.
+   * @param segmentIndex - The index of the segment (must still exist when called).
+   * @param _options - Reserved (e.g. deleting) for future use.
+   * @returns A Memo with restoreMemo(undo): undo => addSegment, redo => removeSegment (skipRecordingHistory).
+   */
+  public createSegmentIndexMemo(
+    segmentationId: string,
+    segmentIndex: number,
+    _options?: { deleting?: boolean }
+  ): csTypes.Memo | null {
+    const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
+    const segment = csSegmentation?.segments?.[segmentIndex];
+    if (!segment) {
+      return null;
+    }
+
+    let color: csTypes.Color | undefined;
+    let visibility: boolean | undefined;
+    const viewportIds = this.getViewportIdsWithSegmentation(segmentationId);
+    if (viewportIds.length > 0) {
+      const firstViewportId = viewportIds[0];
+      const representations = this.getSegmentationRepresentations(firstViewportId, {
+        segmentationId,
+      });
+      const repType = representations[0]?.type ?? LABELMAP;
+      color = this.getSegmentColor(firstViewportId, segmentationId, segmentIndex);
+      visibility = cstSegmentation.config.visibility.getSegmentIndexVisibility(
+        firstViewportId,
+        { segmentationId, type: repType },
+        segmentIndex
+      );
+    }
+
+    const segmentState = {
+      segmentIndex,
+      label: segment.label,
+      isLocked: segment.locked,
+      active: segment.active,
+      color,
+      visibility,
+    };
+
+    const service = this;
+    const memo: csTypes.Memo = {
+      id: csUtils.uuidv4(),
+      operationType: 'segmentIndex',
+      restoreMemo(undo?: boolean) {
+        if (undo === true) {
+          service.addSegment(segmentationId, segmentState);
+        } else {
+          // Redo: remove the segment via cornerstone without recording history
+          cstSegmentation.removeSegment(segmentationId, segmentIndex, { recordHistory: false });
+        }
+      },
+    };
+    return memo;
+  }
+
+  /**
    * Removes a segment from a segmentation and updates the active segment index if necessary.
    *
    * @param segmentationId - The ID of the segmentation containing the segment to remove.
    * @param segmentIndex - The index of the segment to remove.
+   * @param options - Optional. skipRecordingHistory: if true, do not push undo memo (used when redoing).
    *
    * @remarks
    * This method performs the following actions:
@@ -964,8 +1030,21 @@ class SegmentationService extends PubSubService {
    * 3. If the removed segment was the active segment, it updates the active segment index.
    *
    */
-  public removeSegment(segmentationId: string, segmentIndex: number): void {
-    cstSegmentation.removeSegment(segmentationId, segmentIndex);
+  public removeSegment(
+    segmentationId: string,
+    segmentIndex: number,
+    options?: { skipRecordingHistory?: boolean }
+  ): void {
+    let memo;
+    if (!options?.skipRecordingHistory) {
+      memo = this.createSegmentIndexMemo(segmentationId, segmentIndex, { deleting: true });
+      DefaultHistoryMemo.startGroupRecording();
+      cstSegmentation.removeSegment(segmentationId, segmentIndex, { recordHistory: true });
+      DefaultHistoryMemo.push(memo);
+      DefaultHistoryMemo.endGroupRecording();
+    } else {
+      cstSegmentation.removeSegment(segmentationId, segmentIndex, { recordHistory: false });
+    }
   }
 
   public setSegmentVisibility(
