@@ -501,7 +501,7 @@ const StatusError: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
 const StatusInfo: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
   <StatusIndicator
     tooltip={tooltip}
-    icon={<Icons.Info className="h-4 w-4 text-blue-500" />}
+    icon={<Icons.Info className="text-primary h-4 w-4" />}
     defaultTooltip="Info"
   />
 );
