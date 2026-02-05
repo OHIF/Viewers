@@ -419,11 +419,12 @@ export default class MicroscopyService extends PubSubService {
     if (!roiAnnotation) {
       return;
     }
+
     const isVisible = !roiAnnotation.isVisible;
     roiAnnotation.setVisibility(isVisible);
 
     this.managedViewers.forEach(mv => {
-      mv.toggleROIVisibility(uid, roiAnnotation.roiGraphic, isVisible);
+      mv.toggleROIVisibility(uid, isVisible);
     });
 
     this._broadcastEvent(EVENTS.ANNOTATION_UPDATED, roiAnnotation);

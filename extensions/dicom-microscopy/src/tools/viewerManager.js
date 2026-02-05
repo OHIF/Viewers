@@ -188,6 +188,14 @@ class ViewerManager extends PubSubService {
     this.viewer.hideROIs();
   }
 
+  hideROI(uid) {
+    this.viewer.hideROI(uid);
+  }
+
+  showROI(uid) {
+    this.viewer.showROI(uid);
+  }
+
   /**
    * Adds the given ROI graphic into the third-party API
    *
@@ -400,15 +408,16 @@ class ViewerManager extends PubSubService {
    * Toggles the visibility of a specific ROI.
    *
    * @param {string} uid - Unique identifier of the ROI
-   * @param {Object} roiGraphic - ROI graphic object to re-add if making visible
    * @param {boolean} isVisible - Whether the ROI should be visible or hidden
    */
-  toggleROIVisibility(uid, roiGraphic, isVisible) {
-    if (isVisible) {
-      this.runSilently(() => this.viewer.addROI(roiGraphic, styles.default));
-    } else {
-      this.runSilently(() => this.viewer.removeROI(uid));
-    }
+  toggleROIVisibility(uid, isVisible) {
+    this.runSilently(() => {
+      if (isVisible) {
+        this.viewer.showROI(uid);
+      } else {
+        this.viewer.hideROI(uid);
+      }
+    });
   }
 
   _jumpToPoint(coord) {
