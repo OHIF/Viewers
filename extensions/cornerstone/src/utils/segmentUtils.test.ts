@@ -62,7 +62,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       2,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -84,7 +84,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -109,7 +109,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -131,7 +131,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -153,7 +153,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -175,7 +175,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -197,7 +197,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -229,7 +229,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -261,7 +261,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -286,7 +286,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -308,7 +308,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       2,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -348,7 +348,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       10,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -384,7 +384,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       5,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -411,7 +411,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       undefined,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -433,7 +433,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -455,7 +455,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -480,7 +480,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId,
+      undefined,
       direction
     );
   });
@@ -508,7 +508,7 @@ describe('handleSegmentChange', () => {
     expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       'different-segmentation-id',
       2,
-      'different-viewport-id',
+      undefined,
       direction
     );
   });
