@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure Access</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Secure Viewer Access</h1>
+
+    <p id="status" class="status"></p>
+
+    <form id="login-form">
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      />
+      <button type="submit">Send Magic Link</button>
+    </form>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
