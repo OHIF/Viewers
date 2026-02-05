@@ -1368,8 +1368,11 @@ class SegmentationService extends PubSubService {
       const representation = representations[0];
       const { type } = representation;
 
-      // For labelmaps, use the existing jumpToSegmentCenter method
-      if (type !== CONTOUR) {
+      // For contours, check if we have a segment center.
+      const center =
+        type === CONTOUR ? this._getSegmentCenter(segmentationId, segmentIndex) : undefined;
+      const canUseSegmentCenter = type !== CONTOUR || !!center;
+      if (canUseSegmentCenter) {
         this.jumpToSegmentCenter(
           segmentationId,
           segmentIndex,
@@ -1378,7 +1381,8 @@ class SegmentationService extends PubSubService {
           highlightSegment,
           animationLength,
           highlightHideOthers,
-          animationFunctionType
+          animationFunctionType,
+          center
         );
         return;
       }
@@ -1398,7 +1402,7 @@ class SegmentationService extends PubSubService {
       let nearestSliceIndex = null;
       let loopSliceIndex = null;
 
-      for (const [sliceIndex, viewRef] of viewRefs.entries()) {
+      for (const [sliceIndex] of viewRefs.entries()) {
         // Track loop index for wraparound (smallest for forward, largest for backward)
         if (direction > 0) {
           if (loopSliceIndex === null || sliceIndex < loopSliceIndex) {
@@ -1452,15 +1456,16 @@ class SegmentationService extends PubSubService {
     highlightSegment = true,
     animationLength = 750,
     highlightHideOthers = false,
-    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT
+    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT,
+    center?: { image?: csTypes.Point3; world: csTypes.Point3 }
   ): void {
-    const center = this._getSegmentCenter(segmentationId, segmentIndex);
-    if (!center) {
+    const resolvedCenter = center ?? this._getSegmentCenter(segmentationId, segmentIndex);
+    if (!resolvedCenter) {
       console.warn('No center found for segmentation', segmentationId, segmentIndex);
       return;
     }
 
-    const { world } = center as { world: csTypes.Point3 };
+    const { world } = resolvedCenter as { world: csTypes.Point3 };
 
     // need to find which viewports are displaying the segmentation
     const viewportIds = viewportId
