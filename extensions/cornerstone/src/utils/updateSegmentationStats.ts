@@ -178,7 +178,7 @@ export function updateSegmentBidirectionalStats({
     // Sending only the biggest diameter for now
     namedStats.diameter = {
       name: 'diameter',
-      label: 'Maximum diameter',
+      label: 'Maximum Diameter',
       annotationUID: annotation.annotationUID,
       value: maxMajor,
       unit: 'mm',
