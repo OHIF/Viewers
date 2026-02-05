@@ -204,6 +204,97 @@
       }
 
       window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+
+      // OHIF Theme Color Picker - Load saved colors from localStorage
+      (function() {
+        var STORAGE_KEY = 'ohif-theme-colors';
+        var DEFAULT_CSS_VARIABLES = {
+          '--highlight': '191 74% 63%',
+          '--neutral': '213 22% 59%',
+          '--neutral-light': '214 69% 81%',
+          '--neutral-dark': '214 16% 21%',
+          '--background': '236 62% 5%',
+          '--foreground': '0 0% 98%',
+          '--card': '234 64% 10%',
+          '--card-foreground': '0 0% 98%',
+          '--popover': '219 90% 15%',
+          '--popover-foreground': '0 0% 98%',
+          '--primary': '214 98% 60%',
+          '--primary-foreground': '0 0% 98%',
+          '--secondary': '214 66% 48%',
+          '--secondary-foreground': '200 50% 84%',
+          '--muted': '234 64% 10%',
+          '--muted-foreground': '200 46% 65%',
+          '--accent': '217 79% 24%',
+          '--accent-foreground': '0 0% 98%',
+          '--destructive': '0 62.8% 30.6%',
+          '--destructive-foreground': '0 0% 98%',
+          '--border': '0 0% 14.9%',
+          '--input': '236 52% 30%',
+          '--ring': '214 98% 60%',
+          '--chart-1': '220 70% 50%',
+          '--chart-2': '160 60% 45%',
+          '--chart-3': '30 80% 55%',
+          '--chart-4': '280 65% 60%',
+          '--chart-5': '340 75% 55%',
+          '--primary-light': '187 74% 63%',
+          '--primary-main': '220 91% 37%',
+          '--primary-dark': '233 64% 10%',
+          '--primary-active': '213 98% 60%',
+          '--secondary-light': '235 45% 42%',
+          '--secondary-main': '259 63% 25%',
+          '--secondary-dark': '217 91% 15%',
+          '--secondary-active': '240 15% 14%',
+          '--common-bright': '0 0% 88%',
+          '--common-light': '260 6% 66%',
+          '--common-main': '0 0% 100%',
+          '--common-dark': '264 6% 46%',
+          '--common-active': '234 45% 31%',
+          '--bkg-low': '244 76% 4%',
+          '--bkg-med': '233 64% 10%',
+          '--bkg-full': '217 91% 15%',
+          '--actions-primary': '213 98% 60%',
+          '--actions-highlight': '187 74% 63%',
+          '--info-primary': '0 0% 100%',
+          '--info-secondary': '199 39% 65%',
+          '--inputfield-main': '235 45% 42%',
+          '--inputfield-disabled': '259 63% 25%',
+          '--inputfield-focus': '187 74% 63%',
+          '--inputfield-placeholder': '270 5% 24%',
+          '--customgreen-100': '155 96% 43%',
+          '--customgreen-200': '155 88% 45%',
+          '--customblue-10': '224 77% 14%',
+          '--customblue-20': '220 77% 19%',
+          '--customblue-30': '220 82% 24%',
+          '--customblue-40': '220 80% 28%',
+          '--customblue-50': '220 82% 32%',
+          '--customblue-80': '220 86% 46%',
+          '--customblue-100': '181 100% 88%',
+          '--customblue-200': '193 100% 61%',
+          '--customblue-300': '235 45% 21%',
+          '--customblue-400': '218 31% 66%',
+          '--customgray-100': '235 28% 21%',
+          '--indigo-dark': '220 73% 15%',
+          '--aqua-pale': '199 39% 65%'
+        };
+
+        try {
+          var saved = localStorage.getItem(STORAGE_KEY);
+          var colors = saved ? JSON.parse(saved) : DEFAULT_CSS_VARIABLES;
+          var style = document.createElement('style');
+          var cssText = ':root {\n';
+          for (var key in colors) {
+            if (colors.hasOwnProperty(key)) {
+              cssText += '  ' + key + ': ' + colors[key] + ';\n';
+            }
+          }
+          cssText += '}';
+          style.textContent = cssText;
+          document.head.appendChild(style);
+        } catch (e) {
+          console.error('Failed to load theme colors:', e);
+        }
+      })();
     </script>
 
     <!-- EXTENSIONS -->
