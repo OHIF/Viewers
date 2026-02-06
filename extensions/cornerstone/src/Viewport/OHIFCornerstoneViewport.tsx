@@ -272,6 +272,8 @@ const OHIFCornerstoneViewport = React.memo(
         viewportOptions.viewportType = STACK;
       }
 
+      let cancelled = false;
+
       const loadViewportData = async () => {
         const viewportData = await cornerstoneCacheService.createViewportData(
           displaySets,
@@ -279,6 +281,8 @@ const OHIFCornerstoneViewport = React.memo(
           dataSource,
           initialImageIndex
         );
+
+        if (cancelled) return;
 
         const presentations = getViewportPresentations(viewportId, viewportOptions);
 
@@ -302,6 +306,10 @@ const OHIFCornerstoneViewport = React.memo(
       };
 
       loadViewportData();
+
+      return () => {
+        cancelled = true;
+      };
     }, [viewportOptions, displaySets, dataSource]);
 
     const Notification = customizationService.getCustomization('ui.notificationComponent');
