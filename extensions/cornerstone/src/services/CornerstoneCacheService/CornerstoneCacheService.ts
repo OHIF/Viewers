@@ -16,6 +16,7 @@ class CornerstoneCacheService {
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
+  private stackDisplaySetLoadPromises: Map<string, Promise<string[]>> = new Map();
   readonly servicesManager: AppTypes.ServicesManager;
 
   constructor(servicesManager: AppTypes.ServicesManager) {
@@ -151,59 +152,69 @@ class CornerstoneCacheService {
     };
   }
 
+  /**
+   * Ensures displaySet is loaded and returns stack image IDs.
+   * Deduplicates concurrent calls for the same displaySetInstanceUID to avoid race conditions.
+   */
+  private async _getOrComputeStackImageIds(displaySet, dataSource): Promise<string[]> {
+    const uid = displaySet.displaySetInstanceUID;
+    const existing = this.stackDisplaySetLoadPromises.get(uid);
+    if (existing) {
+      return existing;
+    }
+
+    const { uiNotificationService } = this.servicesManager.services;
+
+    const promise = (async () => {
+      try {
+        if (displaySet.load && displaySet.load instanceof Function) {
+          const { userAuthenticationService } = this.servicesManager.services;
+          const headers = userAuthenticationService.getAuthorizationHeader();
+          await displaySet.load({ headers });
+        }
+
+        let stackImageIds = this.stackImageIds.get(uid);
+        if (!stackImageIds) {
+          stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+          displaySet.imageIds = stackImageIds;
+          this.stackImageIds.set(uid, stackImageIds);
+        }
+        return stackImageIds;
+      } catch (e) {
+        uiNotificationService.show({
+          title: 'Error loading displaySet',
+          message: e.message,
+          type: 'error',
+        });
+        console.error(e);
+        throw e;
+      } finally {
+        this.stackDisplaySetLoadPromises.delete(uid);
+      }
+    })();
+
+    this.stackDisplaySetLoadPromises.set(uid, promise);
+    return promise;
+  }
+
   private async _getStackViewportData(
     dataSource,
     displaySets,
     initialImageIndex,
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
-    const { uiNotificationService } = this.servicesManager.services;
+    // Load overlay display sets first (deduplicated via _getOrComputeStackImageIds)
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
-    for (const overlayDisplaySet of overlayDisplaySets) {
-      if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
-        const { userAuthenticationService } = this.servicesManager.services;
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        try {
-          await overlayDisplaySet.load({ headers });
-        } catch (e) {
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
-      }
-    }
+    await Promise.all(
+      overlayDisplaySets.map(ds => this._getOrComputeStackImageIds(ds, dataSource))
+    );
 
     // Ensuring the first non-overlay `displaySet` is always the primary one
     const StackViewportData = [];
     for (const displaySet of displaySets) {
       const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
 
-      if (displaySet.load && displaySet.load instanceof Function) {
-        const { userAuthenticationService } = this.servicesManager.services;
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        try {
-          await displaySet.load({ headers });
-        } catch (e) {
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
-      }
-
-      let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
-
-      if (!stackImageIds) {
-        stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
-        // assign imageIds to the displaySet
-        displaySet.imageIds = stackImageIds;
-        this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
-      }
+      const stackImageIds = await this._getOrComputeStackImageIds(displaySet, dataSource);
 
       StackViewportData.push({
         StudyInstanceUID,
