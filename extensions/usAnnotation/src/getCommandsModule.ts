@@ -242,6 +242,14 @@ function commandsModule({
           }
         });
 
+        if (annotations.length === 0) {
+          const currentFrameIndex = viewportImageIds.indexOf(imageId);
+          frame_annotations[currentFrameIndex] = {
+            pleura_lines: [],
+            b_lines: [],
+          };
+        }
+
         const instance = getInstanceByImageId(servicesManager.services, imageId);
         const json = {
           SOPInstanceUID: instance.SOPInstanceUID,
@@ -279,14 +287,6 @@ function commandsModule({
       downloadBlob(blob, {
         filename: `ultrasound_annotations_${new Date().toISOString().slice(0, 10)}.json`,
       });
-
-      // Append to the document, click to download, and remove
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      // Clean up by revoking the URL
-      URL.revokeObjectURL(url);
     },
   };
 
