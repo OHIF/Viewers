@@ -7,7 +7,9 @@ import {
   useSegmentationTableContext,
   useSegmentStatistics,
   useSegmentationExpanded,
+  SegmentationTableProvider,
 } from './contexts';
+export type { SegmentationTableContextType } from './contexts';
 
 SegmentationTable.Segments = SegmentationSegments;
 SegmentationTable.Config = SegmentationTableConfig;
@@ -19,6 +21,7 @@ export {
   useSegmentationTableContext,
   useSegmentStatistics,
   useSegmentationExpanded,
+  SegmentationTableProvider,
   // components
   SegmentationTable,
 };
