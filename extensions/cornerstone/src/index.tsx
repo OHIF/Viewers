@@ -94,7 +94,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeEnter: ({ servicesManager, commandsManager }: withAppTypes): void => {
+  onModeEnter: ({
+    servicesManager,
+    commandsManager,
+    extensionManager,
+  }: withAppTypes): void => {
     const { cornerstoneViewportService, toolbarService, segmentationService } =
       servicesManager.services;
 
@@ -131,10 +135,22 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       'volume',
       cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
     );
-    // The default stack loading option is to progressive load HTJ2K images
-    // There are other possible options, but these need more thought about
-    // how to define them.
-    imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
+
+    /**
+     * Stack loading: disable streaming when using application/octet-stream
+     * (single-part). Streaming only benefits HTJ2K progressive decode; octet-stream
+     * returns raw DICOM (e.g. CR) which requires full file before decode.
+     */
+    const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
+    const acceptHeader = sourceConfig.acceptHeader ?? [];
+    const isOctetStreamOnly =
+      Array.isArray(acceptHeader) &&
+      acceptHeader.length > 0 &&
+      acceptHeader.every((h) => h === 'application/octet-stream');
+    const stackOptions = isOctetStreamOnly
+      ? { retrieveOptions: { single: { streaming: false, decodeLevel: 1 } } }
+      : stackRetrieveOptions;
+    imageRetrieveMetadataProvider.add('stack', stackOptions);
   },
   getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
