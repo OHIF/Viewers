@@ -83,7 +83,6 @@ export function DatePickerWithRange({
       <Popover.Popover>
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
             <input
               id={`${id}-start`}
               type="text"
@@ -97,6 +96,13 @@ export function DatePickerWithRange({
               )}
               data-cy="input-date-range-start"
             />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform"
+              onClick={() => setOpenEnd(false)} // Close end popover if open, but since start doesn't control end, perhaps not needed
+            >
+              <CalendarIcon className="h-4 w-4 text-white" />
+            </button>
           </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
@@ -120,7 +126,16 @@ export function DatePickerWithRange({
       >
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform"
+              onClick={e => {
+                e.stopPropagation();
+                setOpenEnd(!openEnd);
+              }}
+            >
+              <CalendarIcon className="h-4 w-4 text-white" />
+            </button>
             <input
               id={`${id}-end`}
               type="text"
