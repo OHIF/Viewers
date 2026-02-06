@@ -33,7 +33,6 @@ const languagesMap = {
   ml: 'Malayalam',
   mr: 'Marathi',
   ms: 'Malay',
-  nl: 'Dutch',
   no: 'Norwegian',
   pl: 'Polish',
   'pt-BR': 'Portuguese (Brazil)',
