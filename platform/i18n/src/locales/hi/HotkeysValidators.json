@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "फील्ड खाली नहीं हो सकता",
+  "Hotkey is already in use": "\"{{action}}\" पहले से \"{{pressedKeys}}\" शॉर्टकट का उपयोग कर रहा है।",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "केवल संशोधक कुंजियों (ctrl, alt और shift) को शॉर्टकट के रूप में परिभाषित करना संभव नहीं है",
+  "Shortcut combination is not allowed": "{{pressedKeys}} शॉर्टकट संयोजन की अनुमति नहीं है"
+}

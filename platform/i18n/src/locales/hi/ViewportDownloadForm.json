@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "फ़ाइल नाम खाली नहीं हो सकता।",
+  "fileType": "फ़ाइल प्रकार",
+  "filename": "फ़ाइल नाम",
+  "formTitle": "कृपया आउटपुट छवि के लिए आयाम, फ़ाइल नाम और वांछित प्रकार निर्दिष्ट करें।",
+  "imageHeight": "छवि ऊंचाई (px)",
+  "imagePreview": "छवि पूर्वावलोकन",
+  "imageWidth": "छवि चौड़ाई (px)",
+  "keepAspectRatio": "पहलू अनुपात रखें",
+  "loadingPreview": "छवि पूर्वावलोकन लोड हो रहा है...",
+  "minHeightError": "न्यूनतम मान्य ऊंचाई 100px है।",
+  "minWidthError": "न्यूनतम मान्य चौड़ाई 100px है।",
+  "showAnnotations": "एनोटेशन दिखाएं"
+}

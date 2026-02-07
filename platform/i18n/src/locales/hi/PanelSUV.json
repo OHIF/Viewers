@@ -1,0 +1,10 @@
+{
+  "Patient Information": "रोगी की जानकारी",
+  "Patient Sex": "रोगी का लिंग",
+  "Weight": "वजन",
+  "Total Dose": "कुल खुराक",
+  "Half Life": "आधा जीवन",
+  "Injection Time": "इंजेक्शन समय",
+  "Acquisition Time": "अधिग्रहण समय",
+  "Reload Data": "डेटा फिर से लोड करें"
+}
