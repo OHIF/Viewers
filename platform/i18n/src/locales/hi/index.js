@@ -2,8 +2,10 @@ import AboutModal from './AboutModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
+import DataSourceConfiguration from './DataSourceConfiguration.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
+import HotkeysValidators from './HotkeysValidators.json';
 import MeasurementTable from './MeasurementTable.json';
 import DataRow from './DataRow.json';
 import StudyList from './StudyList.json';
@@ -20,7 +22,12 @@ import Modals from './Modals.json';
 import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Hps from './Hps.json';
+import Messages from './Messages.json';
+import StudyItem from './StudyItem.json';
+import ThumbnailTracked from './ThumbnailTracked.json';
 import ToolbarLayoutSelector from './ToolbarLayoutSelector.json';
+import TooltipClipboard from './TooltipClipboard.json';
+import TrackedCornerstoneViewport from './TrackedCornerstoneViewport.json';
 import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 import CaptureViewportModal from './CaptureViewportModal.json';
 import Tools from './Tools.json';
@@ -37,8 +44,10 @@ export default {
     Buttons,
     CineDialog,
     Common,
+    DataSourceConfiguration,
     DatePicker,
     Header,
+    HotkeysValidators,
     MeasurementTable,
     DataRow,
     StudyList,
@@ -55,7 +64,12 @@ export default {
     Local,
     ErrorBoundary,
     Hps,
+    Messages,
+    StudyItem,
+    ThumbnailTracked,
     ToolbarLayoutSelector,
+    TooltipClipboard,
+    TrackedCornerstoneViewport,
     WindowLevelActionMenu,
     CaptureViewportModal,
     Tools,
