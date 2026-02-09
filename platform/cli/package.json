@@ -21,7 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "7.28.0",
-    "axios": "1.12.0",
+    "axios": "1.13.5",
     "chalk": "5.4.1",
     "execa": "8.0.1",
     "gitignore": "0.7.0",
