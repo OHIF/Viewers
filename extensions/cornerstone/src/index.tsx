@@ -59,6 +59,7 @@ import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
+import merge from 'lodash.merge';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -75,7 +76,7 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
-const stackRetrieveOptions = {
+const DEFAULT_STACK_RETRIEVE_OPTIONS = {
   retrieveOptions: {
     single: {
       streaming: true,
@@ -137,19 +138,17 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     );
 
     /**
-     * Stack loading: disable streaming when using application/octet-stream
-     * (single-part). Streaming only benefits HTJ2K progressive decode; octet-stream
-     * returns raw DICOM (e.g. CR) which requires full file before decode.
+     * Stack retrieve options: read from active data source configuration.
+     * Merged with defaults. Set streaming: false in data source config for uncompressed
+     * DICOM that requires full file before decode, to avoid black image on load.
      */
     const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
-    const acceptHeader = sourceConfig.acceptHeader ?? [];
-    const isOctetStreamOnly =
-      Array.isArray(acceptHeader) &&
-      acceptHeader.length > 0 &&
-      acceptHeader.every((h) => h === 'application/octet-stream');
-    const stackOptions = isOctetStreamOnly
-      ? { retrieveOptions: { single: { streaming: false, decodeLevel: 1 } } }
-      : stackRetrieveOptions;
+    const config = sourceConfig.stackRetrieveOptions;
+    const stackOptions = merge(
+      {},
+      DEFAULT_STACK_RETRIEVE_OPTIONS,
+      config ?? {}
+    ) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
     imageRetrieveMetadataProvider.add('stack', stackOptions);
   },
   getPanelModule,
