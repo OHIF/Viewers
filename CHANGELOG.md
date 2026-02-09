@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* **security:** Use a resolution for axios to address CVE-2026-25639. ([#5793](https://github.com/OHIF/Viewers/issues/5793)) ([94c9e16](https://github.com/OHIF/Viewers/commit/94c9e162f3d17840c7e9659557f685ca8642d06f))
+
+
+
+
+
 # [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
 
 **Note:** Version bump only for package ohif-monorepo-root
