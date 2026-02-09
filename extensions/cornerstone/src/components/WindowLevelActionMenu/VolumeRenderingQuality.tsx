@@ -16,7 +16,7 @@ export function VolumeRenderingQuality({
 
   const onChange = useCallback(
     (value: number) => {
-      commandsManager.runCommand('setVolumeRenderingQulaity', {
+      commandsManager.runCommand('setVolumeRenderingQuality', {
         viewportId,
         volumeQuality: value,
       });
