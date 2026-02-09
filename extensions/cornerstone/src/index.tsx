@@ -59,7 +59,7 @@ import utils from './utils';
 import { useMeasurementTracking } from './hooks/useMeasurementTracking';
 import { setUpSegmentationEventHandlers } from './utils/setUpSegmentationEventHandlers';
 import { setUpAnnotationEventHandlers } from './utils/setUpAnnotationEventHandlers';
-import merge from 'lodash.merge';
+import update from 'immutability-helper';
 export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -143,12 +143,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
      * DICOM that requires full file before decode, to avoid black image on load.
      */
     const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
-    const config = sourceConfig.stackRetrieveOptions;
-    const stackOptions = merge(
-      {},
-      DEFAULT_STACK_RETRIEVE_OPTIONS,
-      config ?? {}
-    ) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
+    const config = sourceConfig.stackRetrieveOptions ?? {};
+    const stackOptions = update(DEFAULT_STACK_RETRIEVE_OPTIONS, { $merge: config }) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
     imageRetrieveMetadataProvider.add('stack', stackOptions);
   },
   getPanelModule,
