@@ -148,7 +148,7 @@
     "package-json": "8.1.1",
     "rollup": "2.79.2",
     "body-parser": "1.20.3",
-    "axios": "1.12.0",
+    "axios": "1.13.5",
     "core-js": "3.45.1",
     "@babel/runtime-corejs2": "7.26.10",
     "tapable": "2.2.2",
