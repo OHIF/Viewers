@@ -129,7 +129,7 @@ const CornerstoneViewportDownloadForm = ({
         downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
       }
 
-      if (segmentationRepresentations.length > 0) {
+      if (segmentationRepresentations?.length) {
         segmentationRepresentations.forEach(segRepresentation => {
           const { segmentationId, colorLUTIndex, type } = segRepresentation;
           if (type === Enums.SegmentationRepresentations.Labelmap) {

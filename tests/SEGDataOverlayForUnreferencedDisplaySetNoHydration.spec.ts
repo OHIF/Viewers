@@ -16,6 +16,7 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
   await leftPanelPageObject.loadSeriesByDescription('Apparent Diffusion Coefficient');
 
   await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
+
   await viewportPageObject
     .getById('default')
     .overlayMenu.dataOverlay.addSegmentation('T2 Weighted Axial Segmentations');
@@ -25,7 +26,6 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 
   // Hide the overlay menu.
   await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
-
   await page.waitForTimeout(5000);
 
   await checkForScreenshot(

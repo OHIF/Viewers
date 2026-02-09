@@ -1608,7 +1608,7 @@ function commandsModule({
         ? animationFunctionType
         : undefined;
 
-      segmentationService.jumpToSegmentCenter(
+      segmentationService.jumpToSegmentNext(
         segmentationId,
         segmentIndex,
         undefined,

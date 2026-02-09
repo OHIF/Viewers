@@ -5,7 +5,7 @@ describe('handleSegmentChange', () => {
     getSegmentation: jest.fn(),
     getActiveSegment: jest.fn(),
     setActiveSegment: jest.fn(),
-    jumpToSegmentCenter: jest.fn(),
+    jumpToSegmentNext: jest.fn(),
   };
 
   const mockSegmentation = {
@@ -40,11 +40,12 @@ describe('handleSegmentChange', () => {
   });
 
   it('should move to next segment when direction is positive and activeSegment is null', () => {
+    const direction = 1;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -58,19 +59,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       2
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       2,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should move to previous segment when direction is negative and activeSegment is null', () => {
+    const direction = -1;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: -1,
+      direction,
       selectedSegmentObjectIndex: 1,
     });
 
@@ -78,14 +81,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should update selectedSegmentObjectIndex when activeSegment is found', () => {
+    const direction = 1;
     const mockActiveSegment = {
       segmentIndex: 2,
     };
@@ -93,7 +98,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -101,19 +106,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       3
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should loop to first segment when going beyond last segment', () => {
+    const direction = 1;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 2,
     });
 
@@ -121,19 +128,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should loop to last segment when going before first segment', () => {
+    const direction = -1;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: -1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -141,19 +150,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       3
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle direction with value greater than 1', () => {
+    const direction = 2;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 2,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -161,19 +172,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       3
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle direction with value less than -1', () => {
+    const direction = -2;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: -2,
+      direction,
       selectedSegmentObjectIndex: 1,
     });
 
@@ -181,14 +194,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       3
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle single segment scenario with positive direction', () => {
+    const direction = 1;
     const singleSegmentSegmentation = {
       segments: {
         '1': {
@@ -203,7 +218,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -211,14 +226,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle single segment scenario with negative direction', () => {
+    const direction = -1;
     const singleSegmentSegmentation = {
       segments: {
         '1': {
@@ -233,7 +250,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: -1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -241,14 +258,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle activeSegment not found in segments', () => {
+    const direction = 1;
     const mockActiveSegment = {
       segmentIndex: 99,
     };
@@ -256,7 +275,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -264,19 +283,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle zero direction', () => {
+    const direction = 0;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 0,
+      direction,
       selectedSegmentObjectIndex: 1,
     });
 
@@ -284,14 +305,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       2
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       2,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle segments with non-sequential indices', () => {
+    const direction = 1;
     const nonSequentialSegmentation = {
       segments: {
         '5': {
@@ -314,7 +337,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -322,14 +345,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       10
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       10,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle wrap around with non-sequential indices', () => {
+    const direction = 1;
     const nonSequentialSegmentation = {
       segments: {
         '5': {
@@ -348,7 +373,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 1,
     });
 
@@ -356,14 +381,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       5
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       5,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle empty segments object', () => {
+    const direction = 1;
     const emptySegmentation = {
       segments: {},
     };
@@ -373,7 +400,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -381,19 +408,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       undefined
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       undefined,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle large positive direction that wraps multiple times', () => {
+    const direction = 5;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 5,
+      direction,
       selectedSegmentObjectIndex: 1,
     });
 
@@ -401,19 +430,21 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle large negative direction that wraps multiple times', () => {
+    const direction = -5;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: -5,
+      direction,
       selectedSegmentObjectIndex: 1,
     });
 
@@ -421,14 +452,16 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       3
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       3,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should handle activeSegment with segmentIndex 0', () => {
+    const direction = 1;
     const mockActiveSegment = {
       segmentIndex: 0,
     };
@@ -436,7 +469,7 @@ describe('handleSegmentChange', () => {
 
     handleSegmentChange({
       ...defaultParameters,
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -444,21 +477,23 @@ describe('handleSegmentChange', () => {
       defaultParameters.segmentationId,
       1
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       defaultParameters.segmentationId,
       1,
-      defaultParameters.viewportId
+      defaultParameters.viewportId,
+      direction
     );
   });
 
   it('should use different viewport and segmentation IDs', () => {
+    const direction = 1;
     mockSegmentationService.getActiveSegment.mockReturnValue(null);
 
     handleSegmentChange({
       ...defaultParameters,
       segmentationId: 'different-segmentation-id',
       viewportId: 'different-viewport-id',
-      direction: 1,
+      direction,
       selectedSegmentObjectIndex: 0,
     });
 
@@ -470,10 +505,11 @@ describe('handleSegmentChange', () => {
       'different-segmentation-id',
       2
     );
-    expect(mockSegmentationService.jumpToSegmentCenter).toHaveBeenCalledWith(
+    expect(mockSegmentationService.jumpToSegmentNext).toHaveBeenCalledWith(
       'different-segmentation-id',
       2,
-      'different-viewport-id'
+      'different-viewport-id',
+      direction
     );
   });
 });
