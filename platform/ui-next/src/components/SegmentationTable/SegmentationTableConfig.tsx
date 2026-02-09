@@ -25,7 +25,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
     setOutlineWidth,
     renderInactiveSegmentations,
     toggleRenderInactiveSegmentations,
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
     data,
   } = useSegmentationTableContext('SegmentationTableConfig');
 
@@ -49,21 +49,22 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
             renderFill && renderOutline ? 'fill-and-outline' : renderOutline ? 'outline' : 'fill'
           }
           onValueChange={value => {
+            const type = segmentationRepresentationTypes?.[0];
             if (value === 'fill-and-outline') {
-              setRenderFill({ type: segmentationRepresentationType }, true);
-              setRenderOutline({ type: segmentationRepresentationType }, true);
-              setRenderFillInactive({ type: segmentationRepresentationType }, true);
-              setRenderOutlineInactive({ type: segmentationRepresentationType }, true);
+              setRenderFill({ type }, true);
+              setRenderOutline({ type }, true);
+              setRenderFillInactive({ type }, true);
+              setRenderOutlineInactive({ type }, true);
             } else if (value === 'outline') {
-              setRenderFill({ type: segmentationRepresentationType }, false);
-              setRenderOutline({ type: segmentationRepresentationType }, true);
-              setRenderFillInactive({ type: segmentationRepresentationType }, false);
-              setRenderOutlineInactive({ type: segmentationRepresentationType }, true);
+              setRenderFill({ type }, false);
+              setRenderOutline({ type }, true);
+              setRenderFillInactive({ type }, false);
+              setRenderOutlineInactive({ type }, true);
             } else {
-              setRenderFill({ type: segmentationRepresentationType }, true);
-              setRenderOutline({ type: segmentationRepresentationType }, false);
-              setRenderFillInactive({ type: segmentationRepresentationType }, true);
-              setRenderOutlineInactive({ type: segmentationRepresentationType }, false);
+              setRenderFill({ type }, true);
+              setRenderOutline({ type }, false);
+              setRenderFillInactive({ type }, true);
+              setRenderOutlineInactive({ type }, false);
             }
           }}
         >
@@ -90,7 +91,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
             className="mx-1 flex-1"
             value={[fillAlpha]}
             onValueChange={([value]) =>
-              setFillAlpha({ type: segmentationRepresentationType }, value)
+              setFillAlpha({ type: segmentationRepresentationTypes?.[0] }, value)
             }
             max={1}
             min={0}
@@ -100,7 +101,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
             className="mx-1 w-10 flex-none"
             value={fillAlpha}
             onChange={e =>
-              setFillAlpha({ type: segmentationRepresentationType }, Number(e.target.value))
+              setFillAlpha({ type: segmentationRepresentationTypes?.[0] }, Number(e.target.value))
             }
           />
         </div>
@@ -112,7 +113,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Slider
             value={[outlineWidth]}
             onValueChange={([value]) =>
-              setOutlineWidth({ type: segmentationRepresentationType }, value)
+              setOutlineWidth({ type: segmentationRepresentationTypes?.[0] }, value)
             }
             max={10}
             min={0}
@@ -122,7 +123,10 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Input
             value={outlineWidth}
             onChange={e =>
-              setOutlineWidth({ type: segmentationRepresentationType }, Number(e.target.value))
+              setOutlineWidth(
+                { type: segmentationRepresentationTypes?.[0] },
+                Number(e.target.value)
+              )
             }
             className="mx-1 w-10 flex-none text-center"
           />

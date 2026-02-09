@@ -3,6 +3,203 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.134...v3.12.0-beta.135) (2026-02-05)
+
+
+### Bug Fixes
+
+* **jump-to-contour-segment:** For contours like those from RSTRUCTs, use generic jumpToSegmentCenter if a segment center is available. ([#5785](https://github.com/OHIF/Viewers/issues/5785)) ([45739b3](https://github.com/OHIF/Viewers/commit/45739b31a2c72cb646c733929f733a8e180a616c))
+
+
+
+
+
+# [3.12.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.133...v3.12.0-beta.134) (2026-02-05)
+
+
+### Bug Fixes
+
+* **HistoryMemo:** Segmentation delete wasn't remembered ([#5775](https://github.com/OHIF/Viewers/issues/5775)) ([48f2f6f](https://github.com/OHIF/Viewers/commit/48f2f6fb13f9ba0aa03ad51afd2812466bcb2f58))
+
+
+
+
+
+# [3.12.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.132...v3.12.0-beta.133) (2026-02-04)
+
+
+### Bug Fixes
+
+* **jump-to-label-map:** Use `undefined` for viewportId for arrow navigation. ([#5774](https://github.com/OHIF/Viewers/issues/5774)) ([512aa3b](https://github.com/OHIF/Viewers/commit/512aa3b07f4c783040acd67e3fd2103559a06522))
+
+
+
+
+
+# [3.12.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.131...v3.12.0-beta.132) (2026-01-30)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.130...v3.12.0-beta.131) (2026-01-30)
+
+
+### Bug Fixes
+
+* **segmentation:** Use jumpToSegmentNext instead of jumpToSegmentCenter for arrow navigation. ([#5759](https://github.com/OHIF/Viewers/issues/5759)) ([02423c5](https://github.com/OHIF/Viewers/commit/02423c5bf3131006df92c8054994887d1811d821))
+
+
+
+
+
+# [3.12.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.129...v3.12.0-beta.130) (2026-01-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.129](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.128...v3.12.0-beta.129) (2026-01-27)
+
+
+### Bug Fixes
+
+* Handle optional ContentSequence for NUM content items ([#5703](https://github.com/OHIF/Viewers/issues/5703)) ([6dedf55](https://github.com/OHIF/Viewers/commit/6dedf5573e78a5751bed0b79646700acedfc8a38))
+
+
+
+
+
+# [3.12.0-beta.128](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.127...v3.12.0-beta.128) (2026-01-27)
+
+
+### Bug Fixes
+
+* **TMTV:** Consider blend mode when adding segmentation representations. OHIF-2416, OHIF-2369 ([#5735](https://github.com/OHIF/Viewers/issues/5735)) ([06612fe](https://github.com/OHIF/Viewers/commit/06612fe177e2c31c33fa5c81c092b830a337cac2))
+
+
+
+
+
+# [3.12.0-beta.127](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.126...v3.12.0-beta.127) (2026-01-22)
+
+
+### Bug Fixes
+
+* Navigate to contour should work ([#5718](https://github.com/OHIF/Viewers/issues/5718)) ([0fd517d](https://github.com/OHIF/Viewers/commit/0fd517d6ab583652a3667f9af49413648f2755db))
+
+
+
+
+
+# [3.12.0-beta.126](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.125...v3.12.0-beta.126) (2026-01-22)
+
+
+### Bug Fixes
+
+* the null value check issue in image spacing calculation ([#5726](https://github.com/OHIF/Viewers/issues/5726)) ([afe184e](https://github.com/OHIF/Viewers/commit/afe184ec78dcc8f780e64687e06670365beeb77e))
+
+
+
+
+
+# [3.12.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.124...v3.12.0-beta.125) (2026-01-21)
+
+
+### Bug Fixes
+
+* **security:** Ignore CVE-2026-23745, CVE-2026-23950 and CVE-2024-28863 because they are limited to build/dev environments. ([#5733](https://github.com/OHIF/Viewers/issues/5733)) ([320f0a7](https://github.com/OHIF/Viewers/commit/320f0a7463ad95251842ece6cd329bba7b6b2a97))
+
+
+
+
+
+# [3.12.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.123...v3.12.0-beta.124) (2026-01-16)
+
+
+### Bug Fixes
+
+* **microscopy:** Update microscope to 0.48.17 to fix a measurement exception. ([#5710](https://github.com/OHIF/Viewers/issues/5710)) ([4a1f509](https://github.com/OHIF/Viewers/commit/4a1f5098654dc7afef4c135f2e2198a0e785f4b9))
+
+
+
+
+
+# [3.12.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.122...v3.12.0-beta.123) (2026-01-14)
+
+
+### Bug Fixes
+
+* **window-level-action-menu:** Window level menu no longer needs two clicks to open after it is used ([#5711](https://github.com/OHIF/Viewers/issues/5711)) ([eb6b814](https://github.com/OHIF/Viewers/commit/eb6b814fc9c35feb6aa5f4378632b53202b0d8a3))
+
+
+
+
+
+# [3.12.0-beta.122](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.121...v3.12.0-beta.122) (2026-01-13)
+
+
+### Bug Fixes
+
+* **segmentation:** List surface representations in the segmentation table for 3D views. ([#5700](https://github.com/OHIF/Viewers/issues/5700)) ([82e6a18](https://github.com/OHIF/Viewers/commit/82e6a18735b2e2278d6b95037d82bd3cb529104d))
+
+
+
+
+
+# [3.12.0-beta.121](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.120...v3.12.0-beta.121) (2026-01-12)
+
+
+### Bug Fixes
+
+* **segmentation:** Update cornerstone dependencies to fix a segmentation exception after capture. ([#5701](https://github.com/OHIF/Viewers/issues/5701)) ([aba4855](https://github.com/OHIF/Viewers/commit/aba48552765d03cf82e6a92cdd443b246560c4fd))
+
+
+
+
+
+# [3.12.0-beta.120](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.119...v3.12.0-beta.120) (2026-01-09)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.12.0-beta.119](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.118...v3.12.0-beta.119) (2026-01-08)
+
+
+### Bug Fixes
+
+* **DicomTagBrowser:** Check for null metadata. ([#5696](https://github.com/OHIF/Viewers/issues/5696)) ([6429a55](https://github.com/OHIF/Viewers/commit/6429a5518a56f7fbd9d948510c52e0d467c9ca57))
+
+
+
+
+
+# [3.12.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.117...v3.12.0-beta.118) (2026-01-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Use active segmentation for navigation. ([#5692](https://github.com/OHIF/Viewers/issues/5692)) ([ecc74a5](https://github.com/OHIF/Viewers/commit/ecc74a53e097b13851ea8f7be0cabab6b0d82b7f))
+
+
+
+
+
 # [3.12.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.116...v3.12.0-beta.117) (2026-01-06)
 
 

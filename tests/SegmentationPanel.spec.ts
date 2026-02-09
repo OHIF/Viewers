@@ -19,8 +19,8 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
   // Expect new segmentation and blank segment named "Segment 1"
-  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegmentation(0);
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(1);
+  const segment1 = rightPanelPageObject.labelMapSegmentationPanel.panel.nthSegment(0);
+  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(1);
   await expect(segment1.locator).toContainText('Segment 1');
 
   // Rename
@@ -32,7 +32,7 @@ test('checks basic add, rename, delete segments from panel', async ({ rightPanel
   // Delete
   await segment1.actions.delete();
 
-  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentationCount()).toBe(0);
+  expect(await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount()).toBe(0);
 });
 
 test('checks saved segmentations loads and jumps to slices', async ({
@@ -62,19 +62,17 @@ test('checks saved segmentations loads and jumps to slices', async ({
   // Confirm spleen jumps to slice 17
   // First iteration repeat to account for segmentation loading delays
   await expect(async () => {
-    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Spleen').click();
+    await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Spleen').click();
     await expect(viewportInfoBottomRight).toContainText('17/');
   }).toPass({
     timeout: 10000,
   });
 
   // Esophagus - 5
-  await rightPanelPageObject.labelMapSegmentationPanel.panel
-    .segmentationByText('Esophagus')
-    .click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Esophagus').click();
   await expect(viewportInfoBottomRight).toContainText('5/');
 
   // Pancreas - 22
-  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentationByText('Pancreas').click();
+  await rightPanelPageObject.labelMapSegmentationPanel.panel.segmentByText('Pancreas').click();
   await expect(viewportInfoBottomRight).toContainText('22/');
 });

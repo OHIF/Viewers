@@ -2117,7 +2117,9 @@ describe('SegmentationService', () => {
       service.removeSegment(segmentationId, segmentIndex);
 
       expect(cstSegmentation.removeSegment).toHaveBeenCalledTimes(1);
-      expect(cstSegmentation.removeSegment).toHaveBeenCalledWith(segmentationId, segmentIndex);
+      expect(cstSegmentation.removeSegment).toHaveBeenCalledWith(segmentationId, segmentIndex, {
+        recordHistory: true,
+      });
     });
   });
 

@@ -5,6 +5,7 @@ import { utils } from '../..';
 import { useViewportSegmentations } from '../../hooks';
 import { useMeasurementTracking } from '../../hooks/useMeasurementTracking';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 /**
  * NavigationComponent provides navigation controls for viewports containing
@@ -27,7 +28,11 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
     viewportId,
   });
 
-  const hasSegmentations = segmentationsWithRepresentations.length > 0;
+  const hasSegmentations =
+    segmentationsWithRepresentations.length > 0 &&
+    segmentationsWithRepresentations.some(
+      segmentation => segmentation?.representation?.type !== SegmentationRepresentations.Surface
+    );
 
   // prefer segment navigation if available
   const navigationMode = hasSegmentations
@@ -87,7 +92,10 @@ function NavigationComponent({ viewportId }: { viewportId: string }) {
         return;
       }
 
-      const segmentationId = segmentationsWithRepresentations[0].segmentation.segmentationId;
+      const activeSegmentationWithRepresentation = segmentationsWithRepresentations.find(
+        segmentation => segmentation?.representation?.active
+      );
+      const segmentationId = activeSegmentationWithRepresentation.segmentation.segmentationId;
 
       utils.handleSegmentChange({
         direction,

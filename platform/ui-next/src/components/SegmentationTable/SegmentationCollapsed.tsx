@@ -50,9 +50,8 @@ const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.React
 // Selector component - for the segmentation selection dropdown
 const SegmentationCollapsedSelector = () => {
   const { t } = useTranslation('SegmentationPanel.HeaderCollapsed');
-  const { data, onSegmentationClick, segmentationRepresentationType } = useSegmentationTableContext(
-    'SegmentationCollapsedSelector'
-  );
+  const { data, onSegmentationClick, segmentationRepresentationTypes } =
+    useSegmentationTableContext('SegmentationCollapsedSelector');
   const { segmentation } = useSegmentationExpanded('SegmentationCollapsedSelector');
 
   if (!data?.length) {
@@ -63,8 +62,8 @@ const SegmentationCollapsedSelector = () => {
     // Only show segmentations of the representation type for this panel. Show all segmentations if no type is specified.
     .filter(
       seg =>
-        !segmentationRepresentationType ||
-        segmentationRepresentationType === seg.representation.type
+        !segmentationRepresentationTypes ||
+        segmentationRepresentationTypes.includes(seg.representation?.type)
     )
     .map(seg => ({
       id: seg.segmentation.segmentationId,
@@ -132,14 +131,14 @@ const SegmentationCollapsedContent = ({ children }: { children: React.ReactNode 
 const SegmentationCollapsedRoot: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
 }) => {
-  const { mode, data, segmentationRepresentationType, selectedSegmentationIdForType } =
+  const { mode, data, segmentationRepresentationTypes, selectedSegmentationIdForType } =
     useSegmentationTableContext('SegmentationCollapsed');
 
   // Find the segmentations for the representation type for this collapsed view.
   const segmentations = data.filter(
     segmentation =>
-      !segmentationRepresentationType ||
-      segmentationRepresentationType === segmentation.representation?.type
+      !segmentationRepresentationTypes ||
+      segmentationRepresentationTypes.includes(segmentation.representation?.type)
   );
 
   // Check if we should render.
