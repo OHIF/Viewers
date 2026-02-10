@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
 # [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
 
 **Note:** Version bump only for package @ohif/extension-test
