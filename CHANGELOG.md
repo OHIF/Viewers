@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.2...v3.13.0-beta.3) (2026-02-10)
+
+
+### Bug Fixes
+
+* **app:** display study not found message for all modes ([#5752](https://github.com/OHIF/Viewers/issues/5752)) ([7f9e59e](https://github.com/OHIF/Viewers/commit/7f9e59ee3074e3511d22c7f0075856a7bd2cc32e))
+
+
+
+
+
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* **cine:** prevent crash on second view/hydration of SR series  ([#5724](https://github.com/OHIF/Viewers/issues/5724)) ([f70c9b9](https://github.com/OHIF/Viewers/commit/f70c9b932db2bb14173acae675d38ce250d244fa))
+
+
+
+
+
+# [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* **security:** Use a resolution for axios to address CVE-2026-25639. ([#5793](https://github.com/OHIF/Viewers/issues/5793)) ([94c9e16](https://github.com/OHIF/Viewers/commit/94c9e162f3d17840c7e9659557f685ca8642d06f))
+
+
+
+
+
+# [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.12.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.134...v3.12.0-beta.135) (2026-02-05)
 
 
