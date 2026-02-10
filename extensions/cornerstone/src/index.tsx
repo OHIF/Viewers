@@ -85,6 +85,12 @@ const DEFAULT_STACK_RETRIEVE_OPTIONS = {
   },
 };
 
+/** Normalize to immutability-helper spec: plain object → $merge, otherwise use as-is. */
+const toUpdateSpec = (obj: object) =>
+  obj != null && typeof obj === 'object' && Object.keys(obj).some(k => k.startsWith('$'))
+    ? obj
+    : { $merge: (obj ?? {}) as object };
+
 const unsubscriptions = [];
 /**
  *
@@ -139,12 +145,13 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 
     /**
      * Stack retrieve options: read from active data source configuration.
-     * Merged with defaults. Set streaming: false in data source config for uncompressed
-     * DICOM that requires full file before decode, to avoid black image on load.
+     * Pass an immutability-helper spec (e.g. { $merge: {...} } or { $set: {...} }) in
+     * stackRetrieveOptions to customize. Plain object is treated as $merge for backward compat.
+     * Set streaming: false for uncompressed DICOM that requires full file before decode.
      */
     const sourceConfig = extensionManager?.getActiveDataSource?.()?.[0]?.getConfig?.() ?? {};
     const config = sourceConfig.stackRetrieveOptions ?? {};
-    const stackOptions = update(DEFAULT_STACK_RETRIEVE_OPTIONS, { $merge: config }) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
+    const stackOptions = update(DEFAULT_STACK_RETRIEVE_OPTIONS, toUpdateSpec(config)) as typeof DEFAULT_STACK_RETRIEVE_OPTIONS;
     imageRetrieveMetadataProvider.add('stack', stackOptions);
   },
   getPanelModule,
