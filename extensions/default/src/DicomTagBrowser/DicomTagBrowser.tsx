@@ -3,7 +3,14 @@ import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
 import { classes, Types } from '@ohif/core';
 import { InputFilter } from '@ohif/ui-next';
-import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Slider,
+} from '@ohif/ui-next';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -136,8 +143,10 @@ const DicomTagBrowser = ({
               onValueChange={value => onSelectChange({ value })}
             >
               <SelectTrigger>
-                {displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)?.label ||
-                  'Select Series'}
+                <SelectValue>
+                  {displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)?.label ||
+                    'Select Series'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {displaySetList.map(item => {
