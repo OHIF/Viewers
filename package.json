@@ -136,6 +136,9 @@
     ]
   },
   "resolutions": {
+    "@cornerstonejs/tools": "link:@cornerstonejs/tools",
+    "@cornerstonejs/core": "link:@cornerstonejs/core",
+    "@cornerstonejs/adapters": "link:@cornerstonejs/adapters",
     "commander": "8.3.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
