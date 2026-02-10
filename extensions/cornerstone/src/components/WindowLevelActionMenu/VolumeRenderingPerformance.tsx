@@ -94,6 +94,20 @@ export function VolumeRenderingPerformance({
         setCurrentInPlaneDecimation(inPlane);
         setCurrentKAxisDecimation(kAxis);
       }
+
+      const mapper = (volumeActor as { actor?: { getMapper?: () => { getInputData?: () => { getSpacing?: () => number[] }; getSampleDistance?: () => number } } }).actor?.getMapper?.();
+      const image = mapper?.getInputData?.();
+      const sampleDistance = mapper?.getSampleDistance?.();
+      if (image && typeof sampleDistance === 'number' && Number.isFinite(sampleDistance)) {
+        const spacing = image.getSpacing?.() ?? [];
+        const averageSpacing = spacing.length === 3 ? (spacing[0] + spacing[1] + spacing[2]) / 3 : 0;
+        if (averageSpacing > 0) {
+          const multiplier = sampleDistance / averageSpacing;
+          setSampleDistanceMultiplierOverall(
+            Math.max(1, Math.min(Math.round(multiplier), MAX_SAMPLE_DISTANCE_MULTIPLIER))
+          );
+        }
+      }
     } catch {
       setVolumeDimensions(null);
       setCurrentInPlaneDecimation(1);
