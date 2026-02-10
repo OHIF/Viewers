@@ -12,19 +12,18 @@ const MAX_SAMPLE_DISTANCE_MULTIPLIER = 20;
 const DEFAULT_SAMPLE_DISTANCE_MULTIPLIER = 1;
 const DEFAULT_SAMPLE_DISTANCE_MULTIPLIER_ON_ROTATION = 1;
 
-function getVolumeDecimationFromCache(
-  volume: VolumeDecimationInfo
-): [number, number, number] {
-  if (volume.ijkDecimation && Array.isArray(volume.ijkDecimation)) {
-    return volume.ijkDecimation;
+/** Parses IJK decimation from volumeId only when format is decimatedVolumeLoader:baseVolumeId:i_j_k; otherwise [1,1,1]. */
+function getIjkDecimationFromVolumeId(volumeId: string): [number, number, number] {
+  const parts = volumeId.split(':');
+  if (parts.length < 3 || parts[0] !== 'decimatedVolumeLoader') {
+    return [...DEFAULT_IJK_DECIMATION];
   }
-  if (
-    volume.appliedDecimation?.originalDecimation &&
-    Array.isArray(volume.appliedDecimation.originalDecimation)
-  ) {
-    return volume.appliedDecimation.originalDecimation;
+  const suffix = parts[2];
+  if (!/^\d+_\d+_\d+$/.test(suffix)) {
+    return [...DEFAULT_IJK_DECIMATION];
   }
-  return [...DEFAULT_IJK_DECIMATION];
+  const [i, j, k] = suffix.split('_').map(Number);
+  return [i, j, k];
 }
 
 export type VolumeRenderingPerformanceProps = {
@@ -64,13 +63,14 @@ export function VolumeRenderingPerformance({
       );
       if (!volumeActor?.referencedId) return;
 
-      const volume = cs3DCache.getVolume(volumeActor.referencedId) as
+      const volumeId = volumeActor.referencedId;
+      const volume = cs3DCache.getVolume(volumeId) as
         | VolumeDecimationInfo
         | undefined;
       if (!volume?.dimensions || volume.dimensions.length < 3) return;
 
       const dimensions = volume.dimensions;
-      const currentIjk = getVolumeDecimationFromCache(volume);
+      const currentIjk = getIjkDecimationFromVolumeId(volumeId);
       const meta = volume.originalMetadata;
 
       const inPlane = Math.max(1, Math.min(currentIjk[0], MAX_IN_PLANE_DECIMATION));
