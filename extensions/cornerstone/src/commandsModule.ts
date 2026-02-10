@@ -1447,6 +1447,46 @@ function commandsModule({
     },
 
     /**
+     * Sets the volume mapper sample distance multiplier for a given viewport.
+     * Higher multiplier = coarser sampling (faster, lower quality).
+     * @param {string} viewportId - The ID of the viewport.
+     * @param {number} sampleDistanceMultiplier - Multiplier applied to average spacing for sample distance.
+     */
+    setSampleDistanceMultiplier: ({ viewportId, sampleDistanceMultiplier }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const mapper = actor.getMapper();
+      const image = mapper.getInputData();
+      const spacing = image.getSpacing();
+      const averageSpacing = spacing.reduce((a, b) => a + b) / 3.0;
+      const sampleDistance = averageSpacing * sampleDistanceMultiplier;
+      const dims = image.getDimensions();
+      const spatialDiagonal = vec3.length(
+        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
+      );
+      const samplesPerRay = Math.ceil(spatialDiagonal / sampleDistance) + 1;
+      mapper.setMaximumSamplesPerRay(samplesPerRay);
+      mapper.setSampleDistance(sampleDistance);
+      viewport.render();
+    },
+
+    /**
+     * Reloads the volume for the viewport with the given IJK decimation.
+     * Requires a decimation-capable volume loader to be registered; otherwise a no-op.
+     * @param {string} viewportId - The ID of the viewport.
+     * @param {[number, number, number]} ijkDecimation - [i, j, k] decimation factors.
+     */
+    reloadVolumeWithDecimation: ({ viewportId, ijkDecimation }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || !viewport.getActors?.()?.length) return;
+      if (!ijkDecimation || !Array.isArray(ijkDecimation) || ijkDecimation.length < 3) return;
+      // Decimation-aware reload must be implemented by a custom volume loader
+      // that accepts ijkDecimation (e.g. in volumeLoader.createAndCacheVolume options).
+      // The UI passes ijkDecimation from component state; no localStorage.
+      // Stub: no-op until a decimation-capable loader is registered.
+    },
+
+    /**
      * Shifts opacity points for a given viewport id.
      * @param {string} viewportId - The ID of the viewport to set the mapping range.
      * @param {number} shift - The shift value to shift the points by.
@@ -2596,6 +2636,12 @@ function commandsModule({
     },
     setVolumeRenderingQuality: {
       commandFn: actions.setVolumeRenderingQuality,
+    },
+    setSampleDistanceMultiplier: {
+      commandFn: actions.setSampleDistanceMultiplier,
+    },
+    reloadVolumeWithDecimation: {
+      commandFn: actions.reloadVolumeWithDecimation,
     },
     shiftVolumeOpacityPoints: {
       commandFn: actions.shiftVolumeOpacityPoints,
