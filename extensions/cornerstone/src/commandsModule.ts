@@ -7,6 +7,8 @@ import {
   Types as CoreTypes,
   BaseVolumeViewport,
   getRenderingEngines,
+  cache,
+  volumeLoader,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -1472,18 +1474,117 @@ function commandsModule({
 
     /**
      * Reloads the volume for the viewport with the given IJK decimation.
-     * Requires a decimation-capable volume loader to be registered; otherwise a no-op.
-     * @param {string} viewportId - The ID of the viewport.
-     * @param {[number, number, number]} ijkDecimation - [i, j, k] decimation factors.
+     * Uses original imageIds from the display set / data source, reuses the
+     * current volume's loader scheme, purges the old volume from cache, then
+     * creates and displays the new decimated volume.
      */
-    reloadVolumeWithDecimation: ({ viewportId, ijkDecimation }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      if (!viewport || !viewport.getActors?.()?.length) return;
-      if (!ijkDecimation || !Array.isArray(ijkDecimation) || ijkDecimation.length < 3) return;
-      // Decimation-aware reload must be implemented by a custom volume loader
-      // that accepts ijkDecimation (e.g. in volumeLoader.createAndCacheVolume options).
-      // The UI passes ijkDecimation from component state; no localStorage.
-      // Stub: no-op until a decimation-capable loader is registered.
+    reloadVolumeWithDecimation: async ({ viewportId, ijkDecimation }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(
+        viewportId
+      ) as VolumeViewport | undefined;
+
+      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+        return;
+      }
+
+      if (
+        !ijkDecimation ||
+        !Array.isArray(ijkDecimation) ||
+        ijkDecimation.length < 3
+      ) {
+        return;
+      }
+
+      const [i, j, k] = ijkDecimation.map(v =>
+        Math.max(1, Math.floor(Number.isFinite(v) ? v : 1))
+      ) as [number, number, number];
+
+      const currentVolumeId = viewport.getVolumeId();
+      if (!currentVolumeId) {
+        return;
+      }
+
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
+        viewportId
+      );
+      const displaySetInstanceUID = displaySetUIDs?.[0];
+      if (!displaySetInstanceUID) {
+        return;
+      }
+
+      const displaySet = displaySetService.getDisplaySetByUID(
+        displaySetInstanceUID
+      );
+      if (!displaySet) {
+        return;
+      }
+
+      let imageIds: string[] | undefined =
+        Array.isArray((displaySet as any).imageIds) &&
+        (displaySet as any).imageIds.length > 0
+          ? (displaySet as any).imageIds
+          : undefined;
+      if (!imageIds?.length) {
+        const dataSource = extensionManager.getActiveDataSource?.()?.[0];
+        if (dataSource?.getImageIdsForDisplaySet) {
+          imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+        }
+      }
+      if (!imageIds?.length) {
+        const currentVolume = cache.getVolume(currentVolumeId) as
+          | { imageIds?: string[] }
+          | undefined;
+        imageIds = currentVolume?.imageIds;
+      }
+      if (!imageIds?.length) {
+        uiNotificationService.show({
+          title: 'Volume reload failed',
+          message: 'No image IDs available for this display set.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const idParts = currentVolumeId.split(':');
+      const baseVolumeId = idParts.length > 1 ? idParts[1] : displaySetInstanceUID;
+      const decimationSuffix = `${i}_${j}_${k}`;
+      const newVolumeId = `decimatedVolumeLoader:${baseVolumeId}:${decimationSuffix}`;
+
+      const savedProperties = viewport.getProperties?.(currentVolumeId) ?? viewport.getProperties?.() ?? {};
+
+      const actors = viewport.getActors?.() ?? [];
+      const volumeActorUIDs = actors
+        .filter(actorEntry => actorEntry.referencedId === currentVolumeId)
+        .map(actorEntry => actorEntry.uid);
+      if (volumeActorUIDs.length) {
+        viewport.removeActors(volumeActorUIDs);
+      }
+
+      const oldVolume = cache.getVolume(currentVolumeId) as
+        | { cancelLoading?: () => void; imageData?: { delete: () => void } }
+        | undefined;
+      if (oldVolume) {
+        oldVolume.cancelLoading?.();
+        oldVolume.imageData?.delete?.();
+      }
+      cache.removeVolumeLoadObject?.(currentVolumeId);
+
+      const newVolume = await volumeLoader.createAndCacheVolume(newVolumeId, {
+        imageIds,
+        progressiveRendering: true,
+        ijkDecimation: [i, j, k] as [number, number, number],
+      });
+
+      if ((newVolume as { load?: () => Promise<void> })?.load) {
+        await (newVolume as { load: () => Promise<void> }).load();
+      }
+
+      await viewport.setVolumes([{ volumeId: newVolumeId }]);
+
+      if (Object.keys(savedProperties).length > 0) {
+        viewport.setProperties(savedProperties, newVolumeId);
+      }
+      viewport.render();
     },
 
     /**
