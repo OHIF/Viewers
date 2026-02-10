@@ -272,7 +272,7 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  if (prevProps.resizeRef?.current !== nextProps.resizeRef?.current) {
+  if (prevProps.resizeRef !== nextProps.resizeRef) {
     return false;
   }
 
