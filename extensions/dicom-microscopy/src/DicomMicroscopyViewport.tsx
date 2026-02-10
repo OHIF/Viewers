@@ -259,7 +259,7 @@ const DicomMicroscopyViewport = React.memo(
             resizeRef.current = ref;
           }}
         />
-        {isLoaded ? null : <LoadingIndicatorProgress className={'h-full w-full bg-black'} />}
+        {isLoaded ? null : <LoadingIndicatorProgress className={'h-full w-full bg-canvas'} />}
       </div>
     );
   },
