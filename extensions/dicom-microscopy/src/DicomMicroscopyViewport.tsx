@@ -187,24 +187,27 @@ const DicomMicroscopyViewport = React.memo(
         await loadViewer(smDisplaySet.others);
 
         if (displaySet.isOverlayDisplaySet && !displaySet.isLoaded && !displaySet.isLoading) {
-          displaySet.load(smDisplaySet);
+          const referencedDisplaySet = displaySet.getSourceDisplaySet();
+          displaySet.load(referencedDisplaySet);
         }
       },
       [dataSource, extensionManager, microscopyService, servicesManager, viewportId]
     );
 
     useEffect(() => {
-      const displaySet = displaySets[0];
-      installOpenLayersRenderer(container.current, displaySet).then(() => {
-        setIsLoaded(true);
-      });
+      if (!viewer) {
+        const displaySet = displaySets[0];
+        installOpenLayersRenderer(container.current, displaySet).then(() => {
+          setIsLoaded(true);
+        });
+      }
 
       return () => {
         if (viewer) {
           microscopyService.removeViewer(viewer);
         }
       };
-    }, []);
+    }, [viewer]);
 
     useEffect(() => {
       const displaySet = displaySets[0];
@@ -265,6 +268,14 @@ const DicomMicroscopyViewport = React.memo(
 
 // Check if the props are the same
 function areEqual(prevProps, nextProps) {
+  if (prevProps.setViewportActive !== nextProps.setViewportActive) {
+    return false;
+  }
+
+  if (prevProps.resizeRef?.current !== nextProps.resizeRef?.current) {
+    return false;
+  }
+
   if (prevProps.viewportId !== nextProps.viewportId) {
     return false;
   }
