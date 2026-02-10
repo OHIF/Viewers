@@ -1,7 +1,6 @@
 import { Types } from '@ohif/core';
 import { Point3 } from '@cornerstonejs/core/types';
 import {
-  VOLUME_AUTO_DECIMATION_THRESHOLD,
   AUTO_DECIMATION_VIEWPORT_TYPES,
   DEFAULT_IJK_DECIMATION,
 } from './constants';
@@ -127,6 +126,7 @@ function showAutoDecimationNotification(
   decimation: Point3,
   displaySets: Types.DisplaySet[],
   originalVoxelCount: number,
+  threshold: number,
   servicesManager: AppTypes.ServicesManager
 ): void {
   const { uiNotificationService, displaySetService } = servicesManager.services;
@@ -157,7 +157,7 @@ function showAutoDecimationNotification(
       .join(', ');
 
   const messageParts = [
-    `Applied ijk decimation ${decimation.join('×')} to keep volume under ${VOLUME_AUTO_DECIMATION_THRESHOLD.toLocaleString()} voxels.`,
+    `Applied ijk decimation ${decimation.join('×')} to keep volume under ${threshold.toLocaleString()} voxels.`,
   ];
 
   if (originalVoxelCount > 0) {
@@ -177,12 +177,22 @@ function showAutoDecimationNotification(
 
 /**
  * Applies auto-decimation to viewport options if necessary based on display set voxel counts.
+ * Decimation runs only when volumeAutoDecimationThreshold is defined (e.g. from app config).
  */
 export function applyAutoDecimationIfNecessary(
   viewportOptions: AppTypes.ViewportGrid.GridViewportOptions,
   displaySets: Types.DisplaySet[],
-  servicesManager: AppTypes.ServicesManager
+  servicesManager: AppTypes.ServicesManager,
+  volumeAutoDecimationThreshold?: number
 ): AppTypes.ViewportGrid.GridViewportOptions {
+  if (
+    volumeAutoDecimationThreshold == null ||
+    !Number.isFinite(volumeAutoDecimationThreshold) ||
+    volumeAutoDecimationThreshold <= 0
+  ) {
+    return viewportOptions;
+  }
+
   const viewportType = resolveViewportType(viewportOptions);
 
   if (!AUTO_DECIMATION_VIEWPORT_TYPES.has(viewportType)) {
@@ -205,7 +215,7 @@ export function applyAutoDecimationIfNecessary(
       maxVoxelCount = voxelCount;
     }
 
-    return voxelCount > VOLUME_AUTO_DECIMATION_THRESHOLD;
+    return voxelCount > volumeAutoDecimationThreshold;
   });
 
   if (!needsAutoDecimation) {
@@ -214,7 +224,7 @@ export function applyAutoDecimationIfNecessary(
 
   const requiredFactor = Math.max(
     1,
-    Math.ceil(maxVoxelCount / VOLUME_AUTO_DECIMATION_THRESHOLD)
+    Math.ceil(maxVoxelCount / volumeAutoDecimationThreshold)
   );
 
   const existingDecimation = resolveIjkDecimation(viewportOptions);
@@ -276,7 +286,13 @@ export function applyAutoDecimationIfNecessary(
     return viewportOptions;
   }
 
-  showAutoDecimationNotification(chosenDecimation, displaySets, maxVoxelCount, servicesManager);
+  showAutoDecimationNotification(
+    chosenDecimation,
+    displaySets,
+    maxVoxelCount,
+    volumeAutoDecimationThreshold,
+    servicesManager
+  );
 
   return {
     ...viewportOptions,

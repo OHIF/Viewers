@@ -12,17 +12,25 @@ class CornerstoneCacheService {
   static REGISTRATION = {
     name: 'cornerstoneCacheService',
     altName: 'CornerstoneCacheService',
-    create: ({ servicesManager }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
-      return new CornerstoneCacheService(servicesManager);
+    create: ({
+      servicesManager,
+      extensionManager,
+    }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
+      return new CornerstoneCacheService(servicesManager, extensionManager);
     },
   };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
   readonly servicesManager: AppTypes.ServicesManager;
+  readonly extensionManager: AppTypes.ExtensionManager;
 
-  constructor(servicesManager: AppTypes.ServicesManager) {
+  constructor(
+    servicesManager: AppTypes.ServicesManager,
+    extensionManager: AppTypes.ExtensionManager
+  ) {
     this.servicesManager = servicesManager;
+    this.extensionManager = extensionManager;
   }
 
   public getCacheSize() {
@@ -252,11 +260,13 @@ class CornerstoneCacheService {
     // First, enrich from localStorage if needed (for volume3d viewports)
     //enrichedViewportOptions = applyDecimationFromLocalStorage(enrichedViewportOptions);
 
-    // Then, apply auto-decimation if necessary
+    // Then, apply auto-decimation if a threshold is set in app config
+    const volumeAutoDecimationThreshold = this.extensionManager?.appConfig?.volumeAutoDecimationThreshold;
     enrichedViewportOptions = applyAutoDecimationIfNecessary(
       enrichedViewportOptions,
       displaySets,
-      this.servicesManager
+      this.servicesManager,
+      volumeAutoDecimationThreshold
     );
 
 
