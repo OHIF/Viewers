@@ -97,6 +97,11 @@ async function run() {
   // This combines the version.json commit and package version updates into one commit
   await execa('git', ['commit', '--amend', '--no-edit']);
 
+  // Lerna created a local tag (e.g. v3.13.0-beta.7) pointing to the pre-amend commit.
+  // Move the tag to the amended commit so the release tag matches what we push.
+  const tagName = `v${nextVersion}`;
+  await execa('git', ['tag', '-f', tagName]);
+
   console.log('Pushing changes...');
   
   // Note: Force push is not necessary here because:
@@ -105,6 +110,9 @@ async function run() {
   // 3. This script runs on a single branch locally, so there's no history rewrite on the remote
   // A regular push is sufficient since we're pushing a commit that doesn't exist on the remote yet
   await execa('git', ['push', 'origin', branchName]);
+
+  console.log('Pushing tag...');
+  await execa('git', ['push', 'origin', tagName]);
 
   console.log('Version set using lerna');
 }
