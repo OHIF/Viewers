@@ -98,7 +98,11 @@ async function run() {
   await fs.writeFile('./version.txt', versionInfo.version);
   await fs.writeFile('./commit.txt', versionInfo.commit);
 
-  console.log('Version info saved to version.json');
+  // Also write to platform/app for webpack to read
+  await fs.writeFile('./platform/app/version.txt', versionInfo.version);
+  await fs.writeFile('./platform/app/commit.txt', versionInfo.commit);
+
+  console.log('Version info saved to version.json and platform/app');
 }
 
 run().catch(err => {
