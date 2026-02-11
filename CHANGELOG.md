@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+
+
+
+
+
 # [3.13.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.7) (2026-02-10)
 
 
