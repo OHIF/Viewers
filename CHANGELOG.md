@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+
+### Bug Fixes
+
+* **microscopy:** Prevent measurement clearing on viewport resize ([#5796](https://github.com/OHIF/Viewers/issues/5796)) ([baef707](https://github.com/OHIF/Viewers/commit/baef707e46fd76b50f8b510b45da64e12d71ed0e))
+
+
+
+
+
+# [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+* Missing tag ([#5808](https://github.com/OHIF/Viewers/issues/5808)) ([c92bdd5](https://github.com/OHIF/Viewers/commit/c92bdd5b48b8805e9ea4cbac72007391b9ba0efe))
+
+
+
+
+
 # [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
 
 
