@@ -100,9 +100,7 @@ export function WindowLevelActionMenuContent({
 
         {is3DVolume && (
           <AllInOneMenu.SubMenu itemLabel={t('Rendering Performance')}>
-            <AllInOneMenu.ItemPanel>
-              <VolumeRenderingPerformance viewportId={viewportId} />
-            </AllInOneMenu.ItemPanel>
+            <VolumeRenderingPerformance viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>

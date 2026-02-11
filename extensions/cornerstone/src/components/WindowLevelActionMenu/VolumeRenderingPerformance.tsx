@@ -2,8 +2,7 @@ import React, { ReactElement, useState, useEffect, useCallback } from 'react';
 import { VolumeDecimationInfo } from '../../types/ViewportPresets';
 import { useSystem } from '@ohif/core';
 import { cache as cs3DCache } from '@cornerstonejs/core';
-import { toolNames } from '../../initCornerstoneTools';
-import { Numeric } from '@ohif/ui-next';
+import { AllInOneMenu, Numeric } from '@ohif/ui-next';
 
 const DEFAULT_IJK_DECIMATION: [number, number, number] = [1, 1, 1];
 const MAX_IN_PLANE_DECIMATION = 32;
@@ -198,116 +197,125 @@ export function VolumeRenderingPerformance({
     decimatedDimensions == null ||
     decimatedVoxels == null
   ) {
-    return <div className="my-1 mt-2 flex flex-col space-y-3" />;
+    return (
+      <AllInOneMenu.ItemPanel>
+        <div className="my-1 mt-2 flex flex-col space-y-2" />
+      </AllInOneMenu.ItemPanel>
+    );
   }
 
   return (
-    <div className="my-1 mt-2 flex flex-col space-y-3">
-      <div className="w-full pl-2 pr-1">
-        <div className="flex flex-col space-y-3">
-          <div className="flex flex-row items-center justify-between">
-            <span className="text-sm font-medium text-foreground">VRT Downsampling</span>
-            {gpuPerformanceScore != null && (
-              <span className="font-mono text-xs text-muted-foreground">
-                GPU Score: {gpuPerformanceScore.toFixed(1)}
-              </span>
-            )}
-          </div>
+    <AllInOneMenu.ItemPanel>
+      <div className="my-1 mt-2 flex flex-col space-y-2">
+        <div className="w-full pl-2 pr-1">
           <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Overall</span>
-              <Numeric.Container
-                mode="stepper"
-                min={1}
-                max={MAX_SAMPLE_DISTANCE_MULTIPLIER}
-                step={1}
-                value={sampleDistanceMultiplierOverall}
-                onChange={v => handleSampleDistanceMultiplier(v as number)}
-                className="border-0 bg-transparent"
-              >
-                <Numeric.NumberStepper
-                  direction="horizontal"
-                  inputWidth="w-7 max-w-7"
-                />
-              </Numeric.Container>
+            <div className="mt-2 flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between px-2 text-base">
+              <span className="text-muted-foreground text-sm">VRT Downsampling</span>
+              {gpuPerformanceScore != null && (
+                <span className="font-mono text-xs text-muted-foreground">
+                  GPU Score: {gpuPerformanceScore.toFixed(1)}
+                </span>
+              )}
+            </div>
+            <div className="bg-background mt-1 mb-1 h-px w-full" />
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-xs">Overall</span>
+                <Numeric.Container
+                  mode="stepper"
+                  min={1}
+                  max={MAX_SAMPLE_DISTANCE_MULTIPLIER}
+                  step={1}
+                  value={sampleDistanceMultiplierOverall}
+                  onChange={v => handleSampleDistanceMultiplier(v as number)}
+                  className="border-0 bg-transparent"
+                >
+                  <Numeric.NumberStepper
+                    direction="horizontal"
+                    inputWidth="w-7 max-w-7"
+                  />
+                </Numeric.Container>
+              </div>
+            </div>
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-xs">
+                  During rotation (Overall x factor)
+                </span>
+                <Numeric.Container
+                  mode="stepper"
+                  min={1}
+                  max={MAX_SAMPLE_DISTANCE_MULTIPLIER}
+                  step={1}
+                  value={sampleDistanceMultiplierOnRotation}
+                  onChange={v => handleSampleDistanceMultiplierOnRotationChange(v as number)}
+                  className="border-0 bg-transparent"
+                >
+                  <Numeric.NumberStepper
+                    direction="horizontal"
+                    inputWidth="w-7 max-w-7"
+                  />
+                </Numeric.Container>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                During rotation (Overall x factor)
-              </span>
-              <Numeric.Container
-                mode="stepper"
-                min={1}
-                max={MAX_SAMPLE_DISTANCE_MULTIPLIER}
-                step={1}
-                value={sampleDistanceMultiplierOnRotation}
-                onChange={v => handleSampleDistanceMultiplierOnRotationChange(v as number)}
-                className="border-0 bg-transparent"
-              >
-                <Numeric.NumberStepper
-                  direction="horizontal"
-                  inputWidth="w-7 max-w-7"
-                />
-              </Numeric.Container>
-            </div>
-          </div>
-        </div>
 
-        <div className="mt-4 flex flex-col space-y-3">
-          <div className="flex flex-row items-center justify-between">
-            <span className="text-sm font-medium text-foreground">Volume Downsizing</span>
-            <span className="font-mono text-xs text-muted-foreground">
-              Voxels: {(totalVoxels / 1e6).toFixed(1)}M → {(decimatedVoxels / 1e6).toFixed(1)}M
-            </span>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                In-Plane (i,j): {volumeDimensions[0]} →{' '}
-                {Math.floor(volumeDimensions[0] / currentInPlaneDecimation)}
+          <div className="bg-background mt-1 mb-1 h-px w-full" />
+          <div className="mt-2 flex flex-col space-y-2">
+            <div className="flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between px-2 text-base">
+              <span className="text-muted-foreground text-sm">Volume Downsizing</span>
+              <span className="font-mono text-xs text-muted-foreground">
+                Voxels: {(totalVoxels / 1e6).toFixed(1)}M → {(decimatedVoxels / 1e6).toFixed(1)}M
               </span>
-              <Numeric.Container
-                mode="stepper"
-                min={1}
-                max={MAX_IN_PLANE_DECIMATION}
-                step={1}
-                value={currentInPlaneDecimation}
-                onChange={v => handleInPlaneDecimationChange(v as number)}
-                className="border-0 bg-transparent"
-              >
-                <Numeric.NumberStepper
-                  direction="horizontal"
-                  inputWidth="w-7 max-w-7"
-                />
-              </Numeric.Container>
             </div>
-          </div>
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                Slice (k): {volumeDimensions[2]} →{' '}
-                {Math.floor(volumeDimensions[2] / currentKAxisDecimation)}
-              </span>
-              <Numeric.Container
-                mode="stepper"
-                min={1}
-                max={MAX_K_AXIS_DECIMATION}
-                step={1}
-                value={currentKAxisDecimation}
-                onChange={v => handleKAxisDecimationChange(v as number)}
-                className="border-0 bg-transparent"
-              >
-                <Numeric.NumberStepper
-                  direction="horizontal"
-                  inputWidth="w-7 max-w-7"
-                />
-              </Numeric.Container>
+            <div className="bg-background mt-1 mb-1 h-px w-full" />
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-xs">
+                  In-Plane (i,j): {volumeDimensions[0]} →{' '}
+                  {Math.floor(volumeDimensions[0] / currentInPlaneDecimation)}
+                </span>
+                <Numeric.Container
+                  mode="stepper"
+                  min={1}
+                  max={MAX_IN_PLANE_DECIMATION}
+                  step={1}
+                  value={currentInPlaneDecimation}
+                  onChange={v => handleInPlaneDecimationChange(v as number)}
+                  className="border-0 bg-transparent"
+                >
+                  <Numeric.NumberStepper
+                    direction="horizontal"
+                    inputWidth="w-7 max-w-7"
+                  />
+                </Numeric.Container>
+              </div>
+            </div>
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-xs">
+                  Slice (k): {volumeDimensions[2]} →{' '}
+                  {Math.ceil(volumeDimensions[2] / currentKAxisDecimation)}
+                </span>
+                <Numeric.Container
+                  mode="stepper"
+                  min={1}
+                  max={MAX_K_AXIS_DECIMATION}
+                  step={1}
+                  value={currentKAxisDecimation}
+                  onChange={v => handleKAxisDecimationChange(v as number)}
+                  className="border-0 bg-transparent"
+                >
+                  <Numeric.NumberStepper
+                    direction="horizontal"
+                    inputWidth="w-7 max-w-7"
+                  />
+                </Numeric.Container>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </AllInOneMenu.ItemPanel>
   );
 }
