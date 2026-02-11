@@ -131,6 +131,11 @@ export default defineConfig({
       PUBLIC_URL,
     },
   },
+  dev: {
+    // Avoid lazy-compilation proxy chunks; they can be served as HTML by
+    // historyApiFallback and cause "MIME type 'text/html' not executable".
+    lazyCompilation: false,
+  },
   server: {
     port: OHIF_PORT,
     open: OHIF_OPEN,

@@ -31,7 +31,7 @@ export interface ExtensionParams extends ExtensionConstructor {
   servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   configuration?: ExtensionConfiguration;
-  peerImport: (moduleId: string) => Promise<any>;
+  peerImport: (moduleId: string, fallback?: () => Promise<unknown>) => Promise<any>;
 }
 
 /**
