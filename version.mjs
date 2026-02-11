@@ -17,6 +17,9 @@ async function run() {
 
   const { stdout: lastCommitMessage } = await execa('git', ['log', '--format=%B', '-n', '1']);
 
+  // Check if this is a master branch (master or v\d*.\d* like v3.13, v3.14)
+  const isMasterBranch = branchName === 'master' || /^v\d+\.\d+$/.test(branchName);
+
   let nextVersion;
 
   if (branchName.startsWith('release')) {
@@ -25,8 +28,8 @@ async function run() {
     const version = await fs.readFile('./version.txt', 'utf-8');
     nextVersion = version.trim();
     console.log('Version from version.txt:', nextVersion);
-  } else {
-    console.log('Branch: master');
+  } else if (isMasterBranch) {
+    console.log('Branch: master (or version branch like v3.13)');
     const prereleaseComponents = semver.prerelease(currentVersion);
     const isBumpBeta = lastCommitMessage.trim().includes('[BUMP BETA]');
     console.log('isBumpBeta', isBumpBeta);
@@ -57,6 +60,29 @@ async function run() {
       // that later has been pulled into this PR
       console.log('Bumping beta version to be fresh beta e.g., from 2.11.0 to 2.12.0-beta.0');
       nextVersion = `${semver.major(currentVersion)}.${semver.minor(currentVersion) + 1}.0-beta.0`;
+    }
+  } else {
+    // For feature/fix branches, include the branch name in the version
+    console.log('Branch: feature/fix branch');
+    const prereleaseComponents = semver.prerelease(currentVersion);
+
+    // Sanitize branch name for use in version (replace invalid chars with dashes)
+    const sanitizedBranchName = branchName.replace(/[^a-zA-Z0-9-]/g, '-');
+
+    if (prereleaseComponents?.includes('beta')) {
+      // If current version has beta, keep it and append branch name
+      // e.g., from 3.13.0-beta.8 to 3.13.0-beta.8-fix-corrected-version-number
+      console.log(
+        `Adding branch name to beta version, e.g., from ${currentVersion} to ${currentVersion}-${sanitizedBranchName}`
+      );
+      nextVersion = `${currentVersion}-${sanitizedBranchName}`;
+    } else {
+      // If no beta, create a dev version with branch name
+      // e.g., from 3.13.0 to 3.13.0-dev-fix-corrected-version-number
+      console.log(
+        `Creating dev version with branch name, e.g., from ${currentVersion} to ${currentVersion}-dev-${sanitizedBranchName}`
+      );
+      nextVersion = `${currentVersion}-dev-${sanitizedBranchName}`;
     }
   }
 
