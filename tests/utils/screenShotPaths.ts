@@ -124,10 +124,6 @@ const screenShotPaths = {
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
   },
-  srHydrationThenReload: {
-    srAfterHydration: 'srAfterHydration.png',
-    srAfterReload: 'srAfterReload.png',
-  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',
