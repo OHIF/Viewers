@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+
+### Bug Fixes
+
+* **microscopy:** Prevent measurement clearing on viewport resize ([#5796](https://github.com/OHIF/Viewers/issues/5796)) ([baef707](https://github.com/OHIF/Viewers/commit/baef707e46fd76b50f8b510b45da64e12d71ed0e))
+
+
+
+
+
 # [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
 
 **Note:** Version bump only for package @ohif/extension-dicom-microscopy
