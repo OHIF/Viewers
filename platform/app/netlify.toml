@@ -10,7 +10,7 @@
 
 [build]
   base = ""
-  build = "cd ../.. && bun ./version.mjs && cd platform/app && yarn run build:viewer:ci"
+  build = "yarn run build:viewer:ci"
   publish = "dist"
 
 
