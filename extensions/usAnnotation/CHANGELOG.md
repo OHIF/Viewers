@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+
+### Bug Fixes
+
+* **usAnnotation:** Prevent error after JSON download ([#5814](https://github.com/OHIF/Viewers/issues/5814)) ([739e323](https://github.com/OHIF/Viewers/commit/739e3239cf5765711050b673b373c0145747824f))
+
+
+
+
+
 # [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
 
 
