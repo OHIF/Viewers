@@ -313,12 +313,13 @@ class CornerstoneCacheService {
       const isOrthographicViewport = viewportType === Enums.ViewportType.ORTHOGRAPHIC;
       const volumeLoaderSchema = displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
       const baseVolumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
-    const volumeId = isVolumeRenderingViewport
-      ? `${baseVolumeId}:volume3d`
-      : isOrthographicViewport
-        ? `${baseVolumeId}:orthographic`
-        : baseVolumeId;
+      const baseVolumeIdWithSuffix = isVolumeRenderingViewport
+        ? `${baseVolumeId}:volume3d`
+        : isOrthographicViewport
+          ? `${baseVolumeId}:orthographic`
+          : baseVolumeId;
       let volumeImageIds = this.volumeImageIds.get(displaySet.displaySetInstanceUID);
+      let volumeId = baseVolumeIdWithSuffix;
       let volume = cs3DCache.getVolume(volumeId);
 
       // Parametric maps do not have image ids but they already have volume data
@@ -329,10 +330,20 @@ class CornerstoneCacheService {
           ? enrichedViewportOptions?.ijkDecimation ?? DEFAULT_IJK_DECIMATION
           : enrichedViewportOptions?.ijkDecimation;
 
-        volume = await volumeLoader.createAndCacheVolume(volumeId, {
-          imageIds: volumeImageIds,
-          ijkDecimation,
-        });
+        const useDecimatedLoader =
+          ijkDecimation != null &&
+          (ijkDecimation[0] !== 1 || ijkDecimation[1] !== 1 || ijkDecimation[2] !== 1);
+        if (useDecimatedLoader) {
+          volumeId = `decimatedVolumeLoader:${baseVolumeIdWithSuffix}:${ijkDecimation[0]}_${ijkDecimation[1]}_${ijkDecimation[2]}`;
+          volume = cs3DCache.getVolume(volumeId);
+        }
+
+        if (!volume) {
+          volume = await volumeLoader.createAndCacheVolume(volumeId, {
+            imageIds: volumeImageIds,
+            ijkDecimation,
+          });
+        }
 
         this.volumeImageIds.set(displaySet.displaySetInstanceUID, volumeImageIds);
 

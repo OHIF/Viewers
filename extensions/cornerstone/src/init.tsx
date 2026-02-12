@@ -164,9 +164,7 @@ export default async function init({
 
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
-    (volumeId: string, options: any) => {
-      return decimatedVolumeLoader(volumeId, options);
-    }
+    cornerstoneStreamingImageVolumeLoader
   );
 
   volumeLoader.registerVolumeLoader(
