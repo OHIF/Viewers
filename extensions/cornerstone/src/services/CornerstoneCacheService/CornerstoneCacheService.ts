@@ -120,6 +120,8 @@ class CornerstoneCacheService {
     ];
 
     candidateVolumeIds.forEach(candidateVolumeId => {
+      this.volumeImageIds.delete(candidateVolumeId);
+
       const volume = cs3DCache.getVolume(candidateVolumeId);
 
       if (!volume) {
