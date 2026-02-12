@@ -39,7 +39,7 @@ const RowComponent = ({
     <div
       style={{ ...style, ...rowStyle }}
       className={classNames(
-        'hover:bg-primary/25 border-input text-foreground flex w-full flex-row items-center break-all bg-black text-base',
+        'hover:bg-primary/25 border-input text-foreground flex w-full flex-row items-center break-all bg-background text-base',
         lineHeightClassName
       )}
       key={keyPrefix}
@@ -281,7 +281,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
         valueRef={valueRef}
       />
       <div
-        className="relative m-auto border-2 border-black bg-black"
+        className="relative m-auto border-2 border-background bg-background"
         style={{ height: '32rem' }}
       >
         {isHeaderRendered() && (

@@ -67,7 +67,7 @@ const Thumbnail = ({
         )}
       >
         <div className="h-[114px] w-[128px]">
-          <div className="relative bg-black">
+          <div className="relative bg-background">
             {imageSrc ? (
               <img
                 src={imageSrc}

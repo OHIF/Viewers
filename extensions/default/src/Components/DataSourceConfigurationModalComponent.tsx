@@ -100,7 +100,7 @@ function DataSourceConfigurationModalComponent({
   const getSelectedItemBackgroundClasses = itemIndex =>
     itemIndex < selectedItems.length
       ? classNames(
-          'bg-black/[.4]',
+          'bg-background/[.4]',
           itemIndex !== itemLabels.length - 1 ? 'hover:bg-transparent active:bg-popover' : ''
         )
       : 'bg-transparent';
@@ -121,7 +121,7 @@ function DataSourceConfigurationModalComponent({
         <div className="text-highlight text-[20px]">
           {t(`Error fetching ${itemLabels[selectedItems.length]} list`)}
         </div>
-        <div className="grow bg-black p-4 text-[14px]">{errorMessage}</div>
+        <div className="grow bg-background p-4 text-[14px]">{errorMessage}</div>
       </div>
     );
   };
@@ -180,7 +180,7 @@ function DataSourceConfigurationModalComponent({
   return (
     <div className="flex h-[calc(100vh-300px)] select-none flex-col gap-4 pt-0.5">
       {getSelectedItemsComponent()}
-      <div className="h-0.5 w-full shrink-0 bg-black"></div>
+      <div className="h-0.5 w-full shrink-0 bg-background"></div>
       {errorMessage ? (
         getErrorComponent()
       ) : (

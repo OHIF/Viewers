@@ -255,7 +255,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
           {/* Number Box */}
           {number !== null && (
             <div
-              className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
+              className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-background text-base ${
                 isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
               } overflow-hidden`}
             >
