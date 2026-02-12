@@ -44,12 +44,6 @@ import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgres
 
 const { registerColormap } = csUtilities.colormap;
 
-// Constants
-const DEFAULT_SAMPLE_DISTANCE_MULTIPLIER = 1;
-const MIN_SAMPLE_DISTANCE_MULTIPLIER = 1;
-const DEFAULT_ROTATE_SAMPLE_DISTANCE_FACTOR = 6;
-const MIN_ROTATE_SAMPLE_DISTANCE_FACTOR = 1;
-
 // TODO: Cypress tests are currently grabbing this from the window?
 (window as any).cornerstone = cornerstone;
 (window as any).cornerstoneTools = cornerstoneTools;
@@ -75,48 +69,11 @@ export default async function init({
 
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
 
-  const savedSampling = localStorage.getItem('volumeRenderingSampling');
-  const savedRotateSampleDistanceFactor = localStorage.getItem('rotateSampleDistanceFactor');
-
-  const cornerstoneConfig = appConfig?.cornerstoneConfiguration || {};
-  const volumeRenderingConfig = cornerstoneConfig?.rendering?.volumeRendering || {};
-  const toolsConfig = cornerstoneConfig?.tools || {};
-
-  let sampleDistanceMultiplier =
-    savedSampling !== null
-      ? Number(savedSampling)
-      : volumeRenderingConfig.sampleDistanceMultiplier !== undefined
-        ? volumeRenderingConfig.sampleDistanceMultiplier
-        : DEFAULT_SAMPLE_DISTANCE_MULTIPLIER;
-  if (sampleDistanceMultiplier < MIN_SAMPLE_DISTANCE_MULTIPLIER) {
-    sampleDistanceMultiplier = MIN_SAMPLE_DISTANCE_MULTIPLIER;
-  }
-
-  const rotateSampleDistanceFactor = savedRotateSampleDistanceFactor !== null
-    ? Math.max(MIN_ROTATE_SAMPLE_DISTANCE_FACTOR, Number(savedRotateSampleDistanceFactor))
-    : toolsConfig.rotateSampleDistanceFactor !== undefined
-      ? Math.max(MIN_ROTATE_SAMPLE_DISTANCE_FACTOR, toolsConfig.rotateSampleDistanceFactor)
-      : DEFAULT_ROTATE_SAMPLE_DISTANCE_FACTOR;
-
-  if (!window.config) {
-    (window as any).config = {};
-  }
-  if (!window.config.cornerstoneConfiguration) {
-    window.config.cornerstoneConfiguration = {};
-  }
-  if (!window.config.cornerstoneConfiguration.tools) {
-    window.config.cornerstoneConfiguration.tools = {};
-  }
-  window.config.cornerstoneConfiguration.tools.rotateSampleDistanceFactor = rotateSampleDistanceFactor;
-
   cornerstone.setConfiguration({
     ...cornerstone.getConfiguration(),
     rendering: {
       ...cornerstone.getConfiguration().rendering,
       strictZSpacingForVolumeViewport: appConfig.strictZSpacingForVolumeViewport,
-      volumeRendering: {
-        sampleDistanceMultiplier: sampleDistanceMultiplier,
-      },
     },
   });
 

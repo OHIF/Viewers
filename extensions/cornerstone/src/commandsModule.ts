@@ -1449,30 +1449,6 @@ function commandsModule({
     },
 
     /**
-     * Sets the volume mapper sample distance multiplier for a given viewport.
-     * Higher multiplier = coarser sampling (faster, lower quality).
-     * @param {string} viewportId - The ID of the viewport.
-     * @param {number} sampleDistanceMultiplier - Multiplier applied to average spacing for sample distance.
-     */
-    setSampleDistanceMultiplier: ({ viewportId, sampleDistanceMultiplier }) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { actor } = viewport.getActors()[0];
-      const mapper = actor.getMapper();
-      const image = mapper.getInputData();
-      const spacing = image.getSpacing();
-      const averageSpacing = spacing.reduce((a, b) => a + b) / 3.0;
-      const sampleDistance = averageSpacing * sampleDistanceMultiplier;
-      const dims = image.getDimensions();
-      const spatialDiagonal = vec3.length(
-        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
-      );
-      const samplesPerRay = Math.ceil(spatialDiagonal / sampleDistance) + 1;
-      mapper.setMaximumSamplesPerRay(samplesPerRay);
-      mapper.setSampleDistance(sampleDistance);
-      viewport.render();
-    },
-
-    /**
      * Reloads the volume for the viewport with the given IJK decimation.
      * Uses original imageIds from the display set / data source, reuses the
      * current volume's loader scheme, purges the old volume from cache, then
@@ -2737,9 +2713,6 @@ function commandsModule({
     },
     setVolumeRenderingQuality: {
       commandFn: actions.setVolumeRenderingQuality,
-    },
-    setSampleDistanceMultiplier: {
-      commandFn: actions.setSampleDistanceMultiplier,
     },
     reloadVolumeWithDecimation: {
       commandFn: actions.reloadVolumeWithDecimation,

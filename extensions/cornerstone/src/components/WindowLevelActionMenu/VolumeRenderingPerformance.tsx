@@ -7,9 +7,6 @@ import { AllInOneMenu, Numeric } from '@ohif/ui-next';
 const DEFAULT_IJK_DECIMATION: [number, number, number] = [1, 1, 1];
 const MAX_IN_PLANE_DECIMATION = 32;
 const MAX_K_AXIS_DECIMATION = 64;
-const MAX_SAMPLE_DISTANCE_MULTIPLIER = 20;
-const DEFAULT_SAMPLE_DISTANCE_MULTIPLIER = 1;
-const DEFAULT_SAMPLE_DISTANCE_MULTIPLIER_ON_ROTATION = 1;
 
 /** Parses IJK decimation from volumeId only when format is decimatedVolumeLoader:baseVolumeId:i_j_k; otherwise [1,1,1]. */
 function getIjkDecimationFromVolumeId(volumeId: string): [number, number, number] {
@@ -42,12 +39,6 @@ export function VolumeRenderingPerformance({
   const [currentKAxisDecimation, setCurrentKAxisDecimation] = useState<number>(
     DEFAULT_IJK_DECIMATION[2]
   );
-  const [sampleDistanceMultiplierOverall, setSampleDistanceMultiplierOverall] = useState(
-    DEFAULT_SAMPLE_DISTANCE_MULTIPLIER
-  );
-  const [sampleDistanceMultiplierOnRotation, setSampleDistanceMultiplierOnRotation] =
-    useState(DEFAULT_SAMPLE_DISTANCE_MULTIPLIER_ON_ROTATION);
-  const [gpuPerformanceScore, setGpuPerformanceScore] = useState<number | null>(null);
 
   useEffect(() => {
     try {
@@ -92,20 +83,6 @@ export function VolumeRenderingPerformance({
         setVolumeDimensions(originalDims);
         setCurrentInPlaneDecimation(inPlane);
         setCurrentKAxisDecimation(kAxis);
-      }
-
-      const mapper = (volumeActor as { actor?: { getMapper?: () => { getInputData?: () => { getSpacing?: () => number[] }; getSampleDistance?: () => number } } }).actor?.getMapper?.();
-      const image = mapper?.getInputData?.();
-      const sampleDistance = mapper?.getSampleDistance?.();
-      if (image && typeof sampleDistance === 'number' && Number.isFinite(sampleDistance)) {
-        const spacing = image.getSpacing?.() ?? [];
-        const averageSpacing = spacing.length === 3 ? (spacing[0] + spacing[1] + spacing[2]) / 3 : 0;
-        if (averageSpacing > 0) {
-          const multiplier = sampleDistance / averageSpacing;
-          setSampleDistanceMultiplierOverall(
-            Math.max(1, Math.min(Math.round(multiplier), MAX_SAMPLE_DISTANCE_MULTIPLIER))
-          );
-        }
       }
     } catch {
       setVolumeDimensions(null);
@@ -155,42 +132,6 @@ export function VolumeRenderingPerformance({
     [commandsManager, viewportId, currentInPlaneDecimation]
   );
 
-  const handleSampleDistanceMultiplier = useCallback(
-    (value: number) => {
-      const v = Math.max(1, Math.min(value, MAX_SAMPLE_DISTANCE_MULTIPLIER));
-      setSampleDistanceMultiplierOverall(v);
-      commandsManager.runCommand('setSampleDistanceMultiplier', {
-        sampleDistanceMultiplier: v,
-        viewportId,
-      });
-    },
-    [commandsManager, viewportId]
-  );
-
-  const handleSampleDistanceMultiplierOnRotationChange = useCallback(
-    (value: number) => {
-      const v = Math.max(1, Math.min(value, MAX_SAMPLE_DISTANCE_MULTIPLIER));
-      setSampleDistanceMultiplierOnRotation(v);
-      // const toolGroup = servicesManager.services.toolGroupService.getToolGroupForViewport(
-      //   viewportId
-      // );
-      // if (toolGroup) {
-      //   const trackballConfig =
-      //     toolGroup.getToolConfiguration(toolNames.VolumeRotate) ?? {};
-      //   toolGroup.setToolConfiguration(toolNames.VolumeRotate, {
-      //     ...(typeof trackballConfig === 'object' ? trackballConfig : {}),
-      //     rotateSampleDistanceFactor: v,
-      //   });
-      //   const cropConfig = toolGroup.getToolConfiguration('VolumeCropping') ?? {};
-      //   toolGroup.setToolConfiguration('VolumeCropping', {
-      //     ...(typeof cropConfig === 'object' ? cropConfig : {}),
-      //     rotateSampleDistanceFactor: v,
-      //   });
-      // }
-    },
-    [servicesManager, viewportId]
-  );
-
   if (
     volumeDimensions == null ||
     totalVoxels == null ||
@@ -208,59 +149,6 @@ export function VolumeRenderingPerformance({
     <AllInOneMenu.ItemPanel>
       <div className="my-1 mt-2 flex flex-col space-y-2">
         <div className="w-full pl-2 pr-1">
-          <div className="flex flex-col space-y-2">
-            <div className="mt-2 flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between px-2 text-base">
-              <span className="text-muted-foreground text-sm">VRT Downsampling</span>
-              {gpuPerformanceScore != null && (
-                <span className="font-mono text-xs text-muted-foreground">
-                  GPU Score: {gpuPerformanceScore.toFixed(1)}
-                </span>
-              )}
-            </div>
-            <div className="bg-background mt-1 mb-1 h-px w-full" />
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-xs">Overall</span>
-                <Numeric.Container
-                  mode="stepper"
-                  min={1}
-                  max={MAX_SAMPLE_DISTANCE_MULTIPLIER}
-                  step={1}
-                  value={sampleDistanceMultiplierOverall}
-                  onChange={v => handleSampleDistanceMultiplier(v as number)}
-                  className="border-0 bg-transparent"
-                >
-                  <Numeric.NumberStepper
-                    direction="horizontal"
-                    inputWidth="w-7 max-w-7"
-                  />
-                </Numeric.Container>
-              </div>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-xs">
-                  During rotation (Overall x factor)
-                </span>
-                <Numeric.Container
-                  mode="stepper"
-                  min={1}
-                  max={MAX_SAMPLE_DISTANCE_MULTIPLIER}
-                  step={1}
-                  value={sampleDistanceMultiplierOnRotation}
-                  onChange={v => handleSampleDistanceMultiplierOnRotationChange(v as number)}
-                  className="border-0 bg-transparent"
-                >
-                  <Numeric.NumberStepper
-                    direction="horizontal"
-                    inputWidth="w-7 max-w-7"
-                  />
-                </Numeric.Container>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-background mt-1 mb-1 h-px w-full" />
           <div className="mt-2 flex flex-col space-y-2">
             <div className="flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between px-2 text-base">
               <span className="text-muted-foreground text-sm">Volume Downsizing</span>
