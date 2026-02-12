@@ -1,5 +1,6 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
+import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
 
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
@@ -143,7 +144,8 @@ function _load(
   if (
     (rtDisplaySet.loading || rtDisplaySet.isLoaded) &&
     loadPromises[SOPInstanceUID] &&
-    cachedRTStructsSEG.has(rtDisplaySet.displaySetInstanceUID)
+    cachedRTStructsSEG.has(rtDisplaySet.displaySetInstanceUID) &&
+    _segmentationExists(rtDisplaySet)
   ) {
     return loadPromises[SOPInstanceUID];
   }
@@ -217,6 +219,10 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   });
 
   return ReferencedSeriesSequence;
+}
+
+function _segmentationExists(segDisplaySet) {
+  return cstSegmentation.state.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
 function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {

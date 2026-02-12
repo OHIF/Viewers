@@ -1727,28 +1727,8 @@ function commandsModule({
      * @param props.segmentationId - The ID of the segmentation to delete
      */
     deleteSegmentationCommand: ({ segmentationId }) => {
-      const { segmentationService, viewportGridService, displaySetService } =
-        servicesManager.services;
-
-      // Cleanup segmentation from display set if not from image source
-      const seg = segmentationService.getSegmentation(segmentationId);
-      if (seg && seg.predecessorImageId === undefined) {
-        try {
-          // Note: segmentations from display sets handled when removed from
-          // display set layer
-          segmentationService.remove(segmentationId);
-          displaySetService.deleteDisplaySet(segmentationId);
-        } catch (e) {
-          console.warn(e);
-        }
-      }
-
-      // Cleanup segmentation from display set layer
-      const viewportId = viewportGridService.getActiveViewportId();
-      commandsManager.runCommand('removeDisplaySetLayer', {
-        viewportId,
-        displaySetInstanceUID: segmentationId,
-      });
+      const { segmentationService } = servicesManager.services;
+      segmentationService.remove(segmentationId);
     },
 
     /**
@@ -1757,16 +1737,11 @@ function commandsModule({
      */
     removeSegmentationFromViewportCommand: ({ segmentationId }) => {
       const { segmentationService, viewportGridService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+      segmentationService.removeSegmentationRepresentations(viewportId, { segmentationId });
 
-      const seg = segmentationService.getSegmentation(segmentationId);
-      if (seg && seg.predecessorImageId === undefined) {
-        // Only remove segmentation without deleting display set
-        segmentationService.removeSegmentationRepresentations(
-          viewportGridService.getActiveViewportId(),
-          { segmentationId }
-        );
-      } else {
-        const viewportId = viewportGridService.getActiveViewportId();
+      const displaySet = displaySetService.getDisplaySetByUID(segmentationId);
+      if (displaySet) {
         commandsManager.runCommand('removeDisplaySetLayer', {
           viewportId,
           displaySetInstanceUID: segmentationId,

@@ -245,7 +245,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REMOVED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRemovedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -265,7 +265,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
-      this._onSegmentationRepresentationModifiedFromSource
+      this._onSegmentationRepresentationRemovedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -764,15 +764,7 @@ class SegmentationService extends PubSubService {
       this.updateSegmentationInSource(segmentationId, data as Partial<cstTypes.Segmentation>);
     } else {
       // Add a new segmentation
-      const spInput = data as cstTypes.SegmentationPublicInput;
-      if (!spInput.representation?.type) {
-        // Safety check to prevent missing representation field error
-        console.warn(
-          `Skipping addOrUpdateSegmentation: ${segmentationId} missing representation field`
-        );
-        return;
-      }
-      this.addSegmentationToSource(spInput);
+      this.addSegmentationToSource(data as cstTypes.SegmentationPublicInput);
     }
   }
 
@@ -1785,7 +1777,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REMOVED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRemovedFromSource
     );
 
     eventTarget.addEventListener(
@@ -1805,7 +1797,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
-      this._onSegmentationRepresentationModifiedFromSource
+      this._onSegmentationRepresentationRemovedFromSource
     );
 
     eventTarget.addEventListener(
@@ -2044,6 +2036,14 @@ class SegmentationService extends PubSubService {
     });
   };
 
+  private _onSegmentationRepresentationRemovedFromSource = evt => {
+    const { segmentationId, viewportId } = evt.detail;
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED, {
+      segmentationId,
+      viewportId,
+    });
+  };
+
   private _onSegmentationModifiedFromSource = (
     evt: cstTypes.EventTypes.SegmentationModifiedEventType
   ) => {
@@ -2060,6 +2060,16 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = evt.detail;
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      segmentationId,
+    });
+  };
+
+  private _onSegmentationRemovedFromSource = (
+    evt: cstTypes.EventTypes.SegmentationRemovedEventType
+  ) => {
+    const { segmentationId } = evt.detail;
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,
     });
   };
