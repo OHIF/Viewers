@@ -76,7 +76,9 @@
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
     "lerna:customVersion": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "pack-dicom-image-loader": "node -e \"require('child_process').execSync('npm run build:loader && npm pack', {cwd: require('path').resolve(__dirname, '../cornerstone3D-beta/packages/dicomImageLoader'), stdio: 'inherit'})\"",
+    "install:with-dicom-loader": "yarn pack-dicom-image-loader && yarn install"
   },
   "dependencies": {
     "execa": "8.0.1"
@@ -136,6 +138,10 @@
     ]
   },
   "resolutions": {
+    "@cornerstonejs/tools": "link:@cornerstonejs/tools",
+    "@cornerstonejs/core": "link:@cornerstonejs/core",
+    "@cornerstonejs/adapters": "link:@cornerstonejs/adapters",
+    "@cornerstonejs/dicom-image-loader": "file:../cornerstone3D-beta/packages/dicomImageLoader/cornerstonejs-dicom-image-loader-4.15.31.tgz",
     "commander": "8.3.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",

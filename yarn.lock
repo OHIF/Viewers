@@ -1279,15 +1279,12 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@cornerstonejs/adapters@4.15.29":
-  version "4.15.29"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-4.15.29.tgz#cd8a60c72db55a76f8e0489ad825bf0f28b0f625"
-  integrity sha512-OcG3YtCQ+C7X/f7buK3dsMOc8NyqsgH/LZRT/JbvppUnqhhfyKIpBTtJG+2+roMyLsi3QrsCeI9Eu6KaQgFFvw==
-  dependencies:
-    "@babel/runtime-corejs2" "7.26.10"
-    buffer "6.0.3"
-    dcmjs "0.48.0"
-    gl-matrix "3.4.3"
-    ndarray "1.0.19"
+  version "0.0.0"
+  uid ""
+
+"@cornerstonejs/adapters@link:@cornerstonejs/adapters":
+  version "0.0.0"
+  uid ""
 
 "@cornerstonejs/ai@4.15.29":
   version "4.15.29"
@@ -1329,19 +1326,16 @@
   integrity sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w==
 
 "@cornerstonejs/core@4.15.29":
-  version "4.15.29"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-4.15.29.tgz#498b3dd23119b9b03fbd81d859e029715766f957"
-  integrity sha512-o+5gXbxtZde1GIULmw+hWwf6KI3eiXCre0U1C372jbovxA66JH2t+2VW1nj0F2JRRnO0FjgT/+DWYCWt0ILGoA==
-  dependencies:
-    "@kitware/vtk.js" "34.15.1"
-    comlink "4.4.2"
-    gl-matrix "3.4.3"
-    loglevel "1.9.2"
+  version "0.0.0"
+  uid ""
 
-"@cornerstonejs/dicom-image-loader@4.15.29":
-  version "4.15.29"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-4.15.29.tgz#238cd5cdc4cfd310e0baffb8e9be7895db01dffe"
-  integrity sha512-+R7NoFyVTz2OSKclVQ21dqwgYmFM5q7SZc59YPcxfop7rk2+9H5rRxa04ytKHPjz+N5AlqbLKpJvy/RE10Xcew==
+"@cornerstonejs/core@link:@cornerstonejs/core":
+  version "0.0.0"
+  uid ""
+
+"@cornerstonejs/dicom-image-loader@4.15.29", "@cornerstonejs/dicom-image-loader@file:../cornerstone3D-beta/packages/dicomImageLoader/cornerstonejs-dicom-image-loader-4.15.31.tgz":
+  version "4.15.31"
+  resolved "file:../cornerstone3D-beta/packages/dicomImageLoader/cornerstonejs-dicom-image-loader-4.15.31.tgz#9bb0321ab1e3679ee1661675b0a55d0bdea6b5ca"
   dependencies:
     "@cornerstonejs/codec-charls" "1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "1.2.2"
@@ -1369,13 +1363,12 @@
     "@icr/polyseg-wasm" "0.4.0"
 
 "@cornerstonejs/tools@4.15.29":
-  version "4.15.29"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-4.15.29.tgz#46d29b8f01d2cc702a15547b1013d2b6a94cffff"
-  integrity sha512-MG+RPJ8EUyT3tWcHimSoDHOTeodNQAz7vPG+H03BjkbRu2RPsRVQRqSqoWHkyTOgyUv1XTk0JXJTXZQ/I7xcdA==
-  dependencies:
-    "@types/offscreencanvas" "2019.7.3"
-    comlink "4.4.2"
-    lodash.get "4.4.2"
+  version "0.0.0"
+  uid ""
+
+"@cornerstonejs/tools@link:@cornerstonejs/tools":
+  version "0.0.0"
+  uid ""
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
@@ -3342,7 +3335,7 @@
 
 "@rollup/rollup-linux-x64-gnu@4.13.0":
   version "4.13.0"
-  resolved "https://registry.yarnpkg.com/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.13.0.tgz#f672f6508f090fc73f08ba40ff76c20b57424778"
+  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.13.0.tgz#f672f6508f090fc73f08ba40ff76c20b57424778"
   integrity sha512-yUD/8wMffnTKuiIsl6xU+4IA8UNhQ/f1sAnQebmE/lyQ8abjsVyDkyRkWop0kdMhKMprpNIhPmYlCxgHrPoXoA==
 
 "@rsbuild/core@1.5.1":
@@ -4065,11 +4058,6 @@
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
-
-"@types/offscreencanvas@2019.7.3":
-  version "2019.7.3"
-  resolved "https://registry.yarnpkg.com/@types/offscreencanvas/-/offscreencanvas-2019.7.3.tgz#90267db13f64d6e9ccb5ae3eac92786a7c77a516"
-  integrity sha512-ieXiYmgSRXUDeOntE1InxjWyvEelZGP63M+cGuquuRLuIKKT1osnkXjxev9B7d1nXSug5vpunx+gNlbVxMlC9A==
 
 "@types/parse-json@^4.0.0":
   version "4.0.2"
@@ -6277,7 +6265,7 @@ combined-stream@^1.0.8, combined-stream@~1.0.6:
 
 comlink@4.4.2, comlink@^4.4.1:
   version "4.4.2"
-  resolved "https://registry.yarnpkg.com/comlink/-/comlink-4.4.2.tgz#cbbcd82742fbebc06489c28a183eedc5c60a2bca"
+  resolved "https://registry.npmjs.org/comlink/-/comlink-4.4.2.tgz#cbbcd82742fbebc06489c28a183eedc5c60a2bca"
   integrity sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==
 
 commander@8.3.0, commander@9.2.0, commander@^10.0.1, commander@^11.1.0, commander@^2.20.0, commander@^2.8.1, commander@^6.2.1, commander@^7.2.0, commander@^8.3.0:
@@ -11570,7 +11558,7 @@ jju@~1.4.0:
 
 jpeg-lossless-decoder-js@2.1.2:
   version "2.1.2"
-  resolved "https://registry.yarnpkg.com/jpeg-lossless-decoder-js/-/jpeg-lossless-decoder-js-2.1.2.tgz#9ff0ecfcafa6acaee6097c532720bd526278aa3d"
+  resolved "https://registry.npmjs.org/jpeg-lossless-decoder-js/-/jpeg-lossless-decoder-js-2.1.2.tgz#9ff0ecfcafa6acaee6097c532720bd526278aa3d"
   integrity sha512-fYf/plymnuKwVw+s8gJ8O/BPw8y8OLaN11MBvEcT05kuy3m45o7BEC4J0JbxMNUYyO+MdK/I/jq0q1gkVYZm2Q==
   optionalDependencies:
     "@rollup/rollup-linux-x64-gnu" "4.13.0"
@@ -12295,7 +12283,7 @@ log-update@^4.0.0:
     slice-ansi "^4.0.0"
     wrap-ansi "^6.2.0"
 
-loglevel@1.9.2, loglevel@^1.8.1:
+loglevel@^1.8.1:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.9.2.tgz#c2e028d6c757720107df4e64508530db6621ba08"
   integrity sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==
@@ -14263,7 +14251,7 @@ pacote@^15.2.0:
 
 pako@2.1.0, pako@^2.0.4:
   version "2.1.0"
-  resolved "https://registry.yarnpkg.com/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
+  resolved "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
   integrity sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==
 
 pako@^1.0.5, pako@~1.0.5:
@@ -18404,7 +18392,7 @@ utrie@^1.0.2:
 
 uuid@9.0.1, uuid@^9.0, uuid@^9.0.0:
   version "9.0.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 uuid@^8.3.2:

@@ -66,8 +66,19 @@ function getRuntimeLoadModesExtensions(modules) {
   const dynamicLoad = [];
   dynamicLoad.push(
     '\n\n// Add a dynamic runtime loader',
-    'async function loadModule(module) {',
-    "  if (typeof module !== 'string') return module;"
+    'async function loadModule(module, fallback) {',
+    "  if (typeof module !== 'string') return module;",
+    '  // If a fallback import function is provided, try it first.',
+    "  if (typeof fallback === 'function') {",
+    '    try {',
+    '      const fallbackModule = await fallback();',
+    '      if (fallbackModule != null) {',
+    '        return fallbackModule;',
+    '      }',
+    '    } catch (e) {',
+    '      // Ignore and continue with the runtime/global loader below.',
+    '    }',
+    '  }'
   );
   modules.forEach(module => {
     const packageName = extractName(module);
