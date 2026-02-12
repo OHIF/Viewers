@@ -99,6 +99,7 @@ export default async function init({
     segmentationService,
     measurementService,
     colorbarService,
+    displaySetService,
     toolbarService,
   } = servicesManager.services;
 
@@ -272,6 +273,13 @@ export default async function init({
 
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
+
+  const getDisplaySetFromVolumeId = (volumeId: string) => {
+    const allDisplaySets = displaySetService.getActiveDisplaySets();
+    const volume = cornerstone.cache.getVolume(volumeId);
+    const imageIds = volume.imageIds;
+    return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
+  };
 
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;

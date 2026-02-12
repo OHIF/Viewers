@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { Thumbnail } from '../Thumbnail';
 import { useDynamicMaxHeight } from '../../hooks/useDynamicMaxHeight';
-import { ScrollArea } from '../ScrollArea';
 
 const ThumbnailList = ({
   thumbnails,
@@ -27,13 +26,11 @@ const ThumbnailList = ({
   );
 
   return (
-    <ScrollArea>
-      <div className="flex flex-col">
-        <div
-          ref={ref}
-          style={{ maxHeight: maxHeight }}
-          className="flex flex-col gap-[2px] pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]"
-        >
+    <div className="flex flex-col">
+      <div
+        ref={ref}
+        className="flex flex-col gap-[2px] pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]"
+      >
           {thumbnailItems.length > 0 && (
             <div
               id="ohif-thumbnail-list"
@@ -90,9 +87,8 @@ const ThumbnailList = ({
               })}
             </div>
           )}
-        </div>
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 
