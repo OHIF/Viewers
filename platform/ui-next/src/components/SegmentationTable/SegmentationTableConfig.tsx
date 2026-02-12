@@ -36,7 +36,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
   return (
     <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
       <div className="my-1 flex items-center justify-between">
-        <span className="text-aqua-pale text-xs">
+        <span className="text-muted-foreground text-xs">
           {t('Show')}:{' '}
           {renderFill && renderOutline
             ? t('Fill & Outline')
