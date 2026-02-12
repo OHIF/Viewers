@@ -168,7 +168,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentations(viewportId);
+      segmentationService.removeRepresentationsFromViewport(viewportId);
       referencedDisplaySetRef.current = null;
       toolGroupService.destroyToolGroup(toolGroupId);
     };

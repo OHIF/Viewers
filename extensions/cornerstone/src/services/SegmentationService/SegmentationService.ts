@@ -1284,14 +1284,14 @@ class SegmentationService extends PubSubService {
 
   /**
    * Clears segmentation representations from the viewport.
-   * Unlike removeSegmentationRepresentations, this doesn't update
+   * Unlike removeRepresentationsFromViewport, this doesn't update
    * removed display set and representation maps.
    * We track removed segmentations manually to avoid re-adding them
    * when the display set is added again.
    * @param viewportId - The viewport ID to clear segmentation representations from.
    */
   public clearSegmentationRepresentations(viewportId: string): void {
-    this.removeSegmentationRepresentations(viewportId);
+    this.removeRepresentationsFromViewport(viewportId);
   }
 
   /**
@@ -1307,7 +1307,7 @@ class SegmentationService extends PubSubService {
   }
 
   /**
-   * It removes the segmentation representations from the viewport.
+   * Removes segmentation representations from the viewport.
    * @param viewportId - The viewport id to remove the segmentation representations from.
    * @param specifier - The specifier to remove the segmentation representations.
    *
@@ -1317,7 +1317,7 @@ class SegmentationService extends PubSubService {
    * If a type specifier is provided, only the segmentation representation with the specified type are removed.
    * If both a segmentationId and type specifier are provided, only the segmentation representation with the specified segmentationId and type are removed.
    */
-  public removeSegmentationRepresentations(
+  public removeRepresentationsFromViewport(
     viewportId: string,
     specifier: {
       segmentationId?: string;

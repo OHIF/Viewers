@@ -1735,18 +1735,14 @@ function commandsModule({
      * Removes a segmentation from the viewport
      * @param props.segmentationId - The ID of the segmentation to remove
      */
-    removeSegmentationFromViewportCommand: ({ segmentationId }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
+    removeSegmentationFromViewportCommand: ({ segmentationId: displaySetInstanceUID }) => {
+      const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getActiveViewportId();
-      segmentationService.removeSegmentationRepresentations(viewportId, { segmentationId });
 
-      const displaySet = displaySetService.getDisplaySetByUID(segmentationId);
-      if (displaySet) {
-        commandsManager.runCommand('removeDisplaySetLayer', {
-          viewportId,
-          displaySetInstanceUID: segmentationId,
-        });
-      }
+      commandsManager.runCommand('removeDisplaySetLayer', {
+        viewportId,
+        displaySetInstanceUID,
+      });
     },
 
     /**
