@@ -67,6 +67,7 @@ export default async function init({
     peerImport: appConfig.peerImport,
   });
 
+    // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
 
   cornerstone.setConfiguration({
@@ -77,7 +78,8 @@ export default async function init({
     },
   });
 
-  const { maxCacheSize } = appConfig;
+   // For debugging large datasets, otherwise prefer the defaults
+ const { maxCacheSize } = appConfig;
   if (maxCacheSize) {
     cornerstone.cache.setMaxCacheSize(maxCacheSize);
   }
@@ -97,12 +99,16 @@ export default async function init({
     segmentationService,
     measurementService,
     colorbarService,
-    displaySetService,
     toolbarService,
   } = servicesManager.services;
 
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
     colorbarService.EVENTS.STATE_CHANGED,
+  ]);
+  toolbarService.registerEventForToolbarUpdate(segmentationService, [
+    segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+    segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+    segmentationService.EVENTS.SEGMENTATION_ANNOTATION_CUT_MERGE_PROCESS_COMPLETED,
   ]);
 
   window.services = servicesManager.services;
@@ -130,10 +136,18 @@ export default async function init({
     getSegmentationPresentationId
   );
 
-  cornerstoneTools.segmentation.config.style.setStyle(
+  segmentationService.setStyle(
     { type: SegmentationRepresentations.Contour },
     {
+      // Declare these alpha values at the Contour type level so that they can be set/changed/inherited for all contour segmentations.
+      fillAlpha: 0.5,
+      fillAlphaInactive: 0.4,
+
+      // In general do not fill contours so that hydrated RTSTRUCTs are not filled in when active or inactive by default.
+      // However, hydrated RTSTRUCTs are filled in when active or inactive if the user chooses to fill ALL contours.
+      // Those Contours created in OHIF (i.e. using the Segmentation Panel) will override both fill properties upon creation.
       renderFill: false,
+      renderFillInactive: false,
     }
   );
 
@@ -258,36 +272,6 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
-    /**
-   * Gets the display set from a volume ID.
-   *
-   * Volume ID format: {loaderScheme}:{displaySetInstanceUID} or {loaderScheme}:{displaySetInstanceUID}:{suffix}
-   *
-   * @example
-   * decimatedVolumeLoader:8d5829ce-e334-9ed0-6c81-ee6e9fbb9e58:volume3d
-   *
-   * @param volumeId - The volume ID string to parse
-   * @returns The display set matching the volume ID, or undefined if not found
-   */
-  const getDisplaySetFromVolumeId = (volumeId: string) => {
-    const parts = volumeId.split(':');
-    if (parts.length >= 2) {
-      const displaySetInstanceUID = parts[1];
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-      if (displaySet) {
-        return displaySet;
-      }
-    }
-
-    const allDisplaySets = displaySetService.getActiveDisplaySets();
-    const volume = cornerstone.cache.getVolume(volumeId);
-    if (!volume || !volume.imageIds) {
-      return undefined;
-    }
-    const imageIds = volume.imageIds;
-    return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
-  };
-
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
     const { viewport } = getEnabledElement(element);
@@ -310,47 +294,6 @@ export default async function init({
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
-
-    /**
-   * Handles volume loaded events to update display set with actual decimated image count.
-   *
-   * When a volume is loaded, this listener updates the display set's numImageFrames
-   * attribute with the actual number of image IDs in the volume, which may differ
-   * from the initial count due to decimation during loading.
-   *
-   * @param evt - The volume loaded event containing the volume details
-   */
-  const volumeLoadedHandler = (evt) => {
-    const { volume } = evt.detail;
-
-    if (!volume || !volume.volumeId || !volume.imageIds) {
-      console.warn('Volume loaded but missing required properties');
-      return;
-    }
-
-    const displaySet = getDisplaySetFromVolumeId(volume.volumeId);
-
-    if (!displaySet) {
-      console.warn('No displaySet found for volume:', volume.volumeId);
-      return;
-    }
-    const actualImageCount = volume.imageIds.length;
-    const dsAny = displaySet as any;
-    if (dsAny.numImageFrames !== actualImageCount && typeof dsAny.setAttributes === 'function') {
-
-      dsAny.setAttributes({
-        numImageFrames: actualImageCount,
-      });
-
-      displaySetService._broadcastEvent(
-        displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-        displaySetService.getActiveDisplaySets()
-      );
-
-    }
-  };
-
-  eventTarget.addEventListener(EVENTS.VOLUME_LOADED, volumeLoadedHandler);
 
   colormaps.forEach(registerColormap);
 

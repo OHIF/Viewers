@@ -1561,6 +1561,16 @@ function commandsModule({
         viewport.setProperties(savedProperties, newVolumeId);
       }
       viewport.render();
+
+      const loadedVolume = cache.getVolume(newVolumeId) as { imageIds?: string[] } | undefined;
+      const actualImageCount = loadedVolume?.imageIds?.length;
+      if (displaySet && actualImageCount != null && typeof (displaySet as any).setAttributes === 'function') {
+        (displaySet as any).setAttributes({ numImageFrames: actualImageCount });
+        displaySetService._broadcastEvent(
+          displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+          displaySetService.getActiveDisplaySets()
+        );
+      }
     },
 
     /**
