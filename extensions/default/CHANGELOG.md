@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replaces legacy colors with ui-next colors ([#5351](https://github.com/OHIF/Viewers/issues/5351)) ([9a2691a](https://github.com/OHIF/Viewers/commit/9a2691a71fe3723bb05cbd148968b64e5d0fa951))
+
+
+
+
+
 # [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
 
 **Note:** Version bump only for package @ohif/extension-default
