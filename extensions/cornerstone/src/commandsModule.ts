@@ -1522,7 +1522,14 @@ function commandsModule({
       }
 
       const idParts = currentVolumeId.split(':');
-      const baseVolumeId = idParts.length > 1 ? idParts[1] : displaySetInstanceUID;
+      const lastSegment = idParts[idParts.length - 1] ?? '';
+      const isDecimatedId =
+        idParts[0] === 'decimatedVolumeLoader' &&
+        idParts.length >= 3 &&
+        /^\d+_\d+_\d+$/.test(lastSegment);
+      const baseVolumeId = isDecimatedId
+        ? idParts.slice(1, -1).join(':')
+        : currentVolumeId;
       const decimationSuffix = `${i}_${j}_${k}`;
       const newVolumeId = `decimatedVolumeLoader:${baseVolumeId}:${decimationSuffix}`;
 

@@ -8,13 +8,13 @@ const DEFAULT_IJK_DECIMATION: [number, number, number] = [1, 1, 1];
 const MAX_IN_PLANE_DECIMATION = 32;
 const MAX_K_AXIS_DECIMATION = 64;
 
-/** Parses IJK decimation from volumeId only when format is decimatedVolumeLoader:baseVolumeId:i_j_k; otherwise [1,1,1]. */
+/** Parses IJK decimation from volumeId. Format is decimatedVolumeLoader:baseVolumeId:i_j_k; baseVolumeId may contain colons. */
 function getIjkDecimationFromVolumeId(volumeId: string): [number, number, number] {
   const parts = volumeId.split(':');
   if (parts.length < 3 || parts[0] !== 'decimatedVolumeLoader') {
     return [...DEFAULT_IJK_DECIMATION];
   }
-  const suffix = parts[2];
+  const suffix = parts[parts.length - 1];
   if (!/^\d+_\d+_\d+$/.test(suffix)) {
     return [...DEFAULT_IJK_DECIMATION];
   }
