@@ -6,6 +6,7 @@ import {
   RightPanelPageObject,
   ViewportPageObject,
   NotFoundStudyPageObject,
+  DicomTagBrowserPageObject,
 } from '../pages';
 
 type PageObjects = {
@@ -15,6 +16,7 @@ type PageObjects = {
   rightPanelPageObject: RightPanelPageObject;
   viewportPageObject: ViewportPageObject;
   notFoundStudyPageObject: NotFoundStudyPageObject;
+  dicomTagBrowserPageObject: DicomTagBrowserPageObject;
 };
 
 export const test = base.extend<PageObjects>({
@@ -35,6 +37,9 @@ export const test = base.extend<PageObjects>({
   },
   notFoundStudyPageObject: async ({ page }, use) => {
     await use(new NotFoundStudyPageObject(page));
+  },
+  dicomTagBrowserPageObject: async ({ page }, use) => {
+    await use(new DicomTagBrowserPageObject(page));
   },
 });
 
