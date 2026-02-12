@@ -4,7 +4,6 @@ import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { VOLUME_LOADER_SCHEME } from '../../constants';
-//import { applyDecimationFromLocalStorage } from '../../utils/decimation/applyDecimationFromLocalStorage';
 import { applyAutoDecimationIfNecessary } from '../../utils/decimation/applyAutoDecimationIfNecessary';
 import { DEFAULT_IJK_DECIMATION } from '../../utils/decimation/constants';
 
@@ -14,23 +13,23 @@ class CornerstoneCacheService {
     altName: 'CornerstoneCacheService',
     create: ({
       servicesManager,
-      extensionManager,
+      appConfig = {},
     }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
-      return new CornerstoneCacheService(servicesManager, extensionManager);
+      return new CornerstoneCacheService(servicesManager, appConfig);
     },
   };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
   readonly servicesManager: AppTypes.ServicesManager;
-  readonly extensionManager: AppTypes.ExtensionManager;
+  private readonly appConfig: AppTypes.Config;
 
   constructor(
     servicesManager: AppTypes.ServicesManager,
-    extensionManager: AppTypes.ExtensionManager
+    appConfig: AppTypes.Config
   ) {
     this.servicesManager = servicesManager;
-    this.extensionManager = extensionManager;
+    this.appConfig = appConfig;
   }
 
   public getCacheSize() {
@@ -254,14 +253,13 @@ class CornerstoneCacheService {
 
     const volumeData = [];
 
-    // Apply decimation logic to viewport options
     let enrichedViewportOptions = viewportOptions || {};
 
     // First, enrich from localStorage if needed (for volume3d viewports)
     //enrichedViewportOptions = applyDecimationFromLocalStorage(enrichedViewportOptions);
 
     // Then, apply auto-decimation if a threshold is set in app config
-    const volumeAutoDecimationThreshold = this.extensionManager?.appConfig?.volumeAutoDecimationThreshold;
+    const volumeAutoDecimationThreshold = this.appConfig?.volumeAutoDecimationThreshold;
     enrichedViewportOptions = applyAutoDecimationIfNecessary(
       enrichedViewportOptions,
       displaySets,

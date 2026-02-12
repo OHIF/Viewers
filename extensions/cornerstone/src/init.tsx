@@ -67,7 +67,7 @@ export default async function init({
     peerImport: appConfig.peerImport,
   });
 
-    // For debugging e2e tests that are failing on CI
+  // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
 
   cornerstone.setConfiguration({
@@ -78,8 +78,8 @@ export default async function init({
     },
   });
 
-   // For debugging large datasets, otherwise prefer the defaults
- const { maxCacheSize } = appConfig;
+  // For debugging large datasets, otherwise prefer the defaults
+  const { maxCacheSize } = appConfig;
   if (maxCacheSize) {
     cornerstone.cache.setMaxCacheSize(maxCacheSize);
   }
@@ -105,6 +105,7 @@ export default async function init({
   toolbarService.registerEventForToolbarUpdate(colorbarService, [
     colorbarService.EVENTS.STATE_CHANGED,
   ]);
+
   toolbarService.registerEventForToolbarUpdate(segmentationService, [
     segmentationService.EVENTS.SEGMENTATION_MODIFIED,
     segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
@@ -330,6 +331,7 @@ export default async function init({
 const createMetadataWrappedStrategy = (strategyFn: (args: any) => any) => {
   return (args: any) => {
     const clonedConfig = imageRetrieveMetadataProvider.clone();
+    imageRetrieveMetadataProvider.clear();
 
     try {
       const result = strategyFn(args);
@@ -337,7 +339,6 @@ const createMetadataWrappedStrategy = (strategyFn: (args: any) => any) => {
     } finally {
       // Ensure metadata is always restored, even if there's an error
       setTimeout(() => {
-        imageRetrieveMetadataProvider.clear();
         imageRetrieveMetadataProvider.restore(clonedConfig);
       }, 10);
     }

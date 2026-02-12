@@ -22,13 +22,13 @@ function getIjkDecimationFromVolumeId(volumeId: string): [number, number, number
   return [i, j, k];
 }
 
-export type VolumeRenderingPerformanceProps = {
+export type VolumeOptionsProps = {
   viewportId: string;
 };
 
-export function VolumeRenderingPerformance({
+export function VolumeOptions({
   viewportId,
-}: VolumeRenderingPerformanceProps): ReactElement {
+}: VolumeOptionsProps): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [volumeDimensions, setVolumeDimensions] = useState<number[] | null>(null);

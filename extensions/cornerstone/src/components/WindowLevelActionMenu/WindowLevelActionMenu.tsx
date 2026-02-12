@@ -6,7 +6,7 @@ import { Colorbar } from './Colorbar';
 import { WindowLevel } from './WindowLevel';
 import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
-import { VolumeRenderingPerformance } from './VolumeRenderingPerformance';
+import { VolumeOptions } from './VolumeOptions';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import i18n from 'i18next';
 
@@ -100,7 +100,7 @@ export function WindowLevelActionMenuContent({
 
         {is3DVolume && (
           <AllInOneMenu.SubMenu itemLabel={t('Volume Options')}>
-            <VolumeRenderingPerformance viewportId={viewportId} />
+            <VolumeOptions viewportId={viewportId} />
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
