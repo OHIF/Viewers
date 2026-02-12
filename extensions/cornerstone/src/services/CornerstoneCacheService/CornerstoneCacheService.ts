@@ -121,13 +121,10 @@ class CornerstoneCacheService {
 
     candidateVolumeIds.forEach(candidateVolumeId => {
       this.volumeImageIds.delete(candidateVolumeId);
-
       const volume = cs3DCache.getVolume(candidateVolumeId);
-
       if (!volume) {
         return;
       }
-
       if (volume.imageIds) {
           volume.imageIds.forEach(imageId => {
           if (cs3DCache.getImageLoadObject(imageId)) {
@@ -135,7 +132,6 @@ class CornerstoneCacheService {
           }
         });
       }
-
       if (cs3DCache._volumeCache.has(candidateVolumeId)) {
         cs3DCache._volumeCache.delete(candidateVolumeId);
       }
@@ -254,13 +250,8 @@ class CornerstoneCacheService {
     // decache the volume data from other viewports or not
 
     const volumeData = [];
-
     let enrichedViewportOptions = viewportOptions || {};
 
-    // First, enrich from localStorage if needed (for volume3d viewports)
-    //enrichedViewportOptions = applyDecimationFromLocalStorage(enrichedViewportOptions);
-
-    // Then, apply auto-decimation if a threshold is set in app config
     const volumeAutoDecimationThreshold = this.appConfig?.volumeAutoDecimationThreshold;
     enrichedViewportOptions = applyAutoDecimationIfNecessary(
       enrichedViewportOptions,

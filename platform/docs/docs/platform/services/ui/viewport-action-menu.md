@@ -24,6 +24,17 @@ The Viewport Action Corners Service extends the PubSubService and provides metho
 - **Viewport-Specific**: Actions are associated with specific viewports, allowing for individualized control.
 - **Dynamic Updates**: Components can be added or removed at runtime, enabling context-sensitive UI elements.
 
+## Window level menu contents
+
+When the viewport action menu is configured with the window level menu (e.g. `windowLevelMenu` in the viewport action toolbar), it can show:
+
+- **Window / level** – Adjust brightness and contrast.
+- **Colormap** – Select a colormap for the viewport.
+- **Colorbar** – Toggle or configure the colorbar.
+- **3D only - Volume rendering presets** – Apply presets for 3D volume rendering (e.g. CT Bone, CT Soft Tissue).
+- **3D only - Volume rendering options** – Additional 3D rendering options.
+- **3D only - Volume Downsizing** – For volume viewports, control IJK decimation (in-plane and through-plane) to reduce memory use and improve performance. Available when a volume is displayed; changing decimation reloads the volume at the selected resolution.
+
 ## Usage
 
 To use the Viewport Action Corners Service, you typically interact with it through the `servicesManager`. Here's a basic example of how to add a component:

@@ -169,7 +169,7 @@ export default async function init({
 
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingDynamicImageVolume',
-    cornerstoneStreamingDynamicImageVolumeLoader  // Keep dynamic loader as-is for now
+    cornerstoneStreamingDynamicImageVolumeLoader
   );
 
   // Register strategies using the wrapper
