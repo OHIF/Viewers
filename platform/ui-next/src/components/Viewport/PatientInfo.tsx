@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '../../components';
 
 const classes = {
-  infoHeader: 'text-base text-primary-light',
+  infoHeader: 'text-base text-highlight',
   infoText: 'text-base text-white max-w-24 truncate',
   firstRow: 'flex flex-col',
   row: 'flex flex-col ml-4',
@@ -37,7 +37,7 @@ function PatientInfo({
     <div ref={showPatientInfoRef}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Icons.Info className="hover:text-primary-light cursor-pointer text-white" />
+          <Icons.Info className="hover:text-highlight cursor-pointer text-white" />
         </TooltipTrigger>
         {isOpen && (
           <TooltipContent
