@@ -142,8 +142,8 @@ const DicomTagBrowser = ({
               value={selectedDisplaySetInstanceUID}
               onValueChange={value => onSelectChange({ value })}
             >
-              <SelectTrigger>
-                <SelectValue>
+              <SelectTrigger data-cy="dicom-tag-series-select-trigger">
+                <SelectValue data-cy="dicom-tag-series-select-value">
                   {displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)?.label ||
                     'Select Series'}
                 </SelectValue>
