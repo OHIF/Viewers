@@ -26,8 +26,8 @@ export async function assertNumberOfModalityLoadBadges({
 export async function assertBoundingBoxIsContainedWithin({
   innerBox,
   outerBox,
-  outerBoxLabel = 'outer element',
   innerBoxLabel = 'inner element',
+  outerBoxLabel = 'outer element',
 }: {
   innerBox: { x: number; y: number; width: number; height: number } | null;
   outerBox: { x: number; y: number; width: number; height: number } | null;
