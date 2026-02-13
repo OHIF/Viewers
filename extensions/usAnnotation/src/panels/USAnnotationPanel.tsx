@@ -395,7 +395,7 @@ export default function USAnnotationPanel() {
    *  🖼  Final Render                                      */
   return (
     <div
-      className="text-foreground h-full bg-black"
+      className="text-foreground h-full bg-background"
       style={{ minWidth: 240, maxWidth: 480, width: '100%' }}
     >
       {/* Workflow */}
