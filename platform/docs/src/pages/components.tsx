@@ -131,7 +131,7 @@ export default function ComponentShowcase() {
       title="OHIF Viewer Design System"
       description="OHIF Viewer Design System"
     >
-      <div className="text-foreground min-h-screen bg-black">
+      <div className="text-foreground min-h-screen bg-background">
         <div className="mx-auto my-4 max-w-5xl pt-6 pb-3">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <a
@@ -227,7 +227,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
 
       {/* Code Section */}
       {showCode && (
-        <pre className="mt-4 overflow-x-auto rounded-md bg-black p-4 text-sm">
+        <pre className="mt-4 overflow-x-auto rounded-md bg-background p-4 text-sm">
           <code>{code}</code>
         </pre>
       )}
@@ -256,7 +256,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
 //       </div>
 //       <div className="showcase-content mb-4">{children}</div>
 //       {showCode && (
-//         <pre className="mt-4 overflow-x-auto rounded-md bg-black p-4 text-sm">
+//         <pre className="mt-4 overflow-x-auto rounded-md bg-background p-4 text-sm">
 //           <code>{code}</code>
 //         </pre>
 //       )}

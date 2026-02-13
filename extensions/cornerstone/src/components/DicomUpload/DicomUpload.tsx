@@ -16,7 +16,7 @@ type DicomUploadProps = {
 
 function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): ReactElement {
   const baseClassNames =
-    'min-h-[375px] flex flex-col bg-black select-none rounded-lg overflow-hidden';
+    'min-h-[375px] flex flex-col bg-background select-none rounded-lg overflow-hidden';
   const [dicomFileUploaderArr, setDicomFileUploaderArr] = useState([]);
 
   const onDrop = useCallback(async acceptedFiles => {
