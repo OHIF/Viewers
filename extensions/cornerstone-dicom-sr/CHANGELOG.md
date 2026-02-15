@@ -3,6 +3,129 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.13...v3.13.0-beta.14) (2026-02-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.12...v3.13.0-beta.13) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replaces legacy colors with ui-next colors ([#5351](https://github.com/OHIF/Viewers/issues/5351)) ([9a2691a](https://github.com/OHIF/Viewers/commit/9a2691a71fe3723bb05cbd148968b64e5d0fa951))
+
+
+
+
+
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.7) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.5...v3.13.0-beta.6) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.4...v3.13.0-beta.5) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.3...v3.13.0-beta.4) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.2...v3.13.0-beta.3) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
 # [3.12.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.134...v3.12.0-beta.135) (2026-02-05)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr

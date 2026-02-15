@@ -71,7 +71,7 @@ export default function PanelRoiThresholdSegmentation() {
   return (
     <div className="mb-1 flex flex-col">
       <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
-        <div className="bg-secondary-dark flex items-baseline justify-between px-2 py-1">
+        <div className="bg-popover flex items-baseline justify-between px-2 py-1">
           <div className="py-1">
             <span className="text-muted-foreground text-base font-bold uppercase">{'TMTV: '}</span>
             <span className="text-foreground">{tmtvValue ? `${tmtvValue.toFixed(3)} mL` : ''}</span>
@@ -81,7 +81,6 @@ export default function PanelRoiThresholdSegmentation() {
               dataCY="exportTmtvCsvReport"
               size="sm"
               variant="ghost"
-              className="text-blue-500"
               onClick={handleExportCSV}
             >
               <span className="pl-1">CSV</span>

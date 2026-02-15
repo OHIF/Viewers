@@ -39,7 +39,7 @@ const RowComponent = ({
     <div
       style={{ ...style, ...rowStyle }}
       className={classNames(
-        'hover:bg-secondary-main border-secondary-light text-foreground flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
+        'hover:bg-primary/25 border-input text-foreground flex w-full flex-row items-center break-all bg-background text-base',
         lineHeightClassName
       )}
       key={keyPrefix}
@@ -74,15 +74,13 @@ const RowComponent = ({
 function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
   return (
     <div
-      className={classNames(
-        'bg-secondary-dark ohif-scrollbar flex w-full flex-row overflow-y-scroll'
-      )}
+      className={classNames('bg-popover ohif-scrollbar flex w-full flex-row overflow-y-scroll')}
       style={rowVerticalPaddingStyle}
     >
       <div className="w-4/24 px-3">
         <label
           ref={tagRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">Tag</span>
         </label>
@@ -90,7 +88,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
       <div className="w-2/24 px-3">
         <label
           ref={vrRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">VR</span>
         </label>
@@ -98,7 +96,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
       <div className="w-6/24 px-3">
         <label
           ref={keywordRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">Keyword</span>
         </label>
@@ -106,7 +104,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
       <div className="w-5/24 grow px-3">
         <label
           ref={valueRef}
-          className="flex flex-1 select-none flex-col pl-1 text-lg text-white"
+          className="text-foreground flex flex-1 select-none flex-col pl-1 text-lg"
         >
           <span className="flex flex-row items-center focus:outline-none">Value</span>
         </label>
@@ -283,7 +281,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
         valueRef={valueRef}
       />
       <div
-        className="relative m-auto border-2 border-black bg-black"
+        className="relative m-auto border-2 border-background bg-background"
         style={{ height: '32rem' }}
       >
         {isHeaderRendered() && (
