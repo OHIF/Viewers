@@ -1,5 +1,4 @@
 import React, { ReactElement, useState, useEffect, useCallback } from 'react';
-import { VolumeDecimationInfo } from '../../types/ViewportPresets';
 import { useSystem } from '@ohif/core';
 import { cache as cs3DCache } from '@cornerstonejs/core';
 import { AllInOneMenu, Numeric } from '@ohif/ui-next';
@@ -55,7 +54,10 @@ export function VolumeOptions({
 
       const volumeId = volumeActor.referencedId;
       const volume = cs3DCache.getVolume(volumeId) as
-        | VolumeDecimationInfo
+        | {
+            dimensions?: [number, number, number];
+            originalMetadata?: { Columns?: number; Rows?: number };
+          }
         | undefined;
       if (!volume?.dimensions || volume.dimensions.length < 3) return;
 

@@ -33,18 +33,6 @@ export type VolumeRenderingQualityRange = {
   step: number;
 };
 
-export type VolumeDecimationInfo = {
-  dimensions?: [number, number, number];
-  ijkDecimation?: [number, number, number];
-  appliedDecimation?: {
-    originalDecimation?: [number, number, number];
-  };
-  originalMetadata?: {
-    Columns?: number;
-    Rows?: number;
-  };
-};
-
 export type VolumeRenderingQualityProps = {
   viewportId: string;
   volumeRenderingQualityRange: VolumeRenderingQualityRange;
