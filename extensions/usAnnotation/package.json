@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-ultrasound-pleura-bline",
-  "version": "3.13.0-beta.12",
+  "version": "3.13.0-beta.14",
   "description": "",
   "author": "Rodrigo Basilio",
   "license": "MIT",
@@ -37,18 +37,18 @@
     "react-i18next": "12.3.1",
     "react-router": "6.30.3",
     "react-router-dom": "6.30.3",
-    "webpack": "5.95.0",
+    "webpack": "5.105.0",
     "webpack-merge": "5.10.0"
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/core": "4.15.29",
     "@cornerstonejs/tools": "4.15.29",
-    "@ohif/core": "3.13.0-beta.12",
-    "@ohif/extension-cornerstone": "3.13.0-beta.12",
-    "@ohif/extension-default": "3.13.0-beta.12",
-    "@ohif/i18n": "3.13.0-beta.12",
-    "@ohif/ui-next": "3.13.0-beta.12"
+    "@ohif/core": "3.13.0-beta.14",
+    "@ohif/extension-cornerstone": "3.13.0-beta.14",
+    "@ohif/extension-default": "3.13.0-beta.14",
+    "@ohif/i18n": "3.13.0-beta.14",
+    "@ohif/ui-next": "3.13.0-beta.14"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
@@ -74,7 +74,7 @@
     "dotenv": "8.6.0",
     "eslint": "8.57.1",
     "eslint-loader": "2.2.1",
-    "webpack": "5.95.0",
+    "webpack": "5.105.0",
     "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
   }
