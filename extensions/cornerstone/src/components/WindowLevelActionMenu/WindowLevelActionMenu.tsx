@@ -90,11 +90,16 @@ export function WindowLevelActionMenuContent({
           </AllInOneMenu.SubMenu>
         )}
 
-        {volumeRenderingPresets && is3DVolume && <VolumeRenderingPresets viewportId={viewportId} />}
+        {volumeRenderingPresets && is3DVolume && (
+          <VolumeRenderingPresets viewportId={viewportId} volumeRenderingPresets={volumeRenderingPresets} />
+        )}
 
         {volumeRenderingQualityRange && is3DVolume && (
           <AllInOneMenu.SubMenu itemLabel={t('Rendering Options')}>
-            <VolumeRenderingOptions viewportId={viewportId} />
+            <VolumeRenderingOptions
+              viewportId={viewportId}
+              volumeRenderingQualityRange={volumeRenderingQualityRange}
+            />
           </AllInOneMenu.SubMenu>
         )}
 
