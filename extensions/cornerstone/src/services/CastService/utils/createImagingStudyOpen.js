@@ -1,9 +1,9 @@
 import { DicomMetadataStore } from '@ohif/core';
 
 /**
- * Creates an imagingstudy-open fhircast message from a StudyInstanceUID
+ * Creates an imagingstudy-open cast message from a StudyInstanceUID
  * @param {string} studyInstanceUID - The DICOM Study Instance UID
- * @returns {object|null} The fhircast message object or null if study not found
+ * @returns {object|null} The cast message object or null if study not found
  */
 export default function createImagingStudyOpen(studyInstanceUID) {
   const study = DicomMetadataStore.getStudy(studyInstanceUID);
