@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.13.0-beta.10",
+  "version": "3.13.0-beta.14",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -80,7 +80,7 @@
     "terser-webpack-plugin": "5.3.14",
     "typescript": "5.5.4",
     "unused-webpack-plugin": "2.4.0",
-    "webpack": "5.95.0",
+    "webpack": "5.105.0",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.2",

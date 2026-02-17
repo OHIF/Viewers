@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.13...v3.13.0-beta.14) (2026-02-13)
+
+**Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline
+
+
+
+
+
+# [3.13.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.12...v3.13.0-beta.13) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline
+
+
+
+
+
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline
+
+
+
+
+
 # [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
 
 **Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline

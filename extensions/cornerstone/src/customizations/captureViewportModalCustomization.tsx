@@ -66,7 +66,7 @@ function ViewportDownloadFormNew({
           >
             {warningState.enabled && showWarningMessage && (
               <div
-                className="text-foreground absolute left-1/2 bottom-[5px] z-[1000] -translate-x-1/2 whitespace-nowrap rounded bg-black p-3 text-xs font-bold"
+                className="text-foreground absolute left-1/2 bottom-[5px] z-[1000] -translate-x-1/2 whitespace-nowrap rounded bg-background p-3 text-xs font-bold"
                 style={{
                   fontSize: '12px',
                 }}

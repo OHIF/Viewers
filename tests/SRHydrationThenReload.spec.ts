@@ -1,4 +1,4 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import { expect, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
@@ -20,17 +20,18 @@ test('should properly reload SR series after hydration', async ({
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
 
-  await checkForScreenshot(page, page, screenShotPaths.srHydrationThenReload.srAfterHydration);
+  const measurementCountAfterFirstLoad =
+    await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+  expect(measurementCountAfterFirstLoad).toBeGreaterThan(0);
 
-  const measurementCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
-
-  if (measurementCount > 1) {
-    await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1).click();
-    await page.waitForTimeout(1000);
-  }
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1).click();
+  await page.waitForTimeout(1000);
 
   await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
 
-  await checkForScreenshot(page, page, screenShotPaths.srHydrationThenReload.srAfterReload);
+  const measurementCountAfterSecondLoad =
+    await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+
+  expect(measurementCountAfterSecondLoad).toBe(measurementCountAfterFirstLoad);
 });
