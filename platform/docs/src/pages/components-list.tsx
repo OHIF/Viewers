@@ -50,7 +50,7 @@ export default function ComponentsList() {
 
           return (
             <TooltipProvider>
-              <div className="text-foreground min-h-screen bg-black">
+              <div className="text-foreground min-h-screen bg-background">
                 <div className="mx-auto my-4 max-w-5xl pt-4 pb-6">
                   {/* Navigation cards */}
                   <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-3">
