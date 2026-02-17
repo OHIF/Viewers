@@ -91,14 +91,7 @@ function Header({
             <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             {banner && (
               <>
-                <a
-                  href="https://projectweek.na-mic.org/PW44_2026_GranCanaria/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary px-2 text-sm hover:text-primary-light hover:underline cursor-pointer"
-                >
-                  {banner}
-                </a>
+                <span className="text-primary px-2 text-sm">{banner}</span>
                 <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
               </>
             )}

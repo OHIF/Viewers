@@ -122,79 +122,83 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
             UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
-    {
-      title: 'Conferencing',
-      icon: 'conferencing',
-      onClick: () => {
-        const topic = servicesManager.services.castService?.hub?.topic || '';
-        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
-        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
-        const params = new URLSearchParams();
-        if (topic) params.append('topic', topic);
-        if (subscriberName) params.append('subscriberName', subscriberName);
-        const queryString = params.toString();
-        const url = `${hubEndpoint}/conference-client${queryString ? `?${queryString}` : ''}`;
-
-        // Create a component that renders an iframe
-        const ConferenceIframe = () => (
-          <div className="w-[400px] h-[700px]">
-            <iframe
-              src={url}
-              className="w-full h-full border-0"
-              title="Conference Client"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        );
-
-        show({
-          content: ConferenceIframe,
-          title: undefined,
-          containerClassName: 'w-[600px] pt-4 pr-4 pb-0 pl-0',
-        });
-      },
-    },
-    {
-      title: 'Cast Test Cient',
-      icon: '3dslicer',
-      onClick: () => {
-        const topic = servicesManager.services.castService?.hub?.topic || '';
-        const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
-        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
-        const params = new URLSearchParams();
-        if (topic) params.append('topic', topic);
-        if (subscriberName) params.append('subscriberName', subscriberName);
-        const queryString = params.toString();
-        const url = `${hubEndpoint}/test-client${queryString ? `?${queryString}` : ''}`;
-        window.open(url, '_blank');
-      },
-    },
-    {
-      title: 'Cast Admin Portal',
-      icon: '3dslicer',
-      onClick: () => {
-        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
-        const url = `${hubEndpoint}/admin`;
-        window.open(url, '_blank');
-      },
-    },
-    {
-      title: 'GET SCENEVIEW',
-      icon: '3dslicer',
-      onClick: () => {
-        const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
-        const url = `${hubEndpoint}/cast-get?subscriber=3DSLICER&dataType=SCENEVIEW`;
-        fetch(url)
-          .then(res => res.json())
-          .then(data => {
-            console.log('GET SCENEVIEW response:', data);
-            servicesManager.services.castService?.applySceneView?.(data);
-          })
-          .catch(err => console.warn('GET SCENEVIEW failed:', err));
-      },
-    },
   ];
+
+  if (appConfig?.cast) {
+    menuOptions.push(
+      {
+        title: 'Conferencing',
+        icon: 'conferencing',
+        onClick: () => {
+          const topic = servicesManager.services.castService?.hub?.topic || '';
+          const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
+          const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+          const params = new URLSearchParams();
+          if (topic) params.append('topic', topic);
+          if (subscriberName) params.append('subscriberName', subscriberName);
+          const queryString = params.toString();
+          const url = `${hubEndpoint}/conference-client${queryString ? `?${queryString}` : ''}`;
+
+          const ConferenceIframe = () => (
+            <div className="w-[400px] h-[700px]">
+              <iframe
+                src={url}
+                className="w-full h-full border-0"
+                title="Conference Client"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          );
+
+          show({
+            content: ConferenceIframe,
+            title: undefined,
+            containerClassName: 'w-[600px] pt-4 pr-4 pb-0 pl-0',
+          });
+        },
+      },
+      {
+        title: 'Cast Test Cient',
+        icon: '3dslicer',
+        onClick: () => {
+          const topic = servicesManager.services.castService?.hub?.topic || '';
+          const subscriberName = servicesManager.services.castService?.hub?.subscriberName || '';
+          const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+          const params = new URLSearchParams();
+          if (topic) params.append('topic', topic);
+          if (subscriberName) params.append('subscriberName', subscriberName);
+          const queryString = params.toString();
+          const url = `${hubEndpoint}/test-client${queryString ? `?${queryString}` : ''}`;
+          window.open(url, '_blank');
+        },
+      },
+      {
+        title: 'Cast Admin Portal',
+        icon: '3dslicer',
+        onClick: () => {
+          const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+          const url = `${hubEndpoint}/admin`;
+          window.open(url, '_blank');
+        },
+      },
+      // {
+      //   title: 'GET SCENEVIEW',
+      //   icon: '3dslicer',
+      //   onClick: () => {
+      //     const hubEndpoint = servicesManager.services.castService?.hub?.hub_endpoint || '';
+      //     const url = `${hubEndpoint}/cast-get?subscriber=3DSLICER&dataType=SCENEVIEW`;
+      //     fetch(url)
+      //       .then(res => res.json())
+      //       .then(data => {
+      //         console.log('GET SCENEVIEW response:', data);
+      //         servicesManager.services.castService?.applySceneView?.(data);
+      //       })
+      //       .catch(err => console.warn('GET SCENEVIEW failed:', err));
+      //   },
+      // }
+    );
+  }
 
   if (appConfig.oidc) {
     menuOptions.push({
@@ -212,7 +216,9 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
-      subscriberName={servicesManager.services.castService?.hub?.topic}
+      subscriberName={
+        appConfig?.cast ? servicesManager.services.castService?.hub?.topic : undefined
+      }
       Secondary={<Toolbar buttonSection="secondary" />}
       PatientInfo={
         appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
