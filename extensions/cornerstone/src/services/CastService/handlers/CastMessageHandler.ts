@@ -1,9 +1,15 @@
 import type { CommandsManager, ServicesManager } from '@ohif/core';
 import type { CastTransport } from '../network/CastClient';
-import type { CastMessage } from '../network/types';
+import type {
+  CastMessage,
+  AnnotationResource,
+  MeasurementResource,
+  PatientContextResource,
+  StudyContextResource,
+} from '../network/types';
+import type { CastLogger } from '../logger';
 import { applySceneViewToViewports } from '../utils/applySceneViewToViewports';
-
-const LOG_PREFIX = 'CastService';
+import { getContextResource } from '../utils/getContextResource';
 
 export interface CastMessageHandlerDeps {
   commandsManager: CommandsManager;
@@ -11,7 +17,18 @@ export interface CastMessageHandlerDeps {
   transport: CastTransport;
   annotationsFromCast: Set<string>;
   measurementsFromCast: Set<string>;
+  logger?: CastLogger;
 }
+
+export interface HandlerContext {
+  currentLocation: string;
+}
+
+type HandlerFn = (
+  castMessage: CastMessage & Record<string, unknown>,
+  event: Record<string, unknown>,
+  ctx: HandlerContext
+) => void | Promise<void>;
 
 export class CastMessageHandler {
   private _commandsManager: CommandsManager;
@@ -19,6 +36,8 @@ export class CastMessageHandler {
   private _transport: CastTransport;
   private _annotationsFromCast: Set<string>;
   private _measurementsFromCast: Set<string>;
+  private _logger: CastLogger | undefined;
+  private _eventHandlers: Map<string, HandlerFn>;
 
   constructor(deps: CastMessageHandlerDeps) {
     this._commandsManager = deps.commandsManager;
@@ -26,67 +45,60 @@ export class CastMessageHandler {
     this._transport = deps.transport;
     this._annotationsFromCast = deps.annotationsFromCast;
     this._measurementsFromCast = deps.measurementsFromCast;
+    this._logger = deps.logger;
+    this._eventHandlers = new Map([
+      ['get-request', (msg, _ev, _ctx) => this._handleGetRequest(msg)],
+      ['patient-open', (_msg, ev) => this._handlePatientOpen(ev)],
+      ['patient-close', () => this._handleNavigateAway('/')],
+      ['imagingstudy-open', (_msg, ev, ctx) => this._handleImagingStudyOpen(ev, ctx.currentLocation)],
+      ['imagingstudy-close', () => this._handleNavigateAway('/')],
+      ['diagnosticreport-close', () => this._handleNavigateAway('/')],
+      ['annotation-delete', (_msg, ev) => this._handleAnnotationDelete(ev)],
+      ['annotation-update', (_msg, ev) => this._handleAnnotationUpdate(ev)],
+      ['measurement-update', (_msg, ev) => this._handleMeasurementUpdate(ev)],
+    ]);
   }
 
-  handle(castMessage: CastMessage & Record<string, unknown>): void {
+  async handle(castMessage: CastMessage & Record<string, unknown>): Promise<void> {
     const event = castMessage.event;
     if (!event) return;
 
     const hubEvent = (event['hub.event'] as string)?.toLowerCase();
     if (!hubEvent) return;
 
-    if (hubEvent === 'get-request') {
-      this._handleGetRequest(castMessage);
-      return;
-    }
-
     const currentLocation = typeof window !== 'undefined' ? window.location.search : '';
+    const ctx: HandlerContext = { currentLocation };
 
-    if (hubEvent === 'patient-open') {
-      this._handlePatientOpen(event, currentLocation);
-      return;
-    }
-    if (currentLocation && hubEvent === 'patient-close') {
+    if (
+      currentLocation &&
+      (hubEvent === 'patient-close' || hubEvent === 'imagingstudy-close' || hubEvent === 'diagnosticreport-close')
+    ) {
       this._commandsManager.runCommand('navigateHistory', { to: '/' });
       return;
     }
-    if (hubEvent === 'imagingstudy-open') {
-      this._handleImagingStudyOpen(event, currentLocation);
-      return;
-    }
-    if (currentLocation && hubEvent === 'imagingstudy-close') {
-      this._commandsManager.runCommand('navigateHistory', { to: '/' });
-      return;
-    }
-    if (currentLocation && hubEvent === 'diagnosticreport-close') {
-      this._commandsManager.runCommand('navigateHistory', { to: '/' });
-      return;
-    }
-    if (hubEvent === 'annotation-update') {
-      this._handleAnnotationUpdate(event);
-      return;
-    }
-    if (hubEvent === 'measurement-update') {
-      this._handleMeasurementUpdate(event);
-    }
+
+    const handler = this._eventHandlers.get(hubEvent);
+    if (!handler) return;
+
+    await Promise.resolve(handler(castMessage, event, ctx));
   }
 
   applySceneView(sceneViewData: Parameters<typeof applySceneViewToViewports>[1]): void {
     applySceneViewToViewports(this._servicesManager, sceneViewData);
   }
 
+  private _handleNavigateAway(to: string): void {
+    this._commandsManager.runCommand('navigateHistory', { to });
+  }
+
   private _handleGetRequest(castMessage: CastMessage & Record<string, unknown>): void {
     const context = castMessage.event?.context as { dataType?: string; requestId?: string } | undefined;
-    if (!context || context.dataType !== 'SCENEVIEW') {
-      return;
-    }
+    if (!context || context.dataType !== 'SCENEVIEW') return;
     const requestId = context.requestId;
     if (!requestId) return;
 
     const hub = this._transport.getHub();
-    if (!hub.websocket || (hub.websocket as WebSocket).readyState !== WebSocket.OPEN) {
-      return;
-    }
+    if (!hub.websocket || (hub.websocket as WebSocket).readyState !== WebSocket.OPEN) return;
 
     const topic = (castMessage.event as Record<string, string>)?.['hub.topic'] ?? hub.topic;
     this._transport.sendGetResponse(
@@ -96,31 +108,19 @@ export class CastMessageHandler {
     );
   }
 
-  private _handlePatientOpen(event: Record<string, unknown>, _currentLocation: string): void {
-    const context = event.context as Array<{ key: string; resource: { identifier?: Array<{ value: string }> } }> | undefined;
-    if (!context) return;
-    let mrn: string | null = null;
-    for (const cr of context) {
-      if (cr.key?.toLowerCase() === 'patient' && cr.resource?.identifier?.[0]?.value) {
-        mrn = cr.resource.identifier[0].value;
-        break;
-      }
-    }
+  private _handlePatientOpen(event: Record<string, unknown>, _currentLocation?: string): void {
+    const context = event.context as Array<{ key: string; resource: PatientContextResource }> | undefined;
+    const patientResource = getContextResource<PatientContextResource>(context, 'patient');
+    const mrn = patientResource?.identifier?.[0]?.value ?? null;
     if (mrn) {
       this._commandsManager.runCommand('navigateHistory', { to: '/?mrn=' + mrn });
     }
   }
 
   private _handleImagingStudyOpen(event: Record<string, unknown>, currentLocation: string): void {
-    const context = event.context as Array<{ key: string; resource: { uid?: string } }> | undefined;
-    if (!context) return;
-    let studyUID: string | null = null;
-    for (const cr of context) {
-      if (cr.key?.toLowerCase() === 'study' && cr.resource?.uid) {
-        studyUID = cr.resource.uid.replaceAll('urn:oid:', '');
-        break;
-      }
-    }
+    const context = event.context as Array<{ key: string; resource: StudyContextResource }> | undefined;
+    const studyResource = getContextResource<StudyContextResource>(context, 'study');
+    const studyUID = studyResource?.uid?.replaceAll('urn:oid:', '') ?? null;
     if (studyUID && !currentLocation.includes(studyUID)) {
       this._commandsManager.runCommand('navigateHistory', {
         to: '/viewer?StudyInstanceUIDs=' + studyUID + '&Cast',
@@ -128,32 +128,24 @@ export class CastMessageHandler {
     }
   }
 
-  private _handleAnnotationUpdate(event: Record<string, unknown>): void {
-    const context = event.context as Array<{ key: string; resource: Record<string, unknown> }> | undefined;
-    if (!context) return;
-
-    let annotationResource: Record<string, unknown> | null = null;
-    for (const cr of context) {
-      if (cr.key?.toLowerCase() === 'annotation') {
-        annotationResource = cr.resource;
-        break;
-      }
-    }
-
+  private _handleAnnotationDelete(event: Record<string, unknown>): void {
+    const context = event.context as Array<{ key: string; resource: AnnotationResource }> | undefined;
+    const annotationResource = getContextResource<AnnotationResource>(context, 'annotation');
     if (!annotationResource?.uid) return;
-
-    this._annotationsFromCast.add(annotationResource.uid as string);
-
-    if (annotationResource.action === 'removed') {
-      this._handleAnnotationRemoved(annotationResource);
-      return;
-    }
-    this._handleAnnotationAddedOrUpdated(annotationResource);
+    void this._handleAnnotationRemoved(annotationResource);
   }
 
-  private async _handleAnnotationRemoved(annotationResource: Record<string, unknown>): Promise<void> {
+  private _handleAnnotationUpdate(event: Record<string, unknown>): void {
+    const context = event.context as Array<{ key: string; resource: AnnotationResource }> | undefined;
+    const annotationResource = getContextResource<AnnotationResource>(context, 'annotation');
+    if (!annotationResource?.uid) return;
+    this._annotationsFromCast.add(annotationResource.uid);
+    void this._handleAnnotationAddedOrUpdated(annotationResource);
+  }
+
+  private async _handleAnnotationRemoved(annotationResource: AnnotationResource): Promise<void> {
     const { MeasurementService } = this._servicesManager.services;
-    const annotationUID = annotationResource.uid as string;
+    const annotationUID = annotationResource.uid;
 
     const measurement = MeasurementService?.getMeasurement(annotationUID);
     if (measurement) {
@@ -170,10 +162,10 @@ export class CastMessageHandler {
     this._annotationsFromCast.delete(annotationUID);
   }
 
-  private async _handleAnnotationAddedOrUpdated(annotationResource: Record<string, unknown>): Promise<void> {
-    const annotationUID = annotationResource.uid as string;
+  private async _handleAnnotationAddedOrUpdated(annotationResource: AnnotationResource): Promise<void> {
+    const annotationUID = annotationResource.uid;
     const { MeasurementService, displaySetService } = this._servicesManager.services;
-    const measurement = annotationResource.measurement as Record<string, unknown> | undefined;
+    const measurement = annotationResource.measurement as MeasurementResource | undefined;
 
     let existingAnnotation: Record<string, unknown> | null = null;
     try {
@@ -192,11 +184,11 @@ export class CastMessageHandler {
 
   private async _updateAnnotation(
     existingAnnotation: Record<string, unknown>,
-    annotationResource: Record<string, unknown>,
-    measurement: Record<string, unknown> | undefined
+    annotationResource: AnnotationResource,
+    measurement: MeasurementResource | undefined
   ): Promise<void> {
     const { MeasurementService } = this._servicesManager.services;
-    const annotationUID = annotationResource.uid as string;
+    const annotationUID = annotationResource.uid;
 
     try {
       const { annotation } = await import('@cornerstonejs/tools');
@@ -208,17 +200,11 @@ export class CastMessageHandler {
       if (annotationResource.metadata) {
         Object.assign((existingAnnotation.metadata as Record<string, unknown>) ?? {}, annotationResource.metadata);
       }
-      if ((annotationResource.metadata as Record<string, unknown>)?.isLocked !== undefined) {
-        annotation.locking.setAnnotationLocked(
-          annotationUID,
-          (annotationResource.metadata as Record<string, boolean>).isLocked
-        );
+      if (annotationResource.metadata?.isLocked !== undefined) {
+        annotation.locking.setAnnotationLocked(annotationUID, annotationResource.metadata.isLocked as boolean);
       }
-      if ((annotationResource.metadata as Record<string, unknown>)?.isVisible !== undefined) {
-        annotation.visibility.setAnnotationVisibility(
-          annotationUID,
-          (annotationResource.metadata as Record<string, boolean>).isVisible
-        );
+      if (annotationResource.metadata?.isVisible !== undefined) {
+        annotation.visibility.setAnnotationVisibility(annotationUID, annotationResource.metadata.isVisible as boolean);
       }
 
       try {
@@ -243,35 +229,39 @@ export class CastMessageHandler {
           }
           MeasurementService.update(
             annotationUID,
-            { ...measurement, source, modifiedTimestamp: (measurement.modifiedTimestamp as number) || Math.floor(Date.now() / 1000) },
+            {
+              ...measurement,
+              source,
+              modifiedTimestamp: measurement.modifiedTimestamp ?? Math.floor(Date.now() / 1000),
+            },
             false
           );
         }
       }
     } catch (err) {
-      console.warn(LOG_PREFIX + ': Failed to update annotation:', err);
+      this._logger?.warn('Failed to update annotation:', err);
     }
   }
 
   private async _createAnnotation(
-    annotationResource: Record<string, unknown>,
-    measurement: Record<string, unknown> | undefined
+    annotationResource: AnnotationResource,
+    measurement: MeasurementResource | undefined
   ): Promise<void> {
     const { MeasurementService, displaySetService } = this._servicesManager.services;
-    const annotationUID = annotationResource.uid as string;
+    const annotationUID = annotationResource.uid;
 
     let source =
       MeasurementService.getSource('Cornerstone3DTools', '0.1') ||
       MeasurementService.getSource('CornerstoneTools', '4.0');
     if (!source) {
-      console.warn(LOG_PREFIX + ': No Cornerstone source available, cannot create annotation');
+      this._logger?.warn('No Cornerstone source available, cannot create annotation');
       return;
     }
 
     const annotationObj = {
       annotationUID,
       highlighted: false,
-      isLocked: (annotationResource.metadata as Record<string, boolean>)?.isLocked || false,
+      isLocked: (annotationResource.metadata as Record<string, boolean>)?.isLocked ?? false,
       invalidated: false,
       metadata: { ...(annotationResource.metadata as Record<string, unknown>) },
       data: { ...(annotationResource.data as Record<string, unknown>) },
@@ -282,22 +272,20 @@ export class CastMessageHandler {
         const toolName = measurement.toolName as string;
         const dataSource = {
           getImageIdsForInstance: ({ instance }: { instance?: unknown }) => {
-            if ((measurement as Record<string, string>).referencedImageId) {
-              return (measurement as Record<string, string>).referencedImageId;
-            }
+            if (measurement.referencedImageId) return measurement.referencedImageId;
             if (displaySetService && instance) {
               const displaySets = displaySetService.getDisplaySetsForSeries(
-                (measurement as Record<string, string>).referenceStudyUID,
-                (measurement as Record<string, string>).referenceSeriesUID
+                measurement.referenceStudyUID ?? '',
+                measurement.referenceSeriesUID ?? ''
               );
               if (displaySets?.length) {
                 const ds =
                   displaySets.find(
                     (d: { displaySetInstanceUID: string }) =>
-                      d.displaySetInstanceUID === (measurement as Record<string, string>).displaySetInstanceUID
+                      d.displaySetInstanceUID === measurement.displaySetInstanceUID
                   ) ?? displaySets[0];
                 const imageIds = displaySetService.getImageIdsForDisplaySet(ds.displaySetInstanceUID);
-                const frameNumber = ((measurement as Record<string, number>).frameNumber ?? 1) - 1;
+                const frameNumber = (measurement.frameNumber ?? 1) - 1;
                 return imageIds[frameNumber] ?? imageIds[0];
               }
             }
@@ -317,11 +305,11 @@ export class CastMessageHandler {
           dataSource
         );
       } catch (err) {
-        console.warn(LOG_PREFIX + ': Failed to use addRawMeasurement, falling back to direct creation:', err);
-        this._createAnnotationDirectly(annotationObj);
+        this._logger?.warn('Failed to use addRawMeasurement, falling back to direct creation:', err);
+        await this._createAnnotationDirectly(annotationObj);
       }
     } else {
-      this._createAnnotationDirectly(annotationObj);
+      await this._createAnnotationDirectly(annotationObj);
     }
   }
 
@@ -330,30 +318,21 @@ export class CastMessageHandler {
       const { annotation } = await import('@cornerstonejs/tools');
       annotation.state.getAnnotationManager().addAnnotation(annotationObj);
     } catch (err) {
-      console.warn(LOG_PREFIX + ': Failed to create annotation directly:', err);
+      this._logger?.warn('Failed to create annotation directly:', err);
     }
   }
 
   private _handleMeasurementUpdate(event: Record<string, unknown>): void {
-    const context = event.context as Array<{ key: string; resource: Record<string, unknown> }> | undefined;
-    if (!context) return;
-
-    let measurementResource: Record<string, unknown> | null = null;
-    for (const cr of context) {
-      if (cr.key?.toLowerCase() === 'measurement') {
-        measurementResource = cr.resource;
-        break;
-      }
-    }
-
+    const context = event.context as Array<{ key: string; resource: MeasurementResource }> | undefined;
+    const measurementResource = getContextResource<MeasurementResource>(context, 'measurement');
     if (!measurementResource?.uid) return;
 
     const { MeasurementService, displaySetService } = this._servicesManager.services;
-    const existingMeasurement = MeasurementService.getMeasurement(measurementResource.uid as string);
+    const existingMeasurement = MeasurementService.getMeasurement(measurementResource.uid);
 
     try {
       if (existingMeasurement) {
-        this._measurementsFromCast.add(measurementResource.uid as string);
+        this._measurementsFromCast.add(measurementResource.uid);
         let source = existingMeasurement.source;
         if (!source || (source.name !== 'Cornerstone3DTools' && source.name !== 'CornerstoneTools')) {
           source =
@@ -361,11 +340,12 @@ export class CastMessageHandler {
             MeasurementService.getSource('CornerstoneTools', '4.0');
         }
         MeasurementService.update(
-          measurementResource.uid as string,
+          measurementResource.uid,
           {
             ...measurementResource,
             source,
-            modifiedTimestamp: (measurementResource.modifiedTimestamp as number) || Math.floor(Date.now() / 1000),
+            modifiedTimestamp:
+              measurementResource.modifiedTimestamp ?? Math.floor(Date.now() / 1000),
           },
           false
         );
@@ -373,16 +353,27 @@ export class CastMessageHandler {
         this._createMeasurementFromCast(measurementResource, MeasurementService, displaySetService);
       }
     } catch (err) {
-      console.warn(LOG_PREFIX + ': Failed to process measurement from hub:', err);
+      this._logger?.warn('Failed to process measurement from hub:', err);
     }
   }
 
   private _createMeasurementFromCast(
-    measurementResource: Record<string, unknown>,
-    MeasurementService: { getSource: (a: string, b: string) => unknown; createSource: (a: string, b: string) => unknown; getSourceMappings: (a: string, b: string) => unknown[]; addRawMeasurement: (...args: unknown[]) => void; measurements?: Map<string, unknown>; EVENTS?: { MEASUREMENT_ADDED: string }; _broadcastEvent?: (a: string, b: unknown) => void },
-    displaySetService: { getDisplaySetsForSeries: (a: string, b: string) => unknown[]; getImageIdsForDisplaySet: (a: string) => string[] }
+    measurementResource: MeasurementResource,
+    MeasurementService: {
+      getSource: (a: string, b: string) => unknown;
+      createSource: (a: string, b: string) => unknown;
+      getSourceMappings: (a: string, b: string) => unknown[];
+      addRawMeasurement: (...args: unknown[]) => void;
+      measurements?: Map<string, unknown>;
+      EVENTS?: { MEASUREMENT_ADDED: string };
+      _broadcastEvent?: (a: string, b: unknown) => void;
+    },
+    displaySetService: {
+      getDisplaySetsForSeries: (a: string, b: string) => unknown[];
+      getImageIdsForDisplaySet: (a: string) => string[];
+    }
   ): void {
-    this._measurementsFromCast.add(measurementResource.uid as string);
+    this._measurementsFromCast.add(measurementResource.uid);
     let source =
       MeasurementService.getSource('Cornerstone3DTools', '0.1') ||
       MeasurementService.getSource('CornerstoneTools', '4.0');
@@ -390,7 +381,7 @@ export class CastMessageHandler {
       source = MeasurementService.createSource('Cast', '1.0.0');
     }
 
-    const annotationData = measurementResource.annotation as Record<string, unknown> | undefined;
+    const annotationData = measurementResource.annotation;
     if (annotationData?.data && source) {
       try {
         const toolName = measurementResource.toolName as string;
@@ -401,22 +392,25 @@ export class CastMessageHandler {
             if (measurementResource.referencedImageId) return measurementResource.referencedImageId;
             if (displaySetService) {
               const displaySets = displaySetService.getDisplaySetsForSeries(
-                measurementResource.referenceStudyUID as string,
-                measurementResource.referenceSeriesUID as string
+                measurementResource.referenceStudyUID ?? '',
+                measurementResource.referenceSeriesUID ?? ''
               ) as Array<{ displaySetInstanceUID: string }>;
               if (displaySets?.length) {
                 const ds =
                   displaySets.find((d) => d.displaySetInstanceUID === measurementResource.displaySetInstanceUID) ??
                   displaySets[0];
                 const imageIds = displaySetService.getImageIdsForDisplaySet(ds.displaySetInstanceUID);
-                const fn = ((measurementResource.frameNumber as number) ?? 1) - 1;
+                const fn = (measurementResource.frameNumber ?? 1) - 1;
                 return imageIds[fn] ?? imageIds[0];
               }
             }
             return null;
           },
         };
-        const mappings = MeasurementService.getSourceMappings((source as { name: string }).name, (source as { version: string }).version);
+        const mappings = MeasurementService.getSourceMappings(
+          (source as { name: string }).name,
+          (source as { version: string }).version
+        );
         const matchingMapping = mappings?.find((m: { annotationType: string }) => m.annotationType === toolName);
         if (!matchingMapping) throw new Error('No mapping found');
 
@@ -435,7 +429,10 @@ export class CastMessageHandler {
             ...(annotationData.data as Record<string, unknown>),
             label: (annotationData.data as Record<string, string>)?.label ?? measurementResource.label,
             text: (annotationData.data as Record<string, string>)?.text ?? measurementResource.label,
-            frameNumber: (annotationData.data as Record<string, number>)?.frameNumber ?? measurementResource.frameNumber ?? 1,
+            frameNumber:
+              (annotationData.data as Record<string, number>)?.frameNumber ??
+              measurementResource.frameNumber ??
+              1,
           },
         };
 
@@ -447,7 +444,7 @@ export class CastMessageHandler {
           dataSource
         );
       } catch (err) {
-        console.warn(LOG_PREFIX + ': Failed to use addRawMeasurement, falling back to direct creation:', err);
+        this._logger?.warn('Failed to use addRawMeasurement, falling back to direct creation:', err);
         this._createMeasurementDirectly(measurementResource, source, MeasurementService);
       }
     } else {
@@ -456,14 +453,15 @@ export class CastMessageHandler {
   }
 
   private _createMeasurementDirectly(
-    measurementResource: Record<string, unknown>,
+    measurementResource: MeasurementResource,
     source: unknown,
     MeasurementService: { getSource: (a: string, b: string) => unknown }
   ): void {
     const newMeasurement = {
       ...measurementResource,
       source,
-      modifiedTimestamp: (measurementResource.modifiedTimestamp as number) || Math.floor(Date.now() / 1000),
+      modifiedTimestamp:
+        measurementResource.modifiedTimestamp ?? Math.floor(Date.now() / 1000),
       uid: measurementResource.uid,
     };
     const ms = MeasurementService as Record<string, unknown>;

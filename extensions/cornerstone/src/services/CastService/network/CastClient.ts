@@ -1,6 +1,6 @@
 import type { HubConfig, CastMessage, CastClientConfig } from './types';
-
-const LOG_PREFIX = 'CastClient';
+import { generateMessageId } from '../utils/generateMessageId';
+import { RECONNECT_INTERVAL_MS, SUBSCRIBE_TIMEOUT_MS } from '../constants';
 
 export interface CastTransport {
   getHub(): HubConfig;
@@ -26,7 +26,7 @@ export class CastClient implements CastTransport {
     }
 
     if (config.autoReconnect) {
-      this._reconnectInterval = setInterval(() => this._checkWebsocket(), 10000);
+      this._reconnectInterval = setInterval(() => this._checkWebsocket(), RECONNECT_INTERVAL_MS);
     }
   }
 
@@ -44,13 +44,13 @@ export class CastClient implements CastTransport {
 
   setHub(hubName: string): boolean {
     if (hubName === this._hub.name) {
-      console.debug(LOG_PREFIX + ': setHub: hub already set to ' + hubName);
+      console.debug('CastClient: setHub: hub already set to', hubName);
       return true;
     }
-    console.debug(LOG_PREFIX + ': setting hub to ' + hubName);
+    console.debug('CastClient: setting hub to', hubName);
     const hubs = this._config.hubs;
     if (!hubs) {
-      console.debug(LOG_PREFIX + ': hub not found in configuration ' + hubName);
+      console.debug('CastClient: hub not found in configuration', hubName);
       return false;
     }
     for (const hubConfig of hubs) {
@@ -62,7 +62,7 @@ export class CastClient implements CastTransport {
         return true;
       }
     }
-    console.debug(LOG_PREFIX + ': hub not found in configuration ' + hubName);
+    console.debug('CastClient: hub not found in configuration', hubName);
     return false;
   }
 
@@ -71,13 +71,18 @@ export class CastClient implements CastTransport {
   }
 
   setTopic(topic: string): void {
-    console.debug(LOG_PREFIX + ': setting topic to ' + topic);
+    console.debug('CastClient: setting topic to', topic);
     this._hub.topic = topic;
   }
 
   async getToken(): Promise<boolean> {
     const hub = this._hub;
-    console.log(LOG_PREFIX + ': Getting token from:', hub.token_endpoint);
+    try {
+      const url = new URL(hub.token_endpoint);
+      console.debug('CastClient: Getting token from:', url.origin + url.pathname);
+    } catch {
+      console.debug('CastClient: Getting token from hub');
+    }
 
     const tokenFormData = new URLSearchParams();
     tokenFormData.append('grant_type', 'client_credentials');
@@ -107,12 +112,12 @@ export class CastClient implements CastTransport {
         }
         return true;
       }
-      const errorText = await response.text();
-      console.error(LOG_PREFIX + ': Error getting token. Status:', response.status, 'Response:', errorText);
+      await response.text(); // consume body (may contain sensitive data; do not log)
+      console.error('CastClient: Error getting token. Status:', response.status);
       return false;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      console.error(LOG_PREFIX + ': Exception getting token:', message, err);
+      console.error('CastClient: Exception getting token:', message);
       return false;
     }
   }
@@ -120,11 +125,11 @@ export class CastClient implements CastTransport {
   async subscribe(): Promise<number | string> {
     const hub = this._hub;
     if (hub.topic === undefined) {
-      console.warn(LOG_PREFIX + ': Error. subscription not sent. No topic defined.');
+      console.warn('CastClient: Error. subscription not sent. No topic defined.');
       return 'error: topic not defined';
     }
     if (!hub.token) {
-      console.warn(LOG_PREFIX + ': Error. subscription not sent. No token available.');
+      console.warn('CastClient: Error. subscription not sent. No token available.');
       return 'error: no token';
     }
 
@@ -145,7 +150,7 @@ export class CastClient implements CastTransport {
         Authorization: 'Bearer ' + hub.token,
       },
       body: subscribeFormData,
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(SUBSCRIBE_TIMEOUT_MS),
     };
 
     try {
@@ -173,22 +178,21 @@ export class CastClient implements CastTransport {
         hub.websocket.addEventListener('message', (ev) => this._processEvent(ev.data));
         hub.websocket.addEventListener('close', () => this._websocketClose());
         hub.websocket.onerror = function () {
-          console.warn(LOG_PREFIX + ': Error reported on websocket');
+          console.warn('CastClient: Error reported on websocket');
         };
 
         return response.status;
       }
       if (response.status === 401) {
-        console.warn(LOG_PREFIX + ': Subscription response 401 - Token refresh needed.');
+        console.warn('CastClient: Subscription response 401 - Token refresh needed.');
         this.getToken();
       } else {
-        const errorText = await response.text();
-        console.error(LOG_PREFIX + ': Subscription rejected by hub. Status:', response.status, 'Response:', errorText);
+        console.error('CastClient: Subscription rejected by hub. Status:', response.status);
       }
       return response.status;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      console.error(LOG_PREFIX + ': Exception subscribing to the hub:', message, err);
+      console.error('CastClient: Exception subscribing to the hub:', message);
       return 0;
     }
   }
@@ -216,14 +220,14 @@ export class CastClient implements CastTransport {
           Authorization: 'Bearer ' + hub.token,
         },
         body: subscribeFormData,
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(SUBSCRIBE_TIMEOUT_MS),
       });
       if (response.status === 202) {
-        console.debug(LOG_PREFIX + ': Unsubscribe successfully from hub ' + hub.name);
+        console.debug('CastClient: Unsubscribe successfully from hub', hub.name);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      console.warn(LOG_PREFIX + ': Error unsubscribing from the hub.', message);
+      console.warn('CastClient: Error unsubscribing from the hub.', message);
     }
     if (hub.websocket) {
       hub.websocket.close();
@@ -234,7 +238,7 @@ export class CastClient implements CastTransport {
   async publish(castMessage: Record<string, unknown>, hub: HubConfig): Promise<Response | null> {
     const timestamp = new Date();
     const msg = { ...castMessage, timestamp: timestamp.toJSON() } as Record<string, unknown>;
-    msg.id = 'OHIF-' + Math.random().toString(36).substring(2, 16);
+    msg.id = generateMessageId('OHIF-');
     hub.lastPublishedMessageID = msg.id as string;
 
     const event = msg.event as Record<string, unknown>;
@@ -256,7 +260,7 @@ export class CastClient implements CastTransport {
       return response;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      console.debug(LOG_PREFIX + ':', message);
+      console.debug('CastClient:', message);
       return null;
     }
   }
@@ -268,7 +272,7 @@ export class CastClient implements CastTransport {
     }
     const response = {
       timestamp: new Date().toJSON(),
-      id: 'OHIF-' + Math.random().toString(36).substring(2, 16),
+      id: generateMessageId('OHIF-'),
       event: {
         'hub.topic': topic ?? hub.topic,
         'hub.event': 'get-response',
@@ -302,7 +306,7 @@ export class CastClient implements CastTransport {
   private async _checkWebsocket(): Promise<void> {
     const hub = this._hub;
     if (hub.resubscribeRequested && hub.subscribed && this._config.autoReconnect) {
-      console.debug(LOG_PREFIX + ': Try to resubscribe');
+      console.debug('CastClient: Try to resubscribe');
       hub.resubscribeRequested = false;
       const response = await this.subscribe();
       if (response !== 202) {
@@ -329,12 +333,12 @@ export class CastClient implements CastTransport {
       }
       this._onMessageCallback?.(castMessage);
     } catch (err) {
-      console.warn(LOG_PREFIX + ': websocket processing error:', err);
+      console.warn('CastClient: websocket processing error:', err);
     }
   }
 
   private _websocketClose(): void {
-    console.debug(LOG_PREFIX + ': websocket is closed.');
+    console.debug('CastClient: websocket is closed.');
     this._hub.resubscribeRequested = true;
   }
 }
