@@ -6,7 +6,6 @@ import { Colorbar } from './Colorbar';
 import { WindowLevel } from './WindowLevel';
 import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
-import { OrientationController } from './OrientationController';
 import { useViewportRendering } from '../../hooks/useViewportRendering';
 import i18n from 'i18next';
 
@@ -87,12 +86,6 @@ export function WindowLevelActionMenuContent({
         )}
 
         {volumeRenderingPresets && is3DVolume && <VolumeRenderingPresets viewportId={viewportId} />}
-
-        {is3DVolume && (
-          <AllInOneMenu.SubMenu itemLabel={t('Orientation Controller')}>
-            <OrientationController viewportId={viewportId} />
-          </AllInOneMenu.SubMenu>
-        )}
 
         {volumeRenderingQualityRange && is3DVolume && (
           <AllInOneMenu.SubMenu itemLabel={t('Rendering Options')}>
