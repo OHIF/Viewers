@@ -8,6 +8,8 @@ import type {
   StudyContextResource,
 } from '../network/types';
 import type { CastLogger } from '../logger';
+import { annotation as csAnnotation } from '@cornerstonejs/tools';
+import { triggerAnnotationRenderForViewportIds } from '@cornerstonejs/tools/utilities';
 import { applySceneViewToViewports } from '../utils/applySceneViewToViewports';
 import { getContextResource } from '../utils/getContextResource';
 
@@ -143,7 +145,7 @@ export class CastMessageHandler {
     void this._handleAnnotationAddedOrUpdated(annotationResource);
   }
 
-  private async _handleAnnotationRemoved(annotationResource: AnnotationResource): Promise<void> {
+  private _handleAnnotationRemoved(annotationResource: AnnotationResource): void {
     const { MeasurementService } = this._servicesManager.services;
     const annotationUID = annotationResource.uid;
 
@@ -152,48 +154,36 @@ export class CastMessageHandler {
       MeasurementService.remove(annotationUID, measurement.source);
     }
 
-    try {
-      const { annotation } = await import('@cornerstonejs/tools');
-      annotation.state.removeAnnotation(annotationUID);
-    } catch {
-      // Cornerstone tools may not be available
-    }
-
+    csAnnotation.state.removeAnnotation(annotationUID);
     this._annotationsFromCast.delete(annotationUID);
   }
 
-  private async _handleAnnotationAddedOrUpdated(annotationResource: AnnotationResource): Promise<void> {
+  private _handleAnnotationAddedOrUpdated(annotationResource: AnnotationResource): void {
     const annotationUID = annotationResource.uid;
-    const { MeasurementService, displaySetService } = this._servicesManager.services;
+    const { MeasurementService } = this._servicesManager.services;
     const measurement = annotationResource.measurement as MeasurementResource | undefined;
 
-    let existingAnnotation: Record<string, unknown> | null = null;
-    try {
-      const { annotation } = await import('@cornerstonejs/tools');
-      existingAnnotation = annotation.state.getAnnotation(annotationUID) as Record<string, unknown>;
-    } catch {
-      // Annotation may not exist yet
-    }
+    const existingAnnotation = csAnnotation.state.getAnnotation(annotationUID) as Record<string, unknown> | undefined;
+    const existingMeasurement = MeasurementService?.getMeasurement(annotationUID);
 
     if (existingAnnotation) {
-      await this._updateAnnotation(existingAnnotation, annotationResource, measurement);
+      this._updateAnnotation(existingAnnotation, annotationResource, measurement);
+    } else if (existingMeasurement) {
+      this._updateMeasurementOnly(annotationResource, measurement);
     } else {
-      await this._createAnnotation(annotationResource, measurement);
+      this._createAnnotation(annotationResource, measurement);
     }
   }
 
-  private async _updateAnnotation(
+  private _updateAnnotation(
     existingAnnotation: Record<string, unknown>,
     annotationResource: AnnotationResource,
     measurement: MeasurementResource | undefined
-  ): Promise<void> {
+  ): void {
     const { MeasurementService } = this._servicesManager.services;
     const annotationUID = annotationResource.uid;
 
     try {
-      const { annotation } = await import('@cornerstonejs/tools');
-      const { triggerAnnotationRenderForViewportIds } = await import('@cornerstonejs/tools/utilities');
-
       if (annotationResource.data) {
         Object.assign((existingAnnotation.data as Record<string, unknown>) ?? {}, annotationResource.data);
       }
@@ -201,10 +191,10 @@ export class CastMessageHandler {
         Object.assign((existingAnnotation.metadata as Record<string, unknown>) ?? {}, annotationResource.metadata);
       }
       if (annotationResource.metadata?.isLocked !== undefined) {
-        annotation.locking.setAnnotationLocked(annotationUID, annotationResource.metadata.isLocked as boolean);
+        csAnnotation.locking.setAnnotationLocked(annotationUID, annotationResource.metadata.isLocked as boolean);
       }
       if (annotationResource.metadata?.isVisible !== undefined) {
-        annotation.visibility.setAnnotationVisibility(annotationUID, annotationResource.metadata.isVisible as boolean);
+        csAnnotation.visibility.setAnnotationVisibility(annotationUID, annotationResource.metadata.isVisible as boolean);
       }
 
       try {
@@ -243,10 +233,37 @@ export class CastMessageHandler {
     }
   }
 
-  private async _createAnnotation(
+  private _updateMeasurementOnly(
     annotationResource: AnnotationResource,
     measurement: MeasurementResource | undefined
-  ): Promise<void> {
+  ): void {
+    if (!measurement) return;
+    const { MeasurementService } = this._servicesManager.services;
+    const annotationUID = annotationResource.uid;
+    const existingMeasurement = MeasurementService?.getMeasurement(annotationUID);
+    if (!existingMeasurement) return;
+    this._measurementsFromCast.add(annotationUID);
+    let source = existingMeasurement.source;
+    if (!source || (source.name !== 'Cornerstone3DTools' && source.name !== 'CornerstoneTools')) {
+      source =
+        MeasurementService.getSource('Cornerstone3DTools', '0.1') ||
+        MeasurementService.getSource('CornerstoneTools', '4.0');
+    }
+    MeasurementService.update(
+      annotationUID,
+      {
+        ...measurement,
+        source,
+        modifiedTimestamp: measurement.modifiedTimestamp ?? Math.floor(Date.now() / 1000),
+      },
+      false
+    );
+  }
+
+  private _createAnnotation(
+    annotationResource: AnnotationResource,
+    measurement: MeasurementResource | undefined
+  ): void {
     const { MeasurementService, displaySetService } = this._servicesManager.services;
     const annotationUID = annotationResource.uid;
 
@@ -306,17 +323,16 @@ export class CastMessageHandler {
         );
       } catch (err) {
         this._logger?.warn('Failed to use addRawMeasurement, falling back to direct creation:', err);
-        await this._createAnnotationDirectly(annotationObj);
+        this._createAnnotationDirectly(annotationObj);
       }
     } else {
-      await this._createAnnotationDirectly(annotationObj);
+      this._createAnnotationDirectly(annotationObj);
     }
   }
 
-  private async _createAnnotationDirectly(annotationObj: Record<string, unknown>): Promise<void> {
+  private _createAnnotationDirectly(annotationObj: Record<string, unknown>): void {
     try {
-      const { annotation } = await import('@cornerstonejs/tools');
-      annotation.state.getAnnotationManager().addAnnotation(annotationObj);
+      csAnnotation.state.getAnnotationManager().addAnnotation(annotationObj);
     } catch (err) {
       this._logger?.warn('Failed to create annotation directly:', err);
     }

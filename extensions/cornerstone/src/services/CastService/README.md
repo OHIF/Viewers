@@ -1,10 +1,10 @@
 # CastService
 
-Syncs annotations and measurements with a FHIRcast-compatible hub (e.g. for multi-user or multi-device sessions). The service subscribes to hub events, publishes local changes, and applies incoming events to the viewer.
+Syncs annotations and measurements with a Cast compatible hub (e.g. for multi-user or multi-device sessions). The service subscribes to hub events, publishes local changes, and applies incoming events to the viewer.
 
 ## Configuration
 
-Cast is configured via app config under `cast` or `fhircast`:
+Cast is configured via app config under `cast`:
 
 - **`defaultHub`** – Name of the hub to use (must match an enabled entry in `hubs`).
 - **`hubs`** – Array of hub configs: `name`, `enabled`, `hub_endpoint`, `token_endpoint`, `client_id`, `client_secret`, `events`, etc.
@@ -33,7 +33,7 @@ Config is validated at startup: if `defaultHub` is set but not found in `hubs` (
 - **`annotation-update`** – Create or update annotation (and optional measurement) from hub; syncs with Cornerstone and MeasurementService.
 - **`annotation-delete`** – Remove annotation by UID from MeasurementService and Cornerstone.
 - **`measurement-update`** – Create or update measurement from hub.
-- **`get-request`** – Respond to SCENEVIEW get-request (placeholder response for now).
+- **`get-request`** – Respond to SCENEVIEW get-request.
 
 ## Annotation publishing
 

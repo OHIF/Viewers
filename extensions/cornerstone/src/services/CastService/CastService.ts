@@ -25,6 +25,9 @@ export default class CastService extends PubSubService {
   private _lastMeasurementUpdateTimes: Map<string, number> = new Map();
   private _lastAnnotationStates: Map<string, unknown> = new Map();
   private _lastAnnotationUpdateTimes: Map<string, number> = new Map();
+  private _annotationState: { getAnnotation: (id: string) => unknown } | null = null;
+  /** Tracks annotations for which we have already published the initial 'added' event. */
+  private _publishedAnnotations: Set<string> = new Set();
 
   public static REGISTRATION = {
     name: 'castService',
@@ -138,6 +141,7 @@ export default class CastService extends PubSubService {
   public destroy(): void {
     this._measurementUnsubscribe?.unsubscribe();
     this._castOrigin.clear();
+    this._publishedAnnotations.clear();
     this._client.destroy();
   }
 
@@ -179,13 +183,13 @@ export default class CastService extends PubSubService {
 
   private async _subscribeToAnnotationEvents(): Promise<void> {
     try {
-      const { Enums } = await import('@cornerstonejs/tools');
+      const tools = await import('@cornerstonejs/tools');
       const { eventTarget } = await import('@cornerstonejs/core');
-      const csToolsEvents = Enums.Events;
+      const csToolsEvents = tools.Enums.Events;
+      this._annotationState = tools.annotation?.state ?? null;
 
-      eventTarget.addEventListener(csToolsEvents.ANNOTATION_ADDED, (evt) =>
-        this._handleAnnotationEvent('added', (evt as CustomEvent).detail)
-      );
+      // Do not listen to ANNOTATION_ADDED: it fires when the arrow is first placed, before the label is set.
+      // Only publish after COMPLETED (user finished text) or MODIFIED (user edited).
       eventTarget.addEventListener(csToolsEvents.ANNOTATION_COMPLETED, (evt) =>
         this._handleAnnotationEvent('added', (evt as CustomEvent).detail)
       );
@@ -212,17 +216,24 @@ export default class CastService extends PubSubService {
       };
     }
   ): void {
-    const annotation = eventDetail?.annotation;
-    if (!annotation?.annotationUID) return;
-    if (annotation.metadata?.toolName !== 'ArrowAnnotate') return;
+    const eventAnnotation = eventDetail?.annotation;
+    if (!eventAnnotation?.annotationUID) return;
+    if (eventAnnotation.metadata?.toolName !== 'ArrowAnnotate') return;
 
-    const annotationUID = annotation.annotationUID ?? annotation.uid;
+    const annotationUID = eventAnnotation.annotationUID ?? eventAnnotation.uid;
 
     if (action === 'removed') {
-      this._publishAnnotationUpdate(annotation, null, action);
+      this._publishAnnotationUpdate(eventAnnotation, null, action);
       this._lastAnnotationStates.delete(annotationUID);
       this._lastAnnotationUpdateTimes.delete(annotationUID);
+      this._publishedAnnotations.delete(annotationUID);
       this._castOrigin.removeAnnotation(annotationUID);
+      return;
+    }
+
+    // ANNOTATION_MODIFIED fires before ANNOTATION_COMPLETED for new annotations.
+    // Skip 'updated' events for annotations we haven't published 'added' for yet.
+    if (action === 'updated' && !this._publishedAnnotations.has(annotationUID)) {
       return;
     }
 
@@ -238,9 +249,49 @@ export default class CastService extends PubSubService {
       // ignore
     }
 
+    const annotation = this._getCurrentAnnotation(annotationUID) ?? eventAnnotation;
+    if (!this._hasLabel(annotation)) {
+      if (action === 'added') {
+        // Label may not be set yet (text callback can run after COMPLETED). Re-check once after a short delay.
+        setTimeout(() => {
+          const current = this._getCurrentAnnotation(annotationUID) ?? eventAnnotation;
+          if (!this._hasLabel(current)) return;
+          let m: Record<string, unknown> | null = null;
+          try {
+            const { MeasurementService } = this._servicesManager.services;
+            m = (MeasurementService?.getMeasurement(annotationUID) ?? null) as Record<string, unknown> | null;
+          } catch {
+            // ignore
+          }
+          this._publishAnnotationUpdate(current, m, 'added');
+          this._publishedAnnotations.add(annotationUID);
+          this._lastAnnotationStates.set(annotationUID, this._getAnnotationState(current));
+          this._lastAnnotationUpdateTimes.set(annotationUID, Date.now());
+        }, 100);
+      }
+      return;
+    }
+
     this._publishAnnotationUpdate(annotation, measurement, action);
+    if (action === 'added') {
+      this._publishedAnnotations.add(annotationUID);
+    }
     this._lastAnnotationStates.set(annotationUID, this._getAnnotationState(annotation));
     this._lastAnnotationUpdateTimes.set(annotationUID, now);
+  }
+
+  /** Get the current annotation from the tool state (may have newer data than the event detail). */
+  private _getCurrentAnnotation(
+    annotationUID: string
+  ): { annotationUID?: string; uid?: string; data?: unknown; metadata?: unknown } | null {
+    const current = this._annotationState?.getAnnotation(annotationUID);
+    return (current as { annotationUID?: string; uid?: string; data?: unknown; metadata?: unknown } | undefined) ?? null;
+  }
+
+  private _hasLabel(annotation: { data?: unknown }): boolean {
+    const data = annotation.data as Record<string, unknown> | undefined;
+    const label = data?.label ?? data?.text;
+    return typeof label === 'string' && label.trim().length > 0;
   }
 
   private _publishAnnotationUpdate(
@@ -260,12 +311,18 @@ export default class CastService extends PubSubService {
       return;
     }
 
+    if (!this._hasLabel(annotation)) return;
+
     const studyMeta =
       measurement && typeof measurement === 'object' && 'referenceStudyUID' in measurement
         ? DicomMetadataStore.getStudy((measurement as { referenceStudyUID: string }).referenceStudyUID)
         : null;
 
     const castMessage = createAnnotationUpdate(annotation, measurement, studyMeta);
+    const uid = annotation.annotationUID ?? annotation.uid;
+    const data = annotation.data as Record<string, unknown> | undefined;
+    const label = data?.label ?? data?.text;
+    this._logger.info('Sending annotation-update', { uid, action, label: typeof label === 'string' ? label : String(label) });
     this._client.publish(castMessage, hub).catch((err) => {
       this._logger.warn('Failed to publish annotation-update event:', err);
     });
