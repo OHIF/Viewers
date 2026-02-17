@@ -6,7 +6,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -27,6 +27,44 @@ window.config = {
   },
   showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
+  measurementTrackingMode: 'simplified',
+
+  cast: {
+    defaultHub: 'SLICER-HUB-CLOUD',
+    autoStart: true,
+    autoReconnect: true,
+    hubs: [
+      {
+        name: 'SLICER-HUB-CLOUD',
+        friendlyName: '3D Slicer Cast Hub',
+        productName: 'SLICER-HUB',
+        client_id: '130c3d9c-4157-4dd1-aa1d-slicer',
+        client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
+        enabled: true,
+        events: ['imagingstudy-open', 'imagingstudy-close', 'annotation-update'],
+        lease: 999,
+        hub_endpoint: 'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/api/hub',
+        authorization_endpoint:
+          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/oauth/authorize',
+        token_endpoint:
+          'https://cast-hub-g6abetanhjesb6cx.westeurope-01.azurewebsites.net/oauth/token',
+      },
+      {
+        name: 'SLICER-HUB',
+        friendlyName: '3D Slicer Cast Hub',
+        productName: 'SLICER-HUB',
+        client_id: '130c3d9c-4157-4dd1-aa1d-slicer',
+        client_secret: '0c931e4163c1bc984b5266735dc652a2f1e3e6e8d8cfe5b0855f433cc8ff018f',
+        enabled: false,
+        events: ['imagingstudy-open', 'imagingstudy-close', 'annotation-update'],
+        lease: 999,
+        hub_endpoint: 'http://localhost:2017/api/hub',
+        authorization_endpoint: 'http://localhost:2017/oauth/authorize',
+        token_endpoint: 'http://localhost:2017/oauth/token',
+      },
+    ],
+  },
+
   // Defines multi-monitor layouts
   multimonitor: [
     {
@@ -276,6 +314,18 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
+
+  customizationService: [
+    {
+      'viewportOverlay.topRight': {
+        $set: [
+          { id: 'WindowLevel', inheritsFrom: 'ohif.overlayItem.windowLevel' },
+          { id: 'ZoomLevel', inheritsFrom: 'ohif.overlayItem.zoomLevel' },
+        ],
+      },
+    },
+  ],
+
   // segmentation: {
   //   segmentLabel: {
   //     enabledByDefault: true,
@@ -301,4 +351,5 @@ window.config = {
   //     );
   //   },
   // },
+  investigationalUseDialog: { option: 'never' },
 };
