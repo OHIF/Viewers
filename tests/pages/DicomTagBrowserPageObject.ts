@@ -16,17 +16,17 @@ export class DicomTagBrowserPageObject {
 
   get seriesSelect() {
     const page = this.page;
-    const button = page.getByTestId('dicom-tag-series-select-trigger');
+    const trigger = page.getByTestId('dicom-tag-series-select-trigger');
     const value = page.getByTestId('dicom-tag-series-select-value');
     const options = page.getByRole('option');
 
     return {
-      button,
+      trigger,
       value,
       options,
 
       async click() {
-        await button.click();
+        await trigger.click();
       },
 
       async selectOption(index) {

@@ -50,13 +50,13 @@ test('should display the long series name properly within the series select butt
 
   await expect(seriesSelect.value).toContainText(selectedOptionText);
 
-  const buttonBox = await seriesSelect.button.boundingBox();
+  const triggerBox = await seriesSelect.trigger.boundingBox();
   const textBox = await seriesSelect.value.boundingBox();
 
   await assertBoundingBoxIsContainedWithin({
     innerBox: textBox,
-    outerBox: buttonBox,
+    outerBox: triggerBox,
     innerBoxLabel: 'text',
-    outerBoxLabel: 'button',
+    outerBoxLabel: 'trigger',
   });
 });
