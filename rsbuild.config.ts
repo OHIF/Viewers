@@ -45,7 +45,6 @@ export default defineConfig({
       'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
       'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
     },
-    include: [/node_modules\/@cornerstonejs/],
   },
   plugins: [pluginReact(), pluginNodePolyfill()],
   tools: {
@@ -139,12 +138,6 @@ export default defineConfig({
     proxy: {
       '/dicomweb': {
         target: 'http://localhost:5000',
-      },
-      '/WadoWebApi/api': {
-        target: 'https://ks.vetmed.fu-berlin.de',
-      },
-      '/dicom-web': {
-        target: 'http://localhost:8042',
       },
       // Add conditional proxy based on env vars
       ...(PROXY_TARGET && PROXY_DOMAIN
