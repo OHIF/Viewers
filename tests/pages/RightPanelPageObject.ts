@@ -201,6 +201,51 @@ export class RightPanelPageObject {
           };
         },
       },
+
+      get config() {
+        const configToggle = page.getByTestId('segmentation-config-toggle');
+        return {
+          toggle: {
+            locator: configToggle,
+            click: async () => {
+              await configToggle.click();
+            },
+          },
+
+          get opacity() {
+            const container = page.getByTestId('segmentation-config-opacity');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+
+          get border() {
+            const container = page.getByTestId('segmentation-config-border');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+
+          get opacityInactive() {
+            const container = page.getByTestId('segmentation-config-opacity-inactive');
+            return {
+              input: container.locator('input'),
+              slider: container.getByRole('slider'),
+              fill: async (value: string) => {
+                await container.locator('input').fill(value);
+              },
+            };
+          },
+        };
+      },
     };
   }
 

@@ -86,7 +86,10 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
             {t('Opacity')}
           </Label>
-          <div className="mx-1 flex-1">
+          <div
+            className="mx-1 flex-1"
+            data-cy="segmentation-config-opacity"
+          >
             <Numeric.Container
               mode="singleRange"
               min={0}
@@ -109,7 +112,10 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
             {t('Border')}
           </Label>
-          <div className="mx-1 flex-1">
+          <div
+            className="mx-1 flex-1"
+            data-cy="segmentation-config-border"
+          >
             <Numeric.Container
               mode="singleRange"
               min={0}
@@ -145,7 +151,10 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
             {t('Opacity')}
           </Label>
-          <div className="mx-1 flex-1">
+          <div
+            className="mx-1 flex-1"
+            data-cy="segmentation-config-opacity-inactive"
+          >
             <Numeric.Container
               mode="singleRange"
               min={0}
