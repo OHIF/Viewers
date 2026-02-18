@@ -17,8 +17,9 @@ async function run() {
 
   const { stdout: lastCommitMessage } = await execa('git', ['log', '--format=%B', '-n', '1']);
 
-  // Check if this is a master branch (master or v\d*.\d* like v3.13, v3.14)
-  const isMasterBranch = branchName === 'master' || /^v\d+\.\d+$/.test(branchName);
+  // Check if this is a master branch (master or \d*.\d* like 3.13, 3.14)
+  // Note vXXX are tags, not branches
+  const isMasterBranch = branchName === 'master' || /^\d+\.\d+$/.test(branchName);
 
   let nextVersion;
 
@@ -76,13 +77,6 @@ async function run() {
         `Adding branch name to beta version, e.g., from ${currentVersion} to ${currentVersion}-${sanitizedBranchName}`
       );
       nextVersion = `${currentVersion}-${sanitizedBranchName}`;
-    } else {
-      // If no beta, create a dev version with branch name
-      // e.g., from 3.13.0 to 3.13.0-dev-fix-corrected-version-number
-      console.log(
-        `Creating dev version with branch name, e.g., from ${currentVersion} to ${currentVersion}-dev-${sanitizedBranchName}`
-      );
-      nextVersion = `${currentVersion}-dev-${sanitizedBranchName}`;
     }
   }
 
