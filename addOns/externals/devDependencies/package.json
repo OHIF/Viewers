@@ -60,7 +60,7 @@
     "jest-canvas-mock": "2.5.2",
     "jest-environment-jsdom": "29.7.0",
     "jest-junit": "6.4.0",
-    "lerna": "7.4.2",
+    "lerna": "9.0.4",
     "lint-staged": "9.5.0",
     "mini-css-extract-plugin": "2.9.2",
     "optimize-css-assets-webpack-plugin": "6.0.1",
