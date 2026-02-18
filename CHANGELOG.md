@@ -3,6 +3,163 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.15...v3.13.0-beta.16) (2026-02-18)
+
+
+### Bug Fixes
+
+* **security:** Bump tar to 7.5.9 and lerna to 9.0.4 to fix CVE-2026-26960. ([#5824](https://github.com/OHIF/Viewers/issues/5824)) ([3d59c0d](https://github.com/OHIF/Viewers/commit/3d59c0d9d3783336eaa8d37cfc0172818942bf00))
+
+
+
+
+
+# [3.13.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.14...v3.13.0-beta.15) (2026-02-17)
+
+
+### Bug Fixes
+
+* **dicom-tag-browser:** Prevent long series names from overlapping - OHIF-2406 ([#5809](https://github.com/OHIF/Viewers/issues/5809)) ([cca1a86](https://github.com/OHIF/Viewers/commit/cca1a8683bc7d392a3a07268f24585642d13b1cd))
+
+
+
+
+
+# [3.13.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.13...v3.13.0-beta.14) (2026-02-13)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.12...v3.13.0-beta.13) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replace hardcoded black with background color token ([#5815](https://github.com/OHIF/Viewers/issues/5815)) ([dbc31a5](https://github.com/OHIF/Viewers/commit/dbc31a5d4ec5b2238683a580af96aff23d9fafeb))
+
+
+
+
+
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+
+### Bug Fixes
+
+* **usAnnotation:** Prevent error after JSON download ([#5814](https://github.com/OHIF/Viewers/issues/5814)) ([739e323](https://github.com/OHIF/Viewers/commit/739e3239cf5765711050b673b373c0145747824f))
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replaces legacy colors with ui-next colors ([#5351](https://github.com/OHIF/Viewers/issues/5351)) ([9a2691a](https://github.com/OHIF/Viewers/commit/9a2691a71fe3723bb05cbd148968b64e5d0fa951))
+
+
+
+
+
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+
+### Bug Fixes
+
+* **microscopy:** Prevent measurement clearing on viewport resize ([#5796](https://github.com/OHIF/Viewers/issues/5796)) ([baef707](https://github.com/OHIF/Viewers/commit/baef707e46fd76b50f8b510b45da64e12d71ed0e))
+
+
+
+
+
+# [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+* Missing tag ([#5808](https://github.com/OHIF/Viewers/issues/5808)) ([c92bdd5](https://github.com/OHIF/Viewers/commit/c92bdd5b48b8805e9ea4cbac72007391b9ba0efe))
+
+
+
+
+
+# [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+
+
+
+
+
+# [3.13.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.7) (2026-02-10)
+
+
+### Bug Fixes
+
+* Add a single version number with commit process ([#5746](https://github.com/OHIF/Viewers/issues/5746)) ([fb7329f](https://github.com/OHIF/Viewers/commit/fb7329f3fe0edc04833f15cd515522353d465912))
+
+
+
+
+
+# [3.13.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.5...v3.13.0-beta.6) (2026-02-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.4...v3.13.0-beta.5) (2026-02-10)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.13.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.3...v3.13.0-beta.4) (2026-02-10)
+
+
+### Bug Fixes
+
+* Better handle octet stream case ([#5789](https://github.com/OHIF/Viewers/issues/5789)) ([037402f](https://github.com/OHIF/Viewers/commit/037402f7f6a1fc07593be302e4f578f6c4870c6e))
+
+
+
+
+
+# [3.13.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.2...v3.13.0-beta.3) (2026-02-10)
+
+
+### Bug Fixes
+
+* **app:** display study not found message for all modes ([#5752](https://github.com/OHIF/Viewers/issues/5752)) ([7f9e59e](https://github.com/OHIF/Viewers/commit/7f9e59ee3074e3511d22c7f0075856a7bd2cc32e))
+
+
+
+
+
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* **cine:** prevent crash on second view/hydration of SR series  ([#5724](https://github.com/OHIF/Viewers/issues/5724)) ([f70c9b9](https://github.com/OHIF/Viewers/commit/f70c9b932db2bb14173acae675d38ce250d244fa))
+
+
+
+
+
 # [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
 
 

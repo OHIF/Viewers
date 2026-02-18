@@ -83,7 +83,7 @@ export function DatePickerWithRange({
       <Popover.Popover>
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
+            <CalendarIcon className="text-foreground absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
             <input
               id={`${id}-start`}
               type="text"
@@ -92,7 +92,7 @@ export function DatePickerWithRange({
               value={start}
               onChange={e => handleInputChange(e, 'start')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus h-[32px] w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-black hover:text-white',
+                'border-inputfield-main focus:border-inputfield-focus hover:text-foreground h-[32px] w-full justify-start rounded border bg-background py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-background',
                 !start && 'text-muted-foreground'
               )}
               data-cy="input-date-range-start"
@@ -120,7 +120,7 @@ export function DatePickerWithRange({
       >
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
+            <CalendarIcon className="text-foreground absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
             <input
               id={`${id}-end`}
               type="text"
@@ -129,7 +129,7 @@ export function DatePickerWithRange({
               value={end}
               onChange={e => handleInputChange(e, 'end')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus h-full w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-black hover:text-white',
+                'border-inputfield-main focus:border-inputfield-focus hover:text-foreground h-full w-full justify-start rounded border bg-background py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-background',
                 !end && 'text-muted-foreground'
               )}
               data-cy="input-date-range-end"
