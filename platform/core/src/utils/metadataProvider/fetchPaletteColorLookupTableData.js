@@ -23,7 +23,7 @@ export default function fetchPaletteColorLookupTableData(item, tag, descriptorTa
 
 function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   const numLutEntries = lutDescriptor[0];
-  const bits = lutDescriptor[2];
+  const bitsStored = lutDescriptor[2];
 
   if (!paletteColorLookupTableData) {
     return undefined;
@@ -32,7 +32,10 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   const arrayBufferToPaletteColorLUT = arraybuffer => {
     // Handle both ArrayBuffer and TypedArray inputs
     const buffer = arraybuffer.buffer || arraybuffer;
-    const data = bits === 16 ? new Uint16Array(buffer) : new Uint8Array(buffer);
+    const data =
+      buffer.byteLength === 2 * numLutEntries || bitsStored > 8
+        ? new Uint16Array(buffer)
+        : new Uint8Array(buffer);
     const lut = [];
 
     for (let i = 0; i < numLutEntries; i++) {
