@@ -370,6 +370,7 @@ jobs:
     resource_class: large
     parallelism: 8
     steps:
+      - install_bun
       - run:
           name: Install System Dependencies
           command: |
