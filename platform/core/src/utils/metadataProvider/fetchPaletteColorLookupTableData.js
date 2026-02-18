@@ -32,6 +32,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   const arrayBufferToPaletteColorLUT = arraybuffer => {
     // Handle both ArrayBuffer and TypedArray inputs
     const buffer = arraybuffer.buffer || arraybuffer;
+    // See note in PS3.3 C7.6.3.1.5 around 8 bit data encoded as 16 bit
     const data =
       buffer.byteLength === 2 * numLutEntries || bitsStored > 8
         ? new Uint16Array(buffer)
