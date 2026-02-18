@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ImageModal, FooterAction } from '@ohif/ui-next';
+import { ImageModal, FooterAction, toast } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 const MAX_TEXTURE_SIZE = 10000;
 const DEFAULT_FILENAME = 'image';
@@ -144,8 +144,10 @@ function ViewportDownloadFormNew({
                 onClick={async () => {
                   try {
                     await onCopyToClipboard();
+                    toast.success(t('Image copied to clipboard'));
                     onClose();
                   } catch (error) {
+                    toast.error(t('Failed to copy image to clipboard'));
                     console.error('Failed to copy to clipboard:', error);
                   }
                 }}
@@ -158,7 +160,7 @@ function ViewportDownloadFormNew({
                   onClose();
                 }}
               >
-                {t('Common:Save')}
+                {t('Save Image')}
               </FooterAction.Primary>
             </FooterAction.Right>
           </FooterAction>
