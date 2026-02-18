@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.13.0-beta.15",
+  "version": "3.13.0-beta.16",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -99,6 +99,7 @@
   "resolutions": {
     "qs": "6.14.1",
     "lodash": "4.17.23",
-    "webpack": "5.105.0"
+    "webpack": "5.105.0",
+    "sharp": "0.34.5"
   }
 }
