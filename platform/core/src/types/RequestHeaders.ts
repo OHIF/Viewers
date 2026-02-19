@@ -2,6 +2,7 @@
  * Interface to clearly present the expected fields to linters when building a request header.
  */
 export interface HeadersInterface {
+  [key: string]: string | string[] | undefined;
   /**
    * Request Accept options. For example,
    * `['multipart/related; type=application/octet-stream; transfer-syntax=1.2.840.10008.1.2.1.99',]`.
