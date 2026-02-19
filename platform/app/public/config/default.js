@@ -25,6 +25,8 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
+  // If set, volumes above this voxel count are auto-decimated on load (e.g. 500M).
+  volumeAutoDecimationThreshold: 500_000_000,
   showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
   // Defines multi-monitor layouts

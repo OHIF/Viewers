@@ -749,8 +749,8 @@ export function useViewportRendering(
       commandsManager.run({
         commandName: 'setVolumeRenderingQuality',
         commandOptions: {
-          quality,
           viewportId,
+          volumeQuality: quality,
         },
       });
     },

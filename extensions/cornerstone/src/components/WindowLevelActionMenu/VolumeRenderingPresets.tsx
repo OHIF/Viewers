@@ -3,11 +3,13 @@ import { Icons } from '@ohif/ui-next';
 import React, { ReactElement } from 'react';
 import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
 import { useSystem } from '@ohif/core';
-import { useViewportRendering } from '../../hooks/useViewportRendering';
+import { VolumeRenderingPresetsProps } from '../../types/ViewportPresets';
 import { useTranslation } from 'react-i18next';
 
-export function VolumeRenderingPresets({ viewportId }: { viewportId?: string } = {}): ReactElement {
-  const { volumeRenderingPresets } = useViewportRendering(viewportId);
+export function VolumeRenderingPresets({
+  viewportId,
+  volumeRenderingPresets,
+}: VolumeRenderingPresetsProps): ReactElement {
   const { servicesManager } = useSystem();
   const { uiDialogService } = servicesManager.services;
   const { t } = useTranslation('WindowLevelActionMenu');

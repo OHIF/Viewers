@@ -17,6 +17,7 @@ import {
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
+  decimatedVolumeLoader,
 } from '@cornerstonejs/core/loaders';
 
 import RequestTypes from '@cornerstonejs/core/enums/RequestType';
@@ -153,6 +154,13 @@ export default async function init({
   );
 
   const metadataProvider = OHIF.classes.MetadataProvider;
+
+  volumeLoader.registerVolumeLoader(
+    'decimatedVolumeLoader',
+    (volumeId: string, options: any) => {
+      return decimatedVolumeLoader(volumeId, options);
+    }
+  );
 
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',

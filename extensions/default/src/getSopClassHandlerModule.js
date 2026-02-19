@@ -93,6 +93,7 @@ const makeDisplaySet = (instances, index) => {
 
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
+  let imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
 
   imageSet.setAttributes({
     volumeLoaderSchema,
@@ -108,7 +109,8 @@ const makeDisplaySet = (instances, index) => {
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
     countIcon: isReconstructable ? 'icon-mpr' : undefined,
-    numImageFrames: instances.length,
+    numImageFrames: imageIds.length,
+    numImageFramesOriginal: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     isReconstructable,
     messages,
@@ -122,7 +124,6 @@ const makeDisplaySet = (instances, index) => {
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
-  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
   let imageId = imageIds[Math.floor(imageIds.length / 2)];
   let thumbnailInstance = instances[Math.floor(instances.length / 2)];
   if (isDynamicVolume) {

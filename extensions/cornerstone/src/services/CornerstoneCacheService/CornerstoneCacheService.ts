@@ -4,22 +4,32 @@ import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import { VOLUME_LOADER_SCHEME } from '../../constants';
+import { applyAutoDecimationIfNecessary } from '../../utils/decimation/applyAutoDecimationIfNecessary';
+import { DEFAULT_IJK_DECIMATION } from '../../utils/decimation/constants';
 
 class CornerstoneCacheService {
   static REGISTRATION = {
     name: 'cornerstoneCacheService',
     altName: 'CornerstoneCacheService',
-    create: ({ servicesManager }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
-      return new CornerstoneCacheService(servicesManager);
+    create: ({
+      servicesManager,
+      appConfig = {},
+    }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
+      return new CornerstoneCacheService(servicesManager, appConfig);
     },
   };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
   readonly servicesManager: AppTypes.ServicesManager;
+  private readonly appConfig: AppTypes.Config;
 
-  constructor(servicesManager: AppTypes.ServicesManager) {
+  constructor(
+    servicesManager: AppTypes.ServicesManager,
+    appConfig: AppTypes.Config
+  ) {
     this.servicesManager = servicesManager;
+    this.appConfig = appConfig;
   }
 
   public getCacheSize() {
@@ -45,7 +55,12 @@ class CornerstoneCacheService {
       cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
       cs3DViewportType === Enums.ViewportType.VOLUME_3D
     ) {
-      viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
+      viewportData = await this._getVolumeViewportData(
+        dataSource,
+        displaySets,
+        cs3DViewportType,
+        viewportOptions
+      );
     } else if (cs3DViewportType === Enums.ViewportType.STACK) {
       // Everything else looks like a stack
       viewportData = await this._getStackViewportData(
@@ -95,29 +110,34 @@ class CornerstoneCacheService {
       };
     }
 
-    // Todo: grab the volume and get the id from the viewport itself
-    const volumeId = `${VOLUME_LOADER_SCHEME}:${invalidatedDisplaySetInstanceUID}`;
+    const displaySet = displaySetService.getDisplaySetByUID(invalidatedDisplaySetInstanceUID);
+    const volumeLoaderSchema = displaySet?.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
+    const baseVolumeId = `${volumeLoaderSchema}:${invalidatedDisplaySetInstanceUID}`;
+    const candidateVolumeIds = [
+      baseVolumeId,
+      `${baseVolumeId}:volume3d`,
+      `${baseVolumeId}:orthographic`,
+    ];
 
-    const volume = cs3DCache.getVolume(volumeId);
-
-    if (volume) {
+    candidateVolumeIds.forEach(candidateVolumeId => {
+      this.volumeImageIds.delete(candidateVolumeId);
+      const volume = cs3DCache.getVolume(candidateVolumeId);
+      if (!volume) {
+        return;
+      }
       if (volume.imageIds) {
-        // also for each imageId in the volume, remove the imageId from the cache
-        // since that will hold the old metadata as well
-
-        volume.imageIds.forEach(imageId => {
+          volume.imageIds.forEach(imageId => {
           if (cs3DCache.getImageLoadObject(imageId)) {
             cs3DCache.removeImageLoadObject(imageId, { force: true });
           }
         });
       }
+      if (cs3DCache._volumeCache.has(candidateVolumeId)) {
+        cs3DCache._volumeCache.delete(candidateVolumeId);
+      }
+    });
 
-      // this shouldn't be via removeVolumeLoadObject, since that will
-      // remove the texture as well, but here we really just need a remove
-      // from registry so that we load it again
-      cs3DCache._volumeCache.delete(volumeId);
-      this.volumeImageIds.delete(volumeId);
-    }
+    this.volumeImageIds.delete(invalidatedDisplaySetInstanceUID);
 
     const displaySets = viewportData.data.map(({ displaySetInstanceUID }) =>
       displaySetService.getDisplaySetByUID(displaySetInstanceUID)
@@ -223,12 +243,23 @@ class CornerstoneCacheService {
   private async _getVolumeViewportData(
     dataSource,
     displaySets,
-    viewportType: Enums.ViewportType
+    viewportType: Enums.ViewportType,
+    viewportOptions?: AppTypes.ViewportGrid.GridViewportOptions
   ): Promise<VolumeViewportData> {
     // Todo: Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
 
     const volumeData = [];
+    let enrichedViewportOptions = viewportOptions || {};
+
+    const volumeAutoDecimationThreshold = this.appConfig?.volumeAutoDecimationThreshold;
+    enrichedViewportOptions = applyAutoDecimationIfNecessary(
+      enrichedViewportOptions,
+      displaySets,
+      this.servicesManager,
+      volumeAutoDecimationThreshold
+    );
+
 
     for (const displaySet of displaySets) {
       const { Modality } = displaySet;
@@ -269,19 +300,41 @@ class CornerstoneCacheService {
         }
       }
 
+      const isVolumeRenderingViewport = viewportType === Enums.ViewportType.VOLUME_3D;
+      const isOrthographicViewport = viewportType === Enums.ViewportType.ORTHOGRAPHIC;
       const volumeLoaderSchema = displaySet.volumeLoaderSchema ?? VOLUME_LOADER_SCHEME;
-      const volumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
+      const baseVolumeId = `${volumeLoaderSchema}:${displaySet.displaySetInstanceUID}`;
+      const baseVolumeIdWithSuffix = isVolumeRenderingViewport
+        ? `${baseVolumeId}:volume3d`
+        : isOrthographicViewport
+          ? `${baseVolumeId}:orthographic`
+          : baseVolumeId;
       let volumeImageIds = this.volumeImageIds.get(displaySet.displaySetInstanceUID);
+      let volumeId = baseVolumeIdWithSuffix;
       let volume = cs3DCache.getVolume(volumeId);
 
       // Parametric maps do not have image ids but they already have volume data
       // therefore a new volume should not be created.
       if (!isParametricMap && !isSegOrRtstruct && (!volumeImageIds || !volume)) {
         volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
+        const ijkDecimation = isVolumeRenderingViewport
+          ? enrichedViewportOptions?.ijkDecimation ?? DEFAULT_IJK_DECIMATION
+          : enrichedViewportOptions?.ijkDecimation;
 
-        volume = await volumeLoader.createAndCacheVolume(volumeId, {
-          imageIds: volumeImageIds,
-        });
+        const useDecimatedLoader =
+          ijkDecimation != null &&
+          (ijkDecimation[0] !== 1 || ijkDecimation[1] !== 1 || ijkDecimation[2] !== 1);
+        if (useDecimatedLoader) {
+          volumeId = `decimatedVolumeLoader:${baseVolumeIdWithSuffix}:${ijkDecimation[0]}_${ijkDecimation[1]}_${ijkDecimation[2]}`;
+          volume = cs3DCache.getVolume(volumeId);
+        }
+
+        if (!volume) {
+          volume = await volumeLoader.createAndCacheVolume(volumeId, {
+            imageIds: volumeImageIds,
+            ijkDecimation,
+          });
+        }
 
         this.volumeImageIds.set(displaySet.displaySetInstanceUID, volumeImageIds);
 
