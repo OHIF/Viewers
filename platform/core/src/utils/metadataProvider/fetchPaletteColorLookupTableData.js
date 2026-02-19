@@ -62,6 +62,11 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
     }
   }
 
+  const arrayPalette = Array.isArray(paletteColorLookupTableData) ? paletteColorLookupTableData[0] : paletteColorLookupTableData;
+  if ( arrayPalette instanceof ArrayBuffer ) {
+      return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(arrayPalette));
+  }
+
   if (paletteColorLookupTableData.retrieveBulkData) {
     return paletteColorLookupTableData
       .retrieveBulkData()
