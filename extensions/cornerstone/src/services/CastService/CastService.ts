@@ -8,7 +8,7 @@ import { CastMessageHandler } from './handlers/CastMessageHandler';
 import { CastOriginTracker } from './CastOriginTracker';
 import { CastLogger } from './logger';
 import { validateCastConfig } from './config/validateCastConfig';
-import { LOG_PREFIX, ANNOTATION_DEBOUNCE_MS } from './constants';
+import { LOG_PREFIX, ANNOTATION_THROTTLE_MS } from './constants';
 import type { HubConfig } from './network/types';
 
 export default class CastService extends PubSubService {
@@ -28,6 +28,8 @@ export default class CastService extends PubSubService {
   private _annotationState: { getAnnotation: (id: string) => unknown } | null = null;
   /** Tracks annotations for which we have already published the initial 'added' event. */
   private _publishedAnnotations: Set<string> = new Set();
+  /** Trailing-edge timers for throttled annotation updates, keyed by annotationUID. */
+  private _pendingAnnotationUpdates: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   public static REGISTRATION = {
     name: 'castService',
@@ -142,6 +144,8 @@ export default class CastService extends PubSubService {
     this._measurementUnsubscribe?.unsubscribe();
     this._castOrigin.clear();
     this._publishedAnnotations.clear();
+    for (const timer of this._pendingAnnotationUpdates.values()) clearTimeout(timer);
+    this._pendingAnnotationUpdates.clear();
     this._client.destroy();
   }
 
@@ -223,31 +227,37 @@ export default class CastService extends PubSubService {
     const annotationUID = eventAnnotation.annotationUID ?? eventAnnotation.uid;
 
     if (action === 'removed') {
+      const pending = this._pendingAnnotationUpdates.get(annotationUID);
+      if (pending) {
+        clearTimeout(pending);
+        this._pendingAnnotationUpdates.delete(annotationUID);
+      }
+      this._castOrigin.removeAnnotation(annotationUID);
       this._publishAnnotationUpdate(eventAnnotation, null, action);
       this._lastAnnotationStates.delete(annotationUID);
       this._lastAnnotationUpdateTimes.delete(annotationUID);
       this._publishedAnnotations.delete(annotationUID);
-      this._castOrigin.removeAnnotation(annotationUID);
       return;
     }
 
-    // ANNOTATION_MODIFIED fires before ANNOTATION_COMPLETED for new annotations.
-    // Skip 'updated' events for annotations we haven't published 'added' for yet.
+    // When we apply an incoming Cast message the annotation state changes,
+    // which fires ANNOTATION_MODIFIED. Consume the flag and skip to avoid echo.
+    // Also mark the annotation as "published" so future user-initiated
+    // modifications on this (received) annotation will be sent out.
+    if (this._castOrigin.hasAnnotation(annotationUID)) {
+      this._castOrigin.removeAnnotation(annotationUID);
+      this._publishedAnnotations.add(annotationUID);
+      return;
+    }
+
+    // For locally-created annotations, ANNOTATION_MODIFIED fires before
+    // ANNOTATION_COMPLETED. Skip 'updated' for annotations we haven't
+    // published 'added' for yet AND that aren't known from Cast.
     if (action === 'updated' && !this._publishedAnnotations.has(annotationUID)) {
       return;
     }
 
-    const lastUpdateTime = this._lastAnnotationUpdateTimes.get(annotationUID) ?? 0;
     const now = Date.now();
-    if (now - lastUpdateTime < ANNOTATION_DEBOUNCE_MS && action === 'updated') return;
-
-    let measurement: Record<string, unknown> | null = null;
-    try {
-      const { MeasurementService } = this._servicesManager.services;
-      measurement = (MeasurementService?.getMeasurement(annotationUID) ?? null) as Record<string, unknown> | null;
-    } catch {
-      // ignore
-    }
 
     const annotation = this._getCurrentAnnotation(annotationUID) ?? eventAnnotation;
     if (!this._hasLabel(annotation)) {
@@ -256,28 +266,58 @@ export default class CastService extends PubSubService {
         setTimeout(() => {
           const current = this._getCurrentAnnotation(annotationUID) ?? eventAnnotation;
           if (!this._hasLabel(current)) return;
-          let m: Record<string, unknown> | null = null;
-          try {
-            const { MeasurementService } = this._servicesManager.services;
-            m = (MeasurementService?.getMeasurement(annotationUID) ?? null) as Record<string, unknown> | null;
-          } catch {
-            // ignore
-          }
-          this._publishAnnotationUpdate(current, m, 'added');
+          this._doPublishAnnotation(annotationUID, current, 'added');
           this._publishedAnnotations.add(annotationUID);
-          this._lastAnnotationStates.set(annotationUID, this._getAnnotationState(current));
-          this._lastAnnotationUpdateTimes.set(annotationUID, Date.now());
         }, 100);
       }
       return;
     }
 
-    this._publishAnnotationUpdate(annotation, measurement, action);
+    // Throttle 'updated' to max 5/s per annotation, with trailing edge so the last state is always sent.
+    if (action === 'updated') {
+      const lastUpdateTime = this._lastAnnotationUpdateTimes.get(annotationUID) ?? 0;
+      const elapsed = now - lastUpdateTime;
+
+      if (elapsed < ANNOTATION_THROTTLE_MS) {
+        const existing = this._pendingAnnotationUpdates.get(annotationUID);
+        if (existing) clearTimeout(existing);
+
+        const remaining = ANNOTATION_THROTTLE_MS - elapsed;
+        this._pendingAnnotationUpdates.set(
+          annotationUID,
+          setTimeout(() => {
+            this._pendingAnnotationUpdates.delete(annotationUID);
+            const current = this._getCurrentAnnotation(annotationUID) ?? eventAnnotation;
+            if (!this._hasLabel(current)) return;
+            this._doPublishAnnotation(annotationUID, current, 'updated');
+          }, remaining)
+        );
+        return;
+      }
+    }
+
+    this._doPublishAnnotation(annotationUID, annotation, action);
     if (action === 'added') {
       this._publishedAnnotations.add(annotationUID);
     }
+  }
+
+  /** Publish an annotation update and record the timestamp. */
+  private _doPublishAnnotation(
+    annotationUID: string,
+    annotation: { annotationUID?: string; uid?: string; data?: unknown; metadata?: unknown },
+    action: string
+  ): void {
+    let measurement: Record<string, unknown> | null = null;
+    try {
+      const { MeasurementService } = this._servicesManager.services;
+      measurement = (MeasurementService?.getMeasurement(annotationUID) ?? null) as Record<string, unknown> | null;
+    } catch {
+      // ignore
+    }
+    this._publishAnnotationUpdate(annotation, measurement, action);
     this._lastAnnotationStates.set(annotationUID, this._getAnnotationState(annotation));
-    this._lastAnnotationUpdateTimes.set(annotationUID, now);
+    this._lastAnnotationUpdateTimes.set(annotationUID, Date.now());
   }
 
   /** Get the current annotation from the tool state (may have newer data than the event detail). */

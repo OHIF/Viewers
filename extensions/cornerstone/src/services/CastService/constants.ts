@@ -2,8 +2,8 @@
  * CastService timing and tuning constants.
  */
 
-/** Throttle annotation update publishes (ms) to avoid flooding the hub. */
-export const ANNOTATION_DEBOUNCE_MS = 1000;
+/** Throttle annotation update publishes (ms) – max 5 per second per annotation. */
+export const ANNOTATION_THROTTLE_MS = 200;
 
 /** Interval (ms) for checking WebSocket and attempting reconnect when autoReconnect is enabled. */
 export const RECONNECT_INTERVAL_MS = 10_000;

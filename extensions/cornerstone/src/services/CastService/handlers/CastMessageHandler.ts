@@ -142,6 +142,12 @@ export class CastMessageHandler {
     const annotationResource = getContextResource<AnnotationResource>(context, 'annotation');
     if (!annotationResource?.uid) return;
     this._annotationsFromCast.add(annotationResource.uid);
+
+    const measurement = annotationResource.measurement as MeasurementResource | undefined;
+    if (measurement) {
+      this._resolveLocalDisplaySetUIDOnResource(measurement);
+    }
+
     void this._handleAnnotationAddedOrUpdated(annotationResource);
   }
 
@@ -165,6 +171,12 @@ export class CastMessageHandler {
 
     const existingAnnotation = csAnnotation.state.getAnnotation(annotationUID) as Record<string, unknown> | undefined;
     const existingMeasurement = MeasurementService?.getMeasurement(annotationUID);
+
+    this._logger?.debug('annotation-update received', {
+      uid: annotationUID,
+      hasExistingAnnotation: !!existingAnnotation,
+      hasExistingMeasurement: !!existingMeasurement,
+    });
 
     if (existingAnnotation) {
       this._updateAnnotation(existingAnnotation, annotationResource, measurement);
@@ -260,6 +272,36 @@ export class CastMessageHandler {
     );
   }
 
+  /**
+   * Resolve the local displaySetInstanceUID for a series. The sender's
+   * displaySetInstanceUID is session-specific and won't match the receiver's.
+   */
+  private _resolveLocalDisplaySetUID(
+    referenceSeriesUID: string | undefined
+  ): string | null {
+    if (!referenceSeriesUID) return null;
+    try {
+      const { displaySetService } = this._servicesManager.services;
+      const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+      return displaySets?.[0]?.displaySetInstanceUID ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Patch a resource's displaySetInstanceUID in-place so it references
+   * the receiver's local display set instead of the sender's.
+   */
+  private _resolveLocalDisplaySetUIDOnResource(
+    resource: { referenceSeriesUID?: string; displaySetInstanceUID?: string }
+  ): void {
+    const localUID = this._resolveLocalDisplaySetUID(resource.referenceSeriesUID);
+    if (localUID) {
+      resource.displaySetInstanceUID = localUID;
+    }
+  }
+
   private _createAnnotation(
     annotationResource: AnnotationResource,
     measurement: MeasurementResource | undefined
@@ -292,15 +334,10 @@ export class CastMessageHandler {
             if (measurement.referencedImageId) return measurement.referencedImageId;
             if (displaySetService && instance) {
               const displaySets = displaySetService.getDisplaySetsForSeries(
-                measurement.referenceStudyUID ?? '',
                 measurement.referenceSeriesUID ?? ''
               );
               if (displaySets?.length) {
-                const ds =
-                  displaySets.find(
-                    (d: { displaySetInstanceUID: string }) =>
-                      d.displaySetInstanceUID === measurement.displaySetInstanceUID
-                  ) ?? displaySets[0];
+                const ds = displaySets[0];
                 const imageIds = displaySetService.getImageIdsForDisplaySet(ds.displaySetInstanceUID);
                 const frameNumber = (measurement.frameNumber ?? 1) - 1;
                 return imageIds[frameNumber] ?? imageIds[0];
@@ -317,10 +354,17 @@ export class CastMessageHandler {
         MeasurementService.addRawMeasurement(
           source,
           toolName,
-          { id: annotationUID, annotation: annotationObj },
+          { id: annotationUID, uid: annotationUID, annotation: annotationObj },
           matchingMapping.toMeasurementSchema,
           dataSource
         );
+
+        // addRawMeasurement creates a measurement but may not add the annotation
+        // to cornerstone's annotation state. Ensure it exists so subsequent
+        // updates can find it via csAnnotation.state.getAnnotation().
+        if (!csAnnotation.state.getAnnotation(annotationUID)) {
+          csAnnotation.state.getAnnotationManager().addAnnotation(annotationObj);
+        }
       } catch (err) {
         this._logger?.warn('Failed to use addRawMeasurement, falling back to direct creation:', err);
         this._createAnnotationDirectly(annotationObj);
@@ -342,6 +386,8 @@ export class CastMessageHandler {
     const context = event.context as Array<{ key: string; resource: MeasurementResource }> | undefined;
     const measurementResource = getContextResource<MeasurementResource>(context, 'measurement');
     if (!measurementResource?.uid) return;
+
+    this._resolveLocalDisplaySetUIDOnResource(measurementResource);
 
     const { MeasurementService, displaySetService } = this._servicesManager.services;
     const existingMeasurement = MeasurementService.getMeasurement(measurementResource.uid);
@@ -385,7 +431,7 @@ export class CastMessageHandler {
       _broadcastEvent?: (a: string, b: unknown) => void;
     },
     displaySetService: {
-      getDisplaySetsForSeries: (a: string, b: string) => unknown[];
+      getDisplaySetsForSeries: (seriesInstanceUID: string) => unknown[];
       getImageIdsForDisplaySet: (a: string) => string[];
     }
   ): void {
@@ -408,13 +454,10 @@ export class CastMessageHandler {
             if (measurementResource.referencedImageId) return measurementResource.referencedImageId;
             if (displaySetService) {
               const displaySets = displaySetService.getDisplaySetsForSeries(
-                measurementResource.referenceStudyUID ?? '',
                 measurementResource.referenceSeriesUID ?? ''
               ) as Array<{ displaySetInstanceUID: string }>;
               if (displaySets?.length) {
-                const ds =
-                  displaySets.find((d) => d.displaySetInstanceUID === measurementResource.displaySetInstanceUID) ??
-                  displaySets[0];
+                const ds = displaySets[0];
                 const imageIds = displaySetService.getImageIdsForDisplaySet(ds.displaySetInstanceUID);
                 const fn = (measurementResource.frameNumber ?? 1) - 1;
                 return imageIds[fn] ?? imageIds[0];
@@ -455,7 +498,7 @@ export class CastMessageHandler {
         MeasurementService.addRawMeasurement(
           source,
           toolName,
-          { id: measurementResource.uid, annotation: annotationObj },
+          { id: measurementResource.uid, uid: measurementResource.uid, annotation: annotationObj },
           matchingMapping.toMeasurementSchema,
           dataSource
         );
