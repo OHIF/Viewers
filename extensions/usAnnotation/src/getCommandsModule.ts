@@ -242,6 +242,14 @@ function commandsModule({
           }
         });
 
+        if (annotations.length === 0) {
+          const currentFrameIndex = viewportImageIds.indexOf(imageId);
+          frame_annotations[currentFrameIndex] = {
+            pleura_lines: [],
+            b_lines: [],
+          };
+        }
+
         const instance = getInstanceByImageId(servicesManager.services, imageId);
         const json = {
           SOPInstanceUID: instance.SOPInstanceUID,
