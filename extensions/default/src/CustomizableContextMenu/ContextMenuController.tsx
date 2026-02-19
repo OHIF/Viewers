@@ -102,26 +102,23 @@ export default class ContextMenuController {
           this.services.uiDialogService.hide('context-menu');
         },
 
-        /**
-         * Displays a sub-menu, removing this menu
-         * @param {*} item
-         * @param {*} itemRef
-         * @param {*} subProps
-         */
-        onShowSubMenu: (item, itemRef, subProps) => {
-          if (!itemRef.subMenu) {
-            console.warn('No submenu defined for', item, itemRef, subProps);
-            return;
-          }
-          this.showContextMenu(
-            {
-              ...contextMenuProps,
-              menuId: itemRef.subMenu,
-            },
-            viewportElement,
-            defaultPointsPosition
-          );
-        },
+        // NOTE: onShowSubMenu removed - DialogContextMenu handles submenus inline
+        // via Floating UI using the `menus` prop passed above.
+        //
+        // onShowSubMenu: (item, itemRef, subProps) => {
+        //   if (!itemRef.subMenu) {
+        //     console.warn('No submenu defined for', item, itemRef, subProps);
+        //     return;
+        //   }
+        //   this.showContextMenu(
+        //     {
+        //       ...contextMenuProps,
+        //       menuId: itemRef.subMenu,
+        //     },
+        //     viewportElement,
+        //     defaultPointsPosition
+        //   );
+        // },
 
         // Default is to run the specified commands.
         onDefault: (item, itemRef, subProps) => {
