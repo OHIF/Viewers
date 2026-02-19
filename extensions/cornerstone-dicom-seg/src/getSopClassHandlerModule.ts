@@ -1,6 +1,6 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
-import { metaData, eventTarget } from '@cornerstonejs/core';
+import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
@@ -174,16 +174,19 @@ async function _loadSegments({
   extensionManager,
   servicesManager,
   segDisplaySet,
-  headers,
-}: withAppTypes) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.common'
-  );
-
+}: withAppTypes<{ segDisplaySet: AppTypes.DisplaySet }>) {
   const { segmentationService, uiNotificationService } = servicesManager.services;
+  const dataSource = extensionManager.getActiveDataSource()[0];
+  const segImageId = dataSource.getImageIdsForInstance({
+    instance: segDisplaySet.instance,
+  });
+  const segImageIdStr = Array.isArray(segImageId) ? segImageId[0] : segImageId;
 
-  const { dicomLoaderService } = utilityModule.exports;
-  const arrayBuffer = await dicomLoaderService.findDicomDataPromise(segDisplaySet, null, headers);
+  if (!segImageIdStr) {
+    throw new Error(
+      'Could not get imageId for SEG instance (getImageIdsForInstance not available or returned nothing).'
+    );
+  }
 
   const referencedDisplaySet = servicesManager.services.displaySetService.getDisplaySetByUID(
     segDisplaySet.referencedDisplaySetInstanceUID
@@ -196,12 +199,15 @@ async function _loadSegments({
   let { imageIds } = referencedDisplaySet;
 
   if (!imageIds) {
-    // try images
-    const { images } = referencedDisplaySet;
-    imageIds = images.map(image => image.imageId);
+    imageIds = (referencedDisplaySet as { images?: { imageId: string }[] }).images?.map(
+      (img: { imageId: string }) => img.imageId
+    );
   }
 
-  // Todo: what should be defaults here
+  if (!imageIds?.length) {
+    throw new Error('referencedDisplaySet has no imageIds');
+  }
+
   const tolerance = 0.001;
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
@@ -212,12 +218,18 @@ async function _loadSegments({
 
   const results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
     imageIds,
-    arrayBuffer,
-    { metadataProvider: metaData, tolerance }
+    segImageIdStr,
+    {
+      metadataProvider: metaData,
+      tolerance,
+    }
   );
 
   let usedRecommendedDisplayCIELabValue = true;
-  results.segMetadata.data.forEach((data, i) => {
+  const resultsTyped = results as {
+    segMetadata: { data: { rgba?: number[]; RecommendedDisplayCIELabValue?: number[] }[] };
+  };
+  resultsTyped.segMetadata.data.forEach((data, i) => {
     if (i > 0) {
       data.rgba = data.RecommendedDisplayCIELabValue;
 
