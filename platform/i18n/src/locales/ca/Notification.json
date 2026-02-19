@@ -1,0 +1,18 @@
+{
+  "Do you want to add this measurement to the existing report?": "Voleu afegir aquesta mesura al informe existent?",
+  "Create new report": "Crear nou informe",
+  "Add to existing report": "Afegir a l'informe existent",
+  "Discard": "Descartar",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "Teniu mesures amb seguiment existents. Què voleu fer amb les mesures amb seguiment existents?",
+  "No, do not ask again for this series": "No, no tornar a preguntar per a aquesta sèrie",
+  "No": "$t(Common:No)",
+  "Track measurements for this series?": "Voleu fer seguiment de les mesures d'aquesta sèrie?",
+  "Yes": "$t(Common:Yes)",
+  "Cancel": "$t(Common:Cancel)",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "Les mesures no poden abastar diversos estudis. Voleu desar les mesures amb seguiment?",
+  "No, discard previously tracked series & measurements": "No, descartar les sèries i mesures amb seguiment prèvies",
+  "Do you want to continue tracking measurements for this study?": "Voleu continuar fent seguiment de les mesures d'aquest estudi?",
+  "Create Report": "Crear informe",
+  "Measurements saved successfully": "Mesures desades correctament",
+  "Failed to store measurements": "Error en desar les mesures"
+}

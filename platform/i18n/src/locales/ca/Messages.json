@@ -1,0 +1,18 @@
+{
+  "Display Set Messages": "Missatges del conjunt de visualització",
+  "1": "No s'han trobat instàncies vàlides a la sèrie.",
+  "2": "El conjunt de visualització té informació de posició faltant.",
+  "3": "El conjunt de visualització no és un volum 3D reconstruïble.",
+  "4": "Els conjunts de visualització de múltiples fotogrames no tenen informació de mesura de píxels.",
+  "5": "Els conjunts de visualització de múltiples fotogrames no tenen informació d'orientació.",
+  "6": "Els conjunts de visualització de múltiples fotogrames no tenen informació de posició.",
+  "7": "El conjunt de visualització té fotogrames faltants.",
+  "8": "El conjunt de visualització té espaiat irregular.",
+  "9": "El conjunt de visualització té dimensions inconsistents entre fotogrames.",
+  "10": "El conjunt de visualització té fotogrames amb un nombre inconsistent de components.",
+  "11": "El conjunt de visualització té fotogrames amb orientacions inconsistents.",
+  "12": "El conjunt de visualització té informació de posició inconsistent.",
+  "13": "Conjunt de visualització no suportat.",
+  "14": "L'UID de classe SOP {{ sopClassUid }} no està suportat.",
+  "15": "Al conjunt de visualització li falta un UID de classe SOP. Comproveu el fitxer."
+}

@@ -4,6 +4,7 @@ import CineDialog from './CineDialog.json';
 import Common from './Common.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
+import InvestigationalUseDialog from './InvestigationalUseDialog.json';
 import MeasurementTable from './MeasurementTable.json';
 import DataRow from './DataRow.json';
 import StudyList from './StudyList.json';
@@ -39,6 +40,7 @@ export default {
     Common,
     DatePicker,
     Header,
+    InvestigationalUseDialog,
     MeasurementTable,
     DataRow,
     StudyList,
