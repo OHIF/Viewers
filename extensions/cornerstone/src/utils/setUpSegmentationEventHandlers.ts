@@ -7,7 +7,8 @@ import {
 } from './segmentationHandlers';
 
 export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManager }) => {
-  const { segmentationService, customizationService, displaySetService } = servicesManager.services;
+  const { segmentationService, customizationService, displaySetService, viewportGridService } =
+    servicesManager.services;
 
   const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
     setupSegmentationDataModifiedHandler({
@@ -57,6 +58,36 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
     }
   );
 
+  const { unsubscribe: unsubscribeSegmentationRemoved } = segmentationService.subscribe(
+    segmentationService.EVENTS.SEGMENTATION_REMOVED,
+    ({ segmentationId }) => {
+      const displaySet = displaySetService.getDisplaySetByUID(segmentationId);
+
+      // Remove the display set layer from all viewports that have it
+      if (displaySet) {
+        const state = viewportGridService.getState();
+        const viewports = state.viewports;
+
+        // Find all viewports that contain this segmentation's display set as a layer
+        for (const [viewportId, viewport] of viewports.entries()) {
+          const displaySetInstanceUIDs = viewport.displaySetInstanceUIDs || [];
+          if (displaySetInstanceUIDs.includes(segmentationId)) {
+            // Remove the display set layer from this viewport
+            commandsManager.runCommand('removeDisplaySetLayer', {
+              viewportId,
+              displaySetInstanceUID: segmentationId,
+            });
+          }
+        }
+
+        // Delete the display set from the service if it was made in client
+        if (displaySet.madeInClient) {
+          displaySetService.deleteDisplaySet(segmentationId);
+        }
+      }
+    }
+  );
+
   const { unsubscribeSelectedSegmentationsForViewportEvents } =
     setUpSelectedSegmentationsForViewportHandler({
       segmentationService,
@@ -66,6 +97,7 @@ export const setUpSegmentationEventHandlers = ({ servicesManager, commandsManage
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
     unsubscribeSegmentationCreated,
+    unsubscribeSegmentationRemoved,
     ...unsubscribeSelectedSegmentationsForViewportEvents,
   ];
 

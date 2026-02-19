@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ImageModal, FooterAction } from '@ohif/ui-next';
+import { ImageModal, FooterAction, toast } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 const MAX_TEXTURE_SIZE = 10000;
 const DEFAULT_FILENAME = 'image';
@@ -16,6 +16,7 @@ interface ViewportDownloadFormNewProps {
   onEnableViewport: (element: HTMLElement) => void;
   onDisableViewport: () => void;
   onDownload: (filename: string, fileType: string) => void;
+  onCopyToClipboard: () => void;
   warningState: { enabled: boolean; value: string };
 }
 
@@ -32,6 +33,7 @@ function ViewportDownloadFormNew({
   onEnableViewport,
   onDisableViewport,
   onDownload,
+  onCopyToClipboard,
 }: ViewportDownloadFormNewProps) {
   const [viewportElement, setViewportElement] = useState<HTMLElement | null>(null);
   const [showWarningMessage, setShowWarningMessage] = useState(true);
@@ -138,13 +140,27 @@ function ViewportDownloadFormNew({
               <FooterAction.Secondary onClick={onClose}>
                 {t('Common:Cancel')}
               </FooterAction.Secondary>
+              <FooterAction.Secondary
+                onClick={async () => {
+                  try {
+                    await onCopyToClipboard();
+                    toast.success(t('Image copied to clipboard'));
+                    onClose();
+                  } catch (error) {
+                    toast.error(t('Failed to copy image to clipboard'));
+                    console.error('Failed to copy to clipboard:', error);
+                  }
+                }}
+              >
+                {t('Copy to Clipboard')}
+              </FooterAction.Secondary>
               <FooterAction.Primary
                 onClick={() => {
                   onDownload(filename || DEFAULT_FILENAME, fileType);
                   onClose();
                 }}
               >
-                {t('Common:Save')}
+                {t('Save Image')}
               </FooterAction.Primary>
             </FooterAction.Right>
           </FooterAction>
