@@ -21,10 +21,6 @@ export class CastClient implements CastTransport {
       this.setHub(config.defaultHub);
     }
 
-    if (config.autoStart && this._hub.name) {
-      this.getToken();
-    }
-
     if (config.autoReconnect) {
       this._reconnectInterval = setInterval(() => this._checkWebsocket(), RECONNECT_INTERVAL_MS);
     }
