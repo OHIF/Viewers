@@ -100,15 +100,18 @@ export function DatePickerWithRange({
           </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
-          className="w-auto p-0"
+          className="w-auto overflow-hidden p-0"
           align="start"
         >
           <Calendar
-            initialFocus
+            autoFocus
             mode="single"
+            captionLayout="dropdown"
             defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
             selected={start ? parse(start, 'yyyy-MM-dd', new Date()) : undefined}
             onSelect={handleStartSelect}
+            startMonth={new Date(1900, 0)}
+            endMonth={new Date(new Date().getFullYear() + 1, 11)}
             numberOfMonths={1}
           />
         </Popover.PopoverContent>
@@ -137,15 +140,18 @@ export function DatePickerWithRange({
           </div>
         </Popover.PopoverTrigger>
         <Popover.PopoverContent
-          className="w-auto p-0"
+          className="w-auto overflow-hidden p-0"
           align="start"
         >
           <Calendar
-            initialFocus
+            autoFocus
             mode="single"
+            captionLayout="dropdown"
             defaultMonth={start ? parse(start, 'yyyy-MM-dd', new Date()) : new Date()}
             selected={end ? parse(end, 'yyyy-MM-dd', new Date()) : undefined}
             onSelect={handleEndSelect}
+            startMonth={new Date(1900, 0)}
+            endMonth={new Date(new Date().getFullYear() + 1, 11)}
             numberOfMonths={1}
           />
         </Popover.PopoverContent>
