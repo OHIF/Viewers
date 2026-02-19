@@ -203,7 +203,7 @@ export class RightPanelPageObject {
       },
 
       get config() {
-        const configToggle = page.getByTestId('segmentation-config-toggle');
+        const configToggle = page.getByTestId('segmentation-config-toggle-Labelmap');
         return {
           toggle: {
             locator: configToggle,
@@ -213,7 +213,7 @@ export class RightPanelPageObject {
           },
 
           get opacity() {
-            const container = page.getByTestId('segmentation-config-opacity');
+            const container = page.getByTestId('segmentation-config-opacity-Labelmap');
             return {
               input: container.locator('input'),
               slider: container.getByRole('slider'),
@@ -224,7 +224,7 @@ export class RightPanelPageObject {
           },
 
           get border() {
-            const container = page.getByTestId('segmentation-config-border');
+            const container = page.getByTestId('segmentation-config-border-Labelmap');
             return {
               input: container.locator('input'),
               slider: container.getByRole('slider'),
@@ -235,7 +235,7 @@ export class RightPanelPageObject {
           },
 
           get opacityInactive() {
-            const container = page.getByTestId('segmentation-config-opacity-inactive');
+            const container = page.getByTestId('segmentation-config-opacity-inactive-Labelmap');
             return {
               input: container.locator('input'),
               slider: container.getByRole('slider'),

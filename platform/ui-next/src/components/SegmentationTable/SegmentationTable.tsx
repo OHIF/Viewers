@@ -44,6 +44,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     children,
     showConfig: externalShowConfig,
     selectedSegmentationIdForType,
+    segmentationRepresentationTypes,
     ...contextProps
   } = props;
 
@@ -112,6 +113,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         activeSegmentation,
         activeRepresentation,
         selectedSegmentationIdForType,
+        segmentationRepresentationTypes,
         ...contextProps,
         setShowConfig: toggleShowConfig,
       }}
@@ -122,7 +124,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
           {hasConfigComponent && (
             <div
               className="ml-auto mr-2"
-              data-cy="segmentation-config-toggle"
+              data-cy={`segmentation-config-toggle-${segmentationRepresentationTypes?.[0]}`}
             >
               <Icons.Settings
                 className="text-primary h-4 w-4"

@@ -77,7 +77,7 @@ test('checks saved segmentations loads and jumps to slices', async ({
   await expect(viewportInfoBottomRight).toContainText('22/');
 });
 
-test.describe('Segmentation panel config input validation', () => {
+test.describe('Segmentation panel config input validation for labelmap', () => {
   test.beforeEach(async ({ rightPanelPageObject }) => {
     await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
@@ -119,7 +119,9 @@ test.describe('Segmentation panel config input validation', () => {
     test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacity.fill('abc')).rejects.toThrow('Cannot type text into input[type=number]');
+      const nonNumericError = 'Cannot type text into input[type=number]';
+
+      await expect(opacity.fill('abc')).rejects.toThrow(nonNumericError);
     });
   });
 
@@ -158,7 +160,9 @@ test.describe('Segmentation panel config input validation', () => {
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(border.fill('abc')).rejects.toThrow('Cannot type text into input[type=number]');
+      const nonNumericError = 'Cannot type text into input[type=number]';
+
+      await expect(border.fill('abc')).rejects.toThrow(nonNumericError);
     });
   });
 
@@ -197,9 +201,9 @@ test.describe('Segmentation panel config input validation', () => {
     test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      await expect(opacityInactive.fill('abc')).rejects.toThrow(
-        'Cannot type text into input[type=number]'
-      );
+      const nonNumericError = 'Cannot type text into input[type=number]';
+
+      await expect(opacityInactive.fill('abc')).rejects.toThrow(nonNumericError);
     });
   });
 });
