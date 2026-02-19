@@ -16,9 +16,6 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <div align="center">
   📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
 </div>
-<div align="center">
-  📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
-</div>
 
 
 
@@ -49,6 +46,32 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 | <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-4d.webp?raw=true" alt="4D" width="350"/> | 4D  | [Demo](https://viewer.ohif.org/dynamic-volume?StudyInstanceUIDs=2.25.232704420736447710317909004159492840763) |
 | <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/demo-video.webp?raw=true" alt="VIDEO" width="350"/> | Video  | [Demo](https://viewer.ohif.org/viewer?StudyInstanceUIDs=2.25.96975534054447904995905761963464388233) |
 | <img src="https://github.com/OHIF/Viewers/blob/master/platform/docs/docs/assets/img/microscopy.webp?raw=true" alt="microscopy" width="350"/> | Slide Microscopy  | [Demo](https://viewer.ohif.org/microscopy?StudyInstanceUIDs=2.25.141277760791347900862109212450152067508) |
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/OHIF/Viewers.git
+cd Viewers
+
+# Install dependencies
+yarn install --frozen-lockfile
+
+# Start development server
+yarn dev
+```
+
+The application will be available at `http://localhost:3000`.
+
+### Using Docker
+
+```bash
+# Build the Docker image
+docker build -t ohif/viewer .
+
+# Run the container
+docker run -p 3000:80 ohif/viewer
+```
 
 ## About
 
@@ -149,12 +172,10 @@ Here is a schematic representation of our development workflow:
    - `git remote add upstream https://github.com/OHIF/Viewers.git`
 5. `yarn install --frozen-lockfile` to restore dependencies and link projects
 
-:::danger
-In general run `yarn install` with the `--frozen-lockfile` flag to help avoid
-supply chain attacks by enforcing reproducible dependencies. That is, if the
-`yarn.lock` file is clean and does NOT reference compromised packages, then
-no compromised packages should land on your machine by using this flag.
-:::
+> ⚠️ **Security Note:** Always run `yarn install` with the `--frozen-lockfile` flag to help avoid
+> supply chain attacks by enforcing reproducible dependencies. If the
+> `yarn.lock` file is clean and does NOT reference compromised packages, then
+> no compromised packages should land on your machine by using this flag.
 
 #### To Develop
 
@@ -177,14 +198,61 @@ also supports a number of commands that can be found in their respective
 | Yarn Commands                | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |
 | **Develop**                  |                                                               |
-| `dev`              | Default development experience for Viewer                     |
-| `dev:fast`             | Our experimental fast dev mode that uses rsbuild instead of webpack                     |
-| `test:unit`                  | Jest multi-project test runner; overall coverage              |
+| `yarn dev`                   | Default development experience for Viewer                     |
+| `yarn dev:fast`              | Experimental fast dev mode using rsbuild instead of webpack   |
+| `yarn dev:orthanc`           | Development with Orthanc DICOM server                         |
+| **Test**                     |                                                               |
+| `yarn test:unit`             | Jest multi-project test runner; overall coverage              |
+| `yarn test:e2e`              | End-to-end tests with Playwright                              |
 | **Deploy**                   |                                                               |
-| `build`\*                    | Builds production output for our PWA Viewer                   |  |
+| `yarn build`                 | Builds production output for our PWA Viewer                   |
+| `yarn build:package-all`     | Build all packages for npm publishing                         |
 
 \* - For more information on different builds, check out our [Deploy
 Docs][deployment-docs]
+
+## Usage Examples
+
+### Connecting to a DICOM Server
+
+Configure your data source in `platform/app/public/config/default.js`:
+
+```javascript
+window.config = {
+  dataSources: [
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        friendlyName: 'My DICOM Server',
+        name: 'dicomweb',
+        wadoUriRoot: 'https://your-server.com/wado',
+        qidoRoot: 'https://your-server.com/dicom-web',
+        wadoRoot: 'https://your-server.com/dicom-web',
+      },
+    },
+  ],
+};
+```
+
+### Loading a Study via URL
+
+```
+https://viewer.ohif.org/viewer?StudyInstanceUIDs=1.2.3.4.5.6.7.8.9
+```
+
+### Custom Mode Configuration
+
+Create a custom mode in the `modes/` directory or configure existing modes:
+
+```javascript
+// modes/your-mode/src/index.js
+export default {
+  id: 'your-mode',
+  displayName: 'Your Custom Mode',
+  // ... configuration
+};
+```
 
 ## Project
 
@@ -195,40 +263,42 @@ you'll see the following:
 
 ```bash
 .
-├── extensions               #
-│   ├── _example             # Skeleton of example extension
-│   ├── default              # basic set of useful functionalities (datasources, panels, etc)
-│   ├── cornerstone       # image rendering and tools w/ Cornerstone3D
-│   ├── cornerstone-dicom-sr # DICOM Structured Report rendering and export
-│   ├── cornerstone-dicom-sr # DICOM Structured Report rendering and export
-│   ├── cornerstone-dicom-seg # DICOM Segmentation rendering and export
-│   ├── cornerstone-dicom-rt # DICOM RTSTRUCT rendering
-│   ├── cornerstone-microscopy # Whole Slide Microscopy rendering
-│   ├── dicom-pdf # PDF rendering
-│   ├── dicom-video # DICOM RESTful Services
-│   ├── measurement-tracking # Longitudinal measurement tracking
-│   ├── tmtv # Total Metabolic Tumor Volume (TMTV) calculation
-|
-
+├── extensions/                    # Feature extensions
+│   ├── cornerstone/               # Image rendering and tools w/ Cornerstone3D
+│   ├── cornerstone-dicom-sr/      # DICOM Structured Report rendering and export
+│   ├── cornerstone-dicom-seg/     # DICOM Segmentation rendering and export
+│   ├── cornerstone-dicom-rt/      # DICOM RTSTRUCT rendering
+│   ├── cornerstone-dicom-pmap/    # DICOM Parametric Map rendering
+│   ├── cornerstone-dynamic-volume/ # Dynamic volume rendering (4D)
+│   ├── default/                   # Basic functionalities (datasources, panels, etc)
+│   ├── dicom-microscopy/          # Whole Slide Microscopy rendering
+│   ├── dicom-pdf/                 # PDF rendering
+│   ├── dicom-video/               # Video rendering
+│   ├── measurement-tracking/      # Longitudinal measurement tracking
+│   └── tmtv/                      # Total Metabolic Tumor Volume calculation
 │
-├── modes                    #
-│   ├── _example             # Skeleton of example mode
-│   ├── basic-dev-mode       # Basic development mode
-│   ├── longitudinal         # Longitudinal mode (measurement tracking)
-│   ├── tmtv       # Total Metabolic Tumor Volume (TMTV) calculation mode
-│   └── microscopy          # Whole Slide Microscopy mode
+├── modes/                         # Workflow configurations
+│   ├── basic/                     # Basic viewing mode
+│   ├── basic-dev-mode/            # Development mode
+│   ├── longitudinal/              # Measurement tracking mode
+│   ├── microscopy/                # Whole Slide Microscopy mode
+│   ├── preclinical-4d/            # 4D imaging mode
+│   ├── segmentation/              # Segmentation workflow mode
+│   └── tmtv/                      # Total Metabolic Tumor Volume mode
 │
-├── platform                 #
-│   ├── core                 # Business Logic
-│   ├── i18n                 # Internationalization Support
-│   ├── ui                   # React component library
-│   ├── docs                 # Documentation
-│   └── viewer               # Connects platform and extension projects
+├── platform/                      # Core platform packages
+│   ├── app/                       # Main viewer application
+│   ├── cli/                       # Command line interface
+│   ├── core/                      # Business logic and services
+│   ├── docs/                      # Documentation
+│   ├── i18n/                      # Internationalization support
+│   ├── ui/                        # React component library
+│   └── ui-next/                   # Next-gen UI components
 │
-├── ...                      # misc. shared configuration
-├── lerna.json               # MonoRepo (Lerna) settings
-├── package.json             # Shared devDependencies and commands
-└── README.md                # This file
+├── Dockerfile                     # Docker configuration
+├── lerna.json                     # MonoRepo (Lerna) settings
+├── package.json                   # Shared devDependencies and commands
+└── README.md                      # This file
 ```
 
 ## Acknowledgments
