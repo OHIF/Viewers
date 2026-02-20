@@ -3,9 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - yarn install
+        - export NODE_OPTIONS="--max-old-space-size=6144"
+        - yarn install --frozen-lockfile
     build:
       commands:
+        - export NODE_OPTIONS="--max-old-space-size=6144"
+        - export GENERATE_SOURCEMAP=false
         - APP_CONFIG=config/smartcareplus.js yarn run build
   artifacts:
     baseDirectory: platform/app/dist
