@@ -194,9 +194,9 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
   }, [experimentId, projectId, subjectId, detectOverreadMode, selectedExperimentId, availableExperiments]);
 
   // Load custom forms for the project (form definitions)
+  // Only projectId is required for fetching form definitions; subjectId is not used by the API
   const loadCustomForms = useCallback(async () => {
-    if (!projectId || !subjectId) {
-      setError('No project or subject selected');
+    if (!projectId) {
       return;
     }
 
@@ -210,6 +210,8 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
       if (forms.length > 0) {
         const firstFormUuid = forms[0].uuid;
         setSelectedFormUuid(firstFormUuid);
+      } else {
+        setSelectedFormUuid('');
       }
     } catch (err) {
       console.error('Failed to load custom forms:', err);
@@ -222,7 +224,7 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
     } finally {
       setLoading(false);
     }
-  }, [projectId, subjectId, uiNotificationService]);
+  }, [projectId, uiNotificationService]);
 
   // Load form data for the current experiment (form data)
   const loadFormData = useCallback(async () => {
@@ -879,6 +881,46 @@ const XNATCustomFormsPanel: React.FC<XNATCustomFormsPanelProps> = ({ servicesMan
           </PanelSection.Content>
         </PanelSection>
       )}
+
+      {/* Overread / Custom Forms selector and state */}
+      <PanelSection>
+        <PanelSection.Header>
+          <div className="flex items-center space-x-2 text-aqua-pale">
+            <Icons.Clipboard className="w-4 h-4" />
+            <span>{isOverreadMode ? 'Overread Forms' : 'Custom Forms'}</span>
+          </div>
+        </PanelSection.Header>
+        <PanelSection.Content>
+          {loading && customForms.length === 0 ? (
+            <div className="text-sm text-muted-foreground">Loading forms...</div>
+          ) : customForms.length === 0 ? (
+            <div className="text-sm text-muted-foreground">
+              No custom forms configured for this project.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                {isOverreadMode
+                  ? 'There is an overread form configured for this project.'
+                  : 'There is a custom form configured for this project.'}
+              </p>
+              <label className="block text-sm font-medium text-foreground">Select form</label>
+              <select
+                value={selectedFormUuid}
+                onChange={(e) => handleFormSelect(e.target.value)}
+                className="w-full p-2 border border-input rounded text-sm bg-background text-foreground"
+              >
+                <option value="">Choose a form...</option>
+                {customForms.map(form => (
+                  <option key={form.uuid} value={form.uuid}>
+                    {form.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </PanelSection.Content>
+      </PanelSection>
 
       {error && (
         <PanelSection>

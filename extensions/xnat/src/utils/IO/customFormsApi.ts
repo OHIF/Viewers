@@ -84,9 +84,11 @@ export async function fetchCustomForms(projectId: string): Promise<ParsedCustomF
         // Parse the contents JSON string
         const contents = JSON.parse(form.contents);
 
-        // Check if this form applies to the project
+        // Check if this form applies to the project (direct match) or is site-wide (applies to all projects)
         const appliesToProject = form.appliesToList.some(
-          item => item.entityId === projectId && item.status === 'enabled'
+          item =>
+            item.status === 'enabled' &&
+            (item.entityId === projectId || item.entityId === 'Site')
         );
 
         if (appliesToProject) {
