@@ -23,6 +23,16 @@ class RoiAnnotation extends PubSubService {
     this.label = label;
     this.viewState = viewState;
     this.setMeasurements(roiGraphic);
+    this.isVisible = true;
+  }
+
+  /**
+   * Sets the visibility state of the annotation.
+   *
+   * @param {boolean} isVisible
+   */
+  setVisibility(isVisible) {
+    this.isVisible = isVisible;
   }
 
   getScoord3d() {
