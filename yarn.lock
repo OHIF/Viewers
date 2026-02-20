@@ -8082,13 +8082,6 @@ dom-serializer@^2.0.0:
     domhandler "^5.0.2"
     entities "^4.2.0"
 
-dom7@^4.0.4:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/dom7/-/dom7-4.0.6.tgz#091a51621d7a19ce0fb86045cafb3c10035e97ed"
-  integrity sha512-emjdpPLhpNubapLFdjNL9tP06Sr+GZkrIHEXLWvOGsytACUrkbeIdjO5g77m00BrHTznnlcNqgmn7pCN192TBA==
-  dependencies:
-    ssr-window "^4.0.0"
-
 domain-browser@^5.7.0:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-5.7.0.tgz#81b942459672e3c7ed8f721fe31135a5628f31cf"
@@ -17613,11 +17606,6 @@ sshpk@^1.18.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
-ssr-window@^4.0.0, ssr-window@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/ssr-window/-/ssr-window-4.0.2.tgz#dc6b3ee37be86ac0e3ddc60030f7b3bc9b8553be"
-  integrity sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==
-
 ssri@12.0.0, ssri@^12.0.0:
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/ssri/-/ssri-12.0.0.tgz#bcb4258417c702472f8191981d3c8a771fee6832"
@@ -18019,13 +18007,10 @@ svgo@^3.0.2:
     csso "^5.0.5"
     picocolors "^1.0.0"
 
-swiper@8.4.7:
-  version "8.4.7"
-  resolved "https://registry.yarnpkg.com/swiper/-/swiper-8.4.7.tgz#0301d385c3efc8efe8b66a64187edcb30e3067ee"
-  integrity sha512-VwO/KU3i9IV2Sf+W2NqyzwWob4yX9Qdedq6vBtS0rFqJ6Fa5iLUJwxQkuD4I38w0WDJwmFl8ojkdcRFPHWD+2g==
-  dependencies:
-    dom7 "^4.0.4"
-    ssr-window "^4.0.2"
+swiper@12.1.2:
+  version "12.1.2"
+  resolved "https://registry.yarnpkg.com/swiper/-/swiper-12.1.2.tgz#39eaad0c088def66a7eb8f6bae1439384586ab90"
+  integrity sha512-4gILrI3vXZqoZh71I1PALqukCFgk+gpOwe1tOvz5uE9kHtl2gTDzmYflYCwWvR4LOvCrJi6UEEU+gnuW5BtkgQ==
 
 symbol-observable@^1.1.0:
   version "1.2.0"
