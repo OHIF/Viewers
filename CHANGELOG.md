@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.18...v3.13.0-beta.19) (2026-02-20)
+
+
+### Bug Fixes
+
+* **security:**  CVE-2026-27212 patched. Various dependency updates as a result of CVE-2026-26996. ([#5830](https://github.com/OHIF/Viewers/issues/5830)) ([2722960](https://github.com/OHIF/Viewers/commit/27229609cda3162e37573418ef82ca5d4e365075))
+
+
+
+
+
 # [3.13.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.17...v3.13.0-beta.18) (2026-02-19)
 
 
