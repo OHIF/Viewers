@@ -656,7 +656,9 @@ const commandsModule = ({
       const displaySets = displaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
-      const defaultDisplaySetInstanceUID = displaySetInstanceUID || displaySetInstanceUIDs[0];
+      const defaultDisplaySetInstanceUID =
+        displaySetInstanceUID || displaySetInstanceUIDs[0] || displaySets[0]?.displaySetInstanceUID;
+
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
