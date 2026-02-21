@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-ultrasound-pleura-bline",
-  "version": "3.13.0-beta.18",
+  "version": "3.13.0-beta.19",
   "description": "",
   "author": "Rodrigo Basilio",
   "license": "MIT",
@@ -44,15 +44,14 @@
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/core": "4.15.29",
     "@cornerstonejs/tools": "4.15.29",
-    "@ohif/core": "3.13.0-beta.18",
-    "@ohif/extension-cornerstone": "3.13.0-beta.18",
-    "@ohif/extension-default": "3.13.0-beta.18",
-    "@ohif/i18n": "3.13.0-beta.18",
-    "@ohif/ui-next": "3.13.0-beta.18"
+    "@ohif/core": "3.13.0-beta.19",
+    "@ohif/extension-cornerstone": "3.13.0-beta.19",
+    "@ohif/extension-default": "3.13.0-beta.19",
+    "@ohif/i18n": "3.13.0-beta.19",
+    "@ohif/ui-next": "3.13.0-beta.19"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",
-    "@babel/eslint-parser": "7.28.0",
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@babel/plugin-transform-arrow-functions": "7.27.1",
     "@babel/plugin-transform-class-properties": "7.27.1",
@@ -67,13 +66,10 @@
     "@babel/preset-typescript": "7.27.1",
     "@svgr/webpack": "8.1.0",
     "babel-loader": "8.4.1",
-    "babel-plugin-module-resolver": "5.0.2",
     "clean-webpack-plugin": "3.0.0",
     "copy-webpack-plugin": "9.1.0",
     "cross-env": "7.0.3",
     "dotenv": "8.6.0",
-    "eslint": "8.57.1",
-    "eslint-loader": "2.2.1",
     "webpack": "5.105.0",
     "webpack-cli": "5.1.4",
     "webpack-merge": "5.10.0"
