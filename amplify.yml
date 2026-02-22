@@ -4,11 +4,17 @@ frontend:
     preBuild:
       commands:
         - export NODE_OPTIONS="--max-old-space-size=6144"
+        - curl -fsSL https://bun.sh/install | bash
+        - export BUN_INSTALL="$HOME/.bun"
+        - export PATH="$BUN_INSTALL/bin:$PATH"
+        - bun --version
         - yarn install --frozen-lockfile
     build:
       commands:
         - export NODE_OPTIONS="--max-old-space-size=6144"
         - export GENERATE_SOURCEMAP=false
+        - export BUN_INSTALL="$HOME/.bun"
+        - export PATH="$BUN_INSTALL/bin:$PATH"
         - APP_CONFIG=config/smartcareplus.js yarn run build
   artifacts:
     baseDirectory: platform/app/dist
@@ -17,3 +23,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+      - $HOME/.bun/**/*
