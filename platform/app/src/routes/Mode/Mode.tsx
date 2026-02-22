@@ -137,33 +137,25 @@ export default function ModeRoute({
    * Validates study existence before loading the viewer.
    * Moved from PanelStudyBrowser.tsx to ensure validation runs in all modes
    */
-  useEffect(() => {
-    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length || !dataSource) {
-      return;
-    }
+  const validateStudies = async () => {
+    for (const studyInstanceUID of studyInstanceUIDs) {
+      try {
+        const qidoForStudyUID = await dataSource.query.studies.search({
+          studyInstanceUid: studyInstanceUID,
+        });
 
-    const validateStudies = async () => {
-      for (const studyInstanceUID of studyInstanceUIDs) {
-        try {
-          const qidoForStudyUID = await dataSource.query.studies.search({
-            studyInstanceUid: studyInstanceUID,
-          });
-
-          if (!qidoForStudyUID?.length) {
-            console.warn('Study not found:', studyInstanceUID);
-            navigate('/notfoundstudy');
-            return;
-          }
-        } catch (error) {
-          console.error('Error validating study:', studyInstanceUID, error);
+        if (!qidoForStudyUID?.length) {
+          console.warn('Study not found:', studyInstanceUID);
           navigate('/notfoundstudy');
           return;
         }
+      } catch (error) {
+        console.error('Error validating study:', studyInstanceUID, error);
+        navigate('/notfoundstudy');
+        return;
       }
-    };
-
-    validateStudies();
-  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, dataSource, navigate]);
+    }
+  };
 
   useEffect(() => {
     if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
@@ -311,14 +303,16 @@ export default function ModeRoute({
     };
 
     let unsubscriptions;
-    setupRouteInit().then(unsubs => {
-      unsubscriptions = unsubs;
+    setupRouteInit()
+      .then(() => validateStudies())
+      .then(unsubs => {
+        unsubscriptions = unsubs;
 
-      mode?.onSetupRouteComplete?.({
-        servicesManager,
-        extensionManager,
-        commandsManager,
-      });
+        mode?.onSetupRouteComplete?.({
+          servicesManager,
+          extensionManager,
+          commandsManager,
+        });
     });
 
     return () => {
