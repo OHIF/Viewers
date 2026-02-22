@@ -11,6 +11,7 @@ import Compose from './Compose';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
+import { decodeJWT } from '../../utils/jwtVerify';
 
 const { getSplitParam } = utils;
 
@@ -31,6 +32,13 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (mode.routeName === 'viewer' && query.toString() === '') {
+      navigate('/', { replace: true });
+    }
+  }, [mode.routeName, query, navigate]);
 
   const navigate = useNavigate();
 
@@ -49,6 +57,7 @@ export default function ModeRoute({
 
   const [refresh, setRefresh] = useState(false);
   const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] = useState(false);
+  const [isVerified, setIsVerified] = useState(false); 
 
   const layoutTemplateData = useRef(false);
   const locationRef = useRef(null);
@@ -73,9 +82,62 @@ export default function ModeRoute({
   const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
 
-  if (token) {
-    updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
-  }
+  useEffect(() => {
+    const checkToken = async () => {
+      let authToken = token;
+      // If no token in URL, try to get from local storage (reload handling & cross-tab)
+      if (!authToken) {
+        authToken = localStorage.getItem('ohif-jwt');
+      }
+
+      if (authToken) {
+        try {
+          // Decode token to perform pre-emptive client-side checks
+          const payload = decodeJWT(authToken);
+          
+          // Verify study UID if present in token (client-side pre-check)
+          const studyUIDs = dataSource?.getStudyInstanceUIDs({ params, query }) || [];
+          if (payload.dicom_study_id && studyUIDs.length > 0) {
+            if (!studyUIDs.includes(payload.dicom_study_id)) {
+              console.error('Study UID mismatch');
+              localStorage.removeItem('ohif-jwt');
+              navigate('/', { replace: true });
+              return;
+            }
+          }
+
+          // Check expiry (client-side pre-check)
+          const currentTime = Math.floor(Date.now() / 1000);
+          if (payload.exp && payload.exp < currentTime) {
+            console.error('Token expired');
+            localStorage.removeItem('ohif-jwt');
+            navigate('/', { replace: true });
+            return;
+          }
+
+          // Persist token for reload capability
+          localStorage.setItem('ohif-jwt', authToken);
+
+          updateAuthServiceAndCleanUrl(authToken, location, userAuthenticationService);
+          userAuthenticationService.setUser(payload);
+          setIsVerified(true);
+        } catch (err) {
+          console.error('JWT Decoding failed:', err);
+          localStorage.removeItem('ohif-jwt');
+          navigate('/', { replace: true });
+        }
+      } else if (mode.routeName === 'viewer') {
+          // For the viewer route, a token is mandatory
+          console.warn('No token provided for viewer');
+          navigate('/', { replace: true });
+      } else {
+        // Other routes (like local) might not need a token
+        setIsVerified(true);
+      }
+    };
+    checkToken();
+  }, [token, mode.routeName]);
+
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
@@ -114,7 +176,7 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!ExtensionDependenciesLoaded || !isVerified) {
       return;
     }
 
@@ -361,7 +423,7 @@ export default function ModeRoute({
     refresh,
   ]);
 
-  if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded) {
+  if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded || !isVerified) {
     return null;
   }
 

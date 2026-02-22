@@ -116,7 +116,7 @@ jobs:
       - run:
           name: 'Security Audit - High Risk Vulnerabilities'
           command: |
-            echo "🔍 Running bun audit for security vulnerabilities..."
+            echo "Running bun audit for security vulnerabilities..."
             echo "Checking for HIGH-RISK vulnerabilities..."
 
             # Define ignored vulnerabilities with comments
@@ -132,26 +132,26 @@ jobs:
             done
 
             if bun audit $IGNORE_FLAGS --audit-level high; then
-              echo "✅ No high-risk vulnerabilities found"
-              echo "🎉 Security audit passed!"
+              echo "No high-risk vulnerabilities found"
+              echo "Security audit passed!"
             else
               echo ""
-              echo "❌ HIGH-RISK VULNERABILITIES DETECTED!"
+              echo "HIGH-RISK VULNERABILITIES DETECTED!"
               echo "======================================"
               echo ""
-              echo "🔧 To fix these issues:"
+              echo "To fix these issues:"
               echo "  1. Run: bun audit"
               echo "  2. Review the vulnerability details"
               echo "  3. Update affected packages to secure versions"
               echo "  4. Test your changes"
               echo "  5. Re-run: bun audit --audit-level high"
               echo ""
-              echo "📋 Full audit report:"
+              echo "Full audit report:"
 
               bun audit $IGNORE_FLAGS --audit-level low || true
 
               echo ""
-              echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
+              echo "This build cannot proceed until high-risk vulnerabilities are resolved."
               exit 1
             fi
       - run:

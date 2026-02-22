@@ -66,6 +66,7 @@
     "@ohif/extension-dicom-pdf": "3.13.0-beta.20",
     "@ohif/extension-dicom-video": "3.13.0-beta.20",
     "@ohif/extension-test": "3.13.0-beta.20",
+    "@ohif/extension-study-notes": "file:../../extensions/study-notes-extension",
     "@ohif/extension-ultrasound-pleura-bline": "3.13.0-beta.20",
     "@ohif/i18n": "3.13.0-beta.20",
     "@ohif/mode-basic-dev-mode": "3.13.0-beta.20",
