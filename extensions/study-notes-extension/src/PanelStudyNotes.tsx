@@ -335,6 +335,27 @@ const PanelStudyNotes = ({ servicesManager, commandsManager }) => {
     return <div className="p-4 text-white text-sm">Please select a viewport to begin.</div>;
   }
 
+  // ── Study Notes ───────────────────────────────────────────────
+  const authHeader = getAuthHeader();
+  const token = authHeader?.split(' ')[1];
+  let userRole = '';
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userRole = payload.user_role || '';
+    } catch (e) {
+      console.error('Error decoding token:', e);
+    }
+  }
+
+  if (userRole !== 'radiologist') {
+    return (
+      <div className="p-4 text-gray-400 text-sm">
+        Reporting and notes are restricted to radiologists.
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-black text-white overflow-y-auto pb-8">
 
