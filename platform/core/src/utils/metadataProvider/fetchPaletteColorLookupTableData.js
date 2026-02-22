@@ -29,14 +29,28 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
     return undefined;
   }
 
-  const arrayBufferToPaletteColorLUT = arraybuffer => {
+  const arrayBufferToPaletteColorLUT = (arraybuffer) => {
     // Handle both ArrayBuffer and TypedArray inputs
     const buffer = arraybuffer.buffer || arraybuffer;
-    const data = bits === 16 ? new Uint16Array(buffer) : new Uint8Array(buffer);
-    const lut = [];
+    // const data = bits === 16 ? new Uint16Array(buffer) : new Uint8Array(buffer);
 
+    const view = new DataView(buffer);
+    const offsetBits = bits - 8;
+
+    const lut = new Uint8Array(numLutEntries);
+
+    // Extract LUT values (always read as 16-bit)
     for (let i = 0; i < numLutEntries; i++) {
-      lut[i] = data[i];
+      // Read 16-bit value (LUT is always 16-bit)
+      const lutValue16 = view.getUint16(i * 2, true);
+
+      // Apply Orthanc shift logic
+      if (offsetBits >= 0) {
+        lut[i] = (lutValue16 >> offsetBits) & 0xff;
+      } else {
+        // If bitsPerEntry < 8, shift left
+        lut[i] = (lutValue16 << Math.abs(offsetBits)) & 0xff;
+      }
     }
 
     return lut;
@@ -48,9 +62,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
 
   if (paletteColorLookupTableData.InlineBinary) {
     try {
-      const uint8Array = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), c =>
-        c.charCodeAt(0)
-      );
+      const uint8Array = Uint8Array.from(atob(paletteColorLookupTableData.InlineBinary), (c) => c.charCodeAt(0));
       return (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(uint8Array));
     } catch (e) {
       console.log("Couldn't decode", paletteColorLookupTableData.InlineBinary, e);
@@ -61,7 +73,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
   if (paletteColorLookupTableData.retrieveBulkData) {
     return paletteColorLookupTableData
       .retrieveBulkData()
-      .then(val => (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(val)));
+      .then((val) => (paletteColorLookupTableData.palette = arrayBufferToPaletteColorLUT(val)));
   }
 
   console.error(`No data found for ${paletteColorLookupTableData} palette`);

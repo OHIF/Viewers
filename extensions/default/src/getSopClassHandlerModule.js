@@ -290,6 +290,7 @@ const sopClassUids = [
   sopClassDictionary.RTImageStorage,
   sopClassDictionary.EnhancedUSVolumeStorage,
   sopClassDictionary.RTDoseStorage,
+  sopClassDictionary.CornealTopographyMapStorage
 ];
 
 function getSopClassHandlerModule(appContextParam) {
