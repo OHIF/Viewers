@@ -22,8 +22,10 @@ export default function fetchPaletteColorLookupTableData(item, tag, descriptorTa
 }
 
 function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
-  const numLutEntries = lutDescriptor[0];
-  const bitsStored = lutDescriptor[2];
+  // DICOM standard says to use 64k instead of 0 as 64k isn't specifiable in
+  // 2 bytes.
+  const numLutEntries = lutDescriptor[0] || 65536;
+  const bitsAllocated = lutDescriptor[2];
 
   if (!paletteColorLookupTableData) {
     return undefined;
@@ -34,7 +36,7 @@ function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
     const buffer = arraybuffer.buffer || arraybuffer;
     // See note in PS3.3 C7.6.3.1.5 around 8 bit data encoded as 16 bit
     const data =
-      buffer.byteLength === 2 * numLutEntries || bitsStored > 8
+      buffer.byteLength === 2 * numLutEntries || bitsAllocated > 8
         ? new Uint16Array(buffer)
         : new Uint8Array(buffer);
     const lut = [];
