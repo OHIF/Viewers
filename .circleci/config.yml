@@ -6,7 +6,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:20.18.1
+    - image: cimg/node:20.19.0
       environment:
         TERM: xterm
         QUICK_BUILD: true
@@ -121,9 +121,8 @@ jobs:
 
             # Define ignored vulnerabilities with comments
             IGNORED_VULNS=(
-              "GHSA-5j98-mcp5-4vw2"  # CVE-2025-64756 - glob is not used on the command line
-              "GHSA-8qq5-rm4j-mr97"  # CVE-2026-23745 - limited to build/dev environments
-              "GHSA-r6q2-hw4h-h46w"  # CVE-2026-23950 - limited to build/dev environments
+              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - OHIF's use of minimatch via glob is safe because it does NOT use the CLI
+                                     # CVE-2026-26996 - OHIF's other uses of minimatch are strictly for building and CI/CD purposes
             )
 
             # Build ignore flags
@@ -373,6 +372,7 @@ jobs:
     resource_class: large
     parallelism: 8
     steps:
+      - install_bun
       - run:
           name: Install System Dependencies
           command: |

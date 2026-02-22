@@ -87,7 +87,7 @@ function DataSourceConfigurationComponent({
   }, [configurationAPI, configuredItems, showConfigurationModal]);
 
   return configuredItems ? (
-    <div className="text-aqua-pale flex items-center overflow-hidden">
+    <div className="text-muted-foreground flex items-center overflow-hidden">
       <Icons.Settings
         className="mr-2.5 h-3.5 w-3.5 shrink-0 cursor-pointer"
         onClick={showConfigurationModal}

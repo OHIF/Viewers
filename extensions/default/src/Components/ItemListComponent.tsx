@@ -44,7 +44,7 @@ function ItemListComponent({
           <InputFilter.ClearButton className="text-primary mr-0.5 p-0.5" />
         </InputFilter>
       </div>
-      <div className="relative flex min-h-[1px] grow flex-col bg-black text-[14px]">
+      <div className="relative flex min-h-[1px] grow flex-col bg-background text-[14px]">
         {itemList == null ? (
           <LoadingIndicatorProgress className={'h-full w-full'} />
         ) : itemList.length === 0 ? (
