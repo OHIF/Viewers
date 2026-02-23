@@ -210,6 +210,7 @@ export function onModeExit({ servicesManager }: withAppTypes) {
 
 export const toolbarSections = {
   [TOOLBAR_SECTIONS.primary]: [
+    'Angle',
     'MeasurementTools',
     'Zoom',
     'Pan',
@@ -264,7 +265,6 @@ export const toolbarSections = {
     'invert',
     'Probe',
     'Cine',
-    'Angle',
     'CobbAngle',
     'Magnify',
     'CalibrationLine',
