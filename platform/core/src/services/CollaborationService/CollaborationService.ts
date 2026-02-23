@@ -332,7 +332,7 @@ class CollaborationService extends PubSubService {
     
     this.roomId = roomId;
     // Using the specified URL from instructions
-    const wsUrl = `ws://127.0.0.1:5411/?roomId=${roomId}&token=${token}`;
+    const wsUrl = `wss://ws.smartcareplus.in/?roomId=${roomId}&token=${token}`;
     
     this.ws = new WebSocket(wsUrl);
 
