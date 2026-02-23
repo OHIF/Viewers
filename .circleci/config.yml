@@ -121,6 +121,8 @@ jobs:
 
             # Define ignored vulnerabilities with comments
             IGNORED_VULNS=(
+              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - OHIF's use of minimatch via glob is safe because it does NOT use the CLI
+                                     # CVE-2026-26996 - OHIF's other uses of minimatch are strictly for building and CI/CD purposes
             )
 
             # Build ignore flags
