@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.20...v3.13.0-beta.21) (2026-02-23)
+
+
+### Bug Fixes
+
+* **RTStruct:** RTSTRUCT contours rendered on first slice for multi-frame images without IPP ([#5811](https://github.com/OHIF/Viewers/issues/5811)) ([b5573ca](https://github.com/OHIF/Viewers/commit/b5573caaa65d0d7ff3e83df0ec70b4aa7ea898ca))
+
+
+
+
+
 # [3.13.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.19...v3.13.0-beta.20) (2026-02-21)
 
 
