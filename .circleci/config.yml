@@ -106,29 +106,28 @@ jobs:
   BUILD_PACKAGES_QUICK:
     <<: *defaults
     resource_class: large
-    environment:
-      # Base branch of the PR (empty for plain pushes).
-      BASE_REF: << pipeline.event.github.pull_request.base.ref >>
     steps:
       - install_bun
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT - only for PRs where bun.lock changed
+      # SECURITY AUDIT - only when bun.lock has changed
       - run:
           name: 'Security Audit - High Risk Vulnerabilities'
           command: |
-            if [[ -z "${BASE_REF}" ]; then
-              echo "No PR context (plain push), skipping security audit."
+            git fetch origin master 2>/dev/null || true
+            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
+            if [[ -z "$BASE_REF" ]]; then
+              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
               exit 0
             fi
-            git fetch origin "$BASE_REF" || true
-            if ! git diff --name-only "origin/$BASE_REF...HEAD" | grep -q '^bun\.lock$'; then
-              echo "bun.lock unchanged, skipping security audit."
+            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
+            if ! echo "$CHANGED_FILES" | grep -qx 'bun.lock'; then
+              echo "⏭️ bun.lock unchanged - skipping security audit."
               exit 0
             fi
-            echo "🔍 Running bun audit for security vulnerabilities..."
+            echo "🔍 bun.lock changed - running bun audit for security vulnerabilities..."
             echo "Checking for HIGH-RISK vulnerabilities..."
 
             # Define ignored vulnerabilities with comments
