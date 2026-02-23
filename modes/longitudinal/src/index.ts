@@ -10,7 +10,9 @@ import { initToolGroups, toolbarButtons, cornerstone,
   mode as basicMode,
   modeInstance as basicModeInstance,
  } from '@ohif/mode-basic';
+ import { ToolbarService } from '@ohif/core';
 
+const { TOOLBAR_SECTIONS } = ToolbarService;
 export const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
@@ -66,18 +68,36 @@ export const longitudinalRoute =
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
+      layoutInstance: longitudinalInstance,
+    };
+
+    export const testTaskRoute =
+    {
+      ...basicRoute,
+      path: 'test-task',
+        /*init: ({ servicesManager, extensionManager }) => {
+          //defaultViewerRouteInit
+        },*/
       layoutInstance: testTaskInstance,
     };
 
+const moreTools = basicModeInstance.toolbarSections['MoreTools'].filter(item => item !== 'Angle');
+const measurementTools = ['Angle',...basicModeInstance.toolbarSections['MeasurementTools']];
+
 export const modeInstance = {
     ...basicModeInstance,
+    toolbarSections: {
+      ...basicModeInstance.toolbarSections,
+      MoreTools: moreTools,
+      MeasurementTools: measurementTools,
+    },
     // TODO: We're using this as a route segment
     // We should not be.
     id,
     routeName: 'viewer',
     displayName: i18n.t('Modes:Basic Viewer'),
     routes: [
-      longitudinalRoute
+      testTaskRoute
     ],
     extensions: extensionDependencies,
   };
