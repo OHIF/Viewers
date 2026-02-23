@@ -12,7 +12,6 @@ import { initToolGroups, toolbarButtons, cornerstone,
  } from '@ohif/mode-basic';
  import { ToolbarService } from '@ohif/core';
 
-const { TOOLBAR_SECTIONS } = ToolbarService;
 export const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
