@@ -112,11 +112,22 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT
+      # SECURITY AUDIT - only when bun.lock has changed
       - run:
           name: 'Security Audit - High Risk Vulnerabilities'
           command: |
-            echo "🔍 Running bun audit for security vulnerabilities..."
+            git fetch origin master 2>/dev/null || true
+            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
+            if [[ -z "$BASE_REF" ]]; then
+              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
+              exit 0
+            fi
+            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
+            if ! echo "$CHANGED_FILES" | grep -qx 'bun.lock'; then
+              echo "⏭️ bun.lock unchanged - skipping security audit."
+              exit 0
+            fi
+            echo "🔍 bun.lock changed - running bun audit for security vulnerabilities..."
             echo "Checking for HIGH-RISK vulnerabilities..."
 
             # Define ignored vulnerabilities with comments
