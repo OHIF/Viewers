@@ -23,6 +23,7 @@ test.beforeEach(async ({
 
 const getSvgPath = async (viewportPageObject) => {
   const viewportId = 'default';
+  return viewportPageObject
     .getById(viewportId)
     .svg('path')
     .first()
