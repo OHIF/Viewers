@@ -1,0 +1,17 @@
+{
+  "name": "@ohif/extension-study-notes",
+  "version": "1.0.0",
+  "description": "Study Notes Extension for SmartCarePlus",
+  "author": "SmartCarePlus",
+  "license": "MIT",
+  "main": "src/index.tsx",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@ohif/core": "^3.0.0",
+    "@ohif/ui": "^3.0.0",
+    "react": "^18.0.0"
+  }
+}
