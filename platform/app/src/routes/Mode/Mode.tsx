@@ -40,8 +40,6 @@ export default function ModeRoute({
     }
   }, [mode.routeName, query, navigate]);
 
-  const navigate = useNavigate();
-
   mode?.onModeInit?.({
     servicesManager,
     extensionManager,

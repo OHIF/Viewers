@@ -21,6 +21,7 @@ import {
   WorkflowStepsService,
   StudyPrefetcherService,
   MultiMonitorService,
+  CollaborationService,
   // utils,
 } from '@ohif/core';
 
@@ -28,7 +29,7 @@ import loadModules, { loadModule as peerImport } from './pluginImports';
 import { publicUrl } from './utils/publicUrl';
 
 /**
- * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
+ * @param {object|Function} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
 async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
@@ -78,6 +79,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
     [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
+    CollaborationService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

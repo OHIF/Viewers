@@ -319,6 +319,8 @@ export default async function init({
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
+
+  // Removed Collaboration Service Event Listeners from here and moved logic to CollaborationService directly to ensure singleton state and proper scope.
 }
 
 /**

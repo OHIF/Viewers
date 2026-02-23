@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
-import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
+import { Enums, eventTarget, getEnabledElement, getRenderingEngine } from '@cornerstonejs/core';
 import { MeasurementService, useViewportRef } from '@ohif/core';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
@@ -13,6 +13,7 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import RemoteCursorOverlay from '../components/RemoteCursorOverlay';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
@@ -40,6 +41,7 @@ const OHIFCornerstoneViewport = React.memo(
       viewportOptions,
       displaySetOptions,
       servicesManager,
+      commandsManager,
       onElementEnabled,
       // eslint-disable-next-line react/prop-types
       onElementDisabled,
@@ -187,6 +189,92 @@ const OHIFCornerstoneViewport = React.memo(
           _rehydrateSynchronizers(viewportId, syncGroupService);
         }
 
+        const { collaborationService } = servicesManager.services as any;
+        if (collaborationService) {
+          const sendRemoteAction = (actionType: string, isForce: boolean) => (e: any) => {
+             if (collaborationService.isRemoteUpdate) return;
+             const detail = e.detail;
+             
+             // DEBUG LOG
+             console.log('[Collaboration] Captured local action:', actionType, detail);
+             
+             let safeCamera = undefined;
+             let currentZoom = undefined;
+             let currentPan = undefined;
+             let currentRotation = undefined;
+             let currentVoi = undefined;
+             let currentInvert = undefined;
+
+             if (actionType === 'camera' && detail.camera) {
+                 const viewportInfo = cornerstoneViewportService.getViewportInfo(detail.viewportId);
+                 if (viewportInfo) {
+                     const renderingEngine = getRenderingEngine(viewportInfo.getRenderingEngineId());
+                     const viewport = renderingEngine?.getViewport(detail.viewportId);
+                     if (viewport) {
+                         currentZoom = viewport.getZoom();
+                         currentPan = viewport.getPan();
+                         currentRotation = viewport.getRotation();
+                     }
+                 }
+                 
+                 const c = detail.camera;
+                 safeCamera = {
+                     viewPlaneNormal: c.viewPlaneNormal ? [c.viewPlaneNormal[0], c.viewPlaneNormal[1], c.viewPlaneNormal[2]] : undefined,
+                     viewUp: c.viewUp ? [c.viewUp[0], c.viewUp[1], c.viewUp[2]] : undefined,
+                     position: c.position ? [c.position[0], c.position[1], c.position[2]] : undefined,
+                     focalPoint: c.focalPoint ? [c.focalPoint[0], c.focalPoint[1], c.focalPoint[2]] : undefined,
+                     parallelProjection: !!c.parallelProjection,
+                     parallelScale: Number(c.parallelScale) || 1,
+                     flipHorizontal: !!c.flipHorizontal,
+                     flipVertical: !!c.flipVertical,
+                 };
+             } else if (actionType === 'voi') {
+                 const viewportInfo = cornerstoneViewportService.getViewportInfo(detail.viewportId);
+                 if (viewportInfo) {
+                     const renderingEngine = getRenderingEngine(viewportInfo.getRenderingEngineId());
+                     const viewport = renderingEngine?.getViewport(detail.viewportId);
+                     if (viewport) {
+                         const props = viewport.getProperties();
+                         currentVoi = props.voiRange;
+                         currentInvert = props.invert;
+                     }
+                 }
+             }
+             
+             collaborationService.sendAction({
+                type: 'action',
+                actionType,
+                viewportId: detail.viewportId,
+                ...(actionType === 'camera' ? { camera: safeCamera, zoom: currentZoom, pan: currentPan, rotation: currentRotation } : 
+                    (actionType === 'voi' ? { voiRange: currentVoi, invert: currentInvert } : 
+                    (actionType === 'colormap' ? { colormap: detail.colormap } :
+                    (actionType === 'colorbar' ? { colorbar: detail.colorbar } :
+                    { annotation: detail.annotation }))))
+            }, isForce);
+          };
+
+          // Attach to Cornerstone3D core event target and the specific viewport element just in case
+          element.addEventListener(Enums.Events.CAMERA_MODIFIED, sendRemoteAction('camera', false));
+          element.addEventListener(Enums.Events.VOI_MODIFIED, sendRemoteAction('voi', false));
+          element.addEventListener(Enums.Events.IMAGE_RENDERED, sendRemoteAction('voi', false));
+          element.addEventListener(Enums.Events.COLORMAP_MODIFIED, sendRemoteAction('colormap', false));
+          
+          eventTarget.addEventListener(cs3DTools.Enums.Events.ANNOTATION_ADDED, sendRemoteAction('annotation_added', true));
+          eventTarget.addEventListener(cs3DTools.Enums.Events.ANNOTATION_MODIFIED, sendRemoteAction('annotation_modified', false));
+          eventTarget.addEventListener(cs3DTools.Enums.Events.ANNOTATION_REMOVED, sendRemoteAction('annotation_removed', true));
+
+          const { colorbarService } = servicesManager.services;
+          if (colorbarService) {
+            colorbarService.subscribe(colorbarService.EVENTS.STATE_CHANGED, (detail: any) => {
+              if (detail.viewportId === viewportId) {
+                // We send the current state of colorbars for this viewport
+                const state = colorbarService.getViewportColorbar(viewportId);
+                sendRemoteAction('colorbar', true)({ viewportId, colorbar: state });
+              }
+            });
+          }
+        }
+
         if (onElementEnabled && typeof onElementEnabled === 'function') {
           onElementEnabled(evt);
         }
@@ -225,6 +313,15 @@ const OHIFCornerstoneViewport = React.memo(
         eventTarget.removeEventListener(Enums.Events.ELEMENT_ENABLED, elementEnabledHandler);
       };
     }, []);
+
+    useEffect(() => {
+      const { collaborationService } = servicesManager.services as any;
+      if (collaborationService && displaySets.length > 0) {
+        collaborationService.init({ servicesManager, commandsManager });
+        const studyInstanceUID = displaySets[0].StudyInstanceUID || 'default-room';
+        collaborationService.connect(studyInstanceUID);
+      }
+    }, [displaySets, servicesManager]);
 
     // subscribe to displaySet metadata invalidation (updates)
     // Currently, if the metadata changes we need to re-render the display set
@@ -314,6 +411,20 @@ const OHIFCornerstoneViewport = React.memo(
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
             onMouseDown={e => e.preventDefault()}
+            onMouseMove={e => {
+              const { collaborationService } = servicesManager.services as any;
+              if (collaborationService) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                collaborationService.sendAction({
+                  type: 'cursor',
+                  userId: collaborationService.userId,
+                  name: `User ${collaborationService.userId.split('_')[1] || ''}`,
+                  viewportId,
+                  x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
+                  y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height))
+                });
+              }
+            }}
             data-viewportid={viewportId}
             ref={el => {
               elementRef.current = el;
@@ -338,6 +449,10 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId={viewportId}
             servicesManager={servicesManager}
           />
+          <RemoteCursorOverlay 
+            viewportId={viewportId} 
+            servicesManager={servicesManager} 
+          />
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">
@@ -354,7 +469,7 @@ const OHIFCornerstoneViewport = React.memo(
           )}
         </div>
         {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
-        <OHIFViewportActionCorners viewportId={viewportId} />
+        <OHIFViewportActionCorners viewportId={viewportId} servicesManager={servicesManager} />
       </React.Fragment>
     );
   },
