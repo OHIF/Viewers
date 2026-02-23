@@ -66,8 +66,8 @@ const commandsModule = ({
      */
     addDisplaySetAsLayer: ({ viewportId, displaySetInstanceUID, removeFirst = false }) => {
       if (!viewportId) {
-          const { activeViewportId } = servicesManager.services.viewportGridService.getState();
-          viewportId = activeViewportId;
+        const { activeViewportId } = servicesManager.services.viewportGridService.getState();
+        viewportId = activeViewportId;
       }
 
       if (!viewportId || !displaySetInstanceUID) {
@@ -151,20 +151,25 @@ const commandsModule = ({
         return;
       }
 
+      // Check if it's a segmentation and handle accordingly.
+      // Note that for the sake of hydrated segmentations, we remove the
+      // segmentation before checking if the display set is indeed in the viewport.
+      // This is because hydrated segmentations are not in the viewport per se
+      // {i.e. they are not layered) but are simply referenced by the display
+      // set in the viewport.
+      const isSegmentation = DERIVED_OVERLAY_MODALITIES.includes(displaySet.Modality);
+      if (isSegmentation) {
+        segmentationService.removeRepresentationsFromViewport(viewportId, {
+          segmentationId: displaySetInstanceUID,
+        });
+      }
+
       // Get current display sets for the viewport
       const currentDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
       // If the display set is not in the viewport, no need to remove it
       if (!currentDisplaySetUIDs.includes(displaySetInstanceUID)) {
         return;
-      }
-
-      // Check if it's a segmentation and handle accordingly
-      const isSegmentation = DERIVED_OVERLAY_MODALITIES.includes(displaySet.Modality);
-      if (isSegmentation) {
-        segmentationService.removeSegmentationRepresentations(viewportId, {
-          segmentationId: displaySetInstanceUID,
-        });
       }
 
       const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(

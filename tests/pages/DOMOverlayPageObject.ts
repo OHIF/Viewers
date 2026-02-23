@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { DicomTagBrowserPageObject } from './DicomTagBrowserPageObject';
 
 export class DOMOverlayPageObject {
   readonly page: Page;
@@ -46,6 +47,11 @@ export class DOMOverlayPageObject {
           },
         };
       },
+
+      get dicomTagBrowser() {
+        return new DicomTagBrowserPageObject(page);
+      },
+
       title: page.locator('[role="dialog"] h2'),
     };
   }

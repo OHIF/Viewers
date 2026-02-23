@@ -2567,12 +2567,12 @@ describe('SegmentationService', () => {
   describe('clearSegmentationRepresentations', () => {
     it('should clear the segmentation representations', () => {
       const viewportId = 'viewportId';
-      jest.spyOn(service, 'removeSegmentationRepresentations').mockReturnValue(undefined);
+      jest.spyOn(service, 'removeRepresentationsFromViewport').mockReturnValue(undefined);
 
       service.clearSegmentationRepresentations(viewportId);
 
-      expect(service.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
-      expect(service.removeSegmentationRepresentations).toHaveBeenCalledWith(viewportId);
+      expect(service.removeRepresentationsFromViewport).toHaveBeenCalledTimes(1);
+      expect(service.removeRepresentationsFromViewport).toHaveBeenCalledWith(viewportId);
     });
   });
 
@@ -2600,7 +2600,7 @@ describe('SegmentationService', () => {
     });
   });
 
-  describe('removeSegmentationRepresentations', () => {
+  describe('removeRepresentationsFromViewport', () => {
     it('should remove the segmentation representations', () => {
       const viewportId = 'viewportId';
       const specifier = {
@@ -2609,7 +2609,7 @@ describe('SegmentationService', () => {
       };
       jest.spyOn(cstSegmentation, 'removeSegmentationRepresentations').mockReturnValue(undefined);
 
-      service.removeSegmentationRepresentations(viewportId, specifier);
+      service.removeRepresentationsFromViewport(viewportId, specifier);
 
       expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledTimes(1);
       expect(cstSegmentation.removeSegmentationRepresentations).toHaveBeenCalledWith(
