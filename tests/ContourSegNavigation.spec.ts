@@ -23,11 +23,10 @@ test.beforeEach(async ({
 
 const getSvgPath = async (viewportPageObject) => {
   const viewportId = 'default';
-  return viewportPageObject
-  .getById(viewportId)
-  .svg('path')
-  .first()
-  .getAttribute('d');
+    .getById(viewportId)
+    .svg('path')
+    .first()
+    .getAttribute('d');
 }
 
 test('should navigate through the contours when clicking through segments in the right panel', async ({
