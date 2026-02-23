@@ -20,7 +20,22 @@ export default {
       contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
     },
   ],
-  'viewportOverlay.topRight': [],
+  'viewportOverlay.topRight': [
+    {
+      id: 'OHIFVersion',
+      inheritsFrom: 'ohif.overlayItem',
+      label: 'v',
+      title: 'OHIF Version',
+      contentF: () => {
+        const version = process.env.VERSION_NUMBER;
+        if (version && version !== 'undefined') {
+          return typeof version === 'string' ? version.trim() : String(version);
+        } else {
+          return '';
+        }
+      },
+    },
+  ],
   'viewportOverlay.bottomLeft': [
     {
       id: 'WindowLevel',
