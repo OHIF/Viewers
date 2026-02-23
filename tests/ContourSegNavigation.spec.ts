@@ -63,7 +63,7 @@ test('should navigate through the contours when clicking through segments in the
   const seg2Again = await getSvgPath(viewportPageObject);
   expect(seg2Again, 'Segment 2 again: expected to match the original segment 2 path').toBe(seg2);
 
-    await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(3).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(3).click();
   const seg3Again = await getSvgPath(viewportPageObject);
   expect(seg3Again, 'Segment 3 again: expected to match the original segment 3 path').toBe(seg3);
 });
