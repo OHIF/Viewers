@@ -41,6 +41,23 @@ export const longitudinalInstance = {
     }
   };
 
+  export const testTaskInstance = {
+    ...basicLayout,
+    id: ohif.layout,
+    props: {
+      ...basicLayout.props,
+      leftPanels: [tracked.measurements],
+      rightPanels: [cornerstone.segmentation, tracked.thumbnailList],
+      viewports: [
+        {
+          namespace: tracked.viewport,
+          // Re-use the display sets from basic
+          displaySetsToDisplay: basicLayout.props.viewports[0].displaySetsToDisplay,
+        },
+        ...basicLayout.props.viewports,
+        ],
+      }
+    };
 
 export const longitudinalRoute =
     {
@@ -49,7 +66,7 @@ export const longitudinalRoute =
         /*init: ({ servicesManager, extensionManager }) => {
           //defaultViewerRouteInit
         },*/
-      layoutInstance: longitudinalInstance,
+      layoutInstance: testTaskInstance,
     };
 
 export const modeInstance = {
