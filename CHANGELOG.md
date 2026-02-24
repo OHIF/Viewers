@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.23...v3.13.0-beta.24) (2026-02-24)
+
+
+### Bug Fixes
+
+* prevent viewer crash when opening DICOM Tag Browser from empty viewport  ([#5827](https://github.com/OHIF/Viewers/issues/5827)) ([d11d6d4](https://github.com/OHIF/Viewers/commit/d11d6d401bc92a3870ec1089d97235b01a6b27c3))
+* **ui-next:** Add validation for opacity and border inputs in the segmentation panel - OHIF-2332 ([#5819](https://github.com/OHIF/Viewers/issues/5819)) ([a8f7099](https://github.com/OHIF/Viewers/commit/a8f709982f16983a11c780e696521df5aa05b604))
+
+
+
+
+
 # [3.13.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.22...v3.13.0-beta.23) (2026-02-23)
 
 
