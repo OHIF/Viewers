@@ -83,7 +83,7 @@ test('should open DICOM Tag Browser from empty viewport and show default series'
   await dicomTagBrowser.waitVisible();
 
   const seriesSelect = dicomTagBrowser.seriesSelect;
-  const optionLabel = await seriesSelect.getOptionLabel(0);
+  const optionLabel = await seriesSelect.getOptionText(0);
 
   await expect(seriesSelect.value).toContainText(optionLabel);
 });
@@ -109,7 +109,7 @@ test('should open DICOM Tag Browser with active viewport series when viewport ha
   await dicomTagBrowser.waitVisible();
 
   const seriesSelect = dicomTagBrowser.seriesSelect;
-  const optionLabel = await seriesSelect.getOptionLabel(2);
+  const optionLabel = await seriesSelect.getOptionText(2);
 
   await expect(seriesSelect.value).toContainText(optionLabel);
 });

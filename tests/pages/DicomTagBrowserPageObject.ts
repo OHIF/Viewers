@@ -29,15 +29,15 @@ export class DicomTagBrowserPageObject {
         await trigger.click();
       },
 
-      async getOptionLabel(index) {
+      async getOptionText(index) {
         await this.click();
         const optionText = await options.nth(index).innerText();
-        const optionLabel = optionText.split('\n')[0].trim();
-        return optionLabel;
+        const trimmedOptionText = optionText.split('\n')[0].trim();
+        return trimmedOptionText;
       },
 
       async selectOption(index) {
-        const selectedText = await this.getOptionLabel(index);
+        const selectedText = await this.getOptionText(index);
         await options.nth(index).click();
         return selectedText;
       },
