@@ -119,32 +119,40 @@ const CornerstoneViewportDownloadForm = ({
 
     try {
       const properties = viewport.getProperties();
+      const viewPresentation = viewport.getViewPresentation?.();
+      const viewRef = viewport.getViewReference?.();
+
       if (downloadViewport instanceof StackViewport) {
         const imageId = viewport.getCurrentImageId();
-
         await downloadViewport.setStack([imageId]);
-        downloadViewport.setProperties(properties);
       } else if (downloadViewport instanceof BaseVolumeViewport) {
         const volumeIds = viewport.getAllVolumeIds();
         await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
       }
+
+      if (viewPresentation && downloadViewport.setViewPresentation) {
+        downloadViewport.setViewPresentation(viewPresentation);
+      }
+
       downloadViewport.setProperties(properties);
-      const viewRef = viewport.getViewReference();
-      downloadViewport.setViewReference(viewRef);
+
+      if (viewRef && downloadViewport.setViewReference) {
+        downloadViewport.setViewReference(viewRef);
+      }
+
       downloadViewport.render();
 
       if (segmentationRepresentations?.length) {
         segmentationRepresentations.forEach(segRepresentation => {
           const { segmentationId, colorLUTIndex, type } = segRepresentation;
+
           if (type === Enums.SegmentationRepresentations.Labelmap) {
             segmentation.addLabelmapRepresentationToViewportMap({
               [downloadViewport.id]: [
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Labelmap,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
@@ -156,9 +164,7 @@ const CornerstoneViewportDownloadForm = ({
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Contour,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
