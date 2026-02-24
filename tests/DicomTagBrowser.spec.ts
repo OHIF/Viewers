@@ -60,3 +60,56 @@ test('should display the long series name properly within the series select butt
     outerBoxLabel: 'trigger',
   });
 });
+
+test('should open DICOM Tag Browser from empty viewport and show default series', async ({
+  page,
+  mainToolbarPageObject,
+  viewportPageObject,
+  DOMOverlayPageObject,
+}) => {
+  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1';
+  const mode = 'viewer';
+  await visitStudy(page, studyInstanceUID, mode, 2000);
+
+  // Switch to 3x3 layout
+  await mainToolbarPageObject.layoutSelection.click();
+  await page.getByTestId('Layout-2-2').click();
+
+  await viewportPageObject.getNth(6).pane.click();
+
+  await mainToolbarPageObject.moreTools.tagBrowser.click();
+
+  const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
+  await dicomTagBrowser.waitVisible();
+
+  const seriesSelect = dicomTagBrowser.seriesSelect;
+  const optionText = await seriesSelect.getOptionText(0);
+
+  await expect(seriesSelect.value).toContainText(optionText);
+});
+
+test('should open DICOM Tag Browser with active viewport series when viewport has display set', async ({
+  page,
+  mainToolbarPageObject,
+  viewportPageObject,
+  DOMOverlayPageObject,
+}) => {
+  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1';
+  const mode = 'viewer';
+  await visitStudy(page, studyInstanceUID, mode, 2000);
+
+  await mainToolbarPageObject.layoutSelection.click();
+  await page.getByTestId('Layout-2-2').click();
+
+  await viewportPageObject.getNth(2).pane.click();
+
+  await mainToolbarPageObject.moreTools.tagBrowser.click();
+
+  const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
+  await dicomTagBrowser.waitVisible();
+
+  const seriesSelect = dicomTagBrowser.seriesSelect;
+  const optionText = await seriesSelect.getOptionText(2);
+
+  await expect(seriesSelect.value).toContainText(optionText);
+});
