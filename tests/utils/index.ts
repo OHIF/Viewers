@@ -16,6 +16,7 @@ import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
+import { getSvgPath } from './getSvgPath';
 import { test, expect } from './fixture';
 
 export {
@@ -36,6 +37,7 @@ export {
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
+  getSvgPath,
   test,
   expect,
 };

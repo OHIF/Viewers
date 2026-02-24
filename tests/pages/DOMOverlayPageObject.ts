@@ -132,26 +132,6 @@ export class DOMOverlayPageObject {
           },
         };
       },
-      get segmentationArrowNavigation() {
-        const container = page.getByTestId('viewport-action-arrows');
-        const prevButton = page.getByTestId('viewport-action-arrows-left');
-        const nextButton = page.getByTestId('viewport-action-arrows-right');
-        return {
-          locator: container,
-          prev: {
-            button: prevButton,
-            click: async () => {
-              await prevButton.click();
-            },
-          },
-          next: {
-            button: nextButton,
-            click: async () => {
-              await nextButton.click();
-            },
-          },
-        };
-      },
       async getModalityLoadBadgeCount() {
         return await page.locator('css=div[data-cy^="ModalityLoadBadge-"]').count();
       },
