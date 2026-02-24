@@ -1,5 +1,7 @@
 import { expect, test, visitStudy } from './utils';
 
+const nonNumericError = 'Cannot type text into input[type=number]';
+
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
@@ -119,8 +121,6 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should reject non-numeric opacity input', async ({ rightPanelPageObject }) => {
       const { opacity } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      const nonNumericError = 'Cannot type text into input[type=number]';
-
       await expect(opacity.fill('abc')).rejects.toThrow(nonNumericError);
     });
   });
@@ -160,8 +160,6 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
     test('should reject non-numeric border input', async ({ rightPanelPageObject }) => {
       const { border } = rightPanelPageObject.labelMapSegmentationPanel.config;
 
-      const nonNumericError = 'Cannot type text into input[type=number]';
-
       await expect(border.fill('abc')).rejects.toThrow(nonNumericError);
     });
   });
@@ -200,8 +198,6 @@ test.describe('Segmentation panel config input validation for labelmap', () => {
 
     test('should reject non-numeric opacity inactive input', async ({ rightPanelPageObject }) => {
       const { opacityInactive } = rightPanelPageObject.labelMapSegmentationPanel.config;
-
-      const nonNumericError = 'Cannot type text into input[type=number]';
 
       await expect(opacityInactive.fill('abc')).rejects.toThrow(nonNumericError);
     });

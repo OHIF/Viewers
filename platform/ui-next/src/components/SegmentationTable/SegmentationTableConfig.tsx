@@ -32,6 +32,10 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
     return null;
   }
 
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
+
   return (
     <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
       <div className="my-1 flex items-center justify-between">
@@ -88,7 +92,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           </Label>
           <div
             className="mx-1 flex-1"
-            data-cy={`segmentation-config-opacity-${segmentationRepresentationTypes?.[0]}`}
+            data-cy={`segmentation-config-opacity${dataCyTypeSuffix}`}
           >
             <Numeric.Container
               mode="singleRange"
@@ -114,7 +118,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           </Label>
           <div
             className="mx-1 flex-1"
-            data-cy={`segmentation-config-border-${segmentationRepresentationTypes?.[0]}`}
+            data-cy={`segmentation-config-border${dataCyTypeSuffix}`}
           >
             <Numeric.Container
               mode="singleRange"
@@ -153,7 +157,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           </Label>
           <div
             className="mx-1 flex-1"
-            data-cy={`segmentation-config-opacity-inactive-${segmentationRepresentationTypes?.[0]}`}
+            data-cy={`segmentation-config-opacity-inactive${dataCyTypeSuffix}`}
           >
             <Numeric.Container
               mode="singleRange"

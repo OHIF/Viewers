@@ -96,6 +96,10 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     }
   };
 
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
+
   return (
     <SegmentationTableProvider
       value={{
@@ -124,7 +128,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
           {hasConfigComponent && (
             <div
               className="ml-auto mr-2"
-              data-cy={`segmentation-config-toggle-${segmentationRepresentationTypes?.[0]}`}
+              data-cy={`segmentation-config-toggle${dataCyTypeSuffix}`}
             >
               <Icons.Settings
                 className="text-primary h-4 w-4"
