@@ -138,6 +138,10 @@ export default function ModeRoute({
    * Moved from PanelStudyBrowser.tsx to ensure validation runs in all modes
    */
   const validateStudies = async () => {
+    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length || !dataSource) {
+      return;
+    }
+
     for (const studyInstanceUID of studyInstanceUIDs) {
       try {
         const qidoForStudyUID = await dataSource.query.studies.search({
@@ -304,9 +308,12 @@ export default function ModeRoute({
 
     let unsubscriptions;
     setupRouteInit()
-      .then(() => validateStudies())
       .then(unsubs => {
         unsubscriptions = unsubs;
+
+        validateStudies()
+      })
+      .then(unsubs => {
 
         mode?.onSetupRouteComplete?.({
           servicesManager,
