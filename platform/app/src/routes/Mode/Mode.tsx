@@ -313,7 +313,7 @@ export default function ModeRoute({
 
         validateStudies()
       })
-      .then(unsubs => {
+      .then(() => {
 
         mode?.onSetupRouteComplete?.({
           servicesManager,
