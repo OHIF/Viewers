@@ -20,13 +20,15 @@ export default class RetrieveMetadataLoader {
     studyInstanceUID,
     filters = {},
     sortCriteria = undefined,
-    sortFunction = undefined
+    sortFunction = undefined,
+    qidoClient = null
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
+    this.qidoClient = qidoClient || client;
   }
 
   async execLoad() {
@@ -57,8 +59,8 @@ export default class RetrieveMetadataLoader {
   }
 
   // Methods to be overwrite
-  async configLoad() {}
-  async preLoad() {}
-  async load(preLoadData) {}
-  async posLoad(loadData) {}
+  async configLoad() { }
+  async preLoad() { }
+  async load(preLoadData) { }
+  async posLoad(loadData) { }
 }

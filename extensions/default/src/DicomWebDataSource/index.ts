@@ -16,7 +16,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
-import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
+import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -158,7 +158,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        */
       generateWadoHeader = (options: HeaderOptions): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        if (options?.includeTransferSyntax!==false) {
+        if (options?.includeTransferSyntax !== false) {
           //Generate accept header depending on config params
           const formattedAcceptHeader = utils.generateAcceptHeader(
             dicomWebConfig.acceptHeader,
@@ -440,6 +440,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     ) => {
       const enableStudyLazyLoad = false;
       wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
+      qidoDicomWebClient.headers = getAuthorizationHeader();
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -448,7 +449,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         filters,
         sortCriteria,
         sortFunction,
-        dicomWebConfig
+        dicomWebConfig,
+        qidoDicomWebClient
       );
 
       // first naturalize the data
@@ -514,6 +516,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     ) => {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
+      qidoDicomWebClient.headers = getAuthorizationHeader();
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
@@ -523,7 +526,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           filters,
           sortCriteria,
           sortFunction,
-          dicomWebConfig
+          dicomWebConfig,
+          qidoDicomWebClient
         );
 
       /**

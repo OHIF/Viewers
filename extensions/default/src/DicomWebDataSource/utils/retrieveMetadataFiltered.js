@@ -19,7 +19,8 @@ function retrieveMetadataFiltered(
   enableStudyLazyLoad,
   filters,
   sortCriteria,
-  sortFunction
+  sortFunction,
+  qidoClient = null
 ) {
   const { seriesInstanceUID } = filters;
 
@@ -35,7 +36,8 @@ function retrieveMetadataFiltered(
         enableStudyLazyLoad,
         seriesSpecificFilters,
         sortCriteria,
-        sortFunction
+        sortFunction,
+        qidoClient
       );
     });
 
