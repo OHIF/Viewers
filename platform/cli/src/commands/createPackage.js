@@ -62,13 +62,13 @@ const createPackage = async options => {
   console.log(chalk.green(`run the following command inside the root of the OHIF monorepo`));
 
   console.log();
-  console.log(chalk.green.bold(`    yarn run cli link-${packageType} ${options.targetDir}`));
+  console.log(chalk.green.bold(`    pnpm run cli link-${packageType} ${options.targetDir}`));
   console.log();
   console.log(
     chalk.yellow("and when you don't need it anymore, run the following command to unlink it")
   );
   console.log();
-  console.log(chalk.yellow(`    yarn run cli unlink-${packageType} ${options.name}`));
+  console.log(chalk.yellow(`    pnpm run cli unlink-${packageType} ${options.name}`));
   console.log();
 
   return true;

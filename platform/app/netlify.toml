@@ -10,20 +10,15 @@
 
 [build]
   base = ""
-  build = "yarn run build:viewer:ci"
+  build = "pnpm run build:viewer:ci"
   publish = "dist"
 
 
 # NODE_VERSION in root `.nvmrc` takes priority
-# YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
 [build.environment]
-  # If 'production', `yarn install` does not install devDependencies
+  # If 'production', `pnpm install` does not install devDependencies
   NODE_ENV = "development"
-  NODE_VERSION = "20.19.0"
-  YARN_VERSION = "1.22.5"
-  RUBY_VERSION = "2.6.2"
-  YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
-  NETLIFY_USE_YARN = "true"
+  NODE_VERSION = "24"
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.

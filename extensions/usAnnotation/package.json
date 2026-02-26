@@ -19,16 +19,14 @@
   ],
   "module": "src/index.ts",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:my-extension": "yarn run dev",
+    "dev:my-extension": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev"
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
     "prop-types": "15.8.1",
@@ -44,11 +42,11 @@
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/core": "4.17.2",
     "@cornerstonejs/tools": "4.17.2",
-    "@ohif/core": "3.13.0-beta.24",
-    "@ohif/extension-cornerstone": "3.13.0-beta.24",
-    "@ohif/extension-default": "3.13.0-beta.24",
-    "@ohif/i18n": "3.13.0-beta.24",
-    "@ohif/ui-next": "3.13.0-beta.24"
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-cornerstone": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/i18n": "workspace:*",
+    "@ohif/ui-next": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "7.28.0",

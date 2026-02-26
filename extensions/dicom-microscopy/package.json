@@ -16,24 +16,22 @@
   ],
   "module": "src/index.tsx",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "node": ">=24"
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:dicom-pdf": "yarn run dev",
+    "dev:dicom-pdf": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.13.0-beta.24",
-    "@ohif/extension-default": "3.13.0-beta.24",
-    "@ohif/i18n": "3.13.0-beta.24",
-    "@ohif/ui": "3.13.0-beta.24",
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/i18n": "workspace:*",
+    "@ohif/ui": "workspace:*",
     "prop-types": "15.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",

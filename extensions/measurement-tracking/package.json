@@ -11,9 +11,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "node": ">=24"
   },
   "files": [
     "dist",
@@ -24,20 +22,20 @@
   ],
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:dicom-pdf": "yarn run dev",
+    "dev:dicom-pdf": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev"
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
     "@cornerstonejs/core": "4.17.2",
     "@cornerstonejs/tools": "4.17.2",
-    "@ohif/core": "3.13.0-beta.24",
-    "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.24",
-    "@ohif/extension-default": "3.13.0-beta.24",
-    "@ohif/ui": "3.13.0-beta.24",
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/ui": "workspace:*",
     "classnames": "2.5.1",
     "dcmjs": "0.49.4",
     "lodash.debounce": "4.0.8",
@@ -49,7 +47,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@ohif/ui": "3.13.0-beta.24",
+    "@ohif/ui": "workspace:*",
     "@xstate/react": "3.2.2",
     "xstate": "4.38.3"
   }

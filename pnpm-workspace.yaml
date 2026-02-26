@@ -1,0 +1,12 @@
+packages:
+  - platform/*
+  - extensions/*
+  - modes/*
+onlyBuiltDependencies:
+  - '@scarf/scarf'
+  - '@swc/core'
+  - core-js
+  - core-js-pure
+  - cypress
+  - protobufjs
+  - sharp

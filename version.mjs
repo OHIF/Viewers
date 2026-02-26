@@ -6,9 +6,9 @@ async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
   console.log('Current branch:', branchName);
 
-  // read the current version from lerna.json
-  const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf-8'));
-  const currentVersion = lernaJson.version;
+  // read the current version from package.json
+  const packageJson = JSON.parse(await fs.readFile('package.json', 'utf-8'));
+  const currentVersion = packageJson.version;
 
   console.log('Current version:', currentVersion);
 

@@ -8,9 +8,7 @@
   "main": "dist/ohif-mode-tmtv.umd.js",
   "module": "src/index.ts",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "node": ">=24"
   },
   "files": [
     "dist",
@@ -24,23 +22,23 @@
   ],
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:cornerstone": "yarn run dev",
+    "dev:cornerstone": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev",
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.13.0-beta.24",
-    "@ohif/extension-cornerstone": "3.13.0-beta.24",
-    "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.24",
-    "@ohif/extension-default": "3.13.0-beta.24",
-    "@ohif/extension-dicom-pdf": "3.13.0-beta.24",
-    "@ohif/extension-dicom-video": "3.13.0-beta.24",
-    "@ohif/extension-measurement-tracking": "3.13.0-beta.24"
+    "@ohif/core": "workspace:*",
+    "@ohif/extension-cornerstone": "workspace:*",
+    "@ohif/extension-cornerstone-dicom-sr": "workspace:*",
+    "@ohif/extension-default": "workspace:*",
+    "@ohif/extension-dicom-pdf": "workspace:*",
+    "@ohif/extension-dicom-video": "workspace:*",
+    "@ohif/extension-measurement-tracking": "workspace:*"
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",

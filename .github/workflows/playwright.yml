@@ -14,25 +14,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20]
+        node-version: [24]
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
         with:
-          bun-version: 1.2.23
+          version: latest
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install Yarn
-        run: npm install -g yarn@1.22.22
+          cache: pnpm
+      - name: Configure git for private repos
+        if: ${{ env.GITHUB_TOKEN }}
+        run: git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf ssh://git@github.com/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install
       - name: Install Playwright browsers
         run: npx playwright install
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
-          bun run test:e2e:coverage
+          pnpm run test:e2e:coverage
       - name: Create directory of test results
         if: ${{ !cancelled() }}
         run: |
@@ -48,7 +52,7 @@ jobs:
           retention-days: 5
       - name: create the coverage report
         run: |
-          bun nyc report --reporter=lcov --reporter=text
+          pnpm exec nyc report --reporter=lcov --reporter=text
       - name: Upload the coverage report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

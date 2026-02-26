@@ -3,16 +3,15 @@
   "keywords": ["ohif-mode"],
   "module": "src/index.tsx",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:cornerstone": "yarn run dev",
+    "dev:cornerstone": "pnpm rundev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev",
+    "build:package": "pnpm runbuild",
+    "start": "pnpm rundev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },

@@ -17,18 +17,16 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "node": ">=24"
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "jest --watchAll",
-    "dev:core": "yarn run dev",
+    "dev:core": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev",
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
@@ -39,7 +37,7 @@
     "@cornerstonejs/codec-openjph": "2.4.7",
     "@cornerstonejs/core": "4.17.2",
     "@cornerstonejs/dicom-image-loader": "4.17.2",
-    "@ohif/ui": "3.13.0-beta.24",
+    "@ohif/ui": "workspace:*",
     "cornerstone-math": "0.1.9",
     "dicom-parser": "1.8.21"
   },

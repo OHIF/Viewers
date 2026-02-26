@@ -9,9 +9,7 @@ const RETRY_DELAY = 10000; // 10 seconds
 async function run() {
   const { stdout: branchName } = await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
 
-  const lernaJson = JSON.parse(await fs.readFile('lerna.json', 'utf8'));
-
-  const packages = lernaJson.packages;
+  const packages = ['extensions/*', 'platform/*', 'modes/*'];
 
   const rootDir = process.cwd();
 

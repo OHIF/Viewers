@@ -6,21 +6,20 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:20.19.0
+    - image: cimg/node:24.0.0
       environment:
         TERM: xterm
         QUICK_BUILD: true
   working_directory: ~/repo
 
 commands:
-  install_bun:
+  install_pnpm:
     steps:
       - run:
-          name: Install Bun
+          name: Install pnpm
           command: |
-            curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.23"
-            echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
-            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
+            npm install -g pnpm@latest
+            echo 'export PATH="$(pnpm store path)/../.bin:$PATH"' >> $BASH_ENV
             source $BASH_ENV
 
 jobs:
@@ -28,16 +27,16 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      - install_bun
+      - install_pnpm
       - run: node --version
       - checkout
       - run:
           name: Install Dependencies
-          command: bun install --no-save
+          command: pnpm install --no-frozen-lockfile
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: bun run test:unit:ci
+          command: pnpm run test:unit:ci
       # platform/app
       - run:
           name: 'VIEWER: Combine report output'
@@ -71,17 +70,17 @@ jobs:
     steps:
       # Checkout code and ALL Git Tags
       - checkout
-      - install_bun
+      - install_pnpm
       - run:
           name: Install Dependencies
-          command: bun install --no-save
+          command: pnpm install --no-frozen-lockfile
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
-          command: bun ./version.mjs
+          command: node ./version.mjs
       - run:
           name: 'Build the OHIF Viewer'
-          command: bun run build
+          command: pnpm run build
           no_output_timeout: 45m
       - run:
           name: 'Upload SourceMaps, Send Deploy Notification'
@@ -107,12 +106,12 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      - install_bun
+      - install_pnpm
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT - only when bun.lock has changed
+      # SECURITY AUDIT - only when pnpm-lock.yaml has changed
       - run:
           name: 'Security Audit - High Risk Vulnerabilities'
           command: |
@@ -123,51 +122,39 @@ jobs:
               exit 0
             fi
             CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
-            if ! echo "$CHANGED_FILES" | grep -qx 'bun.lock'; then
-              echo "⏭️ bun.lock unchanged - skipping security audit."
+            if ! echo "$CHANGED_FILES" | grep -qx 'pnpm-lock.yaml'; then
+              echo "pnpm-lock.yaml unchanged - skipping security audit."
               exit 0
             fi
-            echo "🔍 bun.lock changed - running bun audit for security vulnerabilities..."
+            echo "pnpm-lock.yaml changed - running pnpm audit for security vulnerabilities..."
             echo "Checking for HIGH-RISK vulnerabilities..."
 
-            # Define ignored vulnerabilities with comments
-            IGNORED_VULNS=(
-              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - OHIF's use of minimatch via glob is safe because it does NOT use the CLI
-                                     # CVE-2026-26996 - OHIF's other uses of minimatch are strictly for building and CI/CD purposes
-            )
-
-            # Build ignore flags
-            IGNORE_FLAGS=""
-            for vuln in "${IGNORED_VULNS[@]}"; do
-              IGNORE_FLAGS="$IGNORE_FLAGS --ignore=$vuln"
-            done
-
-            if bun audit $IGNORE_FLAGS --audit-level high; then
-              echo "✅ No high-risk vulnerabilities found"
-              echo "🎉 Security audit passed!"
+            if pnpm audit --audit-level high; then
+              echo "No high-risk vulnerabilities found"
+              echo "Security audit passed!"
             else
               echo ""
-              echo "❌ HIGH-RISK VULNERABILITIES DETECTED!"
+              echo "HIGH-RISK VULNERABILITIES DETECTED!"
               echo "======================================"
               echo ""
-              echo "🔧 To fix these issues:"
-              echo "  1. Run: bun audit"
+              echo "To fix these issues:"
+              echo "  1. Run: pnpm audit"
               echo "  2. Review the vulnerability details"
               echo "  3. Update affected packages to secure versions"
               echo "  4. Test your changes"
-              echo "  5. Re-run: bun audit --audit-level high"
+              echo "  5. Re-run: pnpm audit --audit-level high"
               echo ""
-              echo "📋 Full audit report:"
+              echo "Full audit report:"
 
-              bun audit $IGNORE_FLAGS --audit-level low || true
+              pnpm audit || true
 
               echo ""
-              echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
+              echo "This build cannot proceed until high-risk vulnerabilities are resolved."
               exit 1
             fi
       - run:
           name: Install Dependencies
-          command: bun install --frozen-lockfile
+          command: pnpm install
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -182,24 +169,24 @@ jobs:
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            bun run build:package-all
+            pnpm run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            bun run build:package-all-1
+            pnpm run build:package-all-1
 
   NPM_PUBLISH:
     <<: *defaults
     resource_class: large
     steps:
-      - install_bun
+      - install_pnpm
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
       - run:
           name: Install Dependencies
-          command: bun install --no-save
+          command: pnpm install --no-frozen-lockfile
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -214,11 +201,11 @@ jobs:
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            bun run build:package-all
+            pnpm run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            bun run build:package-all-1
+            pnpm run build:package-all-1
       - run:
           name: increase min time out
           command: |
@@ -230,14 +217,14 @@ jobs:
       - run:
           name: publish package versions
           command: |
-            bun ./publish-version.mjs
+            node ./publish-version.mjs
       - run:
           name: Again set the NPM registry (was deleted in the version script)
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
           name: publish package dist
           command: |
-            bun ./publish-package.mjs
+            node ./publish-package.mjs
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -383,7 +370,7 @@ jobs:
     resource_class: large
     parallelism: 8
     steps:
-      - install_bun
+      - install_pnpm
       - run:
           name: Install System Dependencies
           command: |
@@ -397,11 +384,11 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-command: yarn install --frozen-lockfile --no-save
+          install-command: pnpm install
       - cypress/run-tests:
           cypress-command: |
             npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
-          start-command: yarn run test:data && yarn run test:e2e:serve
+          start-command: pnpm run test:data && pnpm run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:
     <<: *defaults

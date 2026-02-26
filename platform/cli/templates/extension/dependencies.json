@@ -3,16 +3,15 @@
   "keywords": ["ohif-extension"],
   "module": "src/index.tsx",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:my-extension": "yarn run dev",
+    "dev:my-extension": "pnpm rundev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev"
+    "build:package": "pnpm runbuild",
+    "start": "pnpm rundev"
   },
   "peerDependencies": {
     "@ohif/core": "^{LATEST_OHIF_VERSION}",
