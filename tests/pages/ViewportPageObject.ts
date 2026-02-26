@@ -24,6 +24,10 @@ export interface IViewportPageObject {
     contextMenu: {
       open: () => Promise<void>;
     };
+    text: {
+      locator: Locator;
+      click: () => Promise<void>;
+    };
   };
   clickAt: (
     points: { x: number; y: number }[],
@@ -84,6 +88,12 @@ export class ViewportPageObject {
       contextMenu: {
         open: async () => {
           await domOverlayPageObject.viewport.annotationContextMenu.open(annotation);
+        },
+      },
+      text: {
+        locator: annotation.locator('text').first(),
+        click: async () => {
+          await annotation.locator('text').first().click({ force: true });
         },
       },
     };
