@@ -79,6 +79,7 @@ export class ViewportPageObject {
     const page = this.page;
     const domOverlayPageObject = new DOMOverlayPageObject(page);
     const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
+    const textLocator = annotation.locator('text').first();
 
     return {
       locator: annotation,
@@ -91,9 +92,9 @@ export class ViewportPageObject {
         },
       },
       text: {
-        locator: annotation.locator('text').first(),
+        locator: textLocator,
         click: async () => {
-          await annotation.locator('text').first().click({ force: true });
+          await textLocator.click({ force: true });
         },
       },
     };

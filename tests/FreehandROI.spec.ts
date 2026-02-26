@@ -26,11 +26,8 @@ test('should not fire MEASUREMENT_ADDED when clicking the annotation text', asyn
     const annotation = viewportPageObject.active.nthAnnotation(0);
     await annotation.text.click();
 
-    await page.waitForTimeout(500);
+    await expect(measurementAdded.waitFired(1000)).rejects.toThrow();
 
-    const wasEventFired = await measurementAdded.getFired();
-
-    expect(wasEventFired).toBe(false);
   } finally {
     await measurementAdded.unsubscribe();
   }

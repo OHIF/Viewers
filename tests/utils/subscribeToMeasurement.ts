@@ -1,29 +1,33 @@
 export const subscribeToMeasurementAdded = async (page: any) => {
+  let measurementAddedFired = false;
+  let unsubscribeMeasurementAdded: () => void;
+
   await page.evaluate(
     ({ services }: AppTypes.Test) => {
       const { measurementService } = services;
 
-      window.__measurementAddedFired = false;
-
       const { unsubscribe } = measurementService.subscribe(
         measurementService.EVENTS.MEASUREMENT_ADDED,
         () => {
-          window.__measurementAddedFired = true;
+          measurementAddedFired = true;
         }
       );
 
-      window.__unsubscribeMeasurementAdded = unsubscribe;
+      unsubscribeMeasurementAdded = unsubscribe;
     },
     await page.evaluateHandle('window')
   );
 
   return {
-    getFired: async () => page.evaluate(() => window.__measurementAddedFired === true),
+    waitFired: async (timeout?: number) =>
+      await page.waitForFunction(
+        () => measurementAddedFired === true,
+        timeout != null ? { timeout } : undefined
+      ),
 
     unsubscribe: async () => {
       await page.evaluate(() => {
-        const unsub = window.__unsubscribeMeasurementAdded;
-        unsub?.();
+        unsubscribeMeasurementAdded?.();
       });
     },
   };
