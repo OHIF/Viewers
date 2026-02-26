@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/adapters": "4.17.2",
-    "@cornerstonejs/core": "4.17.2",
+    "@cornerstonejs/adapters": "4.18.2",
+    "@cornerstonejs/core": "4.18.2",
     "@kitware/vtk.js": "34.15.1"
   }
 }
