@@ -83,6 +83,9 @@
     "babel-plugin-istanbul": "7.0.1",
     "babel-plugin-transform-import-meta": "2.3.3",
     "cross-env": "7.0.3",
+    "@rsbuild/core": "1.7.3",
+    "@rsbuild/plugin-node-polyfill": "1.4.4",
+    "@rsbuild/plugin-react": "1.4.5",
     "css-loader": "6.11.0",
     "cypress": "14.5.2",
     "cypress-file-upload": "5.0.8",
@@ -135,7 +138,8 @@
       "lodash-es": "4.17.23",
       "diff": "5.2.2",
       "webpack": "5.105.0",
-      "tar": "7.5.9"
+      "tar": "7.5.9",
+      "sharp": "0.34.5"
     }
   }
 }

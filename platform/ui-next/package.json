@@ -64,7 +64,9 @@
     "tailwindcss-animate": "1.0.7"
   },
   "devDependencies": {
-    "@babel/plugin-transform-private-property-in-object": "7.27.1"
+    "@babel/plugin-transform-private-property-in-object": "7.27.1",
+    "webpack": "5.105.0",
+    "webpack-cli": "5.1.4"
   },
   "keywords": [],
   "author": "OHIF",

@@ -47,5 +47,10 @@
     "colormap": "2.3.2",
     "lodash.debounce": "4.0.8",
     "mathjs": "12.4.3"
+  },
+  "devDependencies": {
+    "cross-env": "7.0.3",
+    "webpack": "5.105.0",
+    "webpack-cli": "5.1.4"
   }
 }
