@@ -65,6 +65,7 @@
     "@ohif/extension-dicom-microscopy": "3.13.0-beta.25",
     "@ohif/extension-dicom-pdf": "3.13.0-beta.25",
     "@ohif/extension-dicom-video": "3.13.0-beta.25",
+    "@ohif/extension-dicom-ecg": "3.13.0-beta.25",
     "@ohif/extension-test": "3.13.0-beta.25",
     "@ohif/extension-ultrasound-pleura-bline": "3.13.0-beta.25",
     "@ohif/i18n": "3.13.0-beta.25",

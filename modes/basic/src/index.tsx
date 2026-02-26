@@ -15,7 +15,7 @@ const { structuredCloneWithFunctions } = utils;
  * This list used to include SM, for whole slide imaging, but this is now supported
  * by cornerstone.  Others of these may get added.
  */
-export const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR', 'SR'];
+export const NON_IMAGE_MODALITIES = ['SEG', 'RTSTRUCT', 'RTPLAN', 'PR', 'SR'];
 
 export const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -45,6 +45,11 @@ export const dicomsr = {
 export const dicomvideo = {
   sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
   viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
+};
+
+export const dicomecg = {
+  sopClassHandler: '@ohif/extension-dicom-ecg.sopClassHandlerModule.dicom-ecg',
+  viewport: '@ohif/extension-dicom-ecg.viewportModule.dicom-ecg',
 };
 
 export const dicompdf = {
@@ -82,10 +87,12 @@ export const extensionDependencies = {
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
+  '@ohif/extension-dicom-ecg': '^3.0.0',
 };
 
 export const sopClassHandlers = [
   dicomvideo.sopClassHandler,
+  dicomecg.sopClassHandler,
   dicomSeg.sopClassHandler,
   dicomPmap.sopClassHandler,
   ohif.sopClassHandler,
@@ -312,6 +319,10 @@ export const basicLayout = {
       {
         namespace: dicomRT.viewport,
         displaySetsToDisplay: [dicomRT.sopClassHandler],
+      },
+      {
+        namespace: dicomecg.viewport,
+        displaySetsToDisplay: [dicomecg.sopClassHandler],
       },
     ],
   },
