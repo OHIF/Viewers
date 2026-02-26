@@ -42,6 +42,7 @@ export function setupSegmentationDataModifiedHandler({
           commandsManager.runCommand('runSegmentBidirectional', {
             segmentationId,
             segmentIndex,
+            autoNavigate: false,
           });
         }
       }

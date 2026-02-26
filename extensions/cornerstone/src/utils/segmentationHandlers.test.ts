@@ -235,10 +235,12 @@ describe('setupSegmentationDataModifiedHandler', () => {
     expect(mockCommandsManager.runCommand).toHaveBeenNthCalledWith(1, 'runSegmentBidirectional', {
       segmentationId: 'test-id',
       segmentIndex: 1,
+      autoNavigate: false,
     });
     expect(mockCommandsManager.runCommand).toHaveBeenNthCalledWith(2, 'runSegmentBidirectional', {
       segmentationId: 'test-id',
       segmentIndex: 3,
+      autoNavigate: false,
     });
   });
 

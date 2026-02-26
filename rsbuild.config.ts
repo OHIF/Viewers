@@ -100,12 +100,17 @@ export default defineConfig({
     copy: [
       // Copy plugin files (handled by writePluginImportsFile)
       ...(writePluginImportsFile(SRC_DIR, DIST_DIR) || []),
-      // Copy public directory except config and html-templates
-      {
-        from: path.resolve(__dirname, 'node_modules/onnxruntime-web/dist'),
-        to: `${DIST_DIR}/ort`,
-        force: true,
-      },
+      // Copy ONNX Runtime Web dist for SAM segmentation (includes ort-wasm-simd-threaded.jsep.wasm for WebGPU)
+      ...(function () {
+        const candidates = [
+          path.resolve(__dirname, 'node_modules/onnxruntime-web/dist'),
+          path.resolve(__dirname, 'platform/app/node_modules/onnxruntime-web/dist'),
+        ];
+        const from = candidates.find((p) => fs.existsSync(p));
+        return from
+          ? [{ from, to: `${DIST_DIR}/ort`, force: true }]
+          : [];
+      })(),
       {
         from: PUBLIC_DIR,
         to: DIST_DIR,

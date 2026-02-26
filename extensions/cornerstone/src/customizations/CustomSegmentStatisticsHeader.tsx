@@ -1,9 +1,18 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import React from 'react';
-import { Separator, Button, Tooltip, TooltipTrigger, TooltipContent, Icons } from '@ohif/ui-next';
+import {
+  Separator,
+  Button,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  Icons,
+  Switch,
+} from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 import { roundNumber } from '@ohif/core/src/utils';
 import { useSystem } from '@ohif/core/src';
+import { useBidirectionalAutoNavigateStore } from '../stores';
 
 interface CustomSegmentStatisticsHeaderProps {
   segmentationId: string;
@@ -20,6 +29,12 @@ export const CustomSegmentStatisticsHeader = ({
   const { servicesManager, commandsManager } = useSystem();
   const { segmentationService } = servicesManager.services;
   const { t } = useTranslation('SegmentationPanel');
+  const autoNavigateToLargestSlice = useBidirectionalAutoNavigateStore(
+    state => state.autoNavigateToLargestSlice
+  );
+  const setAutoNavigateToLargestSlice = useBidirectionalAutoNavigateStore(
+    state => state.setAutoNavigateToLargestSlice
+  );
 
   const segmentation = segmentationService.getSegmentation(segmentationId);
   const segment = segmentation.segments[segmentIndex];
@@ -35,7 +50,7 @@ export const CustomSegmentStatisticsHeader = ({
   if (!bidirectional) {
     return (
       <div className="-mt-2 space-y-2">
-        <div className="flex">
+        <div className="flex flex-col gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -55,6 +70,15 @@ export const CustomSegmentStatisticsHeader = ({
             </TooltipTrigger>
             <TooltipContent side="bottom">{t('Add bidirectional measurement')}</TooltipContent>
           </Tooltip>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground text-sm">
+              {t('Auto-navigate to largest slice')}
+            </span>
+            <Switch
+              checked={autoNavigateToLargestSlice}
+              onCheckedChange={setAutoNavigateToLargestSlice}
+            />
+          </div>
         </div>
         <Separator className="bg-input" />
       </div>
@@ -131,6 +155,15 @@ export const CustomSegmentStatisticsHeader = ({
             <TooltipContent side="bottom">{t('Jump to measurement')}</TooltipContent>
           </Tooltip>
         </div>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-muted-foreground text-sm">
+          {t('Auto-navigate to largest slice')}
+        </span>
+        <Switch
+          checked={autoNavigateToLargestSlice}
+          onCheckedChange={setAutoNavigateToLargestSlice}
+        />
       </div>
       <Separator className="bg-input" />
     </div>

@@ -3,3 +3,7 @@ export { usePositionPresentationStore } from './usePositionPresentationStore';
 export { useSegmentationPresentationStore } from './useSegmentationPresentationStore';
 export { useSynchronizersStore } from './useSynchronizersStore';
 export { useSelectedSegmentationsForViewportStore } from './useSelectedSegmentationsForViewportStore';
+export {
+  useBidirectionalAutoNavigateStore,
+  bidirectionalAutoNavigateStore,
+} from './useBidirectionalAutoNavigateStore';
