@@ -121,6 +121,6 @@
     "tailwindcss": "3.2.4",
     "terser-webpack-plugin": "5.3.14",
     "webpack-dev-server": "5.2.2",
-    "workbox-webpack-plugin": "7.4.0"
+    "workbox-webpack-plugin": "6.6.1"
   }
 }
