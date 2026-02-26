@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.13.0-beta.24",
+  "version": "3.13.0-beta.25",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -34,8 +34,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.13.0-beta.24",
-    "@ohif/i18n": "3.13.0-beta.24",
+    "@ohif/core": "3.13.0-beta.25",
+    "@ohif/i18n": "3.13.0-beta.25",
     "dcmjs": "0.49.4",
     "dicomweb-client": "0.10.4",
     "prop-types": "15.8.1",
