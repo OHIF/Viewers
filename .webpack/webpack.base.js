@@ -4,11 +4,13 @@ const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
 
-const webpack = require('webpack');
+const webpack = require('@rspack/core');
 
 // ~~ PLUGINS
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const TerserJSPlugin = require('terser-webpack-plugin');
+// rspack has built-in SWC-based minification; TerserJSPlugin kept for webpack fallback
+let TerserJSPlugin;
+try { TerserJSPlugin = require('terser-webpack-plugin'); } catch { TerserJSPlugin = null; }
 
 // ~~ PackageJSON
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
@@ -20,7 +22,8 @@ const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // Only uncomment for old v2 stylus
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+let ReactRefreshWebpackPlugin;
+try { ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'); } catch { ReactRefreshWebpackPlugin = null; }
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -65,7 +68,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    devtool: isProdBuild ? 'hidden-source-map' : 'cheap-module-source-map',
     entry: ENTRY,
     optimization: {
       // splitChunks: {
@@ -92,9 +95,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       children: false,
       warnings: true,
     },
-    cache: {
-      type: 'filesystem',
-    },
+    cache: isProdBuild ? false : { type: 'filesystem' },
     module: {
       noParse: [/(dicomicc)/],
       rules: [
@@ -214,8 +215,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       ],
       // Attempt to resolve these extensions in order.
       extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
-      // symlinked resources are resolved to their real path, not their symlinked location
-      symlinks: true,
+      // pnpm with shamefully-hoist hoists flat; symlinks: false avoids memory-heavy symlink resolution
+      symlinks: false,
       fallback: {
         fs: false,
         path: false,
@@ -228,19 +229,16 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
+      ...(isProdBuild || !ReactRefreshWebpackPlugin ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
   };
 
   if (isProdBuild) {
-    config.optimization.minimizer = [
-      new TerserJSPlugin({
-        parallel: true,
-        terserOptions: {},
-      }),
-    ];
+    config.optimization.minimizer = TerserJSPlugin
+      ? [new TerserJSPlugin({ parallel: true, terserOptions: {} })]
+      : [new webpack.SwcJsMinimizerRspackPlugin()];
   }
 
   if (isQuickBuild) {
