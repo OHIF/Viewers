@@ -42,7 +42,6 @@ import {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSelectedSegmentationsForViewportStore,
-  bidirectionalAutoNavigateStore,
 } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
@@ -390,11 +389,7 @@ function commandsModule({
         return results;
       }
     },
-    runSegmentBidirectional: async ({
-      segmentationId,
-      segmentIndex,
-      autoNavigate,
-    } = {}) => {
+    runSegmentBidirectional: async ({ segmentationId, segmentIndex } = {}) => {
       // Get active segmentation if not specified
       const targetSegmentation =
         segmentationId && segmentIndex
@@ -445,20 +440,13 @@ function commandsModule({
         }
       });
 
-      // Only navigate to largest slice when explicitly requested (user-initiated with preference on).
-      // Recalculations pass autoNavigate: false and must not navigate.
-      const shouldNavigate =
-        autoNavigate !== undefined
-          ? autoNavigate
-          : bidirectionalAutoNavigateStore.getState().autoNavigateToLargestSlice;
-      if (shouldNavigate) {
-        const activeBidirectional = bidirectionalData.find(
-          measurement => measurement.segmentIndex === targetIndex
-        );
-        commandsManager.run('jumpToMeasurement', {
-          uid: activeBidirectional.annotationUID,
-        });
-      }
+      // get the active segmentIndex bidirectional annotation and jump to it
+      const activeBidirectional = bidirectionalData.find(
+        measurement => measurement.segmentIndex === targetIndex
+      );
+      commandsManager.run('jumpToMeasurement', {
+        uid: activeBidirectional.annotationUID,
+      });
     },
     interpolateLabelmap: () => {
       const { segmentationId, segmentIndex } = _getActiveSegmentationInfo();
