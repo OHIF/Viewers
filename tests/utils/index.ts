@@ -17,6 +17,7 @@ import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgPath } from './getSvgPath';
+import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 
 export {
@@ -38,6 +39,7 @@ export {
   attemptAction,
   addLengthMeasurement,
   getSvgPath,
+  navigateWithViewportArrow,
   test,
   expect,
 };

@@ -60,7 +60,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
-  getNavigationArrows: () => {
+  navigationArrows: {
     locator: Locator;
     prev: {
       button: Locator;
@@ -146,11 +146,10 @@ export class ViewportPageObject {
     return viewport.locator(`svg.svg-layer${innerElement ? ` ${innerElement}` : ''}`);
   }
 
-  private getNavigationArrows() {
-    const page = this.page;
-    const container = page.getByTestId('viewport-action-arrows');
-    const prevButton = page.getByTestId('viewport-action-arrows-left');
-    const nextButton = page.getByTestId('viewport-action-arrows-right');
+  private getNavigationArrows(viewport: Locator) {
+    const container = viewport.getByTestId('viewport-action-arrows');
+    const prevButton = viewport.getByTestId('viewport-action-arrows-left');
+    const nextButton = viewport.getByTestId('viewport-action-arrows-right');
     return {
       locator: container,
       prev: {
@@ -211,7 +210,7 @@ export class ViewportPageObject {
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
-      getNavigationArrows: () => this.getNavigationArrows(),
+      navigationArrows: this.getNavigationArrows(viewport),
     };
   }
 
