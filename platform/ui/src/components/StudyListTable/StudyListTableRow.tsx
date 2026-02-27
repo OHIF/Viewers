@@ -5,8 +5,48 @@ import getGridWidthClass from '../../utils/getGridWidthClass';
 import { Icons } from '@ohif/ui-next';
 
 const StudyListTableRow = props => {
-  const { tableData } = props;
+  const { tableData, useLightTheme = false, colCount } = props;
   const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
+
+  if (useLightTheme) {
+    return (
+      <>
+        <tr
+          className={classnames(
+            'cursor-pointer select-none border-b border-[#f3f4f6] text-[13px] transition-colors',
+            isExpanded ? 'bg-[#f3f4f6]' : 'hover:bg-[#f9fafb]'
+          )}
+          data-cy={dataCY}
+          onClick={onClickRow}
+        >
+          <td className="w-8 px-2 py-2 text-[#9ca3af]">
+            {isExpanded ? (
+              <Icons.ChevronOpen className="inline-flex h-3.5 w-3.5" />
+            ) : (
+              <Icons.ChevronClosed className="inline-flex h-3.5 w-3.5 rotate-180" />
+            )}
+          </td>
+          {row.map((cell, index) => (
+            <td
+              key={cell.key || index}
+              className="truncate px-3 py-2"
+              title={cell.title}
+            >
+              {cell.content}
+            </td>
+          ))}
+        </tr>
+        {isExpanded && (
+          <tr className="border-b border-[#e5e7eb] bg-[#f9fafb]">
+            <td colSpan={colCount || row.length + 1} className="p-4">
+              {expandedContent}
+            </td>
+          </tr>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <tr
@@ -93,16 +133,15 @@ const StudyListTableRow = props => {
 };
 
 StudyListTableRow.propTypes = {
+  useLightTheme: PropTypes.bool,
+  colCount: PropTypes.number,
   tableData: PropTypes.shape({
-    /** A table row represented by an array of "cell" objects */
     row: PropTypes.arrayOf(
       PropTypes.shape({
         key: PropTypes.string.isRequired,
-        /** Optional content to render in row's cell */
         content: PropTypes.node,
-        /** Title attribute to use for provided content */
         title: PropTypes.string,
-        gridCol: PropTypes.number.isRequired,
+        gridCol: PropTypes.number,
       })
     ).isRequired,
     expandedContent: PropTypes.node.isRequired,

@@ -28,5 +28,12 @@
   "Valide": "Validated",
   "MesExamens": "My exams",
   "Tous": "All",
-  "TousLesExamens": "All exams"
+  "TousLesExamens": "All exams",
+  "ExamensPrioritaires": "Priority exams",
+  "ListeDesExamens": "Exam list",
+  "DSN": "DSN",
+  "Statut": "Status",
+  "Images": "Images",
+  "ActionsRapides": "Quick actions",
+  "DateEtHeure": "Date and time"
 }

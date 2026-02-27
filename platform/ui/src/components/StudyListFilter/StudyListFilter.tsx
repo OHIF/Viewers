@@ -359,7 +359,19 @@ function StudyListFilter({
                   {t(labelKey)}
                 </button>
               ))}
-              <Popover open={dateRangePopoverOpen} onOpenChange={open => { setDateRangePopoverOpen(open); if (open) setPeriodType('custom'); }}>
+              <Popover
+                open={dateRangePopoverOpen}
+                onOpenChange={open => {
+                  setDateRangePopoverOpen(open);
+                  if (open) {
+                    onChange({
+                      ...filterValues,
+                      periodType: 'custom',
+                      studyDate: { startDate: null, endDate: null },
+                    });
+                  }
+                }}
+              >
                 <PopoverTrigger asChild>
                   <button type="button" className={filterItemClass(periodType === 'custom')}>
                     {periodType === 'custom' ? periodCustomLabel : t('StudyList:PeriodCustom')}

@@ -271,16 +271,84 @@ function WorkList({
     return !isEqual(filterValues, defaultFilterValues);
   };
 
-  const rollingPageNumberMod = Math.floor(101 / resultsPerPage);
-  const rollingPageNumber = (pageNumber - 1) % rollingPageNumberMod;
-  const offset = resultsPerPage * rollingPageNumber;
-  const offsetAndTake = offset + resultsPerPage;
+  const PRIORITY_LIST_SIZE = 5;
+  const priorityCount = Math.min(PRIORITY_LIST_SIZE, sortedStudies.length);
+  const restCount = Math.max(0, numOfStudies - PRIORITY_LIST_SIZE);
+  const totalRestPages = Math.max(1, Math.ceil(restCount / resultsPerPage));
+  const [restPageNumber, setRestPageNumber] = useState(1);
+  const restOffset = (restPageNumber - 1) * resultsPerPage;
+
+  useEffect(() => {
+    setRestPageNumber(1);
+  }, [debouncedFilterValues]);
+
+  const studyListHeaderColumns = [
+    { label: t('StudyList:PatientName'), width: '16%' },
+    { label: t('StudyList:DSN'), width: '12%' },
+    { label: t('StudyList:DateEtHeure'), width: '14%' },
+    { label: t('StudyList:Description'), width: '20%' },
+    { label: t('StudyList:Modality'), width: '8%' },
+    { label: t('StudyList:Statut'), width: '8%' },
+    { label: t('StudyList:Images'), width: '6%', sortable: false },
+    { label: t('StudyList:ActionsRapides'), width: '10%', sortable: false },
+  ];
+
+  const getStudyViewerLink = study => {
+    const { modalities: mods, studyInstanceUid: uid } = study;
+    const modes = appConfig.groupEnabledModesFirst
+      ? [...appConfig.loadedModes].sort((a, b) => {
+          const isValidA = a.isValidMode({ modalities: mods?.replaceAll?.('/', '\\') || '', study }).valid;
+          const isValidB = b.isValidMode({ modalities: mods?.replaceAll?.('/', '\\') || '', study }).valid;
+          return isValidB - isValidA;
+        })
+      : appConfig.loadedModes;
+    const mode = modes.find(m => !m.hide && m.isValidMode({ modalities: mods?.replaceAll?.('/', '\\') || '', study }).valid);
+    if (!mode?.displayName) return null;
+    const query = new URLSearchParams();
+    if (filterValues.configUrl) query.append('configUrl', filterValues.configUrl);
+    query.append('StudyInstanceUIDs', uid);
+    preserveQueryParameters(query);
+    return `${mode.routeName}${dataPath || ''}?${query.toString()}`;
+  };
+
+  const modalityBadgeClass = mod => {
+    const m = (mod || '').trim().toUpperCase();
+    if (m === 'CT') return 'bg-[#8b5cf6] text-white';
+    if (m === 'XR' || m === 'CR' || m === 'DX') return 'bg-[#ec4899] text-white';
+    if (m === 'MR') return 'bg-[#3b82f6] text-white';
+    if (m === 'US') return 'bg-[#10b981] text-white';
+    if (m === 'PT' || m === 'PET') return 'bg-[#f59e0b] text-white';
+    if (m === 'NM') return 'bg-[#f97316] text-white';
+    if (m === 'MG') return 'bg-[#14b8a6] text-white';
+    if (m === 'SR') return 'bg-[#a78bfa] text-white';
+    return 'bg-[#6b7280] text-white';
+  };
+
+  const renderModalityBadges = modalities => {
+    if (!modalities) return null;
+    const mods = modalities.split(/[/\\]/).map(m => m.trim()).filter(Boolean);
+    return (
+      <div className="flex flex-wrap gap-1">
+        {mods.map((mod, i) => (
+          <span
+            key={i}
+            className={classnames(
+              'inline-flex rounded px-1.5 py-0.5 text-[11px] font-medium leading-tight',
+              modalityBadgeClass(mod)
+            )}
+          >
+            {mod}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   const tableDataSource = sortedStudies.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
     const {
       studyInstanceUid,
-      accession,
       modalities,
       instances,
       description,
@@ -289,16 +357,15 @@ function WorkList({
       date,
       time,
     } = study;
-    const studyDate =
+    const studyDateFr =
       date &&
       moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(t('Common:localDateFormat', 'MMM-DD-YYYY'));
-    const studyTime =
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('DD/MM/YYYY');
+    const studyTimeFr =
       time &&
       moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
-        t('Common:localTimeFormat', 'hh:mm A')
-      );
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('HH:mm');
+    const dateTimeFr = [studyDateFr, studyTimeFr].filter(Boolean).join(' ');
 
     const makeCopyTooltipCell = textValue => {
       if (!textValue) {
@@ -319,6 +386,25 @@ function WorkList({
       );
     };
 
+    const viewerHref = getStudyViewerLink(study);
+    const actionsCell = (
+      <div className="flex items-center gap-2.5" onClick={e => e.stopPropagation()}>
+        {viewerHref ? (
+          <Link to={viewerHref} className="text-[#374151] hover:text-[#111827]" title="Voir">
+            <Icons.EyeVisible className="h-4 w-4" />
+          </Link>
+        ) : (
+          <span className="text-[#d1d5db]"><Icons.EyeVisible className="h-4 w-4" /></span>
+        )}
+        <button type="button" className="text-[#374151] hover:text-[#111827]" title="Télécharger">
+          <Icons.Download className="h-4 w-4" />
+        </button>
+        <button type="button" className="text-[#374151] hover:text-[#111827]" title="Partager">
+          <Icons.Link className="h-4 w-4" />
+        </button>
+      </div>
+    );
+
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
       clickableCY: studyInstanceUid,
@@ -326,23 +412,18 @@ function WorkList({
         {
           key: 'patientName',
           content: patientName ? makeCopyTooltipCell(patientName) : null,
-          gridCol: 4,
+          gridCol: 3,
         },
         {
           key: 'mrn',
           content: makeCopyTooltipCell(mrn),
-          gridCol: 3,
+          gridCol: 2,
         },
         {
           key: 'studyDate',
-          content: (
-            <>
-              {studyDate && <span className="mr-4">{studyDate}</span>}
-              {studyTime && <span>{studyTime}</span>}
-            </>
-          ),
-          title: `${studyDate || ''} ${studyTime || ''}`,
-          gridCol: 5,
+          content: dateTimeFr || '—',
+          title: dateTimeFr,
+          gridCol: 3,
         },
         {
           key: 'description',
@@ -351,29 +432,25 @@ function WorkList({
         },
         {
           key: 'modality',
-          content: modalities,
+          content: renderModalityBadges(modalities),
           title: modalities,
-          gridCol: 3,
+          gridCol: 2,
         },
         {
-          key: 'accession',
-          content: makeCopyTooltipCell(accession),
-          gridCol: 3,
+          key: 'statut',
+          content: <span className="font-medium text-[#ef4444]">{t('StudyList:NonLu')}</span>,
+          title: t('StudyList:NonLu'),
+          gridCol: 2,
         },
         {
-          key: 'instances',
-          content: (
-            <>
-              <Icons.GroupLayers
-                className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary': isExpanded,
-                  'text-secondary-light': !isExpanded,
-                })}
-              />
-              {instances}
-            </>
-          ),
+          key: 'images',
+          content: instances ?? '—',
           title: (instances || 0).toString(),
+          gridCol: 2,
+        },
+        {
+          key: 'actions',
+          content: actionsCell,
           gridCol: 2,
         },
       ],
@@ -497,6 +574,11 @@ function WorkList({
     };
   });
 
+  const restStudies = tableDataSource.slice(
+    PRIORITY_LIST_SIZE + restOffset,
+    PRIORITY_LIST_SIZE + restOffset + resultsPerPage
+  );
+
   const hasStudies = numOfStudies > 0;
 
   const AboutModal = customizationService.getCustomization(
@@ -601,21 +683,75 @@ function WorkList({
             />
           </div>
           {hasStudies ? (
-            <div className="flex grow flex-col">
-              <StudyListTable
-                tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-                numOfStudies={numOfStudies}
-                querying={querying}
-                filtersMeta={filtersMeta}
-              />
-              <div className="grow">
-                <StudyListPagination
-                  onChangePage={onPageNumberChange}
-                  onChangePerPage={onResultsPerPageChange}
-                  currentPage={pageNumber}
-                  perPage={resultsPerPage}
+            <div className="flex grow flex-col gap-4 bg-[#f3f4f6] p-4">
+              {priorityCount > 0 && (
+                <StudyListTable
+                  sectionTitle={t('StudyList:ExamensPrioritaires')}
+                  sectionCount={priorityCount}
+                  headerColumns={studyListHeaderColumns}
+                  useLightTheme
+                  tableDataSource={tableDataSource.slice(0, priorityCount)}
+                  querying={querying}
                 />
-              </div>
+              )}
+              {restStudies.length > 0 && (
+                <StudyListTable
+                  sectionTitle={t('StudyList:ListeDesExamens')}
+                  sectionCount={restCount}
+                  headerColumns={studyListHeaderColumns}
+                  useLightTheme
+                  tableDataSource={restStudies}
+                  querying={querying}
+                />
+              )}
+              {restCount > 0 && (
+                <div
+                  className="flex items-center justify-end gap-4 rounded-lg bg-white px-5 py-3 shadow-sm"
+                  style={{ fontFamily: 'Roboto, sans-serif' }}
+                >
+                  <div className="flex items-center gap-2 text-sm text-[#6b7280]">
+                    <span>{t('StudyList:Results per page')}</span>
+                    <select
+                      className="rounded border border-[#d1d5db] bg-white px-2 py-1 text-sm text-[#374151]"
+                      value={resultsPerPage}
+                      onChange={e => onResultsPerPageChange(Number(e.target.value))}
+                    >
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+                  <span className="text-sm text-[#6b7280]">
+                    {t('StudyList:Page')} {restPageNumber}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      className="rounded px-2 py-1 text-sm text-[#374151] hover:bg-[#f3f4f6] disabled:opacity-30"
+                      onClick={() => setRestPageNumber(1)}
+                      disabled={restPageNumber <= 1}
+                    >|&lt;</button>
+                    <button
+                      type="button"
+                      className="rounded px-2 py-1 text-sm text-[#374151] hover:bg-[#f3f4f6] disabled:opacity-30"
+                      onClick={() => setRestPageNumber(Math.max(1, restPageNumber - 1))}
+                      disabled={restPageNumber <= 1}
+                    >&lt;</button>
+                    <button
+                      type="button"
+                      className="rounded px-2 py-1 text-sm text-[#374151] hover:bg-[#f3f4f6] disabled:opacity-30"
+                      onClick={() => setRestPageNumber(restPageNumber + 1)}
+                      disabled={restPageNumber >= totalRestPages}
+                    >&gt;</button>
+                    <button
+                      type="button"
+                      className="rounded px-2 py-1 text-sm text-[#374151] hover:bg-[#f3f4f6] disabled:opacity-30"
+                      onClick={() => setRestPageNumber(totalRestPages)}
+                      disabled={restPageNumber >= totalRestPages}
+                    >&gt;|</button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center pt-48">

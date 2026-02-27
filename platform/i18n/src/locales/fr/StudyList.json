@@ -36,5 +36,12 @@
   "Valide": "Validé",
   "MesExamens": "Mes examens",
   "Tous": "Tous",
-  "TousLesExamens": "Tous les examens"
+  "TousLesExamens": "Tous les examens",
+  "ExamensPrioritaires": "Examens prioritaires",
+  "ListeDesExamens": "Liste des examens",
+  "DSN": "DSN",
+  "Statut": "Statut",
+  "Images": "Images",
+  "ActionsRapides": "Actions rapides",
+  "DateEtHeure": "Date et heure"
 }
