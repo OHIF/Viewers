@@ -86,10 +86,7 @@ export default function hydrateStructuredReport(
   const datasetToUse = instance;
   let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
     datasetToUse,
-    // dcmjs needs imageIds for imageToWorld; assumes displaySet.measurements order matches instance measurementGroups
-    // for the imageToWorld transformation. The following assumes that the order
-    // that measurements were added to the display set are the same order as
-    // the measurementGroups in the instance.
+    /** dcmjs needs imageIds for imageToWorld; assumes displaySet.measurements order matches instance measurementGroups */
     sopInstanceUIDToImageId,
     metaData
   );
@@ -179,7 +176,7 @@ export default function hydrateStructuredReport(
       const referenceData = getReferenceData(toolData);
       const { imageId } = referenceData;
 
-      // Use SR subtypes for Probe and RectangleROI - they show label (e.g. Lesion) instead of intensity/stats
+      /** Use SR subtypes for Probe and RectangleROI - they show label (e.g. Lesion) instead of intensity/stats */
       const toolNameForRendering =
         annotationType === 'Probe'
           ? 'SRProbe'
@@ -226,7 +223,7 @@ export default function hydrateStructuredReport(
         code: annotation.data.finding,
       });
 
-      // Always lock DICOM SR annotations to prevent accidental modification (medical device safety)
+      /** Always lock DICOM SR annotations to prevent accidental modification (medical device safety) */
       locking.setAnnotationLocked(newAnnotationUID, true);
 
       if (imageId && !imageIds.includes(imageId)) {
