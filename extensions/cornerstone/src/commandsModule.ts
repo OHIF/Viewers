@@ -406,7 +406,7 @@ function commandsModule({
         uiNotificationService.show({
           title: i18n.t('SegmentationPanel:Segment Bidirectional'),
           message: i18n.t(
-            'SegmentationPanel: Draw a segment before using bidirectional measurement'
+            'SegmentationPanel:Draw a segment before using bidirectional measurement'
           ),
           type: 'warning',
         });
@@ -419,15 +419,15 @@ function commandsModule({
         segmentIndices: [targetIndex],
       });
 
+      if (!bidirectionalData.length) {
+        return;
+      }
+
       const activeViewportId = viewportGridService.getActiveViewportId();
 
       // Process each bidirectional measurement
       bidirectionalData.forEach(measurement => {
         const { segmentIndex, majorAxis, minorAxis } = measurement;
-
-        if (!bidirectionalData.length) {
-          return;
-        }
 
         // Create annotation
         const annotation = cornerstoneTools.SegmentBidirectionalTool.hydrate(
