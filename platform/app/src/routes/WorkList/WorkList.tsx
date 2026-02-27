@@ -23,7 +23,6 @@ import {
 } from '@ohif/ui';
 
 import {
-  Header,
   Icons,
   Tooltip,
   TooltipTrigger,
@@ -39,6 +38,7 @@ import {
 import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
+import WorkListHeader from './WorkListHeader';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -166,11 +166,11 @@ function WorkList({
     });
   };
 
-  // Set body style
+  // Set body style (white theme for worklist)
   useEffect(() => {
-    document.body.classList.add('bg-black');
+    document.body.classList.add('bg-white');
     return () => {
-      document.body.classList.remove('bg-black');
+      document.body.classList.remove('bg-white');
     };
   }, []);
 
@@ -181,21 +181,46 @@ function WorkList({
     }
 
     const queryString = {};
+    const periodType = debouncedFilterValues.periodType ?? 'custom';
+    const studyDate = debouncedFilterValues.studyDate ?? { startDate: null, endDate: null };
+
+    // searchQuery -> patientName + MRN (single search filters both)
+    const searchQuery = debouncedFilterValues.searchQuery ?? '';
+    if (searchQuery) {
+      queryString.patientname = searchQuery;
+      queryString.mrn = searchQuery;
+    }
+
+    // Period: compute startDate/endDate from periodType or use custom studyDate
+    let startDate = null;
+    let endDate = null;
+    if (periodType === 'today') {
+      startDate = endDate = moment().format('YYYYMMDD');
+    } else if (periodType === '7d') {
+      startDate = moment().subtract(7, 'days').format('YYYYMMDD');
+      endDate = moment().format('YYYYMMDD');
+    } else if (periodType === '30d') {
+      startDate = moment().subtract(30, 'days').format('YYYYMMDD');
+      endDate = moment().format('YYYYMMDD');
+    } else if (studyDate?.startDate || studyDate?.endDate) {
+      startDate = studyDate.startDate || null;
+      endDate = studyDate.endDate || null;
+    }
+    if (startDate) queryString.startDate = startDate;
+    if (endDate) queryString.endDate = endDate;
+
+    if (debouncedFilterValues.modalities?.length) {
+      queryString.modalities = debouncedFilterValues.modalities.join(',');
+    }
     Object.keys(defaultFilterValues).forEach(key => {
+      if (['searchQuery', 'periodType', 'statusFilter', 'scopeFilter', 'studyDate', 'patientName', 'mrn'].includes(key)) {
+        return;
+      }
       const defaultValue = defaultFilterValues[key];
       const currValue = debouncedFilterValues[key];
-
-      // TODO: nesting/recursion?
-      if (key === 'studyDate') {
-        if (currValue.startDate && defaultValue.startDate !== currValue.startDate) {
-          queryString.startDate = currValue.startDate;
-        }
-        if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
-          queryString.endDate = currValue.endDate;
-        }
-      } else if (key === 'modalities' && currValue.length) {
-        queryString.modalities = currValue.join(',');
-      } else if (currValue !== defaultValue) {
+      if (key === 'studyDate') return;
+      if (currValue !== defaultValue && currValue !== undefined && currValue !== null) {
+        if (key === 'modalities') return; // already handled
         queryString[key] = currValue;
       }
     });
@@ -552,14 +577,8 @@ function WorkList({
   );
 
   return (
-    <div className="flex h-screen flex-col bg-black">
-      <Header
-        isSticky
-        menuOptions={menuOptions}
-        isReturnEnabled={false}
-        WhiteLabeling={appConfig.whiteLabeling}
-        showPatientInfo={PatientInfoVisibility.DISABLED}
-      />
+    <div className="flex h-screen flex-col bg-white">
+      <WorkListHeader menuOptions={menuOptions} />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full flex-col overflow-y-auto">
@@ -578,6 +597,7 @@ function WorkList({
                   ? () => dataSourceConfigurationComponent()
                   : undefined
               }
+              useNewDesign
             />
           </div>
           {hasStudies ? (
@@ -625,6 +645,8 @@ WorkList.propTypes = {
 const defaultFilterValues = {
   patientName: '',
   mrn: '',
+  searchQuery: '',
+  periodType: '30d',
   studyDate: {
     startDate: null,
     endDate: null,
@@ -632,6 +654,8 @@ const defaultFilterValues = {
   description: '',
   modalities: [],
   accession: '',
+  statusFilter: 'nonLu',
+  scopeFilter: 'tous',
   sortBy: '',
   sortDirection: 'none',
   pageNumber: 1,
@@ -656,16 +680,25 @@ function _getQueryFilterValues(params) {
   }
   params = newParams;
 
+  const patientname = params.get('patientname');
+  const mrn = params.get('mrn');
+  const startdate = params.get('startdate') || null;
+  const enddate = params.get('enddate') || null;
+  const hasDateInUrl = startdate || enddate;
   const queryFilterValues = {
-    patientName: params.get('patientname'),
-    mrn: params.get('mrn'),
+    patientName: patientname || '',
+    mrn: mrn || '',
+    searchQuery: patientname || mrn || '',
+    periodType: hasDateInUrl ? 'custom' : undefined,
     studyDate: {
-      startDate: params.get('startdate') || null,
-      endDate: params.get('enddate') || null,
+      startDate: startdate,
+      endDate: enddate,
     },
     description: params.get('description'),
     modalities: params.get('modalities') ? params.get('modalities').split(',') : [],
     accession: params.get('accession'),
+    statusFilter: 'nonLu',
+    scopeFilter: 'tous',
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),

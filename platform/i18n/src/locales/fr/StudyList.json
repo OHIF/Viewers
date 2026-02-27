@@ -25,5 +25,16 @@
   "No studies available": "Aucune étude disponible",
   "Loading...": "Chargement...",
   "Select...": "Sélectionner...",
-  "InstitutionName": "Établissement"
+  "InstitutionName": "Établissement",
+  "SearchPlaceholder": "Rechercher un patient, un examen, une modalité...",
+  "CeJour": "Ce jour",
+  "Period7j": "7j",
+  "Period30j": "30j",
+  "PeriodCustom": "Sélectionné",
+  "NonLu": "Non lu",
+  "EnCours": "En cours",
+  "Valide": "Validé",
+  "MesExamens": "Mes examens",
+  "Tous": "Tous",
+  "TousLesExamens": "Tous les examens"
 }

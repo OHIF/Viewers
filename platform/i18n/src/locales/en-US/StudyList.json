@@ -17,5 +17,16 @@
   "Studies": "Studies",
   "StudyDate": "Study Date",
   "StudyList": "Study List",
-  "Upload": "Upload"
+  "Upload": "Upload",
+  "SearchPlaceholder": "Search for a patient, an exam, a modality...",
+  "CeJour": "Today",
+  "Period7j": "7d",
+  "Period30j": "30d",
+  "PeriodCustom": "Custom",
+  "NonLu": "Unread",
+  "EnCours": "In progress",
+  "Valide": "Validated",
+  "MesExamens": "My exams",
+  "Tous": "All",
+  "TousLesExamens": "All exams"
 }
