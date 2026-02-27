@@ -86,7 +86,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
-      // SR subtypes for hydrated DICOM SR annotations (render-only, show label instead of intensity/stats)
+      /** SR subtypes for hydrated DICOM SR annotations (render-only, show label instead of intensity/stats) */
       ...(SRToolNames
         ? [
             { toolName: SRToolNames.SRProbe },
@@ -253,7 +253,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           displayOnePointAsCrosshairs: true,
         },
       },
-      // SR subtypes for hydrated DICOM SR annotations (render-only)
+      /** SR subtypes for hydrated DICOM SR annotations (render-only) */
       ...(SRToolNames
         ? [
             { toolName: SRToolNames.SRProbe },

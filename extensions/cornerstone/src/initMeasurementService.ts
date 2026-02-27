@@ -170,7 +170,7 @@ const initMeasurementService = (
     Probe.toMeasurement
   );
 
-  // SR subtypes use same schema as base tools (Probe/RectangleROI)
+  /** SR subtypes use same schema as base tools (Probe/RectangleROI) */
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'SRProbe',
