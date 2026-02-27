@@ -33,7 +33,7 @@ export default function init({
   addToolInstance(toolNames.SRArrowAnnotate, ArrowAnnotateTool);
   addToolInstance(toolNames.SRAngle, AngleTool);
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
-  // SR subtypes: show label (e.g. Lesion) instead of intensity/stats; used only for hydration, not toolbar
+  /** SR subtypes: show label (e.g. Lesion) instead of intensity/stats; used only for hydration, not toolbar */
   addToolInstance(toolNames.SRProbe, ProbeTool, {
     getTextLines: getSRProbeTextLines,
   });
@@ -41,7 +41,7 @@ export default function init({
     getTextLines: getSRRectangleROITextLines,
   });
 
-  // TODO - fix the SR display of Cobb Angle, as it joins the two lines
+  /** TODO - fix the SR display of Cobb Angle, as it joins the two lines */
   addToolInstance(toolNames.SRCobbAngle, CobbAngleTool);
 
   const dashedLine = {
