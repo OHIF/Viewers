@@ -40,8 +40,7 @@ const convertSites = (codingValues, sites) => {
 /**
  * Hydrates a structured report
  * Handles 2d and 3d hydration from SCOORD and SCOORD3D points
- * For 3D hydration, chooses a volume display set to display with
- * FOr 2D hydration, chooses the (first) display set containing the referenced image.
+ * For 3D: chooses a volume display set. For 2D: chooses the first display set containing the referenced image.
  */
 export default function hydrateStructuredReport(
   { servicesManager, extensionManager, commandsManager }: withAppTypes,
@@ -51,7 +50,6 @@ export default function hydrateStructuredReport(
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues');
-  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   const {
@@ -85,13 +83,10 @@ export default function hydrateStructuredReport(
     }
   });
 
-  // Mapping of legacy datasets is now directly handled by adapters module
   const datasetToUse = instance;
-
-  // Use CS3D adapters to generate toolState.
   let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
     datasetToUse,
-    // NOTE: we need to pass in the imageIds to dcmjs since the we use them
+    // dcmjs needs imageIds for imageToWorld; assumes displaySet.measurements order matches instance measurementGroups
     // for the imageToWorld transformation. The following assumes that the order
     // that measurements were added to the display set are the same order as
     // the measurementGroups in the instance.
@@ -108,7 +103,6 @@ export default function hydrateStructuredReport(
     });
   }
 
-  // Filter what is found by DICOM SR to measurements we support.
   const mappingDefinitions = mappings.map(m => m.annotationType);
   const hydratableMeasurementsInSR = {};
 
@@ -118,7 +112,6 @@ export default function hydrateStructuredReport(
     }
   });
 
-  // Set the series touched as tracked.
   const imageIds = [];
 
   // TODO: notification if no hydratable?
@@ -126,10 +119,6 @@ export default function hydrateStructuredReport(
     const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
 
     toolDataForAnnotationType.forEach(toolData => {
-      // Add the measurement to toolState
-      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
-      // files, and looking up the imageId from sopInstanceUIDToImageId results
-      // in the wrong value.
       const frameNumber = toolData.annotation.data?.frameNumber || 1;
       const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
 
@@ -160,15 +149,7 @@ export default function hydrateStructuredReport(
     }
   }
 
-  /**
-   * Gets reference data for what frame of reference and the referenced
-   * image id, or for 3d measurements, the volumeId to apply this annotation to.
-   */
   function getReferenceData(toolData): ToolTypes.AnnotationMetadata {
-    // Add the measurement to toolState
-    // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
-    // files, and looking up the imageId from sopInstanceUIDToImageId results
-    // in the wrong value.
     const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
     const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
 
@@ -198,13 +179,21 @@ export default function hydrateStructuredReport(
       const referenceData = getReferenceData(toolData);
       const { imageId } = referenceData;
 
+      // Use SR subtypes for Probe and RectangleROI - they show label (e.g. Lesion) instead of intensity/stats
+      const toolNameForRendering =
+        annotationType === 'Probe'
+          ? 'SRProbe'
+          : annotationType === 'RectangleROI'
+            ? 'SRRectangleROI'
+            : annotationType;
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         predecessorImageId: toolData.predecessorImageId,
         metadata: {
           ...referenceData,
-          toolName: annotationType,
+          toolName: toolNameForRendering,
         },
       };
       utilities.updatePlaneRestriction(annotation.data.handles.points, annotation.metadata);
@@ -237,9 +226,8 @@ export default function hydrateStructuredReport(
         code: annotation.data.finding,
       });
 
-      if (disableEditing) {
-        locking.setAnnotationLocked(newAnnotationUID, true);
-      }
+      // Always lock DICOM SR annotations to prevent accidental modification (medical device safety)
+      locking.setAnnotationLocked(newAnnotationUID, true);
 
       if (imageId && !imageIds.includes(imageId)) {
         imageIds.push(imageId);
@@ -255,12 +243,6 @@ export default function hydrateStructuredReport(
   };
 }
 
-/**
- * For 3d annotations, there are often several display sets which could
- * be used to display the annotation.  Choose the first annotation with the
- * same frame of reference that is reconstructable, or the first display set
- * otherwise.
- */
 function chooseDisplaySet(displaySets, annotation) {
   if (!displaySets?.length) {
     console.warn('No display set found for', annotation);
@@ -276,10 +258,6 @@ function chooseDisplaySet(displaySets, annotation) {
   return displaySets[0];
 }
 
-/**
- * Gets the additional reference data appropriate for a 3d reference.
- * This will choose a volume id, frame of reference and a plane restriction.
- */
 function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   const { FrameOfReferenceUID } = toolData.annotation.metadata;
   const { points } = toolData.annotation.data.handles;
@@ -304,10 +282,6 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   return viewReference;
 }
 
-/**
- * Chooses a possible camera view - right now this is fairly basic,
- * just setting the unknowns to null.
- */
 function chooseCameraView(_ds, points) {
   const selectedPoints = choosePoints(points);
   const cameraFocalPoint = <Point3>centerOf(selectedPoints);

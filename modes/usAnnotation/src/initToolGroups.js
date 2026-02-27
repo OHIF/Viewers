@@ -84,6 +84,8 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
+      { toolName: SRToolNames.SRProbe },
+      { toolName: SRToolNames.SRRectangleROI },
     ],
     enabled: [
       { toolName: toolNames.ImageOverlayViewer },
@@ -153,6 +155,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
+      { toolName: SRToolNames.SRProbe },
       { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
@@ -235,6 +238,8 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           displayOnePointAsCrosshairs: true,
         },
       },
+      { toolName: SRToolNames.SRProbe },
+      { toolName: SRToolNames.SRRectangleROI },
     ],
     disabled: [
       {

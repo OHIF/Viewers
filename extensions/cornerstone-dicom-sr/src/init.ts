@@ -8,6 +8,7 @@ import {
   CircleROITool,
   LengthTool,
   PlanarFreehandROITool,
+  ProbeTool,
   RectangleROITool,
 } from '@cornerstonejs/tools';
 import { Types } from '@ohif/core';
@@ -15,6 +16,7 @@ import { Types } from '@ohif/core';
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import addToolInstance from './utils/addToolInstance';
 import toolNames from './tools/toolNames';
+import { getSRProbeTextLines, getSRRectangleROITextLines } from './utils/srToolGetTextLines';
 
 /**
  * @param {object} configuration
@@ -31,17 +33,23 @@ export default function init({
   addToolInstance(toolNames.SRArrowAnnotate, ArrowAnnotateTool);
   addToolInstance(toolNames.SRAngle, AngleTool);
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
-  addToolInstance(toolNames.SRRectangleROI, RectangleROITool);
+  // SR subtypes: show label (e.g. Lesion) instead of intensity/stats; used only for hydration, not toolbar
+  addToolInstance(toolNames.SRProbe, ProbeTool, {
+    getTextLines: getSRProbeTextLines,
+  });
+  addToolInstance(toolNames.SRRectangleROI, RectangleROITool, {
+    getTextLines: getSRRectangleROITextLines,
+  });
 
   // TODO - fix the SR display of Cobb Angle, as it joins the two lines
   addToolInstance(toolNames.SRCobbAngle, CobbAngleTool);
 
-  // Modify annotation tools to use dashed lines on SR
   const dashedLine = {
     lineDash: '4,4',
   };
   annotation.config.style.setToolGroupToolStyles('SRToolGroup', {
     [toolNames.DICOMSRDisplay]: dashedLine,
+    [toolNames.SRProbe]: dashedLine,
     SRLength: dashedLine,
     SRBidirectional: dashedLine,
     SREllipticalROI: dashedLine,
