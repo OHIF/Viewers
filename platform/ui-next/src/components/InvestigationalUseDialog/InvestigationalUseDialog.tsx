@@ -16,32 +16,13 @@ const InvestigationalUseDialog = ({
   },
 }) => {
   const { option, days } = dialogConfiguration;
+  // Pop-in désactivée définitivement : toujours masquée
   const [isHidden, setIsHidden] = useState(true);
   const { t } = useTranslation('InvestigationalUseDialog');
 
   useEffect(() => {
-    const dialogLocalState = localStorage.getItem('investigationalUseDialog');
-    const dialogSessionState = sessionStorage.getItem('investigationalUseDialog');
-
-    switch (option) {
-      case showDialogOption.NeverShowDialog:
-        setIsHidden(true);
-        break;
-      case showDialogOption.AlwaysShowDialog:
-        setIsHidden(!!dialogSessionState);
-        break;
-      case showDialogOption.ShowOnceAndConfigure:
-        if (dialogLocalState) {
-          const { expiryDate } = JSON.parse(dialogLocalState);
-          const isExpired = new Date() > new Date(expiryDate);
-          setIsHidden(!isExpired);
-        } else {
-          setIsHidden(false);
-        }
-        break;
-      default:
-        setIsHidden(true);
-    }
+    // Pop-in désactivée définitivement : la bannière "investigational use" n'est plus affichée
+    setIsHidden(true);
   }, [option, days]);
 
   const handleConfirmAndHide = () => {
