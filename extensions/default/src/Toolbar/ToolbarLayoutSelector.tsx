@@ -176,7 +176,7 @@ function ToolbarLayoutSelectorWithServices({
           )}
 
           {/* Right Side - Grid Layout */}
-          <div className="bg-muted flex flex-col gap-2.5 border-l-2 border-solid border-black p-2">
+          <div className="bg-muted flex flex-col gap-2.5 border-l-2 border-solid border-background p-2">
             <div className="text-muted-foreground text-xs">{t('Custom')}</div>
             <LayoutSelector.GridSelector
               rows={rows}

@@ -1608,7 +1608,7 @@ function commandsModule({
         ? animationFunctionType
         : undefined;
 
-      segmentationService.jumpToSegmentCenter(
+      segmentationService.jumpToSegmentNext(
         segmentationId,
         segmentIndex,
         undefined,
@@ -1735,12 +1735,14 @@ function commandsModule({
      * Removes a segmentation from the viewport
      * @param props.segmentationId - The ID of the segmentation to remove
      */
-    removeSegmentationFromViewportCommand: ({ segmentationId }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      segmentationService.removeSegmentationRepresentations(
-        viewportGridService.getActiveViewportId(),
-        { segmentationId }
-      );
+    removeSegmentationFromViewportCommand: ({ segmentationId: displaySetInstanceUID }) => {
+      const { viewportGridService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+
+      commandsManager.runCommand('removeDisplaySetLayer', {
+        viewportId,
+        displaySetInstanceUID,
+      });
     },
 
     /**
