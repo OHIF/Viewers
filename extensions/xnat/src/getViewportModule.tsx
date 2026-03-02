@@ -1,5 +1,6 @@
 import { CommandsManager, ExtensionManager } from '@ohif/core';
 import LineChartViewport from './Components/LineChartViewport/index';
+import XNATCornerstoneViewport from './Viewports/XNATCornerstoneViewport';
 
 const getViewportModule = ({
   servicesManager,
@@ -14,6 +15,10 @@ const getViewportModule = ({
     {
       name: 'chartViewport',
       component: LineChartViewport,
+    },
+    {
+      name: 'xnatCornerstone',
+      component: XNATCornerstoneViewport,
     },
   ];
 };

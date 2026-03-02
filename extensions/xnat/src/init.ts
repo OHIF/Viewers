@@ -1,6 +1,7 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 import { initXNATDicomLoader } from './XNATDicomLoader';
+import { registerXnatMetadataFallback } from './metadataProviderFallback';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';
@@ -36,7 +37,8 @@ export default function init({
 }): void {
   const { toolbarService, cineService, viewportGridService, cornerstoneViewportService } = servicesManager.services;
 
-  
+  registerXnatMetadataFallback();
+
   // Initialize XNAT DICOM loader with the configuration, returning a standard promise
   const initializeXNATLoader = async () => {
     try {

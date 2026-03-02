@@ -383,18 +383,44 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
 
                 // Add to metadataProvider for each frame
                 const numberOfFrames = naturalized.NumberOfFrames || 1;
+                const uids = {
+                  StudyInstanceUID,
+                  SeriesInstanceUID: series.SeriesInstanceUID,
+                  SOPInstanceUID: naturalized.SOPInstanceUID,
+                };
+                const generalSeriesModule = {
+                  modality: naturalized.Modality || series.Modality || 'OT',
+                  seriesInstanceUID: series.SeriesInstanceUID,
+                  studyInstanceUID: StudyInstanceUID,
+                };
                 for (let i = 0; i < numberOfFrames; i++) {
                   const frameNumber = i + 1;
                   const frameImageId = implementation.getImageIdsForInstance({
                     instance: naturalized, // Use the naturalized object with imageId
                     frame: numberOfFrames > 1 ? frameNumber : undefined,
                   });
-                  metadataProvider.addImageIdToUIDs(frameImageId, {
-                    StudyInstanceUID,
-                    SeriesInstanceUID: series.SeriesInstanceUID,
-                    SOPInstanceUID: naturalized.SOPInstanceUID,
+                  const frameUids = {
+                    ...uids,
                     frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
-                  });
+                  };
+                  metadataProvider.addImageIdToUIDs(frameImageId, frameUids);
+                  // OHIF MetadataProvider getUIDsFromImageID strips &frame= and looks up base URL
+                  if (frameImageId.includes('&frame=')) {
+                    const baseImageId =
+                      (frameImageId.split('&frame=')[0] || '').replace(/[?&]$/, '') || frameImageId;
+                    if (baseImageId && baseImageId !== frameImageId) {
+                      const hasScheme = baseImageId.startsWith('dicomweb:') || baseImageId.startsWith('http');
+                      metadataProvider.addImageIdToUIDs(
+                        hasScheme ? baseImageId : `dicomweb:${baseImageId}`,
+                        frameUids
+                      );
+                    }
+                  }
+                  metadataProvider.addCustomMetadata(
+                    frameImageId,
+                    'generalSeriesModule',
+                    generalSeriesModule
+                  );
                 }
 
               });

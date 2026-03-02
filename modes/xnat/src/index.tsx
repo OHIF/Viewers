@@ -31,6 +31,8 @@ const xnat = {
   measurements: '@ohif/extension-xnat.panelModule.xnatMeasurements',
   customForms: '@ohif/extension-xnat.panelModule.xnatCustomForms',
   overreadNavList: '@ohif/extension-xnat.panelModule.overreadNavigation',
+  // XNAT viewport wrapper that fixes viewportId/enableViewport race when "No protocol matches"
+  viewport: '@ohif/extension-xnat.viewportModule.xnatCornerstone',
 };
 
 const extensionDependencies = {
@@ -75,9 +77,9 @@ const xnatRoute = {
         leftPanels: leftPanels,
         rightPanels: rightPanels,
         viewports: [
-          // Ensure standard cornerstone viewport is primary
+          // Use XNAT viewport (wraps cornerstone) - fixes viewportId race when "No protocol matches"
           {
-            namespace: cornerstone.viewport,
+            namespace: xnat.viewport,
             displaySetsToDisplay: [
               xnat.sopClassHandler,
               ohif.sopClassHandler,
