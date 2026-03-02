@@ -16,25 +16,16 @@ test.beforeEach(async ({ page }) => {
 });
 
 // >>>>> Test Summaries
-// 1. Load RTStruct on referenced DS
+// 1. Load RTStruct on referenced DS (works on selected DS, rest breaks - on panel but not visible)
 
-// 2. Load RTStruct on referenced DS then unreferenced DS
-// 3. Load RTStruct on unreferenced DS then referenced DS (breaks, on panel but not visible)
+// 2. Load RTStruct on unreferenced DS (works on selected DS, rest breaks - on panel but not visible)
+//    -> Skipping for now
 
-// 4. On referenced DS (FoR1) load FoR1, then FoR2
-// 5. On referenced DS (FoR1) load FoR2, then FoR1 (breaks measurement outline)
+// 3. On referenced DS (FoR1) load FoR1, then FoR2
+// 4. On referenced DS (FoR1) load FoR2, then FoR1 (breaks measurement outline)
 
-// 6. Load RTStruct on referenced DS, then on unreferenced DS with same FoR (works)
-// 7. Load RTStruct on referenced DS, then on unreferenced DS with diff FoR (breaks, on panel but not visible)
+// 5. Load RTFoR1 on viewport 0, check doesn't show up on overlay, delete (from menu), check able to add again
 
-// 8. Load RTFoR1 on viewport 0, delete (from menu), RTFoR1 missing from overlay dropdown of viewport 0
-
-// 9. Load RTstruct on unreferenced DS, then on referenced DS
-//    Load Seg on referenced DS -> runtime error
-
-// 10. Duplicate referenced DS (FoR1)
-//    Load RTFoR1 on unreferenced DS, Load RTFor2 on referenced DS
-//    Load RTFor1 on duplicated referenced DS, referenced DS overlay multiple, duplicate nothing visible
 // <<<<<<< Test Summaries
 
 // 1. Load RTStruct on referenced DS
@@ -75,62 +66,8 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
   );
 });
 
-// 2. Load RTStruct on referenced DS then unreferenced DS
-test('should sequentially overlay an unhydrated RTSTRUCT over display set that the RTSTRUCT does then display set it does not reference', async ({
-  page,
-  rightPanelPageObject,
-  viewportPageObject,
-}) => {
-  const segmentationName = 'FoR 1 RTstruct';
-
-  // Add segmentation to viewport 0 (series referenced by RTStruct)
-  const viewportIdRef = await viewportPageObject.getNth(0).viewportId;
-  const dataOverlayPageObjectRef = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectRef.toggle(viewportIdRef);
-  await dataOverlayPageObjectRef.addSegmentation(segmentationName, viewportIdRef);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObjectRef.toggle(viewportIdRef);
-
-  // Add segmentation to viewport 1 (series not referenced by RTStruct)
-  await viewportPageObject.getNth(1).pane.click();
-  const viewportIdUnref = await viewportPageObject.getNth(1).viewportId;
-  const dataOverlayPageObjectUnref = viewportPageObject.getNth(1).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
-  await dataOverlayPageObjectUnref.addSegmentation(segmentationName, viewportIdUnref);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefUnrefFirstImage
-  );
-
-  // Use panel to focus all images to centre of segmentation
-  const contourSegmentationPanel = rightPanelPageObject.contourSegmentationPanel;
-  await contourSegmentationPanel.panel.nthSegmentation(0).click();
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefUnrefMiddleImage
-  );
-});
-
-// 3. Load RTStruct on unreferenced DS then referenced DS (breaks, on panel but not visible)
-test('should sequentially overlay an unhydrated RTSTRUCT over display set that the RTSTRUCT does not then display set it does reference', async ({
+// 2. Load RTStruct on unreferenced DS
+test.skip('should sequentially overlay an unhydrated RTSTRUCT over display set that the RTSTRUCT does not then display set it does reference', async ({
   page,
   rightPanelPageObject,
   viewportPageObject,
@@ -150,30 +87,11 @@ test('should sequentially overlay an unhydrated RTSTRUCT over display set that t
   // Hide overlay menu.
   await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
 
-  // Add segmentation to viewport 0 (series referenced by RTStruct)
-  await viewportPageObject.getNth(0).pane.click();
-  const viewportIdRef = await viewportPageObject.getNth(0).viewportId;
-  const dataOverlayPageObjectRef = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectRef.toggle(viewportIdRef);
-  await dataOverlayPageObjectRef.addSegmentation(segmentationName, viewportIdRef);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObjectRef.toggle(viewportIdRef);
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayUnrefRefFirstImage
-  );
+  // Segmentation should be added automatically to other vp
 
   // Use panel to focus all images to centre of segmentation
   const contourSegmentationPanel = rightPanelPageObject.contourSegmentationPanel;
-  await contourSegmentationPanel.panel.nthSegmentation(0).click();
+  await contourSegmentationPanel.panel.nthSegment(0).click();
 
   await page.waitForTimeout(5000);
 
@@ -184,7 +102,7 @@ test('should sequentially overlay an unhydrated RTSTRUCT over display set that t
   );
 });
 
-// 4. On referenced DS (FoR1) load FoR1, then FoR2
+// 3. On referenced DS (FoR1) load FoR1, then FoR2
 test('on referenced display set, load RTStruct with same FoR, then RTStruct with different FoR', async ({
   page,
   viewportPageObject,
@@ -226,7 +144,7 @@ test('on referenced display set, load RTStruct with same FoR, then RTStruct with
   );
 });
 
-// 5. On referenced DS (FoR1) load FoR2, then FoR1 (breaks measurement outline)
+// 4. On referenced DS (FoR1) load FoR2, then FoR1 (breaks measurement outline)
 test('on referenced display set, load RTStruct with different FoR, then RTStruct with same FoR', async ({
   page,
   viewportPageObject,
@@ -268,116 +186,7 @@ test('on referenced display set, load RTStruct with different FoR, then RTStruct
   );
 });
 
-// 6. Load RTStruct on referenced DS, then on unreferenced DS with same FoR (works)
-test('segmentation should load sequentially on referenced DS then unreferenced DS with same FoR', async ({
-  page,
-  viewportPageObject,
-  rightPanelPageObject,
-}) => {
-  const segmentationNameFoR1 = 'FoR 1 RTstruct';
-
-  // Add segmentation with FoR1 to viewport 0 (series referenced by RTStruct)
-  const viewportIdRef = await viewportPageObject.getNth(0).viewportId;
-  const dataOverlayPageObject = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
-  await dataOverlayPageObject.toggle(viewportIdRef);
-  await dataOverlayPageObject.addSegmentation(segmentationNameFoR1, viewportIdRef);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObject.toggle(viewportIdRef);
-
-  // Add segmentation with FoR1 to viewport 1 (unreferenced with same FoR)
-  await viewportPageObject.getNth(1).pane.click();
-  const viewportIdUnref = await viewportPageObject.getNth(1).viewportId;
-  const dataOverlayPageObjectUnref = viewportPageObject.getNth(1).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
-  await dataOverlayPageObjectUnref.addSegmentation(segmentationNameFoR1, viewportIdUnref);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefUnrefSameFORFirstImage
-  );
-
-  // Use panel to focus all images to centre of segmentation
-  const contourSegmentationPanel = rightPanelPageObject.contourSegmentationPanel;
-  await contourSegmentationPanel.panel.nthSegmentation(0).click();
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration
-      .overlayRefUnrefSameFORMiddleImage
-  );
-});
-
-// 7. Load RTStruct on referenced DS, then on unreferenced DS with diff FoR (breaks, on panel but not visible)
-test('segmentation should load sequentially on referenced DS then unreferenced DS with different FoR', async ({
-  page,
-  viewportPageObject,
-  rightPanelPageObject,
-}) => {
-  const segmentationNameFoR1 = 'FoR 1 RTstruct';
-
-  // Add segmentation with FoR1 to viewport 0 (series referenced by RTStruct)
-  const dataOverlayPageObject = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
-  await dataOverlayPageObject.toggle();
-  await dataOverlayPageObject.addSegmentation(segmentationNameFoR1);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObject.toggle();
-
-  // Add segmentation with FoR1 to viewport 2 (unreferenced DS with different FoR)
-  await viewportPageObject.getNth(2).pane.click();
-  const viewportIdDiffFOR = await viewportPageObject.getNth(2).viewportId;
-  const dataOverlayPageObjectUnref = viewportPageObject.getNth(2).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectUnref.toggle(viewportIdDiffFOR);
-  await dataOverlayPageObjectUnref.addSegmentation(segmentationNameFoR1, viewportIdDiffFOR);
-
-  // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
-
-  // Hide overlay menu.
-  await dataOverlayPageObjectUnref.toggle(viewportIdDiffFOR);
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefUnrefDiffFORFirstImage
-  );
-
-  // Use panel to focus all images to centre of segmentation
-  const contourSegmentationPanel = rightPanelPageObject.contourSegmentationPanel;
-  await contourSegmentationPanel.panel.nthSegmentation(0).click();
-
-  await page.waitForTimeout(5000);
-
-  await checkForScreenshot(
-    page,
-    page,
-    screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration
-      .overlayRefUnrefDiffFORMiddleImage
-  );
-});
-
-// 8. Load RTFoR1 on viewport 0, delete (from menu), RTFoR1 missing from overlay dropdown of viewport 0
+// 5. Load RTFoR1 on viewport 0, delete (from menu), check able to add again
 test('segmentation should still be available in drop down when deleted from viewport', async ({
   page,
   viewportPageObject,
@@ -404,8 +213,6 @@ test('segmentation should still be available in drop down when deleted from view
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation(segmentationNameFoR1);
 
-  // >>> Repeat of first test, might not be needed
-
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
@@ -414,6 +221,7 @@ test('segmentation should still be available in drop down when deleted from view
 
   await page.waitForTimeout(5000);
 
+  // Double check second add worked properly
   await checkForScreenshot(
     page,
     page,

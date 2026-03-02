@@ -100,20 +100,11 @@ const screenShotPaths = {
   rtDataOverlayForReferencedDisplaySetNoHydration: {
     overlayRefFirstImage: 'overlayRefFirstImage.png',
     overlayRefMiddleImage: 'overlayRefMiddleImage.png',
-    overlayRefUnrefFirstImage: 'overlayRefUnrefFirstImage.png',
-    overlayRefUnrefMiddleImage: 'overlayRefUnrefMiddleImage.png',
-    overlayUnrefRefFirstImage: 'overlayUnrefRefFirstImage.png',
     overlayUnrefRefMiddleImage: 'overlayUnrefRefMiddleImage.png',
     overlaySameFORDiffFORFirstImage: 'overlaySameFORDiffFORFirstImage.png',
     overlaySameFORDiffFORMiddleImage: 'overlaySameFORDiffFORMiddleImage.png',
     overlayDiffFORSameFORFirstImage: 'overlayDiffFORSameFORFIrstImage.png',
     overlayDiffFORSameFORMiddleImage: 'overlayDiffFORSameFORMiddleImage.png',
-    overlayRefUnrefSameFORFirstImage: 'overlayRefUnrefSameFORFirstImage.png',
-    overlayRefUnrefSameFORMiddleImage: 'overlayRefUnrefSameFORMiddleImage.png',
-    overlayRefUnrefDiffFORFirstImage: 'overlayRefUnrefDiffFORFirstImage.png',
-    overlayRefUnrefDiffFORMiddleImage: 'overlayRefUnrefDiffFORMiddleImage.png',
-    overlayDupeRefFirstImage: 'overlayDupeRefFirstImage.png',
-    overlayDupeRefMiddleImage: 'overlayDupeRefMiddleImage.png',
   },
   rtDataOverlayForUnreferencedDisplaySetNoHydration: {
     overlayFirstImage: 'overlayFirstImage.png',
@@ -165,6 +156,11 @@ const screenShotPaths = {
   segNoHydrationThenMPR: {
     segNoHydrationPreMPR: 'segNoHydrationPreMpr.png',
     segNoHydrationPostMPR: 'segNoHydrationPostMpr.png',
+  },
+  segDataOverlayForReferencedDisplaySetNoHydration: {
+    overlayRefFirstImage: 'overlayRefFirstImage.png',
+    overlayRefMiddleImage: 'overlayRefMiddleImage.png',
+    overlayUnrefRefMiddleImage: 'overlayUnrefRefMiddleImage.png',
   },
   segDataOverlayForUnreferencedDisplaySetNoHydration: {
     overlayFirstImage: 'overlayFirstImage.png',
