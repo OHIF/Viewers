@@ -18,6 +18,7 @@ import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import { waitForError } from './waitForError';
 
 export {
   visitStudy,
@@ -38,6 +39,7 @@ export {
   attemptAction,
   addLengthMeasurement,
   subscribeToMeasurementAdded,
+  waitForError,
   test,
   expect,
 };
