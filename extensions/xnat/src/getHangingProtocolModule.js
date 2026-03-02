@@ -131,6 +131,13 @@ const defaultProtocol = {
     }, ],
 };
 
+// Single-stack fallback protocol for error recovery (used by XNAT only)
+const xnatStackFallback = {
+    ...defaultProtocol,
+    id: 'xnatStackFallback',
+    name: 'XNAT Stack Fallback',
+};
+
 // const xnatProtocol = {
 //   id: 'xnat-default',
 //   name: 'XNAT Default',
@@ -197,6 +204,10 @@ function getHangingProtocolModule() {
     return [{
             name: defaultProtocol.id,
             protocol: defaultProtocol,
+        },
+        {
+            name: xnatStackFallback.id,
+            protocol: xnatStackFallback,
         },
         // Create a MxN comparison hanging protocol available by default
         {

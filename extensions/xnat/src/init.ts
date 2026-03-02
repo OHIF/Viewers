@@ -128,16 +128,93 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
 };
 
 /**
- * Pre-registration hook for XNAT extension
- *
- * @param servicesManager - OHIF services manager
- * @param commandsManager - OHIF commands manager
- * @param configuration - Optional configuration object
+ * Pre-registration hook for XNAT extension.
+ * Runs when the extension is registered (before modes load).
+ * Registers metadata fallback so it's available before any viewport loads.
  */
 export function preRegistration({
   servicesManager,
   commandsManager,
   configuration = {},
 }) {
-  // Implementation details
+  registerXnatMetadataFallback();
+
+  // Global safety net: if volume rendering (VTK) hits a hard error (e.g. shader compile),
+  // reload the viewer with the stack protocol in the URL so the error boundary is cleared.
+  const STACK_FALLBACK_PROTOCOL_ID = 'xnatStackFallback';
+
+  function reloadWithStackProtocol(): void {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('hangingProtocolId', STACK_FALLBACK_PROTOCOL_ID);
+      console.warn(
+        'XNAT: Volume rendering error detected, reloading with single stack viewport (hangingProtocolId=xnatStackFallback).'
+      );
+      window.location.replace(url.toString());
+    } catch (e) {
+      console.warn('XNAT: Failed to reload with stack protocol:', e);
+    }
+  }
+
+  const globalAny = window as any;
+  if (!globalAny.__xnatMprShaderErrorHandlerRegistered) {
+    globalAny.__xnatMprShaderErrorHandlerRegistered = true;
+
+    window.addEventListener('error', event => {
+      try {
+        const message = String(event.message || event.error?.message || '');
+        const stack = String(event.error?.stack || '');
+        const fromStack =
+          stack.includes('setMapperShaderParameters') ||
+          stack.includes('updateShaders') ||
+          stack.includes('vtkVolumeFS');
+        const isVolumeError =
+          message.includes('Error compiling shader') ||
+          message.includes('vtkVolumeFS') ||
+          (message.includes('Cannot read properties of null') &&
+            (message.includes('isAttributeUsed') || fromStack)) ||
+          (message.includes('isAttributeUsed') && message.includes('setMapperShaderParameters')) ||
+          fromStack;
+
+        if (!isVolumeError) return;
+
+        const { hangingProtocolService } = servicesManager.services;
+        const hpState = hangingProtocolService.getState();
+        if (hpState.protocolId === STACK_FALLBACK_PROTOCOL_ID) return;
+
+        setTimeout(() => requestAnimationFrame(reloadWithStackProtocol), 50);
+      } catch (e) {
+        console.warn('XNAT: MPR shader fallback failed:', e);
+      }
+    });
+
+    window.addEventListener('unhandledrejection', event => {
+      try {
+        const reason = event.reason;
+        const message = String(reason?.message ?? reason ?? '');
+        const stack = String(reason?.stack ?? '');
+        const fromStack =
+          stack.includes('setMapperShaderParameters') ||
+          stack.includes('updateShaders') ||
+          stack.includes('vtkVolumeFS');
+        const isVolumeError =
+          message.includes('Error compiling shader') ||
+          message.includes('vtkVolumeFS') ||
+          (message.includes('Cannot read properties of null') &&
+            (message.includes('isAttributeUsed') || fromStack)) ||
+          (message.includes('isAttributeUsed') && message.includes('setMapperShaderParameters')) ||
+          fromStack;
+
+        if (!isVolumeError) return;
+
+        const { hangingProtocolService } = servicesManager.services;
+        const hpState = hangingProtocolService.getState();
+        if (hpState.protocolId === STACK_FALLBACK_PROTOCOL_ID) return;
+
+        setTimeout(() => requestAnimationFrame(reloadWithStackProtocol), 50);
+      } catch (e) {
+        console.warn('XNAT: MPR shader fallback failed:', e);
+      }
+    });
+  }
 }
