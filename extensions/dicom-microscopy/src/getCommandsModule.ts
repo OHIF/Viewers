@@ -24,16 +24,18 @@ export default function getCommandsModule({
       }
     },
 
-    setLabel: ({ uid }) => {
+    setLabel: async ({ uid }) => {
       const roiAnnotation = microscopyService.getAnnotation(uid);
-      callInputDialog({
+
+      const value = await callInputDialog({
         uiDialogService,
-        defaultValue: '',
-        onSave: (value: string) => {
-          roiAnnotation.setLabel(value);
-          microscopyService.triggerRelabel(roiAnnotation);
-        },
+        defaultValue: roiAnnotation.label ?? '',
       });
+
+      if (value !== undefined && value !== null) {
+        roiAnnotation.setLabel(value);
+        microscopyService.triggerRelabel(roiAnnotation);
+      }
     },
 
     setToolActive: ({ toolName, toolGroupId = 'MICROSCOPY' }) => {
