@@ -573,7 +573,7 @@ export function useViewportRendering(
         context: 'CORNERSTONE',
       });
     },
-    [commandsManager, validateActiveDisplaySet, viewport]
+    [commandsManager, validateActiveDisplaySet, viewport, viewportId]
   );
 
   const setOpacity = useCallback(
