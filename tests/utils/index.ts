@@ -16,7 +16,6 @@ import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
-import { addSegmentationViaOverlayMenu } from './addSegmentationViaOverlayMenu';
 import { test, expect } from './fixture';
 
 export {
@@ -37,7 +36,6 @@ export {
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
-  addSegmentationViaOverlayMenu,
   test,
   expect,
 };

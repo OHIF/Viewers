@@ -1,11 +1,5 @@
 //import { test } from 'playwright-test-coverage';
-import {
-  visitStudy,
-  addSegmentationViaOverlayMenu,
-  checkForScreenshot,
-  test,
-  screenShotPaths,
-} from './utils';
+import { visitStudy, checkForScreenshot, test, screenShotPaths } from './utils';
 import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
