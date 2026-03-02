@@ -194,6 +194,17 @@ export class MainToolbarPageObject {
           },
         };
       },
+
+      get freehandROI() {
+        const button = page.getByTestId('PlanarFreehandROI');
+        return {
+          button,
+          async click() {
+            await measurementTools.click();
+            await button.click();
+          },
+        };
+      },
     };
   }
 
