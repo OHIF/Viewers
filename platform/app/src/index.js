@@ -17,14 +17,18 @@ import React from 'react';
  */
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
+import { initializeAHIFromUrlParams } from './utils/aws-healthimaging/ahiUrlInit';
 export { history } from './utils/history';
 export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
 
-loadDynamicConfig(window.config).then(config_json => {
+loadDynamicConfig(window.config).then(async config_json => {
   // Reset Dynamic config if defined
   if (config_json !== null) {
     window.config = config_json;
   }
+
+  // Initialize AWS HealthImaging SigV4 signer if URL params are present
+  await initializeAHIFromUrlParams(window.config);
 
   /**
    * Combine our appConfiguration with installed extensions and modes.
