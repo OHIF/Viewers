@@ -244,6 +244,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
           } group relative cursor-pointer`}
           onClick={onSelect}
           data-cy="data-row"
+          data-selected={isSelected}
         >
           {/* Secondary Selection Tint (below hover, always visible when secondary-selected) */}
           {isSecondarySelected && (

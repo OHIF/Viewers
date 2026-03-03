@@ -53,9 +53,6 @@ export class RightPanelPageObject {
       toggleVisibility: async () => {
         await row.getByTestId('data-row-visibility-toggle').click();
       },
-      get selectedIndicator() {
-        return row.and(row.page().locator('.bg-popover'));
-      },
     };
   }
 
