@@ -64,6 +64,17 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  navigationArrows: {
+    locator: Locator;
+    prev: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+    next: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+  };
 }
 
 export class ViewportPageObject {
@@ -146,6 +157,27 @@ export class ViewportPageObject {
     return viewport.locator(`svg.svg-layer${innerElement ? ` ${innerElement}` : ''}`);
   }
 
+  private getNavigationArrows(viewport: Locator) {
+    const container = viewport.getByTestId('viewport-action-arrows');
+    const prevButton = viewport.getByTestId('viewport-action-arrows-left');
+    const nextButton = viewport.getByTestId('viewport-action-arrows-right');
+    return {
+      locator: container,
+      prev: {
+        button: prevButton,
+        click: async () => {
+          await prevButton.click();
+        },
+      },
+      next: {
+        button: nextButton,
+        click: async () => {
+          await nextButton.click();
+        },
+      },
+    };
+  }
+
   private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
     return {
       nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
@@ -189,6 +221,7 @@ export class ViewportPageObject {
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
+      navigationArrows: this.getNavigationArrows(viewport),
     };
   }
 
