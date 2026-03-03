@@ -63,5 +63,5 @@ export async function assertBoundingBoxIsContainedWithin({
 }
 
 export async function expectRowSelected(rowObject) {
-    await expect(rowObject.locator).toContainClass('bg-popover');
+  await expect(rowObject.locator).toContainClass('bg-popover');
 }
