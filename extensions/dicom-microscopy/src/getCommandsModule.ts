@@ -26,7 +26,9 @@ export default function getCommandsModule({
 
     setLabel: async ({ uid }) => {
       const roiAnnotation = microscopyService.getAnnotation(uid);
-
+      if (!roiAnnotation) {
+        return;
+      }
       const value = await callInputDialog({
         uiDialogService,
         defaultValue: roiAnnotation.label ?? '',
