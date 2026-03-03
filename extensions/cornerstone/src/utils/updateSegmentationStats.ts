@@ -61,6 +61,12 @@ export async function updateSegmentationStats({
   Object.entries(stats).forEach(([segmentIndex, segmentStats]) => {
     const index = parseInt(segmentIndex);
 
+    if (!updatedSegmentation.segments[index]) {
+      // This happens when a segment is being restored
+      console.warn('Segment not found to update cached stats:', index);
+      return;
+    }
+
     if (!updatedSegmentation.segments[index].cachedStats) {
       updatedSegmentation.segments[index].cachedStats = {};
       hasUpdates = true;

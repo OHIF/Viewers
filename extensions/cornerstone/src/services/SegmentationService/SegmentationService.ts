@@ -27,6 +27,8 @@ import { SegmentationPresentation, SegmentationPresentationItem } from '../../ty
 import { EasingFunctionEnum, EasingFunctionMap } from '../../utils/transitions';
 import { ViewReference } from '@cornerstonejs/core/types';
 
+const { DefaultHistoryMemo } = csUtils.HistoryMemo;
+
 const {
   Labelmap: LABELMAP,
   Contour: CONTOUR,
@@ -245,7 +247,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REMOVED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRemovedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -265,7 +267,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
-      this._onSegmentationRepresentationModifiedFromSource
+      this._onSegmentationRepresentationRemovedFromSource
     );
 
     eventTarget.removeEventListener(
@@ -952,10 +954,74 @@ class SegmentationService extends PubSubService {
   }
 
   /**
+   * Creates a memo that records the current state of a segment (segmentationId/segmentIndex)
+   * so that undo can restore it via addSegment and redo can call removeSegment again
+   * without recording history.
+   *
+   * @param segmentationId - The ID of the segmentation.
+   * @param segmentIndex - The index of the segment (must still exist when called).
+   * @param _options - Reserved (e.g. deleting) for future use.
+   * @returns A Memo with restoreMemo(undo): undo => addSegment, redo => removeSegment (skipRecordingHistory).
+   */
+  public createSegmentIndexMemo(
+    segmentationId: string,
+    segmentIndex: number,
+    _options?: { deleting?: boolean }
+  ): csTypes.Memo | null {
+    const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
+    const segment = csSegmentation?.segments?.[segmentIndex];
+    if (!segment) {
+      return null;
+    }
+
+    let color: csTypes.Color | undefined;
+    let visibility: boolean | undefined;
+    const viewportIds = this.getViewportIdsWithSegmentation(segmentationId);
+    if (viewportIds.length > 0) {
+      const firstViewportId = viewportIds[0];
+      const representations = this.getSegmentationRepresentations(firstViewportId, {
+        segmentationId,
+      });
+      const repType = representations[0]?.type ?? LABELMAP;
+      color = this.getSegmentColor(firstViewportId, segmentationId, segmentIndex);
+      visibility = cstSegmentation.config.visibility.getSegmentIndexVisibility(
+        firstViewportId,
+        { segmentationId, type: repType },
+        segmentIndex
+      );
+    }
+
+    const segmentState = {
+      segmentIndex,
+      label: segment.label,
+      isLocked: segment.locked,
+      active: segment.active,
+      color,
+      visibility,
+    };
+
+    const service = this;
+    const memo: csTypes.Memo = {
+      id: csUtils.uuidv4(),
+      operationType: 'segmentIndex',
+      restoreMemo(undo?: boolean) {
+        if (undo === true) {
+          service.addSegment(segmentationId, segmentState);
+        } else {
+          // Redo: remove the segment via cornerstone without recording history
+          cstSegmentation.removeSegment(segmentationId, segmentIndex, { recordHistory: false });
+        }
+      },
+    };
+    return memo;
+  }
+
+  /**
    * Removes a segment from a segmentation and updates the active segment index if necessary.
    *
    * @param segmentationId - The ID of the segmentation containing the segment to remove.
    * @param segmentIndex - The index of the segment to remove.
+   * @param options - Optional. skipRecordingHistory: if true, do not push undo memo (used when redoing).
    *
    * @remarks
    * This method performs the following actions:
@@ -964,8 +1030,21 @@ class SegmentationService extends PubSubService {
    * 3. If the removed segment was the active segment, it updates the active segment index.
    *
    */
-  public removeSegment(segmentationId: string, segmentIndex: number): void {
-    cstSegmentation.removeSegment(segmentationId, segmentIndex);
+  public removeSegment(
+    segmentationId: string,
+    segmentIndex: number,
+    options?: { skipRecordingHistory?: boolean }
+  ): void {
+    let memo;
+    if (!options?.skipRecordingHistory) {
+      memo = this.createSegmentIndexMemo(segmentationId, segmentIndex, { deleting: true });
+      DefaultHistoryMemo.startGroupRecording();
+      cstSegmentation.removeSegment(segmentationId, segmentIndex, { recordHistory: true });
+      DefaultHistoryMemo.push(memo);
+      DefaultHistoryMemo.endGroupRecording();
+    } else {
+      cstSegmentation.removeSegment(segmentationId, segmentIndex, { recordHistory: false });
+    }
   }
 
   public setSegmentVisibility(
@@ -1205,14 +1284,14 @@ class SegmentationService extends PubSubService {
 
   /**
    * Clears segmentation representations from the viewport.
-   * Unlike removeSegmentationRepresentations, this doesn't update
+   * Unlike removeRepresentationsFromViewport, this doesn't update
    * removed display set and representation maps.
    * We track removed segmentations manually to avoid re-adding them
    * when the display set is added again.
    * @param viewportId - The viewport ID to clear segmentation representations from.
    */
   public clearSegmentationRepresentations(viewportId: string): void {
-    this.removeSegmentationRepresentations(viewportId);
+    this.removeRepresentationsFromViewport(viewportId);
   }
 
   /**
@@ -1228,7 +1307,7 @@ class SegmentationService extends PubSubService {
   }
 
   /**
-   * It removes the segmentation representations from the viewport.
+   * Removes segmentation representations from the viewport.
    * @param viewportId - The viewport id to remove the segmentation representations from.
    * @param specifier - The specifier to remove the segmentation representations.
    *
@@ -1238,7 +1317,7 @@ class SegmentationService extends PubSubService {
    * If a type specifier is provided, only the segmentation representation with the specified type are removed.
    * If both a segmentationId and type specifier are provided, only the segmentation representation with the specified segmentationId and type are removed.
    */
-  public removeSegmentationRepresentations(
+  public removeRepresentationsFromViewport(
     viewportId: string,
     specifier: {
       segmentationId?: string;
@@ -1289,8 +1368,11 @@ class SegmentationService extends PubSubService {
       const representation = representations[0];
       const { type } = representation;
 
-      // For labelmaps, use the existing jumpToSegmentCenter method
-      if (type !== CONTOUR) {
+      // For contours, check if we have a segment center.
+      const center =
+        type === CONTOUR ? this._getSegmentCenter(segmentationId, segmentIndex) : undefined;
+      const canUseSegmentCenter = type !== CONTOUR || !!center;
+      if (canUseSegmentCenter) {
         this.jumpToSegmentCenter(
           segmentationId,
           segmentIndex,
@@ -1299,7 +1381,8 @@ class SegmentationService extends PubSubService {
           highlightSegment,
           animationLength,
           highlightHideOthers,
-          animationFunctionType
+          animationFunctionType,
+          center
         );
         return;
       }
@@ -1319,7 +1402,7 @@ class SegmentationService extends PubSubService {
       let nearestSliceIndex = null;
       let loopSliceIndex = null;
 
-      for (const [sliceIndex, viewRef] of viewRefs.entries()) {
+      for (const [sliceIndex] of viewRefs.entries()) {
         // Track loop index for wraparound (smallest for forward, largest for backward)
         if (direction > 0) {
           if (loopSliceIndex === null || sliceIndex < loopSliceIndex) {
@@ -1373,15 +1456,16 @@ class SegmentationService extends PubSubService {
     highlightSegment = true,
     animationLength = 750,
     highlightHideOthers = false,
-    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT
+    animationFunctionType: EasingFunctionEnum = EasingFunctionEnum.EASE_IN_OUT,
+    center?: { image?: csTypes.Point3; world: csTypes.Point3 }
   ): void {
-    const center = this._getSegmentCenter(segmentationId, segmentIndex);
-    if (!center) {
+    const resolvedCenter = center ?? this._getSegmentCenter(segmentationId, segmentIndex);
+    if (!resolvedCenter) {
       console.warn('No center found for segmentation', segmentationId, segmentIndex);
       return;
     }
 
-    const { world } = center as { world: csTypes.Point3 };
+    const { world } = resolvedCenter as { world: csTypes.Point3 };
 
     // need to find which viewports are displaying the segmentation
     const viewportIds = viewportId
@@ -1777,7 +1861,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REMOVED,
-      this._onSegmentationModifiedFromSource
+      this._onSegmentationRemovedFromSource
     );
 
     eventTarget.addEventListener(
@@ -1797,7 +1881,7 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
-      this._onSegmentationRepresentationModifiedFromSource
+      this._onSegmentationRepresentationRemovedFromSource
     );
 
     eventTarget.addEventListener(
@@ -2036,6 +2120,14 @@ class SegmentationService extends PubSubService {
     });
   };
 
+  private _onSegmentationRepresentationRemovedFromSource = evt => {
+    const { segmentationId, viewportId } = evt.detail;
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED, {
+      segmentationId,
+      viewportId,
+    });
+  };
+
   private _onSegmentationModifiedFromSource = (
     evt: cstTypes.EventTypes.SegmentationModifiedEventType
   ) => {
@@ -2052,6 +2144,16 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = evt.detail;
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+      segmentationId,
+    });
+  };
+
+  private _onSegmentationRemovedFromSource = (
+    evt: cstTypes.EventTypes.SegmentationRemovedEventType
+  ) => {
+    const { segmentationId } = evt.detail;
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
       segmentationId,
     });
   };
