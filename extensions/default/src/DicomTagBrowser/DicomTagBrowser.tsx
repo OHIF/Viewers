@@ -156,7 +156,7 @@ const DicomTagBrowser = ({
           </div>
           {shouldShowInstanceList && (
             <div className="mx-auto mt-0.5 flex w-1/4 flex-col">
-              <span className="text-muted-foreground flex h-6 items-center pb-2 text-base">
+              <span className="text-muted-foreground whitespace-nowrap flex h-6 items-center pb-2 text-base">
                 Instance Number ({instanceNumber} of {activeDisplaySet?.images?.length})
               </span>
               <Slider
