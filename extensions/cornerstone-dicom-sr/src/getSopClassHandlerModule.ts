@@ -100,6 +100,7 @@ function _getDisplaySetsFromSeries(
     SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
+    imageId: predecessorImageId,
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
@@ -128,6 +129,7 @@ function _getDisplaySetsFromSeries(
     isImagingMeasurementReport,
     sopClassUids,
     instance,
+    predecessorImageId,
     addInstances,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SR')}`,
   };
@@ -183,6 +185,10 @@ async function _load(
   } else {
     srDisplaySet.referencedImages = [];
     srDisplaySet.measurements = [];
+  }
+  const { predecessorImageId } = srDisplaySet;
+  for (const measurement of srDisplaySet.measurements) {
+    measurement.predecessorImageId = predecessorImageId;
   }
 
   const mappings = measurementService.getSourceMappings(
@@ -631,15 +637,20 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   NUMContentItems.forEach(item => {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
-    const { ValueType } = ContentSequence;
-    if (!ValueType === 'SCOORD') {
-      console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
-      return;
-    }
+    // Handle spatial reference ONLY if ContentSequence exists
+    if (ContentSequence) {
+      const { ValueType } = ContentSequence;
 
-    const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
-    if (coords) {
-      measurement.coords.push(coords);
+      if (ValueType !== 'SCOORD' && ValueType !== 'SCOORD3D') {
+        console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
+        return;
+      }
+
+      const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
+
+      if (coords) {
+        measurement.coords.push(coords);
+      }
     }
 
     if (MeasuredValueSequence) {

@@ -1,18 +1,94 @@
 import { CustomDropdownMenuContent } from './CustomDropdownMenuContent';
 import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
-import React, { useState } from 'react';
-import { Switch } from '@ohif/ui-next';
+import SegmentationToolConfig from '../components/SegmentationToolConfig';
+import React from 'react';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
+  const { segmentationService } = servicesManager.services;
+
+  let contourRenderFillChangedGlobally = false;
+
+  // Listen to when the global CONTOUR type renderFill style property is changed.
+  const { unsubscribe } = segmentationService.subscribe(
+    segmentationService.EVENTS.SEGMENTATION_STYLE_MODIFIED,
+    ({ specifier, style }) => {
+      if (
+        specifier.type === SegmentationRepresentations.Contour &&
+        specifier.segmentationId == null &&
+        specifier.viewportId == null &&
+        style.renderFill != null
+      ) {
+        unsubscribe();
+        contourRenderFillChangedGlobally = true;
+      }
+    }
+  );
+
   return {
     'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
     'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
-    'panelSegmentation.onSegmentationAdd': () => {
+    'panelSegmentation.onSegmentationAdd': async ({
+      segmentationRepresentationType = SegmentationRepresentations.Labelmap,
+    }) => {
       const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getState().activeViewportId;
-      commandsManager.run('createLabelmapForViewport', { viewportId });
+      if (segmentationRepresentationType === SegmentationRepresentations.Labelmap) {
+        commandsManager.run('createLabelmapForViewport', { viewportId });
+      } else if (segmentationRepresentationType === SegmentationRepresentations.Contour) {
+        const segmentationId = await commandsManager.run('createContourForViewport', {
+          viewportId,
+        });
+        // Override the default (i.e. hydrated RTSTRUCT) style for contours if the global CONTOUR type
+        // renderFill style property has not been changed.
+        if (!contourRenderFillChangedGlobally) {
+          segmentationService.setStyle(
+            { segmentationId, type: SegmentationRepresentations.Contour },
+            {
+              renderFill: true,
+              renderFillInactive: true,
+            },
+            // Do not merge so that these created contours inherit other type-specific style properties like the fill alpha.
+            // Merging would otherwise permanently inherit the fill alpha and any inheritance from the type level would be lost.
+            false
+          );
+        }
+
+        // If the global CONTOUR type renderFill style property is already set, do not subscribe to the SEGMENTATION_STYLE_MODIFIED event.
+        if (contourRenderFillChangedGlobally) {
+          return;
+        }
+
+        // Subscribe to the SEGMENTATION_STYLE_MODIFIED event to listen for changes to the CONTOUR type renderFill style property.
+        const { unsubscribe } = segmentationService.subscribe(
+          segmentationService.EVENTS.SEGMENTATION_STYLE_MODIFIED,
+          ({ specifier, style }) => {
+            if (
+              specifier.type === SegmentationRepresentations.Contour &&
+              specifier.segmentationId == null &&
+              specifier.viewportId == null &&
+              style.renderFill != null
+            ) {
+              // We are here because the renderFill style property is globally being changed for ALL contours.
+              // When this occurs, the desire is for ALL contours to inherit the property. To make this happen,
+              // we have to clear the style property that was set for this specific segmentation
+              // when it was created above.
+              // We can now also unsubscribe because this change only needs to be made when the global CONTOUR type
+              // renderFill style property is first changed.
+
+              contourRenderFillChangedGlobally = true;
+              unsubscribe();
+              segmentationService.setStyle(
+                { segmentationId, type: SegmentationRepresentations.Contour },
+                {},
+                false
+              );
+            }
+          }
+        );
+      }
     },
     'panelSegmentation.tableMode': 'collapsed',
     'panelSegmentation.readableText': {
@@ -33,67 +109,11 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       lesionGlycolysis: 'Lesion Glycolysis',
       center: 'Center',
     },
-    'segmentationToolbox.config': () => {
-      // Get initial states based on current configuration
-      const [previewEdits, setPreviewEdits] = useState(false);
-      const [segmentLabelEnabled, setSegmentLabelEnabled] = useState(false);
-      const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
-      const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
-      const handlePreviewEditsChange = checked => {
-        setPreviewEdits(checked);
-        commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });
-      };
-
-      const handleToggleSegmentEnabledChange = checked => {
-        setToggleSegmentEnabled(checked);
-        commandsManager.run('toggleSegmentSelect', { toggle: checked });
-      };
-
-      const handleUseCenterAsSegmentIndexChange = checked => {
-        setUseCenterAsSegmentIndex(checked);
-        commandsManager.run('toggleUseCenterSegmentIndex', { toggle: checked });
-      };
-
-      const handleSegmentLabelEnabledChange = checked => {
-        setSegmentLabelEnabled(checked);
-        commandsManager.run('toggleSegmentLabel', { enabled: checked });
-      };
-
-      return (
-        <div className="bg-muted flex flex-col gap-2 border-b border-b-[2px] border-black px-2 py-3">
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={previewEdits}
-              onCheckedChange={handlePreviewEditsChange}
-            />
-            <span className="text-foreground text-base">Preview edits before creating</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={useCenterAsSegmentIndex}
-              onCheckedChange={handleUseCenterAsSegmentIndexChange}
-            />
-            <span className="text-foreground text-base">Use center as segment index</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={toggleSegmentEnabled}
-              onCheckedChange={handleToggleSegmentEnabledChange}
-            />
-            <span className="text-foreground text-base">Hover on segment border to activate</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={segmentLabelEnabled}
-              onCheckedChange={handleSegmentLabelEnabledChange}
-            />
-            <span className="text-foreground text-base">Show segment name on hover</span>
-          </div>
-        </div>
-      );
+    'labelMapSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
+    },
+    'contourSegmentationToolbox.config': () => {
+      return <SegmentationToolConfig />;
     },
   };
 }

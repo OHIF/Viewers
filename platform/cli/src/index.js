@@ -156,7 +156,7 @@ program
     unlinkExtension(extensionName, { viewerDirectory });
     console.log(
       chalk.green(
-        `Successfully unlinked Extension ${extensionName} from the Viewer, don't forget to run yarn install --force`
+        `Successfully unlinked Extension ${extensionName} from the Viewer, don't forget to run yarn install --frozen-lockfile --force`
       )
     );
   });
@@ -179,7 +179,7 @@ program
     unlinkMode(modeName, { viewerDirectory });
     console.log(
       chalk.green(
-        `Successfully unlinked Mode ${modeName} from the Viewer, don't forget to run yarn install --force`
+        `Successfully unlinked Mode ${modeName} from the Viewer, don't forget to run yarn install --frozen-lockfile --force`
       )
     );
   });

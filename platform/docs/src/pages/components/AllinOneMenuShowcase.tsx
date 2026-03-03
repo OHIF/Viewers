@@ -58,7 +58,7 @@ export default function AllinOneMenuShowcase() {
       description="A structured menu that consolidates controls and actions."
       code={`<IconMenu icon="viewport-window-level" menuStyle={{ width: 212, maxHeight: 500 }}>…</IconMenu>`}
     >
-      <div className="border-input/70 relative flex h-12 items-center rounded border bg-black px-4">
+      <div className="border-input/70 relative flex h-12 items-center rounded border bg-background px-4">
         <IconMenu
           icon="viewport-window-level"
           iconClassName="text-xl text-highlight hover:bg-primary/30 cursor-pointer rounded"

@@ -103,7 +103,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
       evt => {
-        if (evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
+        if (evt.rtDisplaySet?.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
           setRtIsLoading(false);
         }
 
@@ -168,7 +168,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentations(viewportId);
+      segmentationService.removeRepresentationsFromViewport(viewportId);
       referencedDisplaySetRef.current = null;
       toolGroupService.destroyToolGroup(toolGroupId);
     };

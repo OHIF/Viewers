@@ -163,11 +163,11 @@ export default function PanelPetSUV() {
   return (
     <>
       <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
-        <div className="flex min-h-0 flex-1 flex-col bg-black text-base">
+        <div className="flex min-h-0 flex-1 flex-col bg-background text-base">
           <PanelSection defaultOpen={true}>
             <PanelSection.Header>{t('Patient Information')}</PanelSection.Header>
             <PanelSection.Content>
-              <div className="bg-primary-dark flex flex-col gap-3 p-2">
+              <div className="bg-muted flex flex-col gap-3 p-2">
                 <InputRow>
                   <InputRow.Label>{t('Patient Sex')}</InputRow.Label>
                   <InputRow.Input
@@ -253,10 +253,10 @@ export default function PanelPetSUV() {
                 <Button
                   variant="default"
                   size="sm"
-                  className="w-28 self-end"
+                  className="self-end px-4"
                   onClick={updateMetadata}
                 >
-                  Reload Data
+                  {t('Reload Data')}
                 </Button>
               </div>
             </PanelSection.Content>

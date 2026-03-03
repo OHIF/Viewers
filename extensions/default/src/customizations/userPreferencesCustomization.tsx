@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
 import { UserPreferencesModal, FooterAction } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
@@ -19,14 +19,40 @@ interface HotkeyDefinitions {
 
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager } = useSystem();
-  const { t } = useTranslation('UserPreferencesModal');
+  const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
+
+  const fallbackHotkeyDefinitions = useMemo(
+    () =>
+      hotkeysManager.getValidHotkeyDefinitions(
+        hotkeysModule.defaults.hotkeyBindings
+      ) as HotkeyDefinitions,
+    [hotkeysManager]
+  );
+
+  useEffect(() => {
+    if (!Object.keys(hotkeyDefaults).length) {
+      hotkeysManager.setDefaultHotKeys(hotkeysModule.defaults.hotkeyBindings);
+    }
+
+    if (!Object.keys(hotkeyDefinitions).length) {
+      hotkeysManager.setHotkeys(fallbackHotkeyDefinitions);
+    }
+  }, [hotkeysManager, hotkeyDefaults, hotkeyDefinitions, fallbackHotkeyDefinitions]);
+
+  const resolvedHotkeyDefaults = Object.keys(hotkeyDefaults).length
+    ? (hotkeyDefaults as HotkeyDefinitions)
+    : fallbackHotkeyDefinitions;
+
+  const initialHotkeyDefinitions = Object.keys(hotkeyDefinitions).length
+    ? (hotkeyDefinitions as HotkeyDefinitions)
+    : resolvedHotkeyDefaults;
 
   const currentLanguage = currentLanguageFn();
 
   const [state, setState] = useState({
-    hotkeyDefinitions: hotkeyDefinitions as HotkeyDefinitions,
+    hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
   });
 
@@ -51,11 +77,51 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     setState(state => ({
       ...state,
       languageValue: defaultLanguage.value,
-      hotkeyDefinitions: hotkeyDefaults as HotkeyDefinitions,
+      hotkeyDefinitions: resolvedHotkeyDefaults,
     }));
 
     hotkeysManager.restoreDefaultBindings();
   };
+
+  const displayNames = React.useMemo(() => {
+    if (typeof Intl === 'undefined' || typeof Intl.DisplayNames !== 'function') {
+      return null;
+    }
+
+    const locales = [state.languageValue, currentLanguage.value, i18nextInstance.language, 'en'];
+    const uniqueLocales = Array.from(new Set(locales.filter(Boolean)));
+
+    try {
+      return new Intl.DisplayNames(uniqueLocales, { type: 'language', fallback: 'none' });
+    } catch (error) {
+      console.warn('Intl.DisplayNames not supported for locales', uniqueLocales, error);
+    }
+
+    return null;
+  }, [state.languageValue, currentLanguage.value, i18nextInstance.language]);
+
+  const getLanguageLabel = React.useCallback(
+    (languageValue: string, fallbackLabel: string) => {
+      const translationKey = `LanguageName.${languageValue}`;
+      if (i18nextInstance.exists(translationKey, { ns: 'UserPreferencesModal' })) {
+        return t(translationKey);
+      }
+
+      if (displayNames) {
+        try {
+          const localized = displayNames.of(languageValue);
+          if (localized && localized.toLowerCase() !== languageValue.toLowerCase()) {
+            return localized.charAt(0).toUpperCase() + localized.slice(1);
+          }
+        } catch (error) {
+          console.debug(`Unable to resolve display name for ${languageValue}`, error);
+        }
+      }
+
+      return fallbackLabel;
+    },
+    [displayNames, i18nextInstance, t]
+  );
 
   return (
     <UserPreferencesModal>
@@ -79,7 +145,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                   key={lang.value}
                   value={lang.value}
                 >
-                  {lang.label}
+                  {getLanguageLabel(lang.value, lang.label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -120,6 +186,9 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             onClick={() => {
               if (state.languageValue !== currentLanguage.value) {
                 i18n.changeLanguage(state.languageValue);
+                // Force page reload after language change to ensure all translations are applied
+                window.location.reload();
+                return; // Exit early since we're reloading
               }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hotkeysModule.stopRecord();

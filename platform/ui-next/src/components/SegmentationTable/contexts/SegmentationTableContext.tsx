@@ -65,20 +65,37 @@ export interface SegmentationTableContextType {
   showSegmentIndex?: boolean;
   renderInactiveSegmentations?: boolean;
 
+  // The types of segmentations displayed/filtered in this table. If undefined, show all types.
+  // The first element is the primary type. Additional elements are secondary types.
+  segmentationRepresentationTypes?: string[];
+
+  // The (last) selected segmentation ID for the representation types above.
+  // If the representation types above is undefined, then it will store the last active segmentation ID.
+  selectedSegmentationIdForType?: string;
+
   // Function handlers
   setShowConfig?: (show: boolean) => void;
   setRenderFill?: ({ type }: { type: string }, value: boolean) => void;
+  setRenderFillInactive?: ({ type }: { type: string }, value: boolean) => void;
   setRenderOutline?: ({ type }: { type: string }, value: boolean) => void;
+  setRenderOutlineInactive?: ({ type }: { type: string }, value: boolean) => void;
   setOutlineWidth?: ({ type }: { type: string }, value: number) => void;
   setFillAlpha?: ({ type }: { type: string }, value: number) => void;
-  setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
+  setFillAlphaInactive?: ({ type }: { type?: string }, value: number) => void;
   toggleRenderInactiveSegmentations?: () => void;
-  onSegmentationAdd?: (segmentationId: string) => void;
+  onSegmentationAdd?: ({
+    segmentationId,
+    segmentationRepresentationType,
+  }: {
+    segmentationId: string;
+    segmentationRepresentationType: string;
+  }) => void;
   onSegmentationClick?: (segmentationId: string) => void;
   onSegmentationDelete?: (segmentationId: string) => void;
   onSegmentAdd?: (segmentationId: string) => void;
   onSegmentClick?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentEdit?: (segmentationId: string, segmentIndex: number) => void;
+  onSegmentCopy?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentationEdit?: (segmentationId: string) => void;
   onSegmentColorClick?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentDelete?: (segmentationId: string, segmentIndex: number) => void;

@@ -40,7 +40,7 @@ const MeasurementTable = ({
       <PanelSection defaultOpen={true}>
         <PanelSection.Header
           key="measurementTableHeader"
-          className="bg-secondary-dark"
+          className="bg-popover"
         >
           <span>{`${t(title)} (${amount})`}</span>
         </PanelSection.Header>
@@ -59,8 +59,8 @@ const Body = () => {
 
   if (!data || data.length === 0) {
     return (
-      <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
-        No tracked measurements
+      <div className="text-highlight mb-1 flex flex-1 items-center px-2 py-2 text-base">
+        {useTranslation('MeasurementTable').t('No tracked measurements')}
       </div>
     );
   }
@@ -125,9 +125,7 @@ const Row = ({ item, index }: RowProps) => {
       isVisible={item.isVisible}
       isLocked={item.isLocked}
     >
-      {item.isUnmapped && (
-        <DataRow.Status.Warning tooltip={item.statusTooltip} />
-      )}
+      {item.isUnmapped && <DataRow.Status.Warning tooltip={item.statusTooltip} />}
     </DataRow>
   );
 };

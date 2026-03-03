@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
@@ -11,20 +10,22 @@ test.beforeEach(async ({ page }) => {
 
 test('should overlay an unhydrated SEG over a display set that the SEG does NOT reference', async ({
   page,
+  leftPanelPageObject,
+  viewportPageObject,
 }) => {
-  await page.getByTestId('study-browser-thumbnail').nth(2).dblclick();
+  await leftPanelPageObject.loadSeriesByDescription('Apparent Diffusion Coefficient');
 
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
-  await page.getByTestId('AddSegmentationDataOverlay-default').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('T2 Weighted Axial Segmentations').click();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
+
+  await viewportPageObject
+    .getById('default')
+    .overlayMenu.dataOverlay.addSegmentation('T2 Weighted Axial Segmentations');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
-
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
   await page.waitForTimeout(5000);
 
   await checkForScreenshot(

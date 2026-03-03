@@ -38,8 +38,8 @@
   "resolutions": {
     "**/@babel/runtime": "7.28.2",
     "commander": "8.3.0",
-    "dcmjs": "0.43.1",
-    "dicomweb-client": ">=0.10.4",
+    "dcmjs": "0.49.4",
+    "dicomweb-client": "0.10.4",
     "nth-check": "2.1.1",
     "trim-newlines": "5.0.0",
     "glob-parent": "6.0.2",

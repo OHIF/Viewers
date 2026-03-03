@@ -1,7 +1,10 @@
 import React, { ReactNode, useState, Children, isValidElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
-import { SegmentationTableProvider, SegmentationTableContextType } from './contexts';
+import {
+  SegmentationTableProvider,
+  SegmentationTableContextType,
+} from './contexts/SegmentationTableContext';
 import { SegmentationSegments } from './SegmentationSegments';
 import { SegmentStatistics } from './SegmentStatistics';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
@@ -31,7 +34,7 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
 }
 
 export const SegmentationTableRoot = (props: SegmentationTableProps) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationPanel');
   const {
     data = [],
     mode,
@@ -40,6 +43,8 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     disabled = false,
     children,
     showConfig: externalShowConfig,
+    selectedSegmentationIdForType,
+    segmentationRepresentationTypes,
     ...contextProps
   } = props;
 
@@ -55,6 +60,11 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
   const activeRepresentation = props.activeRepresentation || activeSegmentationInfo?.representation;
   const activeSegmentation = props.activeSegmentation || activeSegmentationInfo?.segmentation;
 
+  const selectedSegmentationForTypeInfo = data.find(
+    info => info.segmentation?.segmentationId === selectedSegmentationIdForType
+  );
+  const selectedSegmentationForTypeRepresentation = selectedSegmentationForTypeInfo?.representation;
+
   // Extract style properties or use defaults
   const {
     fillAlpha = props.fillAlpha || 0.5,
@@ -62,7 +72,7 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     outlineWidth = props.outlineWidth || 1,
     renderFill = props.renderFill !== undefined ? props.renderFill : true,
     renderOutline = props.renderOutline !== undefined ? props.renderOutline : true,
-  } = activeRepresentation?.styles ?? {};
+  } = selectedSegmentationForTypeRepresentation?.styles ?? {};
 
   // Check if SegmentationTableConfig is present in children
   const hasConfigComponent = Children.toArray(children).some(
@@ -86,6 +96,10 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
     }
   };
 
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
+
   return (
     <SegmentationTableProvider
       value={{
@@ -102,6 +116,8 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         activeSegmentationId,
         activeSegmentation,
         activeRepresentation,
+        selectedSegmentationIdForType,
+        segmentationRepresentationTypes,
         ...contextProps,
         setShowConfig: toggleShowConfig,
       }}
@@ -110,7 +126,10 @@ export const SegmentationTableRoot = (props: SegmentationTableProps) => {
         <PanelSection.Header className="flex items-center justify-between">
           <span>{t(title)}</span>
           {hasConfigComponent && (
-            <div className="ml-auto mr-2">
+            <div
+              className="ml-auto mr-2"
+              data-cy={`segmentation-config-toggle${dataCyTypeSuffix}`}
+            >
               <Icons.Settings
                 className="text-primary h-4 w-4"
                 onClick={e => {

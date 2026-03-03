@@ -2,17 +2,20 @@ import { setUpSegmentationEventHandlers } from './setUpSegmentationEventHandlers
 import {
   setupSegmentationDataModifiedHandler,
   setupSegmentationModifiedHandler,
+  setUpSelectedSegmentationsForViewportHandler,
 } from './segmentationHandlers';
 
 jest.mock('./segmentationHandlers', () => ({
   setupSegmentationDataModifiedHandler: jest.fn(),
   setupSegmentationModifiedHandler: jest.fn(),
+  setUpSelectedSegmentationsForViewportHandler: jest.fn(),
 }));
 
 describe('setUpSegmentationEventHandlers', () => {
   const mockSegmentationService = {
     EVENTS: {
       SEGMENTATION_ADDED: 'SEGMENTATION_ADDED',
+      SEGMENTATION_REMOVED: 'SEGMENTATION_REMOVED',
     },
     subscribe: jest.fn(),
     getSegmentation: jest.fn(),
@@ -38,6 +41,8 @@ describe('setUpSegmentationEventHandlers', () => {
   const mockUnsubscribeDataModified = jest.fn();
   const mockUnsubscribeModified = jest.fn();
   const mockUnsubscribeCreated = jest.fn();
+  const mockUnsubscribeRemoved = jest.fn();
+  const mockUnsubscribeSelectedSegmentationsForViewportEvents = [jest.fn(), jest.fn()];
 
   const defaultParameters = {
     servicesManager: mockServicesManager as unknown as AppTypes.ServicesManager,
@@ -52,8 +57,18 @@ describe('setUpSegmentationEventHandlers', () => {
     (setupSegmentationModifiedHandler as jest.Mock).mockReturnValue({
       unsubscribe: mockUnsubscribeModified,
     });
-    mockSegmentationService.subscribe.mockReturnValue({
-      unsubscribe: mockUnsubscribeCreated,
+    (setUpSelectedSegmentationsForViewportHandler as jest.Mock).mockReturnValue({
+      unsubscribeSelectedSegmentationsForViewportEvents:
+        mockUnsubscribeSelectedSegmentationsForViewportEvents,
+    });
+    mockSegmentationService.subscribe.mockImplementation((eventName: string) => {
+      if (eventName === mockSegmentationService.EVENTS.SEGMENTATION_ADDED) {
+        return { unsubscribe: mockUnsubscribeCreated };
+      }
+      if (eventName === mockSegmentationService.EVENTS.SEGMENTATION_REMOVED) {
+        return { unsubscribe: mockUnsubscribeRemoved };
+      }
+      return { unsubscribe: jest.fn() };
     });
   });
 
@@ -92,6 +107,8 @@ describe('setUpSegmentationEventHandlers', () => {
         mockUnsubscribeDataModified,
         mockUnsubscribeModified,
         mockUnsubscribeCreated,
+        mockUnsubscribeRemoved,
+        ...mockUnsubscribeSelectedSegmentationsForViewportEvents,
       ],
     });
   });
@@ -117,6 +134,7 @@ describe('setUpSegmentationEventHandlers', () => {
 
   it('should create and add display set when segmentation is added and no displaySet exists', () => {
     const mockSegmentation = {
+      label: 'Test Segmentation Label',
       cachedStats: {
         info: 'Test Segmentation Label',
       },
@@ -143,12 +161,12 @@ describe('setUpSegmentationEventHandlers', () => {
       displaySetInstanceUID: 'test-segmentation-id',
       SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
       SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-      SeriesDescription: mockSegmentation.cachedStats.info,
+      SeriesDescription: mockSegmentation.label,
       Modality: 'SEG',
       numImageFrames: mockSegmentation.representationData.Labelmap.imageIds.length,
       imageIds: mockSegmentation.representationData.Labelmap.imageIds,
       isOverlayDisplaySet: true,
-      label: mockSegmentation.cachedStats.info,
+      label: mockSegmentation.label,
       madeInClient: true,
       segmentationId: 'test-segmentation-id',
       isDerived: true,
@@ -157,6 +175,7 @@ describe('setUpSegmentationEventHandlers', () => {
 
   it('should handle displaySet undefined when segmentation is added', () => {
     const mockSegmentation = {
+      label: 'Test Segmentation Label',
       cachedStats: {
         info: 'Test Segmentation Label',
       },
@@ -182,12 +201,12 @@ describe('setUpSegmentationEventHandlers', () => {
       displaySetInstanceUID: 'test-segmentation-id',
       SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
       SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-      SeriesDescription: mockSegmentation.cachedStats.info,
+      SeriesDescription: mockSegmentation.label,
       Modality: 'SEG',
       numImageFrames: mockSegmentation.representationData.Labelmap.imageIds.length,
       imageIds: mockSegmentation.representationData.Labelmap.imageIds,
       isOverlayDisplaySet: true,
-      label: mockSegmentation.cachedStats.info,
+      label: mockSegmentation.label,
       madeInClient: true,
       segmentationId: 'test-segmentation-id',
       isDerived: true,
@@ -196,6 +215,7 @@ describe('setUpSegmentationEventHandlers', () => {
 
   it('should handle empty imageIds array', () => {
     const mockSegmentation = {
+      label: 'Empty Segmentation',
       cachedStats: {
         info: 'Empty Segmentation',
       },
@@ -220,12 +240,12 @@ describe('setUpSegmentationEventHandlers', () => {
       displaySetInstanceUID: 'empty-segmentation-id',
       SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
       SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-      SeriesDescription: mockSegmentation.cachedStats.info,
+      SeriesDescription: mockSegmentation.label,
       Modality: 'SEG',
       numImageFrames: 0,
       imageIds: [],
       isOverlayDisplaySet: true,
-      label: mockSegmentation.cachedStats.info,
+      label: mockSegmentation.label,
       madeInClient: true,
       segmentationId: 'empty-segmentation-id',
       isDerived: true,
@@ -234,6 +254,7 @@ describe('setUpSegmentationEventHandlers', () => {
 
   it('should handle different segmentation label values', () => {
     const mockSegmentation = {
+      label: 'Custom Label Text',
       cachedStats: {
         info: 'Custom Label Text',
       },
@@ -272,6 +293,7 @@ describe('setUpSegmentationEventHandlers', () => {
 
   it('should handle multiple segmentation events', () => {
     const mockSegmentation1 = {
+      label: 'Segmentation 1',
       cachedStats: {
         info: 'Segmentation 1',
       },
@@ -283,6 +305,7 @@ describe('setUpSegmentationEventHandlers', () => {
     };
 
     const mockSegmentation2 = {
+      label: 'Segmentation 2',
       cachedStats: {
         info: 'Segmentation 2',
       },
@@ -310,12 +333,12 @@ describe('setUpSegmentationEventHandlers', () => {
       displaySetInstanceUID: 'segmentation-1',
       SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
       SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-      SeriesDescription: mockSegmentation1.cachedStats.info,
+      SeriesDescription: mockSegmentation1.label,
       Modality: 'SEG',
       numImageFrames: 1,
       imageIds: mockSegmentation1.representationData.Labelmap.imageIds,
       isOverlayDisplaySet: true,
-      label: mockSegmentation1.cachedStats.info,
+      label: mockSegmentation1.label,
       madeInClient: true,
       segmentationId: 'segmentation-1',
       isDerived: true,
@@ -324,12 +347,12 @@ describe('setUpSegmentationEventHandlers', () => {
       displaySetInstanceUID: 'segmentation-2',
       SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
       SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-      SeriesDescription: mockSegmentation2.cachedStats.info,
+      SeriesDescription: mockSegmentation2.label,
       Modality: 'SEG',
       numImageFrames: 2,
       imageIds: mockSegmentation2.representationData.Labelmap.imageIds,
       isOverlayDisplaySet: true,
-      label: mockSegmentation2.cachedStats.info,
+      label: mockSegmentation2.label,
       madeInClient: true,
       segmentationId: 'segmentation-2',
       isDerived: true,
@@ -344,5 +367,6 @@ describe('setUpSegmentationEventHandlers', () => {
     expect(mockUnsubscribeDataModified).toHaveBeenCalled();
     expect(mockUnsubscribeModified).toHaveBeenCalled();
     expect(mockUnsubscribeCreated).toHaveBeenCalled();
+    expect(mockUnsubscribeRemoved).toHaveBeenCalled();
   });
 });

@@ -1,5 +1,4 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -10,18 +9,21 @@ test.beforeEach(async ({ page }) => {
 
 test('should launch MPR with unhydrated SEG chosen from the data overlay menu', async ({
   page,
+  mainToolbarPageObject,
+  rightPanelPageObject,
+  viewportPageObject,
 }) => {
-  await page.getByTestId('side-panel-header-right').click();
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
-  await page.getByTestId('AddSegmentationDataOverlay-default').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('Segmentation').click();
+  await rightPanelPageObject.toggle();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
+  await viewportPageObject
+    .getById('default')
+    .overlayMenu.dataOverlay.addSegmentation('Segmentation');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
 
   await page.waitForTimeout(5000);
 
@@ -31,8 +33,7 @@ test('should launch MPR with unhydrated SEG chosen from the data overlay menu', 
     screenShotPaths.segDataOverlayNoHydrationThenMPR.segDataOverlayNoHydrationPreMPR
   );
 
-  await page.getByTestId('Layout').click();
-  await page.getByTestId('MPR').click();
+  await mainToolbarPageObject.layoutSelection.MPR.click();
 
   await page.waitForTimeout(5000);
 

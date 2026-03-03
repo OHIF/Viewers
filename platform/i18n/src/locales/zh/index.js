@@ -5,6 +5,7 @@ import Common from './Common.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
 import MeasurementTable from './MeasurementTable.json';
+import DataRow from './DataRow.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
@@ -33,6 +34,7 @@ export default {
     DatePicker,
     Header,
     MeasurementTable,
+    DataRow,
     StudyList,
     UserPreferencesModal,
     ViewportDownloadForm,

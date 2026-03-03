@@ -1,5 +1,12 @@
 {
   "Primary": "Test Primary",
   "Recent": "Test Recent",
-  "All": "Test All"
+  "All": "Test All",
+  "Tracked Series": "Test Tracked Series",
+  "Tag Browser": "Test Tag Browser",
+  "Add as Layer": "Test Add as Layer",
+  "Series Number": "Test Series Number",
+  "Series Date": "Test Series Date",
+  "Thumbnail Double Click": "Test Thumbnail Double Click",
+  "The selected display sets could not be added to the viewport.": "Test The selected display sets could not be added to the viewport."
 }

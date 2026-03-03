@@ -22,5 +22,8 @@
   "LOAD": "Test LOAD",
   "NoStudyDate": "Test No Study Date",
   "localDateFormat": "\\T\\e\\s\\t MM/DD/YYYY",
-  "Back": "Test Back"
+  "Back": "Test Back",
+  "Foreground": "Test Foreground",
+  "SELECT A FOREGROUND": "Test SELECT A FOREGROUND",
+  "SELECT A SEGMENTATION": "Test SELECT A SEGMENTATION"
 }

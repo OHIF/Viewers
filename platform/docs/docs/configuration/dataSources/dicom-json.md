@@ -156,7 +156,7 @@ inside your `public` folder. Since files are served from your local server the
 the dicom files will be
 `dicomweb:http://localhost:3000/LIDC-IDRI-0001/01-01-2000-30178/3000566.000000-03192/1-001.dcm`.
 
-After `yarn install` and running `yarn dev` and opening the browser at
+After `yarn install --frozen-lockfile` and running `yarn dev` and opening the browser at
 `http://localhost:3000/viewer/dicomjson?url=http://localhost:3000/LIDC-IDRI-0001.json`
 will display the viewer.
 

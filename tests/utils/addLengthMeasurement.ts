@@ -1,5 +1,7 @@
 import { type Page, expect } from '@playwright/test';
 
+import { MainToolbarPageObject, ViewportPageObject } from '../pages';
+
 /**
  * Defines the optional parameters for the addLengthMeasurement function.
  */
@@ -22,13 +24,16 @@ export async function addLengthMeasurement(
   page: Page,
   options: AddLengthMeasurementOptions = {}
 ): Promise<void> {
+  const mainToolbarPageObject = new MainToolbarPageObject(page);
+  const viewportPageObject = new ViewportPageObject(page);
+
   // Set default values for the click coordinates
   const { firstClick = [150, 100], secondClick = [130, 170] } = options;
   const [x1, y1] = firstClick;
   const [x2, y2] = secondClick;
 
-  const lengthButton = page.getByTestId('MeasurementTools-split-button-primary');
-  const viewport = page.locator('.cornerstone-viewport-element').first();
+  const lengthButton = mainToolbarPageObject.measurementTools.selectedTool.button;
+  const viewport = viewportPageObject.active;
 
   // Assert that the primary measurement button is 'Length' tool
   await expect(lengthButton).toHaveAttribute('data-tool', 'Length');
@@ -43,10 +48,10 @@ export async function addLengthMeasurement(
   await expect(lengthButton).toHaveAttribute('data-active', 'true');
 
   // Perform the two clicks on the viewport canvas to draw the line
-  await viewport.click({ position: { x: x1, y: y1 } });
+  await viewport.clickAt([{ x: x1, y: y1 }]);
 
   // Delay to allow canvas actions to finish/update
   await page.waitForTimeout(200);
 
-  await viewport.click({ position: { x: x2, y: y2 } });
+  await viewport.clickAt([{ x: x2, y: y2 }]);
 }

@@ -3,6 +3,7 @@ import React, { ReactElement, useState, useCallback } from 'react';
 import { PresetDialog } from '@ohif/ui-next';
 import { ViewportPreset, VolumeRenderingPresetsContentProps } from '../../types/ViewportPresets';
 import { useSystem } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
 interface Props extends VolumeRenderingPresetsContentProps {
   hide: () => void;
@@ -12,6 +13,7 @@ export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Pro
   const { commandsManager } = useSystem();
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);
+  const { t } = useTranslation('WindowLevelActionMenu');
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
@@ -41,7 +43,7 @@ export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Pro
           <PresetDialog.PresetSearch
             value={searchValue}
             onChange={handleSearchChange}
-            placeholder="Search all"
+            placeholder={t('Search all', 'Search all')}
           />
         </PresetDialog.PresetFilter>
         <PresetDialog.PresetGrid>
@@ -59,7 +61,7 @@ export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Pro
                 className={
                   selectedPreset?.name === preset.name
                     ? 'border-highlight h-[75px] w-[95px] max-w-none rounded border-2'
-                    : 'hover:border-highlight h-[75px] w-[95px] max-w-none rounded border-2 border-black'
+                    : 'hover:border-highlight h-[75px] w-[95px] max-w-none rounded border-2 border-background'
                 }
               />
               <label className="text-muted-foreground mt-1 text-left text-xs">
@@ -71,7 +73,7 @@ export function VolumeRenderingPresetsContent({ presets, viewportId, hide }: Pro
       </PresetDialog.PresetBody>
       <FooterAction className="mt-4 flex-shrink-0">
         <FooterAction.Right>
-          <FooterAction.Secondary onClick={hide}>Cancel</FooterAction.Secondary>
+          <FooterAction.Secondary onClick={hide}>{t('Common:Cancel')}</FooterAction.Secondary>
         </FooterAction.Right>
       </FooterAction>
     </PresetDialog>

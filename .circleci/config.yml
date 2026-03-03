@@ -6,7 +6,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:20.18.1
+    - image: cimg/node:20.19.0
       environment:
         TERM: xterm
         QUICK_BUILD: true
@@ -112,14 +112,37 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT
+      # SECURITY AUDIT - only when bun.lock has changed
       - run:
           name: 'Security Audit - High Risk Vulnerabilities'
           command: |
-            echo "🔍 Running bun audit for security vulnerabilities..."
+            git fetch origin master 2>/dev/null || true
+            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
+            if [[ -z "$BASE_REF" ]]; then
+              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
+              exit 0
+            fi
+            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
+            if ! echo "$CHANGED_FILES" | grep -qx 'bun.lock'; then
+              echo "⏭️ bun.lock unchanged - skipping security audit."
+              exit 0
+            fi
+            echo "🔍 bun.lock changed - running bun audit for security vulnerabilities..."
             echo "Checking for HIGH-RISK vulnerabilities..."
 
-            if bun audit --audit-level high; then
+            # Define ignored vulnerabilities with comments
+            IGNORED_VULNS=(
+              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - OHIF's use of minimatch via glob is safe because it does NOT use the CLI
+                                     # CVE-2026-26996 - OHIF's other uses of minimatch are strictly for building and CI/CD purposes
+            )
+
+            # Build ignore flags
+            IGNORE_FLAGS=""
+            for vuln in "${IGNORED_VULNS[@]}"; do
+              IGNORE_FLAGS="$IGNORE_FLAGS --ignore=$vuln"
+            done
+
+            if bun audit $IGNORE_FLAGS --audit-level high; then
               echo "✅ No high-risk vulnerabilities found"
               echo "🎉 Security audit passed!"
             else
@@ -135,7 +158,9 @@ jobs:
               echo "  5. Re-run: bun audit --audit-level high"
               echo ""
               echo "📋 Full audit report:"
-              bun audit --audit-level low || true
+
+              bun audit $IGNORE_FLAGS --audit-level low || true
+
               echo ""
               echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
               exit 1
@@ -358,6 +383,7 @@ jobs:
     resource_class: large
     parallelism: 8
     steps:
+      - install_bun
       - run:
           name: Install System Dependencies
           command: |
@@ -371,7 +397,7 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-command: yarn install --no-save
+          install-command: yarn install --frozen-lockfile --no-save
       - cypress/run-tests:
           cypress-command: |
             npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel

@@ -13,6 +13,7 @@ Object.defineProperty(global, 'URL', {
   writable: true,
   value: {
     createObjectURL: jest.fn().mockReturnValue('mock-url'),
+    revokeObjectURL: () => undefined,
   },
 });
 

@@ -19,7 +19,7 @@ COPY ./ /usr/src/app/
 
 # Install node dependencies
 RUN yarn config set workspaces-experimental true
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # Copy the rest of the application code
 

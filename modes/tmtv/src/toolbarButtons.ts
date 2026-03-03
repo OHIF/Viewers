@@ -1,6 +1,8 @@
 import { toolGroupIds } from './initToolGroups';
 import i18n from 'i18next';
 
+import { MIN_SEGMENTATION_DRAWING_RADIUS, MAX_SEGMENTATION_DRAWING_RADIUS } from './constants';
+
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
@@ -205,18 +207,25 @@ const toolbarButtons = [
     props: {
       icon: 'icon-tool-brush',
       label: i18n.t('Buttons:Brush'),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularBrush', 'SphereBrush'],
-        disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularBrush', 'SphereBrush'],
+          disabledText: i18n.t('Buttons:Create new segmentation to enable this tool.'),
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'brush-radius',
+        },
+      ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'brush-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -225,13 +234,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'brush-mode',
           value: 'CircularBrush',
           values: [
-            { value: 'CircularBrush', label: 'Circle' },
-            { value: 'SphereBrush', label: 'Sphere' },
+            { value: 'CircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -244,17 +253,24 @@ const toolbarButtons = [
     props: {
       icon: 'icon-tool-eraser',
       label: i18n.t('Buttons:Eraser'),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircularEraser', 'SphereEraser'],
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularEraser', 'SphereEraser'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'eraser-radius',
+        },
+      ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'eraser-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -263,13 +279,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'CircularEraser',
           values: [
-            { value: 'CircularEraser', label: 'Circle' },
-            { value: 'SphereEraser', label: 'Sphere' },
+            { value: 'CircularEraser', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereEraser', label: i18n.t('Buttons:Sphere') },
           ],
           commands: 'setToolActiveToolbar',
         },
@@ -282,17 +298,24 @@ const toolbarButtons = [
     props: {
       icon: 'icon-tool-threshold',
       label: i18n.t('Buttons:Threshold Tool'),
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
-      },
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'threshold-radius',
+        },
+      ],
       options: [
         {
-          name: 'Radius (mm)',
+          name: i18n.t('Buttons:Radius (mm)'),
           id: 'threshold-radius',
           type: 'range',
-          min: 0.5,
-          max: 99.5,
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
           step: 0.5,
           value: 25,
           commands: {
@@ -307,13 +330,13 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Threshold',
+          name: i18n.t('Buttons:Threshold'),
           type: 'radio',
           id: 'dynamic-mode',
           value: 'ThresholdRange',
           values: [
-            { value: 'ThresholdDynamic', label: 'Dynamic' },
-            { value: 'ThresholdRange', label: 'Range' },
+            { value: 'ThresholdDynamic', label: i18n.t('Buttons:Dynamic') },
+            { value: 'ThresholdRange', label: i18n.t('Buttons:Range') },
           ],
           commands: ({ value, commandsManager }) => {
             if (value === 'ThresholdDynamic') {
@@ -328,20 +351,20 @@ const toolbarButtons = [
           },
         },
         {
-          name: 'Shape',
+          name: i18n.t('Buttons:Shape'),
           type: 'radio',
           id: 'eraser-mode',
           value: 'ThresholdCircularBrush',
           values: [
-            { value: 'ThresholdCircularBrush', label: 'Circle' },
-            { value: 'ThresholdSphereBrush', label: 'Sphere' },
+            { value: 'ThresholdCircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'ThresholdSphereBrush', label: i18n.t('Buttons:Sphere') },
           ],
           condition: ({ options }) =>
             options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
           commands: 'setToolActiveToolbar',
         },
         {
-          name: 'ThresholdRange',
+          name: i18n.t('ROIThresholdConfiguration:ThresholdRange'),
           type: 'double-range',
           id: 'threshold-range',
           min: 0,

@@ -1,17 +1,18 @@
-import { test } from 'playwright-test-coverage';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 
-test('should display added, selected and removed segmentation promptly', async ({ page }) => {
+test('should display added, selected and removed segmentation promptly', async ({
+  page,
+  viewportPageObject,
+}) => {
   const studyInstanceUID = '1.3.6.1.4.1.32722.99.99.239341353911714368772597187099978969331';
   const mode = 'segmentation';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
   // Add a segmentation overlay and ensure the overlay menu reflects this change.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
-  await page.getByTestId('AddSegmentationDataOverlay-default').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('2d-tta_nnU-Net_Segmentation').click();
+  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
+  await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
 
   await page.waitForTimeout(5000);
 
@@ -22,7 +23,7 @@ test('should display added, selected and removed segmentation promptly', async (
   });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await dataOverlayPageObject.toggle();
 
   // navigate to the 51st image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
@@ -35,11 +36,10 @@ test('should display added, selected and removed segmentation promptly', async (
   });
 
   // Show the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await dataOverlayPageObject.toggle();
 
   // Change the segmentation overlay to a different one and ensure the overlay menu reflects this change.
-  await page.getByTestId('overlay-ds-select-value-2D-TTA_NNU-NET_SEGMENTATION').click();
-  await page.getByTestId('Segmentation-SEG').click();
+  await dataOverlayPageObject.changeSegmentation('2d-tta_nnU-Net_Segmentation', 'Segmentation');
 
   await page.waitForTimeout(5000);
 
@@ -49,7 +49,7 @@ test('should display added, selected and removed segmentation promptly', async (
   });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await dataOverlayPageObject.toggle();
 
   // navigate to the 51st image and ensure the correct overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });
@@ -62,11 +62,10 @@ test('should display added, selected and removed segmentation promptly', async (
   });
 
   // Show the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await dataOverlayPageObject.toggle();
 
   // Remove the segmentation overlay and ensure the overlay menu reflects this change.
-  await page.getByTestId('overlay-ds-more-button-SEGMENTATION').click();
-  await page.getByTestId('overlay-ds-remove-button-SEGMENTATION').click();
+  await dataOverlayPageObject.remove('SEGMENTATION');
 
   await page.waitForTimeout(5000);
 
@@ -76,7 +75,7 @@ test('should display added, selected and removed segmentation promptly', async (
   });
 
   // Hide the overlay menu.
-  await page.getByTestId('dataOverlayMenu-default-btn').click();
+  await dataOverlayPageObject.toggle();
 
   // navigate to the 51st image and ensure no overlay is displayed
   await press({ page, key: 'ArrowDown', nTimes: 50 });

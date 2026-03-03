@@ -1,15 +1,101 @@
-import React from 'react';
-import { SegmentationTable } from '@ohif/ui-next';
+import React, { useCallback, useEffect } from 'react';
+import {
+  IconPresentationProvider,
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  SegmentationTable,
+  ToolSettings,
+} from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
-import { metaData, cache } from '@cornerstonejs/core';
-import { useSystem } from '@ohif/core/src';
+import { useActiveToolOptions, useSystem } from '@ohif/core/src';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { Toolbar, useUIStateStore } from '@ohif/extension-default';
+import SegmentationUtilityButton from '../components/SegmentationUtilityButton';
+import { useSelectedSegmentationsForViewportStore } from '../stores';
+import {
+  hasExportableLabelMapData,
+  hasExportableContourData,
+} from '../utils/segmentationExportUtils';
 
-export default function PanelSegmentation({ children }: withAppTypes) {
+type PanelSegmentationProps = {
+  children?: React.ReactNode;
+
+  // The representation types for this segmentation panel. Undefined means all types.
+  // The first element is the primary type. Additional elements are secondary types.
+  segmentationRepresentationTypes?: SegmentationRepresentations[];
+} & withAppTypes;
+
+export default function PanelSegmentation({
+  children,
+  segmentationRepresentationTypes,
+}: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const { customizationService, displaySetService } = servicesManager.services;
+  const {
+    customizationService,
+    displaySetService,
+    viewportGridService,
+    toolbarService,
+    segmentationService,
+  } = servicesManager.services;
+  const { activeViewportId } = viewportGridService.getState();
+
+  const utilitiesSectionMap = {
+    [SegmentationRepresentations.Labelmap]: toolbarService.sections.labelMapSegmentationUtilities,
+    [SegmentationRepresentations.Contour]: toolbarService.sections.contourSegmentationUtilities,
+  };
+
+  const selectedSegmentationsForViewportMap = useSelectedSegmentationsForViewportStore(
+    store => store.selectedSegmentationsForViewport[activeViewportId]
+  );
+
+  const selectedSegmentationIdForType = segmentationRepresentationTypes
+    ? segmentationRepresentationTypes.reduce(
+        (selectedSegmentation, type) =>
+          selectedSegmentation ||
+          (selectedSegmentationsForViewportMap?.has(type)
+            ? selectedSegmentationsForViewportMap?.get(type)
+            : undefined),
+        undefined
+      )
+    : segmentationService?.getActiveSegmentation(activeViewportId)?.segmentationId;
+
+  const buttonSection = segmentationRepresentationTypes?.[0]
+    ? utilitiesSectionMap[segmentationRepresentationTypes[0]]
+    : undefined;
+
+  const { activeToolOptions: activeUtilityOptions } = useActiveToolOptions({
+    buttonSectionId: buttonSection,
+  });
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations();
+
+  const setUIState = useUIStateStore(store => store.setUIState);
+
+  // useEffect for handling clicks on any of the non-active viewports.
+  // The ViewportGrid stops the propagation of pointer/mouse events
+  // for non-active viewports so the Popover below
+  // is not closed when clicking on any of the non-active viewports.
+  useEffect(() => {
+    setUIState('activeSegmentationUtility', null);
+    toolbarService.refreshToolbarState({ viewportId: activeViewportId });
+  }, [activeViewportId, setUIState, toolbarService]);
+
+  // The callback for handling clicks outside of the Popover and, the SegmentationUtilityButton
+  // that triggered it to open. Clicks outside those components must close the Popover.
+  // The Popover is made visible whenever the options associated with the
+  // activeSegmentationUtility exist. Thus clearing the activeSegmentationUtility
+  // clears the associated options and will keep the Popover closed.
+  const handlePopoverOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setUIState('activeSegmentationUtility', null);
+        toolbarService.refreshToolbarState({ viewportId: activeViewportId });
+      }
+    },
+    [activeViewportId, setUIState, toolbarService]
+  );
 
   // Extract customization options
   const segmentationTableMode = customizationService.getCustomization(
@@ -35,6 +121,7 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     },
     onSegmentAdd: segmentationId => {
       commandsManager.run('addSegment', { segmentationId });
+      commandsManager.run('setActiveSegmentation', { segmentationId });
     },
     onSegmentClick: (segmentationId, segmentIndex) => {
       commandsManager.run('setActiveSegmentAndCenter', { segmentationId, segmentIndex });
@@ -51,6 +138,14 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     onSegmentDelete: (segmentationId, segmentIndex) => {
       commandsManager.run('deleteSegment', { segmentationId, segmentIndex });
     },
+    onSegmentCopy:
+      segmentationRepresentationTypes?.[0] === SegmentationRepresentations.Contour
+        ? (segmentationId, segmentIndex) => {
+            commandsManager.run('copyContourSegment', {
+              sourceSegmentInfo: { segmentationId, segmentIndex },
+            });
+          }
+        : undefined,
     onToggleSegmentVisibility: (segmentationId, segmentIndex, type) => {
       commandsManager.run('toggleSegmentVisibility', { segmentationId, segmentIndex, type });
     },
@@ -76,18 +171,36 @@ export default function PanelSegmentation({ children }: withAppTypes) {
       commandsManager.run('deleteSegmentation', { segmentationId });
     },
     setFillAlpha: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setFillAlpha', { type, value });
     },
     setOutlineWidth: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setOutlineWidth', { type, value });
     },
     setRenderFill: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setRenderFill', { type, value });
     },
+    setRenderFillInactive: ({ type }, value) => {
+      commandsManager.run('setRenderFillInactive', { type, value });
+    },
     setRenderOutline: ({ type }, value) => {
+      commandsManager.run('activateSelectedSegmentationOfType', {
+        segmentationRepresentationType: type,
+      });
       commandsManager.run('setRenderOutline', { type, value });
     },
-    setFillAlphaInactive: ({ type }, value) => {
+    setRenderOutlineInactive: ({ type }, value) => {
+      commandsManager.run('setRenderOutlineInactive', { type, value });
+    },
+    setFillAlphaInactive: ({ type }: { type?: string }, value) => {
       commandsManager.run('setFillAlphaInactive', { type, value });
     },
     getRenderInactiveSegmentations: () => {
@@ -96,52 +209,26 @@ export default function PanelSegmentation({ children }: withAppTypes) {
   };
 
   // Generate export options
+  // Map each segmentation to an export option for it.
+  // A segmentation is exportable if it has any labelmap or contour data.
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;
-    const { Labelmap } = representationData;
+    const { Labelmap, Contour } = representationData;
 
-    if (!Labelmap) {
+    if (!Labelmap && !Contour) {
       return { segmentationId, isExportable: true };
     }
 
-    // Check if any segments have anything drawn in any of the viewports
-    const hasAnySegmentData = (() => {
-      const imageIds = Labelmap.imageIds;
-      if (!imageIds?.length) return false;
-
-      for (const imageId of imageIds) {
-        const pixelData = cache.getImage(imageId)?.getPixelData();
-        if (!pixelData) continue;
-
-        for (let i = 0; i < pixelData.length; i++) {
-          if (pixelData[i] !== 0) return true;
-        }
-      }
-      return false;
-    })();
-
-    if (!hasAnySegmentData) {
+    if (
+      !hasExportableLabelMapData(Labelmap, displaySetService) &&
+      !hasExportableContourData(Contour)
+    ) {
       return { segmentationId, isExportable: false };
     }
-
-    const referencedImageIds = Labelmap.referencedImageIds;
-    const firstImageId = referencedImageIds[0];
-    const instance = metaData.get('instance', firstImageId);
-
-    if (!instance) {
-      return { segmentationId, isExportable: false };
-    }
-
-    const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
-    const SeriesInstanceUID = instance.SeriesInstanceUID;
-    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID
-    );
 
     return {
       segmentationId,
-      isExportable: displaySet?.isReconstructable,
+      isExportable: true,
     };
   });
 
@@ -150,13 +237,32 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     disabled,
     data: segmentationsWithRepresentations,
     mode: segmentationTableMode,
-    title: 'Segmentations',
+    title: `${segmentationRepresentationTypes?.[0] ? `${segmentationRepresentationTypes[0]} ` : ''}Segmentations`,
     exportOptions,
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
+    segmentationRepresentationTypes,
+    selectedSegmentationIdForType,
     ...handlers,
+  };
+
+  const renderUtilitiesToolbar = () => {
+    if (!buttonSection) {
+      return null;
+    }
+
+    return (
+      <IconPresentationProvider
+        size="large"
+        IconContainer={SegmentationUtilityButton}
+      >
+        <div className="flex flex-wrap gap-[3px] bg-transparent pb-[2px] pl-[8px] pt-[6px]">
+          <Toolbar buttonSection={buttonSection} />
+        </div>
+      </IconPresentationProvider>
+    );
   };
 
   const renderSegments = () => {
@@ -175,6 +281,7 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     if (tableProps.mode === 'collapsed') {
       return (
         <SegmentationTable.Collapsed>
+          {renderUtilitiesToolbar()}
           <SegmentationTable.Collapsed.Header>
             <SegmentationTable.Collapsed.DropdownMenu>
               <CustomDropdownMenuContent />
@@ -193,6 +300,7 @@ export default function PanelSegmentation({ children }: withAppTypes) {
     return (
       <>
         <SegmentationTable.Expanded>
+          {renderUtilitiesToolbar()}
           <SegmentationTable.Expanded.Header>
             <SegmentationTable.Expanded.DropdownMenu>
               <CustomDropdownMenuContent />
@@ -211,11 +319,27 @@ export default function PanelSegmentation({ children }: withAppTypes) {
   };
 
   return (
-    <SegmentationTable {...tableProps}>
-      {children}
-      <SegmentationTable.Config />
-      <SegmentationTable.AddSegmentationRow />
-      {renderModeContent()}
-    </SegmentationTable>
+    <Popover
+      open={!!activeUtilityOptions}
+      onOpenChange={handlePopoverOpenChange}
+    >
+      <PopoverAnchor>
+        <SegmentationTable {...tableProps}>
+          {children}
+          <SegmentationTable.Config />
+          <SegmentationTable.AddSegmentationRow />
+          {renderModeContent()}
+        </SegmentationTable>
+      </PopoverAnchor>
+      {activeUtilityOptions && (
+        <PopoverContent
+          side="left"
+          align="start"
+          className="w-auto"
+        >
+          <ToolSettings options={activeUtilityOptions} />
+        </PopoverContent>
+      )}
+    </Popover>
   );
 }

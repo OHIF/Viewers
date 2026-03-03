@@ -1,6 +1,9 @@
 {
   "File name": "Test File name",
   "Image size": "Test Image size",
+  "Image size in pixels": "Test Image size in pixels",
   "Include annotations": "Test Include annotations",
-  "Include warning message": "Test Include warning message"
+  "Include warning message": "Test Include warning message",
+  "Width": "Test Width",
+  "Height": "Test Height"
 }

@@ -1,3 +1,7 @@
+import { utils } from '@ohif/core';
+
+const { downloadCsv } = utils;
+
 export function generateSegmentationCSVReport(
   segmentationData,
   info: {
@@ -121,19 +125,7 @@ export function generateSegmentationCSVReport(
     csvString += formattedRow.join(',') + '\n';
   }
 
-  // Create a download link and trigger the download
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-
-  link.setAttribute('href', url);
-  link.setAttribute(
-    'download',
-    `${segmentationData.label || 'Segmentation'}_Report_${new Date().toISOString().split('T')[0]}.csv`
-  );
-  link.style.visibility = 'hidden';
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadCsv(csvString, {
+    filename: `${segmentationData.label || 'Segmentation'}_Report_${new Date().toISOString().split('T')[0]}.csv`,
+  });
 }
