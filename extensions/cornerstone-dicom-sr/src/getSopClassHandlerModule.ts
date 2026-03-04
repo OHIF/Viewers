@@ -652,6 +652,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
         : ContentSequence;
 
       if (!scoordItem) {
+        console.warn(
+          'ContentSequence array contains no SCOORD or SCOORD3D entry, skipping annotation.'
+        );
         return;
       }
 
