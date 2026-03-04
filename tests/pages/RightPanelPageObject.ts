@@ -246,6 +246,16 @@ export class RightPanelPageObject {
           },
         };
       },
+
+      get segmentBidirectional() {
+        const button = page.getByTestId('SegmentBidirectional');
+        return {
+          button,
+          click: async () => {
+            await button.click();
+          },
+        };
+      },
     };
   }
 

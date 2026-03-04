@@ -62,5 +62,7 @@
   "New segment name": "Test New segment name",
   "No segmentations available": "Test No segmentations available",
   "Not available on the current viewport": "Test Not available on the current viewport",
-  "Add segment to enable this tool": "Test Add segment to enable this tool"
+  "Add segment to enable this tool": "Test Add segment to enable this tool",
+  "Segment Bidirectional": "Test Segment Bidirectional",
+  "Draw a segment before using bidirectional measurement": "Test Draw a segment before using bidirectional measurement"
 }
