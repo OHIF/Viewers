@@ -1120,6 +1120,7 @@ describe('SegmentationService', () => {
         isDynamicVolume: false,
         SeriesNumber: 1,
         SeriesDescription: 'Series Description',
+        Modality: 'SEG',
       } as unknown as AppTypes.DisplaySet;
 
       jest
@@ -1143,6 +1144,7 @@ describe('SegmentationService', () => {
         config: {
           cachedStats: {
             info: 'S1: Series Description',
+            labelFallbackSuffix: 'S:1 SEG',
           },
           label: 'Segmentation 2',
           segments: {
@@ -1175,6 +1177,7 @@ describe('SegmentationService', () => {
         dynamicVolumeInfo: {
           timePoints: ['timePoint1', 'timePoint2', 'timePoint3'],
         },
+        Modality: 'SEG',
       } as unknown as AppTypes.DisplaySet;
 
       jest
@@ -1210,6 +1213,7 @@ describe('SegmentationService', () => {
         config: {
           cachedStats: {
             info: 'S1: Series Description',
+            labelFallbackSuffix: 'S:1 SEG',
           },
           label: 'Segmentation 2',
           segments: {
@@ -1320,6 +1324,8 @@ describe('SegmentationService', () => {
         },
         SeriesDate: '2025-01-01',
         SeriesDescription: 'Series Description',
+        Modality: 'SEG',
+        SeriesNumber: 1,
       };
 
       const referencedDisplaySet = {
@@ -1414,6 +1420,9 @@ describe('SegmentationService', () => {
               locked: false,
               segmentIndex: 2,
             },
+          },
+          cachedStats: {
+            labelFallbackSuffix: 'S:1 SEG',
           },
         },
         representation: {
@@ -1534,7 +1543,7 @@ describe('SegmentationService', () => {
     it('should create a segmentation for a RTSTRUCT display set', async () => {
       const segmentationId = 'segmentationId';
       const rtStructDisplaySet = {
-        modality: 'RTSTRUCT',
+        Modality: 'RTSTRUCT',
         displaySetInstanceUID: 'display-set-uid',
         referencedDisplaySetInstanceUID: 'existent-display-set-uid',
         SeriesDate: '2025-01-01',
@@ -1544,6 +1553,7 @@ describe('SegmentationService', () => {
           ROIContours: [{}, {}, {}],
           frameOfReferenceUID: 'frameOfReferenceUID',
         },
+        SeriesNumber: 1,
       };
 
       const referencedDisplaySet = {
@@ -1690,6 +1700,9 @@ describe('SegmentationService', () => {
               locked: false,
               segmentIndex: 3,
             },
+          },
+          cachedStats: {
+            labelFallbackSuffix: 'S:1 RTSTRUCT',
           },
         },
         representation: {

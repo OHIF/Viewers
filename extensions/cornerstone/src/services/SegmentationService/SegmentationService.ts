@@ -586,8 +586,7 @@ class SegmentationService extends PubSubService {
         label: segDisplaySet.SeriesDescription,
         segments,
         cachedStats: {
-          info: `S${segDisplaySet.SeriesNumber}: ${segDisplaySet.SeriesDescription}`,
-          labelFallbackSuffix: `S${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
+          labelFallbackSuffix: `S:${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
         },
       },
     };
@@ -670,7 +669,6 @@ class SegmentationService extends PubSubService {
       config: {
         label: rtDisplaySet.SeriesDescription,
         cachedStats: {
-          info: `S${rtDisplaySet.SeriesNumber}: ${rtDisplaySet.SeriesDescription}`,
           labelFallbackSuffix: `S:${rtDisplaySet.SeriesNumber} ${rtDisplaySet.Modality}`,
         },
       },
