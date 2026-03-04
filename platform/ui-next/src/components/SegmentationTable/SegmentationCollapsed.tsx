@@ -5,7 +5,7 @@ import {
   SegmentationExpandedProvider,
   useSegmentationExpanded,
 } from './contexts';
-import { SegmentationLabel } from './SegmentationExpanded';
+import { SegmentationLabel } from './SegmentationLabel';
 import { useTranslation } from 'react-i18next';
 import {
   Button,

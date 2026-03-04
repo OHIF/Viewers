@@ -13,7 +13,7 @@ test('checks that segmentations created from series with no series description a
   const segmentationPanel = rightPanelPageObject.contourSegmentationPanel.menuButton;
 
   // Switch to contour tab.
-  segmentationPanel.click();
+  await segmentationPanel.click();
 
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);

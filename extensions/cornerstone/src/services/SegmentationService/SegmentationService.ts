@@ -441,7 +441,7 @@ class SegmentationService extends PubSubService {
               },
         cachedStats: {
           info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
-          labelFallbackSuffix: `S${displaySet.SeriesNumber} ${displaySet.Modality}`,
+          labelFallbackSuffix: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         },
       },
     };
