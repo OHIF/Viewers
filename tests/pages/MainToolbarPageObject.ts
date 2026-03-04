@@ -204,13 +204,17 @@ export class MainToolbarPageObject {
           },
         };
       },
+      /* microscopy specific tools */
+      // `.last()` targets the menu item inside the dropdown, not the active-tool
+      // indicator inside the split-button primary
+      // because both share the same data-cy value (e.g. "line")
+      // Other microscopy tools might follow the same pattern
       get line() {
-        const button = page
-          .getByTestId('MeasurementTools-split-button-primary')
-          .getByTestId('line');
+        const button = page.getByTestId('line').last();
         return {
           button,
           async click() {
+            await measurementTools.click();
             await button.click();
           },
         };

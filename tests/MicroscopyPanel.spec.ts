@@ -4,6 +4,7 @@ test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.276.0.7230010.3.1.2.296485376.1.1665793212.499772';
   const mode = 'microscopy';
   await visitStudy(page, studyInstanceUID, mode, 2000);
+  await page.waitForTimeout(2000);
 });
 test('should rename a microscopy measurement label', async ({
   page,
@@ -16,9 +17,9 @@ test('should rename a microscopy measurement label', async ({
 
   await mainToolbarPageObject.measurementTools.line.click();
 
-  await viewportPageObject.active.clickAt([{ x: 300, y: 300 }]);
+  await viewportPageObject.active.clickAt([{ x: 400, y: 200 }]);
   await page.waitForTimeout(200);
-  await viewportPageObject.active.clickAt([{ x: 450, y: 350 }]);
+  await viewportPageObject.active.clickAt([{ x: 550, y: 250 }]);
 
   const measurementRow = rightPanelPageObject.microscopyPanel.nthMeasurement(0);
   await expect(measurementRow.locator).toBeVisible();
