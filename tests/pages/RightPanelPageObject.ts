@@ -46,6 +46,9 @@ export class RightPanelPageObject {
       get actions() {
         return getActionsMenu(row);
       },
+      get title() {
+        return row.getByTestId('data-row-title');
+      },
       click: async () => {
         await row.click();
       },
@@ -320,6 +323,25 @@ export class RightPanelPageObject {
             },
           };
         },
+      },
+    };
+  }
+
+  get microscopyPanel() {
+    const page = this.page;
+    const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
+    const getMeasurementByText = (text: string) => this.getPanelRowByText(text);
+
+    return {
+      locator: page.getByTestId('measurements-panel'),
+      getMeasurementCount: async () => {
+        return await page.getByTestId('data-row').count();
+      },
+      nthMeasurement(index: number) {
+        return getMeasurementByIdx(index);
+      },
+      measurementByText(text: string) {
+        return getMeasurementByText(text);
       },
     };
   }
