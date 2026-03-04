@@ -23,11 +23,11 @@ test('should rename a microscopy measurement label', async ({
   const measurementRow = rightPanelPageObject.microscopyPanel.nthMeasurement(0);
   await expect(measurementRow.locator).toBeVisible();
 
-  await expect(measurementRow.locator).toContainText('(empty)');
+  await expect(measurementRow.title).toHaveText('(empty)');
 
   await measurementRow.actions.rename(newLabel);
 
   await expect(DOMOverlayPageObject.dialog.input.locator).toBeHidden();
 
-  await expect(measurementRow.locator).toContainText(newLabel);
+  await expect(measurementRow.title).toHaveText(newLabel);
 });

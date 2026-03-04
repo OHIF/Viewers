@@ -46,6 +46,9 @@ export class RightPanelPageObject {
       get actions() {
         return getActionsMenu(row);
       },
+      get title() {
+        return row.getByTestId('data-row-title');
+      },
       click: async () => {
         await row.click();
       },
