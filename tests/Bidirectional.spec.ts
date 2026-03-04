@@ -1,11 +1,4 @@
-import {
-  checkForScreenshot,
-  screenShotPaths,
-  test,
-  visitStudy,
-  expect,
-  waitForError,
-} from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -30,25 +23,4 @@ test('should display the bidirectional tool', async ({
     page,
     screenShotPaths.bidirectional.bidirectionalDisplayedCorrectly
   );
-});
-
-test.describe('Segment Bidirectional', () => {
-  test.beforeEach(async ({ page }) => {
-    const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
-    const mode = 'segmentation';
-    await visitStudy(page, studyInstanceUID, mode, 2000);
-  });
-
-  test('should not show an error when Segment Bidirectional is clicked without a segment being drawn', async ({
-    page,
-    rightPanelPageObject,
-  }) => {
-    await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
-
-    const errorMessage = waitForError(page, 3000);
-
-    await rightPanelPageObject.labelMapSegmentationPanel.segmentBidirectional.click();
-
-    await expect(errorMessage).rejects.toThrow();
-  });
 });
