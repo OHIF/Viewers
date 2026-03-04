@@ -26,6 +26,7 @@
         "build:viewer:qa": "cross-env NODE_ENV=production APP_CONFIG=config/google.js yarn run build",
         "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html QUICK_BUILD=false yarn run build",
         "build": "node --max_old_space_size=8096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
+        "build:viewer:xnat": "cross-env NODE_ENV=production APP_CONFIG=config/xnat.js PUBLIC_URL='/VIEWER/' QUICK_BUILD=true node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
         "clean": "shx rm -rf dist",
         "clean:deep": "yarn run clean && shx rm -rf node_modules",
         "dev:fast": "rsbuild dev --config ../../rsbuild.config.ts",
