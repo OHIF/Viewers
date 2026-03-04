@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.29...v3.13.0-beta.30) (2026-03-04)
+
+**Note:** Version bump only for package @ohif/mode-basic
+
+
+
+
+
 # [3.13.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.28...v3.13.0-beta.29) (2026-03-04)
 
 **Note:** Version bump only for package @ohif/mode-basic
