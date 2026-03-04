@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.30...v3.13.0-beta.31) (2026-03-04)
+
+
+### Bug Fixes
+
+* **microscopy:** rename measurement in microscopy mode ([#5866](https://github.com/OHIF/Viewers/issues/5866)) ([2358a73](https://github.com/OHIF/Viewers/commit/2358a73c3cd24953430064480fb9e66bfe36ea69))
+
+
+
+
+
 # [3.13.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.29...v3.13.0-beta.30) (2026-03-04)
 
 **Note:** Version bump only for package @ohif/extension-dicom-microscopy
