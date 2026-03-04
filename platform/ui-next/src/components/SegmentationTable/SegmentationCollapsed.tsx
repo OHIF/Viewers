@@ -5,6 +5,7 @@ import {
   SegmentationExpandedProvider,
   useSegmentationExpanded,
 } from './contexts';
+import { SegmentationLabel } from './SegmentationExpanded';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -49,7 +50,7 @@ const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.React
 
 // Selector component - for the segmentation selection dropdown
 const SegmentationCollapsedSelector = () => {
-  const { t } = useTranslation('SegmentationPanel.HeaderCollapsed');
+  const { t } = useTranslation('SegmentationPanel');
   const { data, onSegmentationClick, segmentationRepresentationTypes } =
     useSegmentationTableContext('SegmentationCollapsedSelector');
   const { segmentation } = useSegmentationExpanded('SegmentationCollapsedSelector');
@@ -67,16 +68,28 @@ const SegmentationCollapsedSelector = () => {
     )
     .map(seg => ({
       id: seg.segmentation.segmentationId,
-      label: seg.segmentation.label,
+      segmentation: seg.segmentation,
     }));
+
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
 
   return (
     <Select
       onValueChange={value => onSegmentationClick(value)}
       value={segmentation?.segmentationId}
     >
-      <SelectTrigger className="w-full overflow-hidden">
-        <SelectValue placeholder={t('Select a segmentation')} />
+      <SelectTrigger
+        className="w-full overflow-hidden"
+        data-cy={`segmentation-select${dataCyTypeSuffix}`}
+      >
+        <SelectValue
+          placeholder={t('Select a segmentation')}
+          data-cy={`segmentation-select-value${dataCyTypeSuffix}`}
+        >
+          <SegmentationLabel segmentation={segmentation} />
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {segmentations.map(seg => (
@@ -84,7 +97,7 @@ const SegmentationCollapsedSelector = () => {
             key={seg.id}
             value={seg.id}
           >
-            {seg.label}
+            <SegmentationLabel segmentation={seg.segmentation} />
           </SelectItem>
         ))}
       </SelectContent>
