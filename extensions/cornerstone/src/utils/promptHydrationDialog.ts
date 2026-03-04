@@ -103,13 +103,15 @@ function promptHydrationDialog({
         }, 0);
       } else if (type === HydrationType.RTSTRUCT) {
         // RT hydration
-        const isHydrated = await hydrateCallback({
-          rtDisplaySet: displaySet,
-          viewportId,
-          servicesManager,
-        });
+        window.setTimeout(async () => {
+          const isHydrated = await hydrateCallback({
+            rtDisplaySet: displaySet,
+            viewportId,
+            servicesManager,
+          });
 
-        resolve(isHydrated);
+          resolve(isHydrated);
+        }, 0);
       } else if (type === HydrationType.SR) {
         // SR has a different result structure
         const hydrationResult = await hydrateCallback(displaySet);
