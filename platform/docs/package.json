@@ -102,6 +102,7 @@
     "webpack": "5.105.0",
     "sharp": "0.34.5",
     "serialize-javascript": "7.0.4",
-    "rollup": "2.80.0"
+    "rollup": "2.80.0",
+    "svgo": "3.3.3"
   }
 }
