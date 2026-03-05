@@ -32,7 +32,7 @@ export async function initializeAHIFromUrlParams(config: AHIUrlConfig): Promise<
   const expiration = urlParams.get('expiration');
 
   // Check if backend credential fetch mode
-  const backendUrl = urlParams.get('backendUrl') || config?.ahi?.backendUrl;
+  const backendUrl = urlParams.get('backendUrl') || config?.ahi?.backendUrl || window.location.origin;
   const orgId = urlParams.get('orgId') || config?.ahi?.orgId;
   const studyUid = urlParams.get('studyUid') || urlParams.get('StudyInstanceUIDs');
 
@@ -62,6 +62,7 @@ export async function initializeAHIFromUrlParams(config: AHIUrlConfig): Promise<
       region,
       refreshBufferSeconds: config?.ahi?.refreshBufferSeconds ?? 10,
       config,
+      customEndpoint,
     });
   }
 
@@ -127,15 +128,16 @@ interface BackendParams {
   region: string;
   refreshBufferSeconds: number;
   config: AHIUrlConfig;
+  customEndpoint?: string;
 }
 
 async function initializeFromBackend(params: BackendParams): Promise<boolean> {
-  const { backendUrl, orgId, studyUid, region, refreshBufferSeconds, config } = params;
+  const { backendUrl, orgId, studyUid, region, refreshBufferSeconds, config, customEndpoint } = params;
 
   try {
     console.log('[AHI] Fetching credentials from backend...');
 
-    const response = await fetch(`${backendUrl}/credentials`, {
+    const response = await fetch(`${backendUrl}/viewer/credentials`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -148,8 +150,17 @@ async function initializeFromBackend(params: BackendParams): Promise<boolean> {
     }
 
     const credentialResponse = await response.json();
-    const { datastoreId, accessKeyId, secretAccessKey, sessionToken, expiration } =
-      credentialResponse;
+    const {
+      region: responseRegion,
+      datastoreId,
+      accessKeyId,
+      secretAccessKey,
+      sessionToken,
+      expiration,
+    } = credentialResponse;
+
+    // Use region from response, fallback to param
+    const effectiveRegion = responseRegion || region;
 
     const credentials: AHICredentials = {
       accessKeyId,
@@ -160,7 +171,7 @@ async function initializeFromBackend(params: BackendParams): Promise<boolean> {
 
     // Create refresh callback
     const credentialRefreshCallback = async (): Promise<AHICredentials> => {
-      const refreshResponse = await fetch(`${backendUrl}/credentials`, {
+      const refreshResponse = await fetch(`${backendUrl}/viewer/credentials`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,19 +193,20 @@ async function initializeFromBackend(params: BackendParams): Promise<boolean> {
     };
 
     ahiSigner.initialize({
-      region,
+      region: effectiveRegion,
       datastoreId,
       credentials,
       credentialRefreshCallback,
       refreshBufferSeconds,
+      customEndpoint,
     });
 
     // Update data source URLs in config
-    updateDataSourceUrls(config, region, datastoreId);
+    updateDataSourceUrls(config, effectiveRegion, datastoreId, customEndpoint);
 
     console.log('[AHI] SigV4 signer initialized from backend');
     console.log('[AHI] Datastore:', datastoreId);
-    console.log('[AHI] Region:', region);
+    console.log('[AHI] Region:', effectiveRegion);
 
     return true;
   } catch (error) {
