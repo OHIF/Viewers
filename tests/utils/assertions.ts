@@ -61,3 +61,7 @@ export async function assertBoundingBoxIsContainedWithin({
     `${innerBoxLabel} bottom edge should be within ${outerBoxLabel}`
   ).toBeLessThanOrEqual(outerBox.y + outerBox.height);
 }
+
+export async function expectRowSelected(rowObject) {
+  await expect(rowObject.locator).toContainClass('bg-popover');
+}

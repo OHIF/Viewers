@@ -16,7 +16,10 @@ import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
+import { getSvgPath } from './getSvgPath';
+import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
+import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 
 export {
   visitStudy,
@@ -36,6 +39,9 @@ export {
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
+  subscribeToMeasurementAdded,
+  getSvgPath,
+  navigateWithViewportArrow,
   test,
   expect,
 };

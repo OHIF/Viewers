@@ -24,6 +24,10 @@ export interface IViewportPageObject {
     contextMenu: {
       open: () => Promise<void>;
     };
+    text: {
+      locator: Locator;
+      click: () => Promise<void>;
+    };
   };
   clickAt: (
     points: { x: number; y: number }[],
@@ -60,6 +64,17 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  navigationArrows: {
+    locator: Locator;
+    prev: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+    next: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+  };
 }
 
 export class ViewportPageObject {
@@ -75,6 +90,7 @@ export class ViewportPageObject {
     const page = this.page;
     const domOverlayPageObject = new DOMOverlayPageObject(page);
     const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
+    const textLocator = annotation.locator('text').first();
 
     return {
       locator: annotation,
@@ -84,6 +100,12 @@ export class ViewportPageObject {
       contextMenu: {
         open: async () => {
           await domOverlayPageObject.viewport.annotationContextMenu.open(annotation);
+        },
+      },
+      text: {
+        locator: textLocator,
+        click: async () => {
+          await textLocator.click({ force: true });
         },
       },
     };
@@ -135,6 +157,27 @@ export class ViewportPageObject {
     return viewport.locator(`svg.svg-layer${innerElement ? ` ${innerElement}` : ''}`);
   }
 
+  private getNavigationArrows(viewport: Locator) {
+    const container = viewport.getByTestId('viewport-action-arrows');
+    const prevButton = viewport.getByTestId('viewport-action-arrows-left');
+    const nextButton = viewport.getByTestId('viewport-action-arrows-right');
+    return {
+      locator: container,
+      prev: {
+        button: prevButton,
+        click: async () => {
+          await prevButton.click();
+        },
+      },
+      next: {
+        button: nextButton,
+        click: async () => {
+          await nextButton.click();
+        },
+      },
+    };
+  }
+
   private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
     return {
       nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
@@ -178,6 +221,7 @@ export class ViewportPageObject {
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
+      navigationArrows: this.getNavigationArrows(viewport),
     };
   }
 
