@@ -9,17 +9,13 @@ import {
 export function getCodeMeaningFromConceptNameCodeSequence(
   conceptNameCodeSequence: ConceptNameCodeSequence
 ): string {
-  const item: ConceptNameCodeSequenceItem = (conceptNameCodeSequence ?? [])[0];
-  const { CodeMeaning } = item;
-  return CodeMeaning ?? "";
+  return conceptNameCodeSequence?.[0]?.CodeMeaning || "";
 }
 
 export function getCodeValueFromConceptNameCodeSequence(
   conceptNameCodeSequence: ConceptNameCodeSequence
 ): string {
-  const item: ConceptNameCodeSequenceItem = (conceptNameCodeSequence ?? [])[0];
-  const { CodeValue } = item;
-  return CodeValue ?? "";
+  return conceptNameCodeSequence?.[0]?.CodeValue || "";
 }
 
 export function getContentSequenceFromSR(root: DICOMStandardReport): ContentSequence{
