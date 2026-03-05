@@ -9,7 +9,7 @@ import {
 export function getCodeMeaningFromConceptNameCodeSequence(
   conceptNameCodeSequence: ConceptNameCodeSequence
 ): string {
-  let item: ConceptNameCodeSequenceItem = conceptNameCodeSequence[0];
+  let item: ConceptNameCodeSequenceItem = (conceptNameCodeSequence ?? [])[0];
   const { CodeMeaning } = item;
   return CodeMeaning ?? "";
 }
@@ -17,7 +17,7 @@ export function getCodeMeaningFromConceptNameCodeSequence(
 export function getCodeValueFromConceptNameCodeSequence(
   conceptNameCodeSequence: ConceptNameCodeSequence
 ): string {
-  let item: ConceptNameCodeSequenceItem = conceptNameCodeSequence[0];
+  let item: ConceptNameCodeSequenceItem = (conceptNameCodeSequence ?? [])[0];
   const { CodeValue } = item;
   return CodeValue ?? "";
 }

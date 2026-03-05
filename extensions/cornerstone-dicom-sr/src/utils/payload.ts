@@ -396,7 +396,10 @@ export const htmlSanitizerOptions = {
       'xmlns:m',
     ],
   },
-  allowedSchemes: ['data', 'priorlink', 'xmlns', 'urn', 'http', 'https', 'mailto'],
+  allowedSchemes: ['priorlink', 'xmlns', 'urn', 'http', 'https', 'mailto'],
+  allowedSchemesByTag: {
+    img: ['data', 'http', 'https'],
+  },
   enforceHtmlBoundary: true,
 };
 
@@ -412,7 +415,7 @@ export const htmlSanitizerOptions = {
  */
 export function getPayloadType(payload: string, suggested_mime: string = 'text/plain') {
   // PDF
-  if (!payload.indexOf('%PDF-')) {
+  if (payload.indexOf('%PDF-') != -1) {
     return 'application/pdf';
   }
   // HTML.

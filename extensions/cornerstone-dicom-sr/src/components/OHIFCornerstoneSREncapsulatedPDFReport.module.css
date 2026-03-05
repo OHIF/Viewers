@@ -6,12 +6,12 @@
 }
 
 .page {
-    flexDirection: 'row';
-    backgroundColor: '#E4E4E4';
+    flexDirection: row;
+    backgroundColor: #E4E4E4;
 }
 
 .section {
-    margin: 10;
-    padding: 10;
+    margin: 10px;
+    padding: 10px;
     flexGrow: 1;
 }

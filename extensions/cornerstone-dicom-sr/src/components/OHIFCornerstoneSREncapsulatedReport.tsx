@@ -23,16 +23,19 @@ export function OHIFCornerstoneSREncapsulatedReport(
   const [textContent, setTextContent] = useState<string>("");
 
   useEffect(() => {
-    data.text().then(content => {
-      const decoded = props.expectB64 ? fromBase64(content) : content;
-      // Sometimes, we may receive a mime of text/plain because the originator based it on the extension of the file instead
-      // of conducting a more thorough search by peaking at the contents and testing.
-      // I understand that can be a very expensive operation, so we do the bare minimum mime correction we need.
-      const correctMime = getPayloadType(decoded, mime);
-      const utf8Text = toUTF8(decoded, props.encoding);
-      setTextContent(utf8Text);
-      setMime(correctMime);
-    });
+    data.text().then(
+      content => {
+        const decoded = props.expectB64 ? fromBase64(content) : content;
+        // Sometimes, we may receive a mime of text/plain because the originator based it on the extension of the file instead
+        // of conducting a more thorough search by peaking at the contents and testing.
+        // I understand that can be a very expensive operation, so we do the bare minimum mime correction we need.
+        const correctMime = getPayloadType(decoded, mime);
+        const utf8Text = toUTF8(decoded, props.encoding);
+        setTextContent(utf8Text);
+        setMime(correctMime);
+      },
+      [data, props.expectB64, props.encoding]
+    );
   })
 
   switch (mime) {
@@ -57,7 +60,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
     default:
       return (
         <p>
-          `Document with mime ${mime} is not recognized or supported for display.`
+          {`Document with mime ${mime} is not recognized or supported for display.`}
         </p>
       );
   }
