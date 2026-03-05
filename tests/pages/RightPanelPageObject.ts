@@ -118,6 +118,10 @@ export class RightPanelPageObject {
     const getSegmentByText = (text: string) => this.getPanelRowByText(text);
 
     return {
+      deleteAll: async () => {
+        await page.getByTestId('segmentation-collapsed-more-btn').click();
+        await page.getByRole('menuitem', { name: 'Delete' }).click();
+      },
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },

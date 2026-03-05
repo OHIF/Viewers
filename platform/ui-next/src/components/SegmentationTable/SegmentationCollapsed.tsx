@@ -38,6 +38,7 @@ const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.React
         <Button
           variant="ghost"
           size="icon"
+          data-cy="segmentation-collapsed-more-btn"
         >
           <Icons.More className="h-6 w-6" />
         </Button>
