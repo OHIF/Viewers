@@ -1,0 +1,24 @@
+diff --git a/node_modules/@cornerstonejs/tools/dist/esm/tools/MagnifyTool.js b/node_modules/@cornerstonejs/tools/dist/esm/tools/MagnifyTool.js
+index bd4f426..3907cf5 100644
+--- a/node_modules/@cornerstonejs/tools/dist/esm/tools/MagnifyTool.js
++++ b/node_modules/@cornerstonejs/tools/dist/esm/tools/MagnifyTool.js
+@@ -52,7 +52,7 @@ class MagnifyTool extends BaseTool {
+             const { viewport } = enabledElement;
+             const { element } = viewport;
+             const viewportProperties = viewport.getProperties();
+-            const { rotation: originalViewportRotation } = viewport.getViewPresentation();
++            const originalViewPresentation = viewport.getViewPresentation();
+             const { canvas: canvasPos, world: worldPos } = currentPoints;
+             let magnifyToolElement;
+             magnifyToolElement = element.querySelector('.magnifyTool');
+@@ -81,9 +81,7 @@ class MagnifyTool extends BaseTool {
+                     return;
+                 }
+                 magnifyViewport.setProperties(viewportProperties);
+-                magnifyViewport.setViewPresentation({
+-                    rotation: originalViewportRotation,
+-                });
++                magnifyViewport.setViewPresentation(originalViewPresentation);
+                 const { parallelScale } = viewport.getCamera();
+                 const { focalPoint, position, viewPlaneNormal } = magnifyViewport.getCamera();
+                 const distance = Math.sqrt(Math.pow(focalPoint[0] - position[0], 2) +

@@ -79,6 +79,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
     "execa": "8.0.1"
   },
   "optionalDependencies": {
@@ -111,6 +112,7 @@
     "cypress-file-upload": "5.0.8",
     "file-loader": "6.2.0",
     "nyc": "17.1.0",
+    "patch-package": "^8.0.1",
     "playwright-test-coverage": "1.2.12",
     "postcss-loader": "6.2.1",
     "prettier": "3.6.2",
