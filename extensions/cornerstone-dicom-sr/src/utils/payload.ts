@@ -410,10 +410,10 @@ export const htmlSanitizerOptions = {
  * This is helpful in deciding how to render and clean up the payload later on.
  *
  * @param {string} payload
- * @param {string} suggested_mime Default MIME to use if we cannot identify the content's MIME
+ * @param {string} suggestedMime Default MIME to use if we cannot identify the content's MIME
  * @return string
  */
-export function getPayloadType(payload: string, suggested_mime: string = 'text/plain') {
+export function getPayloadType(payload: string, suggestedMime: string = 'text/plain') {
   // PDF
   if (payload.indexOf('%PDF-') != -1) {
     return 'application/pdf';
@@ -424,7 +424,7 @@ export function getPayloadType(payload: string, suggested_mime: string = 'text/p
     return 'text/html';
   }
   // Passthrough mime if we cannot detect a special mime.
-  return suggested_mime;
+  return suggestedMime;
 }
 
 /**
