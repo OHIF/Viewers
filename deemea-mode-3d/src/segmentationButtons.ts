@@ -54,10 +54,10 @@ const segmentationButtons: Button[] = [
     props: {
       icon: 'icon-tool-brush',
       label: 'Brush',
-      evaluate: () => {
-        return {
-          disabled: false,
-        };
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['CircularBrush', 'SphereBrush'],
+        disabledText: 'Create new segmentation to enable this tool.',
       },
       options: [
         {
