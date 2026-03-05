@@ -1,4 +1,4 @@
-import { decodeInt16Multiplex, base64ToArrayBuffer, buildEcgModule } from '../utils/ecgHelpers';
+import { decodeInt16Multiplex, base64ToArrayBuffer, buildEcgModule } from './ecgMetadata';
 
 // ---------------------------------------------------------------------------
 // decodeInt16Multiplex
