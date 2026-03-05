@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import Markdown from 'marked-react';
 import {
   fromBase64,
   getPayloadType,
@@ -8,6 +7,7 @@ import {
 } from '../utils/payload';
 import { OHIFCornerstoneSREncapsulatedPDFReport } from './OHIFCornerstoneSREncapsulatedPDFReport';
 import { useState } from 'react';
+import OHIFLazyMarkdownComponent from './OHIFLazyMarkdown';
 
 export interface ReportContentDisplayProps {
   readonly content: Blob;
@@ -41,9 +41,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
   switch (mime) {
     case payloadMIMEOptions.TEXT:
       return (
-        <Markdown>
-          {textContent}
-        </Markdown>
+        <OHIFLazyMarkdownComponent markdownContent={textContent} />
       );
     case payloadMIMEOptions.HTML:
       return (
