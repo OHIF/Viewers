@@ -47,33 +47,57 @@ No extra secrets are required if CS3D is public and the workflow runs in the OHI
 
 ## How to test locally
 
-1. **Update deps from a release (dry run)**  
-   Get a release tag from [CS3D Releases](https://github.com/cornerstonejs/cornerstone3D/releases) (e.g. a `cs3d-pr-*` or `cs3d-merged-v*` tag). Then:
+### Recommended: `install:cs3d` (one command from a PR URL)
 
-   ```bash
-   export GH_TOKEN=your_github_token
-   node .github/scripts/update-cs3d-deps-from-assets.mjs \
-     --release-tag cs3d-pr-123-abc1234 \
-     --repo cornerstonejs/cornerstone3D \
-     --mode integration-only \
-     --cs3d-pr 123 \
-     --cs3d-sha abc1234567890
-   yarn install
-   node .github/scripts/verify-cs3d-integration-diff.mjs --mode integration-only
-   ```
+To point OHIF at the latest CS3D prerelease for a specific PR, run:
 
-2. **Verify diff only**  
-   After making changes, run:
+```bash
+export GH_TOKEN=your_github_pat   # required for GitHub API to resolve the release
+bun run install:cs3d -- https://github.com/cornerstonejs/cornerstone3D/pull/2648
+```
 
-   ```bash
-   CS3D_TRUSTED_REPO=cornerstonejs/cornerstone3D node .github/scripts/verify-cs3d-integration-diff.mjs --mode integration-only
-   ```
+This script:
 
-3. **Resolve merged branch (for merged-update flow)**  
-   ```bash
-   node .github/scripts/update-open-cs3d-integration-prs.mjs --action merged-update
-   ```
-   This prints the branch name (`bot/cs3d-merged`) and writes to `GITHUB_OUTPUT` if that env is set.
+1. Parses the PR URL to get repo and PR number.
+2. Fetches the repo’s releases and finds the **latest** prerelease whose tag matches `cs3d-pr-<PR number>-*`.
+3. Fails with a clear message if no such release exists (e.g. the PR doesn’t have the `ohif-integration` label or the CS3D workflow hasn’t run yet).
+4. Updates all `@cornerstonejs/*` dependency entries and root `resolutions` to the tarball URLs from that release.
+5. Writes `.github/cs3d-integration.json` with metadata.
+6. Runs `bun run install:update-lockfile` to refresh the lockfile.
+
+After it succeeds, run the viewer as usual (e.g. `yarn dev`). To revert to published CS3D versions, restore `package.json` and lockfile from git and run `yarn install` again.
+
+### Manual: update deps from a known release tag
+
+If you already have a release tag (e.g. from [CS3D Releases](https://github.com/cornerstonejs/cornerstone3D/releases)):
+
+```bash
+export GH_TOKEN=your_github_token
+node .github/scripts/update-cs3d-deps-from-assets.mjs \
+  --release-tag cs3d-pr-123-abc1234 \
+  --repo cornerstonejs/cornerstone3D \
+  --mode integration-only \
+  --cs3d-pr 123 \
+  --cs3d-sha abc1234567890
+yarn install
+node .github/scripts/verify-cs3d-integration-diff.mjs --mode integration-only
+```
+
+### Verify diff only
+
+After making changes, to ensure only allowed files changed:
+
+```bash
+CS3D_TRUSTED_REPO=cornerstonejs/cornerstone3D node .github/scripts/verify-cs3d-integration-diff.mjs --mode integration-only
+```
+
+### Resolve merged branch (for merged-update flow)
+
+```bash
+node .github/scripts/update-open-cs3d-integration-prs.mjs --action merged-update
+```
+
+This prints the branch name (`bot/cs3d-merged`) and writes to `GITHUB_OUTPUT` if that env is set.
 
 ## Metadata file
 

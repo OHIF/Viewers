@@ -82,7 +82,6 @@
     "worktree:cs3d": "node scripts/worktree-cs3d.mjs",
     "build:libs": "node scripts/build-libs.mjs",
     "link:libs": "node scripts/link-cornerstone-libs.mjs",
-    "checkout:libs": "node scripts/checkout-libs-for-netlify.mjs",
     "build:cs3d": "cd libs/@cornerstonejs && bun install --frozen-lockfile && bun run build",
     "build:cs3d:watch": "cd libs/@cornerstonejs && bun run watch"
   },
