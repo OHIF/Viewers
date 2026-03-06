@@ -1,0 +1,192 @@
+# Consumes CS3D tarball release assets: creates or updates integration branches and PRs
+# so OHIF can test against a specific CS3D PR or the merged baseline.
+#
+# Branch naming: bot/cs3d-pr-<pr-number> for a CS3D PR; bot/cs3d-merged for merged baseline.
+# Metadata: .github/cs3d-integration.json records mode, release tag, and CS3D repo/sha.
+#
+# Trigger: repository_dispatch from CS3D (or manual) with event_type and client_payload.
+# Compatible event types: cs3d_integration_requested, cs3d_merged_update, or cs3d-integration (branch on payload.mode).
+
+name: OHIF CS3D integration
+
+on:
+  repository_dispatch:
+    types:
+      - cs3d_integration_requested
+      - cs3d_merged_update
+      - cs3d-integration
+
+jobs:
+  # --- A. New integration PR from a CS3D PR ---
+  integration-request:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'repository_dispatch' &&
+      (github.event.action == 'cs3d_integration_requested' ||
+       (github.event.action == 'cs3d-integration' && github.event.client_payload.mode == 'integration-only'))
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch || 'main' }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
+
+      - name: Create or reuse integration branch (idempotent: same CS3D PR → same branch)
+        id: branch
+        run: |
+          PR="${{ github.event.client_payload.cs3d_pr_number }}"
+          BRANCH="bot/cs3d-pr-${PR}"
+          DEFAULT="${{ github.event.repository.default_branch || 'main' }}"
+          git fetch origin
+          if git rev-parse --verify "origin/$BRANCH" 2>/dev/null; then
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH" --rebase || true
+          else
+            git checkout -b "$BRANCH"
+          fi
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Resolve release assets and update CS3D deps
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          node .github/scripts/update-cs3d-deps-from-assets.mjs \
+            --release-tag "${{ github.event.client_payload.release_tag }}" \
+            --repo "${{ github.event.client_payload.source_repository }}" \
+            --mode "${{ github.event.client_payload.mode || 'integration-only' }}" \
+            --cs3d-pr "${{ github.event.client_payload.cs3d_pr_number }}" \
+            --cs3d-sha "${{ github.event.client_payload.cs3d_head_sha }}" \
+            --cs3d-repo "${{ github.event.client_payload.source_repository }}"
+
+      - name: Regenerate lockfile
+        run: yarn install
+
+      - name: Verify diff (allowed: package manifests, lockfile, metadata only in integration-only)
+        env:
+          CS3D_TRUSTED_REPO: ${{ github.event.client_payload.source_repository }}
+        run: node .github/scripts/verify-cs3d-integration-diff.mjs --mode "${{ github.event.client_payload.mode || 'integration-only' }}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add '**/package.json' yarn.lock package-lock.json bun.lock .github/cs3d-integration.json 2>/dev/null || true
+          git add -u
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: integrate CS3D PR ${{ github.event.client_payload.cs3d_pr_number }} (${{ github.event.client_payload.release_tag }})"
+          git push -u origin "${{ steps.branch.outputs.branch }}"
+
+      - name: Open or update PR
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          BRANCH="${{ steps.branch.outputs.branch }}"
+          TITLE="test: integrate CS3D PR #${{ github.event.client_payload.cs3d_pr_number }}"
+          BODY="Integration branch for CS3D PR ${{ github.event.client_payload.cs3d_pr_number }}. Release: ${{ github.event.client_payload.release_tag }}."
+          EXISTING=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            echo "Updated PR #$EXISTING"
+          else
+            gh pr create --head "$BRANCH" --base "${{ github.event.repository.default_branch || 'main' }}" --title "$TITLE" --body "$BODY"
+          fi
+
+  # --- B. Update merged baseline branch from cs3d_merged_update ---
+  merged-update:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'repository_dispatch' &&
+      (github.event.action == 'cs3d_merged_update' ||
+       (github.event.action == 'cs3d-integration' && github.event.client_payload.mode == 'merged-refresh'))
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.23
+
+      - name: Resolve integration branch to update
+        id: target
+        run: node .github/scripts/update-open-cs3d-integration-prs.mjs --action merged-update --default-branch ${{ github.event.repository.default_branch || 'main' }}
+
+      - name: Fetch and checkout or create merged branch
+        run: |
+          git fetch origin
+          BRANCH="${{ steps.target.outputs.branch }}"
+          DEFAULT="${{ github.event.repository.default_branch || 'main' }}"
+          if [ "${{ steps.target.outputs.branch_exists }}" = "true" ]; then
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH" --rebase || true
+          else
+            git checkout -b "$BRANCH" "origin/$DEFAULT"
+          fi
+
+      - name: Update CS3D deps to merged release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          node .github/scripts/update-cs3d-deps-from-assets.mjs \
+            --release-tag "${{ github.event.client_payload.release_tag }}" \
+            --repo "${{ github.event.client_payload.source_repository }}" \
+            --mode "${{ github.event.client_payload.mode || 'merged-refresh' }}" \
+            --cs3d-repo "${{ github.event.client_payload.source_repository }}" \
+            --cs3d-merged-version "${{ github.event.client_payload.cs3d_merged_version }}" \
+            --cs3d-merged-sha "${{ github.event.client_payload.cs3d_merged_sha }}"
+
+      - name: Regenerate lockfile
+        run: yarn install
+
+      - name: Re-run verification (paired-change allows human changes; deps must still be trusted URLs)
+        env:
+          CS3D_TRUSTED_REPO: ${{ github.event.client_payload.source_repository }}
+        run: node .github/scripts/verify-cs3d-integration-diff.mjs --mode "${{ github.event.client_payload.mode || 'merged-refresh' }}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add '**/package.json' yarn.lock package-lock.json bun.lock .github/cs3d-integration.json 2>/dev/null || true
+          git add -u
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: update CS3D integration to merged ${{ github.event.client_payload.release_tag }}"
+          git push -u origin "${{ steps.target.outputs.branch }}"
+
+      - name: Open or update PR for merged baseline
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          BRANCH="${{ steps.target.outputs.branch }}"
+          TITLE="test: integrate CS3D merged ${{ github.event.client_payload.cs3d_merged_version || github.event.client_payload.release_tag }}"
+          BODY="Merged CS3D baseline. Release: ${{ github.event.client_payload.release_tag }}."
+          EXISTING=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh pr edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            echo "Updated PR #$EXISTING"
+          else
+            gh pr create --head "$BRANCH" --base "${{ github.event.repository.default_branch || 'main' }}" --title "$TITLE" --body "$BODY"
+          fi

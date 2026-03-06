@@ -47,6 +47,7 @@
     "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
     "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --frozen-lockfile --modules-folder ../node_modules",
     "install:update-lockfile": "yarn install && bun install --config=./bunfig.update-lockfile.toml",
+    "install:cs3d": "node scripts/install-cs3d-from-pr.mjs",
     "install:libs": "node scripts/install-libs.mjs",
     "install:yarn:frozen-lockfile": "echo Deprecated - use install:frozen && yarn install --frozen-lockfile",
     "install:frozen": "yarn install --frozen-lockfile",

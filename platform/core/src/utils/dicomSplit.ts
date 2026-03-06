@@ -1,3 +1,5 @@
-import { utilities } from '@cornerstonejs/metadata';
-
-export const dicomSplit = utilities.dicomSplit;
+export function dicomSplit(value) {
+  return (
+    (Array.isArray(value) && value) || (typeof value === 'string' && value.split('\\')) || value
+  );
+}

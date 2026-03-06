@@ -1946,21 +1946,24 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cornerstonejs/adapters@4.18.2", "@cornerstonejs/adapters@file:./libs/@cornerstonejs/packages/adapters":
-  version "4.18.4"
+"@cornerstonejs/adapters@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-adapters-4.18.5.tgz":
+  version "4.18.5"
+  uid "97c0d6ba08e965d8c58a2a71922a8f6a2258d337"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-adapters-4.18.5.tgz#97c0d6ba08e965d8c58a2a71922a8f6a2258d337"
   dependencies:
     "@babel/runtime-corejs2" "7.26.10"
     buffer "6.0.3"
-    dcmjs "0.50.1"
+    dcmjs "0.49.4"
     gl-matrix "3.4.3"
     ndarray "1.0.19"
 
-"@cornerstonejs/ai@4.18.2", "@cornerstonejs/ai@file:./libs/@cornerstonejs/packages/ai":
-  version "4.18.4"
+"@cornerstonejs/ai@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-ai-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-ai-4.18.5.tgz#18ab894c2df332f1d5f04d719eeb2e3dc0757fea"
   dependencies:
     "@babel/runtime-corejs2" "7.26.10"
     buffer "6.0.3"
-    dcmjs "0.50.1"
+    dcmjs "0.49.4"
     gl-matrix "3.4.3"
     lodash.clonedeep "4.5.0"
     ndarray "1.0.19"
@@ -1992,16 +1995,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.7.tgz#784394d05d8cf735640e9c3baa206535ee8e0376"
   integrity sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w==
 
-"@cornerstonejs/core@4.18.2", "@cornerstonejs/core@file:./libs/@cornerstonejs/packages/core":
-  version "4.18.4"
+"@cornerstonejs/core@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-core-4.18.5.tgz":
+  version "4.18.5"
+  uid "27dbd18dedf8e4c20e926a1809194dfdcb4dd642"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-core-4.18.5.tgz#27dbd18dedf8e4c20e926a1809194dfdcb4dd642"
   dependencies:
     "@kitware/vtk.js" "34.15.1"
     comlink "4.4.2"
     gl-matrix "3.4.3"
     loglevel "1.9.2"
 
-"@cornerstonejs/dicom-image-loader@4.18.2", "@cornerstonejs/dicom-image-loader@file:./libs/@cornerstonejs/packages/dicomImageLoader":
-  version "4.18.4"
+"@cornerstonejs/dicom-image-loader@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-dicom-image-loader-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-dicom-image-loader-4.18.5.tgz#0fa745678c13c3575b1460c190c9f1fe898306b7"
   dependencies:
     "@cornerstonejs/codec-charls" "1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "1.2.2"
@@ -2013,30 +2019,23 @@
     pako "2.1.0"
     uuid "9.0.1"
 
-"@cornerstonejs/labelmap-interpolation@4.18.2", "@cornerstonejs/labelmap-interpolation@file:./libs/@cornerstonejs/packages/labelmap-interpolation":
-  version "4.18.4"
+"@cornerstonejs/labelmap-interpolation@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-labelmap-interpolation-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-labelmap-interpolation-4.18.5.tgz#6b9cb9299044afe8ca935e3918e4edafb960c18c"
   dependencies:
     "@itk-wasm/morphological-contour-interpolation" "1.1.0"
     itk-wasm "1.0.0-b.165"
 
-"@cornerstonejs/metadata@file:./libs/@cornerstonejs/packages/metadata":
-  version "4.17.4"
-  dependencies:
-    dcmjs "0.50.1"
-    gl-matrix "3.4.3"
-
-"@cornerstonejs/nifti-volume-loader@file:./libs/@cornerstonejs/packages/nifti-volume-loader":
-  version "4.18.4"
-  dependencies:
-    nifti-reader-js "0.6.9"
-
-"@cornerstonejs/polymorphic-segmentation@4.18.2", "@cornerstonejs/polymorphic-segmentation@file:./libs/@cornerstonejs/packages/polymorphic-segmentation":
-  version "4.18.4"
+"@cornerstonejs/polymorphic-segmentation@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-polymorphic-segmentation-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-polymorphic-segmentation-4.18.5.tgz#833a96661aabf46328fed4fd74dd4720e40f1c52"
   dependencies:
     "@icr/polyseg-wasm" "0.4.0"
 
-"@cornerstonejs/tools@4.18.2", "@cornerstonejs/tools@file:./libs/@cornerstonejs/packages/tools":
-  version "4.18.4"
+"@cornerstonejs/tools@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-tools-4.18.5.tgz":
+  version "4.18.5"
+  uid "9534dc4b2f6b7e564f783b078850d7efa11300f4"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-tools-4.18.5.tgz#9534dc4b2f6b7e564f783b078850d7efa11300f4"
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "4.4.2"
@@ -8366,7 +8365,7 @@ dayjs@^1.10.4:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
   integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
-dcmjs@0.49.4, dcmjs@0.50.1, dcmjs@^0.41.0:
+dcmjs@0.49.4, dcmjs@^0.41.0:
   version "0.49.4"
   resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.49.4.tgz#833c014eb9e36a6859c80a860b0fb231d9bfeaf8"
   integrity sha512-w77Gde5JvLjg37FyGIAsTB+oWZIqkO/5NvBeheEVKy6k9XjBgeGsoAbVAByjuGAFLpGqRbf9iWI0edBq87yu/g==
@@ -10050,11 +10049,6 @@ fetch-blob@^3.1.2, fetch-blob@^3.1.4:
   dependencies:
     node-domexception "^1.0.0"
     web-streams-polyfill "^3.0.3"
-
-fflate@*:
-  version "0.8.2"
-  resolved "https://registry.npmjs.org/fflate/-/fflate-0.8.2.tgz#fc8631f5347812ad6028bbe4a2308b2792aa1dea"
-  integrity sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==
 
 fflate@0.7.3:
   version "0.7.3"
@@ -14501,13 +14495,6 @@ next-themes@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/next-themes/-/next-themes-0.3.0.tgz#b4d2a866137a67d42564b07f3a3e720e2ff3871a"
   integrity sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==
-
-nifti-reader-js@0.6.9:
-  version "0.6.9"
-  resolved "https://registry.npmjs.org/nifti-reader-js/-/nifti-reader-js-0.6.9.tgz#737b88eb951c6b98841ce888204a9370214b17e5"
-  integrity sha512-oEC35cuYFR0i+KeXhaK0hJz4oSj511Vo7LmO/6iqbxzwek6XWnBi77VURlk4jsnJ86tlJNpYv6ujmSDpPP46Tw==
-  dependencies:
-    fflate "*"
 
 no-case@^3.0.4:
   version "3.0.4"

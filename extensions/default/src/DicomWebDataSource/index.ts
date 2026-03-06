@@ -1,6 +1,5 @@
 import { api } from 'dicomweb-client';
 import { DicomMetadataStore, IWebApiDataSource, utils, errorHandler, classes } from '@ohif/core';
-import { Enums, utilities } from '@cornerstonejs/metadata';
 
 import {
   mapParams,
@@ -28,7 +27,6 @@ const ImplementationVersionName = 'OHIF-3.11.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
 const metadataProvider = classes.MetadataProvider;
-const { MetadataModules } = Enums;
 
 export type DicomWebConfig = {
   /** Data source name */
@@ -76,12 +74,6 @@ export type DicomWebConfig = {
   staticWado?: boolean;
   /** User authentication service */
   userAuthenticationService: Record<string, unknown>;
-  /**
-   * When true (default), instance metadata is added only to the OHIF MetadataProvider.
-   * When false, naturalized instance metadata is also written to @cornerstonejs/metadata NATURAL
-   * module so that the new metadata module is used instead of the legacy OHIF provider.
-   */
-  useLegacyMetadataProvider?: boolean;
 };
 
 export type BulkDataURIConfig = {
@@ -498,10 +490,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           SOPInstanceUID: instance.SOPInstanceUID,
         });
 
-        if (dicomWebConfig.useLegacyMetadataProvider === false) {
-          utilities.setCacheData(MetadataModules.NATURAL, imageId, instance);
-        }
-
         instancesPerSeries[instance.SeriesInstanceUID].push(instance);
       });
 
@@ -610,9 +598,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
               SOPInstanceUID,
               frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
             });
-            if (dicomWebConfig.useLegacyMetadataProvider === false) {
-              utilities.setCacheData(MetadataModules.NATURAL, frameImageId, instance);
-            }
           }
 
           // Adding imageId to each instance
