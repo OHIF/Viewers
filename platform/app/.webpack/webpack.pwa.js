@@ -74,6 +74,10 @@ module.exports = (env, argv) => {
       },
     },
     resolve: {
+      alias: {
+        // Resolve local lib so build works without link:@cornerstonejs/metadata in package.json
+        '@cornerstonejs/metadata': path.resolve(__dirname, '../../../libs/@cornerstonejs/packages/metadata'),
+      },
       modules: [
         // Modules specific to this package
         path.resolve(__dirname, '../node_modules'),

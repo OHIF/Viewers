@@ -1,12 +1,14 @@
 import OHIF from '@ohif/core';
 import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
+import { Enums as metadataEnums } from '@cornerstonejs/metadata';
 import dcmjs from 'dcmjs';
 import { dicomWebUtils } from '@ohif/extension-default';
 
 const { utils } = OHIF;
 const { denaturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 const { transferDenaturalizedDataset, fixMultiValueKeys } = dicomWebUtils;
+const { MetadataModules } = metadataEnums;
 
 const SOP_CLASS_UIDS = {
   VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.6',

@@ -88,6 +88,7 @@ async function main() {
     path.join(ROOT_DIR, 'node_modules'),
     path.join(ROOT_DIR, 'platform', 'app', 'node_modules'),
     path.join(ROOT_DIR, 'platform', 'ui', 'node_modules'),
+    path.join(ROOT_DIR, 'platform', 'core', 'node_modules'),
   ];
 
   for (const root of roots) {

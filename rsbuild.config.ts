@@ -94,6 +94,8 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
       '@routes': path.resolve(__dirname, './platform/app/src/routes'),
       '@state': path.resolve(__dirname, './platform/app/src/state'),
+      // Resolve local lib so build works without link:@cornerstonejs/metadata in package.json
+      '@cornerstonejs/metadata': path.resolve(__dirname, './libs/@cornerstonejs/packages/metadata'),
     },
   },
   output: {

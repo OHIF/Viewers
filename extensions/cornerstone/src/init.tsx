@@ -184,7 +184,11 @@ export default async function init({
       csUtilities.calibratedPixelSpacingMetadataProvider
     )
   ); // this provider is required for Calibration tool
-  metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
+  // When useLegacyMetadataProvider is false, the app uses @cornerstonejs/metadata (NATURAL cache)
+  // and DICOMweb feeds it directly; when true, use the existing OHIF MetadataProvider.
+  if (appConfig.useLegacyMetadataProvider !== false) {
+    metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
+  }
 
   // These are set reasonably low to allow for interleaved retrieves and slower
   // connections.
