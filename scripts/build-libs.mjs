@@ -23,7 +23,10 @@ async function main() {
     return;
   }
   console.log('build:libs: building @cornerstonejs...');
-  await execa('yarn', ['run', 'build:cs3d'], { cwd: ROOT_DIR, stdio: 'inherit' });
+  // Use yarn in libs so Netlify/CI can build without bun
+  const libsCwd = CS3D_LIBS_DIR;
+  await execa('yarn', ['install'], { cwd: libsCwd, stdio: 'inherit' });
+  await execa('yarn', ['run', 'build'], { cwd: libsCwd, stdio: 'inherit' });
   console.log('build:libs: linking node_modules/@cornerstonejs to libs...');
   await execa('node', ['scripts/link-cornerstone-libs.mjs'], { cwd: ROOT_DIR, stdio: 'inherit' });
 }

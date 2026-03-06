@@ -26,7 +26,7 @@
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
     "build:dev": "lerna run build:dev --stream",
-    "build:ci": "lerna run build:viewer:ci --stream",
+    "build:ci": "yarn run build:libs && lerna run build:viewer:ci --stream",
     "build:qa": "lerna run build:viewer:qa --stream",
     "clean": "npx lerna run clean --stream",
     "clean:deep": "npx lerna run clean:deep --stream",
@@ -81,6 +81,7 @@
     "worktree:cs3d": "node scripts/worktree-cs3d.mjs",
     "build:libs": "node scripts/build-libs.mjs",
     "link:libs": "node scripts/link-cornerstone-libs.mjs",
+    "checkout:libs": "node scripts/checkout-libs-for-netlify.mjs",
     "build:cs3d": "cd libs/@cornerstonejs && bun install --frozen-lockfile && bun run build",
     "build:cs3d:watch": "cd libs/@cornerstonejs && bun run watch"
   },

@@ -1,6 +1,7 @@
 {
   "cornerstonejs": {
     "path": "@cornerstonejs",
+    "url": "https://github.com/cornerstonejs/cornerstone3D.git",
     "branch": "feat/metadata-module",
     "directory": "cornerstone3D"
   }
