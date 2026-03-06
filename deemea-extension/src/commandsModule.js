@@ -168,6 +168,10 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
             }
           }
 
+          if (event?.data?.message?.blockCalibration) {
+            CalibrationLineButton.disabled = true;
+          }
+
           if (ResetButton) {
             if (event.data.message.reset) {
               ResetButton.style.backgroundColor = 'orange';
