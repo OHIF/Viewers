@@ -1,0 +1,7 @@
+{
+  "cornerstonejs": {
+    "path": "@cornerstonejs",
+    "branch": "feat/metadata-module",
+    "directory": "cornerstone3D"
+  }
+}
