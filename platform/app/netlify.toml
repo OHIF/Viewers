@@ -10,8 +10,7 @@
 
 [build]
   base = ""
-  # Checkout libs from externals.json (if any), build them, link into node_modules, then viewer build
-  build = "yarn run checkout:libs && yarn run build:libs && yarn run build:viewer:ci"
+  build = "yarn run build:viewer:ci"
   publish = "dist"
 
 

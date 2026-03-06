@@ -127,6 +127,12 @@ declare global {
       activateViewportBeforeInteraction?: boolean;
       autoPlayCine?: boolean;
       showStudyList?: boolean;
+      /**
+       * When true (default), use the existing OHIF MetadataProvider for Cornerstone.
+       * When false, use the metadata provider from the @cornerstonejs/metadata module;
+       * DICOMweb and other data sources will feed the new module directly.
+       */
+      useLegacyMetadataProvider?: boolean;
       whiteLabeling?: Record<string, unknown>;
       httpErrorHandler?: (error: Error) => void;
       dangerouslyUseDynamicConfig?: {

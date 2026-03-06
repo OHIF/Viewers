@@ -54,6 +54,7 @@
   "dependencies": {
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/adapters": "4.18.2",
+    "@cornerstonejs/metadata": "4.18.2",
     "@cornerstonejs/ai": "4.18.2",
     "@cornerstonejs/core": "4.18.2",
     "@cornerstonejs/labelmap-interpolation": "4.18.2",

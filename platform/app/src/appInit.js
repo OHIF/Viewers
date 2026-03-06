@@ -50,6 +50,10 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   appConfig.peerImport ||= peerImport;
   appConfig.measurementTrackingMode ||= 'standard';
   appConfig.routerBasename ||= publicUrl;
+  // Default: use legacy OHIF MetadataProvider when not specified
+  if (appConfig.useLegacyMetadataProvider === undefined) {
+    appConfig.useLegacyMetadataProvider = true;
+  }
 
   const extensionManager = new ExtensionManager({
     commandsManager,

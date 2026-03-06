@@ -39,6 +39,7 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
+import { registerDefaultProvider } from '@cornerstonejs/metadata';
 import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgressHandler';
 
 const { registerColormap } = csUtilities.colormap;
@@ -178,16 +179,18 @@ export default async function init({
     );
   });
 
-  // add metadata providers
-  metaData.addProvider(
-    csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
-      csUtilities.calibratedPixelSpacingMetadataProvider
-    )
-  ); // this provider is required for Calibration tool
-  // When useLegacyMetadataProvider is false, the app uses @cornerstonejs/metadata (NATURAL cache)
-  // and DICOMweb feeds it directly; when true, use the existing OHIF MetadataProvider.
-  if (appConfig.useLegacyMetadataProvider !== false) {
+  // Metadata providers: when useLegacyMetadataProvider is true, register OHIF's providers
+  // (calibratedPixelSpacing + OHIF MetadataProvider). When false, rely on @cornerstonejs/metadata
+  // default handlers only (no OHIF handlers).
+  if (appConfig.useLegacyMetadataProvider === true) {
+    metaData.addProvider(
+      csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
+        csUtilities.calibratedPixelSpacingMetadataProvider
+      )
+    ); // required for Calibration tool in legacy path
     metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
+  } else {
+    registerDefaultProvider();
   }
 
   // These are set reasonably low to allow for interleaved retrieves and slower
