@@ -60,6 +60,9 @@ import TabLinear from './Sources/TabLinear';
 import TabPatientInfo from './Sources/TabPatientInfo';
 import TabRoiThreshold from './Sources/TabRoiThreshold';
 import TabSegmentation from './Sources/TabSegmentation';
+import TabAssistantIA from './Sources/TabAssistantIA';
+import TabPlugin from './Sources/TabPlugin';
+import TabCR from './Sources/TabCR';
 import TabStudies from './Sources/TabStudies';
 import ThumbnailView from './Sources/ThumbnailView';
 import Trash from './Sources/Trash';
@@ -532,6 +535,9 @@ export const Icons = {
   TabPatientInfo,
   TabRoiThreshold,
   TabSegmentation,
+  TabAssistantIA,
+  TabPlugin,
+  TabCR,
   TabStudies,
   ThumbnailView,
   Trash,
@@ -681,6 +687,9 @@ export const Icons = {
   'tab-contours': (props: IconProps) => TabContours(props),
   TabContours: (props: IconProps) => TabContours(props),
   'tab-segmentation': (props: IconProps) => TabSegmentation(props),
+  'tab-assistant-ia': (props: IconProps) => TabAssistantIA(props),
+  'tab-plugin': (props: IconProps) => TabPlugin(props),
+  'tab-cr': (props: IconProps) => TabCR(props),
   'tab-studies': (props: IconProps) => TabStudies(props),
   'tab-linear': (props: IconProps) => TabLinear(props),
   'tab-4d': (props: IconProps) => Tab4D(props),

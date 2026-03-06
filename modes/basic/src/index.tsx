@@ -27,6 +27,9 @@ export const ohif = {
 };
 
 export const cornerstone = {
+  assistantIA: '@ohif/extension-cornerstone.panelModule.panelAssistantIA',
+  plugins: '@ohif/extension-cornerstone.panelModule.panelPlugins',
+  cr: '@ohif/extension-cornerstone.panelModule.panelCR',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   labelMapSegmentationPanel:
     '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
@@ -281,7 +284,13 @@ export const basicLayout = {
   props: {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+    rightPanels: [
+      cornerstone.assistantIA,
+      cornerstone.plugins,
+      cornerstone.cr,
+      cornerstone.segmentation,
+      cornerstone.measurements,
+    ],
     rightPanelClosed: true,
     rightPanelResizable: true,
     viewports: [

@@ -139,6 +139,12 @@ export default defineConfig({
       '/dicomweb': {
         target: 'http://localhost:5000',
       },
+      '/ekko-pacs-api': {
+        target: 'https://nheuze-pacsia-dev84.edreams-factory.com',
+        changeOrigin: true,
+        secure: true,
+        pathRewrite: { '^/ekko-pacs-api': '' },
+      },
       // Add conditional proxy based on env vars
       ...(PROXY_TARGET && PROXY_DOMAIN
         ? {

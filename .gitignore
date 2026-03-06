@@ -63,3 +63,6 @@ tests/playwright-report/
 
 # Backup files
 *~
+
+# Surcharge config locale (copier depuis config/local.override.json.example)
+platform/app/public/config/local.override.json

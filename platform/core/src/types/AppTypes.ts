@@ -146,6 +146,11 @@ declare global {
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
       };
+      /** Ekko Pacs API (Study / agents / conversations). baseUrl sans slash final. proxyPath pour éviter CORS en dev. */
+      ekkoPacsApi?: {
+        baseUrl?: string;
+        proxyPath?: string;
+      };
     }
 
     export interface Test {

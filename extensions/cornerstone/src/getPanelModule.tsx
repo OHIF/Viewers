@@ -4,6 +4,7 @@ import { Toolbox } from '@ohif/extension-default';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
+import PanelAssistantIA from './panels/PanelAssistantIA';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 
@@ -67,12 +68,35 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     );
   };
 
+  const PanelPlaceholder = () => <div className="flex flex-1 overflow-auto" data-cy="panel-placeholder" />;
+
   return [
     {
       name: 'activeViewportWindowLevel',
       component: () => {
         return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
       },
+    },
+    {
+      name: 'panelAssistantIA',
+      iconName: 'tab-assistant-ia',
+      iconLabel: 'Assistant IA',
+      label: 'Assistant IA',
+      component: PanelAssistantIA,
+    },
+    {
+      name: 'panelPlugins',
+      iconName: 'tab-plugin',
+      iconLabel: 'Plugins',
+      label: 'Plugins',
+      component: PanelPlaceholder,
+    },
+    {
+      name: 'panelCR',
+      iconName: 'tab-cr',
+      iconLabel: 'CR',
+      label: 'CR',
+      component: PanelPlaceholder,
     },
     {
       name: 'panelMeasurement',

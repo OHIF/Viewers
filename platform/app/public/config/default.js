@@ -269,6 +269,12 @@ window.config = {
       },
     },
   ],
+  /** Ekko Pacs API — URL de base. Si vide, le panel utilise proxyPath (origin + /ekko-pacs-api) : à n'utiliser que si un proxy est configuré sur le serveur. */
+  ekkoPacsApi: {
+    baseUrl: 'https://nheuze-pacsia-dev84.edreams-factory.com',
+    /** Utilisé seulement si baseUrl est vide (ex. dev local avec proxy rsbuild). */
+    proxyPath: '/ekko-pacs-api',
+  },
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
     console.warn(error.status);
