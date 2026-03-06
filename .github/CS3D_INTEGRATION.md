@@ -20,6 +20,16 @@ Other @cornerstonejs packages (e.g. codec-*, calculate-suv) that are not in the 
 
 In all modes, **CS3D dependency values** must point only to trusted release asset URLs (default: `https://github.com/<CS3D_TRUSTED_REPO>/releases/download/...`).
 
+## Blocking merge when tarball deps are present
+
+To avoid merging branches that still reference CS3D GitHub release tarballs (integration test state), the workflow **No CS3D tarball deps** runs on pull requests and push to `master`/`main`/`release/*`. It fails if any `package.json` has `@cornerstonejs/*` dependencies or resolutions set to HTTP tarball URLs.
+
+1. **Enable the check in branch protection**  
+   In the repo: **Settings → Branches → Branch protection rules** (for `main`/`master` or your default branch), add **"No CS3D tarball deps"** as a required status check. Merges will then be blocked until deps are reverted to npm versions.
+
+2. **Greptile**  
+   [.greptile/rules.md](../.greptile/rules.md) instructs Greptile not to comment recommending blocking merge solely because tarball refs are present, since the CI already enforces that.
+
 ## Secrets required
 
 | Secret | Purpose |
