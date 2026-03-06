@@ -94,23 +94,29 @@ function promptHydrationDialog({
       if (type === HydrationType.SEG) {
         // SEG needs setTimeout
         window.setTimeout(async () => {
-          const isHydrated = await hydrateCallback({
-            segDisplaySet: displaySet,
-            viewportId,
-          });
-
-          resolve(isHydrated);
+          try {
+            const isHydrated = await hydrateCallback({
+              segDisplaySet: displaySet,
+              viewportId,
+            });
+            resolve(isHydrated);
+          } catch (error) {
+            reject(error);
+          }
         }, 0);
       } else if (type === HydrationType.RTSTRUCT) {
         // RT hydration
         window.setTimeout(async () => {
-          const isHydrated = await hydrateCallback({
-            rtDisplaySet: displaySet,
-            viewportId,
-            servicesManager,
-          });
-
-          resolve(isHydrated);
+          try {
+            const isHydrated = await hydrateCallback({
+              rtDisplaySet: displaySet,
+              viewportId,
+              servicesManager,
+            });
+            resolve(isHydrated);
+          } catch (error) {
+            reject(error);
+          }
         }, 0);
       } else if (type === HydrationType.SR) {
         // SR has a different result structure
