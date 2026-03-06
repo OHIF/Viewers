@@ -1,20 +1,16 @@
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudy,
+  addOHIFConfiguration,
+} from './utils';
+import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    let _config;
-    Object.defineProperty(window, 'config', {
-      get() {
-        return _config;
-      },
-      set(value) {
-        _config = {
-          ...value,
-          disableConfirmationPrompts: true,
-        };
-      },
-      configurable: true,
-    });
+  await addOHIFConfiguration(page, {
+    disableConfirmationPrompts: true,
   });
 
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
@@ -37,6 +33,8 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
     await DOMOverlayPageObject.viewport.getModalityLoadBadgeCount();
   expect(loadBadgeCountAfterFirstLoad).toBe(0);
 
+  await press({ page, key: 'ArrowDown', nTimes: 12 });
+
   await checkForScreenshot(
     page,
     viewportPageObject.active.pane,
@@ -45,7 +43,7 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
 
   await rightPanelPageObject.toggle();
 
-  await rightPanelPageObject.noToolsSegmentationPanel.panel.deleteAll();
+  await rightPanelPageObject.noToolsSegmentationPanel.panel.moreMenu.delete();
   await page.waitForTimeout(2000);
 
   await checkForScreenshot(
@@ -63,13 +61,15 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
     await DOMOverlayPageObject.viewport.getModalityLoadBadgeCount();
   expect(loadBadgeCountAfterSecondLoad).toBe(0);
 
+  await press({ page, key: 'ArrowDown', nTimes: 12 });
+
   await checkForScreenshot(
     page,
     viewportPageObject.active.pane,
     screenShotPaths.rtHydrationDisableConfirmation.secondLoadPostHydration
   );
 
-  await rightPanelPageObject.noToolsSegmentationPanel.panel.deleteAll();
+  await rightPanelPageObject.noToolsSegmentationPanel.panel.moreMenu.delete();
 
   await page.waitForTimeout(2000);
 
