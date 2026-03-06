@@ -44,7 +44,43 @@ Document à transmettre au dev API pour diagnostiquer les problèmes d’appels 
 
 - `study_id` : `id` retourné par `GET /api/study/external/{externalId}`.
 - `agent_id` : `id` d’un agent retourné par `GET /api/study/agents`.
-- On n’envoie pas `prompt_id` ni `image_ids` pour l’instant.
+- On peut envoyer `image_ids` (tableau d’ids renvoyés par l’upload d’images) pour associer des images au message.
+
+### 2.3 Enregistrer une image (upload)
+
+| Méthode | URL (pattern) | Corps | Quand |
+|---------|----------------|-------|--------|
+| `POST` | `{baseUrl}/api/study/{study_id}/image` | JSON : `{ "filename": "...", "base64": "..." }` | Un appel par image, au moment de la selection |
+
+- `filename` : nom du fichier original.
+- `base64` : contenu du fichier encode en base64 (sans le prefixe data:image/...;base64,).
+- **Reponse attendue** : JSON avec l id de l image, ex. `{ "id": 1 }` ou `{ "image_id": 1 }`.
+- Les ids obtenus sont envoyes dans le corps de conversation/create ou conversation/{id}/message (champ `image_ids`).
+
+### 2.4 Poster un message sur une conversation existante
+
+| Méthode | URL (pattern) | Corps | Quand |
+|---------|----------------|-------|--------|
+| `POST` | `{baseUrl}/api/study/conversation/{id}/message` | JSON ci‑dessous | Quand l’utilisateur envoie un message dans une conversation déjà ouverte |
+
+- **`{id}`** : identifiant de la conversation (ex. `20`).
+
+**Corps attendu (exemple) :**
+
+```json
+{
+  "message": "À nice il faut quel temps ?",
+  "agent_id": 1
+}
+```
+
+**Exemple cURL :**
+
+```bash
+curl -X POST 'https://nheuze-pacsia-dev84.edreams-factory.com/api/study/conversation/20/message' \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"À nice il faut quel temps ?","agent_id":1}'
+```
 
 ---
 
@@ -132,6 +168,8 @@ Sans ces en-têtes, le navigateur refuse de donner la réponse au JavaScript mê
 | `GET` | `/api/study/external/{externalId}` | Trouver ou créer l’étude par Study Instance UID |
 | `GET` | `/api/study/agents` | Liste des agents pour les études |
 | `POST` | `/api/study/conversation/create` | Créer une conversation (study_id, agent_id, message) |
+| `POST` | `/api/study/{study_id}/image` | Enregistrer une image (JSON : filename + base64) ; un appel par image ; reponse : `{ id }` ou `{ image_id }` |
+| `POST` | `/api/study/conversation/{id}/message` | Ajouter un message (body : message, agent_id, optionnel image_ids) ; réponse : conversation ou message |
 
 Document généré pour le projet PacsIA front — panel Assistant IA.
 
