@@ -169,6 +169,57 @@ yarn config set workspaces-experimental true
 yarn install --frozen-lockfile
 ```
 
+#### Testing with Cornerstone3D (CS3D) PR builds
+
+To run OHIF against an unreleased [Cornerstone3D](https://github.com/cornerstonejs/cornerstone3D) PR (e.g. to verify imaging changes before they are published to npm), use the integration script with the PR URL. The PR must have the `ohif-integration` label and a successful integration build in CS3D so that a prerelease with tarballs exists.
+
+```bash
+export GH_TOKEN=your_github_personal_access_token
+bun run install:cs3d -- https://github.com/cornerstonejs/cornerstone3D/pull/<PR_NUMBER>
+yarn dev
+```
+
+This switches OHIF’s `@cornerstonejs/*` dependencies to the tarballs from that PR’s prerelease and updates the lockfile. For full details, triggers, and CI behavior, see [.github/CS3D_INTEGRATION.md](.github/CS3D_INTEGRATION.md).
+
+#### Linking a local Cornerstone3D (CS3D) build
+
+To develop or debug OHIF against a **local** [Cornerstone3D](https://github.com/cornerstonejs/cornerstone3D) clone (instead of npm or a PR tarball), use the worktree and build scripts so that `libs/@cornerstonejs` contains your CS3D tree and the viewer uses it.
+
+**Prerequisite:** Clone the CS3D repo in a sibling directory (e.g. next to this repo):
+
+```bash
+cd /path/to/parent
+git clone https://github.com/cornerstonejs/cornerstone3D.git
+# OHIF repo is e.g. ./Viewers or ./1-OHIF
+```
+
+**One-time setup:** Create a worktree in OHIF’s `libs/@cornerstonejs` and point OHIF at it:
+
+```bash
+# From OHIF repo root. Uses ../cornerstone3D by default; optional: branch or path
+yarn worktree:cs3d
+# Optional: use a specific branch or create one: yarn worktree:cs3d -b my-branch origin/main
+```
+
+**Build and link:** Build CS3D and symlink it into `node_modules` so the viewer uses the local build:
+
+```bash
+yarn build:cs3d
+yarn link:libs
+```
+
+Then run the viewer (`yarn dev`). After changing CS3D code, run `yarn build:cs3d` again, or use `yarn build:cs3d:watch` in a separate terminal for incremental builds (then `yarn link:libs` once after the first build).
+
+**Alternative:** If `libs/@cornerstonejs` already exists (e.g. from a previous worktree or submodule), you can build and link in one step: `yarn build:libs` (runs install + build in libs and then `link:libs`).
+
+| Command | Description |
+|--------|-------------|
+| `worktree:cs3d` | Create a git worktree of CS3D in `libs/@cornerstonejs` from a clone (default: `../cornerstone3D`) and set OHIF to use it. Optional args: branch or path; use `-b branch-name` to create a new branch. |
+| `build:cs3d` | Install deps and build CS3D in `libs/@cornerstonejs` (run after `worktree:cs3d`). |
+| `build:cs3d:watch` | Watch and rebuild CS3D on changes; run in a separate terminal while developing. |
+| `link:libs` | Symlink `node_modules/@cornerstonejs/*` to the built packages in `libs/@cornerstonejs/packages/*`. Run after building so the viewer uses the local build. |
+| `build:libs` | If `libs/@cornerstonejs` exists: install, build CS3D there, then run `link:libs`. Single command to build and link. |
+
 ## Commands
 
 These commands are available from the root directory. Each project directory
@@ -181,6 +232,14 @@ also supports a number of commands that can be found in their respective
 | `dev`              | Default development experience for Viewer                     |
 | `dev:fast`             | Our experimental fast dev mode that uses rsbuild instead of webpack                     |
 | `test:unit`                  | Jest multi-project test runner; overall coverage              |
+| **CS3D integration**        |                                                               |
+| `install:cs3d`               | Point OHIF at a [Cornerstone3D](https://github.com/cornerstonejs/cornerstone3D) PR prerelease: `bun run install:cs3d -- <PR_URL>`. Requires `GH_TOKEN`. See [.github/CS3D_INTEGRATION.md](.github/CS3D_INTEGRATION.md). |
+| **CS3D local build**        |                                                               |
+| `worktree:cs3d`             | Create CS3D worktree in `libs/@cornerstonejs` from a sibling clone. Optional: branch or path; `-b name` to create a branch. |
+| `build:cs3d`                | Build CS3D in `libs/@cornerstonejs`. Run after `worktree:cs3d`. |
+| `build:cs3d:watch`          | Watch and rebuild CS3D on changes. |
+| `link:libs`                 | Symlink `node_modules/@cornerstonejs/*` to built packages in `libs/@cornerstonejs`. Run after `build:cs3d`. |
+| `build:libs`                | Build CS3D in libs (if present) and run `link:libs`. |
 | **Deploy**                   |                                                               |
 | `build`\*                    | Builds production output for our PWA Viewer                   |  |
 

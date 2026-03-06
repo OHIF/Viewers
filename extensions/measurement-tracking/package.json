@@ -32,8 +32,8 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "4.18.2",
-    "@cornerstonejs/tools": "4.18.2",
+    "@cornerstonejs/core": "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-core-4.18.5.tgz",
+    "@cornerstonejs/tools": "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-tools-4.18.5.tgz",
     "@ohif/core": "3.13.0-beta.33",
     "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.33",
     "@ohif/extension-default": "3.13.0-beta.33",

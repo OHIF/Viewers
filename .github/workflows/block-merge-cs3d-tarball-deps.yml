@@ -1,0 +1,21 @@
+# Fails when any package.json references @cornerstonejs/* via GitHub release
+# tarball URLs. Add this as a required status check in branch protection to
+# block merging integration branches until deps are reverted to npm versions.
+name: No CS3D tarball deps
+
+on:
+  pull_request:
+    branches: [master, main, release/*]
+  push:
+    branches: [master, main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Block merge if package.json has CS3D tarball refs
+        run: node .github/scripts/check-no-cs3d-tarball-deps.mjs

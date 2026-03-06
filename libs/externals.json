@@ -1,0 +1,8 @@
+{
+  "cornerstonejs": {
+    "path": "@cornerstonejs",
+    "url": "https://github.com/cornerstonejs/cornerstone3D.git",
+    "branch": "feat/publish-tarballs",
+    "directory": "cornerstone3D"
+  }
+}

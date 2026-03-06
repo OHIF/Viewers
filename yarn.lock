@@ -1946,10 +1946,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cornerstonejs/adapters@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-4.18.2.tgz#e18c8d1304e41430a7e1782fe6c8d6c71f5e360f"
-  integrity sha512-8TnZuNIxKATEU+tii/bRbuYZFp4zZoZ18e/kT9ACN3SubnweJuJUK6U+ZRE+AElJQO5JsOZPn/hzlEzUq/uR4g==
+"@cornerstonejs/adapters@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-adapters-4.18.5.tgz":
+  version "4.18.5"
+  uid "97c0d6ba08e965d8c58a2a71922a8f6a2258d337"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-adapters-4.18.5.tgz#97c0d6ba08e965d8c58a2a71922a8f6a2258d337"
   dependencies:
     "@babel/runtime-corejs2" "7.26.10"
     buffer "6.0.3"
@@ -1957,10 +1957,9 @@
     gl-matrix "3.4.3"
     ndarray "1.0.19"
 
-"@cornerstonejs/ai@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-4.18.2.tgz#c5e2a0486f59e3d8cdd1c59aad0737a651f1db69"
-  integrity sha512-/RDRWl4Id2IxeHosZW3jf3Tk6GkMk79iIAMrPEMo7KS1J/l7wKPcB7ayKT6rY3+RdPWU0MYDZGc+6k1tScG3wg==
+"@cornerstonejs/ai@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-ai-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-ai-4.18.5.tgz#18ab894c2df332f1d5f04d719eeb2e3dc0757fea"
   dependencies:
     "@babel/runtime-corejs2" "7.26.10"
     buffer "6.0.3"
@@ -1996,20 +1995,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.7.tgz#784394d05d8cf735640e9c3baa206535ee8e0376"
   integrity sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w==
 
-"@cornerstonejs/core@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-4.18.2.tgz#1e215790566f7def9a4a1a3eae8c4664192811b1"
-  integrity sha512-7+71R3g9KT4MqCQvG49vXp4EACbaTMh+aZ73kAG0dW7mItShLqni5IglodzM/jKHh/qoVbeX6zzaWn8Eq9OnOQ==
+"@cornerstonejs/core@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-core-4.18.5.tgz":
+  version "4.18.5"
+  uid "27dbd18dedf8e4c20e926a1809194dfdcb4dd642"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-core-4.18.5.tgz#27dbd18dedf8e4c20e926a1809194dfdcb4dd642"
   dependencies:
     "@kitware/vtk.js" "34.15.1"
     comlink "4.4.2"
     gl-matrix "3.4.3"
     loglevel "1.9.2"
 
-"@cornerstonejs/dicom-image-loader@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-4.18.2.tgz#e43e10271a7adbfd4e5eb257714da94b53730957"
-  integrity sha512-wcV7NLU5WLwHah7x/b9PkfAuBjbNpE6/nZaC4PWcB8yX0gKuznU1B6bNn42XErB/WlPgFduKL0FKy37ys01tvg==
+"@cornerstonejs/dicom-image-loader@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-dicom-image-loader-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-dicom-image-loader-4.18.5.tgz#0fa745678c13c3575b1460c190c9f1fe898306b7"
   dependencies:
     "@cornerstonejs/codec-charls" "1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "1.2.2"
@@ -2021,25 +2019,23 @@
     pako "2.1.0"
     uuid "9.0.1"
 
-"@cornerstonejs/labelmap-interpolation@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/labelmap-interpolation/-/labelmap-interpolation-4.18.2.tgz#ad9dec8d51db1520535625d5d7da5c1fbb0e1e5d"
-  integrity sha512-MyD4dHouYu7eu0u8sS5+cUuRwpINouUD+c0GZCamEDJ37PSUslhz1gMkQCL7B61NMpx6cAEP0OVlyfVbd7YPmw==
+"@cornerstonejs/labelmap-interpolation@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-labelmap-interpolation-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-labelmap-interpolation-4.18.5.tgz#6b9cb9299044afe8ca935e3918e4edafb960c18c"
   dependencies:
     "@itk-wasm/morphological-contour-interpolation" "1.1.0"
     itk-wasm "1.0.0-b.165"
 
-"@cornerstonejs/polymorphic-segmentation@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-4.18.2.tgz#744e0349ec84edbd3e341bc217f4d2b4e2c62ac5"
-  integrity sha512-lwdcyUflm4tDZEUc2Eq8ot7C9tEnKDJnLk6oKClk9/32ExUIqnItWbKfxwF0yvBiFzVhvdnAsjXvsO1itaD+LA==
+"@cornerstonejs/polymorphic-segmentation@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-polymorphic-segmentation-4.18.5.tgz":
+  version "4.18.5"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-polymorphic-segmentation-4.18.5.tgz#833a96661aabf46328fed4fd74dd4720e40f1c52"
   dependencies:
     "@icr/polyseg-wasm" "0.4.0"
 
-"@cornerstonejs/tools@4.18.2":
-  version "4.18.2"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-4.18.2.tgz#7be4a08b76b73fa3cea9839d879c5826f5d4bf34"
-  integrity sha512-dWbi29k/Y62TVBeK7zaU3mis9+UPjhr0nMGeG+C1PA7jYW07bLWFAL8vEk1oI1hGPOGKWU+Crpc9oRrOyzZkfw==
+"@cornerstonejs/tools@https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-tools-4.18.5.tgz":
+  version "4.18.5"
+  uid "9534dc4b2f6b7e564f783b078850d7efa11300f4"
+  resolved "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-tools-4.18.5.tgz#9534dc4b2f6b7e564f783b078850d7efa11300f4"
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "4.4.2"

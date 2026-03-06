@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/adapters": "4.18.2",
-    "@cornerstonejs/core": "4.18.2",
+    "@cornerstonejs/adapters": "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-adapters-4.18.5.tgz",
+    "@cornerstonejs/core": "https://github.com/cornerstonejs/cornerstone3D/releases/download/cs3d-pr-2648-d5bfc4c/cornerstonejs-core-4.18.5.tgz",
     "@kitware/vtk.js": "34.15.1"
   }
 }

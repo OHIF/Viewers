@@ -47,6 +47,8 @@
     "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
     "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --frozen-lockfile --modules-folder ../node_modules",
     "install:update-lockfile": "yarn install && bun install --config=./bunfig.update-lockfile.toml",
+    "install:cs3d": "node scripts/install-cs3d-from-pr.mjs",
+    "install:libs": "node scripts/install-libs.mjs",
     "install:yarn:frozen-lockfile": "echo Deprecated - use install:frozen && yarn install --frozen-lockfile",
     "install:frozen": "yarn install --frozen-lockfile",
     "audit": "bun audit --ignore=GHSA-3ppc-4f35-3m26 --ignore=GHSA-7r86-cg39-jmmj --ignore=GHSA-23c5-xmqv-rm74",
@@ -76,7 +78,12 @@
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
     "lerna:customVersion": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "worktree:cs3d": "node scripts/worktree-cs3d.mjs",
+    "build:libs": "node scripts/build-libs.mjs",
+    "link:libs": "node scripts/link-cornerstone-libs.mjs",
+    "build:cs3d": "cd libs/@cornerstonejs && bun install --frozen-lockfile && bun run build",
+    "build:cs3d:watch": "cd libs/@cornerstonejs && bun run watch"
   },
   "dependencies": {
     "execa": "8.0.1"
