@@ -89,7 +89,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       /** SR subtypes for hydrated DICOM SR annotations (render-only, show label instead of intensity/stats) */
       ...(SRToolNames
         ? [
-            { toolName: SRToolNames.SRProbe },
+            { toolName: SRToolNames.SRPoint },
             { toolName: SRToolNames.SRRectangleROI },
           ]
         : []),
@@ -165,7 +165,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
-      { toolName: SRToolNames.SRProbe },
+      { toolName: SRToolNames.SRPoint },
       { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
@@ -256,7 +256,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       /** SR subtypes for hydrated DICOM SR annotations (render-only) */
       ...(SRToolNames
         ? [
-            { toolName: SRToolNames.SRProbe },
+            { toolName: SRToolNames.SRPoint },
             { toolName: SRToolNames.SRRectangleROI },
           ]
         : []),

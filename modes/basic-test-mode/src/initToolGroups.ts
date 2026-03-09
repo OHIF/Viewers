@@ -77,7 +77,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.LivewireContour },
       ...(SRToolNames
         ? [
-            { toolName: SRToolNames.SRProbe },
+            { toolName: SRToolNames.SRPoint },
             { toolName: SRToolNames.SRRectangleROI },
           ]
         : []),
@@ -142,7 +142,7 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
-      { toolName: SRToolNames.SRProbe },
+      { toolName: SRToolNames.SRPoint },
       { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
@@ -225,7 +225,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.LivewireContour },
       ...(SRToolNames
         ? [
-            { toolName: SRToolNames.SRProbe },
+            { toolName: SRToolNames.SRPoint },
             { toolName: SRToolNames.SRRectangleROI },
           ]
         : []),
