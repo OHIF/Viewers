@@ -22,17 +22,20 @@ test.beforeEach(async ({ page }) => {
 //
 test('should hydrate SCOORD rectangle measurements correctly', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   // Wait for the side panel to be visible and clickable
   await page.waitForTimeout(3000);
 
   // Navigate to the tracked measurements panel
-  await page.getByTestId('side-panel-header-right').click({ timeout: 15000 });
-  await page.getByTestId('trackedMeasurements-btn').click();
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
 
   // Double-click on the study browser thumbnail to load the SR
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
 
   // Wait for the SR to load and stabilize before taking screenshot
@@ -69,10 +72,13 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   await page.waitForTimeout(1000);
 
   // Wait for the hydrate button to be visible and clickable
-  await page.getByTestId('yes-hydrate-btn').waitFor({ state: 'visible', timeout: 15000 });
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
+    state: 'visible',
+    timeout: 15000,
+  });
 
   // Click the hydrate button to load the SCOORD rectangle measurements
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
   // Wait for hydration to complete and rendering to stabilize
   await page.waitForTimeout(3000);
@@ -85,16 +91,16 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   );
 
   // Verify the measurements list has the correct rectangle measurements
-  const measurementRows = page.getByTestId('data-row');
-  const rowCount = await measurementRows.count();
+  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(rowCount).toBeGreaterThan(0);
 
   // Verify that the measurements are rectangle measurements (not other types)
   for (let i = 0; i < rowCount; i++) {
-    const row = measurementRows.nth(i);
-    const rowText = await row.textContent();
+    const measurementText = await rightPanelPageObject.measurementsPanel.panel
+      .nthMeasurement(i)
+      .locator.textContent();
     // Rectangle measurements should be present, verify they're not other measurement types
-    expect(rowText).toBeTruthy();
+    expect(measurementText).toBeTruthy();
   }
 
   // Test jumping to a specific measurement by scrolling and clicking
@@ -118,7 +124,7 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   });
 
   // Click on a data row to jump to the measurement
-  await page.getByTestId('data-row').first().click();
+  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
   // Take screenshot showing the jump to measurement functionality - use viewport locator
   await checkForScreenshot(
@@ -130,20 +136,26 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
 
 test('should display SCOORD rectangle measurements correctly', async ({
   page,
+  DOMOverlayPageObject,
+  leftPanelPageObject,
+  rightPanelPageObject,
   viewportPageObject,
 }) => {
   // Wait for the side panel to be visible and clickable
   await page.waitForTimeout(3000);
 
   // First hydrate the SR to load the measurements
-  await page.getByTestId('side-panel-header-right').click({ timeout: 15000 });
-  await page.getByTestId('trackedMeasurements-btn').click();
-  await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
+  await rightPanelPageObject.toggle();
+  await rightPanelPageObject.measurementsPanel.select();
+  await leftPanelPageObject.loadSeriesByModality('SR');
   await page.waitForTimeout(2000);
 
   // Wait for the hydrate button to be visible and clickable
-  await page.getByTestId('yes-hydrate-btn').waitFor({ state: 'visible', timeout: 15000 });
-  await page.getByTestId('yes-hydrate-btn').click();
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.button.waitFor({
+    state: 'visible',
+    timeout: 15000,
+  });
+  await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await page.waitForTimeout(2000);
 
   // Zoom to show the rectangle measurements clearly
@@ -176,15 +188,15 @@ test('should display SCOORD rectangle measurements correctly', async ({
   );
 
   // Verify the measurements list has the correct rectangle measurements and not others
-  const measurementRows = page.getByTestId('data-row');
-  const rowCount = await measurementRows.count();
+  const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(rowCount).toBeGreaterThan(0);
 
   // Verify that the measurements are rectangle measurements (not other types like probe)
   for (let i = 0; i < rowCount; i++) {
-    const row = measurementRows.nth(i);
-    const rowText = await row.textContent();
+    const measurementText = await rightPanelPageObject.measurementsPanel.panel
+      .nthMeasurement(i)
+      .locator.textContent();
     // Rectangle measurements should be present, verify they're not other measurement types
-    expect(rowText).toBeTruthy();
+    expect(measurementText).toBeTruthy();
   }
 });

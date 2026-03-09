@@ -3,6 +3,580 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.33...v3.13.0-beta.34) (2026-03-09)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.32...v3.13.0-beta.33) (2026-03-05)
+
+
+### Bug Fixes
+
+* **security:** Bump svgo and tar to fix vulnerabilities. ([#5877](https://github.com/OHIF/Viewers/issues/5877)) ([61a1fcc](https://github.com/OHIF/Viewers/commit/61a1fccd7d47965831a6c80357219eed979ce4d6))
+
+
+
+
+
+# [3.13.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.31...v3.13.0-beta.32) (2026-03-05)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.30...v3.13.0-beta.31) (2026-03-04)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.29...v3.13.0-beta.30) (2026-03-04)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.28...v3.13.0-beta.29) (2026-03-04)
+
+
+### Bug Fixes
+
+* **security:** Address various security vulnerabilities. ([#5869](https://github.com/OHIF/Viewers/issues/5869)) ([be8e266](https://github.com/OHIF/Viewers/commit/be8e266a80f13d03ce9dc4a21a0227d3e1bc36ac))
+
+
+
+
+
+# [3.13.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.27...v3.13.0-beta.28) (2026-03-03)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.26...v3.13.0-beta.27) (2026-03-02)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.25...v3.13.0-beta.26) (2026-02-28)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.24...v3.13.0-beta.25) (2026-02-26)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.23...v3.13.0-beta.24) (2026-02-24)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.22...v3.13.0-beta.23) (2026-02-23)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.21...v3.13.0-beta.22) (2026-02-23)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.20...v3.13.0-beta.21) (2026-02-23)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.19...v3.13.0-beta.20) (2026-02-21)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.18...v3.13.0-beta.19) (2026-02-20)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.17...v3.13.0-beta.18) (2026-02-19)
+
+
+### Bug Fixes
+
+* **segmentation overlay:** update viewport ds list upon seg delete - OHIF-2425 ([#5729](https://github.com/OHIF/Viewers/issues/5729)) ([b353541](https://github.com/OHIF/Viewers/commit/b35354120a01d89b27844f967c32c052bba8b096))
+
+
+
+
+
+# [3.13.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.16...v3.13.0-beta.17) (2026-02-19)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.15...v3.13.0-beta.16) (2026-02-18)
+
+
+### Bug Fixes
+
+* **security:** Bump tar to 7.5.9 and lerna to 9.0.4 to fix CVE-2026-26960. ([#5824](https://github.com/OHIF/Viewers/issues/5824)) ([3d59c0d](https://github.com/OHIF/Viewers/commit/3d59c0d9d3783336eaa8d37cfc0172818942bf00))
+
+
+
+
+
+# [3.13.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.14...v3.13.0-beta.15) (2026-02-17)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.13...v3.13.0-beta.14) (2026-02-13)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.12...v3.13.0-beta.13) (2026-02-12)
+
+
+### Bug Fixes
+
+* **colors:** Replace hardcoded black with background color token ([#5815](https://github.com/OHIF/Viewers/issues/5815)) ([dbc31a5](https://github.com/OHIF/Viewers/commit/dbc31a5d4ec5b2238683a580af96aff23d9fafeb))
+
+
+
+
+
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.7) (2026-02-10)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.5...v3.13.0-beta.6) (2026-02-10)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.4...v3.13.0-beta.5) (2026-02-10)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.3...v3.13.0-beta.4) (2026-02-10)
+
+
+### Bug Fixes
+
+* Better handle octet stream case ([#5789](https://github.com/OHIF/Viewers/issues/5789)) ([037402f](https://github.com/OHIF/Viewers/commit/037402f7f6a1fc07593be302e4f578f6c4870c6e))
+
+
+
+
+
+# [3.13.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.2...v3.13.0-beta.3) (2026-02-10)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* **cine:** prevent crash on second view/hydration of SR series  ([#5724](https://github.com/OHIF/Viewers/issues/5724)) ([f70c9b9](https://github.com/OHIF/Viewers/commit/f70c9b932db2bb14173acae675d38ce250d244fa))
+
+
+
+
+
+# [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.134...v3.12.0-beta.135) (2026-02-05)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.133...v3.12.0-beta.134) (2026-02-05)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.132...v3.12.0-beta.133) (2026-02-04)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.131...v3.12.0-beta.132) (2026-01-30)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.130...v3.12.0-beta.131) (2026-01-30)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.129...v3.12.0-beta.130) (2026-01-28)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.129](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.128...v3.12.0-beta.129) (2026-01-27)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.128](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.127...v3.12.0-beta.128) (2026-01-27)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.127](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.126...v3.12.0-beta.127) (2026-01-22)
+
+
+### Bug Fixes
+
+* Navigate to contour should work ([#5718](https://github.com/OHIF/Viewers/issues/5718)) ([0fd517d](https://github.com/OHIF/Viewers/commit/0fd517d6ab583652a3667f9af49413648f2755db))
+
+
+
+
+
+# [3.12.0-beta.126](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.125...v3.12.0-beta.126) (2026-01-22)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.124...v3.12.0-beta.125) (2026-01-21)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.123...v3.12.0-beta.124) (2026-01-16)
+
+
+### Bug Fixes
+
+* **microscopy:** Update microscope to 0.48.17 to fix a measurement exception. ([#5710](https://github.com/OHIF/Viewers/issues/5710)) ([4a1f509](https://github.com/OHIF/Viewers/commit/4a1f5098654dc7afef4c135f2e2198a0e785f4b9))
+
+
+
+
+
+# [3.12.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.122...v3.12.0-beta.123) (2026-01-14)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.122](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.121...v3.12.0-beta.122) (2026-01-13)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.121](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.120...v3.12.0-beta.121) (2026-01-12)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.120](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.119...v3.12.0-beta.120) (2026-01-09)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.119](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.118...v3.12.0-beta.119) (2026-01-08)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.117...v3.12.0-beta.118) (2026-01-07)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.116...v3.12.0-beta.117) (2026-01-06)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.115...v3.12.0-beta.116) (2026-01-06)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.114...v3.12.0-beta.115) (2026-01-05)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.113...v3.12.0-beta.114) (2026-01-05)
+
+
+### Bug Fixes
+
+* **security:** update qs package to fix vulnerability CVE-2025-15284 ([#5686](https://github.com/OHIF/Viewers/issues/5686)) ([ca364a3](https://github.com/OHIF/Viewers/commit/ca364a3af7a29dc98d5c5b8e4c73abebc107c7ce))
+
+
+
+
+
+# [3.12.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.112...v3.12.0-beta.113) (2025-12-19)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.111...v3.12.0-beta.112) (2025-12-19)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.110...v3.12.0-beta.111) (2025-12-18)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.109...v3.12.0-beta.110) (2025-12-18)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.108...v3.12.0-beta.109) (2025-12-18)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.107...v3.12.0-beta.108) (2025-12-17)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.106...v3.12.0-beta.107) (2025-12-16)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.105...v3.12.0-beta.106) (2025-12-16)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.104...v3.12.0-beta.105) (2025-12-15)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.103...v3.12.0-beta.104) (2025-12-12)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.12.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.102...v3.12.0-beta.103) (2025-12-12)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.12.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.101...v3.12.0-beta.102) (2025-12-10)
 
 **Note:** Version bump only for package ohif-docs

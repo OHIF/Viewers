@@ -21,13 +21,14 @@ import {
 type PanelSegmentationProps = {
   children?: React.ReactNode;
 
-  // The representation type for this segmentation panel. Undefined means all types.
-  segmentationRepresentationType?: SegmentationRepresentations;
+  // The representation types for this segmentation panel. Undefined means all types.
+  // The first element is the primary type. Additional elements are secondary types.
+  segmentationRepresentationTypes?: SegmentationRepresentations[];
 } & withAppTypes;
 
 export default function PanelSegmentation({
   children,
-  segmentationRepresentationType,
+  segmentationRepresentationTypes,
 }: PanelSegmentationProps) {
   const { commandsManager, servicesManager } = useSystem();
   const {
@@ -48,11 +49,20 @@ export default function PanelSegmentation({
     store => store.selectedSegmentationsForViewport[activeViewportId]
   );
 
-  const selectedSegmentationIdForType = segmentationRepresentationType
-    ? selectedSegmentationsForViewportMap?.get(segmentationRepresentationType)
+  const selectedSegmentationIdForType = segmentationRepresentationTypes
+    ? segmentationRepresentationTypes.reduce(
+        (selectedSegmentation, type) =>
+          selectedSegmentation ||
+          (selectedSegmentationsForViewportMap?.has(type)
+            ? selectedSegmentationsForViewportMap?.get(type)
+            : undefined),
+        undefined
+      )
     : segmentationService?.getActiveSegmentation(activeViewportId)?.segmentationId;
 
-  const buttonSection = utilitiesSectionMap[segmentationRepresentationType];
+  const buttonSection = segmentationRepresentationTypes?.[0]
+    ? utilitiesSectionMap[segmentationRepresentationTypes[0]]
+    : undefined;
 
   const { activeToolOptions: activeUtilityOptions } = useActiveToolOptions({
     buttonSectionId: buttonSection,
@@ -129,7 +139,7 @@ export default function PanelSegmentation({
       commandsManager.run('deleteSegment', { segmentationId, segmentIndex });
     },
     onSegmentCopy:
-      segmentationRepresentationType === SegmentationRepresentations.Contour
+      segmentationRepresentationTypes?.[0] === SegmentationRepresentations.Contour
         ? (segmentationId, segmentIndex) => {
             commandsManager.run('copyContourSegment', {
               sourceSegmentInfo: { segmentationId, segmentIndex },
@@ -227,13 +237,13 @@ export default function PanelSegmentation({
     disabled,
     data: segmentationsWithRepresentations,
     mode: segmentationTableMode,
-    title: `${segmentationRepresentationType ? `${segmentationRepresentationType} ` : ''}Segmentations`,
+    title: `${segmentationRepresentationTypes?.[0] ? `${segmentationRepresentationTypes[0]} ` : ''}Segmentations`,
     exportOptions,
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
-    segmentationRepresentationType,
+    segmentationRepresentationTypes,
     selectedSegmentationIdForType,
     ...handlers,
   };

@@ -4,14 +4,9 @@ import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
+import { metaData } from '@cornerstonejs/core';
 
-const {
-  isImage,
-  sortStudyInstances,
-  instancesSortCriteria,
-  sopClassDictionary,
-  isDisplaySetReconstructable,
-} = utils;
+const { isImage, sortStudyInstances, sopClassDictionary, isDisplaySetReconstructable } = utils;
 const { ImageSet } = classes;
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
@@ -50,11 +45,16 @@ function getDisplaySetInfo(instances) {
     const timePoint = timePoints[0];
     const instancesMap = new Map();
 
-    // O(n) to convert it into a map and O(1) to find each instance
-    instances.forEach(instance => instancesMap.set(instance.imageId, instance));
+    let firstTimePointInstances;
 
-    const firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId));
-
+    if (instances[0].NumberOfFrames > 1 && timePoints.length > 1) {
+      // handle multiframe dynamic volume
+      firstTimePointInstances = timePoints[0].map(imageId => metaData.get('instance', imageId));
+    } else {
+      // O(n) to convert it into a map and O(1) to find each instance
+      instances.forEach(instance => instancesMap.set(instance.imageId, instance));
+      firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId));
+    }
     displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances, appConfig);
   } else {
     displaySetInfo = isDisplaySetReconstructable(instances, appConfig);
@@ -261,6 +261,7 @@ const sopClassUids = [
   sopClassDictionary.XRay3DAngiographicImageStorage,
   sopClassDictionary.XRay3DCraniofacialImageStorage,
   sopClassDictionary.BreastTomosynthesisImageStorage,
+  sopClassDictionary.CornealTopographyMapStorage,
   sopClassDictionary.BreastProjectionXRayImageStorageForPresentation,
   sopClassDictionary.BreastProjectionXRayImageStorageForProcessing,
   sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForPresentation,

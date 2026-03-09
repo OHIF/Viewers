@@ -7,6 +7,15 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
+  get crosshairs() {
+    const button = this.page.getByTestId('Crosshairs');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
   get layoutSelection() {
     const page = this.page;
 
@@ -96,6 +105,15 @@ export class MainToolbarPageObject {
 
     return {
       ...measurementTools,
+      get selectedTool() {
+        const button = page.getByTestId('MeasurementTools-split-button-primary');
+        return {
+          button,
+          async click() {
+            await button.click();
+          },
+        };
+      },
       get arrowAnnotate() {
         const button = page.getByTestId('ArrowAnnotate');
         return {
@@ -168,6 +186,31 @@ export class MainToolbarPageObject {
       },
       get splineROI() {
         const button = page.getByTestId('SplineROI');
+        return {
+          button,
+          async click() {
+            await measurementTools.click();
+            await button.click();
+          },
+        };
+      },
+      get freehandROI() {
+        const button = page.getByTestId('PlanarFreehandROI');
+        return {
+          button,
+          async click() {
+            await measurementTools.click();
+            await button.click();
+          },
+        };
+      },
+      /* microscopy specific tools */
+      // `.last()` targets the menu item inside the dropdown, not the active-tool
+      // indicator inside the split-button primary
+      // because both share the same data-cy value (e.g. "line")
+      // Other microscopy tools might follow the same pattern
+      get line() {
+        const button = page.getByTestId('line').last();
         return {
           button,
           async click() {

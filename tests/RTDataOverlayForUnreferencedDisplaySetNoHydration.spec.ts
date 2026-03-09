@@ -12,16 +12,15 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
   page,
   viewportPageObject,
 }) => {
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
-  await page.getByTestId('AddSegmentationDataOverlay-default').click();
-  await page.getByText('SELECT A SEGMENTATION').click();
-  await page.getByTestId('Contours on PET').click();
+  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
+  await dataOverlayPageObject.addSegmentation('Contours on PET');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.click();
+  await dataOverlayPageObject.toggle();
 
   await page.waitForTimeout(5000);
 

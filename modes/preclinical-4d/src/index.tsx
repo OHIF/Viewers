@@ -111,9 +111,14 @@ function modeFactory({ modeConfiguration }) {
         cornerstoneViewportService.EVENTS.VIEWPORT_VOLUMES_CHANGED,
         () => {
           const viewportId = viewportGridService.getActiveViewportId();
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-          cineService.playClip(csViewport.element, { viewportId });
-          // cineService.setIsCineEnabled(true);
+
+          if (!viewportId) {
+            return;
+          }
+
+          const frameRate = 24;
+          cineService.setIsCineEnabled(true);
+          cineService.setCine({ id: viewportId, isPlaying: true, frameRate });
 
           unsubscribe();
         }

@@ -122,11 +122,6 @@ function PanelStudyBrowser({
         studyInstanceUid: StudyInstanceUID,
       });
 
-      if (!qidoForStudyUID?.length) {
-        navigate('/notfoundstudy', '_self');
-        throw new Error('Invalid study URL');
-      }
-
       let qidoStudiesForPatient = qidoForStudyUID;
 
       // try to fetch the prior studies based on the patientID if the
@@ -415,7 +410,7 @@ function PanelStudyBrowser({
         />
         <Separator
           orientation="horizontal"
-          className="bg-black"
+          className="bg-background"
           thickness="2px"
         />
       </>

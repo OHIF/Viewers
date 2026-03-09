@@ -42,8 +42,7 @@
   "Export": "Export",
   "CSV Report": "CSV Report",
   "DICOM SEG": "DICOM SEG",
-  "DICOM RTSS": "DICOM RTSS"
-  ,
+  "DICOM RTSS": "DICOM RTSS",
   "Fill contour holes": "Fill contour holes",
   "Fill Holes": "Fill Holes",
   "Remove Small Contours": "Remove Small Contours",
@@ -63,5 +62,7 @@
   "New segment name": "New segment name",
   "No segmentations available": "No segmentations available",
   "Not available on the current viewport": "Not available on the current viewport",
-  "Add segment to enable this tool": "Add segment to enable this tool"
+  "Add segment to enable this tool": "Add segment to enable this tool",
+  "Segment Bidirectional": "Segment Bidirectional",
+  "Draw a segment before using bidirectional measurement": "Draw a segment before using bidirectional measurement"
 }

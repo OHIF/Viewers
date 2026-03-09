@@ -1,5 +1,6 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
+import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
 
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
@@ -7,8 +8,6 @@ import loadRTStruct from './loadRTStruct';
 const { sopClassDictionary } = utils;
 
 const sopClassUids = [sopClassDictionary.RTStructureSetStorage];
-
-const cachedRTStructsSEG = new Set<string>();
 
 const loadPromises = {};
 
@@ -143,22 +142,12 @@ function _load(
   if (
     (rtDisplaySet.loading || rtDisplaySet.isLoaded) &&
     loadPromises[SOPInstanceUID] &&
-    cachedRTStructsSEG.has(rtDisplaySet.displaySetInstanceUID)
+    _segmentationExists(rtDisplaySet)
   ) {
     return loadPromises[SOPInstanceUID];
   }
 
   rtDisplaySet.loading = true;
-
-  const { unsubscribe } = segmentationService.subscribe(
-    segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
-    (evt: { rtDisplaySet: { displaySetInstanceUID: string } }) => {
-      if (evt.rtDisplaySet?.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
-        cachedRTStructsSEG.add(rtDisplaySet.displaySetInstanceUID);
-        unsubscribe();
-      }
-    }
-  );
 
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
@@ -217,6 +206,10 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   });
 
   return ReferencedSeriesSequence;
+}
+
+function _segmentationExists(segDisplaySet) {
+  return !!cstSegmentation.state.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
 function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
