@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.33...v3.13.0-beta.34) (2026-03-09)
+
+
+### Bug Fixes
+
+* **seg hydration:** auto-hydrate RT struct on second load with disableConfirmationPrompts ([#5875](https://github.com/OHIF/Viewers/issues/5875)) ([6f773f9](https://github.com/OHIF/Viewers/commit/6f773f997214c388409f3af3e9fc0e5b84debc10))
+
+
+
+
+
 # [3.13.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.32...v3.13.0-beta.33) (2026-03-05)
 
 
