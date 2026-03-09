@@ -179,7 +179,7 @@ export default function hydrateStructuredReport(
       /** Use SR subtypes for Probe and RectangleROI - they show label (e.g. Lesion) instead of intensity/stats */
       const toolNameForRendering =
         annotationType === 'Probe'
-          ? 'SRProbe'
+          ? 'SRPoint'
           : annotationType === 'RectangleROI'
             ? 'SRRectangleROI'
             : annotationType;

@@ -225,55 +225,41 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     options
   ) {
     const canvasCoordinates = [];
+    const crossSize = 6;
+
     renderableData.map((data, index) => {
       const point = data[0];
-      // This gives us one point for arrow
+      const [canvasX, canvasY] = viewport.worldToCanvas(point);
       canvasCoordinates.push(viewport.worldToCanvas(point));
 
       if (data[1] !== undefined) {
         canvasCoordinates.push(viewport.worldToCanvas(data[1]));
+        drawing.drawArrow(
+          svgDrawingHelper,
+          annotationUID,
+          `arrow-${index}`,
+          canvasCoordinates[canvasCoordinates.length - 1],
+          canvasCoordinates[canvasCoordinates.length - 2],
+          { color: options.color, width: options.lineWidth }
+        );
+      } else {
+        const cx = Number(canvasX);
+        const cy = Number(canvasY);
+        const crossPaths = [
+          [[cx, cy - crossSize], [cx, cy + crossSize]],
+          [[cx - crossSize, cy], [cx + crossSize, cy]],
+        ];
+        drawing.drawPath(
+          svgDrawingHelper,
+          annotationUID,
+          `cross-${index}`,
+          crossPaths,
+          { color: options.color, lineWidth: options.lineWidth || 2 }
+        );
       }
-      else{
-         // We get the other point for the arrow by using the image size
-      const imagePixelModule = metaData.get('imagePixelModule', referencedImageId);
-
-      let xOffset = 10;
-      let yOffset = 10;
-
-      if (imagePixelModule) {
-        const { columns, rows } = imagePixelModule;
-        xOffset = columns / 10;
-        yOffset = rows / 10;
-      }
-
-      const imagePoint = csUtils.worldToImageCoords(referencedImageId, point);
-      const arrowEnd = csUtils.imageToWorldCoords(referencedImageId, [
-        imagePoint[0] + xOffset,
-        imagePoint[1] + yOffset,
-      ]);
-
-      canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
-        
-      }
-     
-
-      const arrowUID = `${index}`;
-
-      // Todo: handle drawing probe as probe, currently we are drawing it as an arrow
-      drawing.drawArrow(
-        svgDrawingHelper,
-        annotationUID,
-        arrowUID,
-        canvasCoordinates[1],
-        canvasCoordinates[0],
-        {
-          color: options.color,
-          width: options.lineWidth,
-        }
-      );
     });
 
-    return canvasCoordinates; // used for drawing textBox
+    return canvasCoordinates;
   }
 
   renderEllipse(
@@ -374,6 +360,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       {
         ...textBoxOptions,
         color,
+        padding: textBoxOptions.padding ?? 6,
       }
     );
 

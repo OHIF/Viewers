@@ -173,7 +173,7 @@ const initMeasurementService = (
   /** SR subtypes use same schema as base tools (Probe/RectangleROI) */
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
-    'SRProbe',
+    'SRPoint',
     Probe.matchingCriteria,
     Probe.toAnnotation,
     Probe.toMeasurement
