@@ -73,6 +73,7 @@ export default function ModeRoute({
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
+  const isOverreadMode = lowerCaseSearchParams.get('overreadmode') === 'true';
 
   if (token) {
     updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
@@ -200,6 +201,25 @@ export default function ModeRoute({
     }
 
     const validateStudies = async () => {
+      // Ensure data source has URL context (e.g. XNAT projectId/experimentId) before search.
+      // Otherwise dataSource.query.studies.search may fail (e.g. "Project ID is missing").
+      if (typeof dataSource.initialize === 'function') {
+        const urlQuery = new URLSearchParams(window.location.search);
+        const urlParams = {
+          projectId: urlQuery.get('projectId') || params?.projectId,
+          experimentId: urlQuery.get('experimentId') || params?.experimentId,
+          subjectId: urlQuery.get('subjectId') || params?.subjectId,
+          sessionId: urlQuery.get('experimentId') || urlQuery.get('sessionId'),
+          parentProjectId: urlQuery.get('parentProjectId'),
+          experimentLabel: urlQuery.get('experimentLabel'),
+        };
+        try {
+          await dataSource.initialize({ params: urlParams, query: urlQuery });
+        } catch (initErr) {
+          console.warn('[Mode] dataSource.initialize before validation:', initErr);
+        }
+      }
+
       for (const studyInstanceUID of studyInstanceUIDs) {
         try {
           const qidoForStudyUID = await dataSource.query.studies.search({
@@ -207,20 +227,35 @@ export default function ModeRoute({
           });
 
           if (!qidoForStudyUID?.length) {
-            console.warn('Study not found:', studyInstanceUID);
-            navigate('/notfoundstudy');
+            console.warn('[Study validation] Study not found in QIDO-RS:', studyInstanceUID);
+            if (isOverreadMode) {
+              console.error(
+                '[Overread mode] Redirect disabled. Failure reason: dataSource.query.studies.search returned no results for studyInstanceUid:',
+                studyInstanceUID
+              );
+            } else {
+              navigate('/notfoundstudy');
+            }
             return;
           }
         } catch (error) {
           console.error('Error validating study:', studyInstanceUID, error);
-          navigate('/notfoundstudy');
+          if (isOverreadMode) {
+            console.error(
+              '[Overread mode] Redirect disabled. Failure reason (exception):',
+              error?.message ?? error,
+              error
+            );
+          } else {
+            navigate('/notfoundstudy');
+          }
           return;
         }
       }
     };
 
     validateStudies();
-  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, dataSource, navigate]);
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded, dataSource, navigate, isOverreadMode]);
 
   useEffect(() => {
     if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {

@@ -65,10 +65,10 @@ function PanelStudyBrowser({
         studyInstanceUid: StudyInstanceUID,
       });
 
-      if (!qidoForStudyUID?.length) {
-        navigate('/notfoundstudy', '_self');
-        throw new Error('Invalid study URL');
-      }
+      // if (!qidoForStudyUID?.length) {
+      //   navigate('/notfoundstudy', '_self');
+      //   throw new Error('Invalid study URL');
+      // }
 
       let qidoStudiesForPatient = qidoForStudyUID;
 
@@ -218,7 +218,7 @@ function PanelStudyBrowser({
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);

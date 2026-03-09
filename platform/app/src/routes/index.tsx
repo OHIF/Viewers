@@ -31,16 +31,16 @@ NotFoundServer.propTypes = {
   message: PropTypes.string,
 };
 
-const NotFoundStudy = () => {
+const NotFoundStudy = ({
+  message = 'One or more of the requested studies are not available at this time.',
+}) => {
   const [appConfig] = useAppConfig();
   const { showStudyList } = appConfig;
 
   return (
     <div className="text-foreground absolute flex h-full w-full items-center justify-center">
       <div>
-        <h4 data-cy="study-not-found-message">
-          One or more of the requested studies are not available at this time.
-        </h4>
+        <h4 data-cy="study-not-found-message">{message}</h4>
         {showStudyList && (
           <p
             className="mt-2"

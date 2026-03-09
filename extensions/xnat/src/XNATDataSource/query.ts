@@ -9,19 +9,24 @@ import { getXNATStatusFromStudyInstanceUID } from './Utils/DataSourceUtils';
 import { generateRandomUID } from './Utils/UIDUtils';
 
 /**
- * Query methods for XNATDataSource
+ * Query methods for XNATDataSource.
+ * Accepts a configManager (with getConfig()) so search uses current config after initialize().
  */
 export class XNATQueryMethods {
-    private config: any;
+    private configManager: { getConfig: () => any };
     private qidoClient: any;
     private getAuthorizationHeader: () => any;
     private xnatApi: any;
 
-    constructor(config: any, qidoClient: any, getAuthorizationHeader: () => any, xnatApi: any) {
-        this.config = config;
+    constructor(configOrManager: any, qidoClient: any, getAuthorizationHeader: () => any, xnatApi: any) {
+        this.configManager = typeof configOrManager?.getConfig === 'function' ? configOrManager : { getConfig: () => configOrManager };
         this.qidoClient = qidoClient;
         this.getAuthorizationHeader = getAuthorizationHeader;
         this.xnatApi = xnatApi;
+    }
+
+    private get config() {
+        return this.configManager.getConfig();
     }
 
     /**

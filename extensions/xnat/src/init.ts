@@ -45,7 +45,7 @@ export default function init({
       // Pass the configuration to the XNAT DICOM loader
       // Make sure we properly handle the promise returned by initXNATDicomLoader
       const loaderPromise = initXNATDicomLoader(configuration);
-      
+
       // Don't try to call start() on the promise, just use standard then/catch
       return loaderPromise
         .then(() => {
@@ -53,7 +53,7 @@ export default function init({
         })
         .catch(error => {
           console.error('XNAT Extension: Failed to initialize XNAT DICOM loader:', error);
-          
+
           // For other errors, we can still let them propagate
           return Promise.reject(error);
         });
@@ -62,19 +62,19 @@ export default function init({
       return Promise.reject(error);
     }
   };
-  
+
   // Call the initialization function right away. 
   // It will handle waiting for Cornerstone internally.
   initializeXNATLoader();
-  
+
   // Subscribe to DicomMetadataStore events to know when instances are added
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, (event) => {
   });
-  
+
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
   ]);
-  
+
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handlePETImageMetadata);
 
@@ -141,20 +141,20 @@ export function preRegistration({
 
   // Global safety net: if volume rendering (VTK) hits a hard error (e.g. shader compile),
   // reload the viewer with the stack protocol in the URL so the error boundary is cleared.
-  const STACK_FALLBACK_PROTOCOL_ID = 'xnatStackFallback';
+  // const STACK_FALLBACK_PROTOCOL_ID = 'xnatStackFallback';
 
-  function reloadWithStackProtocol(): void {
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set('hangingProtocolId', STACK_FALLBACK_PROTOCOL_ID);
-      console.warn(
-        'XNAT: Volume rendering error detected, reloading with single stack viewport (hangingProtocolId=xnatStackFallback).'
-      );
-      window.location.replace(url.toString());
-    } catch (e) {
-      console.warn('XNAT: Failed to reload with stack protocol:', e);
-    }
-  }
+  // function reloadWithStackProtocol(): void {
+  //   try {
+  //     const url = new URL(window.location.href);
+  //     url.searchParams.set('hangingProtocolId', STACK_FALLBACK_PROTOCOL_ID);
+  //     console.warn(
+  //       'XNAT: Volume rendering error detected, reloading with single stack viewport (hangingProtocolId=xnatStackFallback).'
+  //     );
+  //     window.location.replace(url.toString());
+  //   } catch (e) {
+  //     console.warn('XNAT: Failed to reload with stack protocol:', e);
+  //   }
+  // }
 
   const globalAny = window as any;
   if (!globalAny.__xnatMprShaderErrorHandlerRegistered) {
@@ -182,7 +182,7 @@ export function preRegistration({
         const hpState = hangingProtocolService.getState();
         if (hpState.protocolId === STACK_FALLBACK_PROTOCOL_ID) return;
 
-        setTimeout(() => requestAnimationFrame(reloadWithStackProtocol), 50);
+        // setTimeout(() => requestAnimationFrame(reloadWithStackProtocol), 50);
       } catch (e) {
         console.warn('XNAT: MPR shader fallback failed:', e);
       }
@@ -211,7 +211,7 @@ export function preRegistration({
         const hpState = hangingProtocolService.getState();
         if (hpState.protocolId === STACK_FALLBACK_PROTOCOL_ID) return;
 
-        setTimeout(() => requestAnimationFrame(reloadWithStackProtocol), 50);
+        // setTimeout(() => requestAnimationFrame(reloadWithStackProtocol), 50);
       } catch (e) {
         console.warn('XNAT: MPR shader fallback failed:', e);
       }

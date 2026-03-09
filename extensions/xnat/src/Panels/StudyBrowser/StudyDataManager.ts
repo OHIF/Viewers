@@ -37,7 +37,7 @@ export async function fetchStudiesForPatient(
 
         if (!qidoForStudyUID?.length) {
             console.error('XNAT: Invalid study URL or no data returned for', StudyInstanceUID);
-            navigate('/notfoundstudy');
+            // navigate('/notfoundstudy');
             throw new Error('Invalid study URL');
         }
 

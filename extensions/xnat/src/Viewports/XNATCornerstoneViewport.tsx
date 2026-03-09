@@ -9,21 +9,21 @@ import React, { useLayoutEffect, useEffect, useRef } from 'react';
 import { OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { useViewportRefs, useSystem } from '@ohif/core';
 
-const XNAT_STACK_FALLBACK_PROTOCOL_ID = 'xnatStackFallback';
+// const XNAT_STACK_FALLBACK_PROTOCOL_ID = 'xnatStackFallback';
 
 /** Reload the viewer with stack protocol in the URL so the error boundary is cleared. */
-function reloadWithStackProtocol(): void {
-  try {
-    const url = new URL(window.location.href);
-    url.searchParams.set('hangingProtocolId', XNAT_STACK_FALLBACK_PROTOCOL_ID);
-    console.warn(
-      'XNAT: Volume rendering error detected, reloading with single stack viewport (hangingProtocolId=xnatStackFallback).'
-    );
-    window.location.replace(url.toString());
-  } catch (e) {
-    console.warn('XNAT: Failed to reload with stack protocol:', e);
-  }
-}
+// function reloadWithStackProtocol(): void {
+//   try {
+//     const url = new URL(window.location.href);
+//     url.searchParams.set('hangingProtocolId', XNAT_STACK_FALLBACK_PROTOCOL_ID);
+//     console.warn(
+//       'XNAT: Volume rendering error detected, reloading with single stack viewport (hangingProtocolId=xnatStackFallback).'
+//     );
+//     window.location.replace(url.toString());
+//   } catch (e) {
+//     console.warn('XNAT: Failed to reload with stack protocol:', e);
+//   }
+// }
 
 function isVolumeRenderingError(message: string, stack?: string): boolean {
   const msg = String(message || '');
@@ -41,8 +41,8 @@ function isVolumeRenderingError(message: string, stack?: string): boolean {
 function runFallbackToStack(hangingProtocolService: any): void {
   try {
     const hpState = hangingProtocolService.getState();
-    if (hpState.protocolId === XNAT_STACK_FALLBACK_PROTOCOL_ID) return;
-    reloadWithStackProtocol();
+    // if (hpState.protocolId === XNAT_STACK_FALLBACK_PROTOCOL_ID) return;
+    // reloadWithStackProtocol();
   } catch (e) {
     console.warn('XNAT: MPR fallback to single-stack failed:', e);
   }

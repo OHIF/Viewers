@@ -657,9 +657,10 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
       },
   };
 
-  // Initialize query and store methods after implementation is fully constructed
+  // Initialize query and store methods after implementation is fully constructed.
+  // Pass configManager so query uses current config after initialize() (e.g. URL projectId/experimentId).
   const queryMethods = new XNATQueryMethods(
-    configManager.getConfig(),
+    configManager,
     configManager.getQidoClient(),
     configManager.getAuthorizationHeader,
     xnatApi
