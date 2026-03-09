@@ -40,8 +40,14 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   defaultDataSourceName: 'ahi',
 
-  // AHI-specific configuration
+  // AHI Plugin Configuration
+  // The AHI plugin is loaded dynamically from the pluginUrl.
+  // This keeps all AHI-specific code external to the OHIF source.
   ahi: {
+    // Enable/disable AHI plugin loading
+    enabled: true,
+    // URL to the AHI plugin script (can be external URL or relative path)
+    pluginUrl: '/plugins/ahi/ahi-plugin.js',
     // Default AWS region - can be overridden via URL params
     defaultRegion: 'us-east-1',
     // Credential refresh buffer in seconds (refresh 10s before expiration)
