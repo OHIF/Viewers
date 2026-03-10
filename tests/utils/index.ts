@@ -1,4 +1,5 @@
 import { visitStudy } from './visitStudy';
+import { addOHIFConfiguration } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -23,6 +24,7 @@ import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 
 export {
   visitStudy,
+  addOHIFConfiguration,
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
