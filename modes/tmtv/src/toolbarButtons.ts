@@ -301,7 +301,7 @@ const toolbarButtons = [
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
-          toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+          toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush', 'ThresholdCircularBrushDynamic'],
         },
         {
           name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',

@@ -32,12 +32,19 @@ const SegmentationCollapsedHeader = ({ children }: { children: React.ReactNode }
 
 // Dropdown menu component - specifically for dropdown menu content
 const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.ReactNode }) => {
+  const { segmentationRepresentationTypes } = useSegmentationTableContext(
+    'SegmentationCollapsedDropdownMenu'
+  );
+  const dataCyTypeSuffix = segmentationRepresentationTypes?.[0]
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
+          data-cy={`segmentation-collapsed-more-btn${dataCyTypeSuffix}`}
         >
           <Icons.More className="h-6 w-6" />
         </Button>
