@@ -3,8 +3,6 @@ import React, { createContext, useContext } from 'react';
 export interface SegmentStats {
   info: string;
   namedStats?: Record<string, number | string>;
-  /** Displayed as a styled suffix when the segmentation label is blank, e.g. "S3 CT" */
-  labelFallbackSuffix?: string;
 }
 
 export interface Segment {
@@ -19,6 +17,7 @@ export interface Segmentation {
   segmentationId: string;
   label: string;
   cachedStats: SegmentStats;
+  fallbackLabel?: string;
   segments: Record<number, Segment>;
 }
 

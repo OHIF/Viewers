@@ -1144,9 +1144,9 @@ describe('SegmentationService', () => {
         config: {
           cachedStats: {
             info: 'S1: Series Description',
-            labelFallbackSuffix: 'S:1 SEG',
           },
           label: 'Segmentation 2',
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: true,
@@ -1213,9 +1213,9 @@ describe('SegmentationService', () => {
         config: {
           cachedStats: {
             info: 'S1: Series Description',
-            labelFallbackSuffix: 'S:1 SEG',
           },
           label: 'Segmentation 2',
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: true,
@@ -1385,6 +1385,7 @@ describe('SegmentationService', () => {
       const expectedSegmentation = {
         config: {
           label: segDisplaySet.SeriesDescription,
+          fallbackLabel: 'S:1 SEG',
           segments: {
             '1': {
               active: false,
@@ -1420,9 +1421,6 @@ describe('SegmentationService', () => {
               locked: false,
               segmentIndex: 2,
             },
-          },
-          cachedStats: {
-            labelFallbackSuffix: 'S:1 SEG',
           },
         },
         representation: {
@@ -1660,6 +1658,7 @@ describe('SegmentationService', () => {
       const expectedSegmentation = {
         config: {
           label: rtStructDisplaySet.SeriesDescription,
+          fallbackLabel: 'S:1 RTSTRUCT',
           segments: {
             '1': {
               active: false,
@@ -1700,9 +1699,6 @@ describe('SegmentationService', () => {
               locked: false,
               segmentIndex: 3,
             },
-          },
-          cachedStats: {
-            labelFallbackSuffix: 'S:1 RTSTRUCT',
           },
         },
         representation: {

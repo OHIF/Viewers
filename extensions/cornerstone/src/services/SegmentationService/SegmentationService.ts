@@ -55,6 +55,7 @@ export type SegmentationRepresentation = cstTypes.SegmentationRepresentation & {
   viewportId: string;
   id: string;
   label: string;
+  fallbackLabel?: string;
   styles: cstTypes.RepresentationStyle;
   segments: {
     [key: number]: SegmentRepresentation;
@@ -430,6 +431,7 @@ class SegmentationService extends PubSubService {
       },
       config: {
         label,
+        fallbackLabel: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         segments:
           options?.segments && Object.keys(options.segments).length > 0
             ? options.segments
@@ -441,7 +443,6 @@ class SegmentationService extends PubSubService {
               },
         cachedStats: {
           info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
-          labelFallbackSuffix: `S:${displaySet.SeriesNumber} ${displaySet.Modality}`,
         },
       },
     };
@@ -584,10 +585,8 @@ class SegmentationService extends PubSubService {
       },
       config: {
         label: segDisplaySet.SeriesDescription,
+        fallbackLabel: `S:${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
         segments,
-        cachedStats: {
-          labelFallbackSuffix: `S:${segDisplaySet.SeriesNumber} ${segDisplaySet.Modality}`,
-        },
       },
     };
 
@@ -668,9 +667,7 @@ class SegmentationService extends PubSubService {
       },
       config: {
         label: rtDisplaySet.SeriesDescription,
-        cachedStats: {
-          labelFallbackSuffix: `S:${rtDisplaySet.SeriesNumber} ${rtDisplaySet.Modality}`,
-        },
+        fallbackLabel: `S:${rtDisplaySet.SeriesNumber} ${rtDisplaySet.Modality}`,
       },
     };
 
@@ -1849,6 +1846,7 @@ class SegmentationService extends PubSubService {
       id: id,
       segmentationId,
       label: segmentation.label,
+      fallbackLabel: segmentation.fallbackLabel,
       active,
       type,
       visible,

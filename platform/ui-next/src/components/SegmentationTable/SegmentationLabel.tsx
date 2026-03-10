@@ -17,7 +17,7 @@ export const SegmentationLabel = ({ segmentation }: { segmentation: Segmentation
     return <>{segmentation.label}</>;
   }
 
-  const suffix = segmentation.cachedStats?.labelFallbackSuffix;
+  const suffix = segmentation.fallbackLabel;
   return (
     <>
       <span>{t('No description')}</span>
