@@ -60,6 +60,19 @@ export class RightPanelPageObject {
         await this.page.getByTestId('Rename').click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
+      cancelRename: async (text?: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Rename').click();
+        if (text) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(text);
+        } else {
+          await this.DOMOverlayPageObject.dialog.input.cancel();
+        }
+      },
+      duplicate: async () => {
+        await actionsButton.click();
+        await this.page.getByTestId('Duplicate').click();
+      },
     };
   }
 
