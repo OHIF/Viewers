@@ -137,8 +137,9 @@ function TrackedMeasurementsContextProvider(
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
-        const StructuredReportDisplaySetInstanceUID = evt.data.createdDisplaySetInstanceUIDs[0];
+      const uids = evt.data?.createdDisplaySetInstanceUIDs;
+      if (uids?.length > 0) {
+        const StructuredReportDisplaySetInstanceUID = uids[0];
 
         viewportGridService.setDisplaySetsForViewport({
           viewportId: evt.data.viewportId,

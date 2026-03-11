@@ -8,6 +8,7 @@ async function createReportAsync({
   servicesManager,
   getReport,
   reportType = 'measurement',
+  successMessage,
 }: withAppTypes) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
 
@@ -29,7 +30,7 @@ async function createReportAsync({
 
     uiNotificationService.show({
       title: 'Create Report',
-      message: `${reportType} saved successfully`,
+      message: successMessage ?? `${reportType} saved successfully`,
       type: 'success',
     });
 

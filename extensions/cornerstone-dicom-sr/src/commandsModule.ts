@@ -19,6 +19,7 @@ interface Options {
   InstanceNumber?: number;
   SeriesDate?: string;
   SeriesTime?: string;
+  download?: boolean;
 }
 
 /**
@@ -103,17 +104,21 @@ const commandsModule = (props: withAppTypes) => {
       additionalFindingTypes,
       options = {},
     }) => {
-      // Use the @cornerstonejs adapter for converting to/from DICOM
-      // But it is good enough for now whilst we only have cornerstone as a datasource.
-      log.info('[DICOMSR] storeMeasurements');
+      const { download: isDownload } = options;
+      log.info('[DICOMSR] storeMeasurements', isDownload ? '(download)' : '(store)');
 
-      if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
+      if (!isDownload && (!dataSource || !dataSource.store || !dataSource.store.dicom)) {
         log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
         return Promise.reject({});
       }
 
       try {
-        const naturalizedReport = _generateReport(measurementData, additionalFindingTypes, options);
+        const { download: _download, ...reportOptions } = options;
+        const naturalizedReport = _generateReport(
+          measurementData,
+          additionalFindingTypes,
+          reportOptions
+        );
 
         const { StudyInstanceUID, ContentSequence } = naturalizedReport;
         // The content sequence has 5 or more elements, of which
@@ -125,6 +130,13 @@ const commandsModule = (props: withAppTypes) => {
         }
         if (!naturalizedReport.SOPClassUID) {
           throw new Error('No sop class uid');
+        }
+
+        if (isDownload) {
+          const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+          downloadBlob(reportBlob, { filename: 'dicom-sr.dcm' });
+          DicomMetadataStore.addInstances([naturalizedReport], true);
+          return naturalizedReport;
         }
 
         const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');

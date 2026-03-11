@@ -35,36 +35,62 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       minSeriesNumber: 3000,
       extensionManager,
       servicesManager,
+      enableDownload: true,
     });
 
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
-      const dataSource = dataSources[0];
-
-      const { series, priorSeriesNumber, value: reportName } = promptResult;
+      const { series, priorSeriesNumber, value: reportName, dataSourceName } = promptResult;
       const SeriesDescription = reportName || defaultSaveTitle;
 
-      const getReport = async () => {
-        return commandsManager.runCommand(
-          'storeMeasurements',
-          {
-            measurementData,
-            dataSource,
-            additionalFindingTypes: ['ArrowAnnotate'],
-            options: {
-              SeriesDescription,
-              SeriesNumber: 1 + priorSeriesNumber,
-              predecessorImageId: series,
+      if (dataSourceName === 'download') {
+        const getReport = async () =>
+          commandsManager.runCommand(
+            'storeMeasurements',
+            {
+              measurementData,
+              dataSource: null,
+              additionalFindingTypes: ['ArrowAnnotate'],
+              options: {
+                download: true,
+                SeriesDescription,
+                SeriesNumber: 1 + priorSeriesNumber,
+                predecessorImageId: series,
+              },
             },
-          },
-          'CORNERSTONE_STRUCTURED_REPORT'
-        );
-      };
-      displaySetInstanceUIDs = await createReportAsync({
-        servicesManager,
-        getReport,
-      });
-    } else if (promptResult.action === RESPONSE.CANCEL) {
+            'CORNERSTONE_STRUCTURED_REPORT'
+          );
+        displaySetInstanceUIDs = await createReportAsync({
+          servicesManager,
+          getReport,
+          reportType: 'Report',
+          successMessage: 'Report downloaded and displayed',
+        });
+      } else {
+        const dataSources = extensionManager.getDataSources(dataSourceName);
+        const dataSource = dataSources[0];
+
+        const getReport = async () => {
+          return commandsManager.runCommand(
+            'storeMeasurements',
+            {
+              measurementData,
+              dataSource,
+              additionalFindingTypes: ['ArrowAnnotate'],
+              options: {
+                SeriesDescription,
+                SeriesNumber: 1 + priorSeriesNumber,
+                predecessorImageId: series,
+              },
+            },
+            'CORNERSTONE_STRUCTURED_REPORT'
+          );
+        };
+        displaySetInstanceUIDs = await createReportAsync({
+          servicesManager,
+          getReport,
+        });
+      }
+    } else if (promptResult.action === PROMPT_RESPONSES.CANCEL) {
       // Do nothing
     }
 

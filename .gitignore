@@ -63,3 +63,8 @@ tests/playwright-report/
 
 # Backup files
 *~
+
+# cornerstone3D local linking
+libs/
+link-cs3d.js
+unlink-cs3d.js
