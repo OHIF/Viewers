@@ -3,8 +3,11 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
+// Study list variants:
+// - Default: WorkListUINext (ui-next, with pre-DS hydration)
+// - Optional: WorkList (legacy)
+import WorkList from './WorkList/WorkList';
 import DataSourceWrapper from './DataSourceWrapper';
-import WorkList from './WorkList';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
@@ -14,6 +17,7 @@ import PropTypes from 'prop-types';
 import { routerBasename } from '../utils/publicUrl';
 import { useAppConfig } from '@state';
 import { history } from '../utils/history';
+import WorkListUINext from './WorkListUINext/WorkListUINext';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -124,7 +128,11 @@ const createRoutes = ({
     path: '/',
     children: DataSourceWrapper,
     private: true,
-    props: { children: WorkList, servicesManager, extensionManager },
+    props: { children: WorkListUINext, servicesManager, extensionManager },
+    // To use legacy WorkList instead:
+    // children: DataSourceWrapper,
+    // private: true,
+    // props: { children: WorkList, servicesManager, extensionManager },
   };
 
   const customRoutes = customizationService.getCustomization('routes.customRoutes');
