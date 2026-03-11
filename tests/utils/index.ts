@@ -21,6 +21,7 @@ import { getSvgPath } from './getSvgPath';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import { setViewportImageIndex } from './setViewportImageIndex';
 
 export {
   visitStudy,
@@ -44,6 +45,7 @@ export {
   subscribeToMeasurementAdded,
   getSvgPath,
   navigateWithViewportArrow,
+  setViewportImageIndex,
   test,
   expect,
 };

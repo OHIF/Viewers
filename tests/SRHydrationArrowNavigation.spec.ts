@@ -1,4 +1,10 @@
-import { expect, navigateWithViewportArrow, test, visitStudy } from './utils';
+import {
+  expect,
+  navigateWithViewportArrow,
+  test,
+  visitStudy,
+  setViewportImageIndex,
+} from './utils';
 import { expectRowSelected } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -24,6 +30,9 @@ test('should navigate SR measurements with next/prev arrows after hydration for 
 
   const measurementCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(measurementCount).toBeGreaterThan(1);
+
+  // Navigate to first image
+  await setViewportImageIndex(page, 0);
 
   // first arrow click should navigate to second measurement
   await navigateWithViewportArrow(viewportPageObject, 'next');
