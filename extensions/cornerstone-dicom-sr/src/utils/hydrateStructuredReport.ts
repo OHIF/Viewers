@@ -188,6 +188,8 @@ export default function hydrateStructuredReport(
       }
       if (!targetStudyInstanceUID) {
         targetStudyInstanceUID = ds.StudyInstanceUID;
+      } else if (targetStudyInstanceUID !== ds.StudyInstanceUID) {
+        console.warn('NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.');
       }
     });
   }
