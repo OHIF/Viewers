@@ -150,7 +150,7 @@ export class RightPanelPageObject {
   }
 
   private get segmentsVisibilityToggle() {
-    const button = this.page.getByTestId("all-segments-visiblility-toggle");
+    const button = this.page.getByTestId("all-segments-visibility-toggle");
     return {
       button,
       click: async () => {

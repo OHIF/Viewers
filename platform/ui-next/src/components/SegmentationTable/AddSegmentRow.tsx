@@ -65,7 +65,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
       <Button
         size="icon"
         variant="ghost"
-        data-cy="all-segments-visiblility-toggle"
+        data-cy="all-segments-visibility-toggle"
         onClick={() =>
           onToggleSegmentationRepresentationVisibility(segmentationId, representation?.type)
         }

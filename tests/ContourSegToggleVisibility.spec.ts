@@ -49,11 +49,11 @@ test('when segment visibility is off it is not shown when clicked on', async ({
   const initialCount = await svgPathLocator.count();
   expect(initialCount, 'All segments to be hidden').toBe(0);
 
-  rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
   const countAfterfirstSelection = await svgPathLocator.count();
   expect(countAfterfirstSelection, 'All segments to remain hidden ').toBe(0);
 
-  rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
   const countAfterSecondSelection = await svgPathLocator.count();
   expect(countAfterSecondSelection, 'All segments to remain hidden ').toBe(0);
 });
