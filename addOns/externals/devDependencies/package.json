@@ -29,6 +29,7 @@
     "@types/jest": "27.5.2",
     "@typescript-eslint/eslint-plugin": "8.56.0",
     "@typescript-eslint/parser": "8.56.0",
+    "@types/sanitize-html": "2.16.0",
     "autoprefixer": "10.4.21",
     "babel-loader": "8.4.1",
     "clean-webpack-plugin": "3.0.0",
