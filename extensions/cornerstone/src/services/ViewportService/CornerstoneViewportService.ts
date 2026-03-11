@@ -9,6 +9,7 @@ import {
   utilities as csUtils,
   VolumeViewport,
   VolumeViewport3D,
+  ECGViewport,
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
@@ -38,6 +39,7 @@ import { usePositionPresentationStore } from '../../stores/usePositionPresentati
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
+import { BlendModes } from '@cornerstonejs/core/enums';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -777,6 +779,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   /**
    * Sets the image data for the given viewport.
    */
+  private async _setEcgViewport(
+    viewport: Types.IECGViewport,
+    viewportData: StackViewportData
+  ): Promise<void> {
+    const [displaySet] = viewportData.data;
+    const imageId = displaySet.imageIds?.[0];
+    if (!imageId) {
+      console.error('[CornerstoneViewportService] ECG display set has no imageId');
+      return;
+    }
+    return viewport.setEcg(imageId);
+  }
+
   private async _setOtherViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
@@ -1192,6 +1207,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       segmentationId,
       predecessorImageId,
       type: representationType,
+      config: {
+        blendMode:
+          viewport?.getBlendMode?.() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
+      },
     });
 
     // store the segmentation presentation id in the viewport info
@@ -1250,6 +1269,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportInfo,
         presentations
       );
+    }
+
+    if (viewport instanceof ECGViewport) {
+      return this._setEcgViewport(viewport as unknown as Types.IECGViewport, viewportData as StackViewportData);
     }
 
     return this._setOtherViewport(
@@ -1457,6 +1480,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
           type: representationType,
+          config: {
+            blendMode:
+              viewport?.getBlendMode?.() === 1
+                ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+                : undefined,
+          },
         });
       }
     });

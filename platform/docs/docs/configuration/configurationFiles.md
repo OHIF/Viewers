@@ -312,6 +312,18 @@ reasons:
 However, if you would like to get compressed data in a specific transfer syntax, you can modify the `acceptHeader` configuration or
 `requestTransferSyntaxUID` configuration.
 
+### Data Source: stackRetrieveOptions
+At the data source configuration level, you can set `stackRetrieveOptions` to customize Cornerstone stack image retrieval. Merged with defaults; only specify overrides. For example, set `streaming: false` when the data source returns uncompressed DICOM (e.g. `application/octet-stream` only) to avoid black image on load:
+
+```js
+configuration: {
+  acceptHeader: ['application/octet-stream'],
+  stackRetrieveOptions: {
+    retrieveOptions: { single: { streaming: false } },
+  },
+}
+```
+
 ## Environment Variables
 
 We use environment variables at build and dev time to change the Viewer's
