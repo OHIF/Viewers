@@ -149,6 +149,16 @@ export class RightPanelPageObject {
     };
   }
 
+  private get segmentsVisibilityToggle() {
+    const button = this.page.getByTestId("all-segments-visiblility-toggle");
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
   private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
     const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
@@ -176,10 +186,12 @@ export class RightPanelPageObject {
     const addSegmentationButton = this.addSegmentationButton;
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+    const segmentsVisibilityToggle = this.segmentsVisibilityToggle;
 
     return {
       addSegmentationButton,
       menuButton,
+      segmentsVisibilityToggle,
       panel,
       select: async () => {
         await menuButton.click();

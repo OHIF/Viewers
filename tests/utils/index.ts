@@ -19,6 +19,7 @@ import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
 import { getSvgPath } from './getSvgPath';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
+import { toggleAllSegmentsVisibility, toggleSegmentVisibility } from './segmentVisibilityToggle';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 
@@ -44,6 +45,8 @@ export {
   subscribeToMeasurementAdded,
   getSvgPath,
   navigateWithViewportArrow,
+  toggleAllSegmentsVisibility,
+  toggleSegmentVisibility,
   test,
   expect,
 };
