@@ -9,6 +9,7 @@ import {
   utilities as csUtils,
   VolumeViewport,
   VolumeViewport3D,
+  ECGViewport,
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
@@ -778,6 +779,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   /**
    * Sets the image data for the given viewport.
    */
+  private async _setEcgViewport(
+    viewport: Types.IECGViewport,
+    viewportData: StackViewportData
+  ): Promise<void> {
+    const [displaySet] = viewportData.data;
+    const imageId = displaySet.imageIds?.[0];
+    if (!imageId) {
+      console.error('[CornerstoneViewportService] ECG display set has no imageId');
+      return;
+    }
+    return viewport.setEcg(imageId);
+  }
+
   private async _setOtherViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
@@ -1255,6 +1269,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         viewportInfo,
         presentations
       );
+    }
+
+    if (viewport instanceof ECGViewport) {
+      return this._setEcgViewport(viewport as unknown as Types.IECGViewport, viewportData as StackViewportData);
     }
 
     return this._setOtherViewport(
