@@ -318,15 +318,14 @@ const xnatRoute = {
 
 
     // @ts-ignore
-    const result = await defaultRouteInit({
+    const unsubscriptions = await defaultRouteInit({
       servicesManager,
       extensionManager,
       studyInstanceUIDs,
       dataSource: dataSourceForDefaultRoute,
     }, hangingProtocolId);
 
-    // For comparison views, return null to prevent core routing from processing original UIDs
-    return isComparisonView ? null : studyInstanceUIDs;
+    return unsubscriptions;
   },
 };
 

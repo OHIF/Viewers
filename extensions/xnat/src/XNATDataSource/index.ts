@@ -336,6 +336,48 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                   HighBit: xnatMeta.HighBit === undefined ? ((xnatMeta.BitsStored || (xnatMeta.BitsAllocated || 16)) - 1) : xnatMeta.HighBit,
                 };
 
+                // Multi-frame (Enhanced MR): synthetic per-frame geometry so MPR can reconstruct the volume and sagittal/coronal proportions are correct
+                const numFrames = naturalized.NumberOfFrames || 1;
+                if (numFrames > 1 && !naturalized.PerFrameFunctionalGroupsSequence) {
+                  const origin = (naturalized.ImagePositionPatient || [0, 0, 0]).map(Number);
+                  const orientation = (naturalized.ImageOrientationPatient || [1, 0, 0, 0, 1, 0]).map(Number);
+                  const pixelSpacing = naturalized.PixelSpacing || [1, 1];
+                  const inPlaneSpacing = Math.max(Number(pixelSpacing[0]) || 1, Number(pixelSpacing[1]) || 1);
+                  const sliceThicknessNum = naturalized.SliceThickness != null ? Number(naturalized.SliceThickness) : 0;
+                  const spacing = naturalized.SpacingBetweenSlices != null
+                    ? Number(naturalized.SpacingBetweenSlices)
+                    : sliceThicknessNum >= inPlaneSpacing
+                      ? sliceThicknessNum
+                      : inPlaneSpacing * 2.5;
+
+                  const rowDir = orientation.slice(0, 3);
+                  const colDir = orientation.slice(3, 6);
+                  const normal = [
+                    rowDir[1] * colDir[2] - rowDir[2] * colDir[1],
+                    rowDir[2] * colDir[0] - rowDir[0] * colDir[2],
+                    rowDir[0] * colDir[1] - rowDir[1] * colDir[0],
+                  ];
+                  const round6 = (v: number) => Math.round(v * 1e6) / 1e6;
+                  const perFrame = [];
+                  for (let f = 0; f < numFrames; f++) {
+                    perFrame.push({
+                      PlanePositionSequence: [{
+                        ImagePositionPatient: [
+                          round6(origin[0] + normal[0] * spacing * f),
+                          round6(origin[1] + normal[1] * spacing * f),
+                          round6(origin[2] + normal[2] * spacing * f),
+                        ],
+                      }],
+                    });
+                  }
+                  naturalized.PerFrameFunctionalGroupsSequence = perFrame;
+                  naturalized.SharedFunctionalGroupsSequence = [{
+                    PixelMeasuresSequence: [{ PixelSpacing: pixelSpacing, SliceThickness: spacing, SpacingBetweenSlices: spacing }],
+                    PlaneOrientationSequence: [{ ImageOrientationPatient: orientation }],
+                  }];
+                  delete naturalized.ImagePositionPatient;
+                }
+
                 // Ensure required fields for DicomMetadataStore
                 naturalized = ensureInstanceRequiredFields(naturalized, configManager.getConfig());
 
@@ -347,11 +389,12 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                 delete dicomDatasetToDenaturalize.modality;
                 delete dicomDatasetToDenaturalize.wadoRoot;
                 delete dicomDatasetToDenaturalize.wadoUri;
+                delete dicomDatasetToDenaturalize.PerFrameFunctionalGroupsSequence;
+                delete dicomDatasetToDenaturalize.SharedFunctionalGroupsSequence;
 
-
+                const firstFramePosition = naturalized.PerFrameFunctionalGroupsSequence?.[0]?.PlanePositionSequence?.[0]?.ImagePositionPatient;
                 const storable = {
                   ...denaturalizeDataset(dicomDatasetToDenaturalize),
-                  // Keep these JS properties for OHIF DicomMetadataStore compatibility
                   StudyInstanceUID,
                   SeriesInstanceUID: series.SeriesInstanceUID,
                   SOPInstanceUID: naturalized.SOPInstanceUID,
@@ -359,13 +402,15 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                   modality: determinedModality,
                   SOPClassUID: naturalized.SOPClassUID,
                   InstanceNumber: naturalized.InstanceNumber,
-                  url: imageId.startsWith('dicomweb:') ? imageId.substring(9) : imageId, // Store the actual URL part
-                  imageId: imageId, // Full imageId for Cornerstone
+                  url: imageId.startsWith('dicomweb:') ? imageId.substring(9) : imageId,
+                  imageId: imageId,
+                  PerFrameFunctionalGroupsSequence: naturalized.PerFrameFunctionalGroupsSequence,
+                  SharedFunctionalGroupsSequence: naturalized.SharedFunctionalGroupsSequence,
                   Rows: naturalized.Rows,
                   Columns: naturalized.Columns,
                   PixelSpacing: naturalized.PixelSpacing,
                   SliceThickness: naturalized.SliceThickness,
-                  ImagePositionPatient: naturalized.ImagePositionPatient,
+                  ImagePositionPatient: naturalized.ImagePositionPatient ?? firstFramePosition,
                   ImageOrientationPatient: naturalized.ImageOrientationPatient,
                   ImageType: naturalized.ImageType,
                   NumberOfFrames: naturalized.NumberOfFrames,
@@ -422,7 +467,10 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                     generalSeriesModule
                   );
                 }
-
+                if (numberOfFrames > 1) {
+                  const bareBaseId = imageId.startsWith('dicomweb:') ? imageId : `dicomweb:${imageId}`;
+                  metadataProvider.addImageIdToUIDs(bareBaseId, { ...uids, frameNumber: 1 });
+                }
               });
 
               if (instancesToStoreForThisSeries.length > 0) {
@@ -584,14 +632,14 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
     },
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {
-      const images = displaySet.images;
+      const sourceList = displaySet.instances || displaySet.images;
       const imageIds = [];
 
-      if (!images) {
+      if (!sourceList?.length) {
         return imageIds;
       }
 
-      displaySet.images.forEach(instance => {
+      sourceList.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames || 1; // Add fallback for NumberOfFrames
 
         if (NumberOfFrames > 1) {

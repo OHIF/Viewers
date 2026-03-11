@@ -58,11 +58,15 @@ export function makeDisplaySet(instances: any[], appContext: AppContextType) {
 
   // Determine display set image ID and thumbnail instance
   let displaySetImageId;
+  let allImageIdsInDisplaySet: string[] | undefined;
   let thumbnailInstance = instances[Math.floor(instances.length / 2)];
 
   if (dataSource && typeof dataSource.getImageIdsForDisplaySet === 'function') {
-    const allImageIdsInDisplaySet = dataSource.getImageIdsForDisplaySet(imageSet);
-    displaySetImageId = allImageIdsInDisplaySet[Math.floor(allImageIdsInDisplaySet.length / 2)];
+    allImageIdsInDisplaySet = dataSource.getImageIdsForDisplaySet(imageSet);
+    if (allImageIdsInDisplaySet && allImageIdsInDisplaySet.length > 0) {
+      displaySetImageId =
+        allImageIdsInDisplaySet[Math.floor(allImageIdsInDisplaySet.length / 2)];
+    }
 
     if (isDynamicVolume && dynamicVolumeInfo.timePoints && dynamicVolumeInfo.timePoints.length > 0) {
       const timePoints = dynamicVolumeInfo.timePoints;
@@ -84,7 +88,10 @@ export function makeDisplaySet(instances: any[], appContext: AppContextType) {
   let studyMetadata = null;
 
   // Construct imageIds array
-  const imageIds = instances.map(inst => inst.imageId).filter(id => id);
+  const imageIds =
+    allImageIdsInDisplaySet && allImageIdsInDisplaySet.length > 0
+      ? allImageIdsInDisplaySet
+      : instances.map(inst => inst.imageId).filter(id => id);
 
   if (appContext.servicesManager && appContext.servicesManager.services) {
     const AppContextService = appContext.servicesManager.services.AppContext;
@@ -119,7 +126,7 @@ export function makeDisplaySet(instances: any[], appContext: AppContextType) {
     SOPClassUID: instance?.SOPClassUID,
     isMultiFrame: isMultiFrame(instance),
     countIcon: isReconstructable ? 'icon-mpr' : undefined,
-    numImageFrames: instances.length,
+    numImageFrames: imageIds.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     isReconstructable,
     messages,
