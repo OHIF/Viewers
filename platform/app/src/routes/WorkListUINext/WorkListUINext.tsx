@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@state';
@@ -118,6 +119,8 @@ export default function WorkListUINext({
 function StudyListSettingsPopover() {
   // SettingsPopover.Workflow now uses useStudyListWorkflows internally
   const { t } = useTranslation();
+  const [appConfig] = useAppConfig();
+  const navigate = useNavigate();
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services as any;
   const { show } = useModal();
@@ -166,6 +169,15 @@ function StudyListSettingsPopover() {
         >
           User Preferences
         </StudyList.SettingsPopover.Item>
+        {appConfig.oidc && (
+          <StudyList.SettingsPopover.Item
+            onClick={() => {
+              navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
+            }}
+          >
+            {t('Header:Logout')}
+          </StudyList.SettingsPopover.Item>
+        )}
       </StudyList.SettingsPopover.Content>
     </StudyList.SettingsPopover>
   );
