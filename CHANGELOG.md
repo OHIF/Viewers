@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.36...v3.13.0-beta.37) (2026-03-12)
+
+
+### Bug Fixes
+
+* **security:** Bump tar version to address CVE-2026-31802. ([#5893](https://github.com/OHIF/Viewers/issues/5893)) ([d015b2e](https://github.com/OHIF/Viewers/commit/d015b2e32a418042034c4f557c5a36499c72f702))
+
+
+
+
+
 # [3.13.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.35...v3.13.0-beta.36) (2026-03-11)
 
 
