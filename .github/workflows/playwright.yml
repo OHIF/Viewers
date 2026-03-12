@@ -11,6 +11,9 @@ on:
         required: false
         default: '4.x'
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -98,7 +101,7 @@ jobs:
       - name: Link CS3D packages
         if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
         working-directory: libs/@cornerstonejs
-        run: node scripts/ci/link-ohif-cornerstone-node-modules.mjs "$GITHUB_WORKSPACE"
+        run: node scripts/link-ohif-cornerstone-node-modules.mjs "$GITHUB_WORKSPACE"
 
       # ── CS3D version path: update versions after OHIF install ───────────
       - name: Set CS3D version
