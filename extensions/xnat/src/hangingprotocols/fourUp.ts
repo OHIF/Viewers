@@ -1,4 +1,4 @@
-import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP } from './mpr';
 
 const fourUp = {
   id: 'fourUp',
@@ -48,7 +48,7 @@ const fourUp = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -64,7 +64,7 @@ const fourUp = {
             customViewportProps: {
               hideOverlays: true,
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -87,7 +87,7 @@ const fourUp = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -103,7 +103,7 @@ const fourUp = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {

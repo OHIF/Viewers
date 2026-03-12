@@ -7,6 +7,7 @@ export const segmentationButtons: Button[] = [
     id: 'Brush',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'Brush',
       icon: 'icon-tool-brush',
       label: 'Brush',
       evaluate: {
@@ -19,10 +20,12 @@ export const segmentationButtons: Button[] = [
           name: 'Radius (mm)',
           id: 'brush-radius',
           type: 'range',
+          explicitRunOnly: true,
           min: 0.5,
           max: 99.5,
           step: 0.5,
           value: 25,
+          values: [],
           commands: {
             commandName: 'setBrushSize',
             commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
@@ -46,6 +49,7 @@ export const segmentationButtons: Button[] = [
     id: 'InterpolateLabelmap',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'InterpolateLabelmap',
       icon: 'icon-tool-interpolation',
       label: 'Interpolate Labelmap',
       tooltip:
@@ -64,6 +68,7 @@ export const segmentationButtons: Button[] = [
     id: 'SegmentBidirectional',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'SegmentBidirectional',
       icon: 'icon-tool-bidirectional-segment',
       label: 'Segment Bidirectional',
       tooltip:
@@ -76,6 +81,7 @@ export const segmentationButtons: Button[] = [
     id: 'RegionSegmentPlus',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'RegionSegmentPlus',
       icon: 'icon-tool-click-segment',
       label: 'One Click Segment',
       tooltip:
@@ -92,6 +98,7 @@ export const segmentationButtons: Button[] = [
     id: 'LabelmapSlicePropagation',
     uiType: 'ohif.toolButton',
     props: {
+      id: 'LabelmapSlicePropagation',
       icon: 'icon-labelmap-slice-propagation',
       label: 'Labelmap Assist',
       tooltip:
@@ -115,6 +122,7 @@ export const segmentationButtons: Button[] = [
     id: 'MarkerLabelmap',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'MarkerLabelmap',
       icon: 'icon-marker-labelmap',
       label: 'Marker Guided Labelmap',
       tooltip:
@@ -140,23 +148,15 @@ export const segmentationButtons: Button[] = [
             { value: 'markerInclude', label: 'Include' },
             { value: 'markerExclude', label: 'Exclude' },
           ],
-          commands: ({ commandsManager, options }) => {
-            const markerModeOption = options.find(option => option.id === 'marker-mode');
-            if (markerModeOption.value === 'markerInclude') {
-              commandsManager.run('setToolActive', {
-                toolName: 'MarkerInclude',
-              });
-            } else {
-              commandsManager.run('setToolActive', {
-                toolName: 'MarkerExclude',
-              });
-            }
+          commands: {
+            commandName: 'setMarkerModeForMarkerLabelmap',
           },
         },
         {
           name: 'Clear Markers',
           type: 'button',
           id: 'clear-markers',
+          values: [],
           commands: 'clearMarkersForMarkerLabelmap',
         },
       ],
@@ -166,6 +166,7 @@ export const segmentationButtons: Button[] = [
     id: 'Eraser',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'Eraser',
       icon: 'icon-tool-eraser',
       label: 'Eraser',
       evaluate: {
@@ -177,10 +178,12 @@ export const segmentationButtons: Button[] = [
           name: 'Radius (mm)',
           id: 'eraser-radius',
           type: 'range',
+          explicitRunOnly: true,
           min: 0.5,
           max: 99.5,
           step: 0.5,
           value: 25,
+          values: [],
           commands: {
             commandName: 'setBrushSize',
             commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
@@ -204,6 +207,7 @@ export const segmentationButtons: Button[] = [
     id: 'Threshold',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'Threshold',
       icon: 'icon-tool-threshold',
       label: 'Threshold Tool',
       evaluate: {
@@ -220,10 +224,12 @@ export const segmentationButtons: Button[] = [
           name: 'Radius (mm)',
           id: 'threshold-radius',
           type: 'range',
+          explicitRunOnly: true,
           min: 0.5,
           max: 99.5,
           step: 0.5,
           value: 25,
+          values: [],
           commands: {
             commandName: 'setBrushSize',
             commandOptions: {
@@ -245,21 +251,8 @@ export const segmentationButtons: Button[] = [
             { value: 'ThresholdCircularBrush', label: 'Circle' },
             { value: 'ThresholdSphereBrush', label: 'Sphere' },
           ],
-          commands: ({ value, commandsManager, options }) => {
-            const optionsDynamic = options.find(option => option.id === 'dynamic-mode');
-
-            if (optionsDynamic.value === 'ThresholdDynamic') {
-              commandsManager.run('setToolActive', {
-                toolName:
-                  value === 'ThresholdCircularBrush'
-                    ? 'ThresholdCircularBrushDynamic'
-                    : 'ThresholdSphereBrushDynamic',
-              });
-            } else {
-              commandsManager.run('setToolActive', {
-                toolName: value,
-              });
-            }
+          commands: {
+            commandName: 'setThresholdShape',
           },
         },
         {
@@ -271,30 +264,8 @@ export const segmentationButtons: Button[] = [
             { value: 'ThresholdDynamic', label: 'Dynamic' },
             { value: 'ThresholdRange', label: 'Range' },
           ],
-          commands: ({ value, commandsManager, options }) => {
-            const thresholdRangeOption = options.find(option => option.id === 'threshold-shape');
-
-            if (value === 'ThresholdDynamic') {
-              commandsManager.run('setToolActiveToolbar', {
-                toolName:
-                  thresholdRangeOption.value === 'ThresholdCircularBrush'
-                    ? 'ThresholdCircularBrushDynamic'
-                    : 'ThresholdSphereBrushDynamic',
-              });
-            } else {
-              commandsManager.run('setToolActiveToolbar', {
-                toolName: thresholdRangeOption.value,
-              });
-
-              const thresholdRangeValue = options.find(
-                option => option.id === 'threshold-range'
-              ).value;
-
-              commandsManager.run('setThresholdRange', {
-                toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
-                value: thresholdRangeValue,
-              });
-            }
+          commands: {
+            commandName: 'setThresholdMode',
           },
         },
         {
@@ -305,10 +276,12 @@ export const segmentationButtons: Button[] = [
           max: 1000,
           step: 1,
           value: [50, 600],
-          condition: ({ options }) =>
-            options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+          values: [],
+          condition: ({ options = [] }) =>
+            (options as any[]).find(option => option.id === 'dynamic-mode')?.value ===
+            'ThresholdRange',
           commands: {
-            commandName: 'setThresholdRange',
+            commandName: 'xnatSetThresholdRange',
             commandOptions: {
               toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
             },
@@ -321,6 +294,7 @@ export const segmentationButtons: Button[] = [
     id: 'Shapes',
     uiType: 'ohif.toolBoxButton',
     props: {
+      id: 'Shapes',
       icon: 'icon-tool-shape',
       label: 'Shapes',
       evaluate: {

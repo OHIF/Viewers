@@ -117,8 +117,17 @@ const commandsModule = ({
     setBrushSize: {
       commandFn: actions.setBrushSize,
     },
-    setThresholdRange: {
-      commandFn: actions.setThresholdRange,
+    xnatSetThresholdRange: {
+      commandFn: actions.xnatSetThresholdRange,
+    },
+    setMarkerModeForMarkerLabelmap: {
+      commandFn: actions.setMarkerModeForMarkerLabelmap,
+    },
+    setThresholdShape: {
+      commandFn: actions.setThresholdShape,
+    },
+    setThresholdMode: {
+      commandFn: actions.setThresholdMode,
     },
     increaseBrushSize: {
       commandFn: actions.increaseBrushSize,

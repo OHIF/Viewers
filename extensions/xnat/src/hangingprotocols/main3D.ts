@@ -1,4 +1,4 @@
-import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP } from './mpr';
 
 const main3D = {
   id: 'main3D',
@@ -96,7 +96,7 @@ const main3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -112,7 +112,7 @@ const main3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -128,7 +128,7 @@ const main3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
           },
           displaySets: [
             {

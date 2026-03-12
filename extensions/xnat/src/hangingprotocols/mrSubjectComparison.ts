@@ -1,3 +1,5 @@
+import { CAMERA_POSITION_SYNC_GROUP } from './mpr';
+
 // Sync groups for coordinated viewing
 const VOI_SYNC_GROUP = {
     type: 'voi',
@@ -94,7 +96,7 @@ const currentAxialViewport = {
         initialImageOptions: {
             preset: 'middle',
         },
-        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
     },
     displaySets: [
         {
@@ -113,7 +115,7 @@ const currentSagittalViewport = {
         initialImageOptions: {
             preset: 'middle',
         },
-        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
     },
     displaySets: [
         {
@@ -132,7 +134,7 @@ const currentCoronalViewport = {
         initialImageOptions: {
             preset: 'middle',
         },
-        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
     },
     displaySets: [
         {
@@ -152,7 +154,7 @@ const priorAxialViewport = {
         initialImageOptions: {
             preset: 'middle',
         },
-        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
     },
     displaySets: [
         {
@@ -171,7 +173,7 @@ const priorSagittalViewport = {
         initialImageOptions: {
             preset: 'middle',
         },
-        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
     },
     displaySets: [
         {
@@ -190,7 +192,7 @@ const priorCoronalViewport = {
         initialImageOptions: {
             preset: 'middle',
         },
-        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+        syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
     },
     displaySets: [
         {
@@ -238,7 +240,7 @@ const mrSubjectComparison = {
             initialImageOptions: {
                 preset: 'middle',
             },
-            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
         },
         displaySets: [
             {

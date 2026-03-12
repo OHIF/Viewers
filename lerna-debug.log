@@ -1,16 +1,47 @@
 0 silly argv {
 0 silly argv   _: [ 'run' ],
 0 silly argv   stream: true,
-0 silly argv   lernaVersion: '7.4.2',
+0 silly argv   lernaVersion: '9.0.4',
 0 silly argv   '$0': '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/.bin/lerna',
 0 silly argv   script: 'build:viewer:xnat'
 0 silly argv }
-1 notice cli v7.4.2
+1 notice cli v9.0.4
 2 verbose packageConfigs Explicit "packages" configuration found in lerna.json. Resolving packages using the configured glob(s): ["extensions/*","platform/*","modes/*","addOns/externals/*"]
 3 verbose rootPath /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat
-4 error Error: GenericFailure
-4 error     at getNxWorkspaceFilesFromContext (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/workspace-context.js:16:29)
-4 error     at retrieveWorkspaceFiles (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:26:138)
-4 error     at async buildProjectGraphWithoutDaemon (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/project-graph.js:65:82)
-4 error     at async createProjectGraphAsync (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/project-graph.js:116:25)
-4 error     at async detectProjects (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/lerna/dist/index.js:1455:25)
+4 error - extensions/cornerstone-dicom-seg/package.json: Error: CommaExpected in /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/extensions/cornerstone-dicom-seg/package.json at 53:5
+4 error     51 |         "@kitware/vtk.js": "34.15.1"
+4 error     52 |     }
+4 error   > 53 |     "name": "@ohif/extension-cornerstone-dicom-seg",
+4 error        |     ^^^^^^
+4 error     54 |     "version": "3.13.0-beta.37",
+4 error     55 |     "description": "DICOM SEG read workflow",
+4 error     56 |     "author": "OHIF",
+4 error
+4 error       at parseJson (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/json.js:29:15)
+4 error       at readJsonFile (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/fileutils.js:32:37)
+4 error       at createNodeFromPackageJson (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/plugins/package-json/create-nodes.js:115:47)
+4 error       at /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/plugins/package-json/create-nodes.js:48:20
+4 error       at /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/utils.js:10:33
+4 error       at Array.map (<anonymous>)
+4 error       at createNodesFromFiles (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/utils.js:8:35)
+4 error       at exports.createNodesV2 (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/plugins/package-json/create-nodes.js:41:51)
+4 error       at LoadedNxPlugin.createNodes (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/loaded-nx-plugin.js:26:62)
+4 error       at LoadedNxPlugin.createNodes.<computed> (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/loaded-nx-plugin.js:40:34)
+4 error       Error: CommaExpected in /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/extensions/cornerstone-dicom-seg/package.json at 53:5
+4 error         51 |         "@kitware/vtk.js": "34.15.1"
+4 error         52 |     }
+4 error       > 53 |     "name": "@ohif/extension-cornerstone-dicom-seg",
+4 error            |     ^^^^^^
+4 error         54 |     "version": "3.13.0-beta.37",
+4 error         55 |     "description": "DICOM SEG read workflow",
+4 error         56 |     "author": "OHIF",
+4 error
+4 error           at parseJson (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/json.js:29:15)
+4 error           at readJsonFile (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/fileutils.js:32:37)
+4 error           at createNodeFromPackageJson (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/plugins/package-json/create-nodes.js:115:47)
+4 error           at /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/plugins/package-json/create-nodes.js:48:20
+4 error           at /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/utils.js:10:33
+4 error           at Array.map (<anonymous>)
+4 error           at createNodesFromFiles (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/utils.js:8:35)
+4 error           at exports.createNodesV2 (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/plugins/package-json/create-nodes.js:41:51)
+4 error           at LoadedNxPlugin.createNodes (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/plugins/loaded-nx-plugin.js:26:62)

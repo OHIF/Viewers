@@ -67,25 +67,36 @@ export function getToolbarEvaluators(servicesManager: any): ToolbarModuleItem[] 
     {
       name: 'evaluate.cornerstone.segmentation',
       evaluate: ({ viewportId, button, toolNames, disabledText }: EvaluateFunctionParams): EvaluateFunctionResult => {
-        // Check if segmentations exist for this viewport
-        const segmentations = segmentationService.getSegmentationRepresentations(viewportId);
-        if (!segmentations?.length) {
-          return {
-            disabled: true,
-            disabledText: disabledText ?? 'No segmentations available',
-          };
-        }
-
-        const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
-        if (!Object.keys(activeSegmentation.segments).length) {
-          return {
-            disabled: true,
-            disabledText: 'Add segment to enable this tool',
-          };
-        }
+        // Enable segmentation tools as long as there is at least one segmentation
+        // with at least one segment anywhere (viewport-agnostic). This avoids
+        // blocking tools in MPR or other protocols that may not yet have a
+        // representation attached to the specific viewport.
+        const allSegmentations = segmentationService.getSegmentations?.() ?? [];
+        const hasSegments = allSegmentations.some(
+          seg => seg?.segments && Object.keys(seg.segments).length > 0
+        );
 
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        const evaluatedToolName = toolbarService.getToolNameForButton(button);
 
+        // Debug logging to understand why segmentation tools are (not) active
+        // in different hanging protocols / viewports.
+        console.log('[XNAT evaluate.cornerstone.segmentation]', {
+          viewportId,
+          buttonId: button?.id,
+          toolName: evaluatedToolName,
+          toolNames,
+          hasSegments,
+          toolGroupId: toolGroup?.id,
+          activePrimaryTool: toolGroup?.getActivePrimaryMouseButtonTool?.(),
+        });
+
+        if (!hasSegments) {
+          return {
+            disabled: true,
+            disabledText: disabledText ?? 'Add segment to enable this tool',
+          };
+        }
         if (!toolGroup) {
           return {
             disabled: true,
@@ -99,7 +110,7 @@ export function getToolbarEvaluators(servicesManager: any): ToolbarModuleItem[] 
           };
         }
 
-        const toolName = toolbarService.getToolNameForButton(button);
+        const toolName = evaluatedToolName;
 
         if (!toolGroup.hasTool(toolName) && !toolNames) {
           return {

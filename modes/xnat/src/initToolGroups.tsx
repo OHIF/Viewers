@@ -153,9 +153,8 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
           xOffset: 0.95,
           yOffset: 0.05,
         },
-        disableOnPassive: true,
         autoPan: {
-          enabled: false,
+          enabled: true,
           panSize: 10,
         },
         getReferenceLineColor: viewportId => {
@@ -197,9 +196,8 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           xOffset: 0.95,
           yOffset: 0.05,
         },
-        disableOnPassive: true,
         autoPan: {
-          enabled: false,
+          enabled: true,
           panSize: 10,
         },
         getReferenceLineColor: viewportId => {

@@ -1,4 +1,4 @@
-import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP } from './mpr';
 
 const only3D = {
   id: 'only3D',
@@ -47,7 +47,7 @@ const only3D = {
             orientation: 'coronal',
             customViewportProps: {
               hideOverlays: true,
-              syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
+              syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP, CAMERA_POSITION_SYNC_GROUP],
             },
           },
           displaySets: [
