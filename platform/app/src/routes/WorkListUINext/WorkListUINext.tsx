@@ -45,6 +45,18 @@ export default function WorkListUINext({
 
   const columns = useMemo(() => StudyList.defaultColumns(), []);
 
+  const logoComponent = useMemo(() => {
+    const customLogo = appConfig?.whiteLabeling?.createLogoComponentFn?.(React);
+    return (
+      customLogo ?? (
+        <Icons.OHIFLogoHorizontal
+          aria-label="OHIF logo"
+          className="h-[22px] w-[232px]"
+        />
+      )
+    );
+  }, [appConfig?.whiteLabeling]);
+
   const previewDefaultSize = useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
       const percent = (325 / window.innerWidth) * 100;
@@ -79,12 +91,7 @@ export default function WorkListUINext({
               showColumnVisibility
               title={'Study List'}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
-              toolbarLeftComponent={
-                <Icons.OHIFLogoHorizontal
-                  aria-label="OHIF logo"
-                  className="h-[22px] w-[232px]"
-                />
-              }
+              toolbarLeftComponent={logoComponent}
               toolbarRightComponent={
                 !isPreviewOpen ? (
                   <div className="relative -top-px mt-1 ml-2 flex items-center gap-1">
