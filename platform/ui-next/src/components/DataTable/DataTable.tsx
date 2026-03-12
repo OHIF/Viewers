@@ -107,19 +107,24 @@ function DataTableRoot<TData>({
     autoResetPageIndex: false,
   });
 
-  // After rendering non-empty data once, any updates to the data will
-  // reset the pagination to the first page. This takes care of returning to
-  // the first page when sorting or filtering changes for now. Might need to
-  // revisit this later.
-  const nonEmptyDataRenderedRef = useRef(!!data?.length);
-  useEffect(() => {
-    if (!nonEmptyDataRenderedRef.current) {
-      nonEmptyDataRenderedRef.current = !!data?.length;
-      return;
-    }
+  // Reset pagination to page 0 when filters or sorting change. The refs are
+  // initialized to the mount-time values, so the first effect run always sees
+  // filtersChanged=false and sortingChanged=false. This ensures that the
+  // any pagination applied with filtering or sorting during the initial render
+  // is not overridden.
+  const prevFiltersRef = useRef(filters);
+  const prevSortingRef = useRef(sorting);
 
-    onPaginationChange(pagination => ({ ...pagination, pageIndex: 0 }));
-  }, [data, onPaginationChange]);
+  useEffect(() => {
+    const filtersChanged = filters !== prevFiltersRef.current;
+    const sortingChanged = sorting !== prevSortingRef.current;
+    prevFiltersRef.current = filters;
+    prevSortingRef.current = sorting;
+
+    if ((filtersChanged || sortingChanged) && onPaginationChange) {
+      onPaginationChange(p => ({ ...p, pageIndex: 0 }));
+    }
+  }, [filters, sorting, onPaginationChange]);
 
   // Surface selection changes to consumers.
   useEffect(() => {
