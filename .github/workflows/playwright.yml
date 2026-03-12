@@ -48,7 +48,14 @@ jobs:
             LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name' 2>/dev/null || true)
             if echo "$LABELS" | grep -q "ohif-integration"; then
               echo "enabled=true" >> "$GITHUB_OUTPUT"
-              echo "cs3d_ref=4.x" >> "$GITHUB_OUTPUT"
+              # Parse CS3D_REF from PR body (look for "CS3D_REF: <value>"), default to 4.x
+              REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' 2>/dev/null \
+                | grep -oP '^\s*CS3D_REF:\s*\K\S+' || true)
+              if [[ -z "$REF" ]]; then
+                REF="4.x"
+              fi
+              echo "cs3d_ref=${REF}" >> "$GITHUB_OUTPUT"
+              echo "::notice::CS3D ref from PR body: ${REF}"
             else
               echo "enabled=false" >> "$GITHUB_OUTPUT"
             fi

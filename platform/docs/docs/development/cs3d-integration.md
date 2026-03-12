@@ -24,6 +24,22 @@ The **Playwright Tests** workflow in GitHub Actions has built-in CS3D integratio
 2. Add the **`ohif-integration`** label
 3. The workflow will automatically test against the latest `4.x` CS3D release from npm
 
+To target a specific CS3D branch or version, add a `CS3D_REF` line anywhere in the PR
+description body:
+
+```
+CS3D_REF: main
+```
+
+or
+
+```
+CS3D_REF: 4.18.2
+```
+
+The same branch and version formats from the table below are supported. If no `CS3D_REF`
+line is found in the PR body, it defaults to `4.x`.
+
 ### Triggering via workflow_dispatch
 
 Use **Actions > Playwright Tests > Run workflow** and set the `cs3d_ref` input:
