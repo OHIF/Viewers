@@ -30,7 +30,7 @@ export default function CreateReportDialogPrompt({
   predecessorImageId,
   extensionManager,
   servicesManager,
-  enableDownload,
+  enableDownload = false,
 }): Promise<{
   value: string;
   dataSourceName: string;

@@ -61,9 +61,6 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
         getReport,
-        reportType: dataSourceName === 'download' ? 'Report' : undefined,
-        successMessage:
-          dataSourceName === 'download' ? 'Report downloaded and displayed' : undefined,
       });
     } else if (promptResult.action === PROMPT_RESPONSES.CANCEL) {
       // Do nothing

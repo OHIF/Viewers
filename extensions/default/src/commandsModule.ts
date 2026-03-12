@@ -781,15 +781,25 @@ const commandsModule = ({
      */
     createStoreFunction: ({ dataSource, defaultFileName, defaultContentType }) => {
       if (dataSource === 'download') {
-        return async naturalizedReport => {
-          const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Download only supports a single DICOM instance');
+          }
+          const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
           downloadBlob(reportBlob, { filename: defaultFileName || 'dicom.dcm' });
         };
       }
 
       if (dataSource === 'copyToClipboard') {
-        return async naturalizedReport => {
-          const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Copy to clipboard only supports a single DICOM instance');
+          }
+          const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
           const type = defaultContentType || 'application/dicom';
           await navigator.clipboard.write([
             new ClipboardItem({ [type]: new Blob([reportBlob], { type }) }),
@@ -804,15 +814,21 @@ const commandsModule = ({
         return null;
       }
 
-      return async (naturalizedReport, { dicomDict } = {}) => {
-        await resolvedDataSource.store.dicom(naturalizedReport, null, dicomDict);
+      return async (dicom, { dicomDict } = {}) => {
+        const instances = Array.isArray(dicom) ? dicom : [dicom];
         const config = resolvedDataSource.getConfig?.();
         if (config?.wadoRoot) {
-          naturalizedReport.wadoRoot = config.wadoRoot;
+          instances.forEach(instance => {
+            instance.wadoRoot = config.wadoRoot;
+          });
         }
-        const { StudyInstanceUID } = naturalizedReport;
-        if (StudyInstanceUID) {
-          resolvedDataSource.deleteStudyMetadataPromise(StudyInstanceUID);
+        DicomMetadataStore.addInstances(instances, true);
+        for (const instance of instances) {
+          await resolvedDataSource.store.dicom(instance, null, dicomDict);
+        }
+        const studyUIDs = new Set(instances.map(i => i.StudyInstanceUID).filter(Boolean));
+        for (const uid of studyUIDs) {
+          resolvedDataSource.deleteStudyMetadataPromise(uid);
         }
       };
     },

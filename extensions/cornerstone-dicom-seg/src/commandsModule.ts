@@ -4,7 +4,6 @@ import { cache, metaData } from '@cornerstonejs/core';
 import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt, useUIStateStore } from '@ohif/extension-default';
-import { DicomMetadataStore } from '@ohif/core';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 
@@ -280,8 +279,6 @@ const commandsModule = ({
         }
 
         await storeFn(naturalizedReport, {});
-
-        DicomMetadataStore.addInstances([naturalizedReport], true);
 
         return naturalizedReport;
       } catch (error) {

@@ -1,6 +1,6 @@
 import { metaData } from '@cornerstonejs/core';
 
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF from '@ohif/core';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
@@ -122,11 +122,6 @@ const commandsModule = (props: withAppTypes) => {
         }
 
         await storeFn(naturalizedReport, { measurementData, dicomDict });
-
-        // The "Mode" route listens for DicomMetadataStore changes
-        // When a new instance is added, it listens and
-        // automatically calls makeDisplaySets
-        DicomMetadataStore.addInstances([naturalizedReport], true);
 
         return naturalizedReport;
       } catch (error) {
