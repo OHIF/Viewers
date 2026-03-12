@@ -107,24 +107,30 @@ function DataTableRoot<TData>({
     autoResetPageIndex: false,
   });
 
-  // Reset pagination to page 0 when filters or sorting change. The refs are
-  // initialized to the mount-time values, so the first effect run always sees
-  // filtersChanged=false and sortingChanged=false. This ensures that the
+  // Reset pagination to page 0 when filters or sorting change, but only when
+  // pagination itself did not change in the same render. A simultaneous
+  // pagination change means the caller set the page intentionally (e.g. a
+  // coordinated state restore), so we leave it alone.
+  // The refs are initialized to the mount-time values so the first effect run
+  // always sees all three as unchanged — ensuring that
   // any pagination applied with filtering or sorting during the initial render
   // is not overridden.
   const prevFiltersRef = useRef(filters);
   const prevSortingRef = useRef(sorting);
+  const prevPaginationRef = useRef(pagination);
 
   useEffect(() => {
     const filtersChanged = filters !== prevFiltersRef.current;
     const sortingChanged = sorting !== prevSortingRef.current;
+    const paginationChanged = pagination !== prevPaginationRef.current;
     prevFiltersRef.current = filters;
     prevSortingRef.current = sorting;
+    prevPaginationRef.current = pagination;
 
-    if ((filtersChanged || sortingChanged) && onPaginationChange) {
+    if ((filtersChanged || sortingChanged) && !paginationChanged && onPaginationChange) {
       onPaginationChange(p => ({ ...p, pageIndex: 0 }));
     }
-  }, [filters, sorting, onPaginationChange]);
+  }, [filters, sorting, pagination, onPaginationChange]);
 
   // Surface selection changes to consumers.
   useEffect(() => {
