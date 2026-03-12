@@ -375,6 +375,10 @@ export default function ModeRoute({
 
       let unsubs;
 
+      // If the route defines its own init, let it perform initialization
+      // (including calling defaultRouteInit internally if desired) and
+      // return its unsubscriptions directly. Otherwise, fall back to the
+      // standard defaultRouteInit.
       if (route.init) {
         unsubs = await route.init(
           {
@@ -388,6 +392,8 @@ export default function ModeRoute({
           hangingProtocolIdToUse,
           stageIndexToUse
         );
+
+        return unsubs;
       }
 
       return defaultRouteInit(

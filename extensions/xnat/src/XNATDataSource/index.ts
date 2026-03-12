@@ -18,6 +18,7 @@ import { generateRandomUID } from './Utils/UIDUtils';
 // Extracted modules
 import type { XNATDataSourceConfig, BulkDataURIConfig, InstanceMetadataForStore } from './types';
 import { log, getAppropriateImageId } from './constants';
+import { setXNATImageIdUids } from '../xnatImageIdUidsMap';
 import { XNATDataSourceConfigManager } from './config';
 import { XNATQueryMethods } from './query';
 import { XNATStoreMethods } from './store';
@@ -307,6 +308,12 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                 const imageId = getAppropriateImageId(configManager.getConfig().wadoRoot + xnatInstance.url, configManager.getConfig().imageRendering);
 
 
+                // FrameOfReferenceUID is required for MPR/reference viewable and getClosestImageId; use DICOM value or one per series
+                const frameOfReferenceUID =
+                  (xnatMeta as any).FrameOfReferenceUID ??
+                  (series as any).FrameOfReferenceUID ??
+                  series.SeriesInstanceUID;
+
                 let naturalized = {
                   StudyInstanceUID,
                   SeriesInstanceUID: series.SeriesInstanceUID,
@@ -317,6 +324,7 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                   wadoRoot: configManager.getConfig().wadoRoot, // For OHIF DicomMetadataStore
                   wadoUri: configManager.getConfig().wadoUri,   // For OHIF DicomMetadataStore
                   ...(xnatMeta as any),
+                  FrameOfReferenceUID: frameOfReferenceUID,
                   SOPClassUID: xnatMeta.SOPClassUID || getSOPClassUIDForModality(determinedModality),
                   InstanceNumber: xnatMeta.InstanceNumber || (index + 1).toString(),
                   NumberOfFrames: xnatMeta.NumberOfFrames || 1, // Ensure NumberOfFrames
@@ -393,6 +401,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                 delete dicomDatasetToDenaturalize.SharedFunctionalGroupsSequence;
 
                 const firstFramePosition = naturalized.PerFrameFunctionalGroupsSequence?.[0]?.PlanePositionSequence?.[0]?.ImagePositionPatient;
+                const sharedPixelMeasures = naturalized.SharedFunctionalGroupsSequence?.[0]?.PixelMeasuresSequence?.[0];
+                const spacingBetweenSlices = sharedPixelMeasures?.SpacingBetweenSlices ?? sharedPixelMeasures?.SliceThickness ?? naturalized.SliceThickness;
                 const storable = {
                   ...denaturalizeDataset(dicomDatasetToDenaturalize),
                   StudyInstanceUID,
@@ -402,6 +412,8 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                   modality: determinedModality,
                   SOPClassUID: naturalized.SOPClassUID,
                   InstanceNumber: naturalized.InstanceNumber,
+                  FrameOfReferenceUID: naturalized.FrameOfReferenceUID,
+                  ...(spacingBetweenSlices != null && { SpacingBetweenSlices: spacingBetweenSlices }),
                   url: imageId.startsWith('dicomweb:') ? imageId.substring(9) : imageId,
                   imageId: imageId,
                   PerFrameFunctionalGroupsSequence: naturalized.PerFrameFunctionalGroupsSequence,
@@ -459,6 +471,9 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                         hasScheme ? baseImageId : `dicomweb:${baseImageId}`,
                         frameUids
                       );
+                      // So Cornerstone metadata provider can resolve imagePlaneModule for frame-level imageIds (MPR)
+                      const baseUri = utils.imageIdToURI(hasScheme ? baseImageId : `dicomweb:${baseImageId}`);
+                      setXNATImageIdUids(baseUri, { StudyInstanceUID: uids.StudyInstanceUID, SeriesInstanceUID: uids.SeriesInstanceUID, SOPInstanceUID: uids.SOPInstanceUID });
                     }
                   }
                   metadataProvider.addCustomMetadata(
@@ -467,10 +482,10 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
                     generalSeriesModule
                   );
                 }
-                if (numberOfFrames > 1) {
-                  const bareBaseId = imageId.startsWith('dicomweb:') ? imageId : `dicomweb:${imageId}`;
-                  metadataProvider.addImageIdToUIDs(bareBaseId, { ...uids, frameNumber: 1 });
-                }
+                // Register bare instance imageId (no ?_=0 or &frame=) for frame 1 so
+                // getClosestImageId / base imageId lookups work in volume viewports.
+                const bareBaseId = imageId.startsWith('dicomweb:') ? imageId : `dicomweb:${imageId}`;
+                metadataProvider.addImageIdToUIDs(bareBaseId, { ...uids, frameNumber: 1 });
               });
 
               if (instancesToStoreForThisSeries.length > 0) {
