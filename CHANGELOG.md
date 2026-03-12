@@ -3,6 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.36...v3.13.0-beta.37) (2026-03-12)
+
+
+### Bug Fixes
+
+* **security:** Bump tar version to address CVE-2026-31802. ([#5893](https://github.com/OHIF/Viewers/issues/5893)) ([d015b2e](https://github.com/OHIF/Viewers/commit/d015b2e32a418042034c4f557c5a36499c72f702))
+
+
+
+
+
+# [3.13.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.35...v3.13.0-beta.36) (2026-03-11)
+
+
+### Bug Fixes
+
+* Modalities in study list should select starts with as primary ([#5886](https://github.com/OHIF/Viewers/issues/5886)) ([b83e978](https://github.com/OHIF/Viewers/commit/b83e978df8c9ffda3759378318267b8d0020653c))
+
+
+
+
+
+# [3.13.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.34...v3.13.0-beta.35) (2026-03-09)
+
+
+### Bug Fixes
+
+* **Threshold tool:** Threshold tool no longer becomes deselected when the Dynamic option is selected ([#5884](https://github.com/OHIF/Viewers/issues/5884)) ([889026f](https://github.com/OHIF/Viewers/commit/889026f8a9c20cd21c31b4a02128afd5f057b14b))
+
+
+
+
+
+# [3.13.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.33...v3.13.0-beta.34) (2026-03-09)
+
+
+### Bug Fixes
+
+* **seg hydration:** auto-hydrate RT struct on second load with disableConfirmationPrompts ([#5875](https://github.com/OHIF/Viewers/issues/5875)) ([6f773f9](https://github.com/OHIF/Viewers/commit/6f773f997214c388409f3af3e9fc0e5b84debc10))
+
+
+
+
+
+# [3.13.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.32...v3.13.0-beta.33) (2026-03-05)
+
+
+### Bug Fixes
+
+* **security:** Bump svgo and tar to fix vulnerabilities. ([#5877](https://github.com/OHIF/Viewers/issues/5877)) ([61a1fcc](https://github.com/OHIF/Viewers/commit/61a1fccd7d47965831a6c80357219eed979ce4d6))
+
+
+
+
+
+# [3.13.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.31...v3.13.0-beta.32) (2026-03-05)
+
+
+### Features
+
+* **ecg:** add DICOM ECG waveform extension ([#5856](https://github.com/OHIF/Viewers/issues/5856)) ([70f76ae](https://github.com/OHIF/Viewers/commit/70f76aeba1b27f8e4de5ec73a7b831428e38e3d2))
+
+
+
+
+
+# [3.13.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.30...v3.13.0-beta.31) (2026-03-04)
+
+
+### Bug Fixes
+
+* **microscopy:** rename measurement in microscopy mode ([#5866](https://github.com/OHIF/Viewers/issues/5866)) ([2358a73](https://github.com/OHIF/Viewers/commit/2358a73c3cd24953430064480fb9e66bfe36ea69))
+
+
+
+
+
+# [3.13.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.29...v3.13.0-beta.30) (2026-03-04)
+
+
+### Bug Fixes
+
+* **segmentation:** segment bidirectional tool error and show toast notification when no segment is drawn ([#5861](https://github.com/OHIF/Viewers/issues/5861)) ([7e10830](https://github.com/OHIF/Viewers/commit/7e10830d5802e22bda4df6a3f8008e9a414b4cd4))
+
+
+
+
+
+# [3.13.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.28...v3.13.0-beta.29) (2026-03-04)
+
+
+### Bug Fixes
+
+* **security:** Address various security vulnerabilities. ([#5869](https://github.com/OHIF/Viewers/issues/5869)) ([be8e266](https://github.com/OHIF/Viewers/commit/be8e266a80f13d03ce9dc4a21a0227d3e1bc36ac))
+
+
+
+
+
+# [3.13.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.27...v3.13.0-beta.28) (2026-03-03)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.13.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.26...v3.13.0-beta.27) (2026-03-02)
 
 **Note:** Version bump only for package ohif-monorepo-root

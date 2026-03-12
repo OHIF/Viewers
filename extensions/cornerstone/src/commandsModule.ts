@@ -398,9 +398,18 @@ function commandsModule({
 
       const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
 
-      // Validate that we have valid segmentation data
-      if (!targetId || targetIndex === undefined) {
-        console.warn('runSegmentBidirectional: No valid segmentation or segment index found');
+      // Check if the segment has voxels before computing bidirectional measurement
+      const uniqueSegmentIndices = cstUtils.segmentation.getUniqueSegmentIndices(targetId);
+      const hasVoxels = uniqueSegmentIndices.includes(targetIndex);
+
+      if (!hasVoxels) {
+        uiNotificationService.show({
+          title: i18n.t('SegmentationPanel:Segment Bidirectional'),
+          message: i18n.t(
+            'SegmentationPanel:Draw a segment before using bidirectional measurement'
+          ),
+          type: 'warning',
+        });
         return;
       }
 
@@ -410,9 +419,7 @@ function commandsModule({
         segmentIndices: [targetIndex],
       });
 
-      // Check if we got valid bidirectional data
-      if (!bidirectionalData || !Array.isArray(bidirectionalData) || bidirectionalData.length === 0) {
-        console.warn('runSegmentBidirectional: No bidirectional data found for segment');
+      if (!bidirectionalData.length) {
         return;
       }
 
