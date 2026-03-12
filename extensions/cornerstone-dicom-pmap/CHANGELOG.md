@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.37...v3.13.0-beta.38) (2026-03-12)
+
+
+### Bug Fixes
+
+* **segmentation:** Display "No description S:{series number} {modality}" for segmentations with no label. ([#5874](https://github.com/OHIF/Viewers/issues/5874)) ([7b5d0ce](https://github.com/OHIF/Viewers/commit/7b5d0ce40e5422ccfce6091ac3d7559586cbe57e))
+
+
+
+
+
 # [3.13.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.36...v3.13.0-beta.37) (2026-03-12)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
