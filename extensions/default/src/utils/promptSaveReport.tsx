@@ -42,54 +42,29 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       const { series, priorSeriesNumber, value: reportName, dataSourceName } = promptResult;
       const SeriesDescription = reportName || defaultSaveTitle;
 
-      if (dataSourceName === 'download') {
-        const getReport = async () =>
-          commandsManager.runCommand(
-            'storeMeasurements',
-            {
-              measurementData,
-              dataSource: null,
-              additionalFindingTypes: ['ArrowAnnotate'],
-              options: {
-                download: true,
-                SeriesDescription,
-                SeriesNumber: 1 + priorSeriesNumber,
-                predecessorImageId: series,
-              },
+      const getReport = async () =>
+        commandsManager.runCommand(
+          'storeMeasurements',
+          {
+            measurementData,
+            dataSource: dataSourceName,
+            additionalFindingTypes: ['ArrowAnnotate'],
+            options: {
+              SeriesDescription,
+              SeriesNumber: 1 + priorSeriesNumber,
+              predecessorImageId: series,
             },
-            'CORNERSTONE_STRUCTURED_REPORT'
-          );
-        displaySetInstanceUIDs = await createReportAsync({
-          servicesManager,
-          getReport,
-          reportType: 'Report',
-          successMessage: 'Report downloaded and displayed',
-        });
-      } else {
-        const dataSources = extensionManager.getDataSources(dataSourceName);
-        const dataSource = dataSources[0];
+          },
+          'CORNERSTONE_STRUCTURED_REPORT'
+        );
 
-        const getReport = async () => {
-          return commandsManager.runCommand(
-            'storeMeasurements',
-            {
-              measurementData,
-              dataSource,
-              additionalFindingTypes: ['ArrowAnnotate'],
-              options: {
-                SeriesDescription,
-                SeriesNumber: 1 + priorSeriesNumber,
-                predecessorImageId: series,
-              },
-            },
-            'CORNERSTONE_STRUCTURED_REPORT'
-          );
-        };
-        displaySetInstanceUIDs = await createReportAsync({
-          servicesManager,
-          getReport,
-        });
-      }
+      displaySetInstanceUIDs = await createReportAsync({
+        servicesManager,
+        getReport,
+        reportType: dataSourceName === 'download' ? 'Report' : undefined,
+        successMessage:
+          dataSourceName === 'download' ? 'Report downloaded and displayed' : undefined,
+      });
     } else if (promptResult.action === PROMPT_RESPONSES.CANCEL) {
       // Do nothing
     }

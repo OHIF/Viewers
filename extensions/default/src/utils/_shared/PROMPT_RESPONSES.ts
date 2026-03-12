@@ -5,7 +5,6 @@ const RESPONSE = {
   ADD_SERIES: 2,
   SET_STUDY_AND_SERIES: 3,
   NO_NOT_FOR_SERIES: 4,
-  DOWNLOAD: 5,
 };
 
 export default RESPONSE;

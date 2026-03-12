@@ -1,5 +1,3 @@
-import { DicomMetadataStore } from '@ohif/core';
-
 /**
  *
  * @param {*} servicesManager
@@ -7,7 +5,7 @@ import { DicomMetadataStore } from '@ohif/core';
 async function createReportAsync({
   servicesManager,
   getReport,
-  reportType = 'measurement',
+  reportType = 'Measurements',
   successMessage,
 }: withAppTypes) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
@@ -19,11 +17,8 @@ async function createReportAsync({
       return;
     }
 
-    // The "Mode" route listens for DicomMetadataStore changes
-    // When a new instance is added, it listens and
-    // automatically calls makeDisplaySets
-    DicomMetadataStore.addInstances([naturalizedReport], true);
-
+    // addInstances is called by the store command (storeMeasurements/storeSegmentation),
+    // so the display set should already exist at this point.
     const displaySet = displaySetService.getMostRecentDisplaySet();
 
     const displaySetInstanceUID = displaySet.displaySetInstanceUID;

@@ -1,4 +1,7 @@
-import { Types, DicomMetadataStore } from '@ohif/core';
+import { Types, DicomMetadataStore, utils } from '@ohif/core';
+import dcmjs from 'dcmjs';
+
+const { downloadBlob } = utils;
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -768,6 +771,51 @@ const commandsModule = ({
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },
+
+    /**
+     * Creates a store function based on the data source type.
+     * @param dataSource - 'download', 'copyToClipboard', or a named data source
+     * @param defaultFileName - Default filename for download/clipboard
+     * @param defaultContentType - Default content type for clipboard
+     * @returns A store function, or null if no valid store exists
+     */
+    createStoreFunction: ({ dataSource, defaultFileName, defaultContentType }) => {
+      if (dataSource === 'download') {
+        return async naturalizedReport => {
+          const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+          downloadBlob(reportBlob, { filename: defaultFileName || 'dicom.dcm' });
+        };
+      }
+
+      if (dataSource === 'copyToClipboard') {
+        return async naturalizedReport => {
+          const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+          const type = defaultContentType || 'application/dicom';
+          await navigator.clipboard.write([
+            new ClipboardItem({ [type]: new Blob([reportBlob], { type }) }),
+          ]);
+        };
+      }
+
+      // DICOM STOW path — resolve the named data source
+      const dataSources = extensionManager.getDataSources(dataSource);
+      const resolvedDataSource = dataSources?.[0];
+      if (!resolvedDataSource?.store?.dicom) {
+        return null;
+      }
+
+      return async (naturalizedReport, { dicomDict } = {}) => {
+        await resolvedDataSource.store.dicom(naturalizedReport, null, dicomDict);
+        const config = resolvedDataSource.getConfig?.();
+        if (config?.wadoRoot) {
+          naturalizedReport.wadoRoot = config.wadoRoot;
+        }
+        const { StudyInstanceUID } = naturalizedReport;
+        if (StudyInstanceUID) {
+          resolvedDataSource.deleteStudyMetadataPromise(StudyInstanceUID);
+        }
+      };
+    },
   };
 
   const definitions = {
@@ -796,6 +844,7 @@ const commandsModule = ({
     scrollActiveThumbnailIntoView: actions.scrollActiveThumbnailIntoView,
     addDisplaySetAsLayer: actions.addDisplaySetAsLayer,
     removeDisplaySetLayer: actions.removeDisplaySetLayer,
+    createStoreFunction: actions.createStoreFunction,
   };
 
   return {

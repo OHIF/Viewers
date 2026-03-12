@@ -104,6 +104,7 @@ function ReportDialog({
     hide();
   }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
 
+  // Handles the close dialog button/external close as a cancel
   useEffect(() => {
     return () => {
       if (!actionTakenRef.current) {
