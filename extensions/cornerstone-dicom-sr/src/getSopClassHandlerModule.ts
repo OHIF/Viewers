@@ -637,16 +637,35 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
   NUMContentItems.forEach(item => {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
-    // Handle spatial reference ONLY if ContentSequence exists
+    // Handle spatial reference ONLY if ContentSequence exists.
+    // ContentSequence may be a scalar SCOORD or an array when additional named
+    // SCOORDs (e.g. control points) are nested alongside the primary geometry.
+    // Pick the primary geometry entry: prefer the SCOORD without a
+    // ConceptNameCodeSequence (plain polyline), falling back to the first SCOORD.
     if (ContentSequence) {
-      const { ValueType } = ContentSequence;
+      const scoordItem = Array.isArray(ContentSequence)
+        ? (ContentSequence.find(
+            cs =>
+              (cs.ValueType === 'SCOORD' || cs.ValueType === 'SCOORD3D') &&
+              !cs.ConceptNameCodeSequence
+          ) ?? ContentSequence.find(cs => cs.ValueType === 'SCOORD' || cs.ValueType === 'SCOORD3D'))
+        : ContentSequence;
+
+      if (!scoordItem) {
+        console.warn(
+          'ContentSequence array contains no SCOORD or SCOORD3D entry, skipping annotation.'
+        );
+        return;
+      }
+
+      const { ValueType } = scoordItem;
 
       if (ValueType !== 'SCOORD' && ValueType !== 'SCOORD3D') {
         console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
         return;
       }
 
-      const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
+      const coords = _getCoordsFromSCOORDOrSCOORD3D(scoordItem);
 
       if (coords) {
         measurement.coords.push(coords);

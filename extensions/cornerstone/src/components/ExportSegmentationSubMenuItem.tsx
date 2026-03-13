@@ -5,9 +5,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
   DropdownMenuSubContent,
-  DropdownMenuLabel,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   Icons,
 } from '@ohif/ui-next';
 
@@ -19,8 +17,6 @@ interface ExportSegmentationSubMenuItemProps {
   allowExport: boolean;
   actions: {
     storeSegmentation: (segmentationId: string, modality?: string) => Promise<unknown>;
-    onSegmentationDownloadRTSS: (segmentationId: string) => void;
-    onSegmentationDownload: (segmentationId: string) => void;
     downloadCSVSegmentationReport: (segmentationId: string) => void;
   };
 }
@@ -37,14 +33,10 @@ export const ExportSegmentationSubMenuItem: React.FC<ExportSegmentationSubMenuIt
     <DropdownMenuSub>
       <DropdownMenuSubTrigger className="pl-1">
         <Icons.Export className="text-foreground" />
-        <span className="pl-2">{t('Download & Export')}</span>
+        <span className="pl-2">{t('Export')}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent>
-          <DropdownMenuLabel className="flex items-center pl-0">
-            <Icons.Download className="h-5 w-5" />
-            <span className="pl-1">{t('Download')}</span>
-          </DropdownMenuLabel>
           {segmentationRepresentationType === SegmentationRepresentations.Labelmap && (
             <DropdownMenuItem
               onClick={e => {
@@ -56,31 +48,6 @@ export const ExportSegmentationSubMenuItem: React.FC<ExportSegmentationSubMenuIt
               {t('CSV Report')}
             </DropdownMenuItem>
           )}
-          {segmentationRepresentationType === SegmentationRepresentations.Labelmap && (
-            <DropdownMenuItem
-              onClick={e => {
-                e.preventDefault();
-                actions.onSegmentationDownload(segmentationId);
-              }}
-              disabled={!allowExport}
-            >
-              {t('DICOM SEG')}
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem
-            onClick={e => {
-              e.preventDefault();
-              actions.onSegmentationDownloadRTSS(segmentationId);
-            }}
-            disabled={!allowExport}
-          >
-            {t('DICOM RTSS')}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel className="flex items-center pl-0">
-            <Icons.Export className="h-5 w-5" />
-            <span className="pl-1 pt-1">{t('Export')}</span>
-          </DropdownMenuLabel>
           {segmentationRepresentationType === SegmentationRepresentations.Labelmap && (
             <DropdownMenuItem
               onClick={e => {
