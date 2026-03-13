@@ -170,6 +170,23 @@ const initMeasurementService = (
     Probe.toMeasurement
   );
 
+  /** SR subtypes use same schema as base tools (Probe/RectangleROI) */
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'SRPoint',
+    Probe.matchingCriteria,
+    Probe.toAnnotation,
+    Probe.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'SRRectangleROI',
+    RectangleROI.matchingCriteria,
+    RectangleROI.toAnnotation,
+    RectangleROI.toMeasurement
+  );
+
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
     'UltrasoundDirectionalTool',
