@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
+test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu with network check', async ({
   page,
   mainToolbarPageObject,
   rightPanelPageObject,

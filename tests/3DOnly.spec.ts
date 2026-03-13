@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D only Test', async () => {
-  test('should render 3D only correctly.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D only correctly with network check.', async ({ page, mainToolbarPageObject }) => {
     await mainToolbarPageObject.layoutSelection.threeDOnly.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     await page.waitForLoadState('networkidle', { timeout: 60000 });
