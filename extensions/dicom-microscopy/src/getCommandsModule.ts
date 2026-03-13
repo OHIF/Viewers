@@ -132,6 +132,9 @@ export default function getCommandsModule({
     toggleAnnotations: () => {
       microscopyService.toggleROIsVisibility();
     },
+    toggleMeasurementVisibility: ({ uid }) => {
+      microscopyService.toggleROIVisibility(uid);
+    },
   };
 
   const definitions = {
@@ -149,6 +152,9 @@ export default function getCommandsModule({
     },
     toggleAnnotations: {
       commandFn: actions.toggleAnnotations,
+    },
+    toggleMeasurementVisibility: {
+      commandFn: actions.toggleMeasurementVisibility,
     },
   };
 

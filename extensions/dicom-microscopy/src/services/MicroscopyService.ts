@@ -411,6 +411,26 @@ export default class MicroscopyService extends PubSubService {
   }
 
   /**
+   * Toggle visibility of a specific ROI
+   * @param uid The UID of the ROI to toggle
+   */
+  toggleROIVisibility(uid) {
+    const roiAnnotation = this.getAnnotation(uid);
+    if (!roiAnnotation) {
+      return;
+    }
+
+    const isVisible = !roiAnnotation.isVisible;
+    roiAnnotation.setVisibility(isVisible);
+
+    this.managedViewers.forEach(mv => {
+      mv.toggleROIVisibility(uid, isVisible);
+    });
+
+    this._broadcastEvent(EVENTS.ANNOTATION_UPDATED, roiAnnotation);
+  }
+
+  /**
    * Returns a RoiAnnotation instance for the given ROI UID
    *
    * @param {String} uid UID of the annotation
