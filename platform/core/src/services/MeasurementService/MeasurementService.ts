@@ -138,7 +138,15 @@ class MeasurementService extends PubSubService {
   constructor() {
     super(EVENTS);
   }
-
+  /**
+   * Set servicesManager and publish options for Cast publishing
+   * @param {Object} servicesManager - The services manager
+   * @param {Object} options - Options for publishing (measurementsFromCast, lastMeasurementStates, etc.)
+   */
+  public setPublishOptions(servicesManager: any, options: any = {}): void {
+    this._servicesManager = servicesManager;
+    this._publishOptions = options;
+  }
   /**
    * Adds the given schema to the measurement service schema list.
    * This method should be used to add custom tool schema to the measurement service.

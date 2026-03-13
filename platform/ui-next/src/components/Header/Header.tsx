@@ -31,6 +31,8 @@ interface HeaderProps {
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
   UndoRedo?: ReactNode;
+  subscriberName?: string;
+  banner?: string;
 }
 
 function Header({
@@ -43,6 +45,8 @@ function Header({
   PatientInfo,
   UndoRedo,
   Secondary,
+  subscriberName,
+  banner,
   ...props
 }: HeaderProps): ReactNode {
   const onClickReturn = () => {
@@ -84,7 +88,19 @@ function Header({
             {UndoRedo}
             <div className="border-muted mx-1.5 h-[25px] border-r"></div>
             {PatientInfo}
-            <div className="border-muted mx-1.5 h-[25px] border-r"></div>
+            <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+            {banner && (
+              <>
+                <span className="text-primary px-2 text-sm">{banner}</span>
+                <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+              </>
+            )}
+            {subscriberName && (
+              <>
+                <div className="text-primary px-2 text-sm">ID: {subscriberName}</div>
+                <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+              </>
+            )}
             <div className="flex-shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
