@@ -117,7 +117,7 @@ test('checks if image would jump when clicked on a measurement item', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight;
+  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight.instanceNumber;
 
   // Image loads on slice 1, confirm on slice 1 then add measurement
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
