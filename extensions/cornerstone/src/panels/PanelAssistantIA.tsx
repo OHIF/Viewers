@@ -17,6 +17,8 @@ const API_CONVERSATION_MESSAGE = (base: string, conversationId: number) =>
   `${base.replace(/\/$/, '')}/api/study/conversation/${conversationId}/message`;
 const API_STUDY_IMAGE = (base: string, studyId: number) =>
   `${base.replace(/\/$/, '')}/api/study/${studyId}/image`;
+const API_CONVERSATION_ARCHIVE = (base: string, conversationId: number) =>
+  `${base.replace(/\/$/, '')}/api/study/conversation/${conversationId}/archive`;
 
 type MessageItem = {
   id: number;
@@ -130,6 +132,24 @@ export default function PanelAssistantIA(): React.ReactNode {
       return [];
     });
   }, []);
+
+  const archiveConversation = useCallback(
+    async (conversationId: number) => {
+      if (!baseUrl) return;
+      const url = API_CONVERSATION_ARCHIVE(baseUrl, conversationId);
+      const res = await fetch(url, { method: 'POST' });
+      if (!res.ok) {
+        const errBody = await res.text();
+        setError(errBody || `Erreur archivage: ${res.status}`);
+        return;
+      }
+      setConversations(prev => prev.filter(c => c.id !== conversationId));
+      setSelectedConversationId(prev =>
+        prev === conversationId ? null : prev
+      );
+    },
+    [baseUrl]
+  );
 
   function downloadErrorLogFile() {
     if (!errorLog) return;
@@ -528,16 +548,32 @@ export default function PanelAssistantIA(): React.ReactNode {
                   : 'New Chat';
                 const isSelected = conv.id === selectedConversationId;
                 return (
-                  <button
+                  <div
                     key={conv.id}
-                    type="button"
-                    onClick={() => setSelectedConversationId(conv.id)}
-                    className={`rounded px-2 py-1.5 text-left text-sm hover:bg-primary/15 ${
+                    className={`group relative flex items-center rounded hover:bg-primary/15 ${
                       isSelected ? 'bg-primary/20 text-primary' : 'text-secondary-foreground'
                     }`}
                   >
-                    {label}
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedConversationId(conv.id)}
+                      className="flex-1 truncate px-2 py-1.5 text-left text-sm"
+                    >
+                      {label}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        archiveConversation(conv.id);
+                      }}
+                      className="mr-1 hidden shrink-0 rounded p-0.5 text-secondary-foreground hover:bg-destructive/20 hover:text-destructive group-hover:block"
+                      title="Clore la conversation"
+                      aria-label="Clore la conversation"
+                    >
+                      <Icons.ByName name="Cancel" className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
