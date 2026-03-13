@@ -33,6 +33,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
     if (!isMixedPatients && appConfig.showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
       setExpanded(!expanded);
     }
+    window.dispatchEvent(new CustomEvent('pacsia:load-all-conversations'));
   };
 
   const formattedPatientName = formatWithEllipsis(patientInfo.PatientName, 27);

@@ -7,8 +7,8 @@ import {
   useImageViewer,
 } from '@ohif/ui-next';
 
-const API_STUDY_EXTERNAL = (base: string, externalId: string) =>
-  `${base.replace(/\/$/, '')}/api/study/external/${encodeURIComponent(externalId)}`;
+const API_STUDY_EXTERNAL = (base: string, externalId: string, includeArchived = false) =>
+  `${base.replace(/\/$/, '')}/api/study/external/${encodeURIComponent(externalId)}${includeArchived ? '?includeArchived=1' : ''}`;
 const API_STUDY_AGENTS = (base: string) =>
   `${base.replace(/\/$/, '')}/api/study/agents`;
 const API_CONVERSATION_CREATE = (base: string) =>
@@ -114,6 +114,7 @@ export default function PanelAssistantIA(): React.ReactNode {
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const removePendingImage = useCallback((key: string) => {
@@ -194,12 +195,12 @@ export default function PanelAssistantIA(): React.ReactNode {
     }
   }
 
-  const fetchStudyAndAgents = useCallback(async () => {
+  const fetchStudyAndAgents = useCallback(async (includeArchived = false) => {
     if (!baseUrl || !externalId) return;
     setLoading(true);
     setError(null);
     setErrorLog(null);
-    const studyUrl = API_STUDY_EXTERNAL(baseUrl, externalId);
+    const studyUrl = API_STUDY_EXTERNAL(baseUrl, externalId, includeArchived);
     const agentsUrl = API_STUDY_AGENTS(baseUrl);
     let lastRoute = '';
     try {
@@ -266,6 +267,18 @@ export default function PanelAssistantIA(): React.ReactNode {
 
   useEffect(() => {
     fetchStudyAndAgents();
+  }, [fetchStudyAndAgents]);
+
+  useEffect(() => {
+    const handleLoadAllConversations = () => {
+      setShowArchived(prev => {
+        const next = !prev;
+        fetchStudyAndAgents(next);
+        return next;
+      });
+    };
+    window.addEventListener('pacsia:load-all-conversations', handleLoadAllConversations);
+    return () => window.removeEventListener('pacsia:load-all-conversations', handleLoadAllConversations);
   }, [fetchStudyAndAgents]);
 
   const fileToBase64 = useCallback((file: File): Promise<string> => {
@@ -531,13 +544,29 @@ export default function PanelAssistantIA(): React.ReactNode {
               variant="ghost"
               size="icon"
               className="h-7 w-7"
-              onClick={() => fetchStudyAndAgents()}
+              onClick={() => fetchStudyAndAgents(showArchived)}
               title="Actualiser"
             >
               <Icons.ByName name="Refresh" />
             </Button>
           </div>
         </div>
+        {showArchived && (
+          <div className="flex items-center justify-between rounded bg-primary/10 px-2 py-1">
+            <span className="text-xs text-primary">Conversations archivées incluses</span>
+            <button
+              type="button"
+              onClick={() => {
+                setShowArchived(false);
+                fetchStudyAndAgents(false);
+              }}
+              className="rounded p-0.5 text-primary hover:bg-primary/20"
+              title="Masquer les archivées"
+            >
+              <Icons.ByName name="Cancel" className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
         {conversations.length > 0 && (
           <ScrollArea className="max-h-[120px]">
             <div className="flex flex-col gap-0.5 pr-1">
