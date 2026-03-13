@@ -18,7 +18,7 @@ test.describe('3D primary Test', async () => {
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await page.waitForTimeout(5000);
+    await page.waitForLoadState('networkidle', { timeout: 60000 });
     await checkForScreenshot(
       page,
       page,

@@ -46,6 +46,8 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await page.waitForTimeout(100);
+            await page.waitForLoadState('networkidle', { timeout: 60000 });
           },
         };
       },
@@ -56,6 +58,8 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await page.waitForTimeout(100);
+            await page.waitForLoadState('networkidle', { timeout: 60000 });
           },
         };
       },
@@ -66,6 +70,8 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await page.waitForTimeout(100);
+            await page.waitForLoadState('networkidle', { timeout: 60000 });
           },
         };
       },
@@ -76,6 +82,8 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await page.waitForTimeout(100);
+            await page.waitForLoadState('networkidle', { timeout: 60000 });
           },
         };
       },
@@ -86,6 +94,8 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await page.waitForTimeout(100);
+            await page.waitForLoadState('networkidle', { timeout: 60000 });
           },
         };
       },
