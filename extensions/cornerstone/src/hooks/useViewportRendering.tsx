@@ -10,6 +10,7 @@ import {
   BaseVolumeViewport,
   cache,
 } from '@cornerstonejs/core';
+import { getDataIdForViewport } from '../utils/getDataIdForViewport';
 import { WindowLevelPreset } from '../types/WindowLevel';
 import { ColorbarPositionType, ColorbarOptions, ColorbarProperties } from '../types/Colorbar';
 import { VolumeRenderingConfig } from '../types/VolumeRenderingConfig';
@@ -269,42 +270,36 @@ export function useViewportRendering(
       return;
     }
     try {
-      let properties;
+      const dataId = getDataIdForViewport(viewport as unknown, activeDisplaySetInstanceUID);
 
-      if (viewport instanceof StackViewport) {
-        properties = viewport.getProperties();
-        if (properties.voiRange) {
-          setVoiRange(properties.voiRange);
-          voiRangeRef.current = properties.voiRange;
-        }
-      } else if (viewport instanceof BaseVolumeViewport) {
-        // For volume viewports, find the actor for the active display set
-        const volumeIds = viewport.getAllVolumeIds();
-        const volumeId = volumeIds.find(id => id.includes(activeDisplaySetInstanceUID));
+      const properties =
+        dataId != null
+          ? (viewport as Types.IBaseVolumeViewport).getProperties(dataId)
+          : viewport.getProperties();
 
-        if (volumeId) {
-          properties = viewport.getProperties(volumeId);
-          if (properties?.voiRange) {
-            setVoiRange(properties.voiRange);
-            voiRangeRef.current = properties.voiRange;
-          }
+      if (!properties) {
+        return;
+      }
 
-          // Get opacity from colormap if available
-          if (properties?.colormap?.opacity !== undefined) {
-            const isArray = Array.isArray(properties.colormap.opacity);
-            const opacity = isArray
-              ? properties.colormap.opacity.reduce((max, current) => Math.max(max, current), 0)
-              : properties.colormap.opacity;
+      if (properties.voiRange) {
+        setVoiRange(properties.voiRange);
+        voiRangeRef.current = properties.voiRange;
+      }
 
-            setOpacityState(opacity);
-            setOpacityLinearState(opacityToLinear(opacity));
-          }
+      if (properties.colormap?.opacity !== undefined) {
+        const opacityVal = properties.colormap.opacity;
+        const opacity = Array.isArray(opacityVal)
+          ? (opacityVal as unknown as number[]).reduce(
+              (max, current) => Math.max(max, current),
+              0
+            )
+          : opacityVal;
+        setOpacityState(opacity);
+        setOpacityLinearState(opacityToLinear(opacity));
+      }
 
-          // Get threshold from colormap if available
-          if (properties?.colormap && properties.colormap.threshold !== undefined) {
-            setThresholdState(properties.colormap.threshold);
-          }
-        }
+      if (properties.colormap?.threshold !== undefined) {
+        setThresholdState(properties.colormap.threshold);
       }
     } catch (error) {
       console.error('Error initializing VOI range:', error);
