@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.13.0-beta.36",
+  "version": "3.13.0-beta.39",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

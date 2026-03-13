@@ -157,7 +157,7 @@
     "lodash-es": "4.17.23",
     "diff": "5.2.2",
     "webpack": "5.105.0",
-    "tar": "7.5.10",
+    "tar": "7.5.11",
     "serialize-javascript": "7.0.4",
     "svgo": "3.3.3"
   },
