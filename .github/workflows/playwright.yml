@@ -6,8 +6,8 @@ on:
     inputs:
       cs3d_ref:
         description: >-
-          CS3D branch (e.g. main, origin:feat/foo) or version (e.g. 4.18.2, 4.19+, 4.x).
-          Only used when ohif-integration label is present or via workflow_dispatch.
+          CS3D branch (e.g. main, origin:feat/foo) or version (e.g. 4.18.2, 4.19+, 4.x). Only used
+          when ohif-integration label is present or via workflow_dispatch.
         required: false
         default: '4.19+'
 
@@ -168,7 +168,7 @@ jobs:
       - name: Deploy CS3D preview to Netlify
         if: steps.cs3d-check.outputs.enabled == 'true'
         run: |
-          RESULT=$(npx netlify-cli deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json) || {
+          RESULT=$(npx netlify-cli deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
             echo "::error::Netlify deploy command failed"
             exit 1
           }
