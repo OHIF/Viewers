@@ -122,76 +122,43 @@ export default function hydrateStructuredReport(
   const SeriesInstanceUIDs = [];
 
   // Set the series touched as tracked.
-  const imageIds = [];
+  const imageIds = getImageIds(hydratableMeasurementsInSR, sopInstanceUIDToImageId);
 
-  if (Object.keys(sopInstanceUIDToImageId).length > 0) {
-    // TODO: notification if no hydratable?
-    Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
-      const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
-
-      toolDataForAnnotationType.forEach(toolData => {
-        // Add the measurement to toolState
-        // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
-        // files, and looking up the imageId from sopInstanceUIDToImageId results
-        // in the wrong value.
-        const frameNumber = toolData.annotation.data?.frameNumber || 1;
-        const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
-
-        if (!imageIds.includes(imageId)) {
-          imageIds.push(imageId);
-        }
-      });
-    });
-
-    for (let i = 0; i < imageIds.length; i++) {
-      const imageId = imageIds[i];
-      if (!imageId) {
-        continue;
-      }
-      const { SeriesInstanceUID, StudyInstanceUID } = metaData.get('instance', imageId);
-
-      if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
-        SeriesInstanceUIDs.push(SeriesInstanceUID);
-      }
-
-      if (!targetStudyInstanceUID) {
-        targetStudyInstanceUID = StudyInstanceUID;
-      } else if (targetStudyInstanceUID !== StudyInstanceUID) {
-        console.warn('NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.');
-      }
+  for (const imageId of imageIds) {
+    const { SeriesInstanceUID, StudyInstanceUID } = metaData.get('instance', imageId);
+    if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
+      SeriesInstanceUIDs.push(SeriesInstanceUID);
     }
-  } else {
-    // For 3d annotations there are no image IDs,
-    // so we need to find the display sets by frame of reference to get the SeriesInstanceUIDs
-    const frameOfReferenceUIDs = new Set<string>();
+    if (!targetStudyInstanceUID) {
+      targetStudyInstanceUID = StudyInstanceUID;
+    } else if (targetStudyInstanceUID !== StudyInstanceUID) {
+      console.warn('NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.');
+    }
+  }
 
-    Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
-      const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
-      toolDataForAnnotationType.forEach(toolData => {
-        const { FrameOfReferenceUID } = toolData.annotation.metadata;
-        if (FrameOfReferenceUID) {
-          frameOfReferenceUIDs.add(FrameOfReferenceUID);
-        }
-      });
-    });
+  // For 3d annotations there are no image IDs,
+  // so we need to find the display sets by frame of reference to get the SeriesInstanceUIDs
+  const frameOfReferenceUIDs = getFrameOfReferenceUIDs(
+    hydratableMeasurementsInSR,
+    sopInstanceUIDToImageId
+  );
 
-    frameOfReferenceUIDs.forEach(FrameOfReferenceUID => {
-      const displaySetsFOR = displaySetService.getDisplaySetsBy(
-        ds => ds.FrameOfReferenceUID === FrameOfReferenceUID && !ds.isDerivedDisplaySet
-      );
-      const ds = chooseDisplaySet(displaySetsFOR, FrameOfReferenceUID);
-      if (!ds) {
-        return;
-      }
-      if (!SeriesInstanceUIDs.includes(ds.SeriesInstanceUID)) {
-        SeriesInstanceUIDs.push(ds.SeriesInstanceUID);
-      }
-      if (!targetStudyInstanceUID) {
-        targetStudyInstanceUID = ds.StudyInstanceUID;
-      } else if (targetStudyInstanceUID !== ds.StudyInstanceUID) {
-        console.warn('NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.');
-      }
-    });
+  for (const FrameOfReferenceUID of frameOfReferenceUIDs) {
+    const displaySetsFOR = displaySetService.getDisplaySetsBy(
+      ds => ds.FrameOfReferenceUID === FrameOfReferenceUID && !ds.isDerivedDisplaySet
+    );
+    const ds = chooseDisplaySet(displaySetsFOR, FrameOfReferenceUID);
+    if (!ds) {
+      continue;
+    }
+    if (!SeriesInstanceUIDs.includes(ds.SeriesInstanceUID)) {
+      SeriesInstanceUIDs.push(ds.SeriesInstanceUID);
+    }
+    if (!targetStudyInstanceUID) {
+      targetStudyInstanceUID = ds.StudyInstanceUID;
+    } else if (targetStudyInstanceUID !== ds.StudyInstanceUID) {
+      console.warn('NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.');
+    }
   }
 
   /**
@@ -230,7 +197,7 @@ export default function hydrateStructuredReport(
     toolDataForAnnotationType.forEach(toolData => {
       toolData.uid = guid();
       const referenceData = getReferenceData(toolData);
-      const { imageId } = referenceData;
+      const { referencedImageId } = referenceData;
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
@@ -275,8 +242,8 @@ export default function hydrateStructuredReport(
         locking.setAnnotationLocked(newAnnotationUID, true);
       }
 
-      if (imageId && !imageIds.includes(imageId)) {
-        imageIds.push(imageId);
+      if (referencedImageId && !imageIds.includes(referencedImageId)) {
+        imageIds.push(referencedImageId);
       }
     });
   });
@@ -290,14 +257,63 @@ export default function hydrateStructuredReport(
 }
 
 /**
+ * Gets the unique imageIds from hydratable measurements that have an imageId reference
+ * (i.e., 2D/SCOORD annotations).
+ */
+function getImageIds(hydratableMeasurementsInSR, sopInstanceUIDToImageId): string[] {
+  const imageIds: string[] = [];
+  Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
+
+    toolDataForAnnotationType.forEach(toolData => {
+      // Add the measurement to toolState
+      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
+      // files, and looking up the imageId from sopInstanceUIDToImageId results
+      // in the wrong value.
+      const frameNumber = toolData.annotation.data?.frameNumber || 1;
+      const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
+
+      if (imageId && !imageIds.includes(imageId)) {
+        imageIds.push(imageId);
+      }
+    });
+  });
+  return imageIds;
+}
+
+/**
+ * Gets the unique FrameOfReferenceUIDs from hydratable measurements that have no imageId reference
+ * (i.e., 3D/SCOORD3D annotations). This excludes annotations handled by the getImageIds function.
+ */
+function getFrameOfReferenceUIDs(hydratableMeasurementsInSR, sopInstanceUIDToImageId): string[] {
+  const frameOfReferenceUIDs: string[] = [];
+
+  Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
+    const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
+    toolDataForAnnotationType.forEach(toolData => {
+      const frameNumber = toolData.annotation.data?.frameNumber || 1;
+      const imageId = sopInstanceUIDToImageId[`${toolData.sopInstanceUid}:${frameNumber}`];
+
+      if (!imageId) {
+        const { FrameOfReferenceUID } = toolData.annotation.metadata;
+        if (FrameOfReferenceUID && !frameOfReferenceUIDs.includes(FrameOfReferenceUID)) {
+          frameOfReferenceUIDs.push(FrameOfReferenceUID);
+        }
+      }
+    });
+  });
+  return frameOfReferenceUIDs;
+}
+
+/**
  * For 3d annotations, there are often several display sets which could
  * be used to display the annotation.  Choose the first annotation with the
  * same frame of reference that is reconstructable, or the first display set
  * otherwise.
  */
-function chooseDisplaySet(displaySets, annotation) {
+function chooseDisplaySet(displaySets, reference) {
   if (!displaySets?.length) {
-    console.warn('No display set found for', annotation);
+    console.warn('No display set found for', reference);
     return;
   }
   if (displaySets.length === 1) {
