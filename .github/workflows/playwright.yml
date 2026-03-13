@@ -2,6 +2,17 @@ name: Playwright Tests
 on:
   pull_request:
     branches: [master, release/*]
+  workflow_dispatch:
+    inputs:
+      cs3d_ref:
+        description: >-
+          CS3D branch (e.g. main, origin:feat/foo) or version (e.g. 4.18.2, 4.19+, 4.x). Only used
+          when ohif-integration label is present or via workflow_dispatch.
+        required: false
+        default: '4.19+'
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -9,7 +20,7 @@ concurrency:
 
 jobs:
   playwright-tests:
-    timeout-minutes: 60
+    timeout-minutes: 120
     runs-on: self-hosted
     strategy:
       fail-fast: false
@@ -25,14 +36,106 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install Yarn
         run: npm install -g yarn@1.22.22
+
+      # ── CS3D integration: detect label and ref type ──────────────────────
+      - name: Check for CS3D integration label
+        id: cs3d-check
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "cs3d_ref=${CS3D_REF_INPUT}" >> "$GITHUB_OUTPUT"
+          elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+            LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name' 2>/dev/null || true)
+            if echo "$LABELS" | grep -q "ohif-integration"; then
+              echo "enabled=true" >> "$GITHUB_OUTPUT"
+              # Parse CS3D_REF from PR body (look for "CS3D_REF: <value>"), default to 4.19+
+              REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' 2>/dev/null \
+                | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\([^[:space:]]*\).*/\1/p' | head -1)
+              if [[ -z "$REF" ]]; then
+                REF="4.19+"
+              fi
+              echo "cs3d_ref=${REF}" >> "$GITHUB_OUTPUT"
+              echo "::notice::CS3D ref from PR body: ${REF}"
+            else
+              echo "enabled=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || '4.19+' }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Detect CS3D ref type
+        id: cs3d-ref
+        if: steps.cs3d-check.outputs.enabled == 'true'
+        run: |
+          REF="${CS3D_REF}"
+          if [[ "$REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
+            echo "type=version" >> "$GITHUB_OUTPUT"
+            RESOLVED=$(node .scripts/cs3d-resolve-version.mjs "$REF")
+            echo "version=$RESOLVED" >> "$GITHUB_OUTPUT"
+            echo "::notice::CS3D version: $REF -> $RESOLVED"
+          else
+            echo "type=branch" >> "$GITHUB_OUTPUT"
+            echo "::notice::CS3D branch: $REF"
+          fi
+        env:
+          CS3D_REF: ${{ steps.cs3d-check.outputs.cs3d_ref }}
+
+      # ── CS3D branch path: clone and build before OHIF install ───────────
+      - name: Clone CS3D
+        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
+        run: |
+          REF="${CS3D_REF}"
+          if [[ "$REF" == *:* ]]; then
+            REPO="https://github.com/${REF%%:*}/cornerstone3D.git"
+            BRANCH="${REF#*:}"
+          else
+            REPO="https://github.com/cornerstonejs/cornerstone3D.git"
+            BRANCH="$REF"
+          fi
+          echo "::notice::Cloning CS3D from $REPO branch $BRANCH"
+          git clone --depth 1 --branch "$BRANCH" "$REPO" libs/@cornerstonejs
+        env:
+          CS3D_REF: ${{ steps.cs3d-check.outputs.cs3d_ref }}
+
+      - name: Install & Build CS3D
+        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
+        working-directory: libs/@cornerstonejs
+        run: bun install --frozen-lockfile && bun run build:esm
+
+      # ── Common: install OHIF dependencies ───────────────────────────────
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      # ── CS3D branch path: link packages after OHIF install ──────────────
+      - name: Link CS3D packages
+        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'branch'
+        working-directory: libs/@cornerstonejs
+        run: node scripts/link-ohif-cornerstone-node-modules.mjs "$GITHUB_WORKSPACE"
+
+      # ── CS3D version path: update versions after OHIF install ───────────
+      - name: Set CS3D version
+        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'version'
+        run: |
+          node .scripts/cs3d-set-version.mjs "${CS3D_VERSION}"
+          bun install
+        env:
+          CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
+
+      # ── Common: run tests ───────────────────────────────────────────────
       - name: Install Playwright browsers
         run: npx playwright install
       - name: Run Playwright tests
         run: |
           export NODE_OPTIONS="--max_old_space_size=10192"
           bun run test:e2e:coverage
+
+      # ── Common: collect test results and coverage ───────────────────────
       - name: Create directory of test results
         if: ${{ !cancelled() }}
         run: |
@@ -56,3 +159,83 @@ jobs:
           name: coverage-report-pr
           path: coverage
           retention-days: 3
+
+      # ── CS3D: build and deploy preview to Netlify ───────────────────────
+      - name: Build OHIF viewer (CS3D preview)
+        if: steps.cs3d-check.outputs.enabled == 'true'
+        run: bun run build:ci
+
+      - name: Deploy CS3D preview to Netlify
+        if: steps.cs3d-check.outputs.enabled == 'true'
+        run: |
+          RESULT=$(npx netlify-cli deploy --dir=platform/app/dist --alias="cs3d-pr-${PR_NUM}" --json --filter=@ohif/app) || {
+            echo "::error::Netlify deploy command failed"
+            exit 1
+          }
+          URL=$(echo "$RESULT" | jq -r '.deploy_url')
+          if [[ -z "$URL" || "$URL" == "null" ]]; then
+            echo "::error::Netlify deploy did not return a valid URL"
+            echo "$RESULT"
+            exit 1
+          fi
+          echo "::notice::CS3D preview deployed: $URL"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          PR_NUM: ${{ github.event.pull_request.number || 'manual' }}
+
+      # ── CS3D: log results ───────────────────────────────────────────────
+      - name: Log CS3D version tested
+        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'version'
+        run: |
+          echo "::notice::CS3D integration PASSED with @cornerstonejs/*@${CS3D_VERSION}"
+        env:
+          CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
+
+  # ── Separate job: block merge when using a CS3D branch ─────────────
+  cs3d-branch-merge-guard:
+    name: "CS3D Branch Merge Guard"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check for CS3D branch usage
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            ENABLED=true
+            CS3D_REF="${CS3D_REF_INPUT}"
+          elif [[ "$EVENT_NAME" == "pull_request" ]]; then
+            LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name' 2>/dev/null || true)
+            if echo "$LABELS" | grep -q "ohif-integration"; then
+              ENABLED=true
+              CS3D_REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' 2>/dev/null \
+                | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\([^[:space:]]*\).*/\1/p' | head -1)
+              if [[ -z "$CS3D_REF" ]]; then
+                CS3D_REF="4.19+"
+              fi
+            else
+              ENABLED=false
+            fi
+          else
+            ENABLED=false
+          fi
+
+          if [[ "$ENABLED" != "true" ]]; then
+            echo "::notice::No ohif-integration label — skipping merge guard."
+            exit 0
+          fi
+
+          # Check if the ref is a branch (not a version)
+          if [[ "$CS3D_REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
+            echo "::notice::CS3D ref '$CS3D_REF' is a version — merge allowed."
+            exit 0
+          fi
+
+          echo "::error::Tests ran against CS3D branch '${CS3D_REF}' — this build cannot be merged."
+          echo "::error::Re-run with a published CS3D version (e.g. 4.19+) before merging."
+          exit 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || '4.19+' }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}

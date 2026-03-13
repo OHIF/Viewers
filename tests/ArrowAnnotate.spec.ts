@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the arrow tool and allow free-form text to be entered', async ({
+test('should display the arrow tool and allow free-form text to be entered with network check', async ({
   page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
