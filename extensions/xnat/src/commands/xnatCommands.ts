@@ -39,43 +39,64 @@ export const createXNATCommands = (
 
         XNATStoreSegmentation: async ({ segmentationId }) => {
             try {
+                console.log('[XNAT XNATStoreSegmentation] start', { segmentationId });
+
                 // Import the segmentation export function
                 const { exportSegmentationToXNAT } = await import('./SegmentationExporters');
 
-                // Get the series instance UID from the current viewport
-                const { viewportGridService, displaySetService } = servicesManager.services;
-                const { activeViewportId } = viewportGridService.getState();
-                const viewport = viewportGridService.getState().viewports.get(activeViewportId);
+                const { viewportGridService, displaySetService, uiNotificationService, segmentationService } =
+                    servicesManager.services;
+
+                // Prefer the active viewport, but fall back to the first image viewport
+                const state = viewportGridService.getState();
+                const { activeViewportId, viewports } = state;
+                let viewport = viewports.get(activeViewportId);
 
                 if (!viewport) {
-                    throw new Error('No active viewport found');
+                    viewport = Array.from(viewports.values()).find(
+                        v => v?.displaySetInstanceUIDs && v.displaySetInstanceUIDs.length
+                    );
                 }
 
-                const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-                const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+                if (!viewport) {
+                    throw new Error('No suitable image viewport found for export');
+                }
 
+                const displaySetInstanceUID = viewport.displaySetInstanceUIDs?.[0];
+                if (!displaySetInstanceUID) {
+                    throw new Error('Active viewport has no display set instance UID');
+                }
+
+                const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
                 if (!displaySet) {
-                    throw new Error('No display set found');
+                    throw new Error('No display set found for active viewport');
                 }
 
                 const seriesInstanceUID = displaySet.SeriesInstanceUID;
+
+                console.log('[XNAT XNATStoreSegmentation] resolved export context', {
+                    activeViewportId,
+                    chosenViewportId: viewport.viewportId ?? '(no id)',
+                    displaySetInstanceUID,
+                    seriesInstanceUID,
+                });
 
                 // Call the actual export function directly
                 await exportSegmentationToXNAT(
                     { segmentationId, seriesInstanceUID },
                     {
-                        uiNotificationService: servicesManager.services.uiNotificationService,
+                        uiNotificationService,
                         servicesManager,
                         displaySet,
-                        segmentationService: servicesManager.services.segmentationService
+                        segmentationService,
                     }
                 );
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error exporting segmentation to XNAT:', error);
                 const { uiNotificationService } = servicesManager.services;
                 uiNotificationService.show({
                     title: 'Export Failed',
-                    message: `Failed to export segmentation to XNAT: ${error.message}`,
+                    message: `Failed to export segmentation to XNAT: ${error?.message ?? String(error)}`,
                     type: 'error',
                     duration: 5000,
                 });

@@ -303,7 +303,6 @@ function createDataSource(xnatConfig: XNATDataSourceConfig, servicesManager) {
               xnatInstances.forEach((xnatInstance, index) => {
                 const xnatMeta = xnatInstance.metadata || {};
                 const determinedModality = series.Modality || xnatMeta.Modality || 'Unknown';
-
                 const sopInstanceUID = xnatMeta.SOPInstanceUID || generateRandomUID();
                 const imageId = getAppropriateImageId(configManager.getConfig().wadoRoot + xnatInstance.url, configManager.getConfig().imageRendering);
 

@@ -76,6 +76,48 @@ export async function exportSegmentationToXNAT(
     throw new Error('Error during segmentation generation');
   }
 
+  // Ensure required PixelMeasures information is present on the SEG dataset.
+  // XNAT's ROI service validates PixelSpacing/SliceThickness via PixelMeasuresSequence;
+  // when adapters don't populate it as expected, we can synthesize it from the
+  // source image metadata (which we have via the displaySet).
+  try {
+    // Prefer the first image instance from the displaySet if available
+    const sourceMeta =
+      (displaySet && Array.isArray(displaySet.images) && displaySet.images[0]) ||
+      displaySet?.instance ||
+      displaySet;
+    const pixelSpacing = sourceMeta?.PixelSpacing;
+    const sliceThickness =
+      sourceMeta?.SliceThickness ?? sourceMeta?.SpacingBetweenSlices;
+    const imageOrientationPatient = sourceMeta?.ImageOrientationPatient;
+    if (!dataset.SharedFunctionalGroupsSequence || !dataset.SharedFunctionalGroupsSequence.length) {
+      dataset.SharedFunctionalGroupsSequence = [{}];
+    }
+    const sharedFG = dataset.SharedFunctionalGroupsSequence[0];
+    // PixelMeasuresSequence (we already added this, keep it)
+    if (pixelSpacing && sliceThickness != null) {
+      if (!sharedFG.PixelMeasuresSequence || !sharedFG.PixelMeasuresSequence.length) {
+        sharedFG.PixelMeasuresSequence = [
+          {
+            PixelSpacing: pixelSpacing,
+            SliceThickness: sliceThickness,
+            SpacingBetweenSlices: sourceMeta?.SpacingBetweenSlices ?? sliceThickness,
+          },
+        ];
+      }
+    }
+    // NEW: PlaneOrientationSequence for import geometry checks
+    if (imageOrientationPatient && (!sharedFG.PlaneOrientationSequence || !sharedFG.PlaneOrientationSequence.length)) {
+      sharedFG.PlaneOrientationSequence = [
+        {
+          ImageOrientationPatient: imageOrientationPatient,
+        },
+      ];
+    }
+  } catch (metaError) {
+    console.warn('XNAT: Failed to enrich SEG functional groups from source metadata', metaError);
+  }
+
   // Convert dataset to blob
   const segBlob = datasetToBlob(dataset);
 

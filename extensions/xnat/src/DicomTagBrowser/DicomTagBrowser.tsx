@@ -296,6 +296,11 @@ function getFormattedRowsFromTags({ tags, metadata }) {
 }
 
 function getSortedTags(metadata) {
+  // Gracefully handle missing or invalid metadata
+  if (!metadata || typeof metadata !== 'object') {
+    return [];
+  }
+
   const tagList = getRows(metadata);
 
   // Sort top level tags, sequence groups are sorted when created.
@@ -399,6 +404,9 @@ function getTagInfoFromKeyword(keyword) {
 
 function getRows(metadata, depth = 0) {
   // Tag, Type, Value, Keyword
+  if (!metadata || typeof metadata !== 'object') {
+    return [];
+  }
 
   const keywords = Object.keys(metadata);
 
