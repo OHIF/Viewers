@@ -1,4 +1,4 @@
-import { LengthTool, utilities } from '@cornerstonejs/tools';
+import { LengthTool, utilities, Enums } from '@cornerstonejs/tools';
 import { callInputDialog } from '@ohif/extension-default';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
 
@@ -52,7 +52,7 @@ export function onCompletedCalibrationLine(
   servicesManager: AppTypes.ServicesManager,
   csToolsEvent
 ) {
-  const { uiDialogService, viewportGridService } = servicesManager.services;
+  const { uiDialogService, viewportGridService, toolGroupService } = servicesManager.services;
 
   // calculate length (mm) with the current Pixel Spacing
   const annotationAddedEventDetail = csToolsEvent.detail;
@@ -86,6 +86,13 @@ export function onCompletedCalibrationLine(
       type: 'User',
       scale: 1 / spacingScale,
     });
+
+    const toolGroup = toolGroupService.getToolGroup();
+    if (toolGroup?.hasTool('Pan')) {
+      toolGroup.setToolActive('Pan', {
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      });
+    }
   };
 
   return new Promise((resolve, reject) => {
