@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -33,6 +33,12 @@ import {
   Onboarding,
   ScrollArea,
   InvestigationalUseDialog,
+  toast,
+  Button as ButtonNext,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
 } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
@@ -238,6 +244,22 @@ function WorkList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedFilterValues]);
 
+  const getSeriesForStudy = useCallback(
+    async studyInstanceUid => {
+      if (seriesInStudiesMap.has(studyInstanceUid)) {
+        return seriesInStudiesMap.get(studyInstanceUid);
+      }
+      const series = await dataSource.query.series.search(studyInstanceUid);
+      const sorted = sortBySeriesDate(series);
+      seriesInStudiesMap.set(studyInstanceUid, sorted);
+      setStudiesWithSeriesData(prev =>
+        prev.includes(studyInstanceUid) ? prev : [...prev, studyInstanceUid]
+      );
+      return sorted;
+    },
+    [dataSource]
+  );
+
   // Query for series information
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
@@ -387,21 +409,103 @@ function WorkList({
     };
 
     const viewerHref = getStudyViewerLink(study);
+    const modalitiesToCheck = (modalities || '').replaceAll('/', '\\');
+    const validModes = (appConfig.groupEnabledModesFirst
+      ? [...appConfig.loadedModes].sort((a, b) => {
+          const isValidA = a.isValidMode({ modalities: modalitiesToCheck, study }).valid;
+          const isValidB = b.isValidMode({ modalities: modalitiesToCheck, study }).valid;
+          return isValidB - isValidA;
+        })
+      : appConfig.loadedModes
+    ).filter(m => !m.hide && m.displayName);
+
     const actionsCell = (
-      <div className="flex items-center gap-2.5" onClick={e => e.stopPropagation()}>
-        {viewerHref ? (
-          <Link to={viewerHref} className="text-[#374151] hover:text-[#111827]" title="Voir">
-            <Icons.EyeVisible className="h-4 w-4" />
-          </Link>
-        ) : (
-          <span className="text-[#d1d5db]"><Icons.EyeVisible className="h-4 w-4" /></span>
-        )}
-        <button type="button" className="text-[#374151] hover:text-[#111827]" title="Télécharger">
-          <Icons.Download className="h-4 w-4" />
+      <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+        <button
+          type="button"
+          className="text-[#374151] hover:text-[#111827]"
+          title="Détails"
+          onClick={async e => {
+            e.stopPropagation();
+            let seriesList = [];
+            try {
+              seriesList = await getSeriesForStudy(studyInstanceUid) || [];
+            } catch (err) {
+              console.warn(err);
+            }
+            const rows = seriesList.map(s => ({
+              description: s.description || '(empty)',
+              seriesNumber: s.seriesNumber ?? '',
+              modality: s.modality || '',
+              instances: s.numSeriesInstances ?? '',
+            }));
+            show({
+              title: t('StudyList:DetailsInstances') || 'Détails des instances',
+              containerClassName: 'max-w-2xl bg-white text-[#374151] border border-[#e5e7eb] rounded-lg shadow-lg p-4',
+              content: () => (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-sm" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    <thead>
+                      <tr className="border-b border-[#e5e7eb]">
+                        <th className="px-3 py-2 text-left font-medium text-[#6b7280]">{t('StudyList:Description')}</th>
+                        <th className="px-3 py-2 text-left font-medium text-[#6b7280]">{t('StudyList:Series')}</th>
+                        <th className="px-3 py-2 text-left font-medium text-[#6b7280]">{t('StudyList:Modality')}</th>
+                        <th className="px-3 py-2 text-left font-medium text-[#6b7280]">{t('StudyList:Instances')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.length === 0 ? (
+                        <tr><td colSpan={4} className="px-3 py-4 text-[#6b7280]">—</td></tr>
+                      ) : (
+                        rows.map((row, i) => (
+                          <tr key={i} className="border-b border-[#f3f4f6]">
+                            <td className="px-3 py-2">{row.description}</td>
+                            <td className="px-3 py-2">{row.seriesNumber}</td>
+                            <td className="px-3 py-2">{row.modality}</td>
+                            <td className="px-3 py-2">{row.instances}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              ),
+            });
+          }}
+        >
+          <Icons.Info className="h-4 w-4" />
         </button>
-        <button type="button" className="text-[#374151] hover:text-[#111827]" title="Partager">
-          <Icons.Link className="h-4 w-4" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <ButtonNext
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-[#374151] hover:bg-[#f3f4f6]"
+              title="Actions"
+              onClick={e => e.stopPropagation()}
+            >
+              <Icons.More className="h-4 w-4" />
+            </ButtonNext>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[200px] border border-[#e5e7eb] bg-white shadow-lg">
+            {validModes.map((mode, i) => {
+              const { valid: isValidMode } = mode.isValidMode({ modalities: modalitiesToCheck, study });
+              if (!isValidMode) return null;
+              const query = new URLSearchParams();
+              if (filterValues.configUrl) query.append('configUrl', filterValues.configUrl);
+              query.append('StudyInstanceUIDs', studyInstanceUid);
+              preserveQueryParameters(query);
+              const modeHref = `${mode.routeName}${dataPath || ''}?${query.toString()}`;
+              return (
+                <DropdownMenuItem key={i} asChild>
+                  <Link to={modeHref} className="flex cursor-pointer items-center py-2 text-[#374151]">
+                    {mode.displayName}
+                  </Link>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
 
@@ -568,8 +672,13 @@ function WorkList({
           </div>
         </StudyListExpandedRow>
       ),
-      onClickRow: () =>
-        setExpandedRows(s => (isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey])),
+      onClickRow: () => {
+        if (viewerHref) {
+          navigate(viewerHref);
+        } else {
+          setExpandedRows(s => (isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]));
+        }
+      },
       isExpanded,
     };
   });
@@ -581,24 +690,11 @@ function WorkList({
 
   const hasStudies = numOfStudies > 0;
 
-  const AboutModal = customizationService.getCustomization(
-    'ohif.aboutModal'
-  ) as coreTypes.MenuComponentCustomization;
   const UserPreferencesModal = customizationService.getCustomization(
     'ohif.userPreferencesModal'
   ) as coreTypes.MenuComponentCustomization;
 
   const menuOptions = [
-    {
-      title: AboutModal?.menuTitle ?? t('Header:About'),
-      icon: 'info',
-      onClick: () =>
-        show({
-          content: AboutModal,
-          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
-          containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
-        }),
-    },
     {
       title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
@@ -607,7 +703,7 @@ function WorkList({
           content: UserPreferencesModal as React.ComponentType,
           title: UserPreferencesModal.title ?? t('UserPreferencesModal:User preferences'),
           containerClassName:
-            UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
+            'flex max-w-4xl flex-col gap-0 rounded-xl border border-[#e5e7eb] bg-white pt-6 px-6 pb-0 text-[#374151] shadow-xl [&_.text-primary-light]:text-[#111827] [&_.text-primary]:text-[#6b7280] [&_.text-primary]:hover:text-[#374151] [&_button]:rounded-lg',
         }),
     },
   ];
@@ -660,7 +756,10 @@ function WorkList({
 
   return (
     <div className="flex h-screen flex-col bg-white">
-      <WorkListHeader menuOptions={menuOptions} />
+      <WorkListHeader
+        menuOptions={menuOptions}
+        onNotificationClick={() => toast.info("Vous n'avez aucunes notifications")}
+      />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full flex-col overflow-y-auto">

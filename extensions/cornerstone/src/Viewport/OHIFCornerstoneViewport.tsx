@@ -17,6 +17,7 @@ import { getViewportPresentations } from '../utils/presentations/getViewportPres
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
+import html2canvas from 'html2canvas';
 
 const STACK = 'stack';
 
@@ -80,6 +81,8 @@ const OHIFCornerstoneViewport = React.memo(
 
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
+    const [isIAPanelOpen, setIsIAPanelOpen] = useState(() => !!(window as any).__pacsiaIAPanelOpen);
+    const [isCapturing, setIsCapturing] = useState(false);
     const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
     const viewportRef = useViewportRef(viewportId);
 
@@ -304,6 +307,40 @@ const OHIFCornerstoneViewport = React.memo(
       loadViewportData();
     }, [viewportOptions, displaySets, dataSource]);
 
+    useEffect(() => {
+      const onOpen = () => setIsIAPanelOpen(true);
+      const onClose = () => setIsIAPanelOpen(false);
+      window.addEventListener('pacsia:panel-opened', onOpen);
+      window.addEventListener('pacsia:panel-closed', onClose);
+      return () => {
+        window.removeEventListener('pacsia:panel-opened', onOpen);
+        window.removeEventListener('pacsia:panel-closed', onClose);
+      };
+    }, []);
+
+    const handleCaptureForIA = useCallback(() => {
+      if (isCapturing) return;
+      const wrapperEl = elementRef.current?.closest('.viewport-wrapper') as HTMLElement | null;
+      if (!wrapperEl) return;
+      setIsCapturing(true);
+      setTimeout(() => {
+        html2canvas(wrapperEl, {
+          backgroundColor: '#000',
+          useCORS: true,
+          scale: 1,
+        }).then(canvas => {
+          canvas.toBlob(blob => {
+            setIsCapturing(false);
+            if (!blob) return;
+            const file = new File([blob], `viewport-${viewportId}-${Date.now()}.png`, { type: 'image/png' });
+            window.dispatchEvent(new CustomEvent('pacsia:viewport-captured', { detail: { file } }));
+          }, 'image/png');
+        }).catch(() => {
+          setIsCapturing(false);
+        });
+      }, 50);
+    }, [isCapturing, viewportId]);
+
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -338,6 +375,34 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId={viewportId}
             servicesManager={servicesManager}
           />
+          {isIAPanelOpen && (
+            <button
+              type="button"
+              onClick={handleCaptureForIA}
+              disabled={isCapturing}
+              className="absolute bottom-10 right-8 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-all hover:bg-blue-500 hover:scale-110"
+              title="Envoyer cette image au chat IA"
+              style={{ pointerEvents: 'auto' }}
+            >
+              {isCapturing ? (
+                <svg className="h-5 w-5 animate-spin" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" strokeOpacity="0.25" />
+                  <path d="M10 1a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" viewBox="0 0 22 18" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="5" width="18" height="12" rx="2.5" strokeWidth="1.5" />
+                    <circle cx="8" cy="10.5" r="1.4" fill="currentColor" stroke="none" />
+                    <circle cx="14" cy="10.5" r="1.4" fill="currentColor" stroke="none" />
+                    <path d="M11 5V2.5" strokeWidth="1.5" />
+                    <circle cx="11" cy="1.5" r="1.2" fill="currentColor" stroke="none" />
+                    <path d="M8.5 14.5h5" strokeWidth="1.3" />
+                  </g>
+                </svg>
+              )}
+            </button>
+          )}
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">

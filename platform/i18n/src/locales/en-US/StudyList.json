@@ -35,5 +35,7 @@
   "Statut": "Status",
   "Images": "Images",
   "ActionsRapides": "Quick actions",
-  "DateEtHeure": "Date and time"
+  "DateEtHeure": "Date and time",
+  "DetailsInstances": "Instance details",
+  "Series": "Series"
 }

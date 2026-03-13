@@ -502,6 +502,15 @@ export default function PanelAssistantIA(): React.ReactNode {
   useEffect(() => { fetchStudyAndAgents(); }, [fetchStudyAndAgents]);
 
   useEffect(() => {
+    (window as any).__pacsiaIAPanelOpen = true;
+    window.dispatchEvent(new CustomEvent('pacsia:panel-opened'));
+    return () => {
+      (window as any).__pacsiaIAPanelOpen = false;
+      window.dispatchEvent(new CustomEvent('pacsia:panel-closed'));
+    };
+  }, []);
+
+  useEffect(() => {
     const handleLoadAllConversations = () => setHistoryOpen(true);
     window.addEventListener('pacsia:load-all-conversations', handleLoadAllConversations);
     return () => window.removeEventListener('pacsia:load-all-conversations', handleLoadAllConversations);
@@ -572,6 +581,19 @@ export default function PanelAssistantIA(): React.ReactNode {
     },
     [study, baseUrl, uploadOneImage]
   );
+
+  useEffect(() => {
+    const handleViewportCaptured = (e: Event) => {
+      const file = (e as CustomEvent).detail?.file as File | undefined;
+      if (file && study && baseUrl) {
+        const fileList = new DataTransfer();
+        fileList.items.add(file);
+        handleFilesSelected(fileList.files);
+      }
+    };
+    window.addEventListener('pacsia:viewport-captured', handleViewportCaptured);
+    return () => window.removeEventListener('pacsia:viewport-captured', handleViewportCaptured);
+  }, [study, baseUrl, handleFilesSelected]);
 
   const handleImageDrop = useCallback(
     (e: React.DragEvent) => {

@@ -124,26 +124,29 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   );
 
   return (
-    <UserPreferencesModal>
-      <UserPreferencesModal.Body>
+    <UserPreferencesModal className="text-[#374151]">
+      <UserPreferencesModal.Body className="pt-2 pb-4">
         {/* Language Section */}
-        <div className="mb-3 flex items-center space-x-14">
-          <UserPreferencesModal.SubHeading>{t('Language')}</UserPreferencesModal.SubHeading>
+        <div className="mb-6 flex flex-wrap items-center gap-4">
+          <UserPreferencesModal.SubHeading className="!text-[#6b7280] w-32 shrink-0 text-sm font-semibold uppercase tracking-wide">
+            {t('Language')}
+          </UserPreferencesModal.SubHeading>
           <Select
             defaultValue={state.languageValue}
             onValueChange={onLanguageChangeHandler}
           >
             <SelectTrigger
-              className="w-60"
+              className="w-60 border-[#e5e7eb] bg-white text-[#374151] hover:bg-[#f9fafb] focus:ring-[#374151]/20"
               aria-label="Language"
             >
               <SelectValue placeholder={t('Select language')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-[#e5e7eb] bg-white">
               {availableLanguages.map(lang => (
                 <SelectItem
                   key={lang.value}
                   value={lang.value}
+                  className="text-[#374151] focus:bg-[#f3f4f6]"
                 >
                   {getLanguageLabel(lang.value, lang.label)}
                 </SelectItem>
@@ -152,8 +155,10 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
           </Select>
         </div>
 
-        <UserPreferencesModal.SubHeading>{t('Hotkeys')}</UserPreferencesModal.SubHeading>
-        <UserPreferencesModal.HotkeysGrid>
+        <UserPreferencesModal.SubHeading className="!text-[#6b7280] mb-3 text-sm font-semibold uppercase tracking-wide">
+          {t('Hotkeys')}
+        </UserPreferencesModal.SubHeading>
+        <UserPreferencesModal.HotkeysGrid className="gap-x-12 gap-y-3">
           {Object.entries(state.hotkeyDefinitions).map(([id, definition]) => (
             <UserPreferencesModal.Hotkey
               key={id}
@@ -162,13 +167,17 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
               onChange={newKeys => onHotkeyChangeHandler(id, newKeys)}
               placeholder={definition.keys}
               hotkeys={hotkeysModule}
+              className="text-[#374151]"
             />
           ))}
         </UserPreferencesModal.HotkeysGrid>
       </UserPreferencesModal.Body>
-      <FooterAction>
+      <FooterAction className="border-t border-[#e5e7eb] bg-[#f9fafb] px-6 py-4">
         <FooterAction.Left>
-          <FooterAction.Auxiliary onClick={onResetHandler}>
+          <FooterAction.Auxiliary
+            onClick={onResetHandler}
+            className="text-[#6b7280] hover:text-[#374151] hover:bg-transparent"
+          >
             {t('Reset to defaults')}
           </FooterAction.Auxiliary>
         </FooterAction.Left>
@@ -179,6 +188,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
               hotkeysModule.unpause();
               hide();
             }}
+            className="min-w-[90px] border border-[#d1d5db] bg-white text-[#374151] hover:bg-[#f3f4f6]"
           >
             {t('Cancel')}
           </FooterAction.Secondary>
@@ -195,6 +205,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
               hotkeysModule.unpause();
               hide();
             }}
+            className="min-w-[90px] bg-[#374151] text-white hover:bg-[#111827]"
           >
             {t('Save')}
           </FooterAction.Primary>

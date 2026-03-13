@@ -207,12 +207,16 @@ function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: Hot
   };
 
   return (
-    <div className={cn('flex items-start justify-between gap-2', className)}>
-      <Label className="flex-1 whitespace-normal break-words text-sm">{label}</Label>
+    <div className={cn('flex items-start justify-between gap-3', className)}>
+      <Label className="flex-1 whitespace-normal break-words text-sm font-medium text-[#374151]">
+        {label}
+      </Label>
       <Input
         className={cn(
-          'w-16 text-center transition-colors',
-          isRecording && 'bg-accent text-accent-foreground caret-accent-foreground'
+          'min-w-[4.5rem] flex-shrink-0 text-center font-medium transition-colors',
+          'border-[#e5e7eb] bg-[#f9fafb] text-[#111827] placeholder:text-[#9ca3af]',
+          'focus-visible:border-[#374151] focus-visible:ring-[#374151]/20',
+          isRecording && 'border-[#374151] ring-1 ring-[#374151] bg-white'
         )}
         placeholder={isRecording ? t('Press keys') : translatedPlaceholder || ''}
         value={isRecording ? normalizeHotkeyValue(value) : translatedValue}

@@ -59,9 +59,11 @@ function IconPerson({ className, ...props }) {
 function WorkListHeader({
   className,
   menuOptions,
+  onNotificationClick,
 }: {
   className?: string;
   menuOptions: Array<{ title: string; icon?: string; onClick: () => void }>;
+  onNotificationClick?: () => void;
 }) {
   return (
     <header
@@ -84,6 +86,7 @@ function WorkListHeader({
           size="icon"
           className="h-9 w-9 text-[#374151] hover:bg-[#f3f4f6]"
           title="Notifications"
+          onClick={onNotificationClick}
         >
           <IconBell className="h-5 w-5" />
         </Button>
@@ -98,21 +101,24 @@ function WorkListHeader({
               <IconPerson className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent
+            align="end"
+            className="min-w-[200px] rounded-lg border border-[#e5e7eb] bg-white py-1.5 shadow-xl"
+          >
             {menuOptions.map((option, index) => {
               const IconComponent = option.icon ? Icons[option.icon as keyof typeof Icons] : null;
               return (
                 <DropdownMenuItem
                   key={index}
                   onSelect={option.onClick}
-                  className="flex items-center gap-2 py-2"
+                  className="flex cursor-pointer items-center gap-3 px-3 py-2.5 text-[#374151] outline-none hover:bg-[#f3f4f6] focus:bg-[#f3f4f6] focus:text-[#374151]"
                 >
                   {IconComponent && (
-                    <span className="flex h-4 w-4 items-center justify-center">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[#6b7280]">
                       <Icons.ByName name={option.icon} />
                     </span>
                   )}
-                  <span className="flex-1">{option.title}</span>
+                  <span className="font-medium">{option.title}</span>
                 </DropdownMenuItem>
               );
             })}
