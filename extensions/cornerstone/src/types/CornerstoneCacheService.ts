@@ -27,6 +27,8 @@ type StackViewportData = {
 type VolumeViewportData = {
   viewportType: Enums.ViewportType;
   data: VolumeData[];
+  /** Enriched viewport options (e.g. ijkDecimation, autoDecimationInfo) when created by cache service */
+  viewportOptions?: AppTypes.ViewportGrid.GridViewportOptions;
 };
 
 export type { StackViewportData, VolumeViewportData, StackData, VolumeData };

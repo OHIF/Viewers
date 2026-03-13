@@ -280,7 +280,12 @@ const OHIFCornerstoneViewport = React.memo(
           initialImageIndex
         );
 
-        const presentations = getViewportPresentations(viewportId, viewportOptions);
+        const optionsToUse =
+          'viewportOptions' in viewportData && viewportData.viewportOptions
+            ? viewportData.viewportOptions
+            : viewportOptions;
+
+        const presentations = getViewportPresentations(viewportId, optionsToUse);
 
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
         // Used for segmentation hydration right now, since the logic to decide whether
@@ -295,7 +300,7 @@ const OHIFCornerstoneViewport = React.memo(
         cornerstoneViewportService.setViewportData(
           viewportId,
           viewportData,
-          viewportOptions,
+          optionsToUse,
           displaySetOptions,
           presentations
         );

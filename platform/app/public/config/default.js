@@ -6,7 +6,6 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -25,6 +24,15 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
+  // If set, volumes above this voxel count are auto-decimated on load (e.g. 500M).
+  customizationService: [
+    {
+      volumeDecimation: {
+        volumeAutoDecimationThreshold: 500_000_000,
+        dangerouslyTurnOffDecimationNotification: false,
+      },
+    },
+  ],
   showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
   // Defines multi-monitor layouts

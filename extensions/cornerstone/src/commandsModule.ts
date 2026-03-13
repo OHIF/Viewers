@@ -7,6 +7,8 @@ import {
   Types as CoreTypes,
   BaseVolumeViewport,
   getRenderingEngines,
+  cache,
+  volumeLoader,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -1446,7 +1448,7 @@ function commandsModule({
      * @param {number} volumeQuality - The desired quality level of the volume rendering.
      */
 
-    setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
+    setVolumeRenderingQuality: ({ viewportId, volumeQuality }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
       const mapper = actor.getMapper();
@@ -1463,6 +1465,138 @@ function commandsModule({
       mapper.setMaximumSamplesPerRay(samplesPerRay);
       mapper.setSampleDistance(sampleDistance);
       viewport.render();
+    },
+
+    /**
+     * Reloads the volume for the viewport with the given IJK decimation.
+     * Uses original imageIds from the display set / data source, reuses the
+     * current volume's loader scheme, purges the old volume from cache, then
+     * creates and displays the new decimated volume.
+     */
+    reloadVolumeWithDecimation: async ({ viewportId, ijkDecimation }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(
+        viewportId
+      ) as VolumeViewport | undefined;
+
+      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
+        return;
+      }
+
+      if (
+        !ijkDecimation ||
+        !Array.isArray(ijkDecimation) ||
+        ijkDecimation.length < 3
+      ) {
+        return;
+      }
+
+      const [i, j, k] = ijkDecimation.map(v =>
+        Math.max(1, Math.floor(Number.isFinite(v) ? v : 1))
+      ) as [number, number, number];
+
+      const currentVolumeId = viewport.getVolumeId();
+      if (!currentVolumeId) {
+        return;
+      }
+
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
+        viewportId
+      );
+      const displaySetInstanceUID = displaySetUIDs?.[0];
+      if (!displaySetInstanceUID) {
+        return;
+      }
+
+      const displaySet = displaySetService.getDisplaySetByUID(
+        displaySetInstanceUID
+      );
+      if (!displaySet) {
+        return;
+      }
+
+      let imageIds: string[] | undefined =
+        Array.isArray((displaySet as any).imageIds) &&
+        (displaySet as any).imageIds.length > 0
+          ? (displaySet as any).imageIds
+          : undefined;
+      if (!imageIds?.length) {
+        const dataSource = extensionManager.getActiveDataSource?.()?.[0];
+        if (dataSource?.getImageIdsForDisplaySet) {
+          imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+        }
+      }
+      if (!imageIds?.length) {
+        const currentVolume = cache.getVolume(currentVolumeId) as
+          | { imageIds?: string[] }
+          | undefined;
+        imageIds = currentVolume?.imageIds;
+      }
+      if (!imageIds?.length) {
+        uiNotificationService.show({
+          title: 'Volume reload failed',
+          message: 'No image IDs available for this display set.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const idParts = currentVolumeId.split(':');
+      const lastSegment = idParts[idParts.length - 1] ?? '';
+      const isDecimatedId =
+        idParts[0] === 'decimatedVolumeLoader' &&
+        idParts.length >= 3 &&
+        /^\d+_\d+_\d+$/.test(lastSegment);
+      const baseVolumeId = isDecimatedId
+        ? idParts.slice(1, -1).join(':')
+        : currentVolumeId;
+      const decimationSuffix = `${i}_${j}_${k}`;
+      const newVolumeId = `decimatedVolumeLoader:${baseVolumeId}:${decimationSuffix}`;
+
+      const savedProperties = viewport.getProperties?.(currentVolumeId) ?? viewport.getProperties?.() ?? {};
+
+      const actors = viewport.getActors?.() ?? [];
+      const volumeActorUIDs = actors
+        .filter(actorEntry => actorEntry.referencedId === currentVolumeId)
+        .map(actorEntry => actorEntry.uid);
+      if (volumeActorUIDs.length) {
+        viewport.removeActors(volumeActorUIDs);
+      }
+
+      const oldVolume = cache.getVolume(currentVolumeId) as
+        | { cancelLoading?: () => void; imageData?: { delete: () => void } }
+        | undefined;
+      if (oldVolume) {
+        oldVolume.cancelLoading?.();
+        oldVolume.imageData?.delete?.();
+      }
+      cache.removeVolumeLoadObject?.(currentVolumeId);
+
+      const newVolume = await volumeLoader.createAndCacheVolume(newVolumeId, {
+        imageIds,
+        progressiveRendering: true,
+        ijkDecimation: [i, j, k] as [number, number, number],
+      });
+
+      if ((newVolume as { load?: () => Promise<void> })?.load) {
+        await (newVolume as { load: () => Promise<void> }).load();
+      }
+
+      await viewport.setVolumes([{ volumeId: newVolumeId }]);
+
+      if (Object.keys(savedProperties).length > 0) {
+        viewport.setProperties(savedProperties, newVolumeId);
+      }
+      viewport.render();
+
+      const loadedVolume = cache.getVolume(newVolumeId) as { imageIds?: string[] } | undefined;
+      const actualImageCount = loadedVolume?.imageIds?.length;
+      if (displaySet && actualImageCount != null && typeof (displaySet as any).setAttributes === 'function') {
+        (displaySet as any).setAttributes({ numImageFrames: actualImageCount });
+        displaySetService._broadcastEvent(
+          displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+          displaySetService.getActiveDisplaySets()
+        );
+      }
     },
 
     /**
@@ -2125,6 +2259,80 @@ function commandsModule({
       viewportInfo.setOrientation(orientation);
     },
     /**
+     * Sets the 3D volume viewport camera to look from a standard anatomical direction (S, P, R, L, A, I).
+     * Only applies to VOLUME_3D viewports.
+     */
+    setViewport3DViewDirection: ({
+      viewportId,
+      direction,
+    }: {
+      viewportId: string;
+      direction: 'S' | 'P' | 'R' | 'L' | 'A' | 'I';
+    }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || viewport.type !== CoreEnums.ViewportType.VOLUME_3D) {
+        return;
+      }
+      const camera = viewport.getCamera();
+      const focalPoint = camera.focalPoint as [number, number, number];
+      const position = camera.position as [number, number, number];
+      const dir = vec3.sub(vec3.create(), position, focalPoint);
+      const distance = Math.max(vec3.length(dir), 1e-6);
+      // RAS: R +x, A +y, S +z. Look from = camera position axis; viewUp chosen so anatomy is upright.
+      const axes: Record<string, { offset: [number, number, number]; viewUp: [number, number, number] }> = {
+        S: { offset: [0, 0, 1], viewUp: [0, 1, 0] },
+        I: { offset: [0, 0, -1], viewUp: [0, 1, 0] },
+        R: { offset: [-1, 0, 0], viewUp: [0, 0, 1] },
+        L: { offset: [1, 0, 0], viewUp: [0, 0, 1] },
+        A: { offset: [0, -1, 0], viewUp: [0, 0, 1] },
+        P: { offset: [0, 1, 0], viewUp: [0, 0, 1] },
+      };
+      const { offset, viewUp } = axes[direction];
+      if (!offset) return;
+      const newPosition = vec3.add(
+        vec3.create(),
+        focalPoint,
+        vec3.scale(vec3.create(), vec3.fromValues(...offset), distance)
+      ) as CoreTypes.Point3;
+      viewport.setCamera({
+        position: newPosition,
+        focalPoint: focalPoint as CoreTypes.Point3,
+        viewUp: viewUp as CoreTypes.Point3,
+      });
+      viewport.render();
+    },
+    /**
+     * Rotates the 3D volume viewport camera by an angle (degrees) around the z-axis.
+     * Camera position and viewUp orbit around z; focal point unchanged. Used for spin animation.
+     * Only applies to VOLUME_3D viewports.
+     */
+    rotateViewport3DBy: ({
+      viewportId,
+      angle,
+    }: {
+      viewportId: string;
+      angle: number;
+    }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || viewport.type !== CoreEnums.ViewportType.VOLUME_3D) {
+        return;
+      }
+      const camera = viewport.getCamera();
+      const focalPoint = camera.focalPoint as [number, number, number];
+      const position = camera.position as [number, number, number];
+      const viewUp = camera.viewUp as [number, number, number];
+      const zAxis: [number, number, number] = [0, 0, 1];
+      const rotAngle = (angle * Math.PI) / 180;
+      const rotMat = mat4.identity(new Float32Array(16));
+      mat4.rotate(rotMat, rotMat, rotAngle, zAxis);
+      const offset = vec3.sub(vec3.create(), position, focalPoint);
+      const newOffset = vec3.transformMat4(vec3.create(), offset, rotMat);
+      const newPosition = vec3.add(vec3.create(), focalPoint, newOffset) as CoreTypes.Point3;
+      const newViewUp = vec3.transformMat4(vec3.create(), viewUp, rotMat) as CoreTypes.Point3;
+      viewport.setCamera({ position: newPosition, viewUp: newViewUp });
+      viewport.render();
+    },
+    /**
      * Toggles the horizontal flip state of the viewport.
      */
     toggleViewportHorizontalFlip: ({ viewportId }: { viewportId?: string } = {}) => {
@@ -2615,8 +2823,17 @@ function commandsModule({
     setViewportPreset: {
       commandFn: actions.setViewportPreset,
     },
-    setVolumeRenderingQulaity: {
-      commandFn: actions.setVolumeRenderingQulaity,
+    setViewport3DViewDirection: {
+      commandFn: actions.setViewport3DViewDirection,
+    },
+    rotateViewport3DBy: {
+      commandFn: actions.rotateViewport3DBy,
+    },
+    setVolumeRenderingQuality: {
+      commandFn: actions.setVolumeRenderingQuality,
+    },
+    reloadVolumeWithDecimation: {
+      commandFn: actions.reloadVolumeWithDecimation,
     },
     shiftVolumeOpacityPoints: {
       commandFn: actions.shiftVolumeOpacityPoints,
@@ -2750,6 +2967,8 @@ function commandsModule({
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
+    setViewport3DViewDirection: actions.setViewport3DViewDirection,
+    rotateViewport3DBy: actions.rotateViewport3DBy,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,

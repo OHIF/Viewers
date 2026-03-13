@@ -242,6 +242,7 @@ export const toolbarSections = {
     'modalityLoadBadge',
     'trackingStatus',
     'navigationComponent',
+    'volumeOptionsMenu',
   ],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.bottomLeft]: ['windowLevelMenu'],

@@ -96,6 +96,7 @@ export default function PanelStudyBrowserTracking({
           modality: ds.Modality,
           seriesDate: ds.SeriesDate ? new Date(ds.SeriesDate).toLocaleDateString() : '',
           numInstances: ds.numImageFrames ?? ds.instances?.length,
+          numInstancesOriginal: ds.numImageFramesOriginal,
           loadingProgress,
           countIcon: ds.countIcon,
           messages: ds.messages,

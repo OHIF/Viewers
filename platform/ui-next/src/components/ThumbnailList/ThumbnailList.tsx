@@ -37,7 +37,7 @@ const ThumbnailList = ({
             className="bg-background grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px]"
           >
             {thumbnailItems.map(item => {
-              const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
+              const { displaySetInstanceUID, componentType, numInstances, numInstancesOriginal, ...rest } = item;
 
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
               return (
@@ -46,6 +46,7 @@ const ThumbnailList = ({
                   {...rest}
                   displaySetInstanceUID={displaySetInstanceUID}
                   numInstances={numInstances || 1}
+                  numInstancesOriginal={numInstancesOriginal}
                   isActive={isActive}
                   thumbnailType={componentType}
                   viewPreset="thumbnails"
@@ -65,7 +66,7 @@ const ThumbnailList = ({
             className="bg-background grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px]"
           >
             {listItems.map(item => {
-              const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
+              const { displaySetInstanceUID, componentType, numInstances, numInstancesOriginal, ...rest } = item;
               const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
               return (
                 <Thumbnail
@@ -73,6 +74,7 @@ const ThumbnailList = ({
                   {...rest}
                   displaySetInstanceUID={displaySetInstanceUID}
                   numInstances={numInstances || 1}
+                  numInstancesOriginal={numInstancesOriginal}
                   isActive={isActive}
                   thumbnailType={componentType}
                   viewPreset="list"
@@ -99,6 +101,7 @@ ThumbnailList.propTypes = {
       seriesDate: PropTypes.string,
       seriesNumber: PropTypes.any,
       numInstances: PropTypes.number,
+      numInstancesOriginal: PropTypes.number,
       description: PropTypes.string,
       componentType: PropTypes.any,
       isTracked: PropTypes.bool,

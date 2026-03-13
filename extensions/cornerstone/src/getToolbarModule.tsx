@@ -3,6 +3,7 @@ import i18n from '@ohif/i18n';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
+import { VolumeOptionsMenuWrapper } from './components/VolumeOptionsMenu';
 import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
 import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
@@ -223,6 +224,26 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         return {
           disabled,
         };
+      },
+    },
+    {
+      name: 'ohif.volumeOptionsMenu',
+      defaultComponent: VolumeOptionsMenuWrapper,
+    },
+    {
+      name: 'evaluate.volumeOptionsMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return { disabled: true };
+        }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const isVolumeViewport = displaySets.some(displaySet => displaySet?.isReconstructable);
+
+        return { disabled: !isVolumeViewport };
       },
     },
     {

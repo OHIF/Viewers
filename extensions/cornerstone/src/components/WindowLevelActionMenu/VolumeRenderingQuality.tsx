@@ -11,12 +11,12 @@ export function VolumeRenderingQuality({
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const { min, max, step } = volumeRenderingQualityRange;
-  const [quality, setQuality] = useState(null);
+  const [quality, setQuality] = useState<number | null>(null);
   const { t } = useTranslation('WindowLevelActionMenu');
 
   const onChange = useCallback(
     (value: number) => {
-      commandsManager.runCommand('setVolumeRenderingQulaity', {
+      commandsManager.runCommand('setVolumeRenderingQuality', {
         viewportId,
         volumeQuality: value,
       });
@@ -27,11 +27,13 @@ export function VolumeRenderingQuality({
 
   useEffect(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport?.getActors?.()?.length) return;
     const { actor } = viewport.getActors()[0];
     const mapper = actor.getMapper();
     const image = mapper.getInputData();
     const spacing = image.getSpacing();
-    const sampleDistance = mapper.getSampleDistance();
+    const sampleDistance = (mapper as { getSampleDistance?: () => number }).getSampleDistance?.();
+    if (sampleDistance == null) return;
     const averageSpacing = spacing.reduce((a, b) => a + b) / 3.0;
     if (sampleDistance === averageSpacing) {
       setQuality(1);

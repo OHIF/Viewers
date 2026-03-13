@@ -39,6 +39,10 @@ export type ViewportOptions = {
    * doesn't show them initially.  Displays initially blank if no required match
    */
   allowUnmatchedView?: boolean;
+  /** IJK decimation applied when loading volume data (e.g. from auto-decimation). */
+  ijkDecimation?: [number, number, number];
+  /** Shown in viewport overlay when volume was auto-decimated. */
+  autoDecimationInfo?: { message: string };
 };
 
 export type PublicViewportOptions = {
@@ -56,6 +60,8 @@ export type PublicViewportOptions = {
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
   allowUnmatchedView?: boolean;
+  ijkDecimation?: [number, number, number];
+  autoDecimationInfo?: { message: string };
 };
 
 export type DisplaySetSelector = {

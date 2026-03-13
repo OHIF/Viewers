@@ -4,6 +4,7 @@ import ViewportImageScrollbar from './ViewportImageScrollbar';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
+import AutoDecimationOverlay from './AutoDecimationOverlay';
 
 function CornerstoneOverlays(props: withAppTypes) {
   const { viewportId, element, scrollbarHeight, servicesManager } = props;
@@ -35,16 +36,20 @@ function CornerstoneOverlays(props: withAppTypes) {
     return null;
   }
 
-  if (viewportData) {
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+  const options = viewportInfo?.getViewportOptions?.();
+  const hideOverlays = options?.customViewportProps?.hideOverlays;
 
-    if (viewportInfo?.viewportOptions?.customViewportProps?.hideOverlays) {
-      return null;
-    }
+  if (viewportInfo && hideOverlays) {
+    return (
+      <div className="noselect cornerstone-overlays-container">
+        <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
+      </div>
+    );
   }
 
   return (
-    <div className="noselect">
+    <div className="noselect cornerstone-overlays-container">
       <ViewportImageScrollbar
         viewportId={viewportId}
         viewportData={viewportData}
@@ -62,6 +67,8 @@ function CornerstoneOverlays(props: withAppTypes) {
         servicesManager={servicesManager}
         element={element}
       />
+
+      <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
 
       <ViewportImageSliceLoadingIndicator
         viewportData={viewportData}
