@@ -9,7 +9,7 @@ import { useSystem } from '@ohif/core';
 const excludedModalities = ['SM', 'OT', 'DOC', 'ECG'];
 
 function mapSegmentationToDisplay(segmentation, customizationService) {
-  const { label, segments } = segmentation;
+  const { label, segments, fallbackLabel } = segmentation;
 
   // Get the readable text mapping once
   const readableTextMap = customizationService.getCustomization('panelSegmentation.readableText');
@@ -76,6 +76,7 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
   return {
     ...segmentation,
     label,
+    fallbackLabel,
     segments: updatedSegments,
   };
 }
