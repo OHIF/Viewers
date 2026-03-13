@@ -48,9 +48,9 @@ jobs:
             LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name' 2>/dev/null || true)
             if echo "$LABELS" | grep -q "ohif-integration"; then
               echo "enabled=true" >> "$GITHUB_OUTPUT"
-              # Parse CS3D_REF from PR body (look for "CS3D_REF: <value>"), default to 4.x
+              # Parse CS3D_REF from PR body (look for "CS3D_REF: <value>"), default to 4.19+
               REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' 2>/dev/null \
-                | grep -oP '^\s*CS3D_REF:\s*\K\S+' || true)
+                | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\([^[:space:]]*\).*/\1/p' | head -1)
               if [[ -z "$REF" ]]; then
                 REF="4.19+"
               fi
@@ -74,7 +74,7 @@ jobs:
         if: steps.cs3d-check.outputs.enabled == 'true'
         run: |
           REF="${CS3D_REF}"
-          if [[ "$REF" =~ ^[0-9]+\.[0-9x]+(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
+          if [[ "$REF" =~ ^[0-9]+\.[0-9x]+\+?(\.[0-9x]+)?(-[a-zA-Z0-9._]+)?$ ]]; then
             echo "type=version" >> "$GITHUB_OUTPUT"
             RESOLVED=$(node .scripts/cs3d-resolve-version.mjs "$REF")
             echo "version=$RESOLVED" >> "$GITHUB_OUTPUT"
