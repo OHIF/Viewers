@@ -4,6 +4,7 @@ import {
   SegmentationExpandedProvider,
 } from './SegmentationExpandedContext';
 import { useSegmentStatistics, SegmentStatisticsProvider } from './SegmentStatisticsContext';
+export type { SegmentationTableContextType } from './SegmentationTableContext';
 
 export {
   useSegmentationTableContext,
