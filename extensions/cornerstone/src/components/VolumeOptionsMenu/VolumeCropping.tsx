@@ -4,7 +4,7 @@ import { useSystem } from '@ohif/core';
 
 export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
-  const { toolGroupService } = servicesManager.services;
+  const { toolGroupService, cornerstoneViewportService } = servicesManager.services;
   const [handlesVisible, setHandlesVisible] = useState(false);
   const [clippingPlanesVisible, setClippingPlanesVisible] = useState(false);
   const [rotatePlanes, setRotatePlanes] = useState(false);
@@ -56,6 +56,12 @@ export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): Re
     const actualHandles = tool.getHandlesVisible?.() ?? tool.handlesVisible ?? false;
     setHandlesVisible(actualHandles);
     setKey(prev => prev + 1);
+    if (viewportId) {
+      requestAnimationFrame(() => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        viewport?.render?.();
+      });
+    }
   }
 
   function onClippingPlanesChange(checked: boolean) {

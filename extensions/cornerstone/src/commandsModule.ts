@@ -1020,6 +1020,9 @@ function commandsModule({
       ) {
         return;
       }
+      const visible =
+        options?.visible ?? !croppingTool.getClippingPlanesVisible?.();
+
       const volume3dHasViewports = volume3d?.viewportsInfo?.length > 0;
       if (volume3dHasViewports && volume3d?.hasTool('VolumeCropping')) {
         volume3d.setToolActive('VolumeCropping', {
@@ -1035,15 +1038,18 @@ function commandsModule({
       const VOLUME_CROPPING_CONTROL = 'VolumeCroppingControl';
       toolGroupService.getToolGroupIds().forEach(toolGroupId => {
         const tg = toolGroupService.getToolGroup(toolGroupId);
-        if (tg?.hasTool(VOLUME_CROPPING_CONTROL)) {
+        if (!tg?.hasTool(VOLUME_CROPPING_CONTROL)) {
+          return;
+        }
+        if (visible) {
           tg.setToolEnabled(VOLUME_CROPPING_CONTROL);
           tg.setToolActive(VOLUME_CROPPING_CONTROL, {
             bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
           });
+        } else if (toolGroupId !== 'volume3d') {
+          tg.setToolDisabled(VOLUME_CROPPING_CONTROL);
         }
       });
-      const visible =
-        options?.visible ?? !croppingTool.getClippingPlanesVisible?.();
       croppingTool.setClippingPlanesVisible(visible);
     },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
