@@ -338,6 +338,18 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   };
 
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
+
+  if (toolNames.OrientationController) {
+    const volume3DToolGroup = toolGroupService.getToolGroup('volume3d');
+    const orientationControllerConfig = {
+      colorScheme: 'gray',
+      keepOrientationUp: true,
+      letterColorScheme: 'white',
+      size: 0.028,
+    };
+    volume3DToolGroup.addTool(toolNames.OrientationController, orientationControllerConfig);
+    volume3DToolGroup.setToolEnabled(toolNames.OrientationController);
+  }
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
