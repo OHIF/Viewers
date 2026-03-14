@@ -292,6 +292,31 @@ export default async function init({
     return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
   };
 
+  const volumeLoadedHandler = (evt: { detail: { volume: { volumeId: string; imageIds: string[] } } }) => {
+    const { volume } = evt.detail;
+
+    if (!volume?.volumeId || !volume?.imageIds) {
+      return;
+    }
+
+    const displaySet = getDisplaySetFromVolumeId(volume.volumeId);
+    if (!displaySet) {
+      return;
+    }
+
+    const actualImageCount = volume.imageIds.length;
+    const dsAny = displaySet as { numImageFrames?: number; setAttributes?: (a: { numImageFrames?: number }) => void };
+    if (dsAny.numImageFrames !== actualImageCount && typeof dsAny.setAttributes === 'function') {
+      dsAny.setAttributes({ numImageFrames: actualImageCount });
+      displaySetService._broadcastEvent(
+        displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+        displaySetService.getActiveDisplaySets()
+      );
+    }
+  };
+
+  eventTarget.addEventListener(EVENTS.VOLUME_LOADED, volumeLoadedHandler);
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
     const { viewport } = getEnabledElement(element);

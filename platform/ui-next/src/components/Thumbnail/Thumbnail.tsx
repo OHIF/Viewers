@@ -163,10 +163,9 @@ const Thumbnail = ({
                   <Icons.InfoSeries className="w-3" />
                 )}
                 <div>
-                  {numInstances}
-                  {numInstancesOriginal && numInstancesOriginal !== numInstances && (
-                    <span className="text-muted-foreground/70"> / {numInstancesOriginal}</span>
-                  )}
+                  {numInstancesOriginal && numInstancesOriginal !== numInstances
+                    ? `${numInstancesOriginal} / ${numInstances}`
+                    : numInstances}
                 </div>
               </div>
             </div>
@@ -224,10 +223,9 @@ const Thumbnail = ({
                     <Icons.InfoSeries className="w-3" />
                   )}
                   <div>
-                    {numInstances}
-                    {numInstancesOriginal && numInstancesOriginal !== numInstances && (
-                      <span className="text-muted-foreground/70"> / {numInstancesOriginal}</span>
-                    )}
+                    {numInstancesOriginal && numInstancesOriginal !== numInstances
+                      ? `${numInstancesOriginal} / ${numInstances}`
+                      : numInstances}
                   </div>
                 </div>
               </div>
