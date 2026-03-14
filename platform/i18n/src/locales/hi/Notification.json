@@ -1,0 +1,18 @@
+{
+  "Do you want to add this measurement to the existing report?": "क्या आप इस माप को मौजूदा रिपोर्ट में जोड़ना चाहते हैं?",
+  "Create new report": "नई रिपोर्ट बनाएं",
+  "Add to existing report": "मौजूदा रिपोर्ट में जोड़ें",
+  "Discard": "त्यागें",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "आपके पास पहले से ट्रैक किए गए माप हैं। आप उनके साथ क्या करना चाहते हैं?",
+  "No, do not ask again for this series": "नहीं, इस सीरीज के लिए फिर से न पूछें",
+  "No": "$t(Common:No)",
+  "Track measurements for this series?": "क्या इस सीरीज के लिए माप ट्रैक करें?",
+  "Yes": "$t(Common:Yes)",
+  "Cancel": "$t(Common:Cancel)",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "माप कई अध्ययनों में नहीं फैल सकते। क्या आप अपने ट्रैक किए गए माप सहेजना चाहते हैं?",
+  "No, discard previously tracked series & measurements": "नहीं, पहले ट्रैक की गई सीरीज और माप को त्यागें",
+  "Do you want to continue tracking measurements for this study?": "क्या आप इस अध्ययन के लिए माप ट्रैक करना जारी रखना चाहते हैं?",
+  "Create Report": "रिपोर्ट बनाएं",
+  "Measurements saved successfully": "माप सफलतापूर्वक सहेजे गए",
+  "Failed to store measurements": "माप सहेजने में विफल"
+}
