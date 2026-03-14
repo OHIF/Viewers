@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { useSystem } from '@ohif/core';
 import {
+  AllInOneMenu,
   Button,
   Icons,
   Popover,
@@ -78,11 +79,13 @@ export function VolumeOptionsMenuWrapper(
         alignOffset={0}
         sideOffset={5}
       >
-        <div className="bg-popover rounded p-2">
-          <VolumeCropping viewportId={viewportIdToUse} />
-          <div className="bg-background my-2 h-px w-full" />
-          <VolumeOptions viewportId={viewportIdToUse} />
-        </div>
+        <AllInOneMenu.Menu isVisible={true}>
+          <div className="bg-popover rounded p-2">
+            <VolumeCropping viewportId={viewportIdToUse} />
+            <div className="bg-background my-2 h-px w-full" />
+            <VolumeOptions viewportId={viewportIdToUse} />
+          </div>
+        </AllInOneMenu.Menu>
       </PopoverContent>
     </Popover>
   );

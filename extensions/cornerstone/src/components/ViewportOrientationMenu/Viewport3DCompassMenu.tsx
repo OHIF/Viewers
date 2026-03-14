@@ -104,7 +104,7 @@ function Viewport3DCompassMenu({
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto flex-shrink-0 rounded-lg bg-neutral-800 p-1"
+        className="w-auto flex-shrink-0 rounded-lg border-0 bg-neutral-800 p-1 shadow-none"
         align={align}
         side={side}
         style={{ left: 0 }}
@@ -172,9 +172,14 @@ function Viewport3DCompassMenu({
                 key={dir}
                 className="cursor-pointer select-none outline-none focus:outline-none focus:ring-0"
                 onClick={() => handleDirectionChange(dir)}
-                onKeyDown={e => e.key === 'Enter' && handleDirectionChange(dir)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleDirectionChange(dir);
+                  }
+                }}
                 role="button"
-                tabIndex={-1}
+                tabIndex={0}
                 aria-label={dir}
               >
                 <circle cx={x} cy={y} r={10} fill="transparent" />
@@ -196,7 +201,14 @@ function Viewport3DCompassMenu({
           })}
         </svg>
         <div className="mt-2 flex items-center justify-center gap-0 pt-0">
-          <span className="mr-2 text-lg text-neutral-400">Spin</span>
+          <button
+            type="button"
+            className="mr-2 cursor-pointer text-lg text-neutral-400 outline-none hover:text-neutral-200 focus:text-neutral-200"
+            onClick={() => setSpin(s => (s === 0 ? 1 : 0))}
+            aria-label={spin === 0 ? 'Start spin' : 'Stop spin'}
+          >
+            Spin
+          </button>
           <Button
             variant="ghost"
             size="icon"

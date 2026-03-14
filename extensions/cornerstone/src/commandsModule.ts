@@ -984,6 +984,68 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
+    activateVolumeCroppingControl: () => {
+      const VOLUME_CROPPING = 'VolumeCropping';
+      const VOLUME_CROPPING_CONTROL = 'VolumeCroppingControl';
+      const volume3d = toolGroupService.getToolGroup('volume3d');
+      const volume3dHasViewports = volume3d?.viewportsInfo?.length > 0;
+      if (volume3dHasViewports && volume3d?.hasTool(VOLUME_CROPPING)) {
+        volume3d.setToolActive(VOLUME_CROPPING, {
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        });
+        const croppingTool = volume3d.getToolInstance(VOLUME_CROPPING);
+        if (
+          croppingTool?.originalClippingPlanes?.length === 0 &&
+          croppingTool.onSetToolActive
+        ) {
+          croppingTool.onSetToolActive();
+        }
+      }
+      toolGroupService.getToolGroupIds().forEach(toolGroupId => {
+        const tg = toolGroupService.getToolGroup(toolGroupId);
+        if (tg?.hasTool(VOLUME_CROPPING_CONTROL)) {
+          tg.setToolEnabled(VOLUME_CROPPING_CONTROL);
+          tg.setToolActive(VOLUME_CROPPING_CONTROL, {
+            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+          });
+        }
+      });
+    },
+    toggleCropping: (options?: { visible?: boolean }) => {
+      const volume3d = toolGroupService.getToolGroup('volume3d');
+      const croppingTool = volume3d?.getToolInstance?.('VolumeCropping');
+      if (
+        !croppingTool ||
+        typeof croppingTool.setClippingPlanesVisible !== 'function'
+      ) {
+        return;
+      }
+      const volume3dHasViewports = volume3d?.viewportsInfo?.length > 0;
+      if (volume3dHasViewports && volume3d?.hasTool('VolumeCropping')) {
+        volume3d.setToolActive('VolumeCropping', {
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        });
+        if (
+          croppingTool.originalClippingPlanes?.length === 0 &&
+          croppingTool.onSetToolActive
+        ) {
+          croppingTool.onSetToolActive();
+        }
+      }
+      const VOLUME_CROPPING_CONTROL = 'VolumeCroppingControl';
+      toolGroupService.getToolGroupIds().forEach(toolGroupId => {
+        const tg = toolGroupService.getToolGroup(toolGroupId);
+        if (tg?.hasTool(VOLUME_CROPPING_CONTROL)) {
+          tg.setToolEnabled(VOLUME_CROPPING_CONTROL);
+          tg.setToolActive(VOLUME_CROPPING_CONTROL, {
+            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+          });
+        }
+      });
+      const visible =
+        options?.visible ?? !croppingTool.getClippingPlanesVisible?.();
+      croppingTool.setClippingPlanesVisible(visible);
+    },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
       toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
@@ -1423,6 +1485,18 @@ function commandsModule({
       viewport.render();
     },
 
+    setSampleDistanceMultiplier: ({ sampleDistanceMultiplier, viewportId }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport) {
+        return;
+      }
+      const preset = viewport.viewportProperties?.preset;
+      viewport.setProperties({
+        preset,
+        sampleDistanceMultiplier,
+      });
+    },
+
     /**
      * Sets the volume quality for a given viewport.
      * @param {string} viewportId - The ID of the viewport to set the volume quality.
@@ -1450,134 +1524,310 @@ function commandsModule({
 
     /**
      * Reloads the volume for the viewport with the given IJK decimation.
-     * Uses original imageIds from the display set / data source, reuses the
-     * current volume's loader scheme, purges the old volume from cache, then
-     * creates and displays the new decimated volume.
+     * Affects all viewports showing the same volume. Uses original imageIds
+     * from the display set / data source, purges the old volume from cache,
+     * creates and displays the new decimated volume, restores preset/VOI and
+     * re-enables OrientationController for 3D.
      */
     reloadVolumeWithDecimation: async ({ viewportId, ijkDecimation }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(
         viewportId
-      ) as VolumeViewport | undefined;
-
-      if (!viewport || !(viewport instanceof BaseVolumeViewport)) {
-        return;
-      }
-
-      if (
-        !ijkDecimation ||
-        !Array.isArray(ijkDecimation) ||
-        ijkDecimation.length < 3
-      ) {
-        return;
-      }
-
-      const [i, j, k] = ijkDecimation.map(v =>
-        Math.max(1, Math.floor(Number.isFinite(v) ? v : 1))
-      ) as [number, number, number];
-
-      const currentVolumeId = viewport.getVolumeId();
-      if (!currentVolumeId) {
-        return;
-      }
-
-      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
-        viewportId
-      );
-      const displaySetInstanceUID = displaySetUIDs?.[0];
-      if (!displaySetInstanceUID) {
-        return;
-      }
-
-      const displaySet = displaySetService.getDisplaySetByUID(
-        displaySetInstanceUID
-      );
-      if (!displaySet) {
-        return;
-      }
-
-      let imageIds: string[] | undefined =
-        Array.isArray((displaySet as any).imageIds) &&
-        (displaySet as any).imageIds.length > 0
-          ? (displaySet as any).imageIds
-          : undefined;
-      if (!imageIds?.length) {
-        const dataSource = extensionManager.getActiveDataSource?.()?.[0];
-        if (dataSource?.getImageIdsForDisplaySet) {
-          imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
-        }
-      }
-      if (!imageIds?.length) {
-        const currentVolume = cache.getVolume(currentVolumeId) as
-          | { imageIds?: string[] }
-          | undefined;
-        imageIds = currentVolume?.imageIds;
-      }
-      if (!imageIds?.length) {
+      ) as CoreTypes.IVolumeViewport | undefined;
+      if (!viewport) {
         uiNotificationService.show({
-          title: 'Volume reload failed',
-          message: 'No image IDs available for this display set.',
+          title: 'Volume Reload Failed',
+          message: 'No viewport found',
+          type: 'error',
+        });
+        return;
+      }
+      const currentVolumeId = viewport.getVolumeId?.();
+      if (!currentVolumeId) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No volume in viewport',
+          type: 'error',
+        });
+        return;
+      }
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine?.();
+      if (!renderingEngine) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No rendering engine',
+          type: 'error',
+        });
+        return;
+      }
+      const allViewports = renderingEngine.getViewports();
+      const affectedViewports = allViewports.filter((vp: CoreTypes.IViewport) => {
+        if (
+          'hasVolumeId' in vp &&
+          typeof (vp as CoreTypes.IVolumeViewport).hasVolumeId === 'function'
+        ) {
+          return (vp as CoreTypes.IVolumeViewport).hasVolumeId(currentVolumeId);
+        }
+        return false;
+      }) as CoreTypes.IVolumeViewport[];
+
+      const viewportPropertiesMap = new Map<
+        string,
+        { properties?: unknown; viewportProperties?: unknown; preset?: unknown }
+      >();
+      affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+        const props = (
+          vp as unknown as {
+            getProperties?: () => unknown;
+            viewportProperties?: { preset?: unknown };
+          }
+        ).getProperties?.();
+        const vpProps = (
+          vp as unknown as { viewportProperties?: { preset?: unknown } }
+        ).viewportProperties;
+        viewportPropertiesMap.set(vp.id, {
+          properties: props,
+          viewportProperties: vpProps,
+          preset: vpProps?.preset,
+        });
+      });
+
+      let decimationValues: [number, number, number];
+      if (
+        ijkDecimation &&
+        Array.isArray(ijkDecimation) &&
+        ijkDecimation.length >= 3
+      ) {
+        decimationValues = [
+          ijkDecimation[0],
+          ijkDecimation[1],
+          ijkDecimation[2],
+        ];
+      } else {
+        decimationValues = [1, 1, 1];
+      }
+
+      const displaySetUIDs =
+        viewportGridService.getDisplaySetsUIDsForViewport?.(viewportId);
+      if (!displaySetUIDs?.length) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No display sets for viewport',
+          type: 'error',
+        });
+        return;
+      }
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+      if (!displaySet) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'Display set not found',
           type: 'error',
         });
         return;
       }
 
-      const idParts = currentVolumeId.split(':');
-      const lastSegment = idParts[idParts.length - 1] ?? '';
-      const isDecimatedId =
-        idParts[0] === 'decimatedVolumeLoader' &&
-        idParts.length >= 3 &&
-        /^\d+_\d+_\d+$/.test(lastSegment);
-      const baseVolumeId = isDecimatedId
-        ? idParts.slice(1, -1).join(':')
-        : currentVolumeId;
-      const decimationSuffix = `${i}_${j}_${k}`;
-      const newVolumeId = `decimatedVolumeLoader:${baseVolumeId}:${decimationSuffix}`;
-
-      const savedProperties = viewport.getProperties?.(currentVolumeId) ?? viewport.getProperties?.() ?? {};
-
-      const actors = viewport.getActors?.() ?? [];
-      const volumeActorUIDs = actors
-        .filter(actorEntry => actorEntry.referencedId === currentVolumeId)
-        .map(actorEntry => actorEntry.uid);
-      if (volumeActorUIDs.length) {
-        viewport.removeActors(volumeActorUIDs);
+      const displaySetAsAny = displaySet as {
+        images?: { imageId: string }[];
+        imageIds?: string[];
+        numImageFrames?: number;
+        setAttributes?: (a: unknown) => void;
+      };
+      let originalImageIds: string[];
+      if (displaySetAsAny.images?.length) {
+        originalImageIds = displaySetAsAny.images.map(
+          (img: { imageId: string }) => img.imageId
+        );
+      } else if (displaySetAsAny.imageIds?.length) {
+        const expectedFull =
+          displaySetAsAny.numImageFrames ?? displaySetAsAny.images?.length;
+        if (expectedFull && displaySetAsAny.imageIds.length < expectedFull) {
+          const dataSource = extensionManager.getActiveDataSource?.()?.[0] as {
+            getImageIdsForDisplaySet?: (ds: unknown) => string[];
+          };
+          originalImageIds =
+            dataSource?.getImageIdsForDisplaySet?.(displaySet) ??
+            displaySetAsAny.imageIds;
+        } else {
+          originalImageIds = displaySetAsAny.imageIds;
+        }
+      } else {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No image IDs in display set',
+          type: 'error',
+        });
+        return;
       }
 
-      const oldVolume = cache.getVolume(currentVolumeId) as
-        | { cancelLoading?: () => void; imageData?: { delete: () => void } }
-        | undefined;
-      if (oldVolume) {
-        oldVolume.cancelLoading?.();
-        oldVolume.imageData?.delete?.();
-      }
-      cache.removeVolumeLoadObject?.(currentVolumeId);
-
-      const newVolume = await volumeLoader.createAndCacheVolume(newVolumeId, {
-        imageIds,
-        progressiveRendering: true,
-        ijkDecimation: [i, j, k] as [number, number, number],
+      affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+        const actors = vp.getActors?.() ?? [];
+        const volumeActorUIDs = actors
+          .filter(
+            (a: { referencedId?: string }) => a.referencedId === currentVolumeId
+          )
+          .map((a: { uid?: string }) => a.uid);
+        if (volumeActorUIDs.length) {
+          vp.removeActors?.(volumeActorUIDs);
+        }
       });
 
-      if ((newVolume as { load?: () => Promise<void> })?.load) {
-        await (newVolume as { load: () => Promise<void> }).load();
+      try {
+        const oldVolume = cache.getVolume(currentVolumeId);
+        if (oldVolume) {
+          if (
+            typeof (oldVolume as { cancelLoading?: () => void })
+              .cancelLoading === 'function'
+          ) {
+            (oldVolume as { cancelLoading: () => void }).cancelLoading();
+          }
+          if (
+            (oldVolume as { imageData?: { delete: () => void } }).imageData
+          ) {
+            (oldVolume as { imageData: { delete: () => void } }).imageData.delete();
+          }
+        }
+        cache.removeVolumeLoadObject(currentVolumeId);
+      } catch (e) {
+        console.error('Failed to remove old volume from cache:', e);
       }
 
-      await viewport.setVolumes([{ volumeId: newVolumeId }]);
+      const parts = currentVolumeId.split(':');
+      const baseVolumeId =
+        parts[0] === 'decimatedVolumeLoader' && parts.length >= 3
+          ? parts.slice(1, -1).join(':')
+          : currentVolumeId;
+      const decimationSuffix = decimationValues.join('_');
+      const newVolumeId = `decimatedVolumeLoader:${baseVolumeId}:${decimationSuffix}`;
 
-      if (Object.keys(savedProperties).length > 0) {
-        viewport.setProperties(savedProperties, newVolumeId);
+      const newVolume = await volumeLoader.createAndCacheVolume(newVolumeId, {
+        imageIds: originalImageIds,
+        progressiveRendering: true,
+        ijkDecimation: decimationValues,
+      });
+      const volumeWithLoad = newVolume as unknown as {
+        load?: () => void | Promise<void>;
+      };
+      if (typeof volumeWithLoad.load === 'function') {
+        await Promise.resolve(volumeWithLoad.load());
       }
-      viewport.render();
 
-      const loadedVolume = cache.getVolume(newVolumeId) as { imageIds?: string[] } | undefined;
-      const actualImageCount = loadedVolume?.imageIds?.length;
-      if (displaySet && actualImageCount != null && typeof (displaySet as any).setAttributes === 'function') {
-        (displaySet as any).setAttributes({ numImageFrames: actualImageCount });
-        displaySetService._broadcastEvent(
-          displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-          displaySetService.getActiveDisplaySets()
+      if (typeof displaySetAsAny.setAttributes === 'function') {
+        const decimatedImageIds =
+          (newVolume as { imageIds?: string[] }).imageIds ?? [];
+        displaySetAsAny.setAttributes({
+          imageIds: decimatedImageIds,
+          numImageFrames: decimatedImageIds.length,
+        });
+        if (typeof displaySetService._broadcastEvent === 'function') {
+          displaySetService._broadcastEvent(
+            displaySetService.EVENTS?.DISPLAY_SETS_CHANGED ??
+              'DISPLAY_SETS_CHANGED',
+            displaySetService.getActiveDisplaySets?.() ?? []
+          );
+        }
+      }
+
+      const csUtilsApplyPreset = (csUtils as {
+        applyPreset?: (actor: unknown, preset: unknown) => void;
+      }).applyPreset;
+      for (const vp of affectedViewports) {
+        const vpType = vp.type;
+        const savedProps = viewportPropertiesMap.get(vp.id);
+        if (vpType === CoreEnums.ViewportType.VOLUME_3D) {
+          await vp.setVolumes?.([
+            {
+              volumeId: newVolumeId,
+              callback: ({ volumeActor }: { volumeActor: unknown }) => {
+                if (
+                  savedProps?.preset &&
+                  typeof csUtilsApplyPreset === 'function'
+                ) {
+                  csUtilsApplyPreset(volumeActor, savedProps.preset);
+                } else if (
+                  savedProps?.properties &&
+                  (savedProps.properties as { voiRange?: unknown })?.voiRange
+                ) {
+                  try {
+                    (
+                      volumeActor as {
+                        getProperty: () => {
+                          setRGBTransferFunction: (
+                            i: number,
+                            r: unknown
+                          ) => void;
+                        };
+                      }
+                    )
+                      .getProperty()
+                      .setRGBTransferFunction(
+                        0,
+                        (savedProps.properties as { voiRange: unknown }).voiRange
+                      );
+                  } catch (err) {
+                    console.error(
+                      'Failed to restore properties for viewport',
+                      vp.id,
+                      err
+                    );
+                  }
+                }
+              },
+            },
+          ]);
+          if (
+            typeof (vp as unknown as { resetCamera?: () => void })
+              .resetCamera === 'function'
+          ) {
+            (vp as unknown as { resetCamera: () => void }).resetCamera();
+          }
+        } else {
+          await vp.setVolumes?.([{ volumeId: newVolumeId }]);
+          if (savedProps?.properties) {
+            vp.setProperties?.(
+              savedProps.properties as Parameters<
+                CoreTypes.IVolumeViewport['setProperties']
+              >[0]
+            );
+          }
+        }
+        if (
+          typeof (vp as unknown as { resetCamera?: () => void })
+            .resetCamera === 'function'
+        ) {
+          (vp as unknown as { resetCamera: () => void }).resetCamera();
+        }
+      }
+
+      try {
+        const volume3dToolGroup = toolGroupService.getToolGroup('volume3d');
+        if (volume3dToolGroup?.hasTool?.(toolNames.OrientationController)) {
+          volume3dToolGroup.setToolEnabled(toolNames.OrientationController);
+        }
+      } catch (err) {
+        console.warn(
+          'Failed to re-enable OrientationController after decimation reload',
+          err
         );
       }
+
+      renderingEngine.render();
+      requestAnimationFrame(() => {
+        affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+          try {
+            cornerstoneViewportService._broadcastEvent?.(
+              cornerstoneViewportService.EVENTS?.VIEWPORT_DATA_CHANGED ??
+                'VIEWPORT_DATA_CHANGED',
+              { viewportId: vp.id }
+            );
+          } catch (err) {
+            console.warn(
+              'Failed to broadcast viewport data changed',
+              vp.id,
+              err
+            );
+          }
+        });
+      });
     },
 
     /**
@@ -2783,6 +3033,12 @@ function commandsModule({
     toggleCine: {
       commandFn: actions.toggleCine,
     },
+    activateVolumeCroppingControl: {
+      commandFn: actions.activateVolumeCroppingControl,
+    },
+    toggleCropping: {
+      commandFn: actions.toggleCropping,
+    },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,
     },
@@ -2803,6 +3059,9 @@ function commandsModule({
     },
     setViewportPreset: {
       commandFn: actions.setViewportPreset,
+    },
+    setSampleDistanceMultiplier: {
+      commandFn: actions.setSampleDistanceMultiplier,
     },
     setViewport3DViewDirection: {
       commandFn: actions.setViewport3DViewDirection,

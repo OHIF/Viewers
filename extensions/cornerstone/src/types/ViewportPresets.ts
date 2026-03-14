@@ -51,3 +51,10 @@ export type VolumeLightingProps = {
   viewportId: string;
   hasShade: boolean;
 };
+
+export type VolumeDecimationInfo = {
+  dimensions: number[];
+  ijkDecimation?: [number, number, number];
+  appliedDecimation?: { originalDecimation: [number, number, number] };
+  originalMetadata?: { Columns: number; Rows: number };
+};

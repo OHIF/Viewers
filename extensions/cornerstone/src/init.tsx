@@ -1,4 +1,4 @@
-import OHIF, { errorHandler } from '@ohif/core';
+import OHIF, { errorHandler, getVolumeOptions } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -41,6 +41,7 @@ import { usePositionPresentationStore } from './stores/usePositionPresentationSt
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
 import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgressHandler';
+import gpuPerformanceTest from './utils/gpuPerformanceTest';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -66,6 +67,18 @@ export default async function init({
   await cs3DInit({
     peerImport: appConfig.peerImport,
   });
+
+  const volumeOptions = getVolumeOptions();
+  if (!volumeOptions.gpuTestResults) {
+    try {
+      await gpuPerformanceTest(appConfig);
+    } catch (error) {
+      console.warn(
+        'GPU performance test failed, using default settings:',
+        error
+      );
+    }
+  }
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));

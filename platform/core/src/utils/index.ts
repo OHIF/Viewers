@@ -49,6 +49,10 @@ import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
+import {
+  getVolumeOptions,
+  setVolumeOptions,
+} from './volumeOptionsStorage';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -147,6 +151,8 @@ export {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  getVolumeOptions,
+  setVolumeOptions,
 };
 
 export default utils;

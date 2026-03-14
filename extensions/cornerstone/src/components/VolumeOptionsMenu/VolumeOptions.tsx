@@ -1,7 +1,9 @@
 import React, { ReactElement, useState, useEffect, useCallback } from 'react';
-import { useSystem } from '@ohif/core';
+import { VolumeDecimationInfo } from '../../types/ViewportPresets';
+import { useSystem, getVolumeOptions, setVolumeOptions } from '@ohif/core';
 import { cache as cs3DCache } from '@cornerstonejs/core';
-import { Numeric } from '@ohif/ui-next';
+import { AllInOneMenu, Numeric, Tooltip, TooltipContent, TooltipTrigger } from '@ohif/ui-next';
+import { toolNames } from '../../initCornerstoneTools';
 
 const DEFAULT_IJK_DECIMATION: [number, number, number] = [1, 1, 1];
 const MAX_IN_PLANE_DECIMATION = 32;
@@ -29,7 +31,7 @@ export function VolumeOptions({
   viewportId,
 }: VolumeOptionsProps): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, toolGroupService } = servicesManager.services;
   const [volumeDimensions, setVolumeDimensions] = useState<number[] | null>(null);
 
   const [currentInPlaneDecimation, setCurrentInPlaneDecimation] = useState<number>(
@@ -38,8 +40,17 @@ export function VolumeOptions({
   const [currentKAxisDecimation, setCurrentKAxisDecimation] = useState<number>(
     DEFAULT_IJK_DECIMATION[2]
   );
-  const [sampleDistanceMultiplier, setSampleDistanceMultiplier] = useState(1);
-  const [rotateSampleDistanceFactor, setRotateSampleDistanceFactor] = useState(1);
+  const [sampleDistanceMultiplier, setSampleDistanceMultiplier] = useState(
+    () => getVolumeOptions().sampleDistanceMultiplier
+  );
+  const [rotateSampleDistanceFactor, setRotateSampleDistanceFactor] = useState(
+    () => getVolumeOptions().rotateSampleDistanceFactor
+  );
+  const [gpuPerformanceScore] = useState<number | null>(() => {
+    const gpu = getVolumeOptions().gpuTestResults as { generalPerformanceScore?: number } | null;
+    const score = gpu?.generalPerformanceScore;
+    return score != null ? Number(score) : null;
+  });
 
   useEffect(() => {
     try {
@@ -56,10 +67,7 @@ export function VolumeOptions({
 
       const volumeId = volumeActor.referencedId;
       const volume = cs3DCache.getVolume(volumeId) as
-        | {
-            dimensions?: [number, number, number];
-            originalMetadata?: { Columns?: number; Rows?: number };
-          }
+        | VolumeDecimationInfo
         | undefined;
       if (!volume?.dimensions || volume.dimensions.length < 3) return;
 
@@ -116,10 +124,14 @@ export function VolumeOptions({
     (value: number) => {
       const v = Math.max(1, Math.min(value, MAX_IN_PLANE_DECIMATION));
       setCurrentInPlaneDecimation(v);
-      commandsManager.runCommand('reloadVolumeWithDecimation', {
-        viewportId,
-        ijkDecimation: [v, v, currentKAxisDecimation],
-      });
+      commandsManager.runCommand(
+        'reloadVolumeWithDecimation',
+        {
+          viewportId,
+          ijkDecimation: [v, v, currentKAxisDecimation],
+        },
+        'CORNERSTONE'
+      );
     },
     [commandsManager, viewportId, currentKAxisDecimation]
   );
@@ -128,10 +140,14 @@ export function VolumeOptions({
     (value: number) => {
       const v = Math.max(1, Math.min(value, MAX_K_AXIS_DECIMATION));
       setCurrentKAxisDecimation(v);
-      commandsManager.runCommand('reloadVolumeWithDecimation', {
-        viewportId,
-        ijkDecimation: [currentInPlaneDecimation, currentInPlaneDecimation, v],
-      });
+      commandsManager.runCommand(
+        'reloadVolumeWithDecimation',
+        {
+          viewportId,
+          ijkDecimation: [currentInPlaneDecimation, currentInPlaneDecimation, v],
+        },
+        'CORNERSTONE'
+      );
     },
     [commandsManager, viewportId, currentInPlaneDecimation]
   );
@@ -142,26 +158,64 @@ export function VolumeOptions({
     decimatedDimensions == null ||
     decimatedVoxels == null
   ) {
-    return <div className="my-1 mt-2 flex flex-col space-y-2" />;
+    return (
+      <AllInOneMenu.ItemPanel>
+        <div className="my-1 mt-2 flex flex-col space-y-2" />
+      </AllInOneMenu.ItemPanel>
+    );
   }
 
   return (
-    <div className="my-1 mt-2 flex flex-col space-y-2">
-        {/* Volume Downsampling */}
-        <div className="flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between px-2 text-base">
-          <span className="text-muted-foreground text-sm">Volume Downsampling</span>
+    <AllInOneMenu.ItemPanel>
+      <div className="my-1 mt-2 flex flex-col space-y-2">
+        <div className="flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between pl-1 pr-2 text-base">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-muted-foreground text-sm cursor-help">
+                Volume Downsampling
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="z-[9999]">
+              <span className="block">
+                Downsampling helps rendering speed on low GPU systems.
+              </span>
+              <span className="block">
+                It is set once based on GPU score and can be modified here.
+              </span>
+            </TooltipContent>
+          </Tooltip>
+          {gpuPerformanceScore != null && (
+            <span className="font-mono text-xs text-muted-foreground">
+              GPU Score: {gpuPerformanceScore.toFixed(1)}
+            </span>
+          )}
         </div>
         <div className="w-full pl-2 pr-1">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-foreground text-xs">Overall</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-foreground text-xs cursor-help">Overall</span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="z-[9999]">
+                  Multiplies the sampling distance for all volume interactions.
+                </TooltipContent>
+              </Tooltip>
               <Numeric.Container
                 mode="stepper"
                 min={1}
                 max={8}
                 step={1}
                 value={sampleDistanceMultiplier}
-                onChange={v => setSampleDistanceMultiplier(Math.round(v as number))}
+                onChange={v => {
+                  const newValue = Math.max(1, Math.min(8, Math.round(v as number)));
+                  setSampleDistanceMultiplier(newValue);
+                  setVolumeOptions({ sampleDistanceMultiplier: newValue });
+                  commandsManager.runCommand('setSampleDistanceMultiplier', {
+                    sampleDistanceMultiplier: newValue,
+                    viewportId,
+                  });
+                }}
                 className="border-0 bg-transparent"
               >
                 <Numeric.NumberStepper
@@ -171,14 +225,38 @@ export function VolumeOptions({
               </Numeric.Container>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-foreground text-xs">During rotation</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-foreground text-xs cursor-help">During rotation</span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="z-[9999]">
+                  Extra multipliying factor applied when rotating the volume.
+                </TooltipContent>
+              </Tooltip>
               <Numeric.Container
                 mode="stepper"
                 min={1}
                 max={8}
                 step={1}
                 value={rotateSampleDistanceFactor}
-                onChange={v => setRotateSampleDistanceFactor(Math.round(v as number))}
+                onChange={v => {
+                  const newValue = Math.max(1, Math.min(8, Math.round(v as number)));
+                  setRotateSampleDistanceFactor(newValue);
+                  setVolumeOptions({ rotateSampleDistanceFactor: newValue });
+                  const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+                  if (toolGroup) {
+                    const trackballConfig = toolGroup.getToolConfiguration(toolNames.VolumeRotate) ?? {};
+                    toolGroup.setToolConfiguration(toolNames.VolumeRotate, {
+                      ...(typeof trackballConfig === 'object' ? trackballConfig : {}),
+                      rotateSampleDistanceFactor: newValue,
+                    });
+                    const cropConfig = toolGroup.getToolConfiguration('VolumeCropping') ?? {};
+                    toolGroup.setToolConfiguration('VolumeCropping', {
+                      ...(typeof cropConfig === 'object' ? cropConfig : {}),
+                      rotateSampleDistanceFactor: newValue,
+                    });
+                  }
+                }}
                 className="border-0 bg-transparent"
               >
                 <Numeric.NumberStepper
@@ -189,58 +267,86 @@ export function VolumeOptions({
             </div>
           </div>
         </div>
-        <div className="flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between px-2 text-base">
-          <span className="text-muted-foreground text-sm">Volume Downsizing</span>
-          <span className="font-mono text-xs text-muted-foreground">
-            Voxels: {(totalVoxels / 1e6).toFixed(1)}M → {(decimatedVoxels / 1e6).toFixed(1)}M
-          </span>
-        </div>
         <div className="w-full pl-2 pr-1">
+          <div className="flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-between text-base">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-muted-foreground text-sm cursor-help">
+                  Volume Downsizing
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="z-[9999]">
+                <span className="block">
+                  Downsizing reduces the size of the volume so that it can be rendered.
+                </span>
+                <span className="block">
+                  It is set automatically but can be temporarily adjusted here.
+                </span>
+              </TooltipContent>
+            </Tooltip>
+            <span className="font-mono text-xs text-muted-foreground">
+              Voxels: {(totalVoxels / 1e6).toFixed(1)}M → {(decimatedVoxels / 1e6).toFixed(1)}M
+            </span>
+          </div>
+          <div className="bg-background mt-1 mb-1 h-px w-full" />
           <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-xs">
-                  In-Plane (i,j): {volumeDimensions[0]} →{' '}
-                  {Math.floor(volumeDimensions[0] / currentInPlaneDecimation)}
-                </span>
-                <Numeric.Container
-                  mode="stepper"
-                  min={1}
-                  max={MAX_IN_PLANE_DECIMATION}
-                  step={1}
-                  value={currentInPlaneDecimation}
-                  onChange={v => handleInPlaneDecimationChange(v as number)}
-                  className="border-0 bg-transparent"
-                >
-                  <Numeric.NumberStepper
-                    direction="horizontal"
-                    inputWidth="w-7 max-w-7"
-                  />
-                </Numeric.Container>
-              </div>
+            <div className="flex items-center justify-between">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-foreground text-xs cursor-help">
+                    In-Plane (i,j): {volumeDimensions[0]} →{' '}
+                    {Math.floor(volumeDimensions[0] / currentInPlaneDecimation)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="z-[9999]">
+                  Downsizing along the i and j axes (rows and columns) of the volume.
+                </TooltipContent>
+              </Tooltip>
+              <Numeric.Container
+                mode="stepper"
+                min={1}
+                max={MAX_IN_PLANE_DECIMATION}
+                step={1}
+                value={currentInPlaneDecimation}
+                onChange={handleInPlaneDecimationChange}
+                className="border-0 bg-transparent"
+              >
+                <Numeric.NumberStepper
+                  direction="horizontal"
+                  inputWidth="w-7 max-w-7"
+                />
+              </Numeric.Container>
             </div>
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-xs">
-                  Slice (k): {volumeDimensions[2]} →{' '}
-                  {Math.ceil(volumeDimensions[2] / currentKAxisDecimation)}
-                </span>
-                <Numeric.Container
-                  mode="stepper"
-                  min={1}
-                  max={MAX_K_AXIS_DECIMATION}
-                  step={1}
-                  value={currentKAxisDecimation}
-                  onChange={v => handleKAxisDecimationChange(v as number)}
-                  className="border-0 bg-transparent"
-                >
-                  <Numeric.NumberStepper
-                    direction="horizontal"
-                    inputWidth="w-7 max-w-7"
-                  />
-                </Numeric.Container>
-              </div>
+            <div className="flex items-center justify-between">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-foreground text-xs cursor-help">
+                    Slice (k): {volumeDimensions[2]} →{' '}
+                    {Math.floor(volumeDimensions[2] / currentKAxisDecimation)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="z-[9999]">
+                  Downsizing along the slice (k) axis of the volume.
+                </TooltipContent>
+              </Tooltip>
+              <Numeric.Container
+                mode="stepper"
+                min={1}
+                max={MAX_K_AXIS_DECIMATION}
+                step={1}
+                value={currentKAxisDecimation}
+                onChange={handleKAxisDecimationChange}
+                className="border-0 bg-transparent"
+              >
+                <Numeric.NumberStepper
+                  direction="horizontal"
+                  inputWidth="w-7 max-w-7"
+                />
+              </Numeric.Container>
             </div>
           </div>
         </div>
+      </div>
+    </AllInOneMenu.ItemPanel>
   );
 }
