@@ -13,7 +13,7 @@ test.beforeEach(async ({
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.selectNthSegment(0);
   await page.waitForTimeout(1000);
 });
 
@@ -47,11 +47,11 @@ test('when segment visibility is off it is not shown when clicked on', async ({
   const initialCount = await svgPathLocator.count();
   expect(initialCount, 'All segments to be hidden').toBe(0);
 
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.selectNthSegment(1);
   const countAfterfirstSelection = await svgPathLocator.count();
   expect(countAfterfirstSelection, 'All segments to remain hidden').toBe(0);
 
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(2).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.selectNthSegment(2);
   const countAfterSecondSelection = await svgPathLocator.count();
   expect(countAfterSecondSelection, 'All segments to remain hidden').toBe(0);
 });
@@ -97,12 +97,12 @@ test('should restore svg paths when segment visibility is toggled on/off', async
   expect(svgPathAfter, 'Expected SVG path to be restored after toggling visibility back on').toBe(svgPathBefore);
 });
 
-test('should toggle a segment visibility - on/off', async ({
+test('should toggle an individual segment visibility - on/off', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
   // Establish known state by selecting segment 1
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.selectNthSegment(1);
   const svgPathLocator = viewportPageObject.getById('default').svg('path');
   const initialCount = await svgPathLocator.count();
   expect(initialCount, 'Expected first segment SVG paths to be visible').toBe(4);

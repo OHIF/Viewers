@@ -200,6 +200,10 @@ export class RightPanelPageObject {
       nthSegment(index: number) {
         return getSegmentByIdx(index);
       },
+      selectNthSegment: async (index: number) => {
+        const segment = getSegmentByIdx(index);
+        await segment.title.click();
+      },
       segmentByText(text: string) {
         return getSegmentByText(text);
       },
