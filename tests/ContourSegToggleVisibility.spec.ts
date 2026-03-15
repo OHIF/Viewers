@@ -1,4 +1,4 @@
-import { expect, test, visitStudy, getSvgPath, navigateWithViewportArrow, toggleAllSegmentsVisibility, toggleSegmentVisibility } from './utils';
+import { expect, test, visitStudy, getSvgPath, navigateWithViewportArrow } from './utils';
 
 const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
 
@@ -20,18 +20,17 @@ test.beforeEach(async ({
 test('should toggle all segments visibility - on/off', async ({
   rightPanelPageObject,
   viewportPageObject,
-  page,
 }) => {
   const svgPathLocator = viewportPageObject.getById('default').svg('path');
   const initialCount = await svgPathLocator.count();
-  expect(initialCount, 'Expected at least one visible SVG path initially').toBeGreaterThan(0);
+  expect(initialCount, 'Expected first segment SVG paths to be visible').toBe(2);
 
-  await toggleAllSegmentsVisibility(rightPanelPageObject, page);
+  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
 
   const hiddenCount = await svgPathLocator.count();
   expect(hiddenCount, 'Expected no SVG paths after toggling all visibility off').toBe(0);
 
-  await toggleAllSegmentsVisibility(rightPanelPageObject, page);
+  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
 
   const restoredCount = await svgPathLocator.count();
   expect(restoredCount, 'Expected SVG path count to match initial after toggling all back on').toBe(initialCount);
@@ -41,9 +40,8 @@ test('should toggle all segments visibility - on/off', async ({
 test('when segment visibility is off it is not shown when clicked on', async ({
   rightPanelPageObject,
   viewportPageObject,
-  page,
 }) => {
-  await toggleAllSegmentsVisibility(rightPanelPageObject, page);
+  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
 
   const svgPathLocator = viewportPageObject.getById('default').svg('path');
   const initialCount = await svgPathLocator.count();
@@ -51,20 +49,19 @@ test('when segment visibility is off it is not shown when clicked on', async ({
 
   await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
   const countAfterfirstSelection = await svgPathLocator.count();
-  expect(countAfterfirstSelection, 'All segments to remain hidden ').toBe(0);
+  expect(countAfterfirstSelection, 'All segments to remain hidden').toBe(0);
 
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(2).click();
   const countAfterSecondSelection = await svgPathLocator.count();
-  expect(countAfterSecondSelection, 'All segments to remain hidden ').toBe(0);
+  expect(countAfterSecondSelection, 'All segments to remain hidden').toBe(0);
 });
 
 
 test('when segment visibility is off it is not shown when viewport contour navigation is used', async ({
   rightPanelPageObject,
   viewportPageObject,
-  page,
 }) => {
-  await toggleAllSegmentsVisibility(rightPanelPageObject, page);
+  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
 
   const svgPathLocator = viewportPageObject.getById('default').svg('path');
   const initialCount = await svgPathLocator.count();
@@ -84,19 +81,47 @@ test('should restore svg paths when segment visibility is toggled on/off', async
   viewportPageObject,
   page
 }) => {
-  await toggleAllSegmentsVisibility(rightPanelPageObject, page);
+  await rightPanelPageObject.contourSegmentationPanel.segmentsVisibilityToggle.click();
 
   const segment0 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
-  await toggleSegmentVisibility(segment0, page);
+  await segment0.toggleVisibility();
   const svgPathBefore = await getSvgPath(viewportPageObject);
   expect(svgPathBefore, 'Expected a visible SVG path for segment 0').not.toBeNull();
 
-  await toggleSegmentVisibility(segment0, page);
+  await segment0.toggleVisibility();
   const svgCountAfterToggle = await viewportPageObject.getById('default').svg('path').count();
   expect(svgCountAfterToggle, 'No segment to be displayed').toBe(0);
 
-  await toggleSegmentVisibility(segment0, page);
-
+  await segment0.toggleVisibility();
   const svgPathAfter = await getSvgPath(viewportPageObject);
   expect(svgPathAfter, 'Expected SVG path to be restored after toggling visibility back on').toBe(svgPathBefore);
+});
+
+test('should toggle a segment visibility - on/off', async ({
+  rightPanelPageObject,
+  viewportPageObject,
+}) => {
+  // Establish known state by selecting segment 1
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
+  const svgPathLocator = viewportPageObject.getById('default').svg('path');
+  const initialCount = await svgPathLocator.count();
+  expect(initialCount, 'Expected first segment SVG paths to be visible').toBe(4);
+
+  const segment0 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
+  await segment0.toggleVisibility();
+  const countAfterFirstSeg0Toggle = await svgPathLocator.count();
+  expect(countAfterFirstSeg0Toggle, 'Expected count to be 3 segments remaining').toBe(3);
+
+  const segment1 = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1);
+  await segment1.toggleVisibility();
+  const countAfterFirstSeg1Toggle = await svgPathLocator.count();
+  expect(countAfterFirstSeg1Toggle, 'Expected count to be 2 segments remaining').toBe(2);
+
+  await segment0.toggleVisibility();
+  const countAfterSecondSeg0Toggle = await svgPathLocator.count();
+  expect(countAfterSecondSeg0Toggle, 'Expected count to be back to 3 segments remaining').toBe(3);
+
+  await segment1.toggleVisibility();
+  const countAfterSecondSeg1Toggle = await svgPathLocator.count();
+  expect(countAfterSecondSeg1Toggle, 'Expected count to be restored to initial').toBe(initialCount);
 });

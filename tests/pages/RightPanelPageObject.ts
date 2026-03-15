@@ -174,8 +174,8 @@ export class RightPanelPageObject {
     };
   }
 
-  private get segmentsVisibilityToggle() {
-    const button = this.page.getByTestId("all-segments-visibility-toggle");
+  private getSegmentsVisibilityToggle(type: string) {
+    const button = this.page.getByTestId(`all-segments-visibility-toggle-${type}`);
     return {
       button,
       click: async () => {
@@ -212,7 +212,7 @@ export class RightPanelPageObject {
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
     const segmentationSelect = this.getSegmentationSelect('Contour');
-    const segmentsVisibilityToggle = this.segmentsVisibilityToggle;
+    const segmentsVisibilityToggle = this.getSegmentsVisibilityToggle('Contour');
 
     return {
       addSegmentationButton,
