@@ -28,10 +28,14 @@ const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 
-// read from ../version.txt
-const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '';
-
-const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '';
+// Use speculative version/commit from env when set (e.g. viewer-dev deploy); else read from repo files
+const VERSION_NUMBER =
+  process.env.SPECULATIVE_VERSION ||
+  (fs.readFileSync(path.join(__dirname, '../version.txt'), 'utf8') || '').trim();
+const COMMIT_HASH =
+  process.env.SPECULATIVE_COMMIT ||
+  process.env.CIRCLE_SHA1 ||
+  (fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8') || '').trim();
 
 //
 dotenv.config();

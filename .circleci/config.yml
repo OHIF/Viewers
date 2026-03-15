@@ -76,9 +76,15 @@ jobs:
           name: Install Dependencies
           command: bun install --no-save
       # Build & Test
+      # viewer-dev (master): use speculative version + current commit; git tree stays unchanged
       - run:
-          name: 'Perform the versioning before build'
-          command: bun ./version.mjs
+          name: 'Set version for build (speculative on master, else version.mjs)'
+          command: |
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+              bun ./version-speculative.mjs --write
+            else
+              bun ./version.mjs
+            fi
       - run:
           name: 'Build the OHIF Viewer'
           command: bun run build

@@ -38,6 +38,8 @@ docker/dcm4che/dcm4che-arc
 # Cypress test results
 videos/
 
+# Speculative version for viewer-dev deploy
+version-speculative.mjs
 
 # Locize settings
 .locize

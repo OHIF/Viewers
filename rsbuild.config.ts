@@ -16,8 +16,16 @@ const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 // Add these constants
 const NODE_ENV = process.env.NODE_ENV;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
-const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, './version.txt'), 'utf8') || '';
-const COMMIT_HASH = fs.readFileSync(path.join(__dirname, './commit.txt'), 'utf8') || '';
+// Use speculative version/commit from env when set (e.g. viewer-dev deploy); else read from repo files
+const VERSION_NUMBER = (
+  process.env.SPECULATIVE_VERSION ||
+  (fs.readFileSync(path.join(__dirname, './version.txt'), 'utf8') || '')
+).trim();
+const COMMIT_HASH = (
+  process.env.SPECULATIVE_COMMIT ||
+  process.env.CIRCLE_SHA1 ||
+  (fs.readFileSync(path.join(__dirname, './commit.txt'), 'utf8') || '')
+).trim();
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
