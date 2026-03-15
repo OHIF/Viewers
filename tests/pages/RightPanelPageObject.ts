@@ -60,6 +60,19 @@ export class RightPanelPageObject {
         await this.page.getByTestId('Rename').click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
+      cancelRename: async (text?: string) => {
+        await actionsButton.click();
+        await this.page.getByTestId('Rename').click();
+        if (text) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(text);
+        } else {
+          await this.DOMOverlayPageObject.dialog.input.cancel();
+        }
+      },
+      duplicate: async () => {
+        await actionsButton.click();
+        await this.page.getByTestId('Duplicate').click();
+      },
     };
   }
 
@@ -161,6 +174,16 @@ export class RightPanelPageObject {
     };
   }
 
+  private getSegmentsVisibilityToggle(type: string) {
+    const button = this.page.getByTestId(`all-segments-visibility-toggle-${type}`);
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+    };
+  }
+
   private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
     const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
@@ -177,6 +200,10 @@ export class RightPanelPageObject {
       nthSegment(index: number) {
         return getSegmentByIdx(index);
       },
+      selectNthSegment: async (index: number) => {
+        const segment = getSegmentByIdx(index);
+        await segment.title.click();
+      },
       segmentByText(text: string) {
         return getSegmentByText(text);
       },
@@ -189,10 +216,12 @@ export class RightPanelPageObject {
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
     const segmentationSelect = this.getSegmentationSelect('Contour');
+    const segmentsVisibilityToggle = this.getSegmentsVisibilityToggle('Contour');
 
     return {
       addSegmentationButton,
       menuButton,
+      segmentsVisibilityToggle,
       panel,
       segmentationSelect,
       select: async () => {
