@@ -139,6 +139,31 @@ export class RightPanelPageObject {
     };
   }
 
+  private getSegmentationSelect(type: string) {
+    const page = this.page;
+    const suffix = type ? `-${type}` : '';
+    const locator = page.getByTestId(`segmentation-select${suffix}`);
+    const selectedValue = page.getByTestId(`segmentation-select-value${suffix}`);
+
+    const nthSegmentation = async (n: number) => {
+      await locator.click();
+      return page.getByRole('option').nth(n);
+    };
+
+    return {
+      /** The SelectTrigger button element */
+      locator,
+      /** The span showing the currently selected segmentation label */
+      selectedValue,
+      /** Opens the dropdown and returns a locator for the nth option (0-based) */
+      nthSegmentation,
+      /** Opens the dropdown and clicks the nth segmentation (0-based) */
+      selectNthSegmentation: async (n: number) => {
+        await (await nthSegmentation(n)).click();
+      },
+    };
+  }
+
   private get addSegmentationButton() {
     const button = this.page.getByTestId('addSegmentation');
     return {
@@ -186,6 +211,7 @@ export class RightPanelPageObject {
     const addSegmentationButton = this.addSegmentationButton;
     const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+    const segmentationSelect = this.getSegmentationSelect('Contour');
     const segmentsVisibilityToggle = this.segmentsVisibilityToggle;
 
     return {
@@ -193,6 +219,7 @@ export class RightPanelPageObject {
       menuButton,
       segmentsVisibilityToggle,
       panel,
+      segmentationSelect,
       select: async () => {
         await menuButton.click();
       },
@@ -203,11 +230,13 @@ export class RightPanelPageObject {
     const addSegmentationButton = this.addSegmentationButton;
     const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+    const segmentationSelect = this.getSegmentationSelect('Labelmap');
 
     return {
       addSegmentationButton,
       menuButton,
       panel,
+      segmentationSelect,
       select: async () => {
         await menuButton.click();
       },
