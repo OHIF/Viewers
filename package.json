@@ -163,7 +163,8 @@
     "webpack": "5.105.0",
     "tar": "7.5.11",
     "serialize-javascript": "7.0.4",
-    "svgo": "3.3.3"
+    "svgo": "3.3.3",
+    "flatted": "3.4.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
