@@ -8,13 +8,13 @@
 set -e
 
 if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-  ENABLED=true
-  CS3D_REF="${CS3D_REF_INPUT:-4.19+}"
+  echo "::notice::workflow_dispatch — no merge to block, skipping guard."
+  exit 0
 elif [[ "$EVENT_NAME" == "pull_request" ]]; then
-  LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name' 2>/dev/null || true)
+  LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name')
   if echo "$LABELS" | grep -q "ohif-integration"; then
     ENABLED=true
-    CS3D_REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' 2>/dev/null \
+    CS3D_REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' \
       | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\([^[:space:]]*\).*/\1/p' | head -1)
     if [[ -z "$CS3D_REF" ]]; then
       CS3D_REF="4.19+"

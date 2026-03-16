@@ -11,10 +11,10 @@ if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
   echo "enabled=true" >> "$GITHUB_OUTPUT"
   echo "cs3d_ref=${CS3D_REF_INPUT:-4.19+}" >> "$GITHUB_OUTPUT"
 elif [[ "$EVENT_NAME" == "pull_request" ]]; then
-  LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name' 2>/dev/null || true)
+  LABELS=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/labels" --jq '.[].name')
   if echo "$LABELS" | grep -q "ohif-integration"; then
     echo "enabled=true" >> "$GITHUB_OUTPUT"
-    REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' 2>/dev/null \
+    REF=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.body' \
       | sed -n 's/^[[:space:]]*CS3D_REF:[[:space:]]*\([^[:space:]]*\).*/\1/p' | head -1)
     if [[ -z "$REF" ]]; then
       REF="4.19+"
