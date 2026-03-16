@@ -179,11 +179,17 @@ jobs:
           PR_NUM: ${{ github.event.pull_request.number || 'manual' }}
 
       # ── CS3D: log results ───────────────────────────────────────────────
-      - name: Log CS3D version tested
-        if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'version'
+      - name: Log CS3D build used
+        if: steps.cs3d-check.outputs.enabled == 'true'
         run: |
-          echo "::notice::CS3D integration PASSED with @cornerstonejs/*@${CS3D_VERSION}"
+          if [[ "$CS3D_REF_TYPE" == "branch" ]]; then
+            echo "::notice::CS3D integration PASSED with branch ${CS3D_REF} (linked from libs/@cornerstonejs)"
+          else
+            echo "::notice::CS3D integration PASSED with @cornerstonejs/*@${CS3D_VERSION}"
+          fi
         env:
+          CS3D_REF_TYPE: ${{ steps.cs3d-ref.outputs.type }}
+          CS3D_REF: ${{ steps.cs3d-check.outputs.cs3d_ref }}
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
 
   # ── Separate job: block merge when using a CS3D branch ─────────────
