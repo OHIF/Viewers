@@ -27,18 +27,18 @@ function AutoDecimationOverlay({
     return null;
   }
 
-  const colorClass = isLight ? 'text-neutral-dark' : 'text-neutral-light';
+  const colorClass = 'text-yellow-400';
   const shadowClass = isLight ? 'shadow-light' : 'shadow-dark';
 
   return (
     <div
-      className={`absolute right-0 viewport-overlay pointer-events-none ${colorClass} ${shadowClass} text-base leading-5 text-right`}
-      style={{ top: '2.15rem', maxWidth: '85%' }}
+      className={`absolute viewport-overlay auto-decimation-overlay pointer-events-none ${colorClass} ${shadowClass} text-base leading-5 text-right`}
+      style={{ top: '0.5rem', right: '3.5rem', maxWidth: 'calc(100% - 4rem)' }}
       title="Volume auto-decimated"
       data-cy="auto-decimation-overlay"
     >
-      <div className="overlay-item flex flex-row flex-wrap max-w-[85%]">
-        <span className="shrink-0 break-words whitespace-normal">{info.message}</span>
+      <div className="overlay-item">
+        <span className="break-words whitespace-pre-line">{info.message}</span>
       </div>
     </div>
   );

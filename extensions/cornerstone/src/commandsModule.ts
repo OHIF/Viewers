@@ -1029,6 +1029,7 @@ function commandsModule({
           bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
         });
         if (
+          visible &&
           croppingTool.originalClippingPlanes?.length === 0 &&
           croppingTool.onSetToolActive
         ) {
@@ -1051,6 +1052,32 @@ function commandsModule({
         }
       });
       croppingTool.setClippingPlanesVisible(visible);
+    },
+    toggle3Dhandles: () => {
+      const { viewportGridService } = servicesManager.services;
+      const { activeViewportId } = viewportGridService.getState();
+
+      const allToolGroups = ToolGroupManager.getAllToolGroups?.() || [];
+      let toolGroup;
+      for (const tg of allToolGroups) {
+        if (tg.viewportsInfo?.some(vp => vp.viewportId === activeViewportId)) {
+          toolGroup = tg;
+          break;
+        }
+      }
+
+      if (!toolGroup) {
+        return;
+      }
+      const tool = toolGroup.getToolInstance('VolumeCropping');
+      if (!tool?.setHandlesVisible) {
+        return;
+      }
+      if (tool.originalClippingPlanes?.length === 0) {
+        tool.onSetToolActive?.();
+      }
+      const current = tool.getHandlesVisible?.() ?? false;
+      tool.setHandlesVisible(!current);
     },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
@@ -3044,6 +3071,9 @@ function commandsModule({
     },
     toggleCropping: {
       commandFn: actions.toggleCropping,
+    },
+    toggle3Dhandles: {
+      commandFn: actions.toggle3Dhandles,
     },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,

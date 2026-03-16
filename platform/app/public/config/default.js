@@ -28,7 +28,7 @@ window.config = {
   customizationService: [
     {
       volumeDecimation: {
-        volumeAutoDecimationThreshold: 500_000_000,
+        volumeAutoDecimationThreshold: 10_000_000,
         dangerouslyTurnOffDecimationNotification: false,
       },
     },

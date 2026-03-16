@@ -165,10 +165,9 @@ function buildAutoDecimationInfo(
     messageParts.push(`Display sets: ${labels}.`);
   }
 
-  //const message = messageParts.join(' ');
-  const message = 'Warning: Volume decimated';
+  const message = 'Volume\nreduced';
 
-  console.warn(message);
+  console.warn(messageParts.join(' '));
   return { message };
 }
 
