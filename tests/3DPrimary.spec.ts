@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D primary Test', async () => {
-  test('should render 3D primary correctly with 120s network check.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D primary correctly.', async ({ page, mainToolbarPageObject }) => {
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);

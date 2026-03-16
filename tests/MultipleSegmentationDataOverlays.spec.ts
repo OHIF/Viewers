@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display multiple segmentation overlays (both SEG and RT) with 120s network check', async ({
+test('should display multiple segmentation overlays (both SEG and RT)', async ({
   page,
   mainToolbarPageObject,
   rightPanelPageObject,
