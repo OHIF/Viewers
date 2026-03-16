@@ -8,8 +8,9 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display multiple segmentation overlays (both SEG and RT) with network check', async ({
+test('should display multiple segmentation overlays (both SEG and RT) with 120s network check', async ({
   page,
+  mainToolbarPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
@@ -20,24 +21,21 @@ test('should display multiple segmentation overlays (both SEG and RT) with netwo
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await dataOverlayPageObject.addSegmentation('Segmentation');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await dataOverlayPageObject.addSegmentation('3d_lowres-tta_nnU-Net_Segmentation');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
@@ -61,7 +59,7 @@ test('should display multiple segmentation overlays (both SEG and RT) with netwo
   // Navigate to image 56.
   await press({ page, key: 'ArrowDown', nTimes: 55 });
 
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,
@@ -73,8 +71,7 @@ test('should display multiple segmentation overlays (both SEG and RT) with netwo
 
   await dataOverlayPageObject.addSegmentation('Series 3 - RTSTRUCT');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });

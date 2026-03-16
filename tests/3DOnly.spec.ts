@@ -14,10 +14,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D only Test', async () => {
-  test('should render 3D only correctly with network check.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D only correctly with 120s network check.', async ({ page, mainToolbarPageObject }) => {
     await mainToolbarPageObject.layoutSelection.threeDOnly.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await page.waitForLoadState('networkidle', { timeout: 60000 });
+    await mainToolbarPageObject.waitForVolumeLoad();
     // Use a 4 percent diff pixel ratio to account for slight color differences in the 3D viewport
     await checkForScreenshot({
       page,

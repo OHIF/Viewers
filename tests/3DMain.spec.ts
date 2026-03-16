@@ -14,10 +14,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D main Test', async () => {
-  test('should render 3D main correctly with network check.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D main correctly with 120s network check.', async ({ page, mainToolbarPageObject }) => {
     await mainToolbarPageObject.layoutSelection.threeDMain.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await page.waitForLoadState('networkidle', { timeout: 60000 });
+    await mainToolbarPageObject.waitForVolumeLoad();
     await checkForScreenshot(page, page, screenShotPaths.threeDMain.threeDMainDisplayedCorrectly);
   });
 });

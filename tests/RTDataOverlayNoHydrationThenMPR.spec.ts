@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu with network check', async ({
+test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu with 120s network check', async ({
   page,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -24,7 +24,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Hide the overlay menu.
   await dataOverlayPageObject.toggle();
 
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot(
     page,
@@ -34,7 +34,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot(
     page,

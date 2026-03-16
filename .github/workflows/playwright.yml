@@ -161,6 +161,19 @@ jobs:
           retention-days: 3
 
       # ── CS3D: build and deploy preview to Netlify ───────────────────────
+      - name: Log build context (OHIF/CS3D branch and version for build diagnosis)
+        if: steps.cs3d-check.outputs.enabled == 'true'
+        run: |
+          if [[ "$CS3D_REF_TYPE" == "branch" ]]; then
+            echo "::notice::Build type: ohif-downstream | OHIF: ${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) | CS3D: branch ${{ steps.cs3d-check.outputs.cs3d_ref }}"
+          else
+            echo "::notice::Build type: ohif-upstream | OHIF: ${{ github.repository }}@${{ github.ref }} (${{ github.sha }}) | CS3D: version ${{ steps.cs3d-ref.outputs.version }}"
+          fi
+          node .scripts/log-build-context.mjs
+        env:
+          BUILD_TYPE: ${{ steps.cs3d-ref.outputs.type == 'branch' && 'ohif-downstream' || 'ohif-upstream' }}
+          CS3D_REF_TYPE: ${{ steps.cs3d-ref.outputs.type }}
+
       - name: Build OHIF viewer (CS3D preview)
         if: steps.cs3d-check.outputs.enabled == 'true'
         run: bun run build:ci

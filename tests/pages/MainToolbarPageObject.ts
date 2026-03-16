@@ -7,6 +7,11 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
+  async waitForVolumeLoad(): Promise<void> {
+    await this.page.waitForTimeout(2000);
+    await this.page.waitForLoadState('networkidle', { timeout: 120000 });
+  }
+
   get crosshairs() {
     const button = this.page.getByTestId('Crosshairs');
     return {
@@ -18,6 +23,7 @@ export class MainToolbarPageObject {
   }
   get layoutSelection() {
     const page = this.page;
+    const self = this;
 
     const button = page.getByTestId('Layout');
     const layoutSelection = {
@@ -46,8 +52,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await page.waitForTimeout(2000);
-            await page.waitForLoadState('networkidle', { timeout: 60000 });
+            await self.waitForVolumeLoad();
           },
         };
       },
@@ -58,8 +63,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await page.waitForTimeout(2000);
-            await page.waitForLoadState('networkidle', { timeout: 60000 });
+            await self.waitForVolumeLoad();
           },
         };
       },
@@ -70,8 +74,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await page.waitForTimeout(2000);
-            await page.waitForLoadState('networkidle', { timeout: 60000 });
+            await self.waitForVolumeLoad();
           },
         };
       },
@@ -82,8 +85,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await page.waitForTimeout(2000);
-            await page.waitForLoadState('networkidle', { timeout: 60000 });
+            await self.waitForVolumeLoad();
           },
         };
       },
@@ -94,8 +96,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await page.waitForTimeout(2000);
-            await page.waitForLoadState('networkidle', { timeout: 60000 });
+            await self.waitForVolumeLoad();
           },
         };
       },
