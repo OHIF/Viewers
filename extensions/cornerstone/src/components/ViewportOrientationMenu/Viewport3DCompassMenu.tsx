@@ -45,7 +45,7 @@ function Viewport3DCompassMenu({
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [spin, viewportIdToUse, commandsManager]);
+  }, [spin, viewportIdToUse]);
 
   const handleDirectionChange = (direction: 'S' | 'P' | 'R' | 'L' | 'A' | 'I') => {
     commandsManager.runCommand('setViewport3DViewDirection', {
@@ -105,9 +105,9 @@ function Viewport3DCompassMenu({
       </PopoverTrigger>
       <PopoverContent
         className="w-auto flex-shrink-0 rounded-lg border-0 bg-neutral-800 p-1 shadow-none"
-        align={align}
-        side={side}
-        style={{ left: 0 }}
+          align={align}
+          side={side}
+          style={{ left: 0 /* prevents popover from overflowing the viewport edge */ }}
       >
         <svg
           viewBox="0 0 100 100"

@@ -4,7 +4,7 @@ import { useSystem } from '@ohif/core';
 
 export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): ReactElement {
   const { servicesManager, commandsManager } = useSystem();
-  const { toolGroupService, cornerstoneViewportService } = servicesManager.services;
+  const { toolGroupService } = servicesManager.services;
   const [handlesVisible, setHandlesVisible] = useState(false);
   const [clippingPlanesVisible, setClippingPlanesVisible] = useState(false);
   const [rotatePlanes, setRotatePlanes] = useState(false);
@@ -40,28 +40,22 @@ export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): Re
 
   function onHandlesChange(checked: boolean) {
     const result = getVolumeCroppingTool();
-      if (!result) {
-        return;
-      }
-      const { tool } = result;
-      if (!tool?.setHandlesVisible) {
-        return;
-      }
+    if (!result) {
+      return;
+    }
+    const { tool } = result;
+    if (!tool?.setHandlesVisible) {
+      return;
+    }
 
-      if (tool.originalClippingPlanes?.length === 0) {
-        tool.onSetToolActive?.();
-      }
+    if (tool.originalClippingPlanes?.length === 0) {
+      tool.onSetToolActive?.();
+    }
 
     tool.setHandlesVisible(checked);
     const actualHandles = tool.getHandlesVisible?.() ?? tool.handlesVisible ?? false;
     setHandlesVisible(actualHandles);
     setKey(prev => prev + 1);
-    if (viewportId) {
-      requestAnimationFrame(() => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        viewport?.render?.();
-      });
-    }
   }
 
   function onClippingPlanesChange(checked: boolean) {
@@ -78,13 +72,13 @@ export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): Re
 
   function onRotatePlanesChange(checked: boolean) {
     const result = getVolumeCroppingTool();
-      if (!result) {
-        return;
-      }
-      const { tool } = result;
-      if (!tool?.setRotatePlanesOnDrag) {
-        return;
-      }
+    if (!result) {
+      return;
+    }
+    const { tool } = result;
+    if (!tool?.setRotatePlanesOnDrag) {
+      return;
+    }
 
     result.tool.setRotatePlanesOnDrag(checked);
     setRotatePlanes(checked);

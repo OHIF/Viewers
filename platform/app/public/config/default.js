@@ -77,6 +77,13 @@ window.config = {
             keys: ['y'],
             context: 'CORNERSTONE',
           },
+          {
+            commandName: 'togglePlaneRotation',
+            label: 'Toggle Plane Rotation',
+            commandOptions: {},
+            keys: ['s'],
+            context: 'CORNERSTONE',
+          },
         ],
       },
     },

@@ -1079,6 +1079,32 @@ function commandsModule({
       const current = tool.getHandlesVisible?.() ?? false;
       tool.setHandlesVisible(!current);
     },
+    togglePlaneRotation: () => {
+      const { viewportGridService } = servicesManager.services;
+      const { activeViewportId } = viewportGridService.getState();
+
+      const allToolGroups = ToolGroupManager.getAllToolGroups?.() || [];
+      let toolGroup;
+      for (const tg of allToolGroups) {
+        if (tg.viewportsInfo?.some(vp => vp.viewportId === activeViewportId)) {
+          toolGroup = tg;
+          break;
+        }
+      }
+
+      if (!toolGroup) {
+        return;
+      }
+      const tool = toolGroup.getToolInstance('VolumeCropping');
+      if (!tool?.setRotatePlanesOnDrag) {
+        return;
+      }
+      if (tool.originalClippingPlanes?.length === 0) {
+        tool.onSetToolActive?.();
+      }
+      const current = tool.getRotatePlanesOnDrag?.() ?? false;
+      tool.setRotatePlanesOnDrag(!current);
+    },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
       toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
@@ -3074,6 +3100,9 @@ function commandsModule({
     },
     toggle3Dhandles: {
       commandFn: actions.toggle3Dhandles,
+    },
+    togglePlaneRotation: {
+      commandFn: actions.togglePlaneRotation,
     },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,

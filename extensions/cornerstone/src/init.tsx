@@ -305,12 +305,16 @@ export default async function init({
     }
 
     const actualImageCount = volume.imageIds.length;
-    const dsAny = displaySet as { numImageFrames?: number; setAttributes?: (a: { numImageFrames?: number }) => void };
-    if (dsAny.numImageFrames !== actualImageCount && typeof dsAny.setAttributes === 'function') {
-      dsAny.setAttributes({ numImageFrames: actualImageCount });
-      displaySetService._broadcastEvent(
-        displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-        displaySetService.getActiveDisplaySets()
+    type WithFrameCount = typeof displaySet & {
+      numImageFrames?: number;
+      setAttributes?: (attrs: { numImageFrames?: number }) => void;
+    };
+    const ds = displaySet as WithFrameCount;
+    if (ds.numImageFrames !== actualImageCount && typeof ds.setAttributes === 'function') {
+      ds.setAttributes({ numImageFrames: actualImageCount });
+      displaySetService.setDisplaySetMetadataInvalidated(
+        displaySet.displaySetInstanceUID,
+        false
       );
     }
   };

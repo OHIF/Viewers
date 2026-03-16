@@ -165,6 +165,7 @@ function buildAutoDecimationInfo(
     messageParts.push(`Display sets: ${labels}.`);
   }
 
+  // \n renders as a line break because AutoDecimationOverlay uses whitespace-pre-line.
   const message = 'Volume\nreduced';
 
   console.warn(messageParts.join(' '));

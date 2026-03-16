@@ -331,6 +331,9 @@ class CornerstoneCacheService {
       // therefore a new volume should not be created.
       if (!isParametricMap && !isSegOrRtstruct && (!volumeImageIds || !volume)) {
         volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
+        // Decimation is applied by default for 3D volume viewports (performance).
+        // Orthographic (MPR) viewports do not use a default because downsampling
+        // degrades slice fidelity; they only decimate if explicitly configured.
         const ijkDecimation = isVolumeRenderingViewport
           ? enrichedViewportOptions?.ijkDecimation ?? DEFAULT_IJK_DECIMATION
           : enrichedViewportOptions?.ijkDecimation;

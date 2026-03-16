@@ -245,11 +245,6 @@ export function VolumeOptions({
                   setVolumeOptions({ rotateSampleDistanceFactor: newValue });
                   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
                   if (toolGroup) {
-                    const trackballConfig = toolGroup.getToolConfiguration(toolNames.VolumeRotate) ?? {};
-                    toolGroup.setToolConfiguration(toolNames.VolumeRotate, {
-                      ...(typeof trackballConfig === 'object' ? trackballConfig : {}),
-                      rotateSampleDistanceFactor: newValue,
-                    });
                     const cropConfig = toolGroup.getToolConfiguration('VolumeCropping') ?? {};
                     toolGroup.setToolConfiguration('VolumeCropping', {
                       ...(typeof cropConfig === 'object' ? cropConfig : {}),
