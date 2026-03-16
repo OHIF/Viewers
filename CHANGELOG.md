@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.40...v3.13.0-beta.41) (2026-03-16)
+
+
+### Bug Fixes
+
+* **sr-hydration:** enable hydration and arrow navigation for 3D SR measurements ([#5887](https://github.com/OHIF/Viewers/issues/5887)) ([7a38903](https://github.com/OHIF/Viewers/commit/7a38903b1977b1cf0f3a0ba8a4a823fac5e8fdeb))
+
+
+
+
+
+# [3.13.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.39...v3.13.0-beta.40) (2026-03-13)
+
+
+### Bug Fixes
+
+* **security:** Bump flattened version to address CVE-2026-32141. ([#5897](https://github.com/OHIF/Viewers/issues/5897)) ([d8d376e](https://github.com/OHIF/Viewers/commit/d8d376edaf9c2b7af237182657e3e2203cca5abb))
+
+
+
+
+
+# [3.13.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.38...v3.13.0-beta.39) (2026-03-13)
+
+
+### Bug Fixes
+
+* **window level:** The window level value is not displayed by default on all the viewports when selecting common/custom layout and TMTV. ([#5865](https://github.com/OHIF/Viewers/issues/5865)) ([fe1ecfe](https://github.com/OHIF/Viewers/commit/fe1ecfe0cc5d1bcf82686d821f356da8936a8c4b))
+
+
+
+
+
 # [3.13.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.37...v3.13.0-beta.38) (2026-03-12)
 
 
