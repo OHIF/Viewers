@@ -64,5 +64,6 @@
   "Not available on the current viewport": "Test Not available on the current viewport",
   "Add segment to enable this tool": "Test Add segment to enable this tool",
   "Segment Bidirectional": "Test Segment Bidirectional",
-  "Draw a segment before using bidirectional measurement": "Test Draw a segment before using bidirectional measurement"
+  "Draw a segment before using bidirectional measurement": "Test Draw a segment before using bidirectional measurement",
+  "No description": "Test No description"
 }

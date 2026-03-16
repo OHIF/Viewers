@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.39...v3.13.0-beta.40) (2026-03-13)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.13.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.38...v3.13.0-beta.39) (2026-03-13)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.13.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.37...v3.13.0-beta.38) (2026-03-12)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.13.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.36...v3.13.0-beta.37) (2026-03-12)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.13.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.35...v3.13.0-beta.36) (2026-03-11)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
 # [3.13.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.34...v3.13.0-beta.35) (2026-03-09)
 
 **Note:** Version bump only for package @ohif/mode-basic-dev-mode
