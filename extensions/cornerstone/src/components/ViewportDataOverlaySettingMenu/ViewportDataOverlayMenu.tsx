@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Icons,
@@ -42,6 +42,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     useState(overlayDisplaySets);
 
   const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
+
+  useEffect(() => {
+    setOptimisticOverlayDisplaySets(overlayDisplaySets);
+  }, [backgroundDisplaySet?.displaySetInstanceUID]);
 
   /**
    * Change the background display set

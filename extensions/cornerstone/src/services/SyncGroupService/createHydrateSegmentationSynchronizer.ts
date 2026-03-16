@@ -70,6 +70,14 @@ const segmentationRepresentationModifiedCallback = async (
     return;
   }
 
+  const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
+  const sourceFrameOfReferenceUID =
+    getEnabledElementByViewportId(sourceViewportId)?.viewport?.getFrameOfReferenceUID();
+
+  if (!sharedDisplaySetExists && targetFrameOfReferenceUID !== sourceFrameOfReferenceUID) {
+    return;
+  }
+
   const targetViewportRepresentation = segmentationService.getSegmentationRepresentations(
     targetViewportId,
     { segmentationId }

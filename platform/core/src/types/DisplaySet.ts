@@ -57,6 +57,8 @@ export type DisplaySet = {
    */
   referencedDisplaySetInstanceUID?: string;
 
+  FrameOfReferenceUID?: string;
+
   SeriesDate?: string;
   SeriesTime?: string;
   instance?: InstanceMetadata;
