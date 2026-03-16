@@ -105,65 +105,6 @@ For commercial support, academic collaborations, and answers to common
 questions; please use [Get Support](https://ohif.org/get-support/) to contact
 us.
 
-
-## Cornerstone3D Integration Testing
-
-OHIF's Playwright end-to-end tests can run against a **CS3D branch** or a
-**published CS3D version**, allowing changes that span both repositories to be
-validated together before merging.
-
-### Setting up an integration build
-
-1. Add the **`ohif-integration`** label to your OHIF pull request.
-2. In the PR body, add a line specifying the CS3D ref:
-   ```
-   CS3D_REF: feat/my-feature
-   ```
-   - **Version ref** (e.g. `4.19+`, `4.18.2`) — the workflow resolves it to an
-     exact published version and swaps the CS3D dependency via npm.
-   - **Branch ref** (e.g. `main`, `cornerstonejs:feat/foo`) — the workflow
-     clones the branch, builds CS3D from source with `bun run build:esm`, and
-     symlinks the built packages into OHIF's `node_modules`.
-   - For forks, use the `<owner>:<branch>` format
-     (e.g. `myGithubUser:feat/foo`).
-   - If no `CS3D_REF` is specified, the default is `4.19+`.
-3. The workflow can also be triggered manually via **workflow_dispatch** with a
-   `cs3d_ref` input.
-
-### What happens in CI
-
-The [Playwright workflow](.github/workflows/playwright.yml) runs two jobs:
-
-| Job | Purpose |
-|-----|---------|
-| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, uploads test results and coverage, and deploys a Netlify preview when `ohif-integration` is active. |
-| **CS3D Branch Merge Guard** | A lightweight check that **fails** when the `ohif-integration` label is present and `CS3D_REF` points to a branch (not a version). This prevents merging while still letting the Playwright tests show green so you can see whether the code actually works. |
-
-### Testing changes that span both repos
-
-If a feature requires changes in both Cornerstone3D and OHIF:
-
-1. Create your feature branch in CS3D and push it.
-2. Create a matching branch in OHIF.
-3. Add the `ohif-integration` label to the OHIF pull request.
-4. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
-5. Playwright tests will build CS3D from source, link it, and run the full
-   suite. The merge guard will block merge until you switch to a published
-   version — but you can see the test results and the preview deploy while
-   iterating.
-6. Once the CS3D side is merged and published, update the PR body to reference
-   the published version (e.g. `CS3D_REF: 4.19+`). The tests will run against
-   the registry version and the merge guard will pass.
-
-### Preview deploys
-
-When `ohif-integration` is active, the Playwright workflow also builds the OHIF
-viewer and deploys it to Netlify as a preview. This gives you a live URL to
-manually test the combined CS3D + OHIF changes without running anything locally.
-
-For details on linking CS3D locally for development, see the
-[Cornerstone3D README](libs/@cornerstonejs/README.md#local-development-linking--unlinking).
-
 ## Developing
 
 ### Branches
@@ -226,6 +167,64 @@ yarn config set workspaces-experimental true
 # Restore dependencies
 yarn install --frozen-lockfile
 ```
+
+### Cornerstone3D Integration Testing
+
+OHIF's Playwright end-to-end tests can run against a **CS3D branch** or a
+**published CS3D version**, allowing changes that span both repositories to be
+validated together before merging.
+
+#### Setting up an integration build
+
+1. Add the **`ohif-integration`** label to your OHIF pull request.
+2. In the PR body, add a line specifying the CS3D ref:
+   ```
+   CS3D_REF: feat/my-feature
+   ```
+   - **Version ref** (e.g. `4.19+`, `4.18.2`) — the workflow resolves it to an
+     exact published version and swaps the CS3D dependency via npm.
+   - **Branch ref** (e.g. `main`, `cornerstonejs:feat/foo`) — the workflow
+     clones the branch, builds CS3D from source with `bun run build:esm`, and
+     symlinks the built packages into OHIF's `node_modules`.
+   - For forks, use the `<owner>:<branch>` format
+     (e.g. `myGithubUser:feat/foo`).
+   - If no `CS3D_REF` is specified, the default is `4.19+`.
+3. The workflow can also be triggered manually via **workflow_dispatch** with a
+   `cs3d_ref` input.
+
+#### What happens in CI
+
+The [Playwright workflow](.github/workflows/playwright.yml) runs two jobs:
+
+| Job | Purpose |
+|-----|---------|
+| **Playwright Tests** | Builds OHIF (with CS3D linked or version-swapped), runs the full Playwright suite, uploads test results and coverage, and deploys a Netlify preview when `ohif-integration` is active. |
+| **CS3D Branch Merge Guard** | A lightweight check that **fails** when the `ohif-integration` label is present and `CS3D_REF` points to a branch (not a version). This prevents merging while still letting the Playwright tests show green so you can see whether the code actually works. |
+
+#### Testing changes that span both repos
+
+If a feature requires changes in both Cornerstone3D and OHIF:
+
+1. Create your feature branch in CS3D and push it.
+2. Create a matching branch in OHIF.
+3. Add the `ohif-integration` label to the OHIF pull request.
+4. In the PR body, add: `CS3D_REF: <your-cs3d-branch>`.
+5. Playwright tests will build CS3D from source, link it, and run the full
+   suite. The merge guard will block merge until you switch to a published
+   version — but you can see the test results and the preview deploy while
+   iterating.
+6. Once the CS3D side is merged and published, update the PR body to reference
+   the published version (e.g. `CS3D_REF: 4.19+`). The tests will run against
+   the registry version and the merge guard will pass.
+
+#### Preview deploys
+
+When `ohif-integration` is active, the Playwright workflow also builds the OHIF
+viewer and deploys it to Netlify as a preview. This gives you a live URL to
+manually test the combined CS3D + OHIF changes without running anything locally.
+
+For details on linking CS3D locally for development, see the
+[Cornerstone3D README](libs/@cornerstonejs/README.md#local-development-linking--unlinking).
 
 ## Commands
 
