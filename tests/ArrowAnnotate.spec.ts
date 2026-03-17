@@ -28,7 +28,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await page.waitForTimeout(2000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,
@@ -42,7 +42,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await DOMOverlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 
-  await page.waitForTimeout(2000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,
@@ -56,7 +56,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
     .nthMeasurement(0)
     .actions.rename('Drummer annotation arrow');
 
-  await page.waitForTimeout(2000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,
