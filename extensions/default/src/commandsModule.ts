@@ -1,4 +1,7 @@
-import { Types, DicomMetadataStore } from '@ohif/core';
+import { Types, DicomMetadataStore, utils } from '@ohif/core';
+import dcmjs from 'dcmjs';
+
+const { downloadBlob } = utils;
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -768,6 +771,67 @@ const commandsModule = ({
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },
+
+    /**
+     * Creates a store function based on the data source type.
+     * @param dataSource - 'download', 'copyToClipboard', or a named data source
+     * @param defaultFileName - Default filename for download/clipboard
+     * @param defaultContentType - Default content type for clipboard
+     * @returns A store function, or null if no valid store exists
+     */
+    createStoreFunction: ({ dataSource, defaultFileName, defaultContentType }) => {
+      if (dataSource === 'download') {
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Download only supports a single DICOM instance');
+          }
+          const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
+          downloadBlob(reportBlob, { filename: defaultFileName || 'dicom.dcm' });
+        };
+      }
+
+      if (dataSource === 'copyToClipboard') {
+        return async dicom => {
+          const instances = Array.isArray(dicom) ? dicom : [dicom];
+          DicomMetadataStore.addInstances(instances, true);
+          if (instances.length !== 1) {
+            throw new Error('Copy to clipboard only supports a single DICOM instance');
+          }
+          const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
+          const type = defaultContentType || 'application/dicom';
+          await navigator.clipboard.write([
+            new ClipboardItem({ [type]: new Blob([reportBlob], { type }) }),
+          ]);
+        };
+      }
+
+      // DICOM STOW path — resolve the named data source
+      const dataSources = extensionManager.getDataSources(dataSource);
+      const resolvedDataSource = dataSources?.[0];
+      if (!resolvedDataSource?.store?.dicom) {
+        return null;
+      }
+
+      return async (dicom, { dicomDict } = {}) => {
+        const instances = Array.isArray(dicom) ? dicom : [dicom];
+        const config = resolvedDataSource.getConfig?.();
+        if (config?.wadoRoot) {
+          instances.forEach(instance => {
+            instance.wadoRoot = config.wadoRoot;
+          });
+        }
+        DicomMetadataStore.addInstances(instances, true);
+        for (const instance of instances) {
+          await resolvedDataSource.store.dicom(instance, null, dicomDict);
+        }
+        const studyUIDs = new Set(instances.map(i => i.StudyInstanceUID).filter(Boolean));
+        for (const uid of studyUIDs) {
+          resolvedDataSource.deleteStudyMetadataPromise(uid);
+        }
+      };
+    },
   };
 
   const definitions = {
@@ -796,6 +860,7 @@ const commandsModule = ({
     scrollActiveThumbnailIntoView: actions.scrollActiveThumbnailIntoView,
     addDisplaySetAsLayer: actions.addDisplaySetAsLayer,
     removeDisplaySetLayer: actions.removeDisplaySetLayer,
+    createStoreFunction: actions.createStoreFunction,
   };
 
   return {
