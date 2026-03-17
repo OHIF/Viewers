@@ -46,9 +46,9 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-    "@cornerstonejs/adapters": "4.19.0",
-    "@cornerstonejs/core": "4.19.0",
-    "@cornerstonejs/tools": "4.19.0",
+    "@cornerstonejs/adapters": "4.20.0",
+    "@cornerstonejs/core": "4.20.0",
+    "@cornerstonejs/tools": "4.20.0",
     "classnames": "2.5.1"
   }
 }
