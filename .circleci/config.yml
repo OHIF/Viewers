@@ -112,59 +112,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
-      # SECURITY AUDIT - only when bun.lock has changed
-      - run:
-          name: 'Security Audit - High Risk Vulnerabilities'
-          command: |
-            git fetch origin master 2>/dev/null || true
-            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
-            if [[ -z "$BASE_REF" ]]; then
-              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
-              exit 0
-            fi
-            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
-            if ! echo "$CHANGED_FILES" | grep -qx 'bun.lock'; then
-              echo "⏭️ bun.lock unchanged - skipping security audit."
-              exit 0
-            fi
-            echo "🔍 bun.lock changed - running bun audit for security vulnerabilities..."
-            echo "Checking for HIGH-RISK vulnerabilities..."
-
-            # Define ignored vulnerabilities with comments
-            IGNORED_VULNS=(
-              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - OHIF's use of minimatch via glob is safe because it does NOT use the CLI
-                                     # CVE-2026-26996 - OHIF's other uses of minimatch are strictly for building and CI/CD purposes
-            )
-
-            # Build ignore flags
-            IGNORE_FLAGS=""
-            for vuln in "${IGNORED_VULNS[@]}"; do
-              IGNORE_FLAGS="$IGNORE_FLAGS --ignore=$vuln"
-            done
-
-            if bun audit $IGNORE_FLAGS --audit-level high; then
-              echo "✅ No high-risk vulnerabilities found"
-              echo "🎉 Security audit passed!"
-            else
-              echo ""
-              echo "❌ HIGH-RISK VULNERABILITIES DETECTED!"
-              echo "======================================"
-              echo ""
-              echo "🔧 To fix these issues:"
-              echo "  1. Run: bun audit"
-              echo "  2. Review the vulnerability details"
-              echo "  3. Update affected packages to secure versions"
-              echo "  4. Test your changes"
-              echo "  5. Re-run: bun audit --audit-level high"
-              echo ""
-              echo "📋 Full audit report:"
-
-              bun audit $IGNORE_FLAGS --audit-level low || true
-
-              echo ""
-              echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
-              exit 1
-            fi
       - run:
           name: Install Dependencies
           command: bun install --frozen-lockfile
@@ -403,6 +350,68 @@ jobs:
             npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
           start-command: yarn run test:data && yarn run test:e2e:serve
 
+  SECURITY_AUDIT:
+    <<: *defaults
+    resource_class: large
+    steps:
+      - install_bun
+      - checkout
+      - run:
+          name: 'Security Audit - High Risk Vulnerabilities'
+          command: |
+            git fetch origin master 2>/dev/null || true
+            BASE_REF=$(git merge-base HEAD origin/master 2>/dev/null)
+            if [[ -z "$BASE_REF" ]]; then
+              echo "Could not determine base ref (e.g. shallow clone or no origin/master), skipping security audit."
+              exit 0
+            fi
+            CHANGED_FILES=$(git diff --name-only origin/master...HEAD 2>/dev/null || echo "")
+            if ! echo "$CHANGED_FILES" | grep -qx 'bun.lock'; then
+              echo "⏭️ bun.lock unchanged - skipping security audit."
+              exit 0
+            fi
+            echo "🔍 bun.lock changed - running bun audit for security vulnerabilities..."
+            echo "Checking for HIGH-RISK vulnerabilities..."
+
+            # Define ignored vulnerabilities with comments
+            IGNORED_VULNS=(
+              "GHSA-3ppc-4f35-3m26"  # CVE-2026-26996 - minimatch via itk-wasm and glob is safe because it does NOT use the CLI
+                                     # CVE-2026-26996 - minimatch via other packages are strictly for building and CI/CD purposes; no user supplied expressions are passed to minimatch
+              "GHSA-7r86-cg39-jmmj"  # CVE-2026-27903 - minimatch same as above
+              "GHSA-23c5-xmqv-rm74"  # CVE-2026-27904 - minimatch same as above
+            )
+
+            # Build ignore flags
+            IGNORE_FLAGS=""
+            for vuln in "${IGNORED_VULNS[@]}"; do
+              IGNORE_FLAGS="$IGNORE_FLAGS --ignore=$vuln"
+            done
+
+            if bun audit $IGNORE_FLAGS --audit-level high; then
+              echo "✅ No high-risk vulnerabilities found"
+              echo "🎉 Security audit passed!"
+              exit 0
+            else
+              echo ""
+              echo "❌ HIGH-RISK VULNERABILITIES DETECTED!"
+              echo "======================================"
+              echo ""
+              echo "🔧 To fix these issues:"
+              echo "  1. Run: bun audit"
+              echo "  2. Review the vulnerability details"
+              echo "  3. Update affected packages to secure versions"
+              echo "  4. Test your changes"
+              echo "  5. Re-run: bun audit --audit-level high"
+              echo ""
+              echo "📋 Full audit report:"
+
+              bun audit $IGNORE_FLAGS --audit-level low || true
+
+              echo ""
+              echo "❌ This build cannot proceed until high-risk vulnerabilities are resolved."
+              exit 1
+            fi
+
   DOCKER_MULTIARCH_MANIFEST:
     <<: *defaults
     resource_class: large
@@ -492,6 +501,10 @@ workflows:
       - CYPRESS:
           name: 'Cypress Tests'
           context: cypress
+      - SECURITY_AUDIT:
+          filters:
+            branches:
+              ignore: master
 
   # viewer-dev.ohif.org
   DEPLOY_MASTER:

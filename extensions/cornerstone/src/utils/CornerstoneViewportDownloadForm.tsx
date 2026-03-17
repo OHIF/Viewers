@@ -118,33 +118,50 @@ const CornerstoneViewportDownloadForm = ({
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
     try {
+      // Capture current viewport state
+      // - properties: VOI, colormap, interpolation, etc.
+      // - viewPresentation: flip/rotate/zoom presentation state added for
+      //   saving flip and rotation for capture
+      // - viewReference: image/volume reference
       const properties = viewport.getProperties();
+      const viewPresentation = viewport.getViewPresentation?.();
+      const viewRef = viewport.getViewReference?.();
+
       if (downloadViewport instanceof StackViewport) {
         const imageId = viewport.getCurrentImageId();
-
         await downloadViewport.setStack([imageId]);
-        downloadViewport.setProperties(properties);
       } else if (downloadViewport instanceof BaseVolumeViewport) {
         const volumeIds = viewport.getAllVolumeIds();
         await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
       }
+
+      // Apply presentation state so captured image preserves flip/rotate
+      if (viewPresentation && downloadViewport.setViewPresentation) {
+        downloadViewport.setViewPresentation(viewPresentation);
+      }
+
+      // Apply viewport display properties
       downloadViewport.setProperties(properties);
-      const viewRef = viewport.getViewReference();
-      downloadViewport.setViewReference(viewRef);
+
+      // Ensure correct image/volume reference
+      if (viewRef && downloadViewport.setViewReference) {
+        downloadViewport.setViewReference(viewRef);
+      }
+
       downloadViewport.render();
 
+      // Re-apply segmentation overlays to the download viewport
       if (segmentationRepresentations?.length) {
         segmentationRepresentations.forEach(segRepresentation => {
           const { segmentationId, colorLUTIndex, type } = segRepresentation;
+
           if (type === Enums.SegmentationRepresentations.Labelmap) {
             segmentation.addLabelmapRepresentationToViewportMap({
               [downloadViewport.id]: [
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Labelmap,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
@@ -156,9 +173,7 @@ const CornerstoneViewportDownloadForm = ({
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Contour,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
