@@ -42,15 +42,6 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-<<<<<<< HEAD
-    "@cornerstonejs/core": "4.18.5",
-    "@cornerstonejs/tools": "4.18.5",
-    "@ohif/core": "3.13.0-beta.23",
-    "@ohif/extension-cornerstone": "3.13.0-beta.23",
-    "@ohif/extension-default": "3.13.0-beta.23",
-    "@ohif/i18n": "3.13.0-beta.23",
-    "@ohif/ui-next": "3.13.0-beta.23"
-=======
     "@cornerstonejs/core": "4.20.0",
     "@cornerstonejs/tools": "4.20.0",
     "@ohif/core": "3.13.0-beta.42",
@@ -58,7 +49,6 @@
     "@ohif/extension-default": "3.13.0-beta.42",
     "@ohif/i18n": "3.13.0-beta.42",
     "@ohif/ui-next": "3.13.0-beta.42"
->>>>>>> 69d8ad63f3bcd5c4fd8c313835290e9e167efb0e
   },
   "devDependencies": {
     "@babel/core": "7.28.0",

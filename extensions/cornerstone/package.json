@@ -40,15 +40,9 @@
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
     "@cornerstonejs/codec-openjpeg": "1.3.0",
     "@cornerstonejs/codec-openjph": "2.4.7",
-<<<<<<< HEAD
-    "@cornerstonejs/dicom-image-loader": "4.18.5",
-    "@ohif/core": "3.13.0-beta.23",
-    "@ohif/ui": "3.13.0-beta.23",
-=======
     "@cornerstonejs/dicom-image-loader": "4.20.0",
     "@ohif/core": "3.13.0-beta.42",
     "@ohif/ui": "3.13.0-beta.42",
->>>>>>> 69d8ad63f3bcd5c4fd8c313835290e9e167efb0e
     "dcmjs": "0.49.4",
     "dicom-parser": "1.8.21",
     "hammerjs": "2.0.8",
@@ -59,21 +53,12 @@
   },
   "dependencies": {
     "@babel/runtime": "7.28.2",
-<<<<<<< HEAD
-    "@cornerstonejs/adapters": "4.18.5",
-    "@cornerstonejs/ai": "4.18.5",
-    "@cornerstonejs/core": "4.18.5",
-    "@cornerstonejs/labelmap-interpolation": "4.18.5",
-    "@cornerstonejs/polymorphic-segmentation": "4.18.5",
-    "@cornerstonejs/tools": "4.18.5",
-=======
     "@cornerstonejs/adapters": "4.20.0",
     "@cornerstonejs/ai": "4.20.0",
     "@cornerstonejs/core": "4.20.0",
     "@cornerstonejs/labelmap-interpolation": "4.20.0",
     "@cornerstonejs/polymorphic-segmentation": "4.20.0",
     "@cornerstonejs/tools": "4.20.0",
->>>>>>> 69d8ad63f3bcd5c4fd8c313835290e9e167efb0e
     "@icr/polyseg-wasm": "0.4.0",
     "@itk-wasm/morphological-contour-interpolation": "1.1.0",
     "@kitware/vtk.js": "34.15.1",
