@@ -321,6 +321,12 @@ export class ViewportPageObject {
     return this.viewportPageObjectFactory(viewport);
   }
 
+  async getIdOfNth(index: number): Promise<string> {
+    const viewport = this.page.getByTestId('viewport-pane').nth(index);
+    const viewportId = await viewport.locator('[data-viewportid]').getAttribute('data-viewportid');
+    return viewportId ?? 'default'
+  }
+
   getById(viewportId: string): IViewportPageObject {
     const viewport = this.page.locator(
       `[data-cy="viewport-pane"]:has(div[data-viewportid="${viewportId}"])`

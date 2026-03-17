@@ -486,7 +486,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               }
             }}
           >
-            <SelectTrigger className="flex-1">
+            <SelectTrigger
+              className="flex-1"
+              data-cy={`overlay-background-ds-select-${viewportId}`}
+            >
               <SelectValue>
                 {(
                   backgroundDisplaySet?.SeriesDescription ||
