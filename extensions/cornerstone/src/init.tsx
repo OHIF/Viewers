@@ -285,10 +285,9 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
-  const getDisplaySetFromVolumeId = (volumeId: string) => {
+  const getDisplaySetFromVolume = (volume: { volumeId: string; imageIds: string[] }) => {
     const allDisplaySets = displaySetService.getActiveDisplaySets();
-    const volume = cornerstone.cache.getVolume(volumeId);
-    const imageIds = volume.imageIds;
+    const { imageIds } = volume;
     return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
   };
 
@@ -299,7 +298,7 @@ export default async function init({
       return;
     }
 
-    const displaySet = getDisplaySetFromVolumeId(volume.volumeId);
+    const displaySet = getDisplaySetFromVolume(volume);
     if (!displaySet) {
       return;
     }
