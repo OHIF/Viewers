@@ -61,6 +61,9 @@ tests/playwright-report/
 
 **/.claude/settings.local.json
 
+# cornerstone3D local linking
+libs/
+
 # Backup files
 *~
 

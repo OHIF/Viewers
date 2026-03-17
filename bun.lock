@@ -142,12 +142,12 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/adapters": "4.19.2",
-        "@cornerstonejs/ai": "4.19.2",
-        "@cornerstonejs/core": "4.19.2",
-        "@cornerstonejs/labelmap-interpolation": "4.19.2",
-        "@cornerstonejs/polymorphic-segmentation": "4.19.2",
-        "@cornerstonejs/tools": "4.19.2",
+        "@cornerstonejs/adapters": "4.20.0",
+        "@cornerstonejs/ai": "4.20.0",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/labelmap-interpolation": "4.20.0",
+        "@cornerstonejs/polymorphic-segmentation": "4.20.0",
+        "@cornerstonejs/tools": "4.20.0",
         "@icr/polyseg-wasm": "0.4.0",
         "@itk-wasm/morphological-contour-interpolation": "1.1.0",
         "@kitware/vtk.js": "34.15.1",
@@ -165,7 +165,7 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
         "@cornerstonejs/codec-openjpeg": "1.3.0",
         "@cornerstonejs/codec-openjph": "2.4.7",
-        "@cornerstonejs/dicom-image-loader": "4.19.2",
+        "@cornerstonejs/dicom-image-loader": "4.20.0",
         "@ohif/core": "3.13.0-beta.41",
         "@ohif/ui": "3.13.0-beta.41",
         "dcmjs": "0.49.4",
@@ -182,8 +182,8 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/adapters": "4.19.4",
-        "@cornerstonejs/core": "4.19.4",
+        "@cornerstonejs/adapters": "4.20.0",
+        "@cornerstonejs/core": "4.20.0",
         "@kitware/vtk.js": "34.15.1",
       },
       "peerDependencies": {
@@ -223,8 +223,8 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/adapters": "4.19.4",
-        "@cornerstonejs/core": "4.19.4",
+        "@cornerstonejs/adapters": "4.20.0",
+        "@cornerstonejs/core": "4.20.0",
         "@kitware/vtk.js": "34.15.1",
       },
       "peerDependencies": {
@@ -245,9 +245,9 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/adapters": "4.19.4",
-        "@cornerstonejs/core": "4.19.4",
-        "@cornerstonejs/tools": "4.19.4",
+        "@cornerstonejs/adapters": "4.20.0",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/tools": "4.20.0",
         "classnames": "2.5.1",
       },
       "peerDependencies": {
@@ -267,8 +267,8 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/core": "4.19.4",
-        "@cornerstonejs/tools": "4.19.4",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/tools": "4.20.0",
         "classnames": "2.5.1",
       },
       "peerDependencies": {
@@ -377,8 +377,8 @@
         "xstate": "4.38.3",
       },
       "peerDependencies": {
-        "@cornerstonejs/core": "4.19.4",
-        "@cornerstonejs/tools": "4.19.4",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/tools": "4.20.0",
         "@ohif/core": "3.13.0-beta.41",
         "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.41",
         "@ohif/extension-default": "3.13.0-beta.41",
@@ -432,8 +432,8 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/core": "4.19.4",
-        "@cornerstonejs/tools": "4.19.4",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/tools": "4.20.0",
         "@ohif/core": "3.13.0-beta.41",
         "@ohif/extension-cornerstone": "3.13.0-beta.41",
         "@ohif/extension-default": "3.13.0-beta.41",
@@ -661,8 +661,8 @@
       "version": "3.13.0-beta.41",
       "dependencies": {
         "@babel/runtime": "7.28.2",
-        "@cornerstonejs/core": "4.19.4",
-        "@cornerstonejs/tools": "4.19.4",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/tools": "4.20.0",
         "@ohif/core": "3.13.0-beta.41",
         "@ohif/extension-cornerstone-dicom-sr": "3.13.0-beta.41",
         "@ohif/extension-ultrasound-pleura-bline": "3.13.0-beta.41",
@@ -701,7 +701,7 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
         "@cornerstonejs/codec-openjpeg": "1.3.0",
         "@cornerstonejs/codec-openjph": "2.4.7",
-        "@cornerstonejs/dicom-image-loader": "4.19.4",
+        "@cornerstonejs/dicom-image-loader": "4.20.0",
         "@emotion/serialize": "1.3.3",
         "@ohif/core": "3.13.0-beta.41",
         "@ohif/extension-cornerstone": "3.13.0-beta.41",
@@ -822,8 +822,8 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",
         "@cornerstonejs/codec-openjpeg": "1.3.0",
         "@cornerstonejs/codec-openjph": "2.4.7",
-        "@cornerstonejs/core": "4.19.4",
-        "@cornerstonejs/dicom-image-loader": "4.19.4",
+        "@cornerstonejs/core": "4.20.0",
+        "@cornerstonejs/dicom-image-loader": "4.20.0",
         "@ohif/ui": "3.13.0-beta.41",
         "cornerstone-math": "0.1.9",
         "dicom-parser": "1.8.21",
@@ -1241,9 +1241,9 @@
 
     "@bcoe/v8-coverage": ["@bcoe/v8-coverage@0.2.3", "", {}, "sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw=="],
 
-    "@cornerstonejs/adapters": ["@cornerstonejs/adapters@4.19.2", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "ndarray": "1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "4.19.2", "@cornerstonejs/tools": "4.19.2" } }, "sha512-alzqHxQvz+nxTV4FPuyvcI/+IvZ0P/PFkMTJ2N9Jc/toJ+xPfuRL2daT9ddgMp9sR5qlMh/wD3A+xw+OyN7HPw=="],
+    "@cornerstonejs/adapters": ["@cornerstonejs/adapters@4.20.0", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "ndarray": "1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "4.20.0", "@cornerstonejs/tools": "4.20.0" } }, "sha512-OxplEaHadms6mZ5fX8o9zkMVw7rSjxP6+KRovBAqLXlXsM9hj7MgencWG2JX6SR2bUXvHVusiV9cdECcDMNvsg=="],
 
-    "@cornerstonejs/ai": ["@cornerstonejs/ai@4.19.2", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "lodash.clonedeep": "4.5.0", "ndarray": "1.0.19", "onnxruntime-common": "1.17.1", "onnxruntime-web": "1.17.1" }, "peerDependencies": { "@cornerstonejs/core": "4.19.2", "@cornerstonejs/tools": "4.19.2" } }, "sha512-L5Yk9Gtc20Yl5CoaOaNA6p7pLcMmP6Pmr+BK9Z6BsxaExykkbp5XHWcOBoZngVDQYQkjyVj4+x7ytf9tCAmuBw=="],
+    "@cornerstonejs/ai": ["@cornerstonejs/ai@4.20.0", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "lodash.clonedeep": "4.5.0", "ndarray": "1.0.19", "onnxruntime-common": "1.17.1", "onnxruntime-web": "1.17.1" }, "peerDependencies": { "@cornerstonejs/core": "4.20.0", "@cornerstonejs/tools": "4.20.0" } }, "sha512-65wl8mXy/N6DUjLlNZvKLgWTGWVu4kWDupxNU5p7Pd3ZxU6RnbG6d3pcM30D/bcQEuUWLEQBDodtBeJEsxJxoA=="],
 
     "@cornerstonejs/calculate-suv": ["@cornerstonejs/calculate-suv@1.1.0", "", {}, "sha512-Q9XraiDJif9aMFArD2iEuDO/HXbcRVCqB7KfaHgDrdTTjgDFovS91Psbdim7crypRSvE6dh/+HKeFNHdvNkA6w=="],
 
@@ -1255,15 +1255,15 @@
 
     "@cornerstonejs/codec-openjph": ["@cornerstonejs/codec-openjph@2.4.7", "", {}, "sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w=="],
 
-    "@cornerstonejs/core": ["@cornerstonejs/core@4.19.4", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-U4clteYTLf2CXJDWFj+DsdVGrOFW7kKaEZY7llo03qJjn4TX0VA1Ma/ILt0a6qDGYZQ8vkMmD6T4kLqJCL78EQ=="],
+    "@cornerstonejs/core": ["@cornerstonejs/core@4.20.0", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-rcrctEIcyyAwQ6zcVt1wbYoTPyH6YNLNBOBB/aLeJZfLqGAfca+Cgf5K+KSGFJX1gZOdQZmYGmAF9P58B9PNVw=="],
 
-    "@cornerstonejs/dicom-image-loader": ["@cornerstonejs/dicom-image-loader@4.19.4", "", { "dependencies": { "@cornerstonejs/codec-charls": "1.2.3", "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2", "@cornerstonejs/codec-openjpeg": "1.3.0", "@cornerstonejs/codec-openjph": "2.4.7", "comlink": "4.4.2", "dicom-parser": "1.8.21", "jpeg-lossless-decoder-js": "2.1.2", "pako": "2.1.0", "uuid": "9.0.1" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4" } }, "sha512-1TFoG3IxYQnH9nysqTOWVaqOSqPyOI2sHMunY7ffPxJ9JsGVnsQyMMTk2qPsUc8ZmRb3GDGLv6XB7iQejSvs4Q=="],
+    "@cornerstonejs/dicom-image-loader": ["@cornerstonejs/dicom-image-loader@4.20.0", "", { "dependencies": { "@cornerstonejs/codec-charls": "1.2.3", "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2", "@cornerstonejs/codec-openjpeg": "1.3.0", "@cornerstonejs/codec-openjph": "2.4.7", "comlink": "4.4.2", "dicom-parser": "1.8.21", "jpeg-lossless-decoder-js": "2.1.2", "pako": "2.1.0", "uuid": "9.0.1" }, "peerDependencies": { "@cornerstonejs/core": "4.20.0" } }, "sha512-A7N2ekKEMEEKbw0QecbmgtL89LMpLZDkyzt2a97cZM9qyUdhdETyzL8m6guVtP10Ga5l9Aq9mFt2ifGtwTw0wA=="],
 
-    "@cornerstonejs/labelmap-interpolation": ["@cornerstonejs/labelmap-interpolation@4.19.2", "", { "dependencies": { "@itk-wasm/morphological-contour-interpolation": "1.1.0", "itk-wasm": "1.0.0-b.165" }, "peerDependencies": { "@cornerstonejs/core": "4.19.2", "@cornerstonejs/tools": "4.19.2", "@kitware/vtk.js": "34.15.1" } }, "sha512-FDpptBVXDuj5ZK3sSy4ie8jroLmF5xyPhW7ft/KydshNJsWI3Y0SfjdWr+kiH9PRTzBauzpDZEqGBCArgNKpPg=="],
+    "@cornerstonejs/labelmap-interpolation": ["@cornerstonejs/labelmap-interpolation@4.20.0", "", { "dependencies": { "@itk-wasm/morphological-contour-interpolation": "1.1.0", "itk-wasm": "1.0.0-b.165" }, "peerDependencies": { "@cornerstonejs/core": "4.20.0", "@cornerstonejs/tools": "4.20.0", "@kitware/vtk.js": "34.15.1" } }, "sha512-VDUkvRZPCk98NkBFH0qFNEfjQoyYp2Th2+0KAJtDPeA0aqSPhugh14uJQ5uKEkDzZFUG/TUpeaHi1kldx6C5Gw=="],
 
-    "@cornerstonejs/polymorphic-segmentation": ["@cornerstonejs/polymorphic-segmentation@4.19.2", "", { "dependencies": { "@icr/polyseg-wasm": "0.4.0" }, "peerDependencies": { "@cornerstonejs/core": "4.19.2", "@cornerstonejs/tools": "4.19.2", "@kitware/vtk.js": "34.15.1" } }, "sha512-A3V6ZOJbrwmoPr/DlMTOpQhSqAlWgng/LyIHYt0FXFuGCvW8NI2bhNqQ4t4vq8UoEoE7qgdCZUCC8KYkODUilQ=="],
+    "@cornerstonejs/polymorphic-segmentation": ["@cornerstonejs/polymorphic-segmentation@4.20.0", "", { "dependencies": { "@icr/polyseg-wasm": "0.4.0" }, "peerDependencies": { "@cornerstonejs/core": "4.20.0", "@cornerstonejs/tools": "4.20.0", "@kitware/vtk.js": "34.15.1" } }, "sha512-tsMqAd/GrBeEFB2WU2K+YsGXeaP/1yD635yO1udpG2dloRaJrvFiK1dFMFCBLK3Xd768ZS1nq/MZEel00+vYxA=="],
 
-    "@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.2", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.2", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-8eas92LIhc4Pa0t5RK72JLNZPgePGj+k2Vk3803D97jUrid/pob8q3E7ILBivqLUqPWbVj5fErR/jsZJ08eYtg=="],
+    "@cornerstonejs/tools": ["@cornerstonejs/tools@4.20.0", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.20.0", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-kphlW17eohBRk8MXEgdufM2t8MC5JqdlWUCfXu5rfg0KS1ut6iSWGAxFS+12noPR5qDzfVEYnD+4NkL37jg8pw=="],
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
@@ -5295,21 +5295,11 @@
 
     "@babel/preset-env/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
-    "@cornerstonejs/adapters/@cornerstonejs/core": ["@cornerstonejs/core@4.19.2", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-T/nezzLhlQyS82FHsd129n7nKml2uCQjqOIls8P+S1bd/IUQSTnOZ9rnLFkfSVAvnuVyPiCz2f5t5wp/UZuZMQ=="],
-
     "@cornerstonejs/adapters/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
-
-    "@cornerstonejs/ai/@cornerstonejs/core": ["@cornerstonejs/core@4.19.2", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-T/nezzLhlQyS82FHsd129n7nKml2uCQjqOIls8P+S1bd/IUQSTnOZ9rnLFkfSVAvnuVyPiCz2f5t5wp/UZuZMQ=="],
 
     "@cornerstonejs/ai/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
 
     "@cornerstonejs/dicom-image-loader/uuid": ["uuid@9.0.1", "", { "bin": { "uuid": "dist/bin/uuid" } }, "sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA=="],
-
-    "@cornerstonejs/labelmap-interpolation/@cornerstonejs/core": ["@cornerstonejs/core@4.19.2", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-T/nezzLhlQyS82FHsd129n7nKml2uCQjqOIls8P+S1bd/IUQSTnOZ9rnLFkfSVAvnuVyPiCz2f5t5wp/UZuZMQ=="],
-
-    "@cornerstonejs/polymorphic-segmentation/@cornerstonejs/core": ["@cornerstonejs/core@4.19.2", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-T/nezzLhlQyS82FHsd129n7nKml2uCQjqOIls8P+S1bd/IUQSTnOZ9rnLFkfSVAvnuVyPiCz2f5t5wp/UZuZMQ=="],
-
-    "@cornerstonejs/tools/@cornerstonejs/core": ["@cornerstonejs/core@4.19.2", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-T/nezzLhlQyS82FHsd129n7nKml2uCQjqOIls8P+S1bd/IUQSTnOZ9rnLFkfSVAvnuVyPiCz2f5t5wp/UZuZMQ=="],
 
     "@cspotcode/source-map-support/@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.9", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.0.3", "@jridgewell/sourcemap-codec": "^1.4.10" } }, "sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ=="],
 
@@ -5462,24 +5452,6 @@
     "@ohif/app/clean-webpack-plugin": ["clean-webpack-plugin@4.0.0", "", { "dependencies": { "del": "^4.1.1" }, "peerDependencies": { "webpack": ">=4.0.0 <6.0.0" } }, "sha512-WuWE1nyTNAyW5T7oNyys2EN0cfP2fdRxhxnIQWiAp0bMabPdHhoGxM8A6YL2GhqwgrPnnaemVE7nv5XJ2Fhh2w=="],
 
     "@ohif/app/copy-webpack-plugin": ["copy-webpack-plugin@10.2.4", "", { "dependencies": { "fast-glob": "^3.2.7", "glob-parent": "^6.0.1", "globby": "^12.0.2", "normalize-path": "^3.0.0", "schema-utils": "^4.0.0", "serialize-javascript": "^6.0.0" }, "peerDependencies": { "webpack": "^5.1.0" } }, "sha512-xFVltahqlsRcyyJqQbDY6EYTtyQZF9rf+JPjwHObLdPFMEISqkFkr7mFoVOC6BfYS/dNThyoQKvziugm+OnwBg=="],
-
-    "@ohif/extension-cornerstone/@cornerstonejs/core": ["@cornerstonejs/core@4.19.2", "", { "dependencies": { "@kitware/vtk.js": "34.15.1", "comlink": "4.4.2", "gl-matrix": "3.4.3", "loglevel": "1.9.2" } }, "sha512-T/nezzLhlQyS82FHsd129n7nKml2uCQjqOIls8P+S1bd/IUQSTnOZ9rnLFkfSVAvnuVyPiCz2f5t5wp/UZuZMQ=="],
-
-    "@ohif/extension-cornerstone-dicom-pmap/@cornerstonejs/adapters": ["@cornerstonejs/adapters@4.19.4", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "ndarray": "1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@cornerstonejs/tools": "4.19.4" } }, "sha512-MpdX+h+C12pAYTy4faty2YnaoMQ9Iv6f0UlfH4gDWsYrE/a1Kqe1HMHRIsmixGFX42JgZqKAclmiogxOhcUYfA=="],
-
-    "@ohif/extension-cornerstone-dicom-seg/@cornerstonejs/adapters": ["@cornerstonejs/adapters@4.19.4", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "ndarray": "1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@cornerstonejs/tools": "4.19.4" } }, "sha512-MpdX+h+C12pAYTy4faty2YnaoMQ9Iv6f0UlfH4gDWsYrE/a1Kqe1HMHRIsmixGFX42JgZqKAclmiogxOhcUYfA=="],
-
-    "@ohif/extension-cornerstone-dicom-sr/@cornerstonejs/adapters": ["@cornerstonejs/adapters@4.19.4", "", { "dependencies": { "@babel/runtime-corejs2": "7.26.10", "buffer": "6.0.3", "dcmjs": "0.49.4", "gl-matrix": "3.4.3", "ndarray": "1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@cornerstonejs/tools": "4.19.4" } }, "sha512-MpdX+h+C12pAYTy4faty2YnaoMQ9Iv6f0UlfH4gDWsYrE/a1Kqe1HMHRIsmixGFX42JgZqKAclmiogxOhcUYfA=="],
-
-    "@ohif/extension-cornerstone-dicom-sr/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
-
-    "@ohif/extension-cornerstone-dynamic-volume/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
-
-    "@ohif/extension-measurement-tracking/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
-
-    "@ohif/extension-ultrasound-pleura-bline/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
-
-    "@ohif/mode-ultrasound-pleura-bline/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
 
     "@rollup/plugin-node-resolve/deepmerge": ["deepmerge@4.3.1", "", {}, "sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A=="],
 
@@ -6410,16 +6382,6 @@
     "@npmcli/run-script/which/isexe": ["isexe@4.0.0", "", {}, "sha512-FFUtZMpoZ8RqHS3XeXEmHWLA4thH+ZxCv2lOiPIn1Xc7CxrqhWzNSDzD+/chS/zbYezmiwWLdQC09JdQKmthOw=="],
 
     "@ohif/app/copy-webpack-plugin/globby": ["globby@12.2.0", "", { "dependencies": { "array-union": "^3.0.1", "dir-glob": "^3.0.1", "fast-glob": "^3.2.7", "ignore": "^5.1.9", "merge2": "^1.4.1", "slash": "^4.0.0" } }, "sha512-wiSuFQLZ+urS9x2gGPl1H5drc5twabmm4m2gTR27XDFyjUHJUNsS8o/2aKyIF6IoBaR630atdher0XJ5g6OMmA=="],
-
-    "@ohif/extension-cornerstone-dicom-pmap/@cornerstonejs/adapters/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
-
-    "@ohif/extension-cornerstone-dicom-pmap/@cornerstonejs/adapters/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
-
-    "@ohif/extension-cornerstone-dicom-seg/@cornerstonejs/adapters/@cornerstonejs/tools": ["@cornerstonejs/tools@4.19.4", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "4.4.2", "lodash.get": "4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "4.19.4", "@kitware/vtk.js": "34.15.1", "@types/d3-array": "3.2.1", "@types/d3-interpolate": "3.0.4", "d3-array": "3.2.4", "d3-interpolate": "3.0.1", "gl-matrix": "3.4.3" } }, "sha512-2ENyXRRGWwo8xtbg3PmRF1hkHOTfZ9fEO2xWLJeJpauf12y9yDng/xv4/lJKkZfNCKbU4jXzMM+qcrzyAC8z/g=="],
-
-    "@ohif/extension-cornerstone-dicom-seg/@cornerstonejs/adapters/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
-
-    "@ohif/extension-cornerstone-dicom-sr/@cornerstonejs/adapters/buffer": ["buffer@6.0.3", "", { "dependencies": { "base64-js": "^1.3.1", "ieee754": "^1.2.1" } }, "sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA=="],
 
     "@rspack/binding-wasm32-wasi/@napi-rs/wasm-runtime/@tybys/wasm-util": ["@tybys/wasm-util@0.10.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-VyyPYFlOMNylG45GoAe0xDoLwWuowvf92F9kySqzYh8vmYm7D2u4iUJKa1tOUpS70Ku13ASrOkS4ScXFsTaCNQ=="],
 
