@@ -30,7 +30,6 @@ test('should restore viewport interactivity after deleting an in-progress Livewi
   DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
-  rightPanelPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.livewireContour.click();
   await viewportPageObject.active.clickAt([
