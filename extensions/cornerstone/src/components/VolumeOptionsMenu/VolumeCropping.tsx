@@ -93,9 +93,9 @@ export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): Re
           </TooltipTrigger>
           <TooltipContent side="bottom" className="z-[9999]">
             <span className="block">
-              Controls visibility of 3D cropping planes and handles.
+              Controls visibility of 3D clipping planes and handles.
             </span>
-            <span className="block">Use shift-click to rotate the planes.</span>
+            <span className="block">Use SHIFT-click to rotate the planes.</span>
           </TooltipContent>
         </Tooltip>
       </div>
@@ -150,7 +150,7 @@ export function VolumeCropping({ viewportId }: { viewportId?: string } = {}): Re
                 <span className="text-sm cursor-help">Rotate Planes</span>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="z-[9999]">
-                Allow rotating the clipping planes (without shift).
+                Allow rotating the clipping planes (without SHIFT).
               </TooltipContent>
             </Tooltip>
             <span className="text-muted-foreground text-xs">Hotkey S</span>
