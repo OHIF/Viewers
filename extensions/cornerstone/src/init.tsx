@@ -1,4 +1,4 @@
-import OHIF, { errorHandler, getVolumeOptions } from '@ohif/core';
+import OHIF, { errorHandler, getVolumeOptions, setVolumeOptions } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -70,8 +70,29 @@ export default async function init({
 
   const volumeOptions = getVolumeOptions();
   if (!volumeOptions.gpuTestResults) {
+    const isCypress =
+      typeof window !== 'undefined' && Boolean((window as any).Cypress);
+
     try {
-      await gpuPerformanceTest(appConfig);
+      if (isCypress) {
+        // Avoid WebGL/GPU probing in Cypress/CI runs; seed defaults instead.
+        setVolumeOptions({
+          gpuTestResults: {
+            generalPerformanceScore: 100,
+            renderer: 'Cypress (GPU test skipped)',
+            maxTextureSize: 0,
+            memoryUsedMB: 0,
+            memoryLimitMB: 0,
+            triangleRendering: 0,
+            textureUpload: 0,
+            bufferOperations: 0,
+          },
+          rotateSampleDistanceFactor: 2,
+          sampleDistanceMultiplier: 1,
+        });
+      } else {
+        await gpuPerformanceTest(appConfig);
+      }
     } catch (error) {
       console.warn(
         'GPU performance test failed, using default settings:',
