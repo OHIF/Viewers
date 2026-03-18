@@ -70,16 +70,13 @@ export default async function init({
 
   const volumeOptions = getVolumeOptions();
   if (!volumeOptions.gpuTestResults) {
-    const isCypress =
-      typeof window !== 'undefined' && Boolean((window as any).Cypress);
-
     try {
-      if (isCypress) {
-        // Avoid WebGL/GPU probing in Cypress/CI runs; seed defaults instead.
+      if (Boolean(appConfig.useCPURendering)) {
+        // Avoid WebGL/GPU probing when CPU rendering is forced; seed defaults instead.
         setVolumeOptions({
           gpuTestResults: {
             generalPerformanceScore: 100,
-            renderer: 'Cypress (GPU test skipped)',
+            renderer: 'CPU rendering forced (GPU test skipped)',
             maxTextureSize: 0,
             memoryUsedMB: 0,
             memoryLimitMB: 0,
