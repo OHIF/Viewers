@@ -1964,14 +1964,48 @@ function commandsModule({
         }
       }
 
+      // Persist decimation settings in OHIF viewport options so overlays and
+      // other UI can reflect the current decimation immediately.
+      const isManualDecimated =
+        decimationValues[0] !== 1 || decimationValues[1] !== 1 || decimationValues[2] !== 1;
+      const manualDecimationInfo = isManualDecimated
+        ? { message: `Volume reduced` }
+        : undefined;
+
+      affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+        try {
+          const viewportInfo = cornerstoneViewportService.getViewportInfo(vp.id);
+          const prevOptions =
+            (viewportInfo?.getViewportOptions?.() as unknown as Record<string, unknown>) ?? {};
+
+          viewportInfo?.setViewportOptions?.({
+            ...(prevOptions as any),
+            ijkDecimation: decimationValues,
+            autoDecimationInfo: manualDecimationInfo,
+          });
+        } catch (err) {
+          console.warn('Failed to update viewport options after decimation reload', vp.id, err);
+        }
+      });
+
       renderingEngine.render();
       requestAnimationFrame(() => {
         affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
           try {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(vp.id);
+            const rawViewportData = viewportInfo?.getViewportData?.();
+            const viewportDataForEvent =
+              rawViewportData == null
+                ? null
+                : Array.isArray(rawViewportData)
+                  ? [...rawViewportData]
+                  : typeof rawViewportData === 'object'
+                    ? { ...(rawViewportData as any) }
+                    : rawViewportData;
             cornerstoneViewportService._broadcastEvent?.(
               cornerstoneViewportService.EVENTS?.VIEWPORT_DATA_CHANGED ??
                 'VIEWPORT_DATA_CHANGED',
-              { viewportId: vp.id }
+              { viewportId: vp.id, viewportData: viewportDataForEvent }
             );
           } catch (err) {
             console.warn(
