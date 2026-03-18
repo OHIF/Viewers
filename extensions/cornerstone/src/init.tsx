@@ -309,8 +309,32 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
   const getDisplaySetFromVolume = (volume: { volumeId: string; imageIds: string[] }) => {
+    const { volumeId, imageIds } = volume;
+
+    // Prefer resolving display set UID from volumeId. This is more reliable than
+    // matching on imageIds when decimated loaders generate different ids.
+    try {
+      const parts = volumeId.split(':');
+      const isDecimated = parts[0] === 'decimatedVolumeLoader' && parts.length >= 4;
+      const maybeDecimationSuffix = parts[parts.length - 1];
+      const hasDecimationSuffix = /^\d+_\d+_\d+$/.test(maybeDecimationSuffix);
+      const baseParts = isDecimated && hasDecimationSuffix ? parts.slice(1, -1) : parts;
+
+      // Expected base formats:
+      // - <volumeLoaderSchema>:<displaySetInstanceUID>[:viewportTypeSuffix]
+      // - (wrapped) decimatedVolumeLoader:<baseVolumeIdWithSuffix>:i_j_k
+      const displaySetInstanceUID = baseParts.length >= 2 ? baseParts[1] : undefined;
+      if (displaySetInstanceUID) {
+        const direct = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        if (direct) {
+          return direct;
+        }
+      }
+    } catch {
+      // Fall back to imageId matching.
+    }
+
     const allDisplaySets = displaySetService.getActiveDisplaySets();
-    const { imageIds } = volume;
     return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
   };
 

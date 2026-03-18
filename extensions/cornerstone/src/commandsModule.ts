@@ -1765,8 +1765,6 @@ function commandsModule({
       const displaySetAsAny = displaySet as {
         images?: { imageId: string }[];
         imageIds?: string[];
-        numImageFrames?: number;
-        setAttributes?: (a: unknown) => void;
       };
       let originalImageIds: string[];
       if (displaySetAsAny.images?.length) {
@@ -1774,18 +1772,7 @@ function commandsModule({
           (img: { imageId: string }) => img.imageId
         );
       } else if (displaySetAsAny.imageIds?.length) {
-        const expectedFull =
-          displaySetAsAny.numImageFrames ?? displaySetAsAny.images?.length;
-        if (expectedFull && displaySetAsAny.imageIds.length < expectedFull) {
-          const dataSource = extensionManager.getActiveDataSource?.()?.[0] as {
-            getImageIdsForDisplaySet?: (ds: unknown) => string[];
-          };
-          originalImageIds =
-            dataSource?.getImageIdsForDisplaySet?.(displaySet) ??
-            displaySetAsAny.imageIds;
-        } else {
-          originalImageIds = displaySetAsAny.imageIds;
-        }
+        originalImageIds = displaySetAsAny.imageIds;
       } else {
         uiNotificationService.show({
           title: 'Volume Reload Failed',
@@ -1845,22 +1832,6 @@ function commandsModule({
       };
       if (typeof volumeWithLoad.load === 'function') {
         await Promise.resolve(volumeWithLoad.load());
-      }
-
-      if (typeof displaySetAsAny.setAttributes === 'function') {
-        const decimatedImageIds =
-          (newVolume as { imageIds?: string[] }).imageIds ?? [];
-        displaySetAsAny.setAttributes({
-          imageIds: decimatedImageIds,
-          numImageFrames: decimatedImageIds.length,
-        });
-        if (typeof displaySetService._broadcastEvent === 'function') {
-          displaySetService._broadcastEvent(
-            displaySetService.EVENTS?.DISPLAY_SETS_CHANGED ??
-              'DISPLAY_SETS_CHANGED',
-            displaySetService.getActiveDisplaySets?.() ?? []
-          );
-        }
       }
 
       const csUtilsApplyPreset = (csUtils as {
