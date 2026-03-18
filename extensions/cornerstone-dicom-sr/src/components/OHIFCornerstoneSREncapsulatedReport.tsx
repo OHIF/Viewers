@@ -8,6 +8,7 @@ import {
 import { OHIFCornerstoneSREncapsulatedPDFReport } from './OHIFCornerstoneSREncapsulatedPDFReport';
 import { useState } from 'react';
 import OHIFLazyMarkdownComponent from './OHIFLazyMarkdown';
+import css from './OHIFCornerstoneSREncapsulatedReport.module.css';
 
 export interface ReportContentDisplayProps {
   readonly content: Blob;
@@ -41,11 +42,13 @@ export function OHIFCornerstoneSREncapsulatedReport(
   switch (mime) {
     case payloadMIMEOptions.TEXT:
       return (
-        <OHIFLazyMarkdownComponent markdownContent={textContent} />
+          <blockquote>
+            <OHIFLazyMarkdownComponent markdownContent={textContent} />
+          </blockquote>
       );
     case payloadMIMEOptions.HTML:
       return (
-        <blockquote>
+        <blockquote className={css.defaultHTMLSRReportContainer}>
           <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(textContent) }} />
         </blockquote>
       );
@@ -58,7 +61,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
     default:
       return (
         <p>
-          {`Document with mime ${mime} is not recognized or supported for display.`}
+          {`Document with mime ${mime} is not recognized or supported for display. Please, report issue and/or contribute an update to the project.`}
         </p>
       );
   }
