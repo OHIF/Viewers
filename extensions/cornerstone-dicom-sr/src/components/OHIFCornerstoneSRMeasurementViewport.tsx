@@ -6,6 +6,7 @@ import createReferencedImageDisplaySet from '../utils/createReferencedImageDispl
 import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
+import OHIFCornerstoneSRTextViewport from "./OHIFCornerstoneSRTextViewport";
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 const NULL_DISPLAYSET = { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
@@ -197,7 +198,9 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   let childrenWithProps = null;
 
   if (!activeImageDisplaySetData || !referencedDisplaySetMetadata) {
-    return null;
+    // Maybe the incoming report is not a true Measurement SR Report or rather it encapsulate the report in a node, so
+    // let's give it a second chance to display as a regular Text report.
+    return <OHIFCornerstoneSRTextViewport {...props}></OHIFCornerstoneSRTextViewport>;
   }
 
   if (children && children.length) {
