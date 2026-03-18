@@ -6,8 +6,10 @@ import createReferencedImageDisplaySet from '../utils/createReferencedImageDispl
 import { usePositionPresentationStore, OHIFCornerstoneViewport } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
+import OHIFCornerstoneSRTextViewport from "./OHIFCornerstoneSRTextViewport";
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
+const NULL_DISPLAYSET = { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
 
 function OHIFCornerstoneSRMeasurementViewport(props) {
   const { servicesManager } = useSystem();
@@ -196,7 +198,9 @@ function OHIFCornerstoneSRMeasurementViewport(props) {
   let childrenWithProps = null;
 
   if (!activeImageDisplaySetData || !referencedDisplaySetMetadata) {
-    return null;
+    // Maybe the incoming report is not a true Measurement SR Report or rather it encapsulate the report in a node, so
+    // let's give it a second chance to display as a regular Text report.
+    return <OHIFCornerstoneSRTextViewport {...props}></OHIFCornerstoneSRTextViewport>;
   }
 
   if (children && children.length) {
@@ -238,6 +242,11 @@ async function _getViewportReferencedDisplaySetData(
   const { measurements } = displaySet;
   const measurement = measurements[measurementSelected];
 
+  if (!Array.isArray(measurements) || !measurements.length) {
+    // Make sure the view port moves on if there are no measurement images to pull.
+    return NULL_DISPLAYSET;
+  }
+
   const { displaySetInstanceUID } = measurement;
   if (!displaySet.keyImageDisplaySet) {
     // Create a new display set, and preserve a reference to it here,
@@ -248,12 +257,12 @@ async function _getViewportReferencedDisplaySetData(
   }
 
   if (!displaySetInstanceUID) {
-    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
+    return NULL_DISPLAYSET;
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   if (!referencedDisplaySet?.images) {
-    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
+    return NULL_DISPLAYSET;
   }
 
   const image0 = referencedDisplaySet.images[0];
