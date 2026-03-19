@@ -450,11 +450,7 @@ export function stringToBlob(data: string, mime: string = payloadMIMEOptions.DEF
  * @return string
  */
 export function extractHTMLFromPayload(data: string): string {
-  const results = HTML_EXTRACTION_REGEX.exec(data);
-  if (results && results.length) {
-    return results.shift();
-  }
-  return data;
+  return HTML_EXTRACTION_REGEX.exec(data).shift();
 }
 
 // TODO: Switch over to using DicomBufferCODEC from dcmjs once PR #455 is merged and a new release
