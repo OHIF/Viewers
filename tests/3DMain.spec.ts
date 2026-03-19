@@ -14,10 +14,18 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D main Test', async () => {
-  test('should render 3D main correctly.', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D main correctly grid compare.', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
     await mainToolbarPageObject.layoutSelection.threeDMain.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     await mainToolbarPageObject.waitForVolumeLoad();
-    await checkForScreenshot(page, page, screenShotPaths.threeDMain.threeDMainDisplayedCorrectly);
+    await checkForScreenshot(
+      page,
+      viewportPageObject.grid,
+      screenShotPaths.threeDMain.threeDMainDisplayedCorrectly
+    );
   });
 });
