@@ -4,7 +4,7 @@ import guid from './guid';
 import uuidv4 from './uuidv4';
 import sortBy from './sortBy.js';
 import writeScript from './writeScript.js';
-import b64toBlob from './b64toBlob.js';
+import {b64ToBlob, csvToBlob, toBlob, MimeOptions} from './toBlob';
 //import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import urlUtil from './urlUtil';
 import makeDeferred from './makeDeferred';
@@ -70,7 +70,10 @@ const utils = {
   formatDate,
   formatTime,
   formatPN,
-  b64toBlob,
+  toBlob,
+  csvToBlob,
+  b64ToBlob,
+  MimeOptions,
   urlUtil,
   imageIdToURI,
   //loadAndCacheDerivedDisplaySets,
@@ -114,7 +117,10 @@ export {
   sortBy,
   formatDate,
   writeScript,
-  b64toBlob,
+  toBlob,
+  csvToBlob,
+  b64ToBlob,
+  MimeOptions,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
   makeDeferred,
