@@ -1,8 +1,5 @@
 import React, { lazy, Suspense } from 'react';
 
-// Since I was not sure how to approach lazy loading of components, I consulted with Google Search/ Gemini.
-// Below, is its suggestion
-
 // 1. Define the lazy-loaded component.
 // The dynamic import must return a module with a 'default' export.
 const Markdown = lazy(() => import('marked-react'));
