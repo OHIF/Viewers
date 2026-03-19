@@ -1,5 +1,5 @@
-import { HTML_REGEX, HTML_EXTRACTION_REGEX } from './payload';
-import { getPayloadType, extractHTMLFromPayload } from './payload';
+import {HTML_REGEX, HTML_EXTRACTION_REGEX} from './payload';
+import { getPayloadType, extractHTMLFromPayload, sanitizeHTML } from './payload';
 import { utils } from '@ohif/core';
 
 const pdfFragment =
@@ -48,16 +48,17 @@ const shiftedPDFFragment =
   '>>\n' +
   'stream\n';
 
+const payloads = [
+  { inputPayload: 'faklsjdflk;ajsd;flkja', extractedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
+  { inputPayload: '<html>', extractedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
+  { inputPayload: '<html><head></head><body></body>', extractedHtml: "", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: '<html>sadf</html>', extractedHtml: "<html>sadf</html>", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: '<p>ssadfasdfas</p>', extractedHtml: "", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: pdfFragment, extractedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
+  { inputPayload: shiftedPDFFragment, extractedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
+];
+
 describe('payloadRegex', () => {
-  const payloads = [
-    { inputPayload: 'faklsjdflk;ajsd;flkja', extractedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
-    { inputPayload: '<html>', extractedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
-    { inputPayload: '<html><head></head><body></body>', extractedHtml: "", expectedMime: utils.MimeOptions.Html, isHtml: true },
-    { inputPayload: '<html>sadf</html>', extractedHtml: "<html>sadf</html>", expectedMime: utils.MimeOptions.Html, isHtml: true },
-    { inputPayload: '<p>ssadfasdfas</p>', extractedHtml: "", expectedMime: utils.MimeOptions.Html, isHtml: true },
-    { inputPayload: pdfFragment, extractedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
-    { inputPayload: shiftedPDFFragment, extractedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
-  ];
   test('should be able to detect that the string fragment is an html payload', () => {
     payloads.forEach(payload => {
       const { inputPayload, isHtml } = payload;
@@ -89,6 +90,16 @@ describe('payloadRegex', () => {
       const { inputPayload, extractedHtml } = payload;
       const resultHtml = extractHTMLFromPayload(inputPayload);
       expect(resultHtml).toEqual(extractedHtml);
+    });
+  });
+});
+
+describe('sanitizeHTML', () => {
+  test('should be able to extract HTML well-formed.', () => {
+    payloads.forEach(payload => {
+      const { inputPayload, extractedHtml } = payload;
+      const html = sanitizeHTML(inputPayload);
+      expect(html).toEqual(extractedHtml);
     });
   });
 });
