@@ -1,7 +1,7 @@
 import { Types, DicomMetadataStore, utils } from '@ohif/core';
 import dcmjs from 'dcmjs';
 
-const { downloadBlob } = utils;
+const { downloadBlob, toBlob, MimeOptions } = utils;
 
 import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -800,9 +800,9 @@ const commandsModule = ({
             throw new Error('Copy to clipboard only supports a single DICOM instance');
           }
           const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
-          const type = defaultContentType || 'application/dicom';
+          const type = defaultContentType || MimeOptions.Dicom;
           await navigator.clipboard.write([
-            new ClipboardItem({ [type]: new Blob([reportBlob], { type }) }),
+            new ClipboardItem({ [type]: toBlob(reportBlob, type)}),
           ]);
         };
       }

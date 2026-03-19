@@ -1,6 +1,7 @@
 import getDirectURL from './getDirectURL';
 import getBulkdataValue from './getBulkdataValue';
 import createRenderedRetrieve from './createRenderedRetrieve';
+import {utils} from "@ohif/core";
 
 const mockedGetBulkdataValue = getBulkdataValue as jest.Mock;
 const mockedCreateRenderedRetrieve = createRenderedRetrieve as jest.Mock;
@@ -177,7 +178,7 @@ describe('getDirectURL', () => {
 
     expect(result).toContain('blob:');
     expect(global.URL.createObjectURL).toHaveBeenCalledWith(
-      new Blob([arr], { type: 'accept=video/mp4' })
+        utils.toBlob(arr, utils.MimeOptions.AcceptMp4)
     );
   });
 
