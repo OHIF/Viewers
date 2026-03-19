@@ -1,3 +1,7 @@
+/*
+TODO: The contents of this file need to be reconciled or moved into the upcoming @cornerstonejs/metadata module.
+Once that module becomes available, please move there.
+ */
 import {
   ConceptNameCodeSequence,
   ConceptNameCodeSequenceItem,
