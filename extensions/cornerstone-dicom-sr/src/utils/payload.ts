@@ -2,6 +2,7 @@
  * Set of functions and constants for managing input payloads before rendering in the browser.
  */
 import sanitize from 'sanitize-html';
+import {utils} from '@ohif/core';
 
 /**
  * RegEx for detecting HTML contents in a payload.
@@ -11,17 +12,7 @@ export const HTML_REGEX =
 /**
  * RegEx for extracting HTML contents from a payload.
  */
-export const HTML_EXTRACTION_REGEX = /<html.*>.*<\/html.*>/gms;
-
-/**
- * Enum of MIMEs currently supported for document payloads.
- */
-export const enum payloadMIMEOptions {
-  TEXT = 'text/plain',
-  HTML = 'text/html',
-  PDF = 'application/pdf',
-  DEFAULT = TEXT,
-}
+export const HTML_EXTRACTION_REGEX = /<html.*>.*<\/html.*>/ms;
 
 /**
  * Set of options to pass through to sanitize-html.
@@ -413,15 +404,15 @@ export const htmlSanitizerOptions = {
  * @param {string} suggestedMime Default MIME to use if we cannot identify the content's MIME
  * @return string
  */
-export function getPayloadType(payload: string, suggestedMime: string = 'text/plain') {
+export function getPayloadType(payload: string, suggestedMime: string = utils.MimeOptions.Text) {
   // PDF
   if (payload.indexOf('%PDF-') != -1) {
-    return 'application/pdf';
+    return utils.MimeOptions.Pdf;
   }
   // HTML.
   // Credit for validation regex goes to CSᵠ (https://stackoverflow.com/questions/15458876/check-if-a-string-is-html-or-not)
   if (HTML_REGEX.test(payload)) {
-    return 'text/html';
+    return utils.MimeOptions.Html;
   }
   // Passthrough mime if we cannot detect a special mime.
   return suggestedMime;
@@ -436,7 +427,8 @@ export function getPayloadType(payload: string, suggestedMime: string = 'text/pl
  * @return string
  */
 export function extractHTMLFromPayload(data: string): string {
-  return HTML_EXTRACTION_REGEX.exec(data).shift();
+  const html = HTML_EXTRACTION_REGEX.exec(data) ?? [];
+  return html.shift();
 }
 
 // TODO: Switch over to using DicomBufferCODEC from dcmjs once PR #455 is merged and a new release
