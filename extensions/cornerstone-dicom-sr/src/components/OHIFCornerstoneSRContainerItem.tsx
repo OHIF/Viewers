@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import formatContentItemValue from '../utils/formatContentItem';
 import { OHIFCornerstoneSREncapsulatedReport } from './OHIFCornerstoneSREncapsulatedReport';
-import { stringToBlob } from '../utils/payload';
+import { utils } from '@ohif/core';
 import {
   asStandardReportContentItem,
   getCodeMeaningFromConceptNameCodeSequence,
@@ -59,7 +59,7 @@ function OHIFCornerstoneSRContainerItem(props) {
       <div className="mb-2">
         <span className="font-bold">{codeMeaning}: </span>
         <OHIFCornerstoneSREncapsulatedReport
-          content={stringToBlob(
+          content={utils.toBlob(
             formattedValue,
           )}
           encoding={ webEncoding }

@@ -428,20 +428,6 @@ export function getPayloadType(payload: string, suggestedMime: string = 'text/pl
 }
 
 /**
- * Given a string payload, encapsulate it into a Blob object.
- * This is used mostly to interface with components expecting blobs from different sources.
- *
- * @param {string} data
- * @param {string} mime MIME to add to Blob so other components can know how to handle contents.
- * @return Blob
- */
-export function stringToBlob(data: string, mime: string = payloadMIMEOptions.DEFAULT): Blob {
-  return new Blob([data], {
-    type: mime,
-  });
-}
-
-/**
  * One of the concerns with arbitrary payloads is sanitization. Here, we take an alleged HTML payload
  * and ensure we only capture contents between html tags. Ignore any other potential garbage outside
  * those boundaries.
