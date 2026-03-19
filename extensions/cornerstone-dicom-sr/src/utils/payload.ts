@@ -394,6 +394,8 @@ export const htmlSanitizerOptions = {
   enforceHtmlBoundary: true,
 };
 
+const payloadPrefixWindow = 2048;
+
 /**
  * Given a string payload, attempt to find out the likely MIME associated with it.
  * This function focuses on the MIMEs we care about for document handling.
@@ -405,13 +407,14 @@ export const htmlSanitizerOptions = {
  * @return string
  */
 export function getPayloadType(payload: string, suggestedMime: string = utils.MimeOptions.Text) {
+  const prefix = payload.length < payloadPrefixWindow ? payload : payload.substring(0,payloadPrefixWindow);
   // PDF
-  if (payload.indexOf('%PDF-') != -1) {
+  if (prefix.indexOf('%PDF-') != -1) {
     return utils.MimeOptions.Pdf;
   }
   // HTML.
   // Credit for validation regex goes to CSᵠ (https://stackoverflow.com/questions/15458876/check-if-a-string-is-html-or-not)
-  if (HTML_REGEX.test(payload)) {
+  if (HTML_REGEX.test(prefix)) {
     return utils.MimeOptions.Html;
   }
   // Passthrough mime if we cannot detect a special mime.
