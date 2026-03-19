@@ -1,5 +1,5 @@
 import {HTML_REGEX, HTML_EXTRACTION_REGEX} from './payload';
-import { getPayloadType, extractHTMLFromPayload, sanitizeHTML } from './payload';
+import { getPayloadType, extractHTMLFromPayload, sanitizeHtml } from './payload';
 import { utils } from '@ohif/core';
 
 const pdfFragment =
@@ -94,11 +94,11 @@ describe('payloadRegex', () => {
   });
 });
 
-describe('sanitizeHTML', () => {
+describe('sanitizeHtml', () => {
   test('should be able to extract HTML well-formed.', () => {
     payloads.forEach(payload => {
       const { inputPayload, extractedHtml } = payload;
-      const html = sanitizeHTML(inputPayload);
+      const html = sanitizeHtml(inputPayload);
       expect(html).toEqual(extractedHtml);
     });
   });

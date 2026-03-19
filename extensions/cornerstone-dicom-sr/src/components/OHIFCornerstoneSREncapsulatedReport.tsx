@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import {
   fromBase64,
   getPayloadType,
-  sanitizeHTML,
+  sanitizeHtml,
     toUTF8,
 } from '../utils/payload';
 import {utils} from "@ohif/core";
@@ -56,7 +56,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
     case utils.MimeOptions.Html:
       return (
         <blockquote className={css.defaultHTMLSRReportContainer}>
-          <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(textContent) }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(textContent) }} />
         </blockquote>
       );
     case utils.MimeOptions.Pdf:

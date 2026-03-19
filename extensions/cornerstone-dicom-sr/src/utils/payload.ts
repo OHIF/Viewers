@@ -456,7 +456,7 @@ export function toUTF8(data: string, initialEncoding: string = 'latin1'): string
  *
  * @param {string} data HTML payload we wish to clean up.
  */
-export function sanitizeHTML(
+export function sanitizeHtml(
   data: string
 ): string {
   const html = extractHTMLFromPayload(data);
