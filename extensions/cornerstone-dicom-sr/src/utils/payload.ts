@@ -431,7 +431,7 @@ export function getPayloadType(payload: string, suggestedMime: string = utils.Mi
  */
 export function extractHTMLFromPayload(data: string): string {
   const html = HTML_EXTRACTION_REGEX.exec(data) ?? [];
-  return html.shift();
+  return html.shift() ?? "";
 }
 
 // TODO: Switch over to using DicomBufferCODEC from dcmjs once PR #455 is merged and a new release
