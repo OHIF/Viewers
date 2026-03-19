@@ -3,12 +3,14 @@ import {
   fromBase64,
   getPayloadType,
   sanitizeHTML,
-  payloadMIMEOptions, toUTF8,
+    toUTF8,
 } from '../utils/payload';
+import {utils} from "@ohif/core";
 import { OHIFCornerstoneSREncapsulatedPDFReport } from './OHIFCornerstoneSREncapsulatedPDFReport';
 import { useState } from 'react';
 import OHIFLazyMarkdownComponent from './OHIFLazyMarkdown';
 import css from './OHIFCornerstoneSREncapsulatedReport.module.css';
+import LoadingSpinner from "@ohif/ui-next/components/Icons/Sources/LoadingSpinner";
 
 export interface ReportContentDisplayProps {
   readonly content: Blob;
@@ -20,7 +22,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
   props: ReportContentDisplayProps
 ): JSX.Element {
   const data = props.content;
-  const [mime, setMime] = useState<string>(payloadMIMEOptions.DEFAULT);
+  const [mime, setMime] = useState<string>(utils.MimeOptions.Default);
   const [textContent, setTextContent] = useState<string>("");
 
   useEffect(() => {
@@ -32,27 +34,32 @@ export function OHIFCornerstoneSREncapsulatedReport(
         // I understand that can be a very expensive operation, so we do the bare minimum mime correction we need.
         const correctMime = getPayloadType(decoded, mime);
         const utf8Text = toUTF8(decoded, props.encoding);
+
         setTextContent(utf8Text);
         setMime(correctMime);
       },
-      [data, props.expectB64, props.encoding]
+      [data, props.expectB64, props.encoding, textContent, mime]
     );
   })
 
+    if (textContent == null) {
+        return (<LoadingSpinner />);
+    }
+
   switch (mime) {
-    case payloadMIMEOptions.TEXT:
+    case utils.MimeOptions.Text:
       return (
           <blockquote>
             <OHIFLazyMarkdownComponent markdownContent={textContent} />
           </blockquote>
       );
-    case payloadMIMEOptions.HTML:
+    case utils.MimeOptions.Html:
       return (
         <blockquote className={css.defaultHTMLSRReportContainer}>
           <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(textContent) }} />
         </blockquote>
       );
-    case payloadMIMEOptions.PDF:
+    case utils.MimeOptions.Pdf:
       return (
         <blockquote>
           <OHIFCornerstoneSREncapsulatedPDFReport content={data} />
