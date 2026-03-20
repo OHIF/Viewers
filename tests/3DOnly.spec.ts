@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D only Test', async () => {
-  test('should render 3D only correctly. shouldUpdateThis', async ({
+  test('should render 3D only correctly.', async ({
     page,
     mainToolbarPageObject,
     viewportPageObject,
