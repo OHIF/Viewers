@@ -20,7 +20,6 @@ export function OHIFCornerstoneSREncapsulatedPDFReport(props: PDFViewProps): JSX
             <p>Your browser doesn’t support PDFs. Please download the PDF to view it: <a href={fileURL}>Download
                 PDF</a>.</p>
         </object>
-    )
-        ;
+    );
 
 }

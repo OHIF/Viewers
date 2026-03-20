@@ -1,16 +1,3 @@
-.noteBody {
-    font-size: var(--mantine-font-size-sm);
-}
-
-.noteCite {
-    font-size: var(--mantine-font-size-xs);
-    margin-block-start: 3;
-}
-
-.noteRoot {
-    padding: 5px;
-}
-
 /* Apply element color invertion to the container by default. This is to make white with black text reports pop. */
 .defaultHTMLSRReportContainer {
      filter: invert(100%);
