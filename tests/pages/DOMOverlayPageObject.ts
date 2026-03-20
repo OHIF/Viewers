@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { CLICK_NO_NAV_WAIT } from '../utils/clickOptions';
 import { DicomTagBrowserPageObject } from './DicomTagBrowserPageObject';
 
 export class DOMOverlayPageObject {
@@ -19,13 +20,13 @@ export class DOMOverlayPageObject {
           cancel: {
             button: cancelButton,
             click: async () => {
-              await cancelButton.click();
+              await cancelButton.click(CLICK_NO_NAV_WAIT);
             },
           },
           confirm: {
             button: confirmButton,
             click: async () => {
-              await confirmButton.click();
+              await confirmButton.click(CLICK_NO_NAV_WAIT);
             },
           },
         };
@@ -40,10 +41,10 @@ export class DOMOverlayPageObject {
           },
           fillAndSave: async (text: string) => {
             await locator.fill(text);
-            await saveButton.click();
+            await saveButton.click(CLICK_NO_NAV_WAIT);
           },
           save: async () => {
-            await saveButton.click();
+            await saveButton.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -67,7 +68,7 @@ export class DOMOverlayPageObject {
             return {
               locator: button,
               click: async () => {
-                await button.click();
+                await button.click(CLICK_NO_NAV_WAIT);
               },
             };
           },
@@ -76,7 +77,7 @@ export class DOMOverlayPageObject {
             return {
               locator: button,
               click: async () => {
-                await button.click();
+                await button.click(CLICK_NO_NAV_WAIT);
               },
             };
           },
@@ -96,19 +97,19 @@ export class DOMOverlayPageObject {
           cancel: {
             button: cancelButton,
             click: async () => {
-              await cancelButton.click();
+              await cancelButton.click(CLICK_NO_NAV_WAIT);
             },
           },
           noAndNotAskAgain: {
             button: noAndNotAskAgainButton,
             click: async () => {
-              await noAndNotAskAgainButton.click();
+              await noAndNotAskAgainButton.click(CLICK_NO_NAV_WAIT);
             },
           },
           confirm: {
             button: confirmButton,
             click: async () => {
-              await confirmButton.click();
+              await confirmButton.click(CLICK_NO_NAV_WAIT);
             },
           },
         };
@@ -121,13 +122,13 @@ export class DOMOverlayPageObject {
           no: {
             button: noButton,
             click: async () => {
-              await noButton.click();
+              await noButton.click(CLICK_NO_NAV_WAIT);
             },
           },
           yes: {
             button: yesButton,
             click: async () => {
-              await yesButton.click();
+              await yesButton.click(CLICK_NO_NAV_WAIT);
             },
           },
         };

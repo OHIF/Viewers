@@ -3,8 +3,7 @@ import { addLengthMeasurement, expect, scrollVolumeViewport, test, visitStudy } 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 });
 
 test('checks if Measurements right panel can be hidden/displayed', async ({

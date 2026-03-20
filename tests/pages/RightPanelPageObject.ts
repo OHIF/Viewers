@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 
+import { CLICK_NO_NAV_WAIT } from '../utils/clickOptions';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
 export class RightPanelPageObject {
@@ -21,15 +22,15 @@ export class RightPanelPageObject {
     return {
       button,
       click: async () => {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
       delete: async () => {
-        await button.click();
-        await page.getByRole('menuitem', { name: 'Delete' }).click();
+        await button.click(CLICK_NO_NAV_WAIT);
+        await page.getByRole('menuitem', { name: 'Delete' }).click(CLICK_NO_NAV_WAIT);
       },
       rename: async (text: string) => {
-        await button.click();
-        await page.getByRole('menuitem', { name: 'Rename' }).click();
+        await button.click(CLICK_NO_NAV_WAIT);
+        await page.getByRole('menuitem', { name: 'Rename' }).click(CLICK_NO_NAV_WAIT);
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
     };
@@ -41,23 +42,23 @@ export class RightPanelPageObject {
     return {
       button: actionsButton,
       click: async () => {
-        await actionsButton.click();
+        await actionsButton.click(CLICK_NO_NAV_WAIT);
       },
       delete: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('Delete').click();
+        await actionsButton.click(CLICK_NO_NAV_WAIT);
+        await this.page.getByTestId('Delete').click(CLICK_NO_NAV_WAIT);
       },
       toggleLock: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('LockToggle').click();
+        await actionsButton.click(CLICK_NO_NAV_WAIT);
+        await this.page.getByTestId('LockToggle').click(CLICK_NO_NAV_WAIT);
       },
       unlock: async () => {
-        await actionsButton.click();
-        await this.page.getByTestId('Unlock').click();
+        await actionsButton.click(CLICK_NO_NAV_WAIT);
+        await this.page.getByTestId('Unlock').click(CLICK_NO_NAV_WAIT);
       },
       rename: async (text: string) => {
-        await actionsButton.click();
-        await this.page.getByTestId('Rename').click();
+        await actionsButton.click(CLICK_NO_NAV_WAIT);
+        await this.page.getByTestId('Rename').click(CLICK_NO_NAV_WAIT);
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
     };
@@ -74,11 +75,11 @@ export class RightPanelPageObject {
         return row.getByTestId('data-row-title');
       },
       click: async () => {
-        await row.click();
+        await row.click(CLICK_NO_NAV_WAIT);
       },
       locator: row,
       toggleVisibility: async () => {
-        await row.getByTestId('data-row-visibility-toggle').click();
+        await row.getByTestId('data-row-visibility-toggle').click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -94,7 +95,7 @@ export class RightPanelPageObject {
   }
 
   async toggle() {
-    await this.page.getByTestId('side-panel-header-right').click();
+    await this.page.getByTestId('side-panel-header-right').click(CLICK_NO_NAV_WAIT);
   }
 
   get measurementsPanel() {
@@ -107,7 +108,7 @@ export class RightPanelPageObject {
       menuButton,
       panel: {
         deleteAll: async () => {
-          await page.getByRole('button', { name: 'Delete' }).click();
+          await page.getByRole('button', { name: 'Delete' }).click(CLICK_NO_NAV_WAIT);
         },
         getMeasurementCount: async () => {
           return await page.getByTestId('data-row').count();
@@ -121,7 +122,7 @@ export class RightPanelPageObject {
         },
       },
       select: async () => {
-        await menuButton.click();
+        await menuButton.click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -133,7 +134,7 @@ export class RightPanelPageObject {
     const selectedValue = page.getByTestId(`segmentation-select-value${suffix}`);
 
     const nthSegmentation = async (n: number) => {
-      await locator.click();
+      await locator.click(CLICK_NO_NAV_WAIT);
       return page.getByRole('option').nth(n);
     };
 
@@ -146,7 +147,7 @@ export class RightPanelPageObject {
       nthSegmentation,
       /** Opens the dropdown and clicks the nth segmentation (0-based) */
       selectNthSegmentation: async (n: number) => {
-        await (await nthSegmentation(n)).click();
+        await (await nthSegmentation(n)).click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -156,7 +157,7 @@ export class RightPanelPageObject {
     return {
       button,
       click: async () => {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -196,7 +197,7 @@ export class RightPanelPageObject {
       panel,
       segmentationSelect,
       select: async () => {
-        await menuButton.click();
+        await menuButton.click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -213,7 +214,7 @@ export class RightPanelPageObject {
       panel,
       segmentationSelect,
       select: async () => {
-        await menuButton.click();
+        await menuButton.click(CLICK_NO_NAV_WAIT);
       },
       tools: {
         get brush() {
@@ -223,7 +224,7 @@ export class RightPanelPageObject {
             button,
             input,
             click: async () => {
-              await button.click();
+              await button.click(CLICK_NO_NAV_WAIT);
             },
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
@@ -237,7 +238,7 @@ export class RightPanelPageObject {
             button,
             input,
             click: async () => {
-              await button.click();
+              await button.click(CLICK_NO_NAV_WAIT);
             },
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
@@ -251,7 +252,7 @@ export class RightPanelPageObject {
             button,
             input,
             click: async () => {
-              await button.click();
+              await button.click(CLICK_NO_NAV_WAIT);
             },
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
@@ -266,7 +267,7 @@ export class RightPanelPageObject {
           toggle: {
             locator: configToggle,
             click: async () => {
-              await configToggle.click();
+              await configToggle.click(CLICK_NO_NAV_WAIT);
             },
           },
 
@@ -310,7 +311,7 @@ export class RightPanelPageObject {
         return {
           button,
           click: async () => {
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -326,7 +327,7 @@ export class RightPanelPageObject {
       menuButton,
       panel,
       select: async () => {
-        await menuButton.click();
+        await menuButton.click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -340,12 +341,12 @@ export class RightPanelPageObject {
         return {
           button,
           click: async () => {
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
       async exportTmtvCsvReport() {
-        await page.getByTestId('exportTmtvCsvReport').click();
+        await page.getByTestId('exportTmtvCsvReport').click(CLICK_NO_NAV_WAIT);
       },
       tools: {
         get brush() {
@@ -355,7 +356,7 @@ export class RightPanelPageObject {
             button,
             input,
             click: async () => {
-              await button.click();
+              await button.click(CLICK_NO_NAV_WAIT);
             },
             setRadius: async (radius: number) => {
               await input.fill(radius.toString());
@@ -368,7 +369,7 @@ export class RightPanelPageObject {
           return {
             button,
             click: async () => {
-              await button.click();
+              await button.click(CLICK_NO_NAV_WAIT);
             },
             getPercentageOfMaxSUV: async () => {
               return await input.inputValue();

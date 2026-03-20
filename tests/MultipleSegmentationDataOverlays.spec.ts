@@ -4,8 +4,7 @@ import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.32722.99.99.239341353911714368772597187099978969331';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 });
 
 test('should display multiple segmentation overlays (both SEG and RT)', async ({

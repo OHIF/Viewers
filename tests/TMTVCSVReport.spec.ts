@@ -7,8 +7,7 @@ test('should create and download the TMTV CSV report correctly', async ({
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-  const mode = 'tmtv';
-  await visitStudy(page, studyInstanceUID, mode, 10000);
+  await visitStudy(page, studyInstanceUID, { mode: 'tmtv' });
 
   await rightPanelPageObject.tmtvPanel.addSegmentationButton.click();
   await rightPanelPageObject.tmtvPanel.tools.brush.click();

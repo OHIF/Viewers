@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { CLICK_NO_NAV_WAIT } from '../utils/clickOptions';
 
 export type WaitForLoadOptions = {
   viewportId?: string;
@@ -175,7 +176,7 @@ export class MainToolbarPageObject {
     return {
       button,
       async click() {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
     };
   }
@@ -187,7 +188,7 @@ export class MainToolbarPageObject {
     const layoutSelection = {
       button,
       async click() {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
     };
 
@@ -199,7 +200,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -209,7 +210,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
             await self.waitForVolumeLoad();
           },
         };
@@ -220,7 +221,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
             await self.waitForLoad(DEFAULT_3D_SERIES_UID, { viewportType: 'volume3d' });
           },
         };
@@ -231,7 +232,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
             await self.waitForLoad(DEFAULT_3D_SERIES_UID, { viewportType: 'volume3d' });
           },
         };
@@ -242,7 +243,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
             await self.waitForVolumeLoad();
           },
         };
@@ -253,7 +254,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
             await self.waitForVolumeLoad();
           },
         };
@@ -268,7 +269,7 @@ export class MainToolbarPageObject {
     const measurementTools = {
       button,
       async click() {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
     };
 
@@ -279,7 +280,7 @@ export class MainToolbarPageObject {
         return {
           button,
           async click() {
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -289,7 +290,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -299,7 +300,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -309,7 +310,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -319,7 +320,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -329,7 +330,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -339,7 +340,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -349,7 +350,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -359,7 +360,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -369,7 +370,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -384,7 +385,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await measurementTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -398,7 +399,7 @@ export class MainToolbarPageObject {
     const moreTools = {
       button,
       async click() {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
     };
 
@@ -410,7 +411,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -420,7 +421,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -430,7 +431,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -440,7 +441,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -450,7 +451,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -460,7 +461,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -470,7 +471,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -480,7 +481,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await moreTools.click();
-            await button.click();
+            await button.click(CLICK_NO_NAV_WAIT);
           },
         };
       },
@@ -492,7 +493,7 @@ export class MainToolbarPageObject {
     return {
       button,
       async click() {
-        await button.click();
+        await button.click(CLICK_NO_NAV_WAIT);
       },
     };
   }

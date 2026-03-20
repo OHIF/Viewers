@@ -21,8 +21,11 @@ import { getSvgPath } from './getSvgPath';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import { CLICK_NO_NAV_WAIT } from './clickOptions';
 
+export type { VisitStudyOptions } from './visitStudy';
 export {
+  CLICK_NO_NAV_WAIT,
   visitStudy,
   addOHIFConfiguration,
   checkForScreenshot,

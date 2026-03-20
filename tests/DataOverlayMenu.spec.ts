@@ -6,8 +6,7 @@ test('should display added, selected and removed segmentation promptly', async (
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.32722.99.99.239341353911714368772597187099978969331';
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
 
   // Add a segmentation overlay and ensure the overlay menu reflects this change.
   const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;

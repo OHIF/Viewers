@@ -9,8 +9,7 @@ test.beforeEach(async ({
   DOMOverlayPageObject,
   rightPanelPageObject
 }) => {
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();

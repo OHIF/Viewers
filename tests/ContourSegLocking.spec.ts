@@ -10,8 +10,7 @@ test('should not allow contours to be edited in basic viewer mode', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
@@ -54,8 +53,7 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
 
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
@@ -108,8 +106,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
 
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');

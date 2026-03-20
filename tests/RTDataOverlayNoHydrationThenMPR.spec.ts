@@ -3,8 +3,7 @@ import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 });
 
 test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({

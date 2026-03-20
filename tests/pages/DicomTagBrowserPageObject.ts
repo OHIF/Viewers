@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { CLICK_NO_NAV_WAIT } from '../utils/clickOptions';
 
 export class DicomTagBrowserPageObject {
   readonly page: Page;
@@ -38,7 +39,7 @@ export class DicomTagBrowserPageObject {
 
       async selectOption(index) {
         const selectedText = await this.getOptionText(index);
-        await options.nth(index).click();
+        await options.nth(index).click(CLICK_NO_NAV_WAIT);
         return selectedText;
       },
     };
