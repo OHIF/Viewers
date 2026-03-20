@@ -1,9 +1,0 @@
-/* Apply element color invertion to the container by default. This is to make white with black text reports pop. */
-.defaultHTMLSRReportContainer {
-     filter: invert(100%);
- }
-
-/* Undo the element color invertion applied to the container by default */
-.defaultHTMLSRReportContainer  img {
-    filter: invert(100%);
-}

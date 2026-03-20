@@ -55,7 +55,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
       );
     case utils.MimeOptions.Html:
       return (
-        <blockquote className={css.defaultHTMLSRReportContainer}>
+        <blockquote className="invert [&_img]:invert">
           <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(textContent) }} />
         </blockquote>
       );
