@@ -13,8 +13,13 @@ export default function getCornerstoneViewportType(
   viewportType: string,
   displaySets?: Types.DisplaySet[]
 ): Enums.ViewportType {
+  // Overlays (SEG, RTSTRUCT, …) must not drive viewport classification; otherwise
+  // `displaySets: [SEG, CT]` picks stack/SEG handling and MPR orientations collapse.
+  const primaryDisplaySet =
+    displaySets?.find(ds => ds && !ds.isOverlayDisplaySet) ?? displaySets?.[0];
+
   const lowerViewportType =
-    displaySets?.[0]?.viewportType?.toLowerCase() || viewportType.toLowerCase();
+    primaryDisplaySet?.viewportType?.toLowerCase() || viewportType.toLowerCase();
   if (lowerViewportType === STACK) {
     return Enums.ViewportType.STACK;
   }

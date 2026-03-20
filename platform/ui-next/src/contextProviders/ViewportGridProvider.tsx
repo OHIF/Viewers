@@ -156,6 +156,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
       case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
         const { payload } = action;
         const viewports = new Map(state.viewports);
+        let mutated = false;
 
         payload.forEach(updatedViewport => {
           const { viewportId, displaySetInstanceUIDs } = updatedViewport;
@@ -165,6 +166,29 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
           }
 
           const previousViewport = viewports.get(viewportId);
+
+          const displaySetsUnchanged =
+            previousViewport &&
+            Array.isArray(displaySetInstanceUIDs) &&
+            Array.isArray(previousViewport.displaySetInstanceUIDs) &&
+            displaySetInstanceUIDs.length === previousViewport.displaySetInstanceUIDs.length &&
+            displaySetInstanceUIDs.every(
+              (uid, i) => uid === previousViewport.displaySetInstanceUIDs[i]
+            );
+
+          const noExplicitGridOptions =
+            updatedViewport.viewportOptions == null &&
+            !(updatedViewport.displaySetOptions?.length);
+
+          // Avoid re-merging viewportOptions / presentationIds when only the hanging
+          // protocol re-applies the same display sets (e.g. SEG hydrate with the
+          // referenced volume). New option objects trigger Cornerstone viewports to
+          // reload even though the series are unchanged.
+          if (displaySetsUnchanged && noExplicitGridOptions) {
+            return;
+          }
+
+          mutated = true;
 
           // remove options that were meant for one time usage
           if (previousViewport?.viewportOptions?.initialImageOptions) {
@@ -223,6 +247,10 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
             ...newViewport,
           });
         });
+
+        if (!mutated) {
+          return state;
+        }
 
         return { ...state, viewports };
       }

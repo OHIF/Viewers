@@ -85,7 +85,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       // clean: true,
       publicPath: '/',
     },
-    context: appSrc,
+    context: SRC_DIR,
     stats: {
       colors: true,
       hash: true,

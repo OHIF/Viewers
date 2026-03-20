@@ -661,6 +661,11 @@ export default class HangingProtocolService extends PubSubService {
     if (displaySet?.unsupported) {
       throw new Error('Unsupported displaySet');
     }
+    // Overlays (SEG, RTSTRUCT) share selectors with referenced volumes but must not
+    // sync to every matched viewport before hydration (would replace e.g. 3D primary).
+    if (displaySet?.isOverlayDisplaySet) {
+      return defaultReturn;
+    }
     const protocol = this.protocol;
     const protocolStage = protocol.stages[this.stageIndex];
     const protocolViewports = protocolStage.viewports;

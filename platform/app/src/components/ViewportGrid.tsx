@@ -321,8 +321,14 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
     return { component: EmptyViewport, isReferenceViewable: () => false };
   }
 
+  // Use the primary (non-overlay) series for routing — same ordering issue as
+  // getCornerstoneViewportType: SEG first would open OHIFCornerstoneSEGViewport
+  // and pass only SEG into Cornerstone, breaking volume MPR.
+  const primaryDisplaySet =
+    displaySets.find(ds => ds && !ds.isOverlayDisplaySet) ?? displaySets[0];
+
   // Todo: Do we have a viewport that has two different SOPClassHandlerIds?
-  const SOPClassHandlerId = displaySets[0].SOPClassHandlerId;
+  const SOPClassHandlerId = primaryDisplaySet.SOPClassHandlerId;
 
   for (let i = 0; i < viewportComponents.length; i++) {
     if (!viewportComponents[i]) {
@@ -337,10 +343,10 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
     }
   }
 
-  console.log("Can't show displaySet", SOPClassHandlerId, displaySets[0]);
+  console.log("Can't show displaySet", SOPClassHandlerId, primaryDisplaySet);
   uiNotificationService.show({
     title: 'Viewport Not Supported Yet',
-    message: `Cannot display SOPClassUID of ${displaySets[0].SOPClassUID} yet`,
+    message: `Cannot display SOPClassUID of ${primaryDisplaySet.SOPClassUID} yet`,
     type: 'error',
   });
 

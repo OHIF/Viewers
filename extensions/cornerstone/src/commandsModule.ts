@@ -2093,6 +2093,10 @@ function commandsModule({
         displaySetInstanceUIDs,
       });
 
+      if (!updatedViewports?.length) {
+        return;
+      }
+
       actions.setDisplaySetsForViewports({
         viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
