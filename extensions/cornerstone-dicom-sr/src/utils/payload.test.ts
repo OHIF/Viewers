@@ -1,4 +1,4 @@
-import {HTML_REGEX, HTML_EXTRACTION_REGEX} from './payload';
+import {HTML_REGEX} from './payload';
 import { getPayloadType, extractHTMLFromPayload, sanitizeHtml } from './payload';
 import { utils } from '@ohif/core';
 
@@ -48,14 +48,17 @@ const shiftedPDFFragment =
   '>>\n' +
   'stream\n';
 
+//TODO: fix spacing issue within tags in sanitizeHTML dependency (external package) and then update this test.
 const payloads = [
-  { inputPayload: 'faklsjdflk;ajsd;flkja', extractedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
-  { inputPayload: '<html>', extractedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
-  { inputPayload: '<html><head></head><body></body>', extractedHtml: "", expectedMime: utils.MimeOptions.Html, isHtml: true },
-  { inputPayload: '<html>sadf</html>', extractedHtml: "<html>sadf</html>", expectedMime: utils.MimeOptions.Html, isHtml: true },
-  { inputPayload: '<p>ssadfasdfas</p>', extractedHtml: "", expectedMime: utils.MimeOptions.Html, isHtml: true },
-  { inputPayload: pdfFragment, extractedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
-  { inputPayload: shiftedPDFFragment, extractedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
+  { inputPayload: 'faklsjdflk;ajsd;flkja', extractedHtml: "", sanitizedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
+  { inputPayload: "<html>", extractedHtml: "", sanitizedHtml: "", expectedMime: utils.MimeOptions.Text, isHtml: false },
+  { inputPayload: "<html><head></head><body></body>", extractedHtml: "<html><head></head><body></body>", sanitizedHtml: "<html><head></head><body></body></html>", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: "<  html><head></head><body></body>", extractedHtml: "<  html><head></head><body></body>", sanitizedHtml: "&lt;  html&gt;<head></head><body></body>", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: "<html><head></head><  body></body>", extractedHtml: "<html><head></head><  body></body>", sanitizedHtml: "<html><head></head>&lt;  body&gt;</html>", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: "<html>sadf</html>", extractedHtml: "<html>sadf</html>", sanitizedHtml: "<html>sadf</html>", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: "<p>ssadfasdfas</p>", extractedHtml: "<p>ssadfasdfas</p>", sanitizedHtml: "<p>ssadfasdfas</p>", expectedMime: utils.MimeOptions.Html, isHtml: true },
+  { inputPayload: pdfFragment, extractedHtml: "", sanitizedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
+  { inputPayload: shiftedPDFFragment, extractedHtml: "", sanitizedHtml: "", expectedMime: utils.MimeOptions.Pdf, isHtml: false },
 ];
 
 describe('payloadRegex', () => {
@@ -76,7 +79,7 @@ describe('payloadRegex', () => {
   test('should be able to extract html if input is well-formed', () => {
     payloads.forEach(payload => {
       const { inputPayload, extractedHtml } = payload;
-      const htmlExtractor = HTML_EXTRACTION_REGEX.exec(inputPayload);
+      const htmlExtractor = HTML_REGEX.exec(inputPayload);
       try {
         const html = htmlExtractor.shift();
         expect(html).toEqual(extractedHtml);
@@ -95,11 +98,11 @@ describe('payloadRegex', () => {
 });
 
 describe('sanitizeHtml', () => {
-  test('should be able to extract HTML well-formed.', () => {
+  test('should be able to sanitize HTML fragments.', () => {
     payloads.forEach(payload => {
-      const { inputPayload, extractedHtml } = payload;
+      const { inputPayload, sanitizedHtml } = payload;
       const html = sanitizeHtml(inputPayload);
-      expect(html).toEqual(extractedHtml);
+      expect(html).toEqual(sanitizedHtml);
     });
   });
 });
