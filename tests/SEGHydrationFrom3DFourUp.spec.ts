@@ -6,6 +6,7 @@ import {
   test,
   visitStudy,
 } from './utils';
+import { DEFAULT_3D_SERIES_UID } from './pages';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';
@@ -14,21 +15,24 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up SEG hydration', async () => {
-  test('should properly hydrate SEG from 3D four up layout', async ({
+  test('should properly hydrate SEG from 3D four up layout shouldUpdateThis', async ({
     page,
     DOMOverlayPageObject,
     leftPanelPageObject,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await page.waitForTimeout(5000);
+    await mainToolbarPageObject.waitForLoad(DEFAULT_3D_SERIES_UID, {
+      viewportType: 'volume3d',
+    });
 
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG
     );
 
@@ -37,7 +41,7 @@ test.describe('3D four up SEG hydration', async () => {
     await page.waitForTimeout(5000);
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
     );
 
@@ -46,7 +50,7 @@ test.describe('3D four up SEG hydration', async () => {
     await page.waitForTimeout(5000);
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated
     );
   });

@@ -27,6 +27,8 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
+const POLYSEG_WASM_MODULE = require.resolve('@icr/polyseg-wasm', { paths: [__dirname] });
+
 export default defineConfig({
   source: {
     entry: {
@@ -94,6 +96,7 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
       '@routes': path.resolve(__dirname, './platform/app/src/routes'),
       '@state': path.resolve(__dirname, './platform/app/src/state'),
+      '@icr/polyseg-wasm': POLYSEG_WASM_MODULE,
     },
   },
   output: {

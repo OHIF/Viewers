@@ -21,8 +21,9 @@ import { MultiMonitorService } from './MultiMonitorService';
 
 import type Services from '../types/Services';
 
+export type { Services };
+
 export {
-  Services,
   MeasurementService,
   ServicesManager,
   ServiceProvidersManager,

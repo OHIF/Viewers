@@ -42,11 +42,20 @@ export async function updateSegmentationStats({
     return null;
   }
 
-  const stats = await cornerstoneTools.utilities.segmentation.getStatistics({
-    segmentationId,
-    segmentIndices,
-    mode: 'individual',
-  });
+  let stats;
+  try {
+    stats = await cornerstoneTools.utilities.segmentation.getStatistics({
+      segmentationId,
+      segmentIndices,
+      mode: 'individual',
+    });
+  } catch (e) {
+    console.debug('getStatistics failed (segmentation may not be in tools state yet):', {
+      segmentationId,
+      e,
+    });
+    return null;
+  }
 
   if (!stats) {
     return null;

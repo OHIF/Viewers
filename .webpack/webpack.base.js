@@ -36,6 +36,11 @@ const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8
 //
 dotenv.config();
 
+// Pin to workspace install when @cornerstonejs/* is linked (resolved entry file, not package root)
+const POLYSEG_WASM_MODULE = require.resolve('@icr/polyseg-wasm', {
+  paths: [path.resolve(__dirname, '..')],
+});
+
 const defineValues = {
   /* Application */
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -80,7 +85,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       // clean: true,
       publicPath: '/',
     },
-    context: SRC_DIR,
+    context: appSrc,
     stats: {
       colors: true,
       hash: true,
@@ -201,6 +206,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
+        // Linked @cornerstonejs/polymorphic-segmentation workers resolve from realpath; pin WASM to workspace install
+        '@icr/polyseg-wasm': POLYSEG_WASM_MODULE,
       },
       // Which directories to search when resolving modules
       modules: [
