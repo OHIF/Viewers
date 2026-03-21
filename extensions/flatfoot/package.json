@@ -1,0 +1,11 @@
+{
+  "name": "@custom/extension-flatfoot",
+  "version": "1.0.0",
+  "description": "Flatfoot Measurement Module — calcaneal pitch, Clarke angle, arch index, Meary angle",
+  "main": "src/index.tsx",
+  "private": true,
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "@ohif/core": "^3.0.0"
+  }
+}

@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+
+const EMBED_VIEWER_EVENT = 'ohif:embedViewer';
 import PropTypes from 'prop-types';
 
 import { InvestigationalUseDialog } from '@ohif/ui-next';
@@ -147,6 +149,22 @@ function ViewerLayout({
     };
   }, [panelService, hasPanels]);
 
+  const [embeddedViewerUrl, setEmbeddedViewerUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const url = (e as CustomEvent<{ url: string | null }>).detail?.url;
+      setEmbeddedViewerUrl(url ?? null);
+    };
+    window.addEventListener(EMBED_VIEWER_EVENT, handler);
+    return () => window.removeEventListener(EMBED_VIEWER_EVENT, handler);
+  }, []);
+
+  const closeEmbedded = useCallback(() => {
+    (window as any)._ohifEmbeddedViewer = null;
+    window.dispatchEvent(new CustomEvent(EMBED_VIEWER_EVENT, { detail: { url: null } }));
+  }, []);
+
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
@@ -163,58 +181,79 @@ function ViewerLayout({
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
-          <ResizablePanelGroup {...resizablePanelGroupProps}>
-            {/* LEFT SIDEPANELS */}
-            {hasLeftPanels ? (
-              <>
-                <ResizablePanel {...resizableLeftPanelProps}>
-                  <SidePanelWithServices
-                    side="left"
-                    isExpanded={!leftPanelClosedState}
-                    servicesManager={servicesManager}
-                    {...leftPanelProps}
-                  />
-                </ResizablePanel>
-                <ResizableHandle
-                  onDragging={onHandleDragging}
-                  disabled={!leftPanelResizable}
-                  className={resizableHandleClassName}
-                />
-              </>
-            ) : null}
-            {/* TOOLBAR + GRID */}
-            <ResizablePanel {...resizableViewportGridPanelProps}>
-              <div className="flex h-full flex-1 flex-col">
-                <div
-                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
-                  onMouseEnter={handleMouseEnter}
+
+            {embeddedViewerUrl ? (
+            /* ── EMBEDDED: full-width iframe, replaces viewport ── */
+            <div className="flex h-full w-full flex-col bg-black">
+              <div className="flex shrink-0 items-center justify-between border-b border-gray-700 px-3 py-1">
+                <span className="text-xs text-gray-400">Embedded Viewer</span>
+                <button
+                  className="rounded px-2 py-0.5 text-xs text-white opacity-70 hover:bg-gray-700 hover:opacity-100"
+                  onClick={closeEmbedded}
                 >
-                  <ViewportGridComp
-                    servicesManager={servicesManager}
-                    viewportComponents={viewportComponents}
-                    commandsManager={commandsManager}
-                  />
-                </div>
+                  ✕ Close
+                </button>
               </div>
-            </ResizablePanel>
-            {hasRightPanels ? (
-              <>
-                <ResizableHandle
-                  onDragging={onHandleDragging}
-                  disabled={!rightPanelResizable}
-                  className={resizableHandleClassName}
-                />
-                <ResizablePanel {...resizableRightPanelProps}>
-                  <SidePanelWithServices
-                    side="right"
-                    isExpanded={!rightPanelClosedState}
-                    servicesManager={servicesManager}
-                    {...rightPanelProps}
+              <iframe
+                src={embeddedViewerUrl}
+                className="w-full flex-1 border-0"
+                style={{ minHeight: 0 }}
+                title="Embedded Viewer"
+              />
+            </div>
+          ) : (
+            /* ── NORMAL LAYOUT ── */
+            <ResizablePanelGroup {...resizablePanelGroupProps}>
+              {hasLeftPanels ? (
+                <>
+                  <ResizablePanel {...resizableLeftPanelProps}>
+                    <SidePanelWithServices
+                      side="left"
+                      isExpanded={!leftPanelClosedState}
+                      servicesManager={servicesManager}
+                      {...leftPanelProps}
+                    />
+                  </ResizablePanel>
+                  <ResizableHandle
+                    onDragging={onHandleDragging}
+                    disabled={!leftPanelResizable}
+                    className={resizableHandleClassName}
                   />
-                </ResizablePanel>
-              </>
-            ) : null}
-          </ResizablePanelGroup>
+                </>
+              ) : null}
+              <ResizablePanel {...resizableViewportGridPanelProps}>
+                <div className="flex h-full flex-1 flex-col">
+                  <div
+                    className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                    onMouseEnter={handleMouseEnter}
+                  >
+                    <ViewportGridComp
+                      servicesManager={servicesManager}
+                      viewportComponents={viewportComponents}
+                      commandsManager={commandsManager}
+                    />
+                  </div>
+                </div>
+              </ResizablePanel>
+              {hasRightPanels ? (
+                <>
+                  <ResizableHandle
+                    onDragging={onHandleDragging}
+                    disabled={!rightPanelResizable}
+                    className={resizableHandleClassName}
+                  />
+                  <ResizablePanel {...resizableRightPanelProps}>
+                    <SidePanelWithServices
+                      side="right"
+                      isExpanded={!rightPanelClosedState}
+                      servicesManager={servicesManager}
+                      {...rightPanelProps}
+                    />
+                  </ResizablePanel>
+                </>
+              ) : null}
+            </ResizablePanelGroup>
+          )}
         </React.Fragment>
       </div>
       <Onboarding tours={customizationService.getCustomization('ohif.tours')} />

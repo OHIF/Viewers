@@ -703,6 +703,44 @@ const toolbarButtons: Button[] = [
   //     evaluate: 'evaluate.action',
   //   },
   // },
+  {
+    id: 'EcgViewerOpen',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tab-linear',
+      label: 'ECG Viewer',
+      tooltip: 'Open / close ECG Viewer',
+      commands: 'openEcgViewer',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'FootprintOpen',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-link',
+      label: 'Footprint',
+      tooltip: 'Open / close Footprint',
+      commands: 'openFootprint',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'SmartPaintOpen',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-link',
+      label: 'Smart Paint',
+      tooltip: 'Open / close Smart Paint',
+      commands: 'openSmartPaint',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'ClinicalViewers',
+    uiType: 'ohif.clinicalViewers',
+    props: {},
+  },
 ];
 
 export default toolbarButtons;

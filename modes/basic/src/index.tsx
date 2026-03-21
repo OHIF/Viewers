@@ -219,6 +219,7 @@ export const toolbarSections = {
     'Layout',
     'Crosshairs',
     'MoreTools',
+    'ClinicalViewers',
   ],
 
   [TOOLBAR_SECTIONS.viewportActionMenu.topLeft]: ['orientationMenu', 'dataOverlayMenu'],
@@ -273,6 +274,9 @@ export const toolbarSections = {
     'UltrasoundDirectionalTool',
     'WindowLevelRegion',
     'SegmentLabelTool',
+    'EcgViewerOpen',
+    'FootprintOpen',
+    'SmartPaintOpen',
   ],
 };
 
@@ -281,8 +285,8 @@ export const basicLayout = {
   props: {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
-    rightPanelClosed: true,
+    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.measurements],
+    rightPanelClosed: false,
     rightPanelResizable: true,
     viewports: [
       {
@@ -360,7 +364,7 @@ export const modeInstance = {
   // come first to remove video transfer syntax before ohif uses images
   sopClassHandlers,
   toolbarButtons,
-  enableSegmentationEdit: false,
+  enableSegmentationEdit: true,
   nonModeModalities: NON_IMAGE_MODALITIES,
 };
 

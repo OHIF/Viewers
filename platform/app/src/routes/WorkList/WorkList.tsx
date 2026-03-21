@@ -375,7 +375,50 @@ function WorkList({
               : []
           }
         >
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row flex-wrap gap-2">
+            {/* ── Clinical Tool Shortcuts ───────────────────────────────── */}
+            <Link to="/ecg-viewer">
+              <Button
+                type={ButtonEnums.type.primary}
+                size={ButtonEnums.size.smallTall}
+                startIcon={<Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />}
+                onClick={() => {}}
+              >
+                ECG Viewer
+              </Button>
+            </Link>
+            <Link to="/smart-paint">
+              <Button
+                type={ButtonEnums.type.primary}
+                size={ButtonEnums.size.smallTall}
+                startIcon={<Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />}
+                onClick={() => {}}
+              >
+                Smart Paint
+              </Button>
+            </Link>
+            <Link to="/flatfoot">
+              <Button
+                type={ButtonEnums.type.primary}
+                size={ButtonEnums.size.smallTall}
+                startIcon={<Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />}
+                onClick={() => {}}
+              >
+                Flatfoot Analysis
+              </Button>
+            </Link>
+            <Link to="/viewer-hub">
+              <Button
+                type={ButtonEnums.type.primary}
+                size={ButtonEnums.size.smallTall}
+                startIcon={<Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />}
+                onClick={() => {}}
+              >
+                Clinical Hub
+              </Button>
+            </Link>
+            {/* ── Separator ─────────────────────────────────────────────── */}
+            <div className="mx-1 w-px self-stretch bg-gray-700" />
             {(appConfig.groupEnabledModesFirst
               ? appConfig.loadedModes.sort((a, b) => {
                   const isValidA = a.isValidMode({
