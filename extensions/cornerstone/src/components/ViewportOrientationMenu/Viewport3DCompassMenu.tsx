@@ -2,6 +2,7 @@ import React from 'react';
 import { cn, Icons, useIconPresentation } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
+import { getVolume3dSpin, setVolume3dSpin } from './viewport3dSpinStore';
 
 function Viewport3DCompassMenu({
   location,
@@ -25,7 +26,7 @@ function Viewport3DCompassMenu({
   const viewportIdToUse = viewportId || gridState.activeViewportId;
   const { IconContainer, className: iconClassName, containerProps } = useIconPresentation();
 
-  const [spin, setSpin] = React.useState(0);
+  const [spin, setSpin] = React.useState(() => getVolume3dSpin(viewportIdToUse));
 
   React.useEffect(() => {
     if (spin === 0) return;
@@ -204,7 +205,13 @@ function Viewport3DCompassMenu({
           <button
             type="button"
             className="mr-2 cursor-pointer text-lg text-neutral-400 outline-none hover:text-neutral-200 focus:text-neutral-200"
-            onClick={() => setSpin(s => (s === 0 ? 1 : 0))}
+            onClick={() =>
+              setSpin(s => {
+                const next = s === 0 ? 1 : 0;
+                setVolume3dSpin(viewportIdToUse, next);
+                return next;
+              })
+            }
             aria-label={spin === 0 ? 'Start spin' : 'Stop spin'}
           >
             Spin
@@ -213,7 +220,13 @@ function Viewport3DCompassMenu({
             variant="ghost"
             size="icon"
             className="h-7 w-7"
-            onClick={() => setSpin(s => s - 1)}
+            onClick={() =>
+              setSpin(s => {
+                const next = s - 1;
+                setVolume3dSpin(viewportIdToUse, next);
+                return next;
+              })
+            }
             aria-label="Decrease spin"
           >
             <Icons.ChevronLeft className="h-4 w-4" />
@@ -225,7 +238,13 @@ function Viewport3DCompassMenu({
             variant="ghost"
             size="icon"
             className="h-7 w-7"
-            onClick={() => setSpin(s => s + 1)}
+            onClick={() =>
+              setSpin(s => {
+                const next = s + 1;
+                setVolume3dSpin(viewportIdToUse, next);
+                return next;
+              })
+            }
             aria-label="Increase spin"
           >
             <Icons.ChevronRight className="h-4 w-4" />
