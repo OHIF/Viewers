@@ -13,6 +13,7 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import { Volume3dSpinDriver } from '../components/ViewportOrientationMenu/Volume3dSpinDriver';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
@@ -358,6 +359,7 @@ const OHIFCornerstoneViewport = React.memo(
             />
           )}
         </div>
+        <Volume3dSpinDriver viewportId={viewportId} />
         {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
         <OHIFViewportActionCorners viewportId={viewportId} />
       </React.Fragment>

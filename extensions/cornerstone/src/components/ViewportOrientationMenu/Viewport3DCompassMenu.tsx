@@ -28,26 +28,6 @@ function Viewport3DCompassMenu({
 
   const [spin, setSpin] = React.useState(() => getVolume3dSpin(viewportIdToUse));
 
-  React.useEffect(() => {
-    if (spin === 0) return;
-    const degreesPerSecondPerSpin = 18;
-    let lastTime = performance.now();
-    let rafId: number;
-    const tick = () => {
-      const now = performance.now();
-      const deltaMs = now - lastTime;
-      lastTime = now;
-      const angle = -spin * degreesPerSecondPerSpin * (deltaMs / 1000);
-      commandsManager.runCommand('rotateViewport3DBy', {
-        viewportId: viewportIdToUse,
-        angle,
-      });
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [spin, viewportIdToUse]);
-
   const handleDirectionChange = (direction: 'S' | 'P' | 'R' | 'L' | 'A' | 'I') => {
     commandsManager.runCommand('setViewport3DViewDirection', {
       viewportId: viewportIdToUse,

@@ -1,12 +1,8 @@
-import React, { memo, useSyncExternalStore } from 'react';
+import React, { memo } from 'react';
 import { ViewportActionCorners, IconPresentationProvider, ToolButton } from '@ohif/ui-next';
 import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
 import { ButtonLocation } from '@ohif/core/src/services/ToolBarService/ToolbarService';
 import { useViewportHover } from '../hooks';
-import {
-  getVolume3dSpin,
-  subscribeVolume3dSpin,
-} from './ViewportOrientationMenu/viewport3dSpinStore';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
@@ -15,13 +11,8 @@ export type OHIFViewportActionCornersProps = {
 function OHIFViewportActionCornersComponent({ viewportId }: OHIFViewportActionCornersProps) {
   // Use the viewport hover hook to track if viewport is hovered or active
   const { isHovered, isActive } = useViewportHover(viewportId);
-  const volume3dSpin = useSyncExternalStore(
-    subscribeVolume3dSpin,
-    () => getVolume3dSpin(viewportId),
-    () => getVolume3dSpin(viewportId)
-  );
 
-  const shouldShowCorners = isHovered || isActive || volume3dSpin !== 0;
+  const shouldShowCorners = isHovered || isActive;
 
   if (!shouldShowCorners) {
     return null;
