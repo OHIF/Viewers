@@ -461,6 +461,3 @@ to corner positions significantly affect the calculated angles.
 | Pes Planus (flat foot) | < 17° | < 42° | > 0.26 | > 4° |
 
 ---
-
-*Reference: Cavanagh PR, Rodgers MM. The arch index: a useful measure from footprints.
-J Biomech. 1987;20(5):547-51.*
