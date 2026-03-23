@@ -1,6 +1,5 @@
 import {
   attemptAction,
-  checkForScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -13,17 +12,16 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up Test', async () => {
-  test('should render 3D four up correctly with load check.', async ({
+  test('should render 3D four up correctly with load check. shouldUpdateThis', async ({
     page,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await checkForScreenshot(
-      page,
-      page,
+    await viewportPageObject.checkForScreenshot(
       screenShotPaths.threeDFourUp.threeDFourUpDisplayedCorrectly
     );
   });

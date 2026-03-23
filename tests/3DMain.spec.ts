@@ -1,6 +1,5 @@
 import {
   attemptAction,
-  checkForScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -13,9 +12,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D main Test', async () => {
-  test('should render 3D main correctly. shouldUpdateThis', async ({ page, mainToolbarPageObject }) => {
+  test('should render 3D main correctly. shouldUpdateThis', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
     await mainToolbarPageObject.layoutSelection.threeDMain.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await checkForScreenshot(page, page, screenShotPaths.threeDMain.threeDMainDisplayedCorrectly);
+    await viewportPageObject.checkForScreenshot(screenShotPaths.threeDMain.threeDMainDisplayedCorrectly);
   });
 });

@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import {
+  checkForScreenshot,
   getMousePosition,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
@@ -15,6 +16,22 @@ type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type ViewportScreenshotOptions = {
+  attempts?: number;
+  delay?: number;
+  maxDiffPixelRatio?: number;
+  threshold?: number;
+  normalizedClip?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  fullPage?: boolean;
+  locator?: Locator;
+  hideSelectors?: string[];
 };
 
 export interface IOverlayText {
@@ -101,6 +118,45 @@ export class ViewportPageObject {
   constructor(page: Page) {
     this.page = page;
     this.dataOverlayPageObject = new DataOverlayPageObject(page);
+  }
+
+  async checkForScreenshot(
+    screenshotPath: string,
+    { locator, hideSelectors = ['[data-testid="viewport-action-arrows"]'], ...options }: ViewportScreenshotOptions = {}
+  ) {
+    const screenshotLocator = locator ?? this.grid;
+
+    await this.page.evaluate(selectors => {
+      selectors.forEach(selector => {
+        document.querySelectorAll<HTMLElement>(selector).forEach(element => {
+          if (!element.hasAttribute('data-screenshot-prev-visibility')) {
+            element.setAttribute('data-screenshot-prev-visibility', element.style.visibility || '');
+          }
+          element.style.visibility = 'hidden';
+        });
+      });
+    }, hideSelectors);
+
+    try {
+      await checkForScreenshot({
+        page: this.page,
+        locator: screenshotLocator,
+        screenshotPath,
+        ...options,
+      });
+    } finally {
+      await this.page.evaluate(selectors => {
+        selectors.forEach(selector => {
+          document.querySelectorAll<HTMLElement>(selector).forEach(element => {
+            const previousVisibility = element.getAttribute('data-screenshot-prev-visibility');
+            if (previousVisibility !== null) {
+              element.style.visibility = previousVisibility;
+              element.removeAttribute('data-screenshot-prev-visibility');
+            }
+          });
+        });
+      }, hideSelectors);
+    }
   }
 
   private getAnnotation(viewport: Locator, nth: number) {
