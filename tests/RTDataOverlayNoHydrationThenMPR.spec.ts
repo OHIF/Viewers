@@ -23,7 +23,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Hide the overlay menu.
   await dataOverlayPageObject.toggle();
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   await checkForScreenshot(
     page,
@@ -33,7 +33,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   await checkForScreenshot(
     page,

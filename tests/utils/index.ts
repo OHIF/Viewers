@@ -1,4 +1,4 @@
-import { visitStudy } from './visitStudy';
+import { visitStudy, visitStudyRendered } from './visitStudy';
 import { addOHIFConfiguration } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
@@ -27,6 +27,7 @@ export type { VisitStudyOptions } from './visitStudy';
 export {
   CLICK_NO_NAV_WAIT,
   visitStudy,
+  visitStudyRendered,
   addOHIFConfiguration,
   checkForScreenshot,
   screenShotPaths,

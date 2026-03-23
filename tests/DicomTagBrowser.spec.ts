@@ -36,7 +36,7 @@ test('should display the long series name properly within the series select butt
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.5099.8010.217836670708542506360829799868';
   await visitStudy(page, studyInstanceUID);
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
 

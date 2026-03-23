@@ -1,4 +1,4 @@
-import { expect, test, visitStudy } from './utils';
+import { expect, test, visitStudyRendered } from './utils';
 
 test.beforeEach(
   async ({
@@ -9,7 +9,7 @@ test.beforeEach(
     mainToolbarPageObject,
   }) => {
     const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
-    await visitStudy(page, studyInstanceUID);
+    await visitStudyRendered(page, studyInstanceUID);
     await rightPanelPageObject.toggle();
     await leftPanelPageObject.loadSeriesByDescription('SEG');
 
@@ -21,7 +21,7 @@ test.beforeEach(
   }
 );
 
-test('should list segments in side panel for 3D only view', async ({ rightPanelPageObject }) => {
+test('should list segments in side panel for 3D only view.', async ({ rightPanelPageObject }) => {
   const numberOfSegments =
     await rightPanelPageObject.labelMapSegmentationPanel.panel.getSegmentCount();
   expect(numberOfSegments, 'The side panel should list 13 segments for the 3D only view.').toBe(13);
