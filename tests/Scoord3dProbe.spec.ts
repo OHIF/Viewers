@@ -1,10 +1,4 @@
-import {
-  checkForScreenshot,
-  expect,
-  screenShotPaths,
-  test,
-  visitStudyRendered,
-} from './utils';
+import { checkForScreenshot, expect, screenShotPaths, test, visitStudyRendered } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';

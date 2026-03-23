@@ -1,6 +1,5 @@
 import {
   attemptAction,
-  checkForScreenshot,
   reduce3DViewportSize,
   screenShotPaths,
   test,
@@ -13,39 +12,32 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up SEG hydration', async () => {
-  test('should properly hydrate SEG from 3D four up layout.', async ({
+  test('should properly hydrate SEG from 3D four up layout. shouldUpdateThis', async ({
     page,
     DOMOverlayPageObject,
     leftPanelPageObject,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await page.waitForTimeout(5000);
-
-    await checkForScreenshot(
-      page,
-      page,
+    await viewportPageObject.checkForScreenshot(
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG
     );
 
     await leftPanelPageObject.loadSeriesByDescription('SEG');
 
     await page.waitForTimeout(5000);
-    await checkForScreenshot(
-      page,
-      page,
+    await viewportPageObject.checkForScreenshot(
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
     );
 
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
     await page.waitForTimeout(5000);
-    await checkForScreenshot(
-      page,
-      page,
+    await viewportPageObject.checkForScreenshot(
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated
     );
   });
