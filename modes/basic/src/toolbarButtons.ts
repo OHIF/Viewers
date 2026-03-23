@@ -198,13 +198,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Rotate Right'),
       tooltip: i18n.t('Buttons:Rotate +90'),
       commands: 'rotateViewportCW',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.action',
     },
   },
   {
@@ -215,13 +209,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Flip Horizontal'),
       tooltip: i18n.t('Buttons:Flip Horizontally'),
       commands: 'flipViewportHorizontal',
-      evaluate: [
-        'evaluate.viewportProperties.toggle',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'volume3d'],
-        },
-      ],
+      evaluate: 'evaluate.viewportProperties.toggle',
     },
   },
   {
@@ -243,13 +231,7 @@ const toolbarButtons: Button[] = [
           commandOptions: { toggledState: true },
         },
       },
-      evaluate: [
-        'evaluate.cornerstone.synchronizer',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'volume3d'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstone.synchronizer',
     },
   },
   {
@@ -264,13 +246,7 @@ const toolbarButtons: Button[] = [
         [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('ReferenceLines'),
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('ReferenceLines'),
       },
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool.toggle',
     },
   },
   {
@@ -281,13 +257,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Image Overlay'),
       tooltip: i18n.t('Buttons:Toggle Image Overlay'),
       commands: 'toggleEnabledDisabledToolbar',
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool.toggle',
     },
   },
   {
@@ -298,7 +268,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Stack Scroll'),
       tooltip: i18n.t('Buttons:Stack Scroll'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -309,13 +279,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Invert'),
       tooltip: i18n.t('Buttons:Invert Colors'),
       commands: 'invertViewport',
-      evaluate: [
-        'evaluate.viewportProperties.toggle',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.viewportProperties.toggle',
     },
   },
   {
@@ -326,7 +290,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Probe'),
       tooltip: i18n.t('Buttons:Probe'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -337,13 +301,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Cine'),
       tooltip: i18n.t('Buttons:Cine'),
       commands: 'toggleCine',
-      evaluate: [
-        'evaluate.cine',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['volume3d'],
-        },
-      ],
+      evaluate: 'evaluate.cine',
     },
   },
   {
@@ -354,7 +312,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Angle'),
       tooltip: i18n.t('Buttons:Angle'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -365,7 +323,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Cobb Angle'),
       tooltip: i18n.t('Buttons:Cobb Angle'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -376,13 +334,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Zoom-in'),
       tooltip: i18n.t('Buttons:Zoom-in'),
       commands: setToolActiveToolbar,
-      evaluate: [
-        'evaluate.cornerstoneTool',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -393,13 +345,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Calibration'),
       tooltip: i18n.t('Buttons:Calibration Line'),
       commands: setToolActiveToolbar,
-      evaluate: [
-        'evaluate.cornerstoneTool',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
@@ -420,13 +366,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Magnify Probe'),
       tooltip: i18n.t('Buttons:Magnify Probe'),
       commands: 'toggleActiveDisabledToolbar',
-      evaluate: [
-        'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
     },
   },
   {
@@ -437,13 +377,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Ultrasound Directional'),
       tooltip: i18n.t('Buttons:Ultrasound Directional'),
       commands: setToolActiveToolbar,
-      evaluate: [
-        'evaluate.cornerstoneTool',
-        {
-          name: 'evaluate.modality.supported',
-          supportedModalities: ['US'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
@@ -454,13 +388,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Window Level Region'),
       tooltip: i18n.t('Buttons:Window Level Region'),
       commands: setToolActiveToolbar,
-      evaluate: [
-        'evaluate.cornerstoneTool',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
@@ -471,7 +399,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Length'),
       tooltip: i18n.t('Buttons:Length Tool'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -482,7 +410,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Bidirectional'),
       tooltip: i18n.t('Buttons:Bidirectional Tool'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -493,7 +421,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Annotation'),
       tooltip: i18n.t('Buttons:Arrow Annotate'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -504,7 +432,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Ellipse'),
       tooltip: i18n.t('Buttons:Ellipse ROI'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -515,7 +443,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Rectangle'),
       tooltip: i18n.t('Buttons:Rectangle ROI'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -526,7 +454,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Circle'),
       tooltip: i18n.t('Buttons:Circle Tool'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -537,7 +465,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Freehand ROI'),
       tooltip: i18n.t('Buttons:Freehand ROI'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -548,7 +476,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Spline ROI'),
       tooltip: i18n.t('Buttons:Spline ROI'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -559,7 +487,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Livewire tool'),
       tooltip: i18n.t('Buttons:Livewire tool'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   // Window Level
@@ -570,13 +498,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-window-level',
       label: i18n.t('Buttons:Window Level'),
       commands: setToolActiveToolbar,
-      evaluate: [
-        'evaluate.cornerstoneTool',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['wholeSlide'],
-        },
-      ],
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -587,7 +509,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-move',
       label: i18n.t('Buttons:Pan'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -598,7 +520,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-zoom',
       label: i18n.t('Buttons:Zoom'),
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
   {
@@ -622,13 +544,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: i18n.t('Buttons:Capture'),
       commands: 'showDownloadViewportModal',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'wholeSlide'],
-        },
-      ],
+      evaluate: 'evaluate.action',
     },
   },
   {
@@ -734,6 +650,17 @@ const toolbarButtons: Button[] = [
       tooltip: 'Open / close Smart Paint',
       commands: 'openSmartPaint',
       evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'ABCAngle',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-angle',
+      label: 'ABC Angle',
+      tooltip: 'ABC Angle: place A, B, C — D is auto-provided; drag D to adjust angle',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool.allViewports',
     },
   },
 ];

@@ -277,6 +277,7 @@ export const toolbarSections = {
     'EcgViewerOpen',
     'FootprintOpen',
     'SmartPaintOpen',
+    'ABCAngle',
   ],
 };
 

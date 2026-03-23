@@ -15,6 +15,7 @@ import {
   archIndex,
   calcanealPitchAngle,
   clarkeAngle,
+  mearysAngle,
   pixelDistance,
 } from '../utils/flatfootCalculations';
 import SegmentLabelPanel from '../../../../platform/app/src/components/SegmentLabelPanel';
@@ -43,15 +44,58 @@ interface Measurement {
   color: string;
 }
 
-const TOOL_META: Record<MeasureTool, { label: string; color: string; points: number; hint: string }> = {
-  AREA_POLYGON:    { label: '⬡ Area',           color: '#facc15', points: -1, hint: 'Click dots on image — connected automatically. Press Finish to calculate enclosed area.' },
-  DISTANCE:        { label: 'Distance',          color: '#34d399', points: 2,  hint: 'Click 2 points to measure distance' },
-  CALCANEAL_PITCH: { label: 'Calcaneal Pitch',   color: '#f59e0b', points: 2,  hint: '1) Posterior-inferior calcaneus  2) Anterior-inferior calcaneus' },
-  CLARKE_ANGLE:    { label: "Clarke's Angle",    color: '#a78bfa', points: 3,  hint: '1) Heel  2) Arch apex  3) 1st metatarsal head' },
-  ARCH_INDEX:      { label: 'Arch Index',        color: '#fb923c', points: 2,  hint: '1) Posterior heel  2) Tip of longest toe' },
-  MEARYS_ANGLE:    { label: "Meary's Angle",     color: '#f472b6', points: 4,  hint: '1–2) Talus axis  3–4) 1st metatarsal axis' },
-  TRIANGLE:        { label: '△ Triangle',        color: '#22d3ee', points: 3,  hint: 'Click 3 corner points — calculates all 3 angles, side midpoints & area' },
-  TRIANGLE_SPLIT:  { label: '⊿⊿ Split △',       color: '#f97316', points: 3,  hint: '1) Line start  2) Line end  3) Apex — drops perpendicular, creates 2 triangles with all angles' },
+const TOOL_META: Record<
+  MeasureTool,
+  { label: string; color: string; points: number; hint: string }
+> = {
+  AREA_POLYGON: {
+    label: '⬡ Area',
+    color: '#facc15',
+    points: -1,
+    hint: 'Click dots on image — connected automatically. Press Finish to calculate enclosed area.',
+  },
+  DISTANCE: {
+    label: 'Distance',
+    color: '#34d399',
+    points: 2,
+    hint: 'Click 2 points to measure distance',
+  },
+  CALCANEAL_PITCH: {
+    label: 'Calcaneal Pitch',
+    color: '#f59e0b',
+    points: 2,
+    hint: '1) Posterior-inferior calcaneus  2) Anterior-inferior calcaneus',
+  },
+  CLARKE_ANGLE: {
+    label: "Clarke's Angle",
+    color: '#a78bfa',
+    points: 3,
+    hint: '1) Heel  2) Arch apex  3) 1st metatarsal head',
+  },
+  ARCH_INDEX: {
+    label: 'Arch Index',
+    color: '#fb923c',
+    points: 2,
+    hint: '1) Posterior heel  2) Tip of longest toe',
+  },
+  MEARYS_ANGLE: {
+    label: "Meary's Angle",
+    color: '#f472b6',
+    points: 4,
+    hint: '1–2) Talus axis  3–4) 1st metatarsal axis',
+  },
+  TRIANGLE: {
+    label: '△ Triangle',
+    color: '#22d3ee',
+    points: 3,
+    hint: 'Click 3 corner points — calculates all 3 angles, side midpoints & area',
+  },
+  TRIANGLE_SPLIT: {
+    label: '⊿⊿ Split △',
+    color: '#f97316',
+    points: 3,
+    hint: '1) Line start  2) Line end  3) Apex — drops perpendicular, creates 2 triangles with all angles',
+  },
 };
 
 const MAX_W = 1000;
@@ -81,6 +125,58 @@ function getCanvasCoords(e: React.MouseEvent<HTMLCanvasElement>, canvas: HTMLCan
     x: (e.clientX - rect.left) * scaleX,
     y: (e.clientY - rect.top) * scaleY,
   };
+}
+
+function safeTriangleAngles(A: Point, B: Point, C: Point) {
+  const ab = Math.sqrt((B.x - A.x) ** 2 + (B.y - A.y) ** 2);
+  const bc = Math.sqrt((C.x - B.x) ** 2 + (C.y - B.y) ** 2);
+  const ca = Math.sqrt((A.x - C.x) ** 2 + (A.y - C.y) ** 2);
+  if (ab === 0 || bc === 0 || ca === 0) {
+    return { aA: 0, aB: 0, aC: 0 };
+  }
+
+  const clamp = (v: number) => Math.min(1, Math.max(-1, v));
+  const aA = Math.round(
+    (Math.acos(clamp((ab ** 2 + ca ** 2 - bc ** 2) / (2 * ab * ca))) * 180) / Math.PI
+  );
+  const aB = Math.round(
+    (Math.acos(clamp((ab ** 2 + bc ** 2 - ca ** 2) / (2 * ab * bc))) * 180) / Math.PI
+  );
+
+  return { aA, aB, aC: Math.max(0, 180 - aA - aB) };
+}
+
+function safeSplitFootPoint(A: Point, B: Point, C: Point): Point {
+  const dx = B.x - A.x;
+  const dy = B.y - A.y;
+  const lenSq = dx * dx + dy * dy;
+
+  if (lenSq === 0) {
+    return { ...A };
+  }
+
+  const t = Math.max(0, Math.min(1, ((C.x - A.x) * dx + (C.y - A.y) * dy) / lenSq));
+  return { x: A.x + t * dx, y: A.y + t * dy };
+}
+
+function safeSubTriangleAngles(P: Point, Q: Point, R: Point) {
+  const pq = Math.sqrt((Q.x - P.x) ** 2 + (Q.y - P.y) ** 2);
+  const qr = Math.sqrt((R.x - Q.x) ** 2 + (R.y - Q.y) ** 2);
+  const rp = Math.sqrt((P.x - R.x) ** 2 + (P.y - R.y) ** 2);
+
+  if (pq === 0 || qr === 0 || rp === 0) {
+    return { aP: 0, aQ: 0, aR: 0 };
+  }
+
+  const clamp = (v: number) => Math.min(1, Math.max(-1, v));
+  const aP = Math.round(
+    (Math.acos(clamp((pq ** 2 + rp ** 2 - qr ** 2) / (2 * pq * rp))) * 180) / Math.PI
+  );
+  const aQ = Math.round(
+    (Math.acos(clamp((pq ** 2 + qr ** 2 - rp ** 2) / (2 * pq * qr))) * 180) / Math.PI
+  );
+
+  return { aP, aQ, aR: Math.max(0, 180 - aP - aQ) };
 }
 
 function drawPolygon(
@@ -156,36 +252,36 @@ function drawPolygon(
 }
 
 export default function PanelFlatfoot() {
-  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [image, setImage]                 = useState<HTMLImageElement | null>(null);
-  const [activeTool, setActiveTool]       = useState<MeasureTool>('AREA_POLYGON');
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [activeTool, setActiveTool] = useState<MeasureTool>('AREA_POLYGON');
   const [pendingPoints, setPendingPoints] = useState<Point[]>([]);
-  const [polyPoints, setPolyPoints]       = useState<Point[]>([]);
-  const [measurements, setMeasurements]   = useState<Measurement[]>([]);
-  const [pxPerMm, setPxPerMm]             = useState(3.78);
-  const [calMode, setCalMode]             = useState(false);
-  const [calKnownMm, setCalKnownMm]       = useState('10');
-  const [zoom, setZoom]                   = useState(1);
-  const [rightTab, setRightTab]           = useState<'results' | 'segments'>('results');
-  const [cursorStyle, setCursorStyle]     = useState('crosshair');
+  const [polyPoints, setPolyPoints] = useState<Point[]>([]);
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [pxPerMm, setPxPerMm] = useState(3.78);
+  const [calMode, setCalMode] = useState(false);
+  const [calKnownMm, setCalKnownMm] = useState('10');
+  const [zoom, setZoom] = useState(1);
+  const [rightTab, setRightTab] = useState<'results' | 'segments'>('results');
+  const [cursorStyle, setCursorStyle] = useState('crosshair');
 
   // drag state — refs avoid stale closures during rapid mousemove
-  const dragRef     = useRef<{ measurementId: string; pointIdx: number } | null>(null);
+  const dragRef = useRef<{ measurementId: string; pointIdx: number } | null>(null);
   const hasDraggedRef = useRef(false);
-  const HIT_RADIUS  = 12; // canvas px
+  const HIT_RADIUS = 12; // canvas px
 
   // ── Canvas size ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !image) return;
     const container = containerRef.current;
-    const availW = container ? container.clientWidth  - 8 : MAX_W;
+    const availW = container ? container.clientWidth - 8 : MAX_W;
     const availH = container ? container.clientHeight - 8 : MAX_H;
     const fitScale = Math.min(availW / image.width, availH / image.height, 1);
-    canvas.width  = Math.round(image.width  * fitScale * zoom);
+    canvas.width = Math.round(image.width * fitScale * zoom);
     canvas.height = Math.round(image.height * fitScale * zoom);
   }, [image, zoom]);
 
@@ -258,13 +354,7 @@ export default function PanelFlatfoot() {
 
     if (m.tool === 'TRIANGLE' && pts.length === 3) {
       const [A, B, C] = pts;
-      const ab = Math.sqrt((B.x - A.x) ** 2 + (B.y - A.y) ** 2);
-      const bc = Math.sqrt((C.x - B.x) ** 2 + (C.y - B.y) ** 2);
-      const ca = Math.sqrt((A.x - C.x) ** 2 + (A.y - C.y) ** 2);
-      const clamp = (v: number) => Math.min(1, Math.max(-1, v));
-      const aA = Math.round((Math.acos(clamp((ab ** 2 + ca ** 2 - bc ** 2) / (2 * ab * ca))) * 180) / Math.PI);
-      const aB = Math.round((Math.acos(clamp((ab ** 2 + bc ** 2 - ca ** 2) / (2 * ab * bc))) * 180) / Math.PI);
-      const aC = 180 - aA - aB;
+      const { aA, aB, aC } = safeTriangleAngles(A, B, C);
       const areaPx = Math.abs((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) / 2;
       const areaMm = (areaPx / (pxPerMm * pxPerMm)).toFixed(1);
       const cx = (A.x + B.x + C.x) / 3;
@@ -272,7 +362,9 @@ export default function PanelFlatfoot() {
 
       // Filled triangle
       ctx.beginPath();
-      ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.lineTo(C.x, C.y);
+      ctx.moveTo(A.x, A.y);
+      ctx.lineTo(B.x, B.y);
+      ctx.lineTo(C.x, C.y);
       ctx.closePath();
       ctx.fillStyle = m.color + '22';
       ctx.fill();
@@ -284,11 +376,13 @@ export default function PanelFlatfoot() {
       ctx.stroke();
 
       // Midpoints on each side
-      ([
-        { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 },
-        { x: (B.x + C.x) / 2, y: (B.y + C.y) / 2 },
-        { x: (C.x + A.x) / 2, y: (C.y + A.y) / 2 },
-      ] as Point[]).forEach(mp => {
+      (
+        [
+          { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 },
+          { x: (B.x + C.x) / 2, y: (B.y + C.y) / 2 },
+          { x: (C.x + A.x) / 2, y: (C.y + A.y) / 2 },
+        ] as Point[]
+      ).forEach(mp => {
         ctx.beginPath();
         ctx.arc(mp.x, mp.y, 4, 0, Math.PI * 2);
         ctx.fillStyle = '#fff';
@@ -299,11 +393,13 @@ export default function PanelFlatfoot() {
       });
 
       // Vertex dots + angle labels
-      ([
-        [A, 1, aA],
-        [B, 2, aB],
-        [C, 3, aC],
-      ] as [Point, number, number][]).forEach(([pt, num, angle]) => {
+      (
+        [
+          [A, 1, aA],
+          [B, 2, aB],
+          [C, 3, aC],
+        ] as [Point, number, number][]
+      ).forEach(([pt, num, angle]) => {
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2);
         ctx.fillStyle = m.color;
@@ -349,31 +445,16 @@ export default function PanelFlatfoot() {
     if (m.tool === 'TRIANGLE_SPLIT' && (pts.length === 3 || pts.length === 4)) {
       const [A, B, C] = pts;
       // Use stored D (pts[3]) if available, else compute perpendicular foot
-      let D: Point;
-      if (pts.length === 4) {
-        D = pts[3];
-      } else {
-        const dx = B.x - A.x, dy = B.y - A.y;
-        const t = Math.max(0, Math.min(1, ((C.x - A.x) * dx + (C.y - A.y) * dy) / (dx * dx + dy * dy)));
-        D = { x: A.x + t * dx, y: A.y + t * dy };
-      }
-
-      const clamp = (v: number) => Math.min(1, Math.max(-1, v));
-      const triAngles = (P: Point, Q: Point, R: Point) => {
-        const pq = Math.sqrt((Q.x-P.x)**2 + (Q.y-P.y)**2);
-        const qr = Math.sqrt((R.x-Q.x)**2 + (R.y-Q.y)**2);
-        const rp = Math.sqrt((P.x-R.x)**2 + (P.y-R.y)**2);
-        const aP = Math.round((Math.acos(clamp((pq**2+rp**2-qr**2)/(2*pq*rp)))*180)/Math.PI);
-        const aQ = Math.round((Math.acos(clamp((pq**2+qr**2-rp**2)/(2*pq*qr)))*180)/Math.PI);
-        return { aP, aQ, aR: 180 - aP - aQ };
-      };
-      const t1 = triAngles(A, D, C);
-      const t2 = triAngles(D, B, C);
+      const D = pts.length === 4 ? pts[3] : safeSplitFootPoint(A, B, C);
+      const t1 = safeSubTriangleAngles(A, D, C);
+      const t2 = safeSubTriangleAngles(D, B, C);
 
       // Draw helper: filled triangle + sides
       const drawTri = (P: Point, Q: Point, R: Point, col: string) => {
         ctx.beginPath();
-        ctx.moveTo(P.x, P.y); ctx.lineTo(Q.x, Q.y); ctx.lineTo(R.x, R.y);
+        ctx.moveTo(P.x, P.y);
+        ctx.lineTo(Q.x, Q.y);
+        ctx.lineTo(R.x, R.y);
         ctx.closePath();
         ctx.fillStyle = col + '22';
         ctx.fill();
@@ -385,8 +466,9 @@ export default function PanelFlatfoot() {
 
       // Draw helper: angle label near vertex, pushed outward from triangle centroid
       const drawAngleLabel = (pt: Point, cx: number, cy: number, angle: number, col: string) => {
-        const ddx = pt.x - cx, ddy = pt.y - cy;
-        const dist = Math.sqrt(ddx**2 + ddy**2) || 1;
+        const ddx = pt.x - cx,
+          ddy = pt.y - cy;
+        const dist = Math.sqrt(ddx ** 2 + ddy ** 2) || 1;
         const lx = pt.x + (ddx / dist) * 24;
         const ly = pt.y + (ddy / dist) * 24;
         const s = `${angle}°`;
@@ -394,7 +476,7 @@ export default function PanelFlatfoot() {
         ctx.textAlign = 'center';
         const tw = ctx.measureText(s).width;
         ctx.fillStyle = 'rgba(0,0,0,0.85)';
-        ctx.fillRect(lx - tw/2 - 3, ly - 12, tw + 6, 14);
+        ctx.fillRect(lx - tw / 2 - 3, ly - 12, tw + 6, 14);
         ctx.fillStyle = col;
         ctx.fillText(s, lx, ly);
       };
@@ -417,8 +499,8 @@ export default function PanelFlatfoot() {
       };
 
       // Two triangle colors: tint the two slightly differently
-      const col1 = m.color;       // orange
-      const col2 = '#a78bfa';     // purple for second triangle
+      const col1 = m.color; // orange
+      const col2 = '#a78bfa'; // purple for second triangle
 
       drawTri(A, D, C, col1);
       drawTri(D, B, C, col2);
@@ -435,12 +517,13 @@ export default function PanelFlatfoot() {
 
       // Right angle mark at D
       const len = 8;
-      const abdx = B.x - A.x, abdy = B.y - A.y;
-      const abLen = Math.sqrt(abdx*abdx + abdy*abdy) || 1;
+      const abdx = B.x - A.x,
+        abdy = B.y - A.y;
+      const abLen = Math.sqrt(abdx * abdx + abdy * abdy) || 1;
       const bx = abdx / abLen;
       const by = abdy / abLen;
-      const hx = -(C.y - D.y) / (Math.sqrt((C.x-D.x)**2+(C.y-D.y)**2) || 1);
-      const hy =  (C.x - D.x) / (Math.sqrt((C.x-D.x)**2+(C.y-D.y)**2) || 1);
+      const hx = -(C.y - D.y) / (Math.sqrt((C.x - D.x) ** 2 + (C.y - D.y) ** 2) || 1);
+      const hy = (C.x - D.x) / (Math.sqrt((C.x - D.x) ** 2 + (C.y - D.y) ** 2) || 1);
       ctx.strokeStyle = '#ffffff88';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -466,13 +549,15 @@ export default function PanelFlatfoot() {
       ctx.textBaseline = 'alphabetic';
 
       // Angle labels — Triangle 1 (A, D, C)
-      const cx1 = (A.x + D.x + C.x) / 3, cy1 = (A.y + D.y + C.y) / 3;
+      const cx1 = (A.x + D.x + C.x) / 3,
+        cy1 = (A.y + D.y + C.y) / 3;
       drawAngleLabel(A, cx1, cy1, t1.aP, col1);
       drawAngleLabel(D, cx1, cy1, t1.aQ, col1);
       drawAngleLabel(C, cx1, cy1, t1.aR, col1);
 
       // Angle labels — Triangle 2 (D, B, C)
-      const cx2 = (D.x + B.x + C.x) / 3, cy2 = (D.y + B.y + C.y) / 3;
+      const cx2 = (D.x + B.x + C.x) / 3,
+        cy2 = (D.y + B.y + C.y) / 3;
       drawAngleLabel(D, cx2, cy2, t2.aP, col2);
       drawAngleLabel(B, cx2, cy2, t2.aQ, col2);
       drawAngleLabel(C, cx2, cy2, t2.aR, col2);
@@ -526,7 +611,14 @@ export default function PanelFlatfoot() {
     const areaMm = shoelaceArea(polyPoints) / (pxPerMm * pxPerMm);
     setMeasurements(prev => [
       ...prev,
-      { id: uid(), tool: 'AREA_POLYGON', points: polyPoints, label: 'Area', color: '#facc15', value: `${areaMm.toFixed(1)} mm²` },
+      {
+        id: uid(),
+        tool: 'AREA_POLYGON',
+        points: polyPoints,
+        label: 'Area',
+        color: '#facc15',
+        value: `${areaMm.toFixed(1)} mm²`,
+      },
     ]);
     setPolyPoints([]);
   }, [polyPoints, pxPerMm]);
@@ -554,7 +646,14 @@ export default function PanelFlatfoot() {
         setPendingPoints([]);
         setMeasurements(prev => [
           ...prev,
-          { id: uid(), tool: 'DISTANCE', points: next, label: 'Cal', color: '#f59e0b', value: `${knownMm}mm (${d.toFixed(1)}px)` },
+          {
+            id: uid(),
+            tool: 'DISTANCE',
+            points: next,
+            label: 'Cal',
+            color: '#f59e0b',
+            value: `${knownMm}mm (${d.toFixed(1)}px)`,
+          },
         ]);
         return;
       }
@@ -580,22 +679,11 @@ export default function PanelFlatfoot() {
         value = `AI: ${result.archIndex} | ${result.classification}`;
         label = 'Arch Index';
       } else if (activeTool === 'MEARYS_ANGLE') {
-        const v1 = { x: next[1].x - next[0].x, y: next[1].y - next[0].y };
-        const v2 = { x: next[3].x - next[2].x, y: next[3].y - next[2].y };
-        const dot = v1.x * v2.x + v1.y * v2.y;
-        const mag1 = Math.sqrt(v1.x ** 2 + v1.y ** 2);
-        const mag2 = Math.sqrt(v2.x ** 2 + v2.y ** 2);
-        const angle = Math.round((Math.acos(Math.min(1, dot / (mag1 * mag2))) * 180) / Math.PI);
+        const angle = mearysAngle([next[0], next[1]], [next[2], next[3]]);
         value = `${angle}° ${angle > 4 ? '(>4° flatfoot)' : '(Normal)'}`;
       } else if (activeTool === 'TRIANGLE') {
         const [A, B, C] = next;
-        const ab = Math.sqrt((B.x - A.x) ** 2 + (B.y - A.y) ** 2);
-        const bc = Math.sqrt((C.x - B.x) ** 2 + (C.y - B.y) ** 2);
-        const ca = Math.sqrt((A.x - C.x) ** 2 + (A.y - C.y) ** 2);
-        const clamp = (v: number) => Math.min(1, Math.max(-1, v));
-        const aA = Math.round((Math.acos(clamp((ab ** 2 + ca ** 2 - bc ** 2) / (2 * ab * ca))) * 180) / Math.PI);
-        const aB = Math.round((Math.acos(clamp((ab ** 2 + bc ** 2 - ca ** 2) / (2 * ab * bc))) * 180) / Math.PI);
-        const aC = 180 - aA - aB;
+        const { aA, aB, aC } = safeTriangleAngles(A, B, C);
         const areaPx = Math.abs((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) / 2;
         const areaMm = (areaPx / (pxPerMm * pxPerMm)).toFixed(1);
         value = `∠1=${aA}°  ∠2=${aB}°  ∠3=${aC}° | ${areaMm} mm²`;
@@ -603,22 +691,11 @@ export default function PanelFlatfoot() {
       } else if (activeTool === 'TRIANGLE_SPLIT') {
         // A–B = baseline, C = apex; D = foot of perpendicular from C onto AB
         const [A, B, C] = next;
-        const clamp = (v: number) => Math.min(1, Math.max(-1, v));
-        const triAngles = (P: Point, Q: Point, R: Point) => {
-          const pq = Math.sqrt((Q.x-P.x)**2 + (Q.y-P.y)**2);
-          const qr = Math.sqrt((R.x-Q.x)**2 + (R.y-Q.y)**2);
-          const rp = Math.sqrt((P.x-R.x)**2 + (P.y-R.y)**2);
-          const aP = Math.round((Math.acos(clamp((pq**2+rp**2-qr**2)/(2*pq*rp)))*180)/Math.PI);
-          const aQ = Math.round((Math.acos(clamp((pq**2+qr**2-rp**2)/(2*pq*qr)))*180)/Math.PI);
-          return { aP, aQ, aR: 180 - aP - aQ };
-        };
-        const dx = B.x - A.x, dy = B.y - A.y;
-        const t = Math.max(0, Math.min(1, ((C.x-A.x)*dx + (C.y-A.y)*dy) / (dx*dx + dy*dy)));
-        const D: Point = { x: A.x + t*dx, y: A.y + t*dy };
-        const t1 = triAngles(A, D, C);
-        const t2 = triAngles(D, B, C);
-        const a1 = Math.abs((D.x-A.x)*(C.y-A.y) - (C.x-A.x)*(D.y-A.y)) / 2;
-        const a2 = Math.abs((B.x-D.x)*(C.y-D.y) - (C.x-D.x)*(B.y-D.y)) / 2;
+        const D: Point = safeSplitFootPoint(A, B, C);
+        const t1 = safeSubTriangleAngles(A, D, C);
+        const t2 = safeSubTriangleAngles(D, B, C);
+        const a1 = Math.abs((D.x - A.x) * (C.y - A.y) - (C.x - A.x) * (D.y - A.y)) / 2;
+        const a2 = Math.abs((B.x - D.x) * (C.y - D.y) - (C.x - D.x) * (B.y - D.y)) / 2;
         const mm = (px: number) => (px / (pxPerMm * pxPerMm)).toFixed(1);
         value = `T1: ∠A=${t1.aP}° ∠D=${t1.aQ}° ∠C=${t1.aR}° (${mm(a1)}mm²) | T2: ∠D=${t2.aP}° ∠B=${t2.aQ}° ∠C=${t2.aR}° (${mm(a2)}mm²)`;
         label = 'Split △';
@@ -643,40 +720,47 @@ export default function PanelFlatfoot() {
 
   // ── Recompute stored value after a point is dragged ──
   function recomputeValue(tool: MeasureTool, pts: Point[]): string {
-    const clamp = (v: number) => Math.min(1, Math.max(-1, v));
+    if (tool === 'DISTANCE' && pts.length === 2) {
+      return `${(pixelDistance(pts[0], pts[1]) / pxPerMm).toFixed(1)} mm`;
+    }
+    if (tool === 'CALCANEAL_PITCH' && pts.length === 2) {
+      const angle = calcanealPitchAngle(pts[0], pts[1]);
+      return `${angle}° ${angle >= 17 && angle <= 32 ? '(Normal)' : '(Abnormal)'}`;
+    }
+    if (tool === 'CLARKE_ANGLE' && pts.length === 3) {
+      return `${clarkeAngle(pts[0], pts[1], pts[2])}°`;
+    }
+    if (tool === 'ARCH_INDEX' && pts.length === 2) {
+      const totalPx = pixelDistance(pts[0], pts[1]);
+      const result = archIndex(totalPx, totalPx / 3, pxPerMm);
+      return `AI: ${result.archIndex} | ${result.classification}`;
+    }
+    if (tool === 'MEARYS_ANGLE' && pts.length === 4) {
+      const angle = mearysAngle([pts[0], pts[1]], [pts[2], pts[3]]);
+      return `${angle}° ${angle > 4 ? '(>4° flatfoot)' : '(Normal)'}`;
+    }
+    if (tool === 'AREA_POLYGON' && pts.length >= 3) {
+      const areaMm = shoelaceArea(pts) / (pxPerMm * pxPerMm);
+      return `${areaMm.toFixed(1)} mm²`;
+    }
     if (tool === 'TRIANGLE' && pts.length === 3) {
       const [A, B, C] = pts;
-      const ab = Math.sqrt((B.x-A.x)**2+(B.y-A.y)**2);
-      const bc = Math.sqrt((C.x-B.x)**2+(C.y-B.y)**2);
-      const ca = Math.sqrt((A.x-C.x)**2+(A.y-C.y)**2);
-      const aA = Math.round((Math.acos(clamp((ab**2+ca**2-bc**2)/(2*ab*ca)))*180)/Math.PI);
-      const aB = Math.round((Math.acos(clamp((ab**2+bc**2-ca**2)/(2*ab*bc)))*180)/Math.PI);
-      const aC = 180-aA-aB;
-      const areaMm = (Math.abs((B.x-A.x)*(C.y-A.y)-(C.x-A.x)*(B.y-A.y))/2/(pxPerMm*pxPerMm)).toFixed(1);
+      const { aA, aB, aC } = safeTriangleAngles(A, B, C);
+      const areaMm = (
+        Math.abs((B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)) /
+        2 /
+        (pxPerMm * pxPerMm)
+      ).toFixed(1);
       return `∠1=${aA}°  ∠2=${aB}°  ∠3=${aC}° | ${areaMm} mm²`;
     }
     if (tool === 'TRIANGLE_SPLIT' && (pts.length === 3 || pts.length === 4)) {
       const [A, B, C] = pts;
-      let D: Point;
-      if (pts.length === 4) {
-        D = pts[3];
-      } else {
-        const dx = B.x-A.x, dy = B.y-A.y;
-        const t = Math.max(0, Math.min(1, ((C.x-A.x)*dx+(C.y-A.y)*dy)/(dx*dx+dy*dy)));
-        D = { x: A.x+t*dx, y: A.y+t*dy };
-      }
-      const triAngles = (P: Point, Q: Point, R: Point) => {
-        const pq=Math.sqrt((Q.x-P.x)**2+(Q.y-P.y)**2);
-        const qr=Math.sqrt((R.x-Q.x)**2+(R.y-Q.y)**2);
-        const rp=Math.sqrt((P.x-R.x)**2+(P.y-R.y)**2);
-        const aP=Math.round((Math.acos(clamp((pq**2+rp**2-qr**2)/(2*pq*rp)))*180)/Math.PI);
-        const aQ=Math.round((Math.acos(clamp((pq**2+qr**2-rp**2)/(2*pq*qr)))*180)/Math.PI);
-        return { aP, aQ, aR: 180-aP-aQ };
-      };
-      const t1=triAngles(A,D,C), t2=triAngles(D,B,C);
-      const a1=Math.abs((D.x-A.x)*(C.y-A.y)-(C.x-A.x)*(D.y-A.y))/2;
-      const a2=Math.abs((B.x-D.x)*(C.y-D.y)-(C.x-D.x)*(B.y-D.y))/2;
-      const mm=(px:number)=>(px/(pxPerMm*pxPerMm)).toFixed(1);
+      const D = pts.length === 4 ? pts[3] : safeSplitFootPoint(A, B, C);
+      const t1 = safeSubTriangleAngles(A, D, C);
+      const t2 = safeSubTriangleAngles(D, B, C);
+      const a1 = Math.abs((D.x - A.x) * (C.y - A.y) - (C.x - A.x) * (D.y - A.y)) / 2;
+      const a2 = Math.abs((B.x - D.x) * (C.y - D.y) - (C.x - D.x) * (B.y - D.y)) / 2;
+      const mm = (px: number) => (px / (pxPerMm * pxPerMm)).toFixed(1);
       return `T1: ∠A=${t1.aP}° ∠D=${t1.aQ}° ∠C=${t1.aR}° (${mm(a1)}mm²) | T2: ∠D=${t2.aP}° ∠B=${t2.aQ}° ∠C=${t2.aR}° (${mm(a2)}mm²)`;
     }
     return '';
@@ -691,7 +775,7 @@ export default function PanelFlatfoot() {
     for (const m of measurements) {
       for (let i = 0; i < m.points.length; i++) {
         const p = m.points[i];
-        if (Math.sqrt((pt.x-p.x)**2+(pt.y-p.y)**2) <= HIT_RADIUS) {
+        if (Math.sqrt((pt.x - p.x) ** 2 + (pt.y - p.y) ** 2) <= HIT_RADIUS) {
           dragRef.current = { measurementId: m.id, pointIdx: i };
           e.preventDefault();
           return;
@@ -707,7 +791,7 @@ export default function PanelFlatfoot() {
 
     if (!dragRef.current) {
       const near = measurements.some(m =>
-        m.points.some(p => Math.sqrt((pt.x-p.x)**2+(pt.y-p.y)**2) <= HIT_RADIUS)
+        m.points.some(p => Math.sqrt((pt.x - p.x) ** 2 + (pt.y - p.y) ** 2) <= HIT_RADIUS)
       );
       setCursorStyle(near ? 'move' : 'crosshair');
       return;
@@ -715,15 +799,19 @@ export default function PanelFlatfoot() {
 
     hasDraggedRef.current = true;
     const { measurementId, pointIdx } = dragRef.current;
-    setMeasurements(prev => prev.map(m => {
-      if (m.id !== measurementId) return m;
-      const newPoints = m.points.map((p, i) => i === pointIdx ? pt : p);
-      const newValue = recomputeValue(m.tool, newPoints) || m.value;
-      return { ...m, points: newPoints, value: newValue };
-    }));
+    setMeasurements(prev =>
+      prev.map(m => {
+        if (m.id !== measurementId) return m;
+        const newPoints = m.points.map((p, i) => (i === pointIdx ? pt : p));
+        const newValue = recomputeValue(m.tool, newPoints) || m.value;
+        return { ...m, points: newPoints, value: newValue };
+      })
+    );
   };
 
-  const handleMouseUp = () => { dragRef.current = null; };
+  const handleMouseUp = () => {
+    dragRef.current = null;
+  };
 
   const liveAreaMm =
     polyPoints.length >= 3
@@ -731,7 +819,7 @@ export default function PanelFlatfoot() {
       : null;
 
   return (
-    <div className="flex h-full flex-col bg-gray-950 text-white">
+    <div className="bg-gray-950 flex h-full flex-col text-white">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2 border-b border-gray-800 bg-gray-900 px-4 py-2">
         <span className="text-sm font-bold text-amber-400">Flatfoot Measurement</span>
@@ -882,7 +970,7 @@ export default function PanelFlatfoot() {
       <div className="flex flex-1 overflow-hidden">
         <div
           ref={containerRef}
-          className="flex flex-1 items-center justify-center overflow-auto bg-gray-950 p-2"
+          className="bg-gray-950 flex flex-1 items-center justify-center overflow-auto p-2"
         >
           {!image ? (
             <div
@@ -912,7 +1000,9 @@ export default function PanelFlatfoot() {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              onClick={e => { if (!hasDraggedRef.current) handleCanvasClick(e); }}
+              onClick={e => {
+                if (!hasDraggedRef.current) handleCanvasClick(e);
+              }}
               className="rounded border border-gray-700 shadow-xl"
               style={{ maxWidth: '100%', maxHeight: '100%', cursor: cursorStyle }}
             />
@@ -926,7 +1016,9 @@ export default function PanelFlatfoot() {
             <button
               onClick={() => setRightTab('results')}
               className={`flex-1 py-1.5 text-center text-xs font-medium transition-colors ${
-                rightTab === 'results' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'
+                rightTab === 'results'
+                  ? 'bg-gray-800 text-white'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
               Measurements
@@ -934,7 +1026,9 @@ export default function PanelFlatfoot() {
             <button
               onClick={() => setRightTab('segments')}
               className={`flex-1 py-1.5 text-center text-xs font-medium transition-colors ${
-                rightTab === 'segments' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'
+                rightTab === 'segments'
+                  ? 'bg-gray-800 text-white'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
               Labels
@@ -944,7 +1038,9 @@ export default function PanelFlatfoot() {
           {rightTab === 'results' && (
             <>
               <div className="flex-1 p-3">
-                <div className="mb-2 font-bold uppercase tracking-wide text-gray-300">Measurements</div>
+                <div className="mb-2 font-bold uppercase tracking-wide text-gray-300">
+                  Measurements
+                </div>
                 {measurements.length === 0 && <p className="text-gray-600">No measurements yet.</p>}
                 {measurements.map(m => (
                   <div
@@ -952,7 +1048,10 @@ export default function PanelFlatfoot() {
                     className="mb-1.5 flex items-start justify-between rounded bg-gray-800 px-2 py-1.5"
                   >
                     <div>
-                      <span className="font-medium" style={{ color: m.color }}>
+                      <span
+                        className="font-medium"
+                        style={{ color: m.color }}
+                      >
                         {m.label}
                       </span>
                       <div className="mt-0.5 text-gray-200">{m.value}</div>
