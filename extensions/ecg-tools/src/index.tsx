@@ -1,5 +1,4 @@
 import React from 'react';
-import ClinicalViewersDropdown from './components/ClinicalViewersDropdown';
 import EmbeddedViewerToggleButton from './components/EmbeddedViewerToggleButton';
 
 const EcgToolsExtension = {
@@ -32,10 +31,6 @@ const EcgToolsExtension = {
 
   getToolbarModule(_args: any) {
     return [
-      {
-        name: 'ohif.clinicalViewers',
-        defaultComponent: ClinicalViewersDropdown,
-      },
       {
         name: 'ohif.embeddedViewerToggle',
         defaultComponent: EmbeddedViewerToggleButton,

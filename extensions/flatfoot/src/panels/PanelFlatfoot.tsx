@@ -623,9 +623,10 @@ export default function PanelFlatfoot() {
         value = `T1: ∠A=${t1.aP}° ∠D=${t1.aQ}° ∠C=${t1.aR}° (${mm(a1)}mm²) | T2: ∠D=${t2.aP}° ∠B=${t2.aQ}° ∠C=${t2.aR}° (${mm(a2)}mm²)`;
         label = 'Split △';
         // Store D as 4th point so it can be dragged freely
+        const splitPts = [...next, D];
         setMeasurements(prev => [
           ...prev,
-          { id: uid(), tool: activeTool, points: [...next, D], label, color: meta.color, value },
+          { id: uid(), tool: activeTool, points: splitPts, label, color: meta.color, value },
         ]);
         setPendingPoints([]);
         return;
@@ -918,8 +919,8 @@ export default function PanelFlatfoot() {
           )}
         </div>
 
-        {/* Results panel: tabbed Measurements | Label Map */}
-        <div className="flex w-60 flex-col overflow-y-auto border-l border-gray-800 bg-gray-900 text-xs">
+        {/* Results panel: tabbed Measurements | Batch | Label Map */}
+        <div className="flex w-64 flex-col overflow-y-auto border-l border-gray-800 bg-gray-900 text-xs">
           {/* Tab header */}
           <div className="flex border-b border-gray-800">
             <button
@@ -936,11 +937,11 @@ export default function PanelFlatfoot() {
                 rightTab === 'segments' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              Label Map
+              Labels
             </button>
           </div>
 
-          {rightTab === 'results' ? (
+          {rightTab === 'results' && (
             <>
               <div className="flex-1 p-3">
                 <div className="mb-2 font-bold uppercase tracking-wide text-gray-300">Measurements</div>
@@ -979,9 +980,9 @@ export default function PanelFlatfoot() {
                 </div>
               </div>
             </>
-          ) : (
-            <SegmentLabelPanel />
           )}
+
+          {rightTab === 'segments' && <SegmentLabelPanel />}
         </div>
       </div>
     </div>

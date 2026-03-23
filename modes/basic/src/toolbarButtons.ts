@@ -729,17 +729,12 @@ const toolbarButtons: Button[] = [
     id: 'SmartPaintOpen',
     uiType: 'ohif.toolButton',
     props: {
-      icon: 'icon-link',
+      icon: 'icon-tool-brush',
       label: 'Smart Paint',
       tooltip: 'Open / close Smart Paint',
       commands: 'openSmartPaint',
       evaluate: 'evaluate.action',
     },
-  },
-  {
-    id: 'ClinicalViewers',
-    uiType: 'ohif.clinicalViewers',
-    props: {},
   },
 ];
 
