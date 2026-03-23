@@ -1,4 +1,4 @@
-import { visitStudy } from './visitStudy';
+import { visitStudy, visitStudyRendered } from './visitStudy';
 import { addOHIFConfiguration } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
@@ -24,6 +24,7 @@ import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 
 export {
   visitStudy,
+  visitStudyRendered,
   addOHIFConfiguration,
   checkForScreenshot,
   screenShotPaths,

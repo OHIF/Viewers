@@ -1,10 +1,14 @@
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudyRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
-  const mode = 'viewer';
-
-  await visitStudy(page, studyInstanceUID, mode, 5000);
+  await visitStudyRendered(page, studyInstanceUID);
 
   // Log the actual URL that was loaded
   const currentUrl = page.url();
@@ -19,7 +23,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('should hydrate SCOORD3D probe measurements correctly', async ({
+test('should hydrate SCOORD3D probe measurements correctly.', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -136,7 +140,7 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   );
 });
 
-test('should display SCOORD3D probe measurements correctly', async ({
+test('should display SCOORD3D probe measurements correctly. shouldUpdateThis', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
