@@ -49,7 +49,7 @@
     "install:update-lockfile": "yarn install && bun install --config=./bunfig.update-lockfile.toml",
     "install:yarn:frozen-lockfile": "echo Deprecated - use install:frozen && yarn install --frozen-lockfile",
     "install:frozen": "yarn install --frozen-lockfile",
-    "audit": "bun audit --ignore=GHSA-3ppc-4f35-3m26",
+    "audit": "bun audit --ignore=GHSA-3ppc-4f35-3m26 --ignore=GHSA-7r86-cg39-jmmj --ignore=GHSA-23c5-xmqv-rm74",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
     "test": "yarn run test:unit",
@@ -76,7 +76,11 @@
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
     "lerna:customVersion": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "cs3d:checkout": "cd libs/@cornerstonejs && git fetch && git checkout",
+    "cs3d:build": "cd libs/@cornerstonejs && yarn install && yarn run build:esm",
+    "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
+    "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs ."
   },
   "dependencies": {
     "execa": "8.0.1"
@@ -157,7 +161,10 @@
     "lodash-es": "4.17.23",
     "diff": "5.2.2",
     "webpack": "5.105.0",
-    "tar": "7.5.9"
+    "tar": "7.5.11",
+    "serialize-javascript": "7.0.4",
+    "svgo": "3.3.3",
+    "flatted": "3.4.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

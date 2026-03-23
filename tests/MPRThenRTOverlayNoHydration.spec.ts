@@ -14,8 +14,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 }) => {
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  // Wait 5 seconds for MPR to load. This is necessary in particular when screen shots are added or replaced.
-  await page.waitForTimeout(10000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot(
     page,
@@ -35,8 +34,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  // Wait 5 seconds for RT to load. This is necessary in particular when screen shots are added or replaced.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,

@@ -11,6 +11,30 @@ export class RightPanelPageObject {
     this.DOMOverlayPageObject = new DOMOverlayPageObject(page);
   }
 
+  private getCollapsedMoreMenu(typeSuffix?: string) {
+    const page = this.page;
+    const testId = typeSuffix
+      ? `segmentation-collapsed-more-btn-${typeSuffix}`
+      : 'segmentation-collapsed-more-btn';
+    const button = page.getByTestId(testId);
+
+    return {
+      button,
+      click: async () => {
+        await button.click();
+      },
+      delete: async () => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Delete' }).click();
+      },
+      rename: async (text: string) => {
+        await button.click();
+        await page.getByRole('menuitem', { name: 'Rename' }).click();
+        await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
+      },
+    };
+  }
+
   private getActionsMenu(row: Locator) {
     const actionsButton = row.getByTestId('actionsMenuTrigger');
 
@@ -45,6 +69,9 @@ export class RightPanelPageObject {
     return {
       get actions() {
         return getActionsMenu(row);
+      },
+      get title() {
+        return row.getByTestId('data-row-title');
       },
       click: async () => {
         await row.click();
@@ -117,6 +144,31 @@ export class RightPanelPageObject {
     };
   }
 
+  private getSegmentationSelect(type: string) {
+    const page = this.page;
+    const suffix = type ? `-${type}` : '';
+    const locator = page.getByTestId(`segmentation-select${suffix}`);
+    const selectedValue = page.getByTestId(`segmentation-select-value${suffix}`);
+
+    const nthSegmentation = async (n: number) => {
+      await locator.click();
+      return page.getByRole('option').nth(n);
+    };
+
+    return {
+      /** The SelectTrigger button element */
+      locator,
+      /** The span showing the currently selected segmentation label */
+      selectedValue,
+      /** Opens the dropdown and returns a locator for the nth option (0-based) */
+      nthSegmentation,
+      /** Opens the dropdown and clicks the nth segmentation (0-based) */
+      selectNthSegmentation: async (n: number) => {
+        await (await nthSegmentation(n)).click();
+      },
+    };
+  }
+
   private get addSegmentationButton() {
     const button = this.page.getByTestId('addSegmentation');
     return {
@@ -127,12 +179,14 @@ export class RightPanelPageObject {
     };
   }
 
-  private get segmentationPanel() {
+  private getSegmentationPanel(typeSuffix?: string) {
     const page = this.page;
     const getSegmentByIdx = (index: number) => this.getPanelRowByIdx(index);
     const getSegmentByText = (text: string) => this.getPanelRowByText(text);
+    const moreMenu = this.getCollapsedMoreMenu(typeSuffix);
 
     return {
+      moreMenu,
       getSegmentCount: async () => {
         return await page.getByTestId('data-row').count();
       },
@@ -150,13 +204,15 @@ export class RightPanelPageObject {
   get contourSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
-    const panel = this.segmentationPanel;
+    const panel = this.getSegmentationPanel('Contour');
     const menuButton = page.getByTestId('panelSegmentationWithToolsContour-btn');
+    const segmentationSelect = this.getSegmentationSelect('Contour');
 
     return {
       addSegmentationButton,
       menuButton,
       panel,
+      segmentationSelect,
       select: async () => {
         await menuButton.click();
       },
@@ -166,13 +222,15 @@ export class RightPanelPageObject {
   get labelMapSegmentationPanel() {
     const page = this.page;
     const addSegmentationButton = this.addSegmentationButton;
-    const panel = this.segmentationPanel;
+    const panel = this.getSegmentationPanel('Labelmap');
     const menuButton = page.getByTestId('panelSegmentationWithToolsLabelMap-btn');
+    const segmentationSelect = this.getSegmentationSelect('Labelmap');
 
     return {
       addSegmentationButton,
       menuButton,
       panel,
+      segmentationSelect,
       select: async () => {
         await menuButton.click();
       },
@@ -266,12 +324,22 @@ export class RightPanelPageObject {
           },
         };
       },
+
+      get segmentBidirectional() {
+        const button = page.getByTestId('SegmentBidirectional');
+        return {
+          button,
+          click: async () => {
+            await button.click();
+          },
+        };
+      },
     };
   }
 
   get noToolsSegmentationPanel() {
     const page = this.page;
-    const panel = this.segmentationPanel;
+    const panel = this.getSegmentationPanel();
     const menuButton = page.getByTestId(/^panelSegmentation.*-btn$/).first();
 
     return {
@@ -330,6 +398,25 @@ export class RightPanelPageObject {
             },
           };
         },
+      },
+    };
+  }
+
+  get microscopyPanel() {
+    const page = this.page;
+    const getMeasurementByIdx = (index: number) => this.getPanelRowByIdx(index);
+    const getMeasurementByText = (text: string) => this.getPanelRowByText(text);
+
+    return {
+      locator: page.getByTestId('measurements-panel'),
+      getMeasurementCount: async () => {
+        return await page.getByTestId('data-row').count();
+      },
+      nthMeasurement(index: number) {
+        return getMeasurementByIdx(index);
+      },
+      measurementByText(text: string) {
+        return getMeasurementByText(text);
       },
     };
   }
