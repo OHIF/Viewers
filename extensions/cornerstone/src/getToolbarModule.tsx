@@ -430,6 +430,23 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       },
     },
     {
+      name: 'evaluate.cornerstoneTool.allViewports',
+      evaluate: ({ viewportId, button, toolNames }) => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        const toolName = toolbarService.getToolNameForButton(button);
+
+        if (toolGroup && toolGroup.hasTool(toolName)) {
+          const isPrimaryActive = toolNames
+            ? toolNames.includes(toolGroup.getActivePrimaryMouseButtonTool())
+            : toolGroup.getActivePrimaryMouseButtonTool() === toolName;
+          return { disabled: false, isActive: isPrimaryActive };
+        }
+
+        // Tool not in this viewport's group — still show as enabled (never gray out)
+        return { disabled: false, isActive: false };
+      },
+    },
+    {
       name: 'evaluate.action',
       evaluate: () => {
         return {

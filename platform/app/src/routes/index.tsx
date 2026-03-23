@@ -8,6 +8,10 @@ import WorkList from './WorkList';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
+import EcgViewer from './EcgViewer';
+import SmartPaint from './SmartPaint';
+import Flatfoot from './Flatfoot';
+import ViewerHub from './ViewerHub';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
 import PropTypes from 'prop-types';
@@ -77,6 +81,22 @@ const bakedInRoutes = [
     path: `/localbasic`,
     children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
   },
+  {
+    path: `/ecg-viewer`,
+    children: EcgViewer,
+  },
+  {
+    path: `/smart-paint`,
+    children: SmartPaint,
+  },
+  {
+    path: `/flatfoot`,
+    children: Flatfoot,
+  },
+  {
+    path: `/viewer-hub`,
+    children: ViewerHub,
+  },
 ];
 
 // NOT FOUND (404)
@@ -117,7 +137,8 @@ const createRoutes = ({
     props: { children: WorkList, servicesManager, extensionManager },
   };
 
-  const customRoutes = customizationService.getCustomization('routes.customRoutes');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const customRoutes = customizationService.getCustomization('routes.customRoutes') as any;
 
   const allRoutes = [
     ...routes,

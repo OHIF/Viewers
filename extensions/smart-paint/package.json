@@ -1,0 +1,11 @@
+{
+  "name": "@custom/extension-smart-paint",
+  "version": "1.0.0",
+  "description": "Smart Paint ROI Tool — freehand brush contour drawing with 2D/3D support, sensitivity control, undo/redo",
+  "main": "src/index.tsx",
+  "private": true,
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "@ohif/core": "^3.0.0"
+  }
+}

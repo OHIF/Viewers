@@ -1,0 +1,12 @@
+{
+  "name": "@custom/mode-ecg",
+  "version": "1.0.0",
+  "description": "ECG & Clinical Tools Mode — ECG measurement, Smart Paint ROI, Flatfoot analysis",
+  "main": "src/index.tsx",
+  "private": true,
+  "peerDependencies": {
+    "@ohif/core": "^3.0.0",
+    "@ohif/extension-default": "^3.0.0",
+    "@ohif/extension-cornerstone": "^3.0.0"
+  }
+}

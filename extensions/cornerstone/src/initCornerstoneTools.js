@@ -51,6 +51,7 @@ import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
+import ABCAngleTool from './tools/ABCAngleTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
@@ -117,6 +118,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SculptorTool);
   addTool(SplineContourSegmentationTool);
   addTool(LabelMapEditWithContourTool);
+  addTool(ABCAngleTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -180,6 +182,7 @@ const toolNames = {
   SculptorTool: SculptorTool.toolName,
   SplineContourSegmentation: SplineContourSegmentationTool.toolName,
   LabelMapEditWithContourTool: LabelMapEditWithContourTool.toolName,
+  ABCAngle: ABCAngleTool.toolName,
 };
 
 export { toolNames };

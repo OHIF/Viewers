@@ -1,0 +1,12 @@
+{
+  "name": "@custom/extension-ecg-tools",
+  "version": "1.0.0",
+  "description": "Advanced ECG Tools Extension for OHIF Viewer — mV/s measurement, QTc (Bazett), HR, QRS Axis, comparison",
+  "main": "src/index.tsx",
+  "private": true,
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@ohif/core": "^3.0.0"
+  }
+}
