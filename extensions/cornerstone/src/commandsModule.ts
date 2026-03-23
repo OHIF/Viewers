@@ -1051,6 +1051,10 @@ function commandsModule({
         }
 
         const currentMode = toolGroup.getToolOptions(toolName).mode;
+        // Matches the isOn check in evaluate.cornerstoneTool.crosshairToggle (getToolbarModule.tsx).
+        // Both must agree on which modes count as "on" — the evaluator uses it to show the
+        // toggled button state, this command uses it to decide whether to disable or enable.
+        // If adding Active mode support (e.g. modifier key), update both.
         const isOn = currentMode === Enums.ToolModes.Passive ||
                      currentMode === Enums.ToolModes.Enabled;
 

@@ -443,6 +443,10 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         }
 
         const currentMode = toolGroup.getToolOptions(toolName).mode;
+        // Matches the isOn check in toggleCrosshairsToolbar (commandsModule.ts).
+        // Both must agree on which modes count as "on" — this evaluator uses it to show the
+        // toggled button state, the command uses it to decide whether to disable or enable.
+        // If adding Active mode support (e.g. modifier key), update both.
         const isOn = currentMode === Enums.ToolModes.Passive ||
                      currentMode === Enums.ToolModes.Enabled;
 
