@@ -1041,6 +1041,28 @@ function commandsModule({
         }
       }
     },
+    toggleCrosshairsToolbar({ value, itemId, toolGroupIds = ['mpr'] }) {
+      const toolName = itemId || value;
+
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+          return;
+        }
+
+        const currentMode = toolGroup.getToolOptions(toolName).mode;
+        const isOn = currentMode === Enums.ToolModes.Passive ||
+                     currentMode === Enums.ToolModes.Enabled;
+
+        if (isOn) {
+          // On → turn OFF
+          toolGroup.setToolDisabled(toolName);
+        } else {
+          // Off → turn ON (Passive — visible + repositionable via handles)
+          toolGroup.setToolPassive(toolName);
+        }
+      });
+    },
     setToolActiveToolbar: ({ value, itemId, toolName, toolGroupIds = [], bindings }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
       toolName = toolName || itemId || value;
@@ -2638,6 +2660,9 @@ function commandsModule({
     },
     toggleActiveDisabledToolbar: {
       commandFn: actions.toggleActiveDisabledToolbar,
+    },
+    toggleCrosshairsToolbar: {
+      commandFn: actions.toggleCrosshairsToolbar,
     },
     updateStoredPositionPresentation: {
       commandFn: actions.updateStoredPositionPresentation,

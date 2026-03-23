@@ -430,6 +430,31 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       },
     },
     {
+      name: 'evaluate.cornerstoneTool.crosshairToggle',
+      evaluate: ({ viewportId, button, disabledText }) => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+        if (!toolGroup) {
+          return;
+        }
+
+        const toolName = toolbarService.getToolNameForButton(button);
+        if (!toolGroup.hasTool(toolName)) {
+          return getDisabledState(disabledText);
+        }
+
+        const currentMode = toolGroup.getToolOptions(toolName).mode;
+        const isOn = currentMode === Enums.ToolModes.Passive ||
+                     currentMode === Enums.ToolModes.Enabled;
+
+        return {
+          disabled: false,
+          isActive: false,
+          isToggled: isOn,
+          icon: isOn ? 'tool-crosshair-checked' : 'tool-crosshair',
+        };
+      },
+    },
+    {
       name: 'evaluate.action',
       evaluate: () => {
         return {
