@@ -656,6 +656,7 @@ const toolbarButtons: Button[] = [
       },
       evaluate: {
         name: 'evaluate.cornerstoneTool.crosshairToggle',
+        disabledText: i18n.t('Buttons:Select an MPR viewport to enable this tool'),
       },
     },
   },
