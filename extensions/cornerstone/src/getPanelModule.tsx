@@ -98,7 +98,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     {
       name: 'panelSegmentationWithToolsLabelMap',
       iconName: 'tab-segmentation',
-      iconLabel: 'Segmentation',
+      iconLabel: 'Label Map',
       label: i18n.t('SegmentationPanel:Labelmap'),
       component: props =>
         wrappedPanelSegmentationWithTools({

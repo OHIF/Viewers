@@ -50,6 +50,14 @@ export const CustomDropdownMenuContent = () => {
     return null;
   }
 
+  const isLabelMap = segmentationRepresentationTypes?.[0] === 'Labelmap';
+  const createLabel = isLabelMap
+    ? `Create New ${t('Labelmap')} ${t('Segmentation')}`
+    : t('Create New Segmentation');
+  const manageLabel = isLabelMap
+    ? `Manage Current ${t('Labelmap')} ${t('Segmentation')}`
+    : t('Manage Current Segmentation');
+
   // Determine if export is allowed for this segmentation
   if (exportOptions) {
     const exportOption = exportOptions.find(opt => opt.segmentationId === segmentationId);
@@ -87,11 +95,11 @@ export const CustomDropdownMenuContent = () => {
           }
         >
           <Icons.Add className="text-foreground" />
-          <span className="pl-2">{t('Create New Segmentation')}</span>
+          <span className="pl-2">{createLabel}</span>
         </DropdownMenuItem>
       )}
       <DropdownMenuSeparator />
-      <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{manageLabel}</DropdownMenuLabel>
       <DropdownMenuItem onClick={() => onSegmentationRemoveFromViewport(segmentationId)}>
         <Icons.Series className="text-foreground" />
         <span className="pl-2">{t('Remove from Viewport')}</span>

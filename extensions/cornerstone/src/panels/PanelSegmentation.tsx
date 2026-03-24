@@ -17,6 +17,7 @@ import {
   hasExportableLabelMapData,
   hasExportableContourData,
 } from '../utils/segmentationExportUtils';
+import i18n from '@ohif/i18n';
 
 type PanelSegmentationProps = {
   children?: React.ReactNode;
@@ -233,11 +234,15 @@ export default function PanelSegmentation({
   });
 
   // Common props for SegmentationTable
+  const title = segmentationRepresentationTypes?.[0]
+    ? i18n.t(`SegmentationPanel:${segmentationRepresentationTypes[0]} Segmentations`)
+    : i18n.t('SegmentationPanel:Segmentations');
+
   const tableProps = {
     disabled,
     data: segmentationsWithRepresentations,
     mode: segmentationTableMode,
-    title: `${segmentationRepresentationTypes?.[0] ? `${segmentationRepresentationTypes[0]} ` : ''}Segmentations`,
+    title,
     exportOptions,
     disableEditing,
     onSegmentationAdd,

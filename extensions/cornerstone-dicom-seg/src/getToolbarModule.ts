@@ -122,6 +122,34 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
       },
     },
     {
+      name: 'evaluate.cornerstone.segmentation.activeTool',
+      evaluate: ({ viewportId, toolNames, disabledText }) => {
+        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+        if (!toolGroup) {
+          return {
+            disabled: true,
+            disabledText:
+              disabledText ?? i18n.t('SegmentationPanel:Not available on the current viewport'),
+          };
+        }
+
+        if (!toolNames?.length) {
+          return {
+            disabled: false,
+            isActive: false,
+          };
+        }
+
+        const activePrimaryTool = toolGroup.getActivePrimaryMouseButtonTool();
+
+        return {
+          disabled: false,
+          isActive: toolNames.includes(activePrimaryTool),
+        };
+      },
+    },
+    {
       name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
       evaluate: ({ button, radiusOptionId }) => {
         const toolGroupIds = toolGroupService.getToolGroupIds();

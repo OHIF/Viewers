@@ -22,6 +22,9 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
     (!segmentationRepresentationTypes && data.length > 0) ||
     data.some(info => segmentationRepresentationTypes?.includes(info.representation?.type));
 
+  const isLabelMap = segmentationRepresentationTypes?.[0] === 'Labelmap';
+  const addLabel = isLabelMap ? `Add ${t('Labelmap')} ${t('Segmentation')}` : t('Add segmentation');
+
   if (hasRepresentationType && mode === 'collapsed') {
     return null;
   }
@@ -47,9 +50,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
         <div className="grid h-[28px] w-[28px] place-items-center">
           {disabled ? <Icons.Info /> : <Icons.Add />}
         </div>
-        <span className="text-[13px]">
-          {t(disabled ? 'Segmentation not supported' : 'Add segmentation')}
-        </span>
+        <span className="text-[13px]">{disabled ? t('Segmentation not supported') : addLabel}</span>
       </div>
     </div>
   );

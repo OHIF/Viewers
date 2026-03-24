@@ -36,6 +36,10 @@ export const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
 
+export const dynamicVolume = {
+  ecgViewerPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
+};
+
 export const dicomsr = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
   sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
@@ -76,6 +80,7 @@ export const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dynamic-volume': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
@@ -160,7 +165,7 @@ export function onModeEnter({
   if (this.activatePanelTrigger) {
     this._activatePanelTriggersSubscriptions = [
       ...panelService.addActivatePanelTriggers(
-        cornerstone.segmentation,
+        cornerstone.labelMapSegmentationPanel,
         [
           {
             sourcePubSubService: segmentationService,
@@ -244,6 +249,7 @@ export const toolbarSections = {
   MeasurementTools: [
     'Length',
     'Bidirectional',
+    'ECGBidirectional',
     'ArrowAnnotate',
     'EllipticalROI',
     'RectangleROI',
@@ -273,7 +279,24 @@ export const toolbarSections = {
     'UltrasoundDirectionalTool',
     'WindowLevelRegion',
     'SegmentLabelTool',
+    'Brush',
+    'Eraser',
+    'ABCSplitAngle',
+    'ECGViewer',
   ],
+
+  labelMapSegmentationToolbox: ['LabelMapTools'],
+  LabelMapTools: [
+    'LabelmapSlicePropagation',
+    'BrushTools',
+    'MarkerLabelmap',
+    'RegionSegmentPlus',
+    'Shapes',
+    'LabelMapEditWithContour',
+  ],
+  BrushTools: ['Brush', 'Eraser'],
+  labelMapSegmentationUtilities: ['LabelMapUtilities'],
+  LabelMapUtilities: ['InterpolateLabelmap', 'SegmentBidirectional'],
 };
 
 export const basicLayout = {
@@ -281,7 +304,7 @@ export const basicLayout = {
   props: {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.measurements, dynamicVolume.ecgViewerPanel],
     rightPanelClosed: true,
     rightPanelResizable: true,
     viewports: [

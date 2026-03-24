@@ -34,6 +34,19 @@
   fill: none;
 }
 
+.LineChart svg .dot {
+  transition:
+    r 120ms ease,
+    fill 120ms ease,
+    stroke 120ms ease;
+}
+
+.LineChart svg .dot.selected {
+  fill: #f5c542;
+  stroke: #fff3bf;
+  stroke-width: 1.5px;
+}
+
 .LineChart svg .legend .legend-background {
   fill: none;
   stroke: #383f42;

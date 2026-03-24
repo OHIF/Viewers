@@ -48,7 +48,13 @@ export async function createSegmentationForViewport(
 
   const segs = segmentationService.getSegmentations();
 
-  const label = options.label || `${i18n.t('Tools:Segmentation')} ${segs.length + 1}`;
+  const defaultLabel =
+    segmentationType === SegmentationRepresentations.Labelmap
+      ? `${i18n.t('SegmentationPanel:Labelmap')} ${i18n.t('SegmentationPanel:Segmentation')} ${
+          segs.length + 1
+        }`
+      : `${i18n.t('Tools:Segmentation')} ${segs.length + 1}`;
+  const label = options.label || defaultLabel;
   const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);

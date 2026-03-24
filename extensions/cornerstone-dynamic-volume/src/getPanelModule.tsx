@@ -1,5 +1,5 @@
 import React from 'react';
-import { DynamicDataPanel } from './panels';
+import { DynamicDataPanel, ECGViewerPanel } from './panels';
 import { Toolbox } from '@ohif/extension-default';
 import { PanelSegmentation } from '@ohif/extension-cornerstone';
 import DynamicExport from './panels/DynamicExport';
@@ -39,6 +39,10 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
     );
   };
 
+  const wrappedECGViewer = () => {
+    return <ECGViewerPanel servicesManager={servicesManager} />;
+  };
+
   return [
     {
       name: 'dynamic-volume',
@@ -53,6 +57,13 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedDynamicSegmentation,
+    },
+    {
+      name: 'dynamic-ecg-viewer',
+      iconName: 'tab-linear',
+      iconLabel: 'ECG',
+      label: 'ECG Viewer',
+      component: wrappedECGViewer,
     },
   ];
 }

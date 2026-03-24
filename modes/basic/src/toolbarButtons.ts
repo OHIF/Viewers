@@ -4,6 +4,9 @@ import { EVENTS } from '@cornerstonejs/core';
 import { ViewportGridService } from '@ohif/core';
 import i18n from 'i18next';
 
+const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
+const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
+
 const callbacks = (toolName: string) => [
   {
     commandName: 'setViewportForToolConfiguration',
@@ -32,6 +35,27 @@ const toolbarButtons: Button[] = [
   {
     id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'BrushTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'LabelMapTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'LabelMapUtilities',
+    uiType: 'ohif.Toolbar',
     props: {
       buttonSection: true,
     },
@@ -369,6 +393,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'ABCSplitAngle',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-angle',
+      label: 'ABC Split Angle',
+      tooltip: 'Draw A-B-C, auto-create D, and calculate both triangle angles',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
     id: 'Magnify',
     uiType: 'ohif.toolButton',
     props: {
@@ -481,6 +516,17 @@ const toolbarButtons: Button[] = [
       icon: 'tool-bidirectional',
       label: i18n.t('Buttons:Bidirectional'),
       tooltip: i18n.t('Buttons:Bidirectional Tool'),
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'ECGBidirectional',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-cobb-angle',
+      label: 'ECG QTc',
+      tooltip: 'ECG QTc — Click 3 points: A=QRS-onset, B=T-end, C=next QRS-onset. Calculates QT, RR, QTc Bazett and QTc Fridericia.',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -677,6 +723,459 @@ const toolbarButtons: Button[] = [
       ],
     },
   },
+  {
+    id: 'Brush',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-brush',
+      label: i18n.t('Buttons:Brush'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation.activeTool',
+          toolNames: ['CircularBrush', 'SphereBrush'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'brush-radius',
+        },
+        'evaluate.action',
+      ],
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            toolName: 'CircularBrush',
+            toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+          },
+        },
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+      options: [
+        {
+          name: i18n.t('Buttons:Radius (mm)'),
+          id: 'brush-radius',
+          type: 'range',
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+          },
+        },
+        {
+          name: i18n.t('Buttons:Shape'),
+          type: 'radio',
+          id: 'brush-mode',
+          value: 'CircularBrush',
+          values: [
+            { value: 'CircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereBrush', label: i18n.t('Buttons:Sphere') },
+          ],
+          commands: setToolActiveToolbar,
+        },
+      ],
+    },
+  },
+  {
+    id: 'Eraser',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-eraser',
+      label: i18n.t('Buttons:Eraser'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation.activeTool',
+          toolNames: ['CircularEraser', 'SphereEraser'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'eraser-radius',
+        },
+        'evaluate.action',
+      ],
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            toolName: 'CircularEraser',
+            toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+          },
+        },
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+      options: [
+        {
+          name: i18n.t('Buttons:Radius (mm)'),
+          id: 'eraser-radius',
+          type: 'range',
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+          },
+        },
+        {
+          name: i18n.t('Buttons:Shape'),
+          type: 'radio',
+          id: 'eraser-mode',
+          value: 'CircularEraser',
+          values: [
+            { value: 'CircularEraser', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereEraser', label: i18n.t('Buttons:Sphere') },
+          ],
+          commands: setToolActiveToolbar,
+        },
+      ],
+    },
+  },
+  {
+    id: 'Threshold',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-threshold',
+      label: i18n.t('Buttons:Threshold Tool'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation.activeTool',
+          toolNames: [
+            'ThresholdCircularBrush',
+            'ThresholdSphereBrush',
+            'ThresholdCircularBrushDynamic',
+            'ThresholdSphereBrushDynamic',
+          ],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'threshold-radius',
+        },
+        'evaluate.action',
+      ],
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            toolName: 'ThresholdCircularBrush',
+            toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+          },
+        },
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+      options: [
+        {
+          name: i18n.t('Buttons:Radius (mm)'),
+          id: 'threshold-radius',
+          type: 'range',
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: {
+              toolNames: [
+                'ThresholdCircularBrush',
+                'ThresholdSphereBrush',
+                'ThresholdCircularBrushDynamic',
+                'ThresholdSphereBrushDynamic',
+              ],
+            },
+          },
+        },
+        {
+          name: i18n.t('Buttons:Shape'),
+          type: 'radio',
+          id: 'threshold-shape',
+          value: 'ThresholdCircularBrush',
+          values: [
+            { value: 'ThresholdCircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'ThresholdSphereBrush', label: i18n.t('Buttons:Sphere') },
+          ],
+          commands: ({ value, commandsManager, options }) => {
+            const optionsDynamic = options.find(option => option.id === 'dynamic-mode');
+
+            if (optionsDynamic.value === 'ThresholdDynamic') {
+              commandsManager.run('setToolActive', {
+                toolName:
+                  value === 'ThresholdCircularBrush'
+                    ? 'ThresholdCircularBrushDynamic'
+                    : 'ThresholdSphereBrushDynamic',
+              });
+            } else {
+              commandsManager.run('setToolActive', {
+                toolName: value,
+              });
+            }
+          },
+        },
+        {
+          name: i18n.t('Buttons:Threshold'),
+          type: 'radio',
+          id: 'dynamic-mode',
+          value: 'ThresholdDynamic',
+          values: [
+            { value: 'ThresholdDynamic', label: i18n.t('Buttons:Dynamic') },
+            { value: 'ThresholdRange', label: i18n.t('Buttons:Range') },
+          ],
+          commands: ({ value, commandsManager, options }) => {
+            const thresholdRangeOption = options.find(option => option.id === 'threshold-shape');
+
+            if (value === 'ThresholdDynamic') {
+              commandsManager.run('setToolActiveToolbar', {
+                toolName:
+                  thresholdRangeOption.value === 'ThresholdCircularBrush'
+                    ? 'ThresholdCircularBrushDynamic'
+                    : 'ThresholdSphereBrushDynamic',
+              });
+            } else {
+              commandsManager.run('setToolActiveToolbar', {
+                toolName: thresholdRangeOption.value,
+              });
+
+              const thresholdRangeValue = options.find(
+                option => option.id === 'threshold-range'
+              ).value;
+
+              commandsManager.run('setThresholdRange', {
+                toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                value: thresholdRangeValue,
+              });
+            }
+          },
+        },
+        {
+          name: 'ThresholdRange',
+          type: 'double-range',
+          id: 'threshold-range',
+          min: -1000,
+          max: 1000,
+          step: 1,
+          value: [50, 600],
+          condition: ({ options }) =>
+            options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+          commands: {
+            commandName: 'setThresholdRange',
+            commandOptions: {
+              toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'Shapes',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-shape',
+      label: i18n.t('Buttons:Shapes'),
+      evaluate: 'evaluate.action',
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
+      options: [
+        {
+          name: i18n.t('Buttons:Shape'),
+          type: 'radio',
+          value: 'CircleScissor',
+          id: 'shape-mode',
+          values: [
+            { value: 'CircleScissor', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereScissor', label: i18n.t('Buttons:Sphere') },
+            { value: 'RectangleScissor', label: i18n.t('Buttons:Rectangle') },
+          ],
+          commands: 'setToolActiveToolbar',
+        },
+      ],
+    },
+  },
+  {
+    id: 'InterpolateLabelmap',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-interpolate',
+      label: i18n.t('Buttons:Interpolate Labelmap'),
+      tooltip: i18n.t(
+        'Buttons:Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.'
+      ),
+      evaluate: 'evaluate.action',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'interpolateLabelmap',
+      ],
+    },
+  },
+  {
+    id: 'SegmentBidirectional',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'actions-bidirectional',
+      label: i18n.t('Buttons:Segment Bidirectional'),
+      tooltip: i18n.t(
+        'Buttons:Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.'
+      ),
+      evaluate: 'evaluate.action',
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'runSegmentBidirectional',
+      ],
+    },
+  },
+  {
+    id: 'RegionSegmentPlus',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-click-segment',
+      label: i18n.t('Buttons:One Click Segment'),
+      tooltip: i18n.t(
+        'Buttons:Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.'
+      ),
+      evaluate: 'evaluate.action',
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'LabelmapSlicePropagation',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-labelmap-slice-propagation',
+      label: i18n.t('Buttons:Labelmap Assist'),
+      tooltip: i18n.t(
+        'Buttons:Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.'
+      ),
+      evaluate: 'evaluate.action',
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
+          'LabelmapSlicePropagation'
+        ),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
+      },
+      commands: [
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+        'toggleEnabledDisabledToolbar',
+      ],
+    },
+  },
+  {
+    id: 'MarkerLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-marker-labelmap',
+      label: i18n.t('Buttons:Marker Guided Labelmap'),
+      tooltip: i18n.t(
+        'Buttons:Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.'
+      ),
+      evaluate: 'evaluate.action',
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: {
+            segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
+      },
+      options: [
+        {
+          name: i18n.t('Buttons:Marker Mode'),
+          type: 'radio',
+          id: 'marker-mode',
+          value: 'markerInclude',
+          values: [
+            { value: 'markerInclude', label: i18n.t('Buttons:Include') },
+            { value: 'markerExclude', label: i18n.t('Buttons:Exclude') },
+          ],
+          commands: ({ commandsManager, options }) => {
+            const markerModeOption = options.find(option => option.id === 'marker-mode');
+            if (markerModeOption.value === 'markerInclude') {
+              commandsManager.run('setToolActive', {
+                toolName: 'MarkerInclude',
+              });
+            } else {
+              commandsManager.run('setToolActive', {
+                toolName: 'MarkerExclude',
+              });
+            }
+          },
+        },
+        {
+          name: i18n.t('Buttons:Clear Markers'),
+          type: 'button',
+          id: 'clear-markers',
+          commands: 'clearMarkersForMarkerLabelmap',
+        },
+      ],
+    },
+  },
+  {
+    id: 'LabelMapEditWithContour',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'tool-labelmap-edit-with-contour',
+      label: i18n.t('Buttons:Labelmap Edit with Contour Tool'),
+      tooltip: i18n.t('Buttons:Labelmap Edit with Contour Tool'),
+      commands: [
+        'setToolActiveToolbar',
+        {
+          commandName: 'activateSelectedSegmentationOfType',
+          commandOptions: { segmentationRepresentationType: 'Labelmap' },
+        },
+      ],
+      evaluate: 'evaluate.action',
+    },
+  },
   // {
   //   id: 'Undo',
   //   uiType: 'ohif.toolButton',
@@ -703,6 +1202,22 @@ const toolbarButtons: Button[] = [
   //     evaluate: 'evaluate.action',
   //   },
   // },
+  {
+    id: 'ECGViewer',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tab-linear',
+      label: i18n.t('Buttons:ECG Viewer'),
+      tooltip: i18n.t('Buttons:Open ECG Viewer Panel'),
+      commands: {
+        commandName: 'activatePanel',
+        commandOptions: {
+          panelId: 'dynamic-ecg-viewer',
+        },
+      },
+      evaluate: 'evaluate.action',
+    },
+  },
 ];
 
 export default toolbarButtons;

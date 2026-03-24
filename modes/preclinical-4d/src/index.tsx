@@ -22,6 +22,7 @@ const ohif = {
 
 const dynamicVolume = {
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
+  ecgViewerPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
 };
 
 const cornerstone = {
@@ -104,6 +105,21 @@ function modeFactory({ modeConfiguration }) {
         'panelSegmentation.showAddSegment': {
           $set: false,
         },
+        'studyBrowser.studyMenuItems': {
+          $set: [
+            {
+              id: 'ecgViewer',
+              label: 'ECG Viewer',
+              iconName: 'tab-linear',
+              onClick: ({ servicesManager: sm }) => {
+                sm.services.panelService.activatePanel(
+                  '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
+                  true
+                );
+              },
+            },
+          ],
+        },
       });
 
       // Auto play the clip initially when the volumes are loaded
@@ -177,7 +193,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]],
               leftPanelResizable: true,
-              rightPanels: [],
+              rightPanels: [dynamicVolume.ecgViewerPanel],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

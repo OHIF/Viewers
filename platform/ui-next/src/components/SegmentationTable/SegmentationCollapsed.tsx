@@ -49,10 +49,11 @@ const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.React
 
 // Selector component - for the segmentation selection dropdown
 const SegmentationCollapsedSelector = () => {
-  const { t } = useTranslation('SegmentationPanel.HeaderCollapsed');
+  const { t } = useTranslation('SegmentationPanel');
   const { data, onSegmentationClick, segmentationRepresentationTypes } =
     useSegmentationTableContext('SegmentationCollapsedSelector');
   const { segmentation } = useSegmentationExpanded('SegmentationCollapsedSelector');
+  const isLabelMap = segmentationRepresentationTypes?.[0] === 'Labelmap';
 
   if (!data?.length) {
     return null;
@@ -76,7 +77,7 @@ const SegmentationCollapsedSelector = () => {
       value={segmentation?.segmentationId}
     >
       <SelectTrigger className="w-full overflow-hidden">
-        <SelectValue placeholder={t('Select a segmentation')} />
+        <SelectValue placeholder={isLabelMap ? `Select a ${t('Labelmap').toLowerCase()}` : t('Select a segmentation')} />
       </SelectTrigger>
       <SelectContent>
         {segmentations.map(seg => (

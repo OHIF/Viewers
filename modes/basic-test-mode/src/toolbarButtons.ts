@@ -8,6 +8,8 @@ import { defaults } from '@ohif/core';
 import i18n from 'i18next';
 
 const { windowLevelPresets } = defaults;
+const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
+const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
 
 /**
  *
@@ -60,6 +62,13 @@ const toolbarButtons: Button[] = [
   {
     id: 'WindowLevelGroup',
     uiType: 'ohif.toolButtonList',
+    props: {
+      buttonSection: true,
+    },
+  },
+  {
+    id: 'BrushTools',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       buttonSection: true,
     },
@@ -220,6 +229,116 @@ const toolbarButtons: Button[] = [
       tooltip: i18n.t('Buttons:Length Tool'),
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'Brush',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-tool-brush',
+      label: i18n.t('Buttons:Brush'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularBrush', 'SphereBrush'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'brush-radius',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
+      ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
+      options: [
+        {
+          name: 'Size (mm)',
+          id: 'brush-radius',
+          type: 'range',
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+          },
+        },
+        {
+          name: i18n.t('Buttons:Shape'),
+          type: 'radio',
+          id: 'brush-mode',
+          value: 'CircularBrush',
+          values: [
+            { value: 'CircularBrush', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereBrush', label: i18n.t('Buttons:Sphere') },
+          ],
+          commands: setToolActiveToolbar,
+        },
+      ],
+    },
+  },
+  {
+    id: 'Eraser',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'icon-tool-eraser',
+      label: i18n.t('Buttons:Eraser'),
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['CircularEraser', 'SphereEraser'],
+        },
+        {
+          name: 'evaluate.cornerstone.segmentation.synchronizeDrawingRadius',
+          radiusOptionId: 'eraser-radius',
+        },
+        {
+          name: 'evaluate.cornerstone.hasSegmentationOfType',
+          segmentationRepresentationType: 'Labelmap',
+        },
+      ],
+      commands: {
+        commandName: 'activateSelectedSegmentationOfType',
+        commandOptions: {
+          segmentationRepresentationType: 'Labelmap',
+        },
+      },
+      options: [
+        {
+          name: i18n.t('Buttons:Radius (mm)'),
+          id: 'eraser-radius',
+          type: 'range',
+          explicitRunOnly: true,
+          min: MIN_SEGMENTATION_DRAWING_RADIUS,
+          max: MAX_SEGMENTATION_DRAWING_RADIUS,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+          },
+        },
+        {
+          name: i18n.t('Buttons:Shape'),
+          type: 'radio',
+          id: 'eraser-mode',
+          value: 'CircularEraser',
+          values: [
+            { value: 'CircularEraser', label: i18n.t('Buttons:Circle') },
+            { value: 'SphereEraser', label: i18n.t('Buttons:Sphere') },
+          ],
+          commands: setToolActiveToolbar,
+        },
+      ],
     },
   },
   {
@@ -533,6 +652,17 @@ const toolbarButtons: Button[] = [
       icon: 'icon-tool-cobb-angle',
       label: i18n.t('Buttons:Cobb Angle'),
       tooltip: i18n.t('Buttons:Cobb Angle'),
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'ABCSplitAngle',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-angle',
+      label: 'ABC Split Angle',
+      tooltip: 'Draw A-B-C, auto-create D, and calculate both triangle angles',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },

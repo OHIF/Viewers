@@ -463,6 +463,30 @@ function WorkList({
                 )
               );
             })}
+            {(() => {
+              const query = new URLSearchParams();
+              if (filterValues.configUrl) {
+                query.append('configUrl', filterValues.configUrl);
+              }
+              query.append('StudyInstanceUIDs', studyInstanceUid);
+              preserveQueryParameters(query);
+              return (
+                <Link
+                  key="ecg-viewer"
+                  to={`viewer${dataPath || ''}?${query.toString()}`}
+                >
+                  <Button
+                    type={ButtonEnums.type.primary}
+                    size={ButtonEnums.size.smallTall}
+                    startIcon={<Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />}
+                    onClick={() => {}}
+                    dataCY={`mode-ecg-viewer-${studyInstanceUid}`}
+                  >
+                    ECG Viewer
+                  </Button>
+                </Link>
+              );
+            })()}
           </div>
         </StudyListExpandedRow>
       ),

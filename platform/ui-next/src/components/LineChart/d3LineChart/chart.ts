@@ -278,8 +278,23 @@ const _updateLine = (root, dataset = [], dAttrValue) => {
  * @return {object} points svg element
  *
  */
-const _addPoints = (root, dataset, cxAttrValue, cyAttrValue) => {
-  return root
+const _isSelectedPoint = (point, selectedPointMap) => {
+  if (!selectedPointMap?.size) {
+    return false;
+  }
+
+  return selectedPointMap.has(`${point.seriesIndex}:${point.pointIndex}`);
+};
+
+const _addPoints = (
+  root,
+  dataset,
+  cxAttrValue,
+  cyAttrValue,
+  selectedPointMap = new Set(),
+  onPointClick
+) => {
+  const points = root
     .selectAll('.dot')
     .data(dataset)
     .enter()
@@ -287,11 +302,21 @@ const _addPoints = (root, dataset, cxAttrValue, cyAttrValue) => {
     .attr('id', (point, index) => {
       return `point-${index}`;
     })
-    .attr('class', 'dot')
+    .attr('class', point => `dot${_isSelectedPoint(point, selectedPointMap) ? ' selected' : ''}`)
     .attr('clip-path', 'url(#clip)')
     .attr('cx', cxAttrValue)
     .attr('cy', cyAttrValue)
-    .attr('r', 2);
+    .attr('r', point => (_isSelectedPoint(point, selectedPointMap) ? 4 : 2));
+
+  if (onPointClick) {
+    points
+      .style('cursor', 'pointer')
+      .on('click', (_event, point) => {
+        onPointClick(point);
+      });
+  }
+
+  return points;
 };
 
 /**
@@ -315,10 +340,30 @@ const _getPoints = root => {
  * @modifies {root}
  *
  */
-const _updatePoints = (root, dataset = [], cxAttrValue, cyAttrValue) => {
+const _updatePoints = (
+  root,
+  dataset = [],
+  cxAttrValue,
+  cyAttrValue,
+  selectedPointMap = new Set(),
+  onPointClick
+) => {
   const dot = root.selectAll('.dot');
 
-  dot.data(dataset).attr('cx', cxAttrValue).attr('cy', cyAttrValue);
+  dot
+    .data(dataset)
+    .attr('cx', cxAttrValue)
+    .attr('cy', cyAttrValue)
+    .attr('class', point => `dot${_isSelectedPoint(point, selectedPointMap) ? ' selected' : ''}`)
+    .attr('r', point => (_isSelectedPoint(point, selectedPointMap) ? 4 : 2));
+
+  if (onPointClick) {
+    dot
+      .style('cursor', 'pointer')
+      .on('click', (_event, point) => {
+        onPointClick(point);
+      });
+  }
 };
 
 /**

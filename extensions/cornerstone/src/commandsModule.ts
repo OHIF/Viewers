@@ -2230,17 +2230,23 @@ function commandsModule({
         deleting,
       });
     },
-    activateSelectedSegmentationOfType: ({ segmentationRepresentationType }) => {
+    activateSelectedSegmentationOfType: async ({ segmentationRepresentationType }) => {
       const { segmentationService, viewportGridService } = servicesManager.services;
       const activeViewportId = viewportGridService.getActiveViewportId();
       const { selectedSegmentationsForViewport } =
         useSelectedSegmentationsForViewportStore.getState();
-      const segmentationId = selectedSegmentationsForViewport[activeViewportId]?.get(
+      let segmentationId = selectedSegmentationsForViewport[activeViewportId]?.get(
         segmentationRepresentationType
       );
 
       if (!segmentationId) {
-        return;
+        if (segmentationRepresentationType === 'Labelmap') {
+          segmentationId = await actions.createLabelmapForViewport({
+            viewportId: activeViewportId,
+          });
+        } else {
+          return;
+        }
       }
 
       segmentationService.setActiveSegmentation(activeViewportId, segmentationId);

@@ -51,7 +51,9 @@ const _bindZoom = (
   yAxisGenerator,
   parseXPoint,
   parseYPoint,
-  datasets
+  datasets,
+  selectedPointMap,
+  onPointClick
 ) => {
   _zoom.on('zoom', _zoomListener); // .filter(zoomEventsFilter);
 
@@ -99,7 +101,9 @@ const _bindZoom = (
         seriesContainer,
         dataset,
         parseXPoint(transformedXAxisScale),
-        parseYPoint(transformedYAxisScale)
+        parseYPoint(transformedYAxisScale),
+        selectedPointMap,
+        onPointClick
       );
     });
   }
@@ -117,7 +121,9 @@ const bindMouseEvents = (
   yAxisGenerator,
   parseXPoint,
   parseYPoint,
-  datasets
+  datasets,
+  selectedPointMap,
+  onPointClick
 ) => {
   if (!root) {
     return;
@@ -133,7 +139,9 @@ const bindMouseEvents = (
     yAxisGenerator,
     parseXPoint,
     parseYPoint,
-    datasets
+    datasets,
+    selectedPointMap,
+    onPointClick
   );
 };
 

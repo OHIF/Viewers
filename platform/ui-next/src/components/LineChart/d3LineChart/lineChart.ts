@@ -135,6 +135,8 @@ const addLineChartNode = ({
   showAxisGrid = false,
   showLegend = false,
   transparentChartBackground = false,
+  selectedPoints = [],
+  onPointClick,
 }) => {
   const marginRight = showLegend ? legendWidth + 2 * LEGEND.margin : MARGIN.right;
   const _width = width - MARGIN.left - marginRight;
@@ -222,6 +224,9 @@ const addLineChartNode = ({
   );
 
   const datasets = [];
+  const selectedPointMap = new Set(
+    selectedPoints.map(point => `${point.seriesIndex}:${point.pointIndex}`)
+  );
 
   series.forEach((currentSeries, seriesIndex) => {
     const { points } = currentSeries;
@@ -242,7 +247,9 @@ const addLineChartNode = ({
       seriesContainer,
       dataset,
       parseXPoint(xAxisScale),
-      parseYPoint(yAxisScale)
+      parseYPoint(yAxisScale),
+      selectedPointMap,
+      onPointClick
     );
 
     datasets.push(dataset);
@@ -263,7 +270,9 @@ const addLineChartNode = ({
     yAxisGenerator,
     parseXPoint,
     parseYPoint,
-    datasets
+    datasets,
+    selectedPointMap,
+    onPointClick
   );
 
   return chartWrapper;
