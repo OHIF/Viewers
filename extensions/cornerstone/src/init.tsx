@@ -23,7 +23,6 @@ import RequestTypes from '@cornerstonejs/core/enums/RequestType';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
-import { loadE2eScreenshotFonts } from './utils/loadE2eScreenshotFonts';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
@@ -84,8 +83,7 @@ export default async function init({
     cornerstone.cache.setMaxCacheSize(maxCacheSize);
   }
 
-  await loadE2eScreenshotFonts(appConfig);
-  initCornerstoneTools(appConfig);
+  initCornerstoneTools();
 
   Settings.getRuntimeSettings().set('useCursors', Boolean(appConfig.useCursors));
 

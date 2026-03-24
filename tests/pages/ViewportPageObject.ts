@@ -1,12 +1,16 @@
 import { Locator, Page } from '@playwright/test';
 import {
+  applyViewportScreenshotStabilization,
+  assertViewportOverlayText,
   checkForScreenshot,
   getMousePosition,
+  restoreViewportScreenshotStabilization,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
 } from '../utils';
+import type { ViewportScreenshotStabilization } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
@@ -32,6 +36,11 @@ type ViewportScreenshotOptions = {
   fullPage?: boolean;
   locator?: Locator;
   hideSelectors?: string[];
+  /**
+   * When set, stabilizes listed overlay rows and/or SVG annotation text boxes before each
+   * screenshot attempt (purple placeholder boxes, transparent text). Omitted fields unchanged.
+   */
+  stabilization?: ViewportScreenshotStabilization;
 };
 
 export interface IOverlayText {
@@ -122,9 +131,18 @@ export class ViewportPageObject {
 
   async checkForScreenshot(
     screenshotPath: string | string[],
-    { locator, hideSelectors = ['[data-testid="viewport-action-arrows"]'], ...options }: ViewportScreenshotOptions = {}
+    {
+      locator,
+      hideSelectors = ['[data-testid="viewport-action-arrows"]'],
+      stabilization,
+      ...options
+    }: ViewportScreenshotOptions = {}
   ) {
     const screenshotLocator = locator ?? this.grid;
+
+    if (stabilization) {
+      await assertViewportOverlayText(this.page, stabilization);
+    }
 
     await this.page.evaluate(selectors => {
       selectors.forEach(selector => {
@@ -143,8 +161,15 @@ export class ViewportPageObject {
         locator: screenshotLocator,
         screenshotPath,
         ...options,
+        beforeScreenshot: stabilization
+          ? async () => {
+              await restoreViewportScreenshotStabilization(this.page);
+              await applyViewportScreenshotStabilization(this.page, stabilization);
+            }
+          : undefined,
       });
     } finally {
+      await restoreViewportScreenshotStabilization(this.page);
       await this.page.evaluate(selectors => {
         selectors.forEach(selector => {
           document.querySelectorAll<HTMLElement>(selector).forEach(element => {

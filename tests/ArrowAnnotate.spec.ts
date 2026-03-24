@@ -1,4 +1,15 @@
-import { screenShotPaths, test, visitStudy } from './utils';
+import { type ViewportScreenshotStabilization, screenShotPaths, test, visitStudy } from './utils';
+
+/** Stabilizes overlays and the arrow text box; `annotationText` matches what was just saved or renamed. */
+function arrowAnnotateStabilization(annotationText: string): ViewportScreenshotStabilization {
+  return {
+    seriesDate: '22-May-2014',
+    seriesDescription: '2.0',
+    windowLevel: 'W: 230 L: 100',
+    imageInfo: 'I:1 (1/2)',
+    annotations: [{ type: 'arrowAnnotate', text: annotationText, size: 220 }],
+  };
+}
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -30,7 +41,10 @@ test('should display the arrow tool and allow free-form text to be entered shoul
 
   await viewportPageObject.checkForScreenshot(
     screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
-    { maxDiffPixelRatio: 0.0075 }
+    {
+      maxDiffPixelRatio: 0.0075,
+      stabilization: arrowAnnotateStabilization('Ringo Starr was the drummer for The Beatles'),
+    }
   );
 
   // Now edit the arrow text and the label should not change.
@@ -43,7 +57,10 @@ test('should display the arrow tool and allow free-form text to be entered shoul
 
   await viewportPageObject.checkForScreenshot(
     screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
-    { maxDiffPixelRatio: 0.0075 }
+    {
+      maxDiffPixelRatio: 0.0075,
+      stabilization: arrowAnnotateStabilization('Neil Peart was the drummer for Rush'),
+    }
   );
 
   // Now edit the label and the text should not change.
@@ -56,6 +73,9 @@ test('should display the arrow tool and allow free-form text to be entered shoul
 
   await viewportPageObject.checkForScreenshot(
     screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
-    { maxDiffPixelRatio: 0.0075 }
+    {
+      maxDiffPixelRatio: 0.0075,
+      stabilization: arrowAnnotateStabilization('Drummer annotation arrow'),
+    }
   );
 });

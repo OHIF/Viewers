@@ -28,7 +28,7 @@ export default defineConfig({
     launchOptions: {
       // do not hide the scrollbars so that we can assert their look-and-feel
       ignoreDefaultArgs: ['--hide-scrollbars'],
-      // Reduce cross-OS text rasterization differences in screenshot baselines (see e2e.js e2eStableScreenshotFonts).
+      // Reduce cross-OS text rasterization differences in screenshot baselines.
       args: [
         '--font-render-hinting=none',
         '--disable-font-subpixel-positioning',

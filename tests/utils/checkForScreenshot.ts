@@ -22,6 +22,8 @@ type CheckForScreenshotProps = {
     height: number;
   };
   fullPage?: boolean;
+  /** Runs before each screenshot capture (including each retry attempt). */
+  beforeScreenshot?: () => Promise<void>;
 };
 
 /** GitHub Actions: re-run with debug logging sets these (runner / step / diagnostic). */
@@ -66,6 +68,7 @@ async function runScreenshotCheckAttempt(
     threshold: number;
     clip?: { x: number; y: number; width: number; height: number };
     fullPage: boolean;
+    beforeScreenshot?: () => Promise<void>;
   },
   attemptIndex: number,
   totalAttempts: number
@@ -74,6 +77,10 @@ async function runScreenshotCheckAttempt(
   const updateSnapshots = testInfo.config.updateSnapshots;
   const debugAllFailures = isGithubActionsScreenshotDebug();
   const writeOneOnFinalFailure = attemptIndex === totalAttempts - 1 && !debugAllFailures;
+
+  if (options.beforeScreenshot) {
+    await options.beforeScreenshot();
+  }
 
   const screenshotOptions = {
     animations: 'disabled' as const,
@@ -163,6 +170,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     threshold = 0.05,
     normalizedClip,
     fullPage = false,
+    beforeScreenshot,
   } = props;
 
   const paths = Array.isArray(screenshotPath) ? screenshotPath : [screenshotPath];
@@ -201,7 +209,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
       await runScreenshotCheckAttempt(
         locator,
         paths,
-        { maxDiffPixelRatio, threshold, clip, fullPage },
+        { maxDiffPixelRatio, threshold, clip, fullPage, beforeScreenshot },
         i,
         attempts
       );
