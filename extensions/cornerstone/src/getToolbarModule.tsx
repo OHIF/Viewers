@@ -1,5 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
 import i18n from '@ohif/i18n';
+import { utils as coreUtils } from '@ohif/core';
 import { utils } from '@ohif/ui-next';
 import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
 import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
@@ -12,6 +13,8 @@ import NavigationComponent from './components/NavigationComponent/NavigationComp
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
 import ViewportColorbarsContainer from './components/ViewportColorbar';
 import AdvancedRenderingControls from './components/AdvancedRenderingControls';
+
+const { ModifierKeyCodeToName } = coreUtils;
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -449,6 +452,21 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         // If adding Active mode support (e.g. modifier key), update both.
         const isOn = currentMode === Enums.ToolModes.Passive ||
                      currentMode === Enums.ToolModes.Enabled;
+
+        if (isOn) {
+          const toolInstance = toolGroup.getToolInstance(toolName);
+          const jumpOnClick = toolInstance?.configuration?.jumpOnClick;
+          if (jumpOnClick?.enabled && jumpOnClick.modifierKey != null) {
+            const modifierName = ModifierKeyCodeToName[jumpOnClick.modifierKey] || 'Modifier';
+            return {
+              disabled: false,
+              isActive: false,
+              isToggled: true,
+              icon: 'tool-crosshair-checked',
+              tooltip: `Press ${modifierName} + Click to jump`,
+            };
+          }
+        }
 
         return {
           disabled: false,

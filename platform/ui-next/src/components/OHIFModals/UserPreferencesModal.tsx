@@ -225,8 +225,73 @@ function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: Hot
   );
 }
 
+/** Maps browser event.key values to the lowercase token stored in shortcuts */
+const EVENT_KEY_TO_TOKEN: Record<string, string> = {
+  Control: 'ctrl',
+  Shift: 'shift',
+  Alt: 'alt',
+  Meta: 'meta',
+};
+
+/** An editable mouse-shortcut row that captures a single modifier key */
+interface MouseShortcutProps {
+  label: string;
+  value: string;
+  className?: string;
+  onChange?: (value: string) => void;
+  hotkeys?: {
+    pause: () => void;
+    unpause: () => void;
+  };
+}
+
+function MouseShortcut({ label, value, className, onChange, hotkeys }: MouseShortcutProps) {
+  const [isRecording, setIsRecording] = React.useState(false);
+  const { t } = useTranslation('UserPreferencesModal');
+  const translatedValue = React.useMemo(() => translateHotkeyValue(value, t), [value, t]);
+
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    event.preventDefault();
+    const mapped = EVENT_KEY_TO_TOKEN[event.key];
+    if (mapped && onChange) {
+      onChange(mapped);
+      hotkeys?.unpause();
+      setIsRecording(false);
+    }
+  };
+
+  const onFocus = () => {
+    setIsRecording(true);
+    hotkeys?.pause();
+  };
+
+  const onBlur = () => {
+    setIsRecording(false);
+    hotkeys?.unpause();
+  };
+
+  return (
+    <div className={cn('flex items-start justify-between gap-2', className)}>
+      <Label className="flex-1 whitespace-normal break-words text-sm">{label}</Label>
+      <Input
+        className={cn(
+          'w-16 text-center transition-colors',
+          isRecording && 'bg-accent text-accent-foreground caret-accent-foreground'
+        )}
+        placeholder={isRecording ? t('Press a modifier key') : ''}
+        value={isRecording ? '' : translatedValue}
+        onKeyDown={onKeyDown}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        readOnly={!isRecording}
+      />
+    </div>
+  );
+}
+
 /** Attach subcomponents as static properties for a nicer API */
 UserPreferencesModal.Body = Body;
 UserPreferencesModal.HotkeysGrid = HotkeysGrid;
 UserPreferencesModal.Hotkey = Hotkey;
+UserPreferencesModal.MouseShortcut = MouseShortcut;
 UserPreferencesModal.SubHeading = SubHeading;

@@ -251,6 +251,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
             enabled: false,
             panSize: 10,
           },
+          jumpOnClick: {
+            enabled: true,
+            modifierKey: Enums.KeyboardBindings.Ctrl,
+          },
           getReferenceLineColor: viewportId => {
             const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
             const viewportOptions = viewportInfo?.viewportOptions;

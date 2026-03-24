@@ -18,8 +18,16 @@ interface HotkeyDefinitions {
 }
 
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
-  const { hotkeysManager } = useSystem();
+  const { hotkeysManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
+  const { customizationService, toolbarService, viewportGridService } =
+    servicesManager.services;
+  const rawMouseShortcuts =
+    customizationService.getCustomization('ohif.hotkeyBindings.mouseShortcuts') || [];
+  const initialMouseShortcuts = rawMouseShortcuts.map(shortcut => ({
+    ...shortcut,
+    keys: typeof shortcut.keys === 'function' ? shortcut.keys() : shortcut.keys,
+  }));
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -54,6 +62,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const [state, setState] = useState({
     hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
+    mouseShortcuts: initialMouseShortcuts,
   });
 
   const onLanguageChangeHandler = (value: string) => {
@@ -73,11 +82,21 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     }));
   };
 
+  const onMouseShortcutChangeHandler = (index: number, newKeys: string) => {
+    setState(prev => ({
+      ...prev,
+      mouseShortcuts: prev.mouseShortcuts.map((shortcut, i) =>
+        i === index ? { ...shortcut, keys: newKeys } : shortcut
+      ),
+    }));
+  };
+
   const onResetHandler = () => {
     setState(state => ({
       ...state,
       languageValue: defaultLanguage.value,
       hotkeyDefinitions: resolvedHotkeyDefaults,
+      mouseShortcuts: initialMouseShortcuts,
     }));
 
     hotkeysManager.restoreDefaultBindings();
@@ -152,6 +171,23 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
           </Select>
         </div>
 
+        {state.mouseShortcuts.length > 0 && (
+          <>
+            <UserPreferencesModal.SubHeading>{t('Mouse Shortcuts')}</UserPreferencesModal.SubHeading>
+            <UserPreferencesModal.HotkeysGrid>
+              {state.mouseShortcuts.map((shortcut, index) => (
+                <UserPreferencesModal.MouseShortcut
+                  key={index}
+                  label={t(shortcut.label)}
+                  value={shortcut.keys}
+                  onChange={newKeys => onMouseShortcutChangeHandler(index, newKeys)}
+                  hotkeys={hotkeysModule}
+                />
+              ))}
+            </UserPreferencesModal.HotkeysGrid>
+          </>
+        )}
+
         <UserPreferencesModal.SubHeading>{t('Hotkeys')}</UserPreferencesModal.SubHeading>
         <UserPreferencesModal.HotkeysGrid>
           {Object.entries(state.hotkeyDefinitions).map(([id, definition]) => (
@@ -186,11 +222,20 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             onClick={() => {
               if (state.languageValue !== currentLanguage.value) {
                 i18n.changeLanguage(state.languageValue);
-                // Force page reload after language change to ensure all translations are applied
                 window.location.reload();
-                return; // Exit early since we're reloading
+                return;
               }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
+
+              for (const shortcut of state.mouseShortcuts) {
+                shortcut.onChange?.(shortcut.keys);
+              }
+
+              if (state.mouseShortcuts.length > 0) {
+                const viewportId = viewportGridService.getActiveViewportId();
+                toolbarService.refreshToolbarState({ viewportId });
+              }
+
               hotkeysModule.stopRecord();
               hotkeysModule.unpause();
               hide();

@@ -146,6 +146,35 @@ export function onModeEnter({
   // Init Default and SR ToolGroups
   initToolGroups(extensionManager, toolGroupService, commandsManager);
 
+  customizationService.setCustomizations({
+    'ohif.hotkeyBindings.mouseShortcuts': [
+      {
+        label: 'Crosshairs Jump to Click',
+        keys: () => {
+          const config = toolGroupService.getToolConfiguration('mpr', 'Crosshairs');
+          const code = config?.jumpOnClick?.modifierKey;
+          return code != null
+            ? utils.ModifierKeyCodeToName[code]?.toLowerCase()
+            : undefined;
+        },
+        onChange: (newKeys: string) => {
+          const config = toolGroupService.getToolConfiguration('mpr', 'Crosshairs');
+          if (!config) {
+            return;
+          }
+          toolGroupService.setToolConfiguration('mpr', 'Crosshairs', {
+            ...config,
+            jumpOnClick: {
+              ...config.jumpOnClick,
+              modifierKey:
+                utils.ModifierKeyNameToCode[newKeys] ?? config.jumpOnClick?.modifierKey,
+            },
+          });
+        },
+      },
+    ],
+  });
+
   toolbarService.register(this.toolbarButtons);
 
   for (const [key, section] of Object.entries(this.toolbarSections)) {

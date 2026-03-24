@@ -49,6 +49,7 @@ import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
+import { ModifierKeyCodeToName, ModifierKeyNameToCode } from './modifierKeyUtils';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -105,6 +106,8 @@ const utils = {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  ModifierKeyCodeToName,
+  ModifierKeyNameToCode,
 };
 
 export {
@@ -147,6 +150,8 @@ export {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  ModifierKeyCodeToName,
+  ModifierKeyNameToCode,
 };
 
 export default utils;
