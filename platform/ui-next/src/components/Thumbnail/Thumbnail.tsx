@@ -33,6 +33,7 @@ const Thumbnail = ({
   onReject = () => {},
   onClickUntrack = () => {},
   ThumbnailMenuItems = () => {},
+  isFirstInList = false,
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -60,36 +61,29 @@ const Thumbnail = ({
 
   const renderThumbnailPreset = () => {
     return (
-      <div
-        className={classnames(
-          'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
-          isActive && 'bg-popover rounded'
-        )}
-      >
-        <div className="h-[114px] w-[128px]">
-          <div className="relative bg-black">
+      <div className="flex h-full w-full flex-col items-center justify-start gap-[2px] p-[4px]">
+        <div className="h-[72px] w-[96px]">
+          <div className="relative bg-black rounded">
             {imageSrc ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
-                className="h-[114px] w-[128px] rounded object-contain"
+                className="h-[72px] w-[96px] object-cover"
                 crossOrigin="anonymous"
               />
             ) : (
-              <div className="bg-background h-[114px] w-[128px] rounded"></div>
+              <div className="bg-background h-[72px] w-[96px] rounded"></div>
             )}
 
-            {/* bottom left */}
-            <div className="absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[10px] pr-[6px] pl-[5px]">
+            {/* top left — modality badge */}
+            <div className="absolute top-0 left-0 p-[4px]">
               <div
                 className={classnames(
-                  'h-[10px] w-[10px] rounded-[2px]',
-                  isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
-                  loadingProgress && loadingProgress < 1 && 'bg-primary/25'
+                  'flex h-[19px] w-[23px] items-center justify-center rounded-[2px] text-[12px] font-medium leading-none',
+                  isActive
+                    ? 'bg-[#CACACA] text-[#393939]'
+                    : 'bg-[#5C5C5C] text-[#D1D5DB]'
                 )}
-              ></div>
-              <div
-                className="text-[11px] font-semibold text-white"
                 data-cy="series-modality-label"
               >
                 {modality}
@@ -140,30 +134,28 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="flex h-[52px] w-[128px] flex-col justify-start pt-px">
+        <div className="flex h-[42px] w-[96px] flex-col justify-start overflow-hidden">
           <Tooltip>
             <TooltipContent>{description}</TooltipContent>
             <TooltipTrigger>
               <div
-                className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white"
+                className="w-full overflow-hidden text-ellipsis whitespace-nowrap pt-[5px] pb-[2px] pl-1 text-left text-[14px] font-semibold font-inter leading-none text-white"
                 data-cy="series-description-label"
               >
                 {description}
               </div>
             </TooltipTrigger>
           </Tooltip>
-          <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-            <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
-            <div className="text-muted-foreground text-[11px]">
-              <div className="flex items-center gap-[4px]">
-                {countIcon ? (
-                  React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                ) : (
-                  <Icons.InfoSeries className="w-3" />
-                )}
-                <div>{numInstances}</div>
-              </div>
-            </div>
+          <div className="flex items-center gap-[4px] pl-1 text-[11px] text-[#B9B9B9]">
+            <span>S:{seriesNumber}</span>
+            {countIcon ? (
+              React.createElement(Icons[countIcon] || Icons.MissingIcon, {
+                className: 'w-3 text-[#B9B9B9]',
+              })
+            ) : (
+              <Icons.InfoSeries className="w-3 text-[#B9B9B9]" />
+            )}
+            <span>{numInstances}</span>
           </div>
         </div>
       </div>
@@ -173,23 +165,23 @@ const Thumbnail = ({
   const renderListPreset = () => {
     return (
       <div
-        className={classnames(
-          'flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]',
-          isActive && 'bg-popover rounded'
-        )}
+        className="flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]"
       >
         <div className="relative flex h-[32px] w-full items-center gap-[8px] overflow-hidden">
           <div
             className={classnames(
               'h-[32px] w-[4px] min-w-[4px] rounded',
-              isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
+              isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-[#B9B9B9]',
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
           ></div>
           <div className="flex h-full w-[calc(100%-12px)] flex-col justify-start">
             <div className="flex items-center gap-[7px]">
               <div
-                className="text-[13px] font-semibold text-white"
+                className={classnames(
+                  'flex h-[19px] w-[23px] items-center justify-center rounded-[2px] text-[12px] font-medium leading-none text-[#D1D5DB]',
+                  isActive ? 'bg-transparent' : 'bg-[#5C5C5C]'
+                )}
                 data-cy="series-modality-label"
               >
                 {modality}
@@ -198,7 +190,7 @@ const Thumbnail = ({
                 <TooltipContent>{description}</TooltipContent>
                 <TooltipTrigger className="w-full overflow-hidden">
                   <div
-                    className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-normal text-white"
+                    className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-semibold text-white"
                     data-cy="series-description-label"
                   >
                     {description}
@@ -208,10 +200,9 @@ const Thumbnail = ({
             </div>
 
             <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-              <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
+              <div className="text-muted-foreground text-[12px]">S:{seriesNumber}</div>
               <div className="text-muted-foreground text-[12px]">
                 <div className="flex items-center gap-[4px]">
-                  {' '}
                   {countIcon ? (
                     React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
                   ) : (
@@ -269,8 +260,9 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
-        viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
+        'group flex cursor-pointer select-none flex-col rounded outline-none',
+        isActive ? 'bg-[#0076F7]' : 'bg-[#5C5C5C] hover:brightness-110',
+        viewPreset === 'thumbnails' && 'h-[124px] w-[104px]',
         viewPreset === 'list' && 'h-[40px] w-full'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
@@ -327,6 +319,7 @@ Thumbnail.propTypes = {
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
   thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
+  isFirstInList: PropTypes.bool,
 };
 
 export { Thumbnail };
