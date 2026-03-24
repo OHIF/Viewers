@@ -1,5 +1,8 @@
 import { Page } from '@playwright/test';
 
+/** MPR / axial-primary and 3D hanging-protocol presets can schedule navigations that do not settle before Playwright's action timeout; skip post-click navigation wait and rely on waitForViewportsRendered(). */
+const LAYOUT_PRESET_CLICK_OPTIONS = { noWaitAfter: true } as const;
+
 export class MainToolbarPageObject {
   readonly page: Page;
 
@@ -41,7 +44,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
             await self.waitForViewportsRendered();
           },
         };
@@ -52,7 +55,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
             await self.waitForViewportsRendered();
           },
         };
@@ -63,7 +66,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
             await self.waitForViewportsRendered();
           },
         };
@@ -74,7 +77,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
             await self.waitForViewportsRendered();
           },
         };
@@ -85,7 +88,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
             await self.waitForViewportsRendered();
           },
         };
@@ -96,7 +99,7 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
             await self.waitForViewportsRendered();
           },
         };
