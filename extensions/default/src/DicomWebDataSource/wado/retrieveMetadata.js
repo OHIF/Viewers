@@ -21,8 +21,7 @@ async function RetrieveMetadata(
   enableStudyLazyLoad,
   filters = {},
   sortCriteria,
-  sortFunction,
-  qidoClient = null
+  sortFunction
 ) {
   const RetrieveMetadataLoader =
     enableStudyLazyLoad !== false ? RetrieveMetadataLoaderAsync : RetrieveMetadataLoaderSync;
@@ -32,8 +31,7 @@ async function RetrieveMetadata(
     StudyInstanceUID,
     filters,
     sortCriteria,
-    sortFunction,
-    qidoClient
+    sortFunction
   );
   const data = await retrieveMetadataLoader.execLoad();
 

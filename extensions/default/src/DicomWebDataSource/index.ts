@@ -440,7 +440,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     ) => {
       const enableStudyLazyLoad = false;
       wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
-      qidoDicomWebClient.headers = getAuthorizationHeader();
       // data is all SOPInstanceUIDs
       const data = await retrieveStudyMetadata(
         wadoDicomWebClient,
@@ -449,8 +448,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         filters,
         sortCriteria,
         sortFunction,
-        dicomWebConfig,
-        qidoDicomWebClient
+        dicomWebConfig
       );
 
       // first naturalize the data
@@ -516,7 +514,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     ) => {
       const enableStudyLazyLoad = true;
       wadoDicomWebClient.headers = generateWadoHeader(excludeTransferSyntax);
-      qidoDicomWebClient.headers = getAuthorizationHeader();
       // Get Series
       const { preLoadData: seriesSummaryMetadata, promises: seriesPromises } =
         await retrieveStudyMetadata(
@@ -526,8 +523,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           filters,
           sortCriteria,
           sortFunction,
-          dicomWebConfig,
-          qidoDicomWebClient
+          dicomWebConfig
         );
 
       /**

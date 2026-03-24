@@ -94,8 +94,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
    */
   *getPreLoaders() {
     const preLoaders = [];
-    const { studyInstanceUID, filters: { seriesInstanceUID } = {} } = this;
-    const qidoClient = this.qidoClient;
+    const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
 
     // asking to include Series Date, Series Time, Series Description
     // and Series Number in the series metadata returned to better sort series
@@ -109,10 +108,10 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     if (seriesInstanceUID) {
       options.queryParams.SeriesInstanceUID = seriesInstanceUID;
-      preLoaders.push(qidoClient.searchForSeries.bind(qidoClient, options));
+      preLoaders.push(client.searchForSeries.bind(client, options));
     }
     // Fallback preloader
-    preLoaders.push(qidoClient.searchForSeries.bind(qidoClient, options));
+    preLoaders.push(client.searchForSeries.bind(client, options));
 
     yield* preLoaders;
   }

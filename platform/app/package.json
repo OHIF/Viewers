@@ -49,9 +49,6 @@
     "README.md"
   ],
   "dependencies": {
-    "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/protocol-http": "^3.374.0",
-    "@aws-sdk/signature-v4": "^3.374.0",
     "@babel/runtime": "7.28.2",
     "@cornerstonejs/codec-charls": "1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "1.2.2",

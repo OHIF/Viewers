@@ -65,16 +65,50 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
 
   const config = {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
+    devtool: isProdBuild ? 'nosources-source-map' : 'cheap-module-source-map',
     entry: ENTRY,
     optimization: {
-      // splitChunks: {
-      //   // include all types of chunks
-      //   chunks: 'all',
-      // },
-      //runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all',
+        maxSize: 6 * 1024 * 1024, // 6MB max chunk size
+        minSize: 20000, // 20KB min size
+        maxAsyncRequests: 30,
+        maxInitialRequests: 30,
+        cacheGroups: {
+          cornerstone: {
+            test: /[\\/]node_modules[\\/](@cornerstonejs|cornerstone)/,
+            name: 'vendor-cornerstone',
+            chunks: 'all',
+            priority: 20,
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router)/,
+            name: 'vendor-react',
+            chunks: 'all',
+            priority: 15,
+          },
+          dcmjs: {
+            test: /[\\/]node_modules[\\/](dcmjs|dicom-parser)/,
+            name: 'vendor-dicom',
+            chunks: 'all',
+            priority: 15,
+          },
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+      runtimeChunk: 'single',
       minimize: isProdBuild,
-      sideEffects: false,
+      sideEffects: true,
     },
     output: {
       // clean: true,
@@ -101,31 +135,31 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         ...(isProdBuild
           ? []
           : [
-              ...(IS_COVERAGE
-                ? [
-                    {
-                      test: /\.[jt]sx?$/,
-                      exclude: /node_modules/,
-                      use: {
-                        loader: 'babel-loader',
-                        options: {
-                          presets: ['@babel/preset-typescript', '@babel/preset-react'],
-                          plugins: ['istanbul'],
-                        },
-                      },
+            ...(IS_COVERAGE
+              ? [
+                {
+                  test: /\.[jt]sx?$/,
+                  exclude: /node_modules/,
+                  use: {
+                    loader: 'babel-loader',
+                    options: {
+                      presets: ['@babel/preset-typescript', '@babel/preset-react'],
+                      plugins: ['istanbul'],
                     },
-                  ]
-                : [
-                    {
-                      test: /\.[jt]sx?$/,
-                      exclude: /node_modules/,
-                      loader: 'babel-loader',
-                      options: {
-                        plugins: isProdBuild ? [] : ['react-refresh/babel'],
-                      },
-                    },
-                  ]),
-            ]),
+                  },
+                },
+              ]
+              : [
+                {
+                  test: /\.[jt]sx?$/,
+                  exclude: /node_modules/,
+                  loader: 'babel-loader',
+                  options: {
+                    plugins: isProdBuild ? [] : ['react-refresh/babel'],
+                  },
+                },
+              ]),
+          ]),
         {
           test: /\.svg?$/,
           oneOf: [
@@ -238,7 +272,17 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     config.optimization.minimizer = [
       new TerserJSPlugin({
         parallel: true,
-        terserOptions: {},
+        terserOptions: {
+          compress: {
+            drop_console: false,
+            drop_debugger: true,
+          },
+          mangle: true,
+          output: {
+            comments: false,
+          },
+        },
+        extractComments: false,
       }),
     ];
   }

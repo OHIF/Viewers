@@ -47,7 +47,7 @@ window.config = {
     // Enable/disable AHI plugin loading
     enabled: true,
     // URL to the AHI plugin script (can be external URL or relative path)
-    pluginUrl: '/plugins/ahi/ahi-plugin.js',
+    pluginUrl: '/viewer/plugins/ahi/ahi-plugin.js',
     // Default AWS region - can be overridden via URL params
     defaultRegion: 'us-east-1',
     // Credential refresh buffer in seconds (refresh 10s before expiration)

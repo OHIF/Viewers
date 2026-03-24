@@ -25,8 +25,7 @@ export function retrieveStudyMetadata(
   filters,
   sortCriteria,
   sortFunction,
-  dicomWebConfig = {},
-  qidoClient = null
+  dicomWebConfig = {}
 ) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -55,8 +54,7 @@ export function retrieveStudyMetadata(
       enableStudyLazyLoad,
       filters,
       sortCriteria,
-      sortFunction,
-      qidoClient
+      sortFunction
     );
   } else {
     // Create a promise to handle the data retrieval
@@ -67,8 +65,7 @@ export function retrieveStudyMetadata(
         enableStudyLazyLoad,
         filters,
         sortCriteria,
-        sortFunction,
-        qidoClient
+        sortFunction
       ).then(function (data) {
         resolve(data);
       }, reject);

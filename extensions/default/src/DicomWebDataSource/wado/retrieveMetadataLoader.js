@@ -20,15 +20,13 @@ export default class RetrieveMetadataLoader {
     studyInstanceUID,
     filters = {},
     sortCriteria = undefined,
-    sortFunction = undefined,
-    qidoClient = null
+    sortFunction = undefined
   ) {
     this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
     this.sortCriteria = sortCriteria;
     this.sortFunction = sortFunction;
-    this.qidoClient = qidoClient || client;
   }
 
   async execLoad() {
