@@ -106,19 +106,7 @@ function modeFactory({ modeConfiguration }) {
           $set: false,
         },
         'studyBrowser.studyMenuItems': {
-          $set: [
-            {
-              id: 'ecgViewer',
-              label: 'ECG Viewer',
-              iconName: 'tab-linear',
-              onClick: ({ servicesManager: sm }) => {
-                sm.services.panelService.activatePanel(
-                  '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
-                  true
-                );
-              },
-            },
-          ],
+          $set: [],
         },
       });
 
@@ -193,7 +181,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]],
               leftPanelResizable: true,
-              rightPanels: [dynamicVolume.ecgViewerPanel],
+              rightPanels: [],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [

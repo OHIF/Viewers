@@ -8,6 +8,10 @@
   fill: #151c20;
 }
 
+.LineChart svg .background.transparent {
+  fill: transparent;
+}
+
 .LineChart svg .axis.label {
   fill: #ddd;
   font-size: 12px;

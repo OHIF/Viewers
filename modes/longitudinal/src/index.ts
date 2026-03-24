@@ -4,7 +4,6 @@ import { initToolGroups, toolbarButtons, cornerstone,
   ohif,
   dicomsr,
   dicomvideo,
-  dynamicVolume,
   basicLayout,
   basicRoute,
   extensionDependencies as basicDependencies,
@@ -30,7 +29,7 @@ export const longitudinalInstance = {
   props: {
     ...basicLayout.props,
     leftPanels: [tracked.thumbnailList],
-    rightPanels: [cornerstone.labelMapSegmentationPanel, tracked.measurements, dynamicVolume.ecgViewerPanel],
+    rightPanels: [cornerstone.labelMapSegmentationPanel, tracked.measurements],
     viewports: [
       {
         namespace: tracked.viewport,

@@ -8,6 +8,18 @@ const MAX_SELECTED_POINTS = 4;
 const SMALL_BOX_SECONDS = 0.04; // 1 mm at 25 mm/s
 const LARGE_BOX_SECONDS = 0.2;  // 5 mm (1 large box)
 const MAX_RR_HRV = 6;
+const MAX_DICOM_POINTS_PER_SERIES = 4000;
+const ECG_PAPER_BG = {
+  backgroundColor: '#fff8f8',
+  backgroundImage: `
+    linear-gradient(to right, rgba(244,114,114,0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244,114,114,0.22) 1px, transparent 1px),
+    linear-gradient(to right, rgba(239,68,68,0.38) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(239,68,68,0.38) 1px, transparent 1px)
+  `,
+  backgroundSize: '8px 8px, 8px 8px, 40px 40px, 40px 40px',
+  backgroundPosition: '0 0, 0 0, 0 0, 0 0',
+} as const;
 
 const POINT_NAMES = ['A', 'B', 'C', 'D'];
 
@@ -96,6 +108,14 @@ type ImagePoint = {
   fill: string;
 };
 
+type SvgPoint = {
+  x: number;
+  y: number;
+  dataX: number;
+  dataY: number;
+  pointIndex: number;
+};
+
 const IMAGE_POINT_COLORS = ['#60a5fa', '#4ade80', '#facc15', '#fb923c']; // A, B, C, D
 
 // ── QTc thresholds ─────────────────────────────────────────────────────────────
@@ -140,6 +160,431 @@ function toSeconds(value: number, unit: string): number {
     case 'h':  return value * 3600;
     default:   return value;
   }
+}
+
+function getSensitivityScaleToMv(channelDataSet: any): number {
+  const unitsSeq = channelDataSet?.elements?.['x003a0211'];
+  const codeValue = unitsSeq?.items?.[0]?.dataSet?.string('x00080100')?.trim().toLowerCase();
+  const codeMeaning = unitsSeq?.items?.[0]?.dataSet?.string('x00080104')?.trim().toLowerCase();
+  const unitText = `${codeValue ?? ''} ${codeMeaning ?? ''}`;
+
+  if (unitText.includes('millivolt') || codeValue === 'mv') {
+    return 1;
+  }
+  if (unitText.includes('microvolt') || codeValue === 'uv') {
+    return 1 / 1000;
+  }
+  if (unitText.includes('volt') || codeValue === 'v') {
+    return 1000;
+  }
+
+  // ECG waveform sensitivity is most commonly stored in microvolts.
+  return 1 / 1000;
+}
+
+function downsampleSeriesPoints(points: [number, number][], maxPoints = MAX_DICOM_POINTS_PER_SERIES) {
+  if (!Array.isArray(points) || points.length <= maxPoints) {
+    return points;
+  }
+
+  // Min-max downsampling: for each bucket keep the min and max sample so that
+  // peak and trough values (QRS spikes, P/T waves) are never dropped.
+  const buckets = Math.floor(maxPoints / 2);
+  const bucketSize = points.length / buckets;
+  const sampled: [number, number][] = [];
+
+  for (let b = 0; b < buckets; b++) {
+    const start = Math.floor(b * bucketSize);
+    const end = Math.min(Math.floor((b + 1) * bucketSize), points.length);
+    if (start >= end) continue;
+
+    let minIdx = start;
+    let maxIdx = start;
+    for (let i = start + 1; i < end; i++) {
+      if (points[i][1] < points[minIdx][1]) minIdx = i;
+      if (points[i][1] > points[maxIdx][1]) maxIdx = i;
+    }
+
+    // Always emit in time order so the path doesn't cross itself.
+    if (minIdx <= maxIdx) {
+      sampled.push(points[minIdx]);
+      if (minIdx !== maxIdx) sampled.push(points[maxIdx]);
+    } else {
+      sampled.push(points[maxIdx]);
+      if (minIdx !== maxIdx) sampled.push(points[minIdx]);
+    }
+  }
+
+  return sampled;
+}
+
+function normalizeLeadLabel(label = ''): string {
+  return label.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function findLeadIndex(series: EcgData['series'], aliases: string[]) {
+  const normalizedAliases = aliases.map(normalizeLeadLabel);
+  return series.findIndex(lead => normalizedAliases.includes(normalizeLeadLabel(lead.label)));
+}
+
+function isStandard12LeadLike(ecgData: EcgData | null) {
+  if (!ecgData?.series?.length) {
+    return false;
+  }
+
+  const requiredGroups = [
+    ['i', 'lead1', 'leadi'],
+    ['ii', 'lead2', 'leadii'],
+    ['iii', 'lead3', 'leadiii'],
+    ['avr'],
+    ['avl'],
+    ['avf'],
+  ];
+
+  return (
+    ecgData.series.length >= 8 &&
+    requiredGroups.every(group => findLeadIndex(ecgData.series, group) !== -1)
+  );
+}
+
+function filterPointsInRange(points: [number, number][], startMs: number, endMs: number) {
+  return points.filter(([x]) => x >= startMs && x <= endMs);
+}
+
+function getNearestSvgPoint(points: SvgPoint[], x: number, y: number, maxDistance = 60) {
+  let nearest: SvgPoint | null = null;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+
+  for (const point of points) {
+    const distance = Math.hypot(point.x - x, point.y - y);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearest = point;
+    }
+  }
+
+  return nearestDistance <= maxDistance ? nearest : null;
+}
+
+type EcgSheetRendererProps = {
+  ecgData: EcgData;
+  selectedPoints: ChartPoint[];
+  setSelectedPoints: React.Dispatch<React.SetStateAction<ChartPoint[]>>;
+};
+
+function EcgSheetRenderer({ ecgData, selectedPoints, setSelectedPoints }: EcgSheetRendererProps) {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const series = ecgData.series;
+  const totalDurationMs = Math.max(
+    ...series.map(lead => lead.points[lead.points.length - 1]?.[0] ?? 0),
+    10000
+  );
+  const segmentDurationMs = totalDurationMs / 4;
+
+  const sheetWidth = 1200;
+  const marginX = 28;
+  const marginTop = 26;
+  const marginBottom = 34;
+  const cols = 4;
+  const cellWidth = (sheetWidth - marginX * 2) / cols;
+  const largeBoxPx = cellWidth / 12.5;
+  const smallBoxPx = largeBoxPx / 5;
+  const mvToPx = largeBoxPx * 2;
+  const rowHeight = largeBoxPx * 7;
+  const rhythmHeight = rowHeight;
+  const sheetHeight = marginTop + rowHeight * 3 + rhythmHeight + marginBottom;
+  const rhythmTop = marginTop + rowHeight * 3;
+  const rhythmBaseline = rhythmTop + rowHeight / 2;
+
+  const leadLayout = [
+    [['I', 'lead1', 'leadi'], ['aVR', 'avr'], ['V1', 'v1'], ['V4', 'v4']],
+    [['II', 'lead2', 'leadii'], ['aVL', 'avl'], ['V2', 'v2'], ['V5', 'v5']],
+    [['III', 'lead3', 'leadiii'], ['aVF', 'avf'], ['V3', 'v3'], ['V6', 'v6']],
+  ];
+
+  const rhythmLeadAliases = ['II', 'lead2', 'leadii'];
+  const rhythmSeriesIndex = Math.max(0, findLeadIndex(series, rhythmLeadAliases));
+  const rhythmSeries = series[rhythmSeriesIndex];
+
+  const buildPath = (
+    leadPoints: [number, number][],
+    startMs: number,
+    endMs: number,
+    xOffset: number,
+    baselineY: number,
+    width: number
+  ) => {
+    const pts = filterPointsInRange(leadPoints, startMs, endMs);
+    if (!pts.length) {
+      return '';
+    }
+
+    return pts
+      .map(([x, y], idx) => {
+        const px = xOffset + ((x - startMs) / (endMs - startMs || 1)) * width;
+        const py = baselineY - y * mvToPx;
+        return `${idx === 0 ? 'M' : 'L'} ${px.toFixed(2)} ${py.toFixed(2)}`;
+      })
+      .join(' ');
+  };
+
+  const rhythmSvgPoints: SvgPoint[] = useMemo(() => {
+    const points = rhythmSeries?.points ?? [];
+    return points.map(([x, y], pointIndex) => ({
+      x: marginX + (x / (totalDurationMs || 1)) * (sheetWidth - marginX * 2),
+      y: rhythmBaseline - y * mvToPx,
+      dataX: x,
+      dataY: y,
+      pointIndex,
+    }));
+  }, [marginX, mvToPx, rhythmBaseline, rhythmSeries, sheetWidth, totalDurationMs]);
+
+  const handleSheetClick = (event: React.MouseEvent<SVGRectElement>) => {
+    const svg = svgRef.current;
+    if (!svg) {
+      return;
+    }
+
+    const rect = svg.getBoundingClientRect();
+    const scaleX = sheetWidth / rect.width;
+    const scaleY = sheetHeight / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+    const nearest = getNearestSvgPoint(rhythmSvgPoints, x, y);
+    if (!nearest) {
+      return;
+    }
+
+    setSelectedPoints(prev => {
+      const id = `${rhythmSeriesIndex}-${nearest.pointIndex}`;
+      const existingIdx = prev.findIndex(p => `${p.seriesIndex}-${p.pointIndex}` === id);
+      if (existingIdx !== -1) {
+        // Already placed — keep it, do not toggle off
+        return prev;
+      }
+      if (prev.length >= MAX_SELECTED_POINTS) {
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          x: nearest.dataX,
+          y: nearest.dataY,
+          seriesIndex: rhythmSeriesIndex,
+          pointIndex: nearest.pointIndex,
+          seriesLabel: rhythmSeries?.label,
+        },
+      ];
+    });
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="rounded bg-white/5 px-3 py-2 text-xs text-white/60">
+        ECG sheet view. Point selection is placed on the rhythm strip ({rhythmSeries?.label ?? 'Lead II'}).
+      </div>
+      <div
+        className="overflow-hidden rounded border border-red-200/80 shadow-inner"
+        style={ECG_PAPER_BG}
+      >
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${sheetWidth} ${sheetHeight}`}
+          className="block h-auto w-full"
+          aria-label="ECG sheet"
+        >
+          <defs>
+            <pattern id="ecg-small-grid" width={smallBoxPx} height={smallBoxPx} patternUnits="userSpaceOnUse">
+              <path d={`M ${smallBoxPx} 0 L 0 0 0 ${smallBoxPx}`} fill="none" stroke="rgba(244,114,114,0.22)" strokeWidth="1" />
+            </pattern>
+            <pattern id="ecg-large-grid" width={largeBoxPx} height={largeBoxPx} patternUnits="userSpaceOnUse">
+              <rect width={largeBoxPx} height={largeBoxPx} fill="url(#ecg-small-grid)" />
+              <path d={`M ${largeBoxPx} 0 L 0 0 0 ${largeBoxPx}`} fill="none" stroke="rgba(239,68,68,0.38)" strokeWidth="1.2" />
+            </pattern>
+          </defs>
+
+          <rect x="0" y="0" width={sheetWidth} height={sheetHeight} fill="url(#ecg-large-grid)" />
+
+          {leadLayout.map((row, rowIndex) =>
+            row.map((aliases, colIndex) => {
+              const seriesIndex = findLeadIndex(series, aliases);
+              if (seriesIndex === -1) {
+                return null;
+              }
+
+              const lead = series[seriesIndex];
+              const startMs = colIndex * segmentDurationMs;
+              const endMs = (colIndex + 1) * segmentDurationMs;
+              const xOffset = marginX + colIndex * cellWidth;
+              const baselineY = marginTop + rowIndex * rowHeight + rowHeight / 2;
+              const path = buildPath(lead.points, startMs, endMs, xOffset, baselineY, cellWidth);
+
+              return (
+                <g key={`${rowIndex}-${colIndex}`}>
+                  <text x={xOffset + 10} y={baselineY - rowHeight / 2 + 18} fill="#222" fontSize="18" fontWeight="700">
+                    {lead.label}
+                  </text>
+                  <path d={path} fill="none" stroke="#111" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round" />
+                </g>
+              );
+            })
+          )}
+
+          <g>
+            <text x={marginX + 10} y={rhythmTop + 18} fill="#222" fontSize="18" fontWeight="700">
+              {rhythmSeries?.label ?? 'II'}
+            </text>
+            <path
+              d={buildPath(rhythmSeries?.points ?? [], 0, totalDurationMs, marginX, rhythmBaseline, sheetWidth - marginX * 2)}
+              fill="none"
+              stroke="#111"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+
+            {selectedPoints
+              .filter(point => point.seriesIndex === rhythmSeriesIndex)
+              .sort((a, b) => a.x - b.x)
+              .map((point, index, arr) => {
+                const svgPoint = rhythmSvgPoints.find(p => p.pointIndex === point.pointIndex);
+                if (!svgPoint) {
+                  return null;
+                }
+                const nextChartPoint = index < arr.length - 1 ? arr[index + 1] : null;
+                const nextPoint = nextChartPoint
+                  ? rhythmSvgPoints.find(p => p.pointIndex === nextChartPoint.pointIndex)
+                  : null;
+                const color = IMAGE_POINT_COLORS[index] ?? '#60a5fa';
+                const deltaMs = nextChartPoint !== null
+                  ? Math.round(Math.abs(nextChartPoint.x - point.x))
+                  : null;
+                const midSvgX = nextPoint ? (svgPoint.x + nextPoint.x) / 2 : svgPoint.x;
+                const midSvgY = nextPoint ? Math.min(svgPoint.y, nextPoint.y) - 18 : svgPoint.y;
+
+                return (
+                  <g key={`${point.seriesIndex}-${point.pointIndex}`}>
+                    {nextPoint && (
+                      <>
+                        <line
+                          x1={svgPoint.x}
+                          y1={svgPoint.y}
+                          x2={nextPoint.x}
+                          y2={nextPoint.y}
+                          stroke={color}
+                          strokeWidth="2"
+                        />
+                        {deltaMs !== null && (
+                          <>
+                            <text
+                              x={midSvgX} y={midSvgY - 2}
+                              textAnchor="middle"
+                              fill="rgba(0,0,0,0.85)" fontSize="16" fontWeight="bold" fontFamily="monospace"
+                              stroke="rgba(0,0,0,0.85)" strokeWidth={4} paintOrder="stroke"
+                            >
+                              {deltaMs} ms
+                            </text>
+                            <text
+                              x={midSvgX} y={midSvgY - 2}
+                              textAnchor="middle"
+                              fill={color} fontSize="16" fontWeight="bold" fontFamily="monospace"
+                            >
+                              {deltaMs} ms
+                            </text>
+                            <text
+                              x={midSvgX} y={midSvgY + 16}
+                              textAnchor="middle"
+                              fill="rgba(0,0,0,0.7)" fontSize="11" fontFamily="monospace"
+                              stroke="rgba(0,0,0,0.7)" strokeWidth={3} paintOrder="stroke"
+                            >
+                              {(deltaMs / 200).toFixed(2)} lg □ · {(deltaMs / 40).toFixed(1)} sm □
+                            </text>
+                            <text
+                              x={midSvgX} y={midSvgY + 16}
+                              textAnchor="middle"
+                              fill={color} fontSize="11" fontFamily="monospace" opacity={0.8}
+                            >
+                              {(deltaMs / 200).toFixed(2)} lg □ · {(deltaMs / 40).toFixed(1)} sm □
+                            </text>
+                          </>
+                        )}
+                      </>
+                    )}
+                    <circle cx={svgPoint.x} cy={svgPoint.y} r="6" fill={color} stroke="#fff" strokeWidth="1.2" />
+                    <text x={svgPoint.x + 10} y={svgPoint.y - 8} fill={color} fontSize="14" fontWeight="700">
+                      {POINT_GUIDE[index]?.name ?? index + 1}
+                    </text>
+                  </g>
+                );
+              })}
+
+            {/* Total span bracket below rhythm strip */}
+            {(() => {
+              const sorted = selectedPoints
+                .filter(p => p.seriesIndex === rhythmSeriesIndex)
+                .sort((a, b) => a.x - b.x);
+              if (sorted.length < 2) return null;
+              const first = rhythmSvgPoints.find(p => p.pointIndex === sorted[0].pointIndex);
+              const last = rhythmSvgPoints.find(p => p.pointIndex === sorted[sorted.length - 1].pointIndex);
+              if (!first || !last) return null;
+              const totalMs = Math.round(Math.abs(sorted[sorted.length - 1].x - sorted[0].x));
+              const by = rhythmTop + rhythmHeight + 10;
+              const tickH = 6;
+              return (
+                <g>
+                  {/* bracket line */}
+                  <line x1={first.x} y1={by} x2={last.x} y2={by} stroke="#facc15" strokeWidth={2} />
+                  <line x1={first.x} y1={by - tickH} x2={first.x} y2={by + tickH} stroke="#facc15" strokeWidth={2} />
+                  <line x1={last.x} y1={by - tickH} x2={last.x} y2={by + tickH} stroke="#facc15" strokeWidth={2} />
+                  {/* total label */}
+                  <text
+                    x={(first.x + last.x) / 2} y={by + 20}
+                    textAnchor="middle"
+                    fill="black" fontSize="15" fontWeight="bold" fontFamily="monospace"
+                    stroke="black" strokeWidth={4} paintOrder="stroke"
+                  >
+                    Total A→{sorted.length >= 4 ? 'D' : sorted.length === 3 ? 'C' : 'B'}: {totalMs} ms
+                  </text>
+                  <text
+                    x={(first.x + last.x) / 2} y={by + 20}
+                    textAnchor="middle"
+                    fill="#facc15" fontSize="15" fontWeight="bold" fontFamily="monospace"
+                  >
+                    Total A→{sorted.length >= 4 ? 'D' : sorted.length === 3 ? 'C' : 'B'}: {totalMs} ms
+                  </text>
+                  <text
+                    x={(first.x + last.x) / 2} y={by + 35}
+                    textAnchor="middle"
+                    fill="black" fontSize="11" fontFamily="monospace"
+                    stroke="black" strokeWidth={3} paintOrder="stroke"
+                  >
+                    min interval: {Math.min(...sorted.slice(0, -1).map((p, i) => Math.round(Math.abs(sorted[i + 1].x - p.x))))} ms
+                  </text>
+                  <text
+                    x={(first.x + last.x) / 2} y={by + 35}
+                    textAnchor="middle"
+                    fill="#facc15" fontSize="11" fontFamily="monospace" opacity={0.8}
+                  >
+                    min interval: {Math.min(...sorted.slice(0, -1).map((p, i) => Math.round(Math.abs(sorted[i + 1].x - p.x))))} ms
+                  </text>
+                </g>
+              );
+            })()}
+
+            <rect
+              x={marginX}
+              y={rhythmTop}
+              width={sheetWidth - marginX * 2}
+              height={rhythmHeight}
+              fill="transparent"
+              style={{ cursor: 'crosshair' }}
+              onClick={handleSheetClick}
+            />
+          </g>
+        </svg>
+      </div>
+    </div>
+  );
 }
 
 // Series points are [x, y] tuples (confirmed from d3LineChart source)
@@ -262,6 +707,43 @@ function computeSeriesStats(pts: { x: number; y: number }[]) {
   return { maxY, minY, peakToPeak: maxY - minY, xRange };
 }
 
+// ── Butterworth lowpass filter (zero-phase, 2nd order) ────────────────────────
+// Matches the 40 Hz filter applied by ecg.galliera.it for display smoothing.
+// Uses forward + backward pass (filtfilt) to eliminate phase distortion.
+function butterworthLowpass(signal: number[], fs: number, fc = 40): number[] {
+  if (signal.length < 3 || fc <= 0 || fc >= fs / 2) return signal;
+
+  // Bilinear transform coefficients for 2nd-order Butterworth lowpass
+  const c = 1 / Math.tan(Math.PI * fc / fs);
+  const c2 = c * c;
+  const norm = 1 / (1 + Math.SQRT2 * c + c2);
+  const b0 = norm;
+  const b1 = 2 * norm;
+  const b2 = norm;
+  const a1 = 2 * norm * (1 - c2);
+  const a2 = norm * (1 - Math.SQRT2 * c + c2);
+
+  // Single-pass IIR filter
+  function filterPass(x: number[]): number[] {
+    const y = new Array(x.length).fill(0);
+    for (let n = 0; n < x.length; n++) {
+      y[n] = b0 * x[n]
+           + b1 * (n >= 1 ? x[n - 1] : x[0])
+           + b2 * (n >= 2 ? x[n - 2] : x[0])
+           - a1 * (n >= 1 ? y[n - 1] : 0)
+           - a2 * (n >= 2 ? y[n - 2] : 0);
+    }
+    return y;
+  }
+
+  // Forward pass, then reverse, then backward pass, then reverse again (filtfilt)
+  const forward = filterPass(signal);
+  forward.reverse();
+  const backward = filterPass(forward);
+  backward.reverse();
+  return backward;
+}
+
 // ── NEW: CSV / text ECG parser ─────────────────────────────────────────────────
 // Accepts CSV with header: time, Lead_I, Lead_II, ...
 // Or 2-column: time, amplitude
@@ -308,7 +790,7 @@ function parseEcgCsv(text: string): EcgData | null {
 function parseDicomEcg(buffer: ArrayBuffer): EcgData | null {
   try {
     const byteArray = new Uint8Array(buffer);
-    const dataSet = dicomParser.parseDicom(byteArray, { untilTag: 'x54001010' });
+    const dataSet = dicomParser.parseDicom(byteArray);
 
     // WaveformSequence (5400,0100)
     const waveformSeq = dataSet.elements['x54000100'];
@@ -328,7 +810,7 @@ function parseDicomEcg(buffer: ArrayBuffer): EcgData | null {
 
     // Channel definitions (003A,0200)
     const chanDefSeq = wds.elements['x003a0200'];
-    const channels: { label: string; sensitivity: number; baseline: number }[] = [];
+    const channels: { label: string; sensitivity: number; baseline: number; scaleToMv: number }[] = [];
     for (let i = 0; i < numChannels; i++) {
       const ch = chanDefSeq?.items?.[i]?.dataSet;
       const rawLabel = ch?.string('x003a0203') ?? `Lead ${i + 1}`;
@@ -336,7 +818,8 @@ function parseDicomEcg(buffer: ArrayBuffer): EcgData | null {
       const sensitivity = parseFloat(ch?.string('x003a0210') ?? '1') || 1;
       const corrFactor = parseFloat(ch?.string('x003a0212') ?? '1') || 1;
       const baseline = parseFloat(ch?.string('x003a0213') ?? '0') || 0;
-      channels.push({ label, sensitivity: sensitivity * corrFactor, baseline });
+      const scaleToMv = getSensitivityScaleToMv(ch);
+      channels.push({ label, sensitivity, baseline, scaleToMv: scaleToMv * corrFactor });
     }
 
     // WaveformData (5400,1010)
@@ -358,15 +841,26 @@ function parseDicomEcg(buffer: ArrayBuffer): EcgData | null {
           ? (isSigned ? view.getInt16(offset, true) : view.getUint16(offset, true))
           : (isSigned ? view.getInt8(offset) : view.getUint8(offset));
         const ch = channels[c];
-        // sensitivity is typically in µV/LSB — convert to mV
-        const amplitudeMv = (raw * ch.sensitivity + ch.baseline) / 1000;
+        // DICOM waveform conversion: (sample + baseline) × sensitivity × correctionFactor.
+        const amplitudeMv = (raw + ch.baseline) * ch.sensitivity * ch.scaleToMv;
         series[c].points.push([timeMs, amplitudeMv]);
       }
     }
 
+    // Apply 40 Hz Butterworth lowpass filter (zero-phase) matching ecg.galliera.it
+    const filteredSeries = series.map(channel => {
+      const rawMv = channel.points.map(p => p[1]);
+      const filtered = butterworthLowpass(rawMv, samplingFreq, 40);
+      const points: [number, number][] = channel.points.map((p, i) => [p[0], filtered[i]]);
+      return { ...channel, points };
+    });
+
     return {
       axis: { x: { label: 'Time (ms)' }, y: { label: 'Amplitude (mV)' } },
-      series,
+      series: filteredSeries.map(channel => ({
+        ...channel,
+        points: downsampleSeriesPoints(channel.points),
+      })),
     };
   } catch (err) {
     console.error('DICOM ECG parse error:', err);
@@ -404,9 +898,24 @@ function renderIntervalCard(iv: IntervalResult, ampUnit: string, highlight = fal
           {status.note && <span className="ml-1 font-normal text-white/55">— {status.note}</span>}
         </div>
       )}
+      {/* How-it's-calculated box */}
+      <div className="mt-2 rounded bg-black/30 px-2.5 py-2 font-mono text-xs leading-relaxed text-white/50">
+        <div className="mb-1 font-sans font-semibold not-italic text-white/40 uppercase tracking-wide text-[10px]">How calculated</div>
+        <div>
+          Δt = |t<sub>{iv.to}</sub> − t<sub>{iv.from}</sub>| = <span className="text-white/75 font-semibold">{fmt(iv.ms, 0)} ms</span>
+        </div>
+        <div className="text-white/35">
+          At 25 mm/s → 1 mm = 40 ms, 5 mm = 200 ms (1 large □)
+        </div>
+        <div>
+          = <span className="text-white/65">{fmt(iv.largeBoxes, 2)}</span> large boxes × 200 ms
+          &nbsp;=&nbsp;
+          <span className="text-white/65">{fmt(iv.smallBoxes, 1)}</span> small boxes × 40 ms
+        </div>
+      </div>
       <div className="mt-1.5 grid grid-cols-2 gap-x-2 text-xs text-white/45">
         <span>{fmt(iv.seconds, 3)} s</span>
-        <span>{fmt(iv.seconds, 3)} s / {fmt(iv.ms, 0)} ms</span>
+        <span>{fmt(iv.ms, 0)} ms</span>
         <span>Small boxes: {fmt(iv.smallBoxes, 1)}</span>
         <span>Large boxes: {fmt(iv.largeBoxes, 2)}</span>
         <span>Δ Amplitude: {fmt(iv.amplitudeDelta, 3)} {ampUnit}</span>
@@ -426,6 +935,7 @@ function renderIntervalCard(iv: IntervalResult, ampUnit: string, highlight = fal
 type QtcSectionProps = {
   chartData: any;
   qtInterval: IntervalResult | null;
+  imageQtMs?: number | null;
   gender: Gender;
   setGender: (g: Gender) => void;
   rrMs: string;
@@ -440,6 +950,7 @@ type QtcSectionProps = {
 function QtcSection({
   chartData,
   qtInterval,
+  imageQtMs = null,
   gender,
   setGender,
   rrMs,
@@ -460,7 +971,8 @@ function QtcSection({
     return Number.isFinite(val) && val > 0 ? val / 1000 : null;
   }, [manualQtMs]);
 
-  const qtSec = qtInterval?.seconds ?? manualQtSec;
+  const imageQtSec = imageQtMs !== null ? imageQtMs / 1000 : null;
+  const qtSec = qtInterval?.seconds ?? imageQtSec ?? manualQtSec;
   const bazett = useMemo(() => qtcBazett(qtSec, rrSec), [qtSec, rrSec]);
   const fridericia = useMemo(() => qtcFridericia(qtSec, rrSec), [qtSec, rrSec]);
   const bazettStatus = useMemo(
@@ -519,6 +1031,11 @@ function QtcSection({
           <span>
             QT from points B→D:{' '}
             <span className="font-semibold text-white/80">{fmt(qtSec * 1000, 0)} ms</span>
+          </span>
+        ) : imageQtMs !== null ? (
+          <span>
+            QT from uploaded ECG image B→D:{' '}
+            <span className="font-semibold text-yellow-300">{fmt(imageQtMs, 0)} ms</span>
           </span>
         ) : (
           <span>
@@ -733,6 +1250,45 @@ function EcgChartBlock({
   const series = ecgData?.series;
   const timeUnit = parseTimeUnit(axis?.x?.label);
   const ampUnit = parseAmplitudeUnit(axis?.y?.label);
+  const shouldRenderSheet = !imageUrl && isStandard12LeadLike(ecgData);
+  const imageContainerRef = useRef<HTMLDivElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const [estimatedPxPerBox, setEstimatedPxPerBox] = useState<number | null>(null);
+  const [imageDisplayRect, setImageDisplayRect] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const pxBox = useMemo(() => {
+    const parsed = parseFloat(imgCalibPxPerBox);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+    return estimatedPxPerBox;
+  }, [estimatedPxPerBox, imgCalibPxPerBox]);
+  const usingEstimatedCalibration = !imgCalibPxPerBox && estimatedPxPerBox !== null;
+  const sortedImgPts = useMemo(() => [...imagePoints].sort((a, b) => a.x - b.x), [imagePoints]);
+  const imgIntervals = useMemo(
+    () =>
+      sortedImgPts.slice(0, -1).map((p, i) => {
+        const next = sortedImgPts[i + 1];
+        const px = Math.round(Math.abs(next.x - p.x));
+        const ms = pxBox ? Math.round((px / pxBox) * 200) : null;
+        return { label: `${p.label} → ${next.label}`, px, ms };
+      }),
+    [pxBox, sortedImgPts]
+  );
+  const ptB = useMemo(() => imagePoints.find(p => p.label === 'B'), [imagePoints]);
+  const ptD = useMemo(() => imagePoints.find(p => p.label === 'D'), [imagePoints]);
+  const bdPx = useMemo(
+    () => (ptB && ptD ? Math.round(Math.abs(ptD.x - ptB.x)) : null),
+    [ptB, ptD]
+  );
+  const bdMs = useMemo(
+    () => (bdPx && pxBox ? Math.round((bdPx / pxBox) * 200) : null),
+    [bdPx, pxBox]
+  );
 
   // Two-click calibration state
   const [calibMode, setCalibMode] = useState(false);
@@ -756,6 +1312,48 @@ function EcgChartBlock({
     const seriesData = getSeriesXY(series, orderedPoints[1].seriesIndex);
     return buildInterval(orderedPoints[1], orderedPoints[3], 'B', 'D', timeUnit, seriesData);
   }, [orderedPoints, timeUnit, series]);
+
+  useEffect(() => {
+    if (onQtFromImage && bdMs !== null) {
+      onQtFromImage(bdMs);
+    }
+  }, [bdMs, onQtFromImage]);
+
+  const updateEstimatedCalibration = useCallback(() => {
+    if (!imageRef.current || !imageContainerRef.current) {
+      return;
+    }
+
+    const containerRect = imageContainerRef.current.getBoundingClientRect();
+    const renderedRect = imageRef.current.getBoundingClientRect();
+    const nextRect = {
+      left: renderedRect.left - containerRect.left,
+      top: renderedRect.top - containerRect.top,
+      width: renderedRect.width,
+      height: renderedRect.height,
+    };
+    setImageDisplayRect(nextRect);
+
+    const renderedWidth = renderedRect.width;
+    if (!renderedWidth) {
+      return;
+    }
+
+    // Default estimate: a standard ECG print spans about 10 seconds across the width,
+    // which corresponds to 50 large boxes at 25 mm/s.
+    setEstimatedPxPerBox(renderedWidth / 50);
+  }, []);
+
+  useEffect(() => {
+    if (!imageUrl) {
+      setEstimatedPxPerBox(null);
+      return;
+    }
+
+    updateEstimatedCalibration();
+    window.addEventListener('resize', updateEstimatedCalibration);
+    return () => window.removeEventListener('resize', updateEstimatedCalibration);
+  }, [imageUrl, updateEstimatedCalibration]);
 
   const handlePointClick = (point: ChartPoint) => {
     setSelectedPoints(prev => {
@@ -807,29 +1405,29 @@ function EcgChartBlock({
 
       {imageUrl ? (() => {
         /* ── Image view with interactive point placement ── */
-        const pxBox = parseFloat(imgCalibPxPerBox) || null;
-        const sortedImgPts = [...imagePoints].sort((a, b) => a.x - b.x);
-
-        // Consecutive intervals between placed points (in order A→B→C→D)
-        const imgIntervals = sortedImgPts.slice(0, -1).map((p, i) => {
-          const next = sortedImgPts[i + 1];
-          const px = Math.round(Math.abs(next.x - p.x));
-          const ms = pxBox ? Math.round((px / pxBox) * 200) : null;
-          return { label: `${p.label} → ${next.label}`, px, ms };
-        });
-
-        // B→D (QT interval)
-        const ptB = imagePoints.find(p => p.label === 'B');
-        const ptD = imagePoints.find(p => p.label === 'D');
-        const bdPx = ptB && ptD ? Math.round(Math.abs(ptD.x - ptB.x)) : null;
-        const bdMs = bdPx && pxBox ? Math.round((bdPx / pxBox) * 200) : null;
-
         const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+          if (!imageDisplayRect) {
+            return;
+          }
+
           // Read coordinates before entering the async state updater —
           // e.currentTarget is nulled by React after the event completes.
           const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
+          const localX = e.clientX - rect.left;
+          const localY = e.clientY - rect.top;
+
+          const insideImage =
+            localX >= imageDisplayRect.left &&
+            localX <= imageDisplayRect.left + imageDisplayRect.width &&
+            localY >= imageDisplayRect.top &&
+            localY <= imageDisplayRect.top + imageDisplayRect.height;
+
+          if (!insideImage) {
+            return;
+          }
+
+          const x = localX - imageDisplayRect.left;
+          const y = localY - imageDisplayRect.top;
 
           if (calibMode) {
             if (calibX1 === null) {
@@ -880,7 +1478,10 @@ function EcgChartBlock({
                       Click 2 points to calibrate
                     </button>
                     {pxBox ? (
-                      <span className="text-green-400 font-mono">{Math.round(pxBox)} px = 200 ms</span>
+                      <span className="text-green-400 font-mono">
+                        {Math.round(pxBox)} px = 200 ms
+                        {usingEstimatedCalibration ? ' (estimated)' : ''}
+                      </span>
                     ) : (
                       <span className="text-white/30">not set — click to calibrate for accurate ms</span>
                     )}
@@ -948,6 +1549,7 @@ function EcgChartBlock({
 
             {/* Image + SVG overlay */}
             <div
+              ref={imageContainerRef}
               role="button"
               tabIndex={0}
               className="relative overflow-hidden rounded border border-white/10 bg-black/20"
@@ -956,21 +1558,29 @@ function EcgChartBlock({
               onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') e.currentTarget.click(); }}
             >
               <img
+                ref={imageRef}
                 src={imageUrl}
                 alt={uploadedFileName ?? 'ECG image'}
                 className="pointer-events-none block w-full object-contain"
                 style={{ maxHeight: 360 }}
+                onLoad={updateEstimatedCalibration}
                 draggable={false}
               />
               <svg
-                className="pointer-events-none absolute inset-0 h-full w-full"
-                style={{ overflow: 'visible' }}
+                className="pointer-events-none absolute"
+                style={{
+                  overflow: 'visible',
+                  left: imageDisplayRect?.left ?? 0,
+                  top: imageDisplayRect?.top ?? 0,
+                  width: imageDisplayRect?.width ?? '100%',
+                  height: imageDisplayRect?.height ?? '100%',
+                }}
               >
                 {/* Lines + measurement labels between consecutive points */}
                 {imagePoints.slice(0, -1).map((pt, i) => {
                   const next = imagePoints[i + 1];
                   const midX = (pt.x + next.x) / 2;
-                  const midY = Math.min(pt.y, next.y) - 14;
+                  const midY = Math.max(pt.y, next.y) + 18;
                   const px = Math.round(Math.abs(next.x - pt.x));
                   const ms = pxBox ? Math.round((px / pxBox) * 200) : null;
                   const lineColor = pt.fill;
@@ -987,21 +1597,58 @@ function EcgChartBlock({
                         stroke={lineColor} strokeWidth={2.5} opacity={1}
                       />
                       {/* Measurement label above midpoint */}
-                      <text
-                        x={midX} y={midY}
-                        textAnchor="middle"
-                        fill="black" fontSize="12" fontWeight="bold" fontFamily="monospace"
-                        stroke="black" strokeWidth={3} paintOrder="stroke"
-                      >
-                        {ms !== null ? `${ms} ms` : `${px} px`}
-                      </text>
-                      <text
-                        x={midX} y={midY}
-                        textAnchor="middle"
-                        fill={lineColor} fontSize="12" fontWeight="bold" fontFamily="monospace"
-                      >
-                        {ms !== null ? `${ms} ms` : `${px} px`}
-                      </text>
+                      {ms !== null ? (
+                        <>
+                          <text
+                            x={midX} y={midY}
+                            textAnchor="middle"
+                            fill="black" fontSize="13" fontWeight="bold" fontFamily="monospace"
+                            stroke="black" strokeWidth={4} paintOrder="stroke"
+                          >
+                            {ms} ms
+                          </text>
+                          <text
+                            x={midX} y={midY}
+                            textAnchor="middle"
+                            fill={lineColor} fontSize="13" fontWeight="bold" fontFamily="monospace"
+                          >
+                            {ms} ms
+                          </text>
+                          <text
+                            x={midX} y={midY + 18}
+                            textAnchor="middle"
+                            fill="black" fontSize="13" fontFamily="monospace"
+                            stroke="black" strokeWidth={3} paintOrder="stroke"
+                          >
+                            {(ms / 200).toFixed(2)} lg □ · {(ms / 40).toFixed(1)} sm □
+                          </text>
+                          <text
+                            x={midX} y={midY + 18}
+                            textAnchor="middle"
+                            fill={lineColor} fontSize="13" fontFamily="monospace" opacity={0.9}
+                          >
+                            {(ms / 200).toFixed(2)} lg □ · {(ms / 40).toFixed(1)} sm □
+                          </text>
+                        </>
+                      ) : (
+                        <>
+                          <text
+                            x={midX} y={midY}
+                            textAnchor="middle"
+                            fill="black" fontSize="13" fontFamily="sans-serif"
+                            stroke="black" strokeWidth={3} paintOrder="stroke"
+                          >
+                            set scale for ms
+                          </text>
+                          <text
+                            x={midX} y={midY}
+                            textAnchor="middle"
+                            fill={lineColor} fontSize="13" fontFamily="sans-serif" opacity={0.9}
+                          >
+                            set scale for ms
+                          </text>
+                        </>
+                      )}
                     </g>
                   );
                 })}
@@ -1034,48 +1681,62 @@ function EcgChartBlock({
               <div className="space-y-1.5">
                 <div className="text-xs uppercase tracking-wide text-white/55">Image Measurements</div>
                 {imgIntervals.map(iv => (
-                  <div key={iv.label} className="flex items-center justify-between rounded bg-white/5 px-3 py-1.5 text-xs">
-                    <span className="text-white/70">{iv.label}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-white/40">{iv.px} px</span>
+                  <div
+                    key={iv.label}
+                    className="rounded border border-blue-500/30 bg-blue-900/20 px-3 py-2 text-xs space-y-0.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-yellow-300">{iv.label}</span>
                       {iv.ms !== null ? (
-                        <span className="font-mono font-semibold text-white">{iv.ms} ms</span>
+                        <span className="font-mono font-semibold text-yellow-300 text-xs">{iv.ms} ms</span>
                       ) : (
-                        <span className="text-white/30">— ms (set calibration)</span>
+                        <span className="text-yellow-200/70 text-xs">— ms (set calibration)</span>
                       )}
                     </div>
+                    {iv.ms !== null && (
+                      <div className="font-mono text-yellow-200/75 text-[10px]">
+                        = {(iv.ms / 200).toFixed(2)} large □ × 200 ms
+                        &nbsp;=&nbsp;{(iv.ms / 40).toFixed(1)} small □ × 40 ms
+                      </div>
+                    )}
                   </div>
                 ))}
 
                 {/* B→D (QT) summary row */}
                 {bdPx !== null && (
-                  <div className="flex items-center justify-between rounded border border-yellow-500/30 bg-yellow-900/10 px-3 py-1.5 text-xs">
-                    <span className="font-semibold text-yellow-300">B → D (QT Interval)</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-white/40">{bdPx} px</span>
+                  <div className="rounded border border-yellow-500/30 bg-yellow-900/10 px-3 py-2 text-xs space-y-0.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-yellow-300">B → D (QT Interval)</span>
+                      <div className="flex items-center gap-2">
                       {bdMs !== null ? (
                         <>
                           <span className="font-mono font-semibold text-white">{bdMs} ms</span>
-                          {onQtFromImage && (
-                            <button
-                              type="button"
-                              onClick={e => { e.stopPropagation(); onQtFromImage(bdMs); }}
-                              className="rounded bg-yellow-600/60 px-2 py-0.5 text-yellow-100 hover:bg-yellow-600 transition-colors"
-                            >
-                              Use in QTc ↓
-                            </button>
-                          )}
+                          <span className="rounded bg-yellow-600/60 px-2 py-0.5 text-yellow-100">
+                            Used in QTc
+                          </span>
                         </>
                       ) : (
-                        <span className="text-white/30">— ms</span>
-                      )}
+                          <span className="text-white/30">— ms</span>
+                        )}
+                      </div>
                     </div>
+                    {bdMs !== null && (
+                      <div className="font-mono text-white/40 text-[10px]">
+                        = {(bdMs / 200).toFixed(2)} large □ × 200 ms
+                        &nbsp;=&nbsp;{(bdMs / 40).toFixed(1)} small □ × 40 ms
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {!pxBox && (
                   <div className="text-xs text-white/30 text-center">
                     Enter calibration above to convert pixels to milliseconds
+                  </div>
+                )}
+                {usingEstimatedCalibration && (
+                  <div className="text-xs text-yellow-300/80 text-center">
+                    Using default ms estimate from ECG width. Calibrate manually if you need exact values.
                   </div>
                 )}
               </div>
@@ -1118,19 +1779,32 @@ function EcgChartBlock({
           </div>
 
           {/* Chart */}
-          <div className="h-[220px] overflow-hidden rounded border border-white/10">
-            <LineChart
-              showLegend={true}
-              legendWidth={120}
-              axis={{
-                x: { label: axis.x.label, indexRef: 0, type: 'x', range: { min: 0 } },
-                y: { label: axis.y.label, indexRef: 1, type: 'y' },
-              }}
-              series={series}
+          {shouldRenderSheet ? (
+            <EcgSheetRenderer
+              ecgData={ecgData}
               selectedPoints={selectedPoints}
-              onPointClick={handlePointClick}
+              setSelectedPoints={setSelectedPoints}
             />
-          </div>
+          ) : (
+            <div
+              className="h-[320px] overflow-hidden rounded border border-red-200/80 shadow-inner"
+              style={ECG_PAPER_BG}
+            >
+              <LineChart
+                showLegend={true}
+                legendWidth={120}
+                showAxisGrid={false}
+                transparentChartBackground={true}
+                axis={{
+                  x: { label: axis.x.label, indexRef: 0, type: 'x', range: { min: 0 } },
+                  y: { label: axis.y.label, indexRef: 1, type: 'y' },
+                }}
+                series={series}
+                selectedPoints={selectedPoints}
+                onPointClick={handlePointClick}
+              />
+            </div>
+          )}
 
           {/* Unit info */}
           <div className="flex items-center justify-between rounded bg-white/5 px-3 py-1.5 text-xs text-white/50">
@@ -1138,7 +1812,7 @@ function EcgChartBlock({
               Y: <span className="font-semibold text-white/70">{ampUnit}</span>
               &nbsp;·&nbsp; X: <span className="font-semibold text-white/70">{timeUnit}</span>
             </span>
-            <span>25 mm/s</span>
+            <span>{shouldRenderSheet ? 'ECG sheet 25 mm/s, 10 mm/mV' : '25 mm/s'}</span>
           </div>
 
           {/* Progress hint */}
@@ -1179,11 +1853,35 @@ function EcgChartBlock({
                           )
                         )
                       }
-                      className="rounded border border-white/10 bg-black/20 px-2 py-1.5 text-left text-xs hover:border-white/30"
+                      className="rounded border border-white/10 bg-black/20 px-2 py-2 text-left text-xs hover:border-white/30"
                     >
-                      <div className={`mb-0.5 font-bold ${g.color}`}>{g.name}</div>
-                      <div className="text-white/60">t = {fmt(pt.x, 4)} {timeUnit}</div>
-                      <div className="text-white/60">{ampUnit} = {fmt(pt.y, 3)}</div>
+                      {/* Point header: letter + clinical role */}
+                      <div className="mb-1.5 flex items-center gap-1.5">
+                        <span className={`text-sm font-bold ${g.color}`}>{g.name}</span>
+                        <span className="text-white/30">|</span>
+                        <span className="text-white/65">{g.desc}</span>
+                      </div>
+                      {/* Time measurement */}
+                      <div className="mb-0.5 font-mono">
+                        <span className="text-white/40">t = </span>
+                        <span className="font-semibold text-white">
+                          {timeUnit === 'ms' ? fmt(pt.x, 0) : fmt(pt.x * 1000, 0)} ms
+                        </span>
+                        <span className="ml-1.5 text-white/30">
+                          ({fmt((timeUnit === 'ms' ? pt.x : pt.x * 1000) / 200, 2)} lg box)
+                        </span>
+                      </div>
+                      {/* Amplitude measurement */}
+                      <div className="font-mono">
+                        <span className="text-white/40">V = </span>
+                        <span className={`font-semibold ${pt.y >= 0 ? 'text-cyan-300' : 'text-orange-300'}`}>
+                          {fmt(pt.y, 3)} {ampUnit}
+                        </span>
+                        <span className="ml-1.5 text-white/30">
+                          ({fmt(pt.y * 10, 1)} mm @ ×1 gain)
+                        </span>
+                      </div>
+                      <div className="mt-1 text-white/25 italic">click to remove</div>
                     </button>
                   );
                 })}
@@ -1253,6 +1951,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
   const [rrMsA, setRrMsA] = useState('');
   const [hrBpmA, setHrBpmA] = useState('');
   const [manualQtMsA, setManualQtMsA] = useState('');
+  const [imageQtMsA, setImageQtMsA] = useState<number | null>(null);
   const [genderA, setGenderA] = useState<Gender>('male');
   const [rrEntriesA, setRrEntriesA] = useState<string[]>(Array(MAX_RR_HRV).fill(''));
   const [qrsLeadI, setQrsLeadI] = useState('');
@@ -1263,6 +1962,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
   const [rrMsB, setRrMsB] = useState('');
   const [hrBpmB, setHrBpmB] = useState('');
   const [manualQtMsB, setManualQtMsB] = useState('');
+  const [imageQtMsB, setImageQtMsB] = useState<number | null>(null);
   const [genderB, setGenderB] = useState<Gender>('male');
 
   // Active chart data
@@ -1362,12 +2062,14 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
           setUploadedEcgA(null);
           setUploadedEcgAName(file.name);
           setSelectedPointsA([]);
+          setImageQtMsA(null);
           setRrMsA(''); setHrBpmA(''); setManualQtMsA('');
         } else {
           setUploadedImageB(dataUrl);
           setUploadedEcgB(null);
           setUploadedEcgBName(file.name);
           setSelectedPointsB([]);
+          setImageQtMsB(null);
           setRrMsB(''); setHrBpmB(''); setManualQtMsB('');
         }
       };
@@ -1390,12 +2092,14 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
           setUploadedImageA(null);
           setUploadedEcgAName(file.name);
           setSelectedPointsA([]);
+          setImageQtMsA(null);
           setRrMsA(''); setHrBpmA(''); setManualQtMsA('');
         } else {
           setUploadedEcgB(parsed);
           setUploadedImageB(null);
           setUploadedEcgBName(file.name);
           setSelectedPointsB([]);
+          setImageQtMsB(null);
           setRrMsB(''); setHrBpmB(''); setManualQtMsB('');
         }
       };
@@ -1417,12 +2121,14 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
         setUploadedImageA(null);
         setUploadedEcgAName(file.name);
         setSelectedPointsA([]);
+        setImageQtMsA(null);
         setRrMsA(''); setHrBpmA(''); setManualQtMsA('');
       } else {
         setUploadedEcgB(parsed);
         setUploadedImageB(null);
         setUploadedEcgBName(file.name);
         setSelectedPointsB([]);
+        setImageQtMsB(null);
         setRrMsB(''); setHrBpmB(''); setManualQtMsB('');
       }
     };
@@ -1433,7 +2139,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex h-full flex-col text-white">
+    <div className="flex h-full flex-col overflow-y-auto text-white">
 
       {/* ── Toolbar: Layout + Upload controls ──────────────────────────────── */}
       <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-2">
@@ -1536,7 +2242,9 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
           ECG Waveform &amp; Intervals
           {layoutMode === 'compare' && <span className="ml-2 text-xs text-white/40">(comparison mode)</span>}
         </PanelSection.Header>
-        <PanelSection.Content className="bg-muted space-y-4 px-4 pt-3 pb-4">
+        <PanelSection.Content className="bg-muted px-4 pt-3 pb-4">
+
+          <div className={layoutMode === 'compare' ? 'grid grid-cols-2 gap-3' : 'space-y-4'}>
 
           {/* ECG A */}
           <EcgChartBlock
@@ -1553,6 +2261,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
               setUploadedImageA(null);
               setUploadedEcgAName(null);
               setSelectedPointsA([]);
+              setImageQtMsA(null);
               setImagePointsA([]);
               setImgCalibPxPerBoxA('');
             }}
@@ -1561,7 +2270,10 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
             setImagePoints={setImagePointsA}
             imgCalibPxPerBox={imgCalibPxPerBoxA}
             setImgCalibPxPerBox={setImgCalibPxPerBoxA}
-            onQtFromImage={ms => setManualQtMsA(String(ms))}
+            onQtFromImage={ms => {
+              setImageQtMsA(ms);
+              setManualQtMsA(String(ms));
+            }}
           />
 
           {/* ECG B — only in compare mode */}
@@ -1580,6 +2292,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
                 setUploadedImageB(null);
                 setUploadedEcgBName(null);
                 setSelectedPointsB([]);
+                setImageQtMsB(null);
                 setImagePointsB([]);
                 setImgCalibPxPerBoxB('');
               }}
@@ -1588,9 +2301,14 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
               setImagePoints={setImagePointsB}
               imgCalibPxPerBox={imgCalibPxPerBoxB}
               setImgCalibPxPerBox={setImgCalibPxPerBoxB}
-              onQtFromImage={ms => setManualQtMsB(String(ms))}
+              onQtFromImage={ms => {
+                setImageQtMsB(ms);
+                setManualQtMsB(String(ms));
+              }}
             />
           )}
+
+          </div>
         </PanelSection.Content>
       </PanelSection>
 
@@ -1604,6 +2322,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
           <QtcSection
             chartData={ecgAData}
             qtInterval={qtIntervalA}
+            imageQtMs={imageQtMsA}
             gender={genderA}
             setGender={setGenderA}
             rrMs={rrMsA}
@@ -1628,6 +2347,7 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
               <QtcSection
                 chartData={ecgBData}
                 qtInterval={qtIntervalB}
+                imageQtMs={imageQtMsB}
                 gender={genderB}
                 setGender={setGenderB}
                 rrMs={rrMsB}
@@ -1836,7 +2556,187 @@ function ECGViewerPanel({ servicesManager }: withAppTypes) {
           </PanelSection.Content>
         </PanelSection>
       )}
+
+      <EcgDocumentationSection />
     </div>
+  );
+}
+
+// ── ECG Viewer Documentation Panel ────────────────────────────────────────────
+
+function EcgDocumentationSection() {
+  return (
+    <PanelSection defaultOpen={false}>
+      <PanelSection.Header>ECG Viewer — Documentation &amp; Formulas</PanelSection.Header>
+      <PanelSection.Content className="bg-muted space-y-4 px-4 pt-3 pb-5 text-xs leading-relaxed text-white/60">
+
+        {/* Overview */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">Overview</div>
+          <p>
+            This viewer decodes DICOM Waveform IOD (SOP 1.2.840.10008.5.1.4.1.1.9.1.1) 12-lead
+            ECG files, applies a clinical 40 Hz lowpass filter, and renders the waveform at
+            standard paper scale (25 mm/s, 10 mm/mV). Interactive point placement lets you
+            measure any fiducial interval directly on the rhythm strip.
+          </p>
+        </div>
+
+        {/* Measurement workflow */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">Measurement Workflow</div>
+          <ol className="list-decimal pl-4 space-y-1 text-white/55">
+            <li>Click the ECG waveform to place point <span className="font-bold text-blue-400">A</span> at P-wave onset.</li>
+            <li>Click to place point <span className="font-bold text-green-400">B</span> at QRS onset (end of PR segment).</li>
+            <li>Click to place point <span className="font-bold text-yellow-400">C</span> at QRS end / J-point.</li>
+            <li>Click to place point <span className="font-bold text-orange-400">D</span> at T-wave end.</li>
+            <li>All consecutive intervals (A→B, B→C, C→D) and derived QT (B→D) are computed automatically.</li>
+          </ol>
+        </div>
+
+        {/* ECG paper standard */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">ECG Paper Standard (IEC 60601-2-51 / AHA)</div>
+          <div className="rounded bg-black/30 px-3 py-2.5 font-mono space-y-1">
+            <div>Paper speed : 25 mm/s</div>
+            <div>Small box   : 1 mm wide  = <span className="text-yellow-300">40 ms</span></div>
+            <div>Large box   : 5 mm wide  = <span className="text-yellow-300">200 ms</span>  (5 small boxes)</div>
+            <div>Amplitude   : gain ×1    → 10 mm = <span className="text-cyan-300">1 mV</span>  (2 large boxes tall)</div>
+          </div>
+        </div>
+
+        {/* Clinical formulas */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">Clinical Formulas</div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[11px]">
+              <thead>
+                <tr className="border-b border-white/10 text-white/40 text-left">
+                  <th className="pb-1.5 pr-3 font-semibold">Measurement</th>
+                  <th className="pb-1.5 pr-3 font-semibold">Formula</th>
+                  <th className="pb-1.5 font-semibold">Normal range</th>
+                </tr>
+              </thead>
+              <tbody className="font-mono text-white/55">
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">Any interval</td>
+                  <td className="py-1.5 pr-3">Δt = n<sub>large</sub> × 200 ms = n<sub>small</sub> × 40 ms</td>
+                  <td className="py-1.5 text-white/35">—</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">PR interval (A→B)</td>
+                  <td className="py-1.5 pr-3">t<sub>B</sub> − t<sub>A</sub></td>
+                  <td className="py-1.5 text-green-400">120–200 ms</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">QRS duration (B→C)</td>
+                  <td className="py-1.5 pr-3">t<sub>C</sub> − t<sub>B</sub></td>
+                  <td className="py-1.5 text-green-400">60–100 ms</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">QT interval (B→D)</td>
+                  <td className="py-1.5 pr-3">t<sub>D</sub> − t<sub>B</sub></td>
+                  <td className="py-1.5 text-green-400">350–440 ms</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">QTc Bazett</td>
+                  <td className="py-1.5 pr-3">QT<sub>s</sub> / √RR<sub>s</sub> × 1000</td>
+                  <td className="py-1.5 text-green-400">&lt;440 ms ♂ / &lt;460 ms ♀</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">QTc Fridericia</td>
+                  <td className="py-1.5 pr-3">QT<sub>s</sub> / ∛RR<sub>s</sub> × 1000</td>
+                  <td className="py-1.5 text-green-400">&lt;440 ms ♂ / &lt;460 ms ♀</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-1.5 pr-3 font-sans text-white/70">Heart rate</td>
+                  <td className="py-1.5 pr-3">HR = 60 000 / RR<sub>ms</sub></td>
+                  <td className="py-1.5 text-green-400">60–100 bpm</td>
+                </tr>
+                <tr>
+                  <td className="py-1.5 pr-3 font-sans text-white/70">QRS axis</td>
+                  <td className="py-1.5 pr-3">θ = atan2(aVF, I) × 180/π</td>
+                  <td className="py-1.5 text-green-400">−30° to +90°</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-1.5 text-white/35">
+            Subscript <em>s</em> = value in seconds. Subscript <em>ms</em> = value in milliseconds.
+          </p>
+        </div>
+
+        {/* DICOM signal conversion */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">DICOM Signal Conversion (PS3.3 C.10.9.1.4)</div>
+          <div className="rounded bg-black/30 px-3 py-2.5 font-mono space-y-1">
+            <div className="text-white/70">V<sub>mV</sub> = (ADC + Baseline) × Sensitivity × CorrFactor × unit_scale</div>
+            <div className="mt-2 text-white/35 space-y-0.5">
+              <div>ADC        — raw 16-bit signed sample from tag (5400,1010)</div>
+              <div>Baseline   — (003A,0213) Channel Baseline coded offset</div>
+              <div>Sensitivity — (003A,0210) Channel Sensitivity (per LSB)</div>
+              <div>CorrFactor — (003A,0212) Channel Sensitivity Correction Factor</div>
+              <div>unit_scale — (003A,0211) units: µV → ÷1000 · mV → ×1 · V → ×1000</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Signal processing */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">Signal Processing Pipeline</div>
+          <ol className="list-decimal pl-4 space-y-1.5 text-white/55">
+            <li>
+              <span className="font-semibold text-white/70">Butterworth 2nd-order lowpass at 40 Hz (zero-phase)</span>
+              <div className="mt-0.5 font-mono text-white/35 text-[11px]">
+                H(z) = b₀(1 + z⁻¹)² / (1 + a₁z⁻¹ + a₂z⁻²),  b₀ = 1/(1 + √2·c + c²),  c = 1/tan(π·fc/fs)
+              </div>
+              <div className="mt-0.5 text-white/35">
+                Forward + backward pass (filtfilt) eliminates phase distortion — QRS timing is preserved.
+              </div>
+            </li>
+            <li>
+              <span className="font-semibold text-white/70">Min-max downsampling</span>
+              <div className="mt-0.5 text-white/35">
+                Keeps both the minimum and maximum sample in every display bucket so QRS spikes and
+                P/T waves are never dropped during decimation.
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        {/* Technical stack */}
+        <div>
+          <div className="mb-1.5 font-semibold text-white/80 uppercase tracking-wide text-[10px]">Technical Stack</div>
+          <div className="space-y-1 text-white/55">
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 font-semibold text-white/65">dicom-parser</span>
+              <span>Low-level DICOM byte-stream parser — reads waveform sequence, channel definitions, and ADC data.</span>
+            </div>
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 font-semibold text-white/65">D3.js</span>
+              <span>SVG chart rendering via d3-selection, d3-scale, d3-shape — scales data coordinates to pixels and draws polyline paths.</span>
+            </div>
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 font-semibold text-white/65">React 18</span>
+              <span>Component UI, state management (useState / useMemo / useCallback / useRef).</span>
+            </div>
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 font-semibold text-white/65">Tailwind CSS</span>
+              <span>Utility-class styling — ECG paper background via repeating CSS linear-gradients.</span>
+            </div>
+            <div className="flex gap-2">
+              <span className="w-32 shrink-0 font-semibold text-white/65">OHIF Viewer</span>
+              <span>PanelSection, LineChart, and display-set service infrastructure from the OHIF platform.</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10 pt-2 text-white/25">
+          ECG measurements are for educational and clinical-assistance purposes only.
+          Always verify with a qualified clinician. Not a substitute for certified diagnostic equipment.
+        </div>
+
+      </PanelSection.Content>
+    </PanelSection>
   );
 }
 

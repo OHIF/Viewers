@@ -154,7 +154,13 @@ export function onModeEnter({
 
   toolbarService.register(this.toolbarButtons);
 
-  for (const [key, section] of Object.entries(this.toolbarSections)) {
+  const toolbarSections = structuredCloneWithFunctions(this.toolbarSections);
+
+  if (isECGViewerRoute()) {
+    toolbarSections.MeasurementTools = [...toolbarSections.MeasurementTools, 'ECGBidirectional'];
+  }
+
+  for (const [key, section] of Object.entries(toolbarSections)) {
     toolbarService.updateSection(key, section);
   }
 
@@ -255,7 +261,6 @@ export const toolbarSections = {
   MeasurementTools: [
     'Length',
     'Bidirectional',
-    'ECGBidirectional',
     'ArrowAnnotate',
     'EllipticalROI',
     'RectangleROI',
@@ -288,7 +293,6 @@ export const toolbarSections = {
     'Brush',
     'Eraser',
     'ABCSplitAngle',
-    'ECGViewer',
   ],
 
   labelMapSegmentationToolbox: ['LabelMapTools'],
@@ -305,12 +309,26 @@ export const toolbarSections = {
   LabelMapUtilities: ['InterpolateLabelmap', 'SegmentBidirectional'],
 };
 
+function isECGViewerRoute() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const searchParams = new URLSearchParams(window.location.search ?? '');
+  const activePanel =
+    searchParams.get('activePanel') ??
+    searchParams.get('activepanel') ??
+    searchParams.get('ACTIVEPANEL');
+
+  return activePanel === dynamicVolume.ecgViewerPanel;
+}
+
 export const basicLayout = {
   id: ohif.layout,
   props: {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.measurements, dynamicVolume.ecgViewerPanel],
+    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.measurements],
     rightPanelClosed: true,
     rightPanelResizable: true,
     viewports: [
@@ -350,8 +368,23 @@ export const basicLayout = {
   },
 };
 
-export function layoutTemplate() {
-  return structuredCloneWithFunctions(this.layoutInstance);
+export function layoutTemplate({ location }) {
+  const layout = structuredCloneWithFunctions(this.layoutInstance);
+  const searchParams = new URLSearchParams(location?.search ?? '');
+  const activePanel =
+    searchParams.get('activePanel') ??
+    searchParams.get('activepanel') ??
+    searchParams.get('ACTIVEPANEL');
+
+  if (activePanel === dynamicVolume.ecgViewerPanel) {
+    layout.props.rightPanels = [dynamicVolume.ecgViewerPanel];
+    layout.props.leftPanelClosed = false;
+    layout.props.rightPanelClosed = false;
+    layout.props.rightPanelInitialExpandedWidth = 1400;
+    layout.props.rightPanelMinimumExpandedWidth = 1400;
+  }
+
+  return layout;
 }
 
 export const basicRoute = {
