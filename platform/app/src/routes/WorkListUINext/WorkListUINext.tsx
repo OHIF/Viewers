@@ -7,6 +7,7 @@ import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync } from '../../hooks';
 
 import { StudyList, Icons, Button, useModal } from '@ohif/ui-next';
+import { useWorkListToolbarActions } from './useWorkListToolbarActions';
 
 import { utils, DicomMetadataStore, useSystem } from '@ohif/core';
 import type { StudyRow } from '@ohif/ui-next';
@@ -46,17 +47,14 @@ export default function WorkListUINext({
 
   const columns = useMemo(() => StudyList.defaultColumns(), []);
 
-  const logoComponent = useMemo(() => {
-    const customLogo = appConfig?.whiteLabeling?.createLogoComponentFn?.(React);
-    return (
-      customLogo ?? (
-        <Icons.OHIFLogoHorizontal
-          aria-label="OHIF logo"
-          className="h-[22px] w-[232px]"
-        />
-      )
-    );
-  }, [appConfig?.whiteLabeling]);
+  const logoComponent = appConfig?.whiteLabeling?.createLogoComponentFn?.(React) ?? (
+    <Icons.OHIFLogoHorizontal
+      aria-label="OHIF logo"
+      className="h-[22px] w-[232px]"
+    />
+  );
+
+  const toolbarActions = useWorkListToolbarActions(servicesManager, dataSource, onRefresh);
 
   const previewDefaultSize = useMemo(() => {
     if (typeof window !== 'undefined' && window.innerWidth > 0) {
@@ -93,6 +91,7 @@ export default function WorkListUINext({
               title={'Study List'}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
+              toolbarRightActionsComponent={toolbarActions}
               toolbarRightComponent={
                 !isPreviewOpen ? (
                   <div className="relative -top-px mt-1 ml-2 flex items-center gap-1">
