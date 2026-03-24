@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "ohif-monorepo-root",
@@ -734,7 +735,7 @@
         "hammerjs": "2.0.8",
         "history": "5.3.0",
         "i18next": "17.3.1",
-        "i18next-browser-languagedetector": "3.1.1",
+        "i18next-browser-languagedetector": "2.2.4",
         "lodash.isequal": "4.5.0",
         "oidc-client": "1.11.5",
         "oidc-client-ts": "3.3.0",
@@ -839,7 +840,7 @@
       },
       "devDependencies": {
         "i18next": "17.3.1",
-        "i18next-browser-languagedetector": "3.1.1",
+        "i18next-browser-languagedetector": "2.2.4",
         "react": "18.3.1",
         "react-dom": "18.3.1",
         "react-i18next": "12.3.1",
@@ -847,7 +848,7 @@
       },
       "peerDependencies": {
         "i18next": "17.3.1",
-        "i18next-browser-languagedetector": "3.1.1",
+        "i18next-browser-languagedetector": "2.2.4",
         "react": "18.3.1",
         "react-dom": "18.3.1",
         "react-i18next": "12.3.1",
@@ -3346,7 +3347,7 @@
 
     "i18next": ["i18next@17.3.1", "", { "dependencies": { "@babel/runtime": "^7.3.1" } }, "sha512-4nY+yaENaoZKmpbiDXPzucVHCN3hN9Z9Zk7LyQXVOKVIpnYOJ3L/yxHJlBPtJDq3PGgjFwA0QBFm/26Z0iDT5A=="],
 
-    "i18next-browser-languagedetector": ["i18next-browser-languagedetector@3.1.1", "", {}, "sha512-JBgFWijjI1t6as4WgGvDdX4GLJPZwC/SMHzLQQ3ef7XaJsEkomlXFqXifKvOVJg09Hj2BVWe6strDdIF4J/0ng=="],
+    "i18next-browser-languagedetector": ["i18next-browser-languagedetector@2.2.4", "", {}, "sha512-wPbtH18FdOuB245I8Bhma5/XSDdN/HpYlX+wga1eMy+slhaFQSnrWX6fp+aYSL2eEuj0RlfHeEVz6Fo/lxAj6A=="],
 
     "i18next-locize-backend": ["i18next-locize-backend@2.2.2", "", { "dependencies": { "@babel/runtime": "^7.7.4" } }, "sha512-YUHyrCr/8V85fh4WKE8rvzcQdS47lRbHOrDu69bBfMSiycCW26wYwcw2UQjtMY8GcoKgDYbYGbSfzunpnLATvQ=="],
 

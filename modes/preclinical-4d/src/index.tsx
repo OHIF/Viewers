@@ -22,6 +22,7 @@ const ohif = {
 
 const dynamicVolume = {
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
+  ecgViewerPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
 };
 
 const cornerstone = {
@@ -103,6 +104,9 @@ function modeFactory({ modeConfiguration }) {
         },
         'panelSegmentation.showAddSegment': {
           $set: false,
+        },
+        'studyBrowser.studyMenuItems': {
+          $set: [],
         },
       });
 

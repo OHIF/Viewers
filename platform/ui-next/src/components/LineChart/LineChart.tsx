@@ -17,6 +17,8 @@ const LineChart = ({
   transparentChartBackground = false,
   containerClassName,
   chartContainerClassName,
+  selectedPoints = [],
+  onPointClick,
 }: {
   title: string;
   width: number;
@@ -28,6 +30,13 @@ const LineChart = ({
   transparentChartBackground: boolean;
   containerClassName: string;
   chartContainerClassName: string;
+  selectedPoints?: { seriesIndex: number; pointIndex: number }[];
+  onPointClick?: (point: {
+    x: number;
+    y: number;
+    seriesIndex: number;
+    pointIndex: number;
+  }) => void;
 }): JSX.Element => {
   const chartContainerRef = useRef(null);
   const [d3SVGContainer, setD3SVGRef] = useState(null);
@@ -67,6 +76,8 @@ const LineChart = ({
       showLegend,
       legendWidth,
       transparentChartBackground,
+      selectedPoints,
+      onPointClick,
     });
   }, [
     d3SVGContainer,
@@ -79,6 +90,8 @@ const LineChart = ({
     transparentChartBackground,
     showLegend,
     legendWidth,
+    selectedPoints,
+    onPointClick,
   ]);
 
   return (
@@ -116,6 +129,8 @@ LineChart.propTypes = {
   transparentChartBackground: PropTypes.bool,
   containerClassName: PropTypes.string,
   chartContainerClassName: PropTypes.string,
+  selectedPoints: PropTypes.array,
+  onPointClick: PropTypes.func,
 };
 
 export default LineChart;

@@ -3,6 +3,7 @@ const dynamicVolume = {
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
   segmentation: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-segmentation',
+  ecgViewer: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
 };
 
 const cornerstone = {
@@ -105,7 +106,16 @@ function getWorkflowSettings({ servicesManager }) {
       {
         id: 'kineticAnalysis',
         name: 'Kinetic Analysis',
-        layout: defaultLayout,
+        layout: {
+          panels: {
+            left: defaultLeftPanel,
+            right: [],
+          },
+          options: {
+            leftPanelClosed: false,
+            rightPanelClosed: true,
+          },
+        },
         toolbarButtons: defaultButtons,
         hangingProtocol: {
           protocolId: 'default4D',

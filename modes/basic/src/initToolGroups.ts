@@ -10,6 +10,9 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
+const MIN_SEGMENTATION_DRAWING_RADIUS = 0.5;
+const MAX_SEGMENTATION_DRAWING_RADIUS = 99.5;
+
 function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
@@ -68,6 +71,8 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
+      { toolName: toolNames.ABCSplitAngle },
+      { toolName: toolNames.ECGBidirectional },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.CalibrationLine },
       {
@@ -81,11 +86,95 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: toolNames.LabelmapSlicePropagation,
+      },
+      {
+        toolName: toolNames.MarkerLabelmap,
+      },
+      {
+        toolName: toolNames.RegionSegmentPlus,
+      },
+      {
+        toolName: toolNames.LabelMapEditWithContourTool,
+      },
+      { toolName: toolNames.CircleScissors },
+      { toolName: toolNames.RectangleScissors },
+      { toolName: toolNames.SphereScissors },
     ],
-    enabled: [
-      { toolName: toolNames.ImageOverlayViewer },
-      { toolName: toolNames.ReferenceLines },
-    ],
+    enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
     disabled: [
       {
         toolName: toolNames.AdvancedMagnify,
@@ -225,6 +314,8 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
+      { toolName: toolNames.ABCSplitAngle },
+      { toolName: toolNames.ECGBidirectional },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
@@ -235,6 +326,93 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           displayOnePointAsCrosshairs: true,
         },
       },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          minRadius: MIN_SEGMENTATION_DRAWING_RADIUS,
+          maxRadius: MAX_SEGMENTATION_DRAWING_RADIUS,
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: toolNames.LabelmapSlicePropagation,
+      },
+      {
+        toolName: toolNames.MarkerLabelmap,
+      },
+      {
+        toolName: toolNames.RegionSegmentPlus,
+      },
+      {
+        toolName: toolNames.LabelMapEditWithContourTool,
+      },
+      { toolName: toolNames.CircleScissors },
+      { toolName: toolNames.RectangleScissors },
+      { toolName: toolNames.SphereScissors },
     ],
     disabled: [
       {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useImageViewer } from '@ohif/ui-next';
+import { useImageViewer, Button, Icons } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
@@ -12,6 +12,56 @@ import { type TabsProps } from '@ohif/core/src/utils/createStudyBrowserTabs';
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
 const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
+
+function StudyMenuItemsComponent({ StudyInstanceUID }) {
+  const { servicesManager, commandsManager } = useSystem();
+  const { customizationService } = servicesManager.services;
+  const [actionItems, setActionItems] = React.useState<
+    Array<{
+      id: string;
+      label: string;
+      iconName: string;
+      onClick: (args: withAppTypes) => void;
+    }>
+  >(() => customizationService.getCustomization('studyBrowser.studyMenuItems') || []);
+
+  React.useEffect(() => {
+    // Update immediately in case customization was set before mount
+    setActionItems(customizationService.getCustomization('studyBrowser.studyMenuItems') || []);
+
+    const subscription = customizationService.subscribe(
+      customizationService.EVENTS.MODE_CUSTOMIZATION_MODIFIED,
+      () => {
+        setActionItems(customizationService.getCustomization('studyBrowser.studyMenuItems') || []);
+      }
+    );
+    return () => subscription.unsubscribe();
+  }, [customizationService]);
+
+  if (!actionItems?.length) {
+    return null;
+  }
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {actionItems.map(item => (
+        <Button
+          key={item.id}
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={e => {
+            e.stopPropagation();
+            item.onClick({ commandsManager, servicesManager, StudyInstanceUID });
+          }}
+          title={item.label}
+        >
+          <Icons.ByName name={item.iconName} />
+        </Button>
+      ))}
+    </div>
+  );
+}
 
 /**
  * Study Browser component that displays and manages studies and their display sets
@@ -440,11 +490,7 @@ function PanelStudyBrowser({
           servicesManager,
           menuItemsKey: 'studyBrowser.thumbnailMenuItems',
         })}
-        StudyMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.studyMenuItems',
-        })}
+        StudyMenuItems={StudyMenuItemsComponent}
       />
     </>
   );

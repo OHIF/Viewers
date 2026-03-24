@@ -78,6 +78,7 @@ function initI18n(
       // for all options read: https://www.i18next.com/overview/configuration-options
       .init({
         fallbackLng: DEFAULT_LANGUAGE,
+        lngWhitelist: Object.keys(locales),
         saveMissing: apiKeyAvailable,
         debug: debugMode,
         keySeparator: false,
@@ -114,6 +115,7 @@ function initI18n(
       // for all options read: https://www.i18next.com/overview/configuration-options
       .init({
         fallbackLng: DEFAULT_LANGUAGE,
+        lngWhitelist: Object.keys(locales),
         resources: locales,
         debug: debugMode,
         keySeparator: false,

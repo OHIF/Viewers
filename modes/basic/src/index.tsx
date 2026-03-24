@@ -20,6 +20,7 @@ export const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR', '
 export const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   wsiSopClassHandler:
@@ -34,6 +35,14 @@ export const cornerstone = {
     '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsContour',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+};
+
+export const dynamicVolume = {
+  ecgViewerPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
+};
+
+export const chart = {
+  viewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
 export const dicomsr = {
@@ -76,6 +85,7 @@ export const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dynamic-volume': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
@@ -88,6 +98,7 @@ export const sopClassHandlers = [
   dicomvideo.sopClassHandler,
   dicomSeg.sopClassHandler,
   dicomPmap.sopClassHandler,
+  ohif.chartSopClassHandler,
   ohif.sopClassHandler,
   ohif.wsiSopClassHandler,
   dicompdf.sopClassHandler,
@@ -143,7 +154,13 @@ export function onModeEnter({
 
   toolbarService.register(this.toolbarButtons);
 
-  for (const [key, section] of Object.entries(this.toolbarSections)) {
+  const toolbarSections = structuredCloneWithFunctions(this.toolbarSections);
+
+  if (isECGViewerRoute()) {
+    toolbarSections.MeasurementTools = [...toolbarSections.MeasurementTools, 'ECGBidirectional'];
+  }
+
+  for (const [key, section] of Object.entries(toolbarSections)) {
     toolbarService.updateSection(key, section);
   }
 
@@ -160,7 +177,7 @@ export function onModeEnter({
   if (this.activatePanelTrigger) {
     this._activatePanelTriggersSubscriptions = [
       ...panelService.addActivatePanelTriggers(
-        cornerstone.segmentation,
+        cornerstone.labelMapSegmentationPanel,
         [
           {
             sourcePubSubService: segmentationService,
@@ -273,15 +290,45 @@ export const toolbarSections = {
     'UltrasoundDirectionalTool',
     'WindowLevelRegion',
     'SegmentLabelTool',
+    'Brush',
+    'Eraser',
+    'ABCSplitAngle',
   ],
+
+  labelMapSegmentationToolbox: ['LabelMapTools'],
+  LabelMapTools: [
+    'LabelmapSlicePropagation',
+    'BrushTools',
+    'MarkerLabelmap',
+    'RegionSegmentPlus',
+    'Shapes',
+    'LabelMapEditWithContour',
+  ],
+  BrushTools: ['Brush', 'Eraser'],
+  labelMapSegmentationUtilities: ['LabelMapUtilities'],
+  LabelMapUtilities: ['InterpolateLabelmap', 'SegmentBidirectional'],
 };
+
+function isECGViewerRoute() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const searchParams = new URLSearchParams(window.location.search ?? '');
+  const activePanel =
+    searchParams.get('activePanel') ??
+    searchParams.get('activepanel') ??
+    searchParams.get('ACTIVEPANEL');
+
+  return activePanel === dynamicVolume.ecgViewerPanel;
+}
 
 export const basicLayout = {
   id: ohif.layout,
   props: {
     leftPanels: [ohif.thumbnailList],
     leftPanelResizable: true,
-    rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+    rightPanels: [cornerstone.labelMapSegmentationPanel, cornerstone.measurements],
     rightPanelClosed: true,
     rightPanelResizable: true,
     viewports: [
@@ -313,12 +360,31 @@ export const basicLayout = {
         namespace: dicomRT.viewport,
         displaySetsToDisplay: [dicomRT.sopClassHandler],
       },
+      {
+        namespace: chart.viewport,
+        displaySetsToDisplay: [ohif.chartSopClassHandler],
+      },
     ],
   },
 };
 
-export function layoutTemplate() {
-  return structuredCloneWithFunctions(this.layoutInstance);
+export function layoutTemplate({ location }) {
+  const layout = structuredCloneWithFunctions(this.layoutInstance);
+  const searchParams = new URLSearchParams(location?.search ?? '');
+  const activePanel =
+    searchParams.get('activePanel') ??
+    searchParams.get('activepanel') ??
+    searchParams.get('ACTIVEPANEL');
+
+  if (activePanel === dynamicVolume.ecgViewerPanel) {
+    layout.props.rightPanels = [dynamicVolume.ecgViewerPanel];
+    layout.props.leftPanelClosed = false;
+    layout.props.rightPanelClosed = false;
+    layout.props.rightPanelInitialExpandedWidth = 1400;
+    layout.props.rightPanelMinimumExpandedWidth = 1400;
+  }
+
+  return layout;
 }
 
 export const basicRoute = {

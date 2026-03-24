@@ -47,7 +47,7 @@ const dicomSeg = {
 };
 
 const cornerstone = {
-  panel: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+  panel: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithToolsLabelMap',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
@@ -179,7 +179,13 @@ function modeFactory() {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
+        'ABCSplitAngle',
       ]);
+
+      toolbarService.updateSection(toolbarService.sections.labelMapSegmentationToolbox, [
+        'BrushTools',
+      ]);
+      toolbarService.updateSection('BrushTools', ['Brush', 'Eraser']);
 
       customizationService.setCustomizations(
         {

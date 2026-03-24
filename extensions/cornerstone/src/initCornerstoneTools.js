@@ -50,6 +50,8 @@ import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
+import ABCSplitAngleTool from './tools/ABCSplitAngleTool';
+import ECGBidirectionalTool from './tools/ECGBidirectionalTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
 export default function initCornerstoneTools(configuration = {}) {
@@ -97,6 +99,8 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(PaintFillTool);
   addTool(ReferenceLinesTool);
   addTool(CalibrationLineTool);
+  addTool(ABCSplitAngleTool);
+  addTool(ECGBidirectionalTool);
   addTool(TrackballRotateTool);
   addTool(ImageOverlayViewerTool);
   addTool(AdvancedMagnifyTool);
@@ -156,6 +160,8 @@ const toolNames = {
   PaintFill: PaintFillTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
   CalibrationLine: CalibrationLineTool.toolName,
+  ABCSplitAngle: ABCSplitAngleTool.toolName,
+  ECGBidirectional: ECGBidirectionalTool.toolName,
   TrackballRotateTool: TrackballRotateTool.toolName,
   CircleScissors: CircleScissorsTool.toolName,
   RectangleScissors: RectangleScissorsTool.toolName,

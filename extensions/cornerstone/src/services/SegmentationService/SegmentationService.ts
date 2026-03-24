@@ -414,7 +414,13 @@ class SegmentationService extends PubSubService {
     const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
 
     const segs = this.getSegmentations();
-    const label = options?.label || `Segmentation ${segs.length + 1}`;
+    const defaultLabel =
+      segmentationType === LABELMAP
+        ? `${i18n.t('SegmentationPanel:Labelmap')} ${i18n.t('SegmentationPanel:Segmentation')} ${
+            segs.length + 1
+          }`
+        : `Segmentation ${segs.length + 1}`;
+    const label = options?.label || defaultLabel;
 
     const segImageIds = derivedImages.map(image => image.imageId);
 
