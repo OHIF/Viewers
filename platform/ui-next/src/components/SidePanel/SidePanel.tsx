@@ -61,7 +61,7 @@ const tabSpacerWidth = 2;
 const baseClasses = 'bg-black border-black justify-start box-content flex flex-col';
 
 const openStateIconName = {
-  left: 'SidePanelCloseLeft',
+  left: 'ReduceMenu',
   right: 'SidePanelCloseRight',
 };
 
@@ -293,9 +293,9 @@ const SidePanel = ({
           }}
           data-cy={`side-panel-header-${side}`}
         >
-          <Icons.NavigationPanelReveal
-            className={classnames('text-primary', side === 'left' && 'rotate-180 transform')}
-          />
+          <div className="flex h-[38px] w-[38px] items-center justify-center rounded p-[3px]">
+            <Icons.ReduceMenu className="rotate-180 transform text-white" />
+          </div>
         </div>
         <div className={classnames('mt-3 flex flex-col space-y-3')}>
           {_childComponents.map((childComponent, index) => (
@@ -351,9 +351,11 @@ const SidePanel = ({
         }}
         data-cy={`side-panel-header-${side}`}
       >
-        {React.createElement(Icons[openStateIconName[side]] || Icons.MissingIcon, {
-          className: 'text-primary',
-        })}
+        <div className="flex h-[38px] w-[38px] items-center justify-center rounded p-[3px]">
+          {React.createElement(Icons[openStateIconName[side]] || Icons.MissingIcon, {
+            className: 'text-white',
+          })}
+        </div>
       </div>
     );
   };

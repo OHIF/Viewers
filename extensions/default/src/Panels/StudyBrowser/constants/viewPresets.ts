@@ -3,12 +3,12 @@ import type { viewPreset } from '../types/viewPreset';
 const defaultViewPresets = [
   {
     id: 'list',
-    iconName: 'ListView',
+    iconName: 'ListViewCustom',
     selected: false,
   },
   {
     id: 'thumbnails',
-    iconName: 'ThumbnailView',
+    iconName: 'ListGrid',
     selected: true,
   },
 ] as viewPreset[];

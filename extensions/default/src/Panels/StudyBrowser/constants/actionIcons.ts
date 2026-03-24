@@ -3,7 +3,7 @@ import type { actionIcon } from '../types/actionsIcon';
 const defaultActionIcons = [
   {
     id: 'settings',
-    iconName: 'Settings',
+    iconName: 'Filters',
     value: false,
   },
 ] as actionIcon[];

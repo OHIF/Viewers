@@ -231,6 +231,10 @@ import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
 import ChevronLeft from './Sources/ChevronLeft';
+import ListGrid from './Sources/ListGrid';
+import ListViewCustom from './Sources/ListViewCustom';
+import Filters from './Sources/Filters';
+import ReduceMenu from './Sources/ReduceMenu';
 import StatusAlert from './Sources/StatusAlert';
 import Undo from './Sources/Undo';
 import TabContours from './Sources/TabContours';
@@ -809,6 +813,10 @@ export const Icons = {
   Redo,
   JumpToSlice,
   IllustrationNotFound,
+  ListGrid,
+  ListViewCustom,
+  Filters,
+  ReduceMenu,
 
   /** Adds an icon to the set of icons */
   addIcon: (name: string, icon) => {

@@ -37,12 +37,12 @@ export default {
   'studyBrowser.viewPresets': [
     {
       id: 'list',
-      iconName: 'ListView',
+      iconName: 'ListViewCustom',
       selected: false,
     },
     {
       id: 'thumbnails',
-      iconName: 'ThumbnailView',
+      iconName: 'ListGrid',
       selected: true,
     },
   ],

@@ -21,19 +21,26 @@ function PanelStudyBrowserHeader({
         <div className={'flex h-[24px] w-full select-none justify-center self-center text-[14px]'}>
           <div className="flex w-full items-center gap-[10px]">
             <div className="flex items-center justify-center">
-              <div className="text-primary flex items-center space-x-1">
-                {actionIcons.map((icon: actionIcon, index) =>
-                  React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
-                    key: index,
-                    onClick: () => updateActionIconValue(icon),
-                    className: `cursor-pointer`,
-                  })
-                )}
+              <div className="flex items-center space-x-1">
+                {actionIcons.map((icon: actionIcon, index) => (
+                  <div
+                    key={index}
+                    onClick={() => updateActionIconValue(icon)}
+                    className={`flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded p-[3px] ${
+                      icon.value ? 'bg-[#0076F7]' : ''
+                    }`}
+                  >
+                    {React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
+                      className: 'text-white',
+                    })}
+                  </div>
+                ))}
               </div>
             </div>
             <div className="ml-auto flex h-full items-center justify-center">
               <ToggleGroup
                 type="single"
+                className="gap-[5px] bg-transparent"
                 value={viewPresets.filter(preset => preset.selected)[0].id}
                 onValueChange={value => {
                   const selectedViewPreset = viewPresets.find(preset => preset.id === value);
@@ -45,9 +52,11 @@ function PanelStudyBrowserHeader({
                     key={index}
                     aria-label={viewPreset.id}
                     value={viewPreset.id}
-                    className="text-actions-primary"
+                    className="h-[30px] w-[30px] rounded p-[3px] text-white data-[state=on]:bg-[#0076F7] data-[state=on]:text-white"
                   >
-                    {React.createElement(Icons[viewPreset.iconName] || Icons.MissingIcon)}
+                    {React.createElement(Icons[viewPreset.iconName] || Icons.MissingIcon, {
+                      className: 'text-white',
+                    })}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
