@@ -338,4 +338,6 @@ window.config = {
     console.warn('test, navigate to https://ohif.org/');
   },
   hotkeys: [],
+  // Load Roboto for measurement/annotation SVG text; pairs with Chromium flags in playwright.config.ts for stable screenshots.
+  e2eStableScreenshotFonts: true,
 };

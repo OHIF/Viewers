@@ -94,6 +94,8 @@ declare global {
       preferSizeOverAccuracy?: boolean;
       useNorm16Texture?: boolean;
       useCPURendering?: boolean;
+      /** When true (e2e config), load a web font for annotation text so Playwright screenshots match across OSes. */
+      e2eStableScreenshotFonts?: boolean;
       strictZSpacingForVolumeViewport?: boolean;
       useCursors?: boolean;
       maxCacheSize?: number;

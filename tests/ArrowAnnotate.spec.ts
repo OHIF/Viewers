@@ -1,12 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import { screenShotPaths, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   await visitStudy(page, studyInstanceUID);
 });
 
-test('should display the arrow tool and allow free-form text to be entered', async ({
-  page,
+test('should display the arrow tool and allow free-form text to be entered shouldUpdateThis', async ({
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -29,11 +28,10 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await mainToolbarPageObject.waitForViewportsRendered();
 
-  await checkForScreenshot({
-    page,
-    maxDiffPixelRatio: 0.0075,
-    screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
-  });
+  await viewportPageObject.checkForScreenshot(
+    screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
+    { maxDiffPixelRatio: 0.0075 }
+  );
 
   // Now edit the arrow text and the label should not change.
 
@@ -43,11 +41,10 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await mainToolbarPageObject.waitForViewportsRendered();
 
-  await checkForScreenshot({
-    page,
-    maxDiffPixelRatio: 0.0075,
-    screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
-  });
+  await viewportPageObject.checkForScreenshot(
+    screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
+    { maxDiffPixelRatio: 0.0075 }
+  );
 
   // Now edit the label and the text should not change.
 
@@ -57,9 +54,8 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await mainToolbarPageObject.waitForViewportsRendered();
 
-  await checkForScreenshot({
-    page,
-    maxDiffPixelRatio: 0.0075,
-    screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
-  });
+  await viewportPageObject.checkForScreenshot(
+    screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
+    { maxDiffPixelRatio: 0.0075 }
+  );
 });

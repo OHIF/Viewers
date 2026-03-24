@@ -52,7 +52,7 @@ import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 
-export default function initCornerstoneTools(configuration = {}) {
+export default function initCornerstoneTools(appConfig = {}) {
   CrosshairsTool.isAnnotation = false;
   LabelmapSlicePropagationTool.isAnnotation = false;
   MarkerLabelmapTool.isAnnotation = false;
@@ -121,6 +121,12 @@ export default function initCornerstoneTools(configuration = {}) {
   const annotationStyle = {
     textBoxFontSize: '15px',
     lineWidth: '1.5',
+    ...(appConfig.e2eStableScreenshotFonts
+      ? {
+          textBoxFontFamily:
+            'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+        }
+      : {}),
   };
 
   const defaultStyles = annotation.config.style.getDefaultToolStyles();

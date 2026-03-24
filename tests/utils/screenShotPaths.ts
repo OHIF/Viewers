@@ -5,15 +5,9 @@ import { screenshotPathForOhifDownstream } from './ohifDownstreamScreenshot';
  */
 const screenShotPaths = {
   arrowAnnotate: {
-    arrowAnnotateDisplayedCorrectly0: screenshotPathForOhifDownstream(
-      'arrowAnnotateDisplayedCorrectly0.png'
-    ),
-    arrowAnnotateDisplayedCorrectly1: screenshotPathForOhifDownstream(
-      'arrowAnnotateDisplayedCorrectly1.png'
-    ),
-    arrowAnnotateDisplayedCorrectly2: screenshotPathForOhifDownstream(
-      'arrowAnnotateDisplayedCorrectly2.png'
-    ),
+    arrowAnnotateDisplayedCorrectly0: 'arrowAnnotateDisplayedCorrectly0.png',
+    arrowAnnotateDisplayedCorrectly1: 'arrowAnnotateDisplayedCorrectly1.png',
+    arrowAnnotateDisplayedCorrectly2: 'arrowAnnotateDisplayedCorrectly2.png',
   },
   angle: {
     angleDisplayedCorrectly: 'angleDisplayedCorrectly.png',
