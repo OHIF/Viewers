@@ -20,6 +20,7 @@ export const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR', '
 export const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   wsiSopClassHandler:
@@ -38,6 +39,10 @@ export const cornerstone = {
 
 export const dynamicVolume = {
   ecgViewerPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer',
+};
+
+export const chart = {
+  viewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
 export const dicomsr = {
@@ -93,6 +98,7 @@ export const sopClassHandlers = [
   dicomvideo.sopClassHandler,
   dicomSeg.sopClassHandler,
   dicomPmap.sopClassHandler,
+  ohif.chartSopClassHandler,
   ohif.sopClassHandler,
   ohif.wsiSopClassHandler,
   dicompdf.sopClassHandler,
@@ -335,6 +341,10 @@ export const basicLayout = {
       {
         namespace: dicomRT.viewport,
         displaySetsToDisplay: [dicomRT.sopClassHandler],
+      },
+      {
+        namespace: chart.viewport,
+        displaySetsToDisplay: [ohif.chartSopClassHandler],
       },
     ],
   },

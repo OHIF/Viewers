@@ -69,17 +69,25 @@ export default function ModeRoute({
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
+  const activePanelId = lowerCaseSearchParams.get('activepanel');
 
   if (token) {
     updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
   }
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
-  if (dataSourceName !== undefined) {
-    extensionManager.setActiveDataSource(dataSourceName);
-  }
+  // NOTE: setActiveDataSource must NOT be called during render — it fires ACTIVE_DATA_SOURCE_CHANGED synchronously,
+  // which triggers setState on DataSourceWrapper while ModeRoute is still rendering (React warning).
+  const [dataSource, setDataSourceState] = useState(() =>
+    extensionManager.getActiveDataSourceOrNull()
+  );
 
-  const dataSource = extensionManager.getActiveDataSourceOrNull();
+  useEffect(() => {
+    if (dataSourceName !== undefined) {
+      extensionManager.setActiveDataSource(dataSourceName);
+      setDataSourceState(extensionManager.getActiveDataSourceOrNull());
+    }
+  }, [dataSourceName]);
 
   // Only handling one route per mode for now
   const route = mode.routes?.[0] ?? null;
@@ -284,6 +292,10 @@ export default function ModeRoute({
         extensionManager,
         commandsManager,
       });
+
+      if (activePanelId) {
+        panelService.activatePanel(activePanelId, true);
+      }
     });
 
     return () => {

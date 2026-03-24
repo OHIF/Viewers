@@ -42,32 +42,20 @@ const StudyListFilter = ({
                   {t('StudyList')}
                 </Typography>
                 {getDataSourceConfigurationComponent && getDataSourceConfigurationComponent()}
-                {onUploadClick && (
-                  <div
-                    className="text-primary-active flex cursor-pointer items-center gap-2 self-center text-lg font-semibold"
-                    onClick={onUploadClick}
-                  >
-                    <Icons.Upload />
-                    <span>{t('Upload')}</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex h-[34px] flex-row items-center">
-                {/* TODO revisit the completely rounded style of button used for clearing the study list filter - for now use LegacyButton*/}
                 {isFiltering && (
                   <LegacyButton
                     rounded="full"
                     variant="outlined"
                     color="primaryActive"
                     border="primaryActive"
-                    className="mx-8"
                     startIcon={<Icons.Cancel />}
                     onClick={clearFilters}
                   >
-                    {t('ClearFilters')}
+                    {t('Reset')}
                   </LegacyButton>
                 )}
-
+              </div>
+              <div className="flex h-[34px] flex-row items-center">
                 <Typography
                   variant="h6"
                   className="mr-2"
@@ -79,7 +67,7 @@ const StudyListFilter = ({
                   variant="h6"
                   className="text-primary-light"
                 >
-                  {`${t('Studies')} `}
+                  {`${t('Studies')} `}
                 </Typography>
               </div>
             </div>

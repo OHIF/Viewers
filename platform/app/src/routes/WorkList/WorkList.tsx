@@ -437,7 +437,7 @@ function WorkList({
                     {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later */}
                     <Button
                       type={ButtonEnums.type.primary}
-                      size={ButtonEnums.size.smallTall}
+                      size={ButtonEnums.size.medium}
                       disabled={!isValidMode}
                       startIconTooltip={
                         !isValidMode ? (
@@ -464,11 +464,19 @@ function WorkList({
               );
             })}
             {(() => {
+              const studyModalities = modalities ? modalities.split('/') : [];
+              if (!studyModalities.includes('ECG')) {
+                return null;
+              }
               const query = new URLSearchParams();
               if (filterValues.configUrl) {
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+              query.append(
+                'activePanel',
+                '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-ecg-viewer'
+              );
               preserveQueryParameters(query);
               return (
                 <Link
@@ -477,7 +485,7 @@ function WorkList({
                 >
                   <Button
                     type={ButtonEnums.type.primary}
-                    size={ButtonEnums.size.smallTall}
+                    size={ButtonEnums.size.medium}
                     startIcon={<Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />}
                     onClick={() => {}}
                     dataCY={`mode-ecg-viewer-${studyInstanceUid}`}
