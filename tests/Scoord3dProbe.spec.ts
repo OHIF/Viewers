@@ -134,7 +134,7 @@ test('should hydrate SCOORD3D probe measurements correctly.', async ({
   );
 });
 
-test('should display SCOORD3D probe measurements correctly. shouldUpdateThis', async ({
+test('should display SCOORD3D probe measurements correctly.', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,

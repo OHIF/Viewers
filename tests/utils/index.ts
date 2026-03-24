@@ -1,6 +1,7 @@
 import { visitStudy, visitStudyRendered } from './visitStudy';
 import { addOHIFConfiguration } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
+import { isOhifDownstream, screenshotPathForOhifDownstream } from './ohifDownstreamScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
   simulateClicksOnElement,
@@ -30,6 +31,8 @@ export {
   visitStudyRendered,
   addOHIFConfiguration,
   checkForScreenshot,
+  isOhifDownstream,
+  screenshotPathForOhifDownstream,
   screenShotPaths,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,

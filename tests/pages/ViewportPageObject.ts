@@ -121,7 +121,7 @@ export class ViewportPageObject {
   }
 
   async checkForScreenshot(
-    screenshotPath: string,
+    screenshotPath: string | string[],
     { locator, hideSelectors = ['[data-testid="viewport-action-arrows"]'], ...options }: ViewportScreenshotOptions = {}
   ) {
     const screenshotLocator = locator ?? this.grid;

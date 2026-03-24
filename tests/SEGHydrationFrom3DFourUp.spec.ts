@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up SEG hydration', async () => {
-  test('should properly hydrate SEG from 3D four up layout. shouldUpdateThis', async ({
+  test('should properly hydrate SEG from 3D four up layout.', async ({
     page,
     DOMOverlayPageObject,
     leftPanelPageObject,

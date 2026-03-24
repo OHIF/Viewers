@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D only Test', async () => {
-  test('should render 3D only correctly. shouldUpdateThis', async ({
+  test('should render 3D only correctly.', async ({
     page,
     mainToolbarPageObject,
     viewportPageObject,
@@ -20,8 +20,11 @@ test.describe('3D only Test', async () => {
     await mainToolbarPageObject.layoutSelection.threeDOnly.click();
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
     // Use a 4 percent diff pixel ratio to account for slight color differences in the 3D viewport
-    await viewportPageObject.checkForScreenshot(screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly, {
-      maxDiffPixelRatio: 0.04,
-    });
+    await viewportPageObject.checkForScreenshot(
+      screenShotPaths.threeDOnly.threeDOnlyDisplayedCorrectly,
+      {
+        maxDiffPixelRatio: 0.04,
+      }
+    );
   });
 });

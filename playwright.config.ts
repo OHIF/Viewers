@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 0,
+  // OHIF Downstream (Cornerstone → OHIF CI): at most 2 runs per test (1 retry). Default CI: 3 retries → 4 runs.
+  retries: process.env.OHIF_DOWNSTREAM ? 1 : process.env.CI ? 3 : 0,
   workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
