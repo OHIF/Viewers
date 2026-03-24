@@ -30,7 +30,6 @@ export class MainToolbarPageObject {
       button,
       async click() {
         await button.click();
-        await self.waitForViewportsRendered();
       },
     };
 
@@ -43,6 +42,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -53,6 +53,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -63,6 +64,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -73,6 +75,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -83,6 +86,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -93,6 +97,7 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
+            await self.waitForViewportsRendered();
           },
         };
       },
