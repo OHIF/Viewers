@@ -649,7 +649,7 @@ const toolbarButtons: Button[] = [
       label: i18n.t('Buttons:Crosshairs'),
       tooltip: i18n.t('Buttons:Click to toggle on or off'),
       commands: {
-        commandName: 'toggleCrosshairsToolbar',
+        commandName: 'togglePassiveDisabledToolbar',
         commandOptions: {
           toolGroupIds: ['mpr'],
         },
