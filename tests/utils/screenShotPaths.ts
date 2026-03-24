@@ -100,11 +100,8 @@ const screenShotPaths = {
   rtDataOverlayForReferencedDisplaySetNoHydration: {
     overlayRefFirstImage: 'overlayRefFirstImage.png',
     overlayRefMiddleImage: 'overlayRefMiddleImage.png',
+    overlayRefUnrefMiddleImage: 'overlayRefUnrefMiddleImage.png',
     overlayUnrefRefMiddleImage: 'overlayUnrefRefMiddleImage.png',
-    overlaySameFORDiffFORFirstImage: 'overlaySameFORDiffFORFirstImage.png',
-    overlaySameFORDiffFORMiddleImage: 'overlaySameFORDiffFORMiddleImage.png',
-    overlayDiffFORSameFORFirstImage: 'overlayDiffFORSameFORFIrstImage.png',
-    overlayDiffFORSameFORMiddleImage: 'overlayDiffFORSameFORMiddleImage.png',
   },
   rtDataOverlayForUnreferencedDisplaySetNoHydration: {
     overlayFirstImage: 'overlayFirstImage.png',
@@ -160,6 +157,7 @@ const screenShotPaths = {
   segDataOverlayForReferencedDisplaySetNoHydration: {
     overlayRefFirstImage: 'overlayRefFirstImage.png',
     overlayRefMiddleImage: 'overlayRefMiddleImage.png',
+    overlayRefUnrefMiddleImage: 'overlayRefUnrefMiddleImage.png',
     overlayUnrefRefMiddleImage: 'overlayUnrefRefMiddleImage.png',
   },
   segDataOverlayForUnreferencedDisplaySetNoHydration: {

@@ -237,7 +237,7 @@ export class ViewportPageObject {
           .locator('[data-viewportid]')
           .first()
           .getAttribute('data-viewportid')
-          .then(id => id || 'default'); // Fallback to 'default' if attribute is missing
+          .then(id => id);
       },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
