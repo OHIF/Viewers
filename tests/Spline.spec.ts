@@ -1,4 +1,5 @@
 import { checkForScreenshot, screenShotPaths, test, visitStudy, expect } from './utils';
+import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
@@ -26,7 +27,6 @@ test('should display the spline tool', async ({
 });
 
 test('should restore viewport interactivity after deleting an in-progress Spline annotation via context menu', async ({
-  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   viewportPageObject,
@@ -40,11 +40,42 @@ test('should restore viewport interactivity after deleting an in-progress Spline
   ]);
 
   await viewportPageObject.active.clickAt([{ x: 550, y: 312 }], 'right');
-  await page.waitForTimeout(500);
 
   const deleteButton = DOMOverlayPageObject.viewport.annotationContextMenu.delete;
   await expect(deleteButton.locator).toBeVisible();
   await deleteButton.click();
+
+  await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeHidden();
+
+  // Draw and complete a new Spline annotation to verify interactivity is restored
+  await viewportPageObject.active.clickAt([
+    { x: 380, y: 299 },
+    { x: 420, y: 236 },
+    { x: 523, y: 232 },
+    { x: 581, y: 287 },
+    { x: 482, y: 333 },
+    { x: 383, y: 301 },
+  ]);
+  await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
+  await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeVisible();
+});
+
+test('should restore viewport interactivity after deleting an in-progress Spline annotation via Backspace', async ({
+  page,
+  DOMOverlayPageObject,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
+  await mainToolbarPageObject.measurementTools.splineROI.click();
+
+  await viewportPageObject.active.clickAt([
+    { x: 380, y: 299 },
+    { x: 420, y: 236 },
+    { x: 523, y: 232 },
+  ]);
+
+  await page.waitForTimeout(500);
+  await press({ page, key: 'Backspace' });
 
   await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeHidden();
 
