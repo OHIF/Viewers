@@ -284,7 +284,10 @@ const SidePanel = ({
     return (
       <div className="relative flex w-full flex-col">
         <div
-          className="absolute right-0 top-0 flex cursor-pointer items-center justify-center"
+          className={classnames(
+            'absolute top-0 flex cursor-pointer items-center justify-center',
+            side === 'left' ? 'right-0' : 'left-0'
+          )}
           style={{ width: `${closeIconWidth}px` }}
           onClick={() => {
             updatePanelOpen(!panelOpen);
@@ -297,7 +300,12 @@ const SidePanel = ({
         </div>
         <div
           className="absolute flex flex-col space-y-3"
-          style={{ top: '42px', right: 0, width: `${closeIconWidth}px`, color: '#FFFFFF' }}
+          style={{
+            top: '42px',
+            [side === 'left' ? 'right' : 'left']: 0,
+            width: `${closeIconWidth}px`,
+            color: '#FFFFFF',
+          }}
         >
           {_childComponents.map((childComponent, index) => (
             <Tooltip key={index}>

@@ -4,9 +4,7 @@ import type { IconProps } from '../types';
 export const SortingDescending = (props: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="9"
-    height="16"
-    viewBox="0 0 9 16"
+    viewBox="0 9.8 9 6.2"
     {...props}
   >
     <g
