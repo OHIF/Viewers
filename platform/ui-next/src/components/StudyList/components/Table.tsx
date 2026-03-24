@@ -133,6 +133,7 @@ function TableContent({
           {title ? <DataTable.Title>{title}</DataTable.Title> : null}
           <div className="absolute right-0 flex items-center">
             {toolbarRightActionsComponent}
+            {toolbarRightActionsComponent && <div className="bg-input mx-2 h-4 w-px" />}
             {/* Pagination appears to the left of the "View" button */}
             <DataTable.Pagination<StudyRow> />
             {showColumnVisibility && <DataTable.ViewOptions<StudyRow> />}

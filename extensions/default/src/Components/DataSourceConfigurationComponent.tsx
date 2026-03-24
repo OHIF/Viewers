@@ -136,9 +136,7 @@ function DataSourceConfigurationComponent({
         </Card>
       </HoverCardContent>
     </HoverCard>
-  ) : (
-    <></>
-  );
+  ) : null;
 }
 
 export default DataSourceConfigurationComponent;
