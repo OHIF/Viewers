@@ -41,7 +41,7 @@ export class DataOverlayPageObject {
     return labels;
   }
 
-  getActiveSegmentationLocator(label: string) {
+  getOverlaySegmentationRow(label: string) {
     const locator = this.page.getByTestId(`overlay-ds-select-value-${label.toUpperCase()}`);
     return locator;
   }

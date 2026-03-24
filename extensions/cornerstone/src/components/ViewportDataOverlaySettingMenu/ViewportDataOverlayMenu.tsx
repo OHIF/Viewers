@@ -45,7 +45,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
 
   useEffect(() => {
     setOptimisticOverlayDisplaySets(overlayDisplaySets);
-  }, [backgroundDisplaySet?.displaySetInstanceUID]);
+  }, [backgroundDisplaySet?.displaySetInstanceUID, overlayDisplaySets]);
 
   /**
    * Change the background display set

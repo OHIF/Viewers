@@ -50,15 +50,14 @@ test('should only sync segmentations to viewports with same Frame of Reference',
   await viewportPageObject.getById(FOR1ViewportIdA).pane.hover();
   await dataOverlay.toggle(FOR1ViewportIdA);
   await dataOverlay.addSegmentation(segmentationFOR1Label, FOR1ViewportIdA);
-  await expect(dataOverlay.getActiveSegmentationLocator(segmentationFOR1Label)).toBeVisible();
+  await expect(dataOverlay.getOverlaySegmentationRow(segmentationFOR1Label)).toBeVisible();
   await dataOverlay.closeMenu(FOR1ViewportIdA);
   await page.waitForTimeout(2000);
 
   // In another FOR1 viewport B: segmentation FOR1 should be visible (synced)
   await viewportPageObject.getById(FOR1ViewportIdB).pane.hover();
   await dataOverlay.toggle(FOR1ViewportIdB);
-  const activeSegmentationViewportB =
-    dataOverlay.getActiveSegmentationLocator(segmentationFOR1Label);
+  const activeSegmentationViewportB = dataOverlay.getOverlaySegmentationRow(segmentationFOR1Label);
   await expect(activeSegmentationViewportB).toBeVisible();
   await expect(activeSegmentationViewportB).toHaveText(segmentationFOR1Label.toUpperCase());
   await dataOverlay.closeMenu(FOR1ViewportIdB);
@@ -66,6 +65,6 @@ test('should only sync segmentations to viewports with same Frame of Reference',
   // In FOR2 viewport: segmentation FOR1 should NOT be visible
   await viewportPageObject.getById(FOR2ViewportIdC).pane.hover();
   await dataOverlay.toggle(FOR2ViewportIdC);
-  await expect(dataOverlay.getActiveSegmentationLocator(segmentationFOR1Label)).not.toBeVisible();
+  await expect(dataOverlay.getOverlaySegmentationRow(segmentationFOR1Label)).not.toBeVisible();
   await dataOverlay.closeMenu(FOR2ViewportIdC);
 });
