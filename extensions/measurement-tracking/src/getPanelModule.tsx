@@ -14,7 +14,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
       name: 'seriesList',
       iconName: 'tab-studies',
       iconLabel: 'Studies',
-      label: i18n.t('SidePanel:Studies'),
+      label: i18n.t('SidePanel:Series'),
       component: props => <PanelStudyBrowserTracking {...props} />,
     },
     {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
+import imageNotFoundSrc from '../Icons/Sources/ImageNotFound.svg';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
@@ -70,6 +71,12 @@ const Thumbnail = ({
                 alt={imageAltText}
                 className="h-[72px] w-[96px] object-cover"
                 crossOrigin="anonymous"
+              />
+            ) : thumbnailType === 'thumbnailNoImage' ? (
+              <img
+                src={imageNotFoundSrc}
+                alt="Image indisponible"
+                className="h-[72px] w-[96px] rounded object-cover"
               />
             ) : (
               <div className="bg-background h-[72px] w-[96px] rounded"></div>

@@ -102,7 +102,7 @@ module.exports = {
       },
       bkg: {
         low: '#272727',
-        med: '#5C5C5C',
+        med: '#272727',
         full: '#0076F7',
       },
       info: {

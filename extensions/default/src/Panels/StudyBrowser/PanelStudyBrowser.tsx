@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
-import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
+import { useViewportGrid, StudyBrowser, Separator, Icons } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
@@ -54,6 +54,8 @@ function PanelStudyBrowser({
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+
+  const [seriesFilter, setSeriesFilter] = useState('');
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -348,6 +350,22 @@ function PanelStudyBrowser({
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
+  const filteredTabs = useMemo(() => {
+    const q = seriesFilter.trim();
+    if (!q) {
+      return tabs;
+    }
+    return tabs.map(tab => ({
+      ...tab,
+      studies: tab.studies?.map(study => ({
+        ...study,
+        displaySets: study.displaySets?.filter(ds =>
+          ds.seriesNumber != null && ds.seriesNumber.toString().includes(q)
+        ),
+      })),
+    }));
+  }, [tabs, seriesFilter]);
+
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
@@ -405,7 +423,7 @@ function PanelStudyBrowser({
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   return (
-    <>
+    <div className="bg-bkg-low flex min-h-0 flex-1 flex-col overflow-hidden">
       <>
         <PanelStudyBrowserHeader
           viewPresets={viewPresets}
@@ -413,15 +431,34 @@ function PanelStudyBrowser({
           actionIcons={actionIcons}
           updateActionIconValue={updateActionIconValue}
         />
+        <div className="relative bg-bkg-low px-2 py-1">
+          <input
+            type="text"
+            value={seriesFilter}
+            onChange={e => setSeriesFilter(e.target.value)}
+            placeholder="Rechercher une série..."
+            className="focus:ring-ring w-full rounded border-0 bg-[#3a3a3a] py-1.5 pr-8 pl-3 text-sm text-white placeholder-[#888] focus:ring-1 focus:outline-none"
+          />
+          {seriesFilter ? (
+            <button
+              type="button"
+              aria-label="Effacer la recherche"
+              onClick={() => setSeriesFilter('')}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-[#888] hover:text-white"
+            >
+              <Icons.Cancel className="h-3 w-3" />
+            </button>
+          ) : null}
+        </div>
         <Separator
           orientation="horizontal"
-          className="bg-black"
+          className="bg-bkg-low"
           thickness="2px"
         />
       </>
 
       <StudyBrowser
-        tabs={tabs}
+        tabs={filteredTabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
@@ -446,7 +483,7 @@ function PanelStudyBrowser({
           menuItemsKey: 'studyBrowser.studyMenuItems',
         })}
       />
-    </>
+    </div>
   );
 }
 

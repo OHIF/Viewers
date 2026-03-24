@@ -9,7 +9,7 @@ import SidePanelWithServices from '../Components/SidePanelWithServices';
 import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
 
-const resizableHandleClassName = 'mt-[1px] bg-black';
+const resizableHandleClassName = 'bg-bkg-low';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -158,7 +158,7 @@ function ViewerLayout({
         appConfig={appConfig}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
+        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-bkg-low"
         style={{ height: 'calc(100vh - 52px' }}
       >
         <React.Fragment>
