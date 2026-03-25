@@ -1,4 +1,13 @@
 import { Button, buttonVariants } from './Button';
+import {
+  SmartScrollbar,
+  useSmartScrollbarContext,
+  SmartScrollbarTrack,
+  SmartScrollbarFill,
+  SmartScrollbarIndicator,
+  SmartScrollbarEndpoints,
+} from './SmartScrollbar';
+import type { SmartScrollbarContextValue } from './SmartScrollbar';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
   Command,
@@ -269,5 +278,11 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
-  LayoutSelector
+  LayoutSelector,
+  SmartScrollbar,
+  useSmartScrollbarContext,
+  SmartScrollbarTrack,
+  SmartScrollbarFill,
+  SmartScrollbarIndicator,
+  SmartScrollbarEndpoints,
 };
