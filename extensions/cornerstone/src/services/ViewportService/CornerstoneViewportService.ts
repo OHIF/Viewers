@@ -870,16 +870,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
+    return viewport.setStack(imageIds, initialImageIndexToUse).then(async () => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations, viewportInfo);
 
       if (overlayProcessingResults?.length) {
-        overlayProcessingResults.forEach(overlayProcessingResult => {
+        for (const overlayProcessingResult of overlayProcessingResults) {
           if (overlayProcessingResult?.addOverlayFn) {
-            overlayProcessingResult.addOverlayFn();
+            await overlayProcessingResult.addOverlayFn();
           }
-        });
+        }
       }
 
       if (displayArea) {
@@ -1122,11 +1122,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     await viewport.setVolumes(volumeInputArray);
 
     if (overlayProcessingResults?.length) {
-      overlayProcessingResults.forEach(({ addOverlayFn }) => {
+      for (const { addOverlayFn } of overlayProcessingResults) {
         if (addOverlayFn) {
-          addOverlayFn();
+          await addOverlayFn();
         }
-      });
+      }
     }
     viewport.render();
 
@@ -1203,18 +1203,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         : csToolsEnums.SegmentationRepresentations.Contour;
 
     const { predecessorImageId } = displaySet;
-    segmentationService.addSegmentationRepresentation(viewport.id, {
-      segmentationId,
-      predecessorImageId,
-      type: representationType,
-      config: {
-        blendMode:
-          viewport?.getBlendMode?.() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
-      },
-    });
-
+    const segmentationRepresentationPromise = segmentationService.addSegmentationRepresentation(
+      viewport.id,
+      {
+        segmentationId,
+        predecessorImageId,
+        type: representationType,
+        config: {
+          blendMode:
+            viewport?.getBlendMode?.() === 1
+              ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+              : undefined,
+        },
+      }
+    );
     // store the segmentation presentation id in the viewport info
     this.storePresentation({ viewportId: viewport.id });
+    return segmentationRepresentationPromise;
   }
 
   // Todo: keepCamera is an interim solution until we have a better solution for
@@ -1272,7 +1277,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     if (viewport instanceof ECGViewport) {
-      return this._setEcgViewport(viewport as unknown as Types.IECGViewport, viewportData as StackViewportData);
+      return this._setEcgViewport(
+        viewport as unknown as Types.IECGViewport,
+        viewportData as StackViewportData
+      );
     }
 
     return this._setOtherViewport(
