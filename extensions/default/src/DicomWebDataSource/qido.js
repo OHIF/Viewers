@@ -52,6 +52,14 @@ function processResults(qidoStudies) {
       accession: getString(qidoStudy['00080050']) || '', // short string, probably a number?
       mrn: getString(qidoStudy['00100020']) || '', // medicalRecordNumber
       patientName: utils.formatPN(getName(qidoStudy['00100010'])) || '',
+      numSeries: (() => {
+        const v = getString(qidoStudy['00201206']);
+        if (v === '' || v === undefined) {
+          return null;
+        }
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      })(),
       instances: Number(getString(qidoStudy['00201208'])) || 0, // number
       description: getString(qidoStudy['00081030']) || '',
       modalities: getString(getModalities(qidoStudy['00080060'], qidoStudy['00080061'])) || '',
@@ -151,6 +159,8 @@ function mapParams(params, options = {}) {
   const commaSeparatedFields = [
     '00081030', // Study Description
     '00080060', // Modality
+    '00201206', // Number of Study Related Series
+    '00201208', // Number of Study Related Instances
     // Add more fields here if you want them in the result
   ].join(',');
 

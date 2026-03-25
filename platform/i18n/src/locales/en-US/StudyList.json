@@ -34,6 +34,7 @@
   "DSN": "DSN",
   "Statut": "Status",
   "Images": "Images",
+  "NumberOfSeries": "Number of series",
   "ActionsRapides": "Quick actions",
   "DateEtHeure": "Date and time",
   "DetailsInstances": "Instance details",

@@ -42,6 +42,7 @@
   "DSN": "DSN",
   "Statut": "Statut",
   "Images": "Images",
+  "NumberOfSeries": "Nombre de séries",
   "ActionsRapides": "Actions rapides",
   "DateEtHeure": "Date et heure",
   "DetailsInstances": "Détails des instances"

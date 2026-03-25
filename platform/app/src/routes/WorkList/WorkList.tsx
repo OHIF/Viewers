@@ -305,14 +305,15 @@ function WorkList({
   }, [debouncedFilterValues]);
 
   const studyListHeaderColumns = [
-    { label: t('StudyList:PatientName'), width: '16%' },
-    { label: t('StudyList:DSN'), width: '12%' },
-    { label: t('StudyList:DateEtHeure'), width: '14%' },
-    { label: t('StudyList:Description'), width: '20%' },
+    { label: t('StudyList:PatientName'), width: '15%' },
+    { label: t('StudyList:DSN'), width: '11%' },
+    { label: t('StudyList:DateEtHeure'), width: '13%' },
+    { label: t('StudyList:Description'), width: '18%' },
     { label: t('StudyList:Modality'), width: '8%' },
-    { label: t('StudyList:Statut'), width: '8%' },
+    { label: t('StudyList:NumberOfSeries'), width: '7%', sortable: false },
+    { label: t('StudyList:Statut'), width: '7%' },
     { label: t('StudyList:Images'), width: '6%', sortable: false },
-    { label: t('StudyList:ActionsRapides'), width: '10%', sortable: false },
+    { label: t('StudyList:ActionsRapides'), width: '9%', sortable: false },
   ];
 
   const getStudyViewerLink = study => {
@@ -373,6 +374,7 @@ function WorkList({
       studyInstanceUid,
       modalities,
       instances,
+      numSeries,
       description,
       mrn,
       patientName,
@@ -538,6 +540,12 @@ function WorkList({
           key: 'modality',
           content: renderModalityBadges(modalities),
           title: modalities,
+          gridCol: 2,
+        },
+        {
+          key: 'numSeries',
+          content: numSeries != null ? String(numSeries) : '—',
+          title: numSeries != null ? String(numSeries) : '',
           gridCol: 2,
         },
         {
