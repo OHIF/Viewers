@@ -109,7 +109,7 @@ test.skip('should overlay unhydrated segmentation on non-referenced then referen
 });
 
 // 3. Load segmentation FOR1 on viewport 0, delete (from menu), check able to add again
-test.skip('segmentation should still be available in drop down when deleted from viewport', async ({
+test('segmentation should still be available in drop down when deleted from viewport', async ({
   page,
   rightPanelPageObject,
   viewportPageObject,
