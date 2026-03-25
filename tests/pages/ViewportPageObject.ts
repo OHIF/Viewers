@@ -17,12 +17,33 @@ type NormalizedDragParams = {
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
 };
 
+export interface IOverlayText {
+  get windowLevel(): Locator;
+  get instanceNumber(): Locator;
+}
+
+function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
+  const locator = viewport.getByTestId(id);
+  return {
+    get windowLevel() {
+      return locator.getByTitle('Window Level');
+    },
+    get instanceNumber() {
+      return locator.getByTitle('Instance Number');
+    },
+  };
+}
+
 export interface IViewportPageObject {
   nthAnnotation(nth: number): {
     locator: Locator;
     click: () => Promise<void>;
     contextMenu: {
       open: () => Promise<void>;
+    };
+    text: {
+      locator: Locator;
+      click: () => Promise<void>;
     };
   };
   clickAt: (
@@ -42,10 +63,10 @@ export interface IViewportPageObject {
     bottomMid: Locator;
   };
   overlayText: {
-    topLeft: Locator;
-    topRight: Locator;
-    bottomLeft: Locator;
-    bottomRight: Locator;
+    topLeft: IOverlayText;
+    topRight: IOverlayText;
+    bottomLeft: IOverlayText;
+    bottomRight: IOverlayText;
   };
   overlayMenu: {
     dataOverlay: DataOverlayPageObject;
@@ -60,6 +81,17 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  navigationArrows: {
+    locator: Locator;
+    prev: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+    next: {
+      button: Locator;
+      click: () => Promise<void>;
+    };
+  };
 }
 
 export class ViewportPageObject {
@@ -75,6 +107,7 @@ export class ViewportPageObject {
     const page = this.page;
     const domOverlayPageObject = new DOMOverlayPageObject(page);
     const annotation = viewport.locator('g[data-annotation-uid]').nth(nth);
+    const textLocator = annotation.locator('text').first();
 
     return {
       locator: annotation,
@@ -84,6 +117,12 @@ export class ViewportPageObject {
       contextMenu: {
         open: async () => {
           await domOverlayPageObject.viewport.annotationContextMenu.open(annotation);
+        },
+      },
+      text: {
+        locator: textLocator,
+        click: async () => {
+          await textLocator.click({ force: true });
         },
       },
     };
@@ -100,10 +139,10 @@ export class ViewportPageObject {
 
   private getOverlayText(viewport: Locator) {
     return {
-      topLeft: viewport.getByTestId('viewport-overlay-top-left'),
-      topRight: viewport.getByTestId('viewport-overlay-top-right'),
-      bottomLeft: viewport.getByTestId('viewport-overlay-bottom-left'),
-      bottomRight: viewport.getByTestId('viewport-overlay-bottom-right'),
+      topLeft: overlayTextFactory(viewport, 'viewport-overlay-top-left'),
+      topRight: overlayTextFactory(viewport, 'viewport-overlay-top-right'),
+      bottomLeft: overlayTextFactory(viewport, 'viewport-overlay-bottom-left'),
+      bottomRight: overlayTextFactory(viewport, 'viewport-overlay-bottom-right'),
     };
   }
 
@@ -133,6 +172,27 @@ export class ViewportPageObject {
 
   private getSvg(viewport: Locator, innerElement?: SvgInnerElement) {
     return viewport.locator(`svg.svg-layer${innerElement ? ` ${innerElement}` : ''}`);
+  }
+
+  private getNavigationArrows(viewport: Locator) {
+    const container = viewport.getByTestId('viewport-action-arrows');
+    const prevButton = viewport.getByTestId('viewport-action-arrows-left');
+    const nextButton = viewport.getByTestId('viewport-action-arrows-right');
+    return {
+      locator: container,
+      prev: {
+        button: prevButton,
+        click: async () => {
+          await prevButton.click();
+        },
+      },
+      next: {
+        button: nextButton,
+        click: async () => {
+          await nextButton.click();
+        },
+      },
+    };
   }
 
   private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
@@ -178,6 +238,7 @@ export class ViewportPageObject {
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
       },
+      navigationArrows: this.getNavigationArrows(viewport),
     };
   }
 
