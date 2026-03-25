@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import usePatientInfo from '../../hooks/usePatientInfo';
-import { Icons } from '@ohif/ui-next';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@ohif/ui-next';
 
 export enum PatientInfoVisibility {
   VISIBLE = 'visible',
@@ -9,65 +9,88 @@ export enum PatientInfoVisibility {
   VISIBLE_READONLY = 'visibleReadOnly',
 }
 
-const formatWithEllipsis = (str, maxLength) => {
-  if (str?.length > maxLength) {
-    return str.substring(0, maxLength) + '...';
+const buildDemographicItems = (patientInfo: {
+  PatientID?: string;
+  PatientSex?: string;
+  PatientWeight?: string;
+  PatientSize?: string;
+  PatientAge?: string;
+}): string => {
+  const parts: string[] = [];
+  if (patientInfo.PatientID) {
+    parts.push(`ID: ${patientInfo.PatientID}`);
   }
-  return str;
+  if (patientInfo.PatientSex) {
+    parts.push(patientInfo.PatientSex);
+  }
+  if (patientInfo.PatientWeight) {
+    parts.push(`${patientInfo.PatientWeight} kg`);
+  }
+  if (patientInfo.PatientSize) {
+    parts.push(`${patientInfo.PatientSize} cm`);
+  }
+  if (patientInfo.PatientAge) {
+    parts.push(`${patientInfo.PatientAge} ans`);
+  }
+  return parts.join(' | ');
 };
 
-function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
-  const initialExpandedState =
-    appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE ||
-    appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;
-  const [expanded, setExpanded] = useState(initialExpandedState);
-  const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
+function HeaderPatientInfo({ appConfig }: withAppTypes) {
+  const { patientInfo, isMixedPatients } = usePatientInfo();
 
-  useEffect(() => {
-    if (isMixedPatients && expanded) {
-      setExpanded(false);
-    }
-  }, [isMixedPatients, expanded]);
+  if (isMixedPatients) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-primary text-[13px]">Patients multiples</span>
+      </div>
+    );
+  }
 
-  const handleOnClick = () => {
-    if (!isMixedPatients && appConfig.showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
-      setExpanded(!expanded);
-    }
-    window.dispatchEvent(new CustomEvent('pacsia:load-all-conversations'));
-  };
+  const studyDatePart = patientInfo.StudyDate ? `(${patientInfo.StudyDate})` : '';
+  const fullStudyDescription = (patientInfo.StudyDescription || '').trim();
+  const DESCRIPTION_MAX_LEN = 16;
+  const isStudyDescriptionTruncated = fullStudyDescription.length > DESCRIPTION_MAX_LEN;
+  const displayStudyDescription = isStudyDescriptionTruncated
+    ? `${fullStudyDescription.slice(0, DESCRIPTION_MAX_LEN)}...`
+    : fullStudyDescription;
 
-  const formattedPatientName = formatWithEllipsis(patientInfo.PatientName, 27);
-  const formattedPatientID = formatWithEllipsis(patientInfo.PatientID, 15);
+  const hasStudySubtitle = Boolean(fullStudyDescription || studyDatePart);
+
+  const demographicLine = buildDemographicItems(patientInfo);
 
   return (
-    <div
-      className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
-      onClick={handleOnClick}
-    >
-      {isMixedPatients ? (
-        <Icons.MultiplePatients className="text-primary" />
-      ) : (
-        <Icons.Patient className="text-primary" />
-      )}
-      <div className="flex flex-col justify-center">
-        {expanded ? (
+    <div className="flex flex-col gap-[4px]">
+      <div className="flex flex-wrap items-baseline gap-x-1.5 font-medium text-[18px] text-[#F9FAFB]">
+        {patientInfo.PatientName && <span>{patientInfo.PatientName}</span>}
+        {hasStudySubtitle && (
           <>
-            <div className="self-start text-[13px] font-bold text-white">
-              {formattedPatientName}
-            </div>
-            <div className="text-aqua-pale flex gap-2 text-[11px]">
-              <div>{formattedPatientID}</div>
-              <div>{patientInfo.PatientSex}</div>
-              <div>{patientInfo.PatientDOB}</div>
-            </div>
+            {patientInfo.PatientName && <span className="text-[#F9FAFB]">-</span>}
+            {fullStudyDescription &&
+              (isStudyDescriptionTruncated ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-default">{displayStudyDescription}</span>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    align="start"
+                    className="max-w-md"
+                  >
+                    {fullStudyDescription}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <span>{displayStudyDescription}</span>
+              ))}
+            {studyDatePart && (
+              <span>{fullStudyDescription ? ` ${studyDatePart}` : studyDatePart}</span>
+            )}
           </>
-        ) : (
-          <div className="text-primary self-center text-[13px]">
-            {isMixedPatients ? 'Multiple Patients' : 'Patient'}
-          </div>
         )}
       </div>
-      <Icons.ArrowLeft className={`text-primary ${expanded ? 'rotate-180' : ''}`} />
+      {demographicLine && (
+        <div className="font-medium text-[16px] text-[#D1D5DB]">{demographicLine}</div>
+      )}
     </div>
   );
 }

@@ -227,6 +227,7 @@ import OHIFLogoColorDarkBackground from './Sources/OHIFLogoColorDarkBackground';
 import Magnifier from './Sources/Magnifier';
 import LoadingOHIFMark from './Sources/LoadingOHIFMark';
 import ArrowLeftBold from './Sources/ArrowLeftBold';
+import ArrowReturnToWorkList from './Sources/ArrowReturnToWorkList';
 import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
@@ -581,6 +582,7 @@ export const Icons = {
   ArrowLeft: ChevronClosed,
   ArrowRight,
   ArrowLeftBold,
+  ArrowReturnToWorkList,
   ArrowRightBold: (props: IconProps) => {
     return (
       <ArrowLeftBold

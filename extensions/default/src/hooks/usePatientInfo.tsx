@@ -1,7 +1,23 @@
 import { useState, useEffect } from 'react';
+import moment from 'moment';
 import { utils, useSystem } from '@ohif/core';
 
 const { formatPN, formatDate } = utils;
+
+const SEX_MAP: Record<string, string> = { M: 'H', F: 'F', O: 'A' };
+
+const calculateAge = (birthDate: string, studyDate: string): string | null => {
+  if (!birthDate) {
+    return null;
+  }
+  const birth = moment(birthDate, 'YYYYMMDD', true);
+  if (!birth.isValid()) {
+    return null;
+  }
+  const ref = studyDate ? moment(studyDate, 'YYYYMMDD', true) : moment();
+  const age = (ref.isValid() ? ref : moment()).diff(birth, 'years');
+  return String(age);
+};
 
 function usePatientInfo() {
   const { servicesManager } = useSystem();
@@ -12,6 +28,11 @@ function usePatientInfo() {
     PatientID: '',
     PatientSex: '',
     PatientDOB: '',
+    PatientAge: '',
+    PatientWeight: '',
+    PatientSize: '',
+    StudyDate: '',
+    StudyDescription: '',
   });
   const [isMixedPatients, setIsMixedPatients] = useState(false);
 
@@ -40,11 +61,19 @@ function usePatientInfo() {
       return;
     }
 
+    const weightRaw = instance.PatientWeight;
+    const sizeRaw = instance.PatientSize;
+
     setPatientInfo({
       PatientID: instance.PatientID || null,
       PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
-      PatientSex: instance.PatientSex || null,
+      PatientSex: SEX_MAP[instance.PatientSex] ?? instance.PatientSex ?? null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
+      PatientAge: calculateAge(instance.PatientBirthDate, instance.StudyDate),
+      PatientWeight: weightRaw ? `${Math.round(parseFloat(weightRaw))}` : null,
+      PatientSize: sizeRaw ? `${Math.round(parseFloat(sizeRaw) * 100)}` : null,
+      StudyDate: instance.StudyDate ? formatDate(instance.StudyDate, 'DD/MM/YYYY') : null,
+      StudyDescription: instance.StudyDescription || null,
     });
     checkMixedPatients(instance.PatientID || null);
   };
