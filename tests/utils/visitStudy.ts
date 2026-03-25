@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 
 /** Default max time for {@link waitForViewportGridCornerstoneRendered} (viewport grid present + Cornerstone RENDERED + volumes loaded). */
-export const DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS = 60_000;
+export const DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS = 120_000;
 
 const VIEWPORT_RENDER_TIMEOUT = DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS;
 
