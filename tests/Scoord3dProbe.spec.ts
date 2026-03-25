@@ -1,15 +1,19 @@
+import { noGpu } from 'testEnv';
 import { checkForScreenshot, expect, screenShotPaths, test, visitStudyRendered } from './utils';
 
-test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
-  await visitStudyRendered(page, studyInstanceUID);
+test.describe('SCOORD3D probe', () => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
 
-  // Log the actual URL that was loaded
-  const currentUrl = page.url();
-  console.log(`✅ Actual page URL: ${currentUrl}\n`);
-});
+  test.beforeEach(async ({ page }) => {
+    const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
+    await visitStudyRendered(page, studyInstanceUID);
 
-test('should hydrate SCOORD3D probe measurements correctly.', async ({
+    // Log the actual URL that was loaded
+    const currentUrl = page.url();
+    console.log(`✅ Actual page URL: ${currentUrl}\n`);
+  });
+
+  test('should hydrate SCOORD3D probe measurements correctly.', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -124,9 +128,9 @@ test('should hydrate SCOORD3D probe measurements correctly.', async ({
     viewportPageObject.active.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
   );
-});
+  });
 
-test('should display SCOORD3D probe measurements correctly.', async ({
+  test('should display SCOORD3D probe measurements correctly.', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -191,4 +195,5 @@ test('should display SCOORD3D probe measurements correctly.', async ({
     // Probe measurements should be present, verify they're not other measurement types
     expect(measurementText).toBeTruthy();
   }
+  });
 });

@@ -1,4 +1,4 @@
-import { test, visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudyRendered } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID =

@@ -1,3 +1,4 @@
+import { noGpu } from 'testEnv';
 import {
   checkForScreenshot,
   expect,
@@ -6,18 +7,20 @@ import {
   visitStudyRendered,
 } from './utils';
 
-test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
+test.describe('SCOORD rectangle', () => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
 
-  await visitStudyRendered(page, studyInstanceUID);
+  test.beforeEach(async ({ page }) => {
+    const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
 
-  // Log the actual URL that was loaded
-  const currentUrl = page.url();
-  console.log(`✅ Actual page URL: ${currentUrl}\n`);
-});
+    await visitStudyRendered(page, studyInstanceUID);
 
-//
-test('should hydrate SCOORD rectangle measurements correctly', async ({
+    // Log the actual URL that was loaded
+    const currentUrl = page.url();
+    console.log(`✅ Actual page URL: ${currentUrl}\n`);
+  });
+
+  test('should hydrate SCOORD rectangle measurements correctly', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -129,9 +132,9 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
     viewportPageObject.active.pane,
     screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement
   );
-});
+  });
 
-test('should display SCOORD rectangle measurements correctly', async ({
+  test('should display SCOORD rectangle measurements correctly', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -196,4 +199,5 @@ test('should display SCOORD rectangle measurements correctly', async ({
     // Rectangle measurements should be present, verify they're not other measurement types
     expect(measurementText).toBeTruthy();
   }
+  });
 });
