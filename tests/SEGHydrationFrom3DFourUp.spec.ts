@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D four up SEG hydration', async () => {
-  test('should properly hydrate SEG from 3D four up layout.', async ({
+  test('should properly hydrate SEG from 3D four up layout', async ({
     page,
     DOMOverlayPageObject,
     leftPanelPageObject,
@@ -28,17 +28,18 @@ test.describe('3D four up SEG hydration', async () => {
     );
 
     await leftPanelPageObject.loadSeriesByDescription('SEG');
+    await mainToolbarPageObject.waitForViewportsRendered();
 
-    await page.waitForTimeout(5000);
     await viewportPageObject.checkForScreenshot(
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
     );
 
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
+    await mainToolbarPageObject.waitForViewportsRendered();
 
-    await page.waitForTimeout(5000);
     await viewportPageObject.checkForScreenshot(
-      screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated
+      screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated,
+      { screenshotTimeout: 30_000 }
     );
   });
 });

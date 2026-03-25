@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const webpack = require('webpack');
+const { getLocalCornerstoneAliases } = require('./localCornerstoneAliases.js');
 
 // ~~ PLUGINS
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -206,6 +207,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
+        ...getLocalCornerstoneAliases(path.join(__dirname, '..')),
         // Linked @cornerstonejs/polymorphic-segmentation workers resolve from realpath; pin WASM to workspace install
         '@icr/polyseg-wasm': POLYSEG_WASM_MODULE,
       },

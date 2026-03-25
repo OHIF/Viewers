@@ -4,6 +4,10 @@ import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
 import fs from 'fs';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { getLocalCornerstoneAliases } = require('./.webpack/localCornerstoneAliases.js');
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
 const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
@@ -96,6 +100,7 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
       '@routes': path.resolve(__dirname, './platform/app/src/routes'),
       '@state': path.resolve(__dirname, './platform/app/src/state'),
+      ...getLocalCornerstoneAliases(__dirname),
       '@icr/polyseg-wasm': POLYSEG_WASM_MODULE,
     },
   },

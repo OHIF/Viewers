@@ -22,6 +22,8 @@ type CheckForScreenshotProps = {
     height: number;
   };
   fullPage?: boolean;
+  /** Playwright `locator.screenshot({ timeout })` — default 5000. */
+  screenshotTimeout?: number;
   /** Runs before each screenshot capture (including each retry attempt). */
   beforeScreenshot?: () => Promise<void>;
 };
@@ -68,6 +70,7 @@ async function runScreenshotCheckAttempt(
     threshold: number;
     clip?: { x: number; y: number; width: number; height: number };
     fullPage: boolean;
+    screenshotTimeout: number;
     beforeScreenshot?: () => Promise<void>;
   },
   attemptIndex: number,
@@ -88,7 +91,7 @@ async function runScreenshotCheckAttempt(
     clip: options.clip,
     fullPage: options.fullPage,
     scale: 'css' as const,
-    timeout: 5000,
+    timeout: options.screenshotTimeout,
   };
 
   const actual = await locator.screenshot(screenshotOptions);
@@ -170,6 +173,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     threshold = 0.05,
     normalizedClip,
     fullPage = false,
+    screenshotTimeout = 5000,
     beforeScreenshot,
   } = props;
 
@@ -209,7 +213,14 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
       await runScreenshotCheckAttempt(
         locator,
         paths,
-        { maxDiffPixelRatio, threshold, clip, fullPage, beforeScreenshot },
+        {
+          maxDiffPixelRatio,
+          threshold,
+          clip,
+          fullPage,
+          screenshotTimeout,
+          beforeScreenshot,
+        },
         i,
         attempts
       );

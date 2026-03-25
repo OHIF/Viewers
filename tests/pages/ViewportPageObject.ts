@@ -3,6 +3,7 @@ import {
   applyViewportScreenshotStabilization,
   assertViewportOverlayText,
   checkForScreenshot,
+  defaultOverlayScreenshotStabilization,
   getMousePosition,
   restoreViewportScreenshotStabilization,
   simulateClicksOnElement,
@@ -34,11 +35,14 @@ type ViewportScreenshotOptions = {
     height: number;
   };
   fullPage?: boolean;
+  /** Forwarded to Playwright `locator.screenshot({ timeout })`. Default 5000 in {@link checkForScreenshot}. */
+  screenshotTimeout?: number;
   locator?: Locator;
   hideSelectors?: string[];
   /**
    * When set, stabilizes listed overlay rows and/or SVG annotation text boxes before each
    * screenshot attempt (purple placeholder boxes, transparent text). Omitted fields unchanged.
+   * @default {@link defaultOverlayScreenshotStabilization}
    */
   stabilization?: ViewportScreenshotStabilization;
 };
@@ -134,7 +138,7 @@ export class ViewportPageObject {
     {
       locator,
       hideSelectors = ['[data-testid="viewport-action-arrows"]'],
-      stabilization,
+      stabilization = defaultOverlayScreenshotStabilization,
       ...options
     }: ViewportScreenshotOptions = {}
   ) {

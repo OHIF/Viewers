@@ -1,4 +1,9 @@
-import { type ViewportScreenshotStabilization, screenShotPaths, test, visitStudy } from './utils';
+import {
+  type ViewportScreenshotStabilization,
+  screenShotPaths,
+  test,
+  visitStudyRendered,
+} from './utils';
 
 /** Stabilizes overlays and the arrow text box; `annotationText` matches what was just saved or renamed. */
 function arrowAnnotateStabilization(annotationText: string): ViewportScreenshotStabilization {
@@ -13,10 +18,10 @@ function arrowAnnotateStabilization(annotationText: string): ViewportScreenshotS
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
-  await visitStudy(page, studyInstanceUID);
+  await visitStudyRendered(page, studyInstanceUID);
 });
 
-test('should display the arrow tool and allow free-form text to be entered shouldUpdateThis', async ({
+test('should display the arrow tool and allow free-form text to be entered', async ({
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,

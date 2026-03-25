@@ -1,6 +1,9 @@
 import { Page } from '@playwright/test';
 
-const VIEWPORT_RENDER_TIMEOUT = 60_000;
+/** Default max time for {@link waitForViewportGridCornerstoneRendered} (viewport grid present + Cornerstone RENDERED + volumes loaded). */
+export const DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS = 60_000;
+
+const VIEWPORT_RENDER_TIMEOUT = DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS;
 
 export type VisitStudyOptions = {
   /**
@@ -81,31 +84,22 @@ export async function visitStudy(
   }
 }
 
-/**
- * Visit the study and wait for cornerstone viewports to be rendered.
- * For volume viewports, also waits until associated volumes are fully loaded.
- * @param page - The page to interact with
- * @param studyInstanceUID - The study instance UID of the study to visit
- * @param options - options for mode, delay, and datasources
- * @param delay - The delay to wait after visiting the study
- * @param datasources - the data source to load the study from
- */
-export async function visitStudyRendered(
-  page: Page,
-  studyInstanceUID: string,
-  options: {
-    mode?: string;
-    delay?: number;
-    datasources?: string;
-    loadTimeout?: number;
-  } = {}
-) {
-  const { mode = 'viewer', delay, datasources = 'ohif', loadTimeout = 60000 } = options;
+export type WaitForViewportGridCornerstoneRenderedOptions = {
+  /** @default {@link DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS} */
+  timeout?: number;
+};
 
-  const url = `/${mode}/${datasources}?StudyInstanceUIDs=${studyInstanceUID}`;
-  await page.goto(url);
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForLoadState('networkidle');
+/**
+ * Poll until `[data-cy="viewport-grid"]` exists and every viewport in that grid reports
+ * Cornerstone `ViewportStatus.RENDERED`, and referenced volumes in cache are loaded.
+ * Same condition as the post-navigation gate in {@link visitStudyRendered}; use after layout
+ * or hydration actions so screenshots target a stable grid.
+ */
+export async function waitForViewportGridCornerstoneRendered(
+  page: Page,
+  options: WaitForViewportGridCornerstoneRenderedOptions = {}
+): Promise<void> {
+  const timeout = options.timeout ?? DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS;
 
   await page.waitForFunction(
     () => {
@@ -127,9 +121,14 @@ export async function visitStudyRendered(
       );
 
       const allEnabledElements = cornerstone.getEnabledElements();
-      const enabledElements = allEnabledElements.filter(enabledElement => {
-        const element = enabledElement?.element;
-        const viewportId = enabledElement?.viewportId ?? enabledElement?.viewport?.id;
+      const enabledElements = allEnabledElements.filter((enabledElement: unknown) => {
+        const ee = enabledElement as {
+          element?: unknown;
+          viewportId?: string;
+          viewport?: { id?: string };
+        };
+        const element = ee?.element;
+        const viewportId = ee?.viewportId ?? ee?.viewport?.id;
         const isElementInGrid = element instanceof HTMLElement && viewportGrid.contains(element);
         const isViewportIdInGrid =
           typeof viewportId === 'string' && gridViewportIds.has(viewportId);
@@ -137,7 +136,10 @@ export async function visitStudyRendered(
         return isElementInGrid || isViewportIdInGrid;
       });
       const viewports = enabledElements
-        .map(enabledElement => enabledElement?.viewport)
+        .map(
+          (enabledElement: unknown) =>
+            (enabledElement as { viewport?: { viewportStatus?: string } })?.viewport
+        )
         .filter(Boolean);
 
       if (viewports.length < 1) {
@@ -170,8 +172,42 @@ export async function visitStudyRendered(
       return true;
     },
     undefined,
-    { timeout: loadTimeout }
+    { timeout }
   );
+}
+
+/**
+ * Visit the study and wait for cornerstone viewports to be rendered.
+ * For volume viewports, also waits until associated volumes are fully loaded.
+ * @param page - The page to interact with
+ * @param studyInstanceUID - The study instance UID of the study to visit
+ * @param options - options for mode, delay, and datasources
+ * @param delay - The delay to wait after visiting the study
+ * @param datasources - the data source to load the study from
+ */
+export async function visitStudyRendered(
+  page: Page,
+  studyInstanceUID: string,
+  options: {
+    mode?: string;
+    delay?: number;
+    datasources?: string;
+    loadTimeout?: number;
+  } = {}
+) {
+  const {
+    mode = 'viewer',
+    delay,
+    datasources = 'ohif',
+    loadTimeout = DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS,
+  } = options;
+
+  const url = `/${mode}/${datasources}?StudyInstanceUIDs=${studyInstanceUID}`;
+  await page.goto(url);
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState('networkidle');
+
+  await waitForViewportGridCornerstoneRendered(page, { timeout: loadTimeout });
 
   if (delay != null) {
     await page.waitForTimeout(delay);

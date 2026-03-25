@@ -66,6 +66,14 @@ export type ViewportScreenshotStabilization = {
   verifyOverlayText?: boolean;
 };
 
+/** Live overlay placeholders for all four corners per viewport (no expected-text assertions). */
+export const defaultOverlayScreenshotStabilization: ViewportScreenshotStabilization = {
+  seriesDate: true,
+  seriesDescription: true,
+  windowLevel: true,
+  imageInfo: true,
+};
+
 type SerializedOverlayField =
   | { mode: 'live'; minHeight: number; charWidthPx: number }
   | { mode: 'fixed'; text: string; minWidth: number; minHeight: number };

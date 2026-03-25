@@ -1,21 +1,19 @@
-import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  screenShotPaths,
+  test,
+  visitStudyRendered,
+} from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.840.113654.2.55.242841386983064378162007136685545369722';
 
-  await visitStudy(page, studyInstanceUID);
+  await visitStudyRendered(page, studyInstanceUID);
 
   // Log the actual URL that was loaded
   const currentUrl = page.url();
   console.log(`✅ Actual page URL: ${currentUrl}\n`);
-
-  // Remove any webpack dev server overlays that might be blocking interactions
-  await page.evaluate(() => {
-    const overlay = document.getElementById('webpack-dev-server-client-overlay');
-    if (overlay) {
-      overlay.remove();
-    }
-  });
 });
 
 //

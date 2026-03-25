@@ -69,6 +69,25 @@ function volumeIdPrefixesMatch(a: string[], bPrefixLen: number, b: string[]): bo
   return true;
 }
 
+/**
+ * Only treat base volumes as identical (skip setVolumes) when the enabled viewport
+ * already matches the desired OHIF viewport type. Otherwise stack → MPR (same volumeId)
+ * can incorrectly skip rebuilding the volume viewport.
+ */
+function viewportMatchesDesiredVolumePresentation(
+  viewport: Types.IViewport,
+  viewportInfo: ViewportInfo
+): boolean {
+  const desiredType = viewportInfo.getViewportType();
+  if (viewport.type !== desiredType) {
+    return false;
+  }
+  return (
+    desiredType === csEnums.ViewportType.ORTHOGRAPHIC ||
+    desiredType === csEnums.ViewportType.VOLUME_3D
+  );
+}
+
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
 export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
@@ -1152,7 +1171,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         singleBaseViewport &&
         nextBaseVolumeIds.length &&
         existingVolumeIds.length >= nextBaseVolumeIds.length &&
-        volumeIdPrefixesMatch(existingVolumeIds, nextBaseVolumeIds.length, nextBaseVolumeIds)
+        volumeIdPrefixesMatch(existingVolumeIds, nextBaseVolumeIds.length, nextBaseVolumeIds) &&
+        viewportMatchesDesiredVolumePresentation(viewport, viewportInfo)
       ) {
         // Same primary volume already loaded (e.g. labelmap / extra actors after it) — avoid
         // setVolumes(), which tears down all actors and blanks MPR during SEG hydrate.
@@ -1191,6 +1211,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     this.setPresentations(viewport.id, presentations);
+    // Presentations apply segmentation (hydrated labelmap etc.) after the render above — redraw so
+    // every orthographic/3D tile shows the updated scene (fixes MPR siblings blank after SEG hydrate).
+    viewport.render();
 
     if (!presentations.positionPresentation && !skippedIdenticalBaseVolumes) {
       const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);

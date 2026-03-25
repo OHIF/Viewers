@@ -7,14 +7,6 @@ test.beforeEach(async ({ page }) => {
   // Log the actual URL that was loaded
   const currentUrl = page.url();
   console.log(`✅ Actual page URL: ${currentUrl}\n`);
-
-  // Remove any webpack dev server overlays that might be blocking interactions
-  await page.evaluate(() => {
-    const overlay = document.getElementById('webpack-dev-server-client-overlay');
-    if (overlay) {
-      overlay.remove();
-    }
-  });
 });
 
 test('should hydrate SCOORD3D probe measurements correctly.', async ({
