@@ -10,9 +10,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 // >>>>> Test Summaries
-// 1. Load RTStruct on referenced DS (works on selected DS, rest breaks - on panel but not visible)
+// 1. Load RTStruct on referenced DS (works on selected DS, does not visibly load on other viewports - on panel but not visible)
 
-// 2. Load RTStruct on unreferenced DS (works on selected DS, rest breaks - on panel but not visible)
+// 2. Load RTStruct on unreferenced DS (works on selected DS, does not visibly load on other viewports - on panel but not visible)
 //    -> Skipping for now
 
 // 3. Load RTFoR1 on viewport 0, check doesn't show up on overlay, delete (from menu), check able to add again
