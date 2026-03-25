@@ -1,3 +1,4 @@
+import { noGpu } from 'testEnv';
 import {
   attemptAction,
   reduce3DViewportSize,
@@ -12,7 +13,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('3D primary Test', async () => {
-  test('should render 3D primary correctly.', async ({
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
+
+  test('should render 3D primary correctly', async ({
     page,
     mainToolbarPageObject,
     viewportPageObject,

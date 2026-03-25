@@ -1,11 +1,15 @@
+import { noGpu } from 'testEnv';
 import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 
-test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
-  await visitStudy(page, studyInstanceUID);
-});
+test.describe('RT hydration 2', () => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
 
-test('should hydrate RT reports correctly', async ({
+  test.beforeEach(async ({ page }) => {
+    const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
+    await visitStudy(page, studyInstanceUID);
+  });
+
+  test('should hydrate RT reports correctly', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -40,4 +44,5 @@ test('should hydrate RT reports correctly', async ({
   // should preserve zoom and pan and scroll position after hydration
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
   await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
+  });
 });

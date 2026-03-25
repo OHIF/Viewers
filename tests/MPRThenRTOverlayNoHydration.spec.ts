@@ -1,12 +1,16 @@
+import { noGpu } from 'testEnv';
 import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
-test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
-  await visitStudy(page, studyInstanceUID);
-});
+test.describe('MPR then RT overlay no hydration', () => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
 
-test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
+  test.beforeEach(async ({ page }) => {
+    const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
+    await visitStudy(page, studyInstanceUID);
+  });
+
+  test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay menu', async ({
   page,
   mainToolbarPageObject,
   viewportPageObject,
@@ -39,5 +43,6 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
     page,
     screenshotPath: screenShotPaths.mprThenRTOverlayNoHydration.mprPostRTOverlayNoHydration,
     normalizedClip: { x: 0, y: 0, width: 1.0, height: 0.75 }, // clip to avoid any popups concerning surface creation and clipping
+  });
   });
 });

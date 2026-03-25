@@ -1,12 +1,16 @@
+import { linuxText } from 'testEnv';
 import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
 import { press } from './utils/keyboardUtils';
 
-test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
-  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
-});
+test.describe('Label map seg locking', () => {
+  test.skip(linuxText, 'Overlay text / rasterization differs in this CI environment');
 
-test('should prevent editing of label map segmentations when panelSegmentation.disableEditing is true', async ({
+  test.beforeEach(async ({ page }) => {
+    const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
+    await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
+  });
+
+  test('should prevent editing of label map segmentations when panelSegmentation.disableEditing is true', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -59,9 +63,9 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   });
 
   await checkForScreenshot(page, page, screenShotPaths.labelMapSegLocking.globalLockedSegPostEdit);
-});
+  });
 
-test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
+  test('should allow editing of label map segmentations when panelSegmentation.disableEditing is false', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -118,4 +122,5 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
     page,
     screenShotPaths.labelMapSegLocking.globalUnlockedSegPostEdit
   );
+  });
 });
