@@ -17,6 +17,23 @@ type NormalizedDragParams = {
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
 };
 
+export interface IOverlayText {
+  get windowLevel(): Locator;
+  get instanceNumber(): Locator;
+}
+
+function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
+  const locator = viewport.getByTestId(id);
+  return {
+    get windowLevel() {
+      return locator.getByTitle('Window Level');
+    },
+    get instanceNumber() {
+      return locator.getByTitle('Instance Number');
+    },
+  };
+}
+
 export interface IViewportPageObject {
   nthAnnotation(nth: number): {
     locator: Locator;
@@ -46,10 +63,10 @@ export interface IViewportPageObject {
     bottomMid: Locator;
   };
   overlayText: {
-    topLeft: Locator;
-    topRight: Locator;
-    bottomLeft: Locator;
-    bottomRight: Locator;
+    topLeft: IOverlayText;
+    topRight: IOverlayText;
+    bottomLeft: IOverlayText;
+    bottomRight: IOverlayText;
   };
   overlayMenu: {
     dataOverlay: DataOverlayPageObject;
@@ -122,10 +139,10 @@ export class ViewportPageObject {
 
   private getOverlayText(viewport: Locator) {
     return {
-      topLeft: viewport.getByTestId('viewport-overlay-top-left'),
-      topRight: viewport.getByTestId('viewport-overlay-top-right'),
-      bottomLeft: viewport.getByTestId('viewport-overlay-bottom-left'),
-      bottomRight: viewport.getByTestId('viewport-overlay-bottom-right'),
+      topLeft: overlayTextFactory(viewport, 'viewport-overlay-top-left'),
+      topRight: overlayTextFactory(viewport, 'viewport-overlay-top-right'),
+      bottomLeft: overlayTextFactory(viewport, 'viewport-overlay-bottom-left'),
+      bottomRight: overlayTextFactory(viewport, 'viewport-overlay-bottom-right'),
     };
   }
 
