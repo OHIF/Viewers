@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService, useViewportRef } from '@ohif/core';
-import { useViewportDialog } from '@ohif/ui-next';
+import { useViewportDialog, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
@@ -83,6 +83,15 @@ const OHIFCornerstoneViewport = React.memo(
     const [enabledVPElement, setEnabledVPElement] = useState(null);
     const [isIAPanelOpen, setIsIAPanelOpen] = useState(() => !!(window as any).__pacsiaIAPanelOpen);
     const [isCapturing, setIsCapturing] = useState(false);
+    const [isAddingToGallery, setIsAddingToGallery] = useState(false);
+
+    const appConfig = typeof window !== 'undefined' ? (window as any).config : {};
+    const proxyPath = appConfig?.ekkoPacsApi?.proxyPath ?? '';
+    const baseUrlConfig = appConfig?.ekkoPacsApi?.baseUrl ?? '';
+    const galleryBaseUrl =
+      baseUrlConfig ||
+      (proxyPath && typeof window !== 'undefined' ? window.location.origin + proxyPath : '');
+    const galleryExternalId = displaySets?.[0]?.StudyInstanceUID ?? null;
     const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
     const viewportRef = useViewportRef(viewportId);
 
@@ -328,6 +337,7 @@ const OHIFCornerstoneViewport = React.memo(
           backgroundColor: '#000',
           useCORS: true,
           scale: 1,
+          ignoreElements: el => el.classList.contains('viewport-capture-exclude'),
         }).then(canvas => {
           canvas.toBlob(blob => {
             setIsCapturing(false);
@@ -340,6 +350,43 @@ const OHIFCornerstoneViewport = React.memo(
         });
       }, 50);
     }, [isCapturing, viewportId]);
+
+    const handleAddToGallery = useCallback(async () => {
+      if (isAddingToGallery || !galleryBaseUrl || !galleryExternalId) return;
+      const wrapperEl = elementRef.current?.closest('.viewport-wrapper') as HTMLElement | null;
+      if (!wrapperEl) return;
+      setIsAddingToGallery(true);
+      try {
+        const canvas = await html2canvas(wrapperEl, {
+          backgroundColor: '#000',
+          useCORS: true,
+          scale: 1,
+          ignoreElements: el => el.classList.contains('viewport-capture-exclude'),
+        });
+        const blob = await new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob(b => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/png');
+        });
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve((reader.result as string).split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        const studyRes = await fetch(
+          `${galleryBaseUrl}/api/study/external/${encodeURIComponent(galleryExternalId)}`
+        );
+        const study = await studyRes.json();
+        const filename = `viewport-${viewportId}-${Date.now()}.png`;
+        await fetch(`${galleryBaseUrl}/api/study/${study.id}/image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename, base64 }),
+        });
+        window.dispatchEvent(new CustomEvent('pacsia:gallery-refresh'));
+      } finally {
+        setIsAddingToGallery(false);
+      }
+    }, [isAddingToGallery, galleryBaseUrl, galleryExternalId, viewportId]);
 
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
@@ -375,34 +422,64 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId={viewportId}
             servicesManager={servicesManager}
           />
-          {isIAPanelOpen && (
-            <button
-              type="button"
-              onClick={handleCaptureForIA}
-              disabled={isCapturing}
-              className="absolute bottom-10 right-8 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-all hover:bg-blue-500 hover:scale-110"
-              title="Envoyer cette image au chat IA"
-              style={{ pointerEvents: 'auto' }}
-            >
-              {isCapturing ? (
-                <svg className="h-5 w-5 animate-spin" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" strokeOpacity="0.25" />
-                  <path d="M10 1a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" viewBox="0 0 22 18" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="5" width="18" height="12" rx="2.5" strokeWidth="1.5" />
-                    <circle cx="8" cy="10.5" r="1.4" fill="currentColor" stroke="none" />
-                    <circle cx="14" cy="10.5" r="1.4" fill="currentColor" stroke="none" />
-                    <path d="M11 5V2.5" strokeWidth="1.5" />
-                    <circle cx="11" cy="1.5" r="1.2" fill="currentColor" stroke="none" />
-                    <path d="M8.5 14.5h5" strokeWidth="1.3" />
-                  </g>
-                </svg>
-              )}
-            </button>
-          )}
+          <div
+            className="viewport-capture-exclude absolute bottom-10 right-8 z-50 flex flex-row-reverse items-center gap-2"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={handleCaptureForIA}
+                  disabled={isCapturing}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-all hover:bg-blue-500 hover:scale-110 disabled:opacity-60"
+                >
+                  {isCapturing ? (
+                    <svg className="h-5 w-5 animate-spin" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" strokeOpacity="0.25" />
+                      <path d="M10 1a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5" viewBox="0 0 22 18" xmlns="http://www.w3.org/2000/svg">
+                      <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="5" width="18" height="12" rx="2.5" strokeWidth="1.5" />
+                        <circle cx="8" cy="10.5" r="1.4" fill="currentColor" stroke="none" />
+                        <circle cx="14" cy="10.5" r="1.4" fill="currentColor" stroke="none" />
+                        <path d="M11 5V2.5" strokeWidth="1.5" />
+                        <circle cx="11" cy="1.5" r="1.2" fill="currentColor" stroke="none" />
+                        <path d="M8.5 14.5h5" strokeWidth="1.3" />
+                      </g>
+                    </svg>
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top">Envoyer cette image au chat IA</TooltipContent>
+            </Tooltip>
+            {galleryBaseUrl && galleryExternalId && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleAddToGallery}
+                    disabled={isAddingToGallery}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-all hover:bg-blue-500 hover:scale-110 disabled:opacity-60"
+                  >
+                    {isAddingToGallery ? (
+                      <svg className="h-5 w-5 animate-spin" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2" strokeOpacity="0.25" />
+                        <path d="M10 1a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    ) : (
+                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
+                        <path d="M480-480ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h320v80H200v560h560v-320h80v320q0 33-23.5 56.5T760-120H200Zm40-160h480L570-480 450-320l-90-120-120 160Zm440-320v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Z" />
+                      </svg>
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top">Ajouter cette image à la photothèque</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">

@@ -240,6 +240,13 @@ import StatusAlert from './Sources/StatusAlert';
 import Undo from './Sources/Undo';
 import TabContours from './Sources/TabContours';
 import TabGallery from './Sources/TabGallery';
+import GalleryImages from './Sources/GalleryImages';
+import AddImage from './Sources/AddImage';
+import DownloadImage from './Sources/DownloadImage';
+import EditImage from './Sources/EditImage';
+import DeleteImage from './Sources/DeleteImage';
+import Fullscreen from './Sources/Fullscreen';
+import FullscreenExit from './Sources/FullscreenExit';
 import IllustrationNotFound from './Sources/IllustrationNotFound';
 //
 //
@@ -704,6 +711,20 @@ export const Icons = {
   'tab-roi-threshold': (props: IconProps) => TabRoiThreshold(props),
   'tab-gallery': (props: IconProps) => TabGallery(props),
   TabGallery: (props: IconProps) => TabGallery(props),
+  GalleryImages: (props: IconProps) => GalleryImages(props),
+  'gallery-images': (props: IconProps) => GalleryImages(props),
+  AddImage: (props: IconProps) => AddImage(props),
+  'add-image': (props: IconProps) => AddImage(props),
+  DownloadImage: (props: IconProps) => DownloadImage(props),
+  'download-image': (props: IconProps) => DownloadImage(props),
+  EditImage: (props: IconProps) => EditImage(props),
+  'edit-image': (props: IconProps) => EditImage(props),
+  DeleteImage: (props: IconProps) => DeleteImage(props),
+  'delete-image': (props: IconProps) => DeleteImage(props),
+  Fullscreen: (props: IconProps) => Fullscreen(props),
+  'fullscreen': (props: IconProps) => Fullscreen(props),
+  FullscreenExit: (props: IconProps) => FullscreenExit(props),
+  'fullscreen-exit': (props: IconProps) => FullscreenExit(props),
   'icon-mpr': (props: IconProps) => IconMPR(props),
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),
