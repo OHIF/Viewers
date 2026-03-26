@@ -1,7 +1,7 @@
 import { useSmartScrollbarContext } from './SmartScrollbar';
 import { getIndicatorLayout } from './utils';
 
-// ── Baked Design 27 constants ──────────────────────────────────
+// ── Indicator dimensions and colors ─────────────────────────────
 const INDICATOR_SIZE = 8;
 const BORDER_WIDTH = 1;
 const INDICATOR_COLOR = 'hsl(var(--foreground) / 0.9)';

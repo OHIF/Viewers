@@ -6,11 +6,36 @@ import {
   useRef,
   useCallback,
   useId,
+  Children,
+  isValidElement,
   type RefObject,
 } from 'react';
 import { getIndicatorLayout } from './utils';
+import { SmartScrollbarIndicator } from './SmartScrollbarIndicator';
 
-// ── Baked Design 27 constants ──────────────────────────────────
+// ── Child validation ────────────────────────────────────────────
+let _warnedNoIndicator = false;
+
+function validateChildren(children: React.ReactNode): void {
+  if (process.env.NODE_ENV === 'production') return;
+
+  let hasIndicator = false;
+
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child)) return;
+    if (child.type === SmartScrollbarIndicator) hasIndicator = true;
+  });
+
+  if (!hasIndicator && !_warnedNoIndicator) {
+    _warnedNoIndicator = true;
+    console.warn(
+      'SmartScrollbar: no <SmartScrollbarIndicator> found. ' +
+      'The user will not see their current scroll position.'
+    );
+  }
+}
+
+// ── Layout and timing constants ─────────────────────────────────
 const TRACK_WIDTH = 8;
 const RESTING_WIDTH = 4;
 const FILL_PADDING = 3;
@@ -60,6 +85,8 @@ export function SmartScrollbar({
   className,
   children,
 }: SmartScrollbarProps) {
+  validateChildren(children);
+
   const svgIdPrefix = useId();
 
   // ── ResizeObserver for trackHeight ───────────────────────────

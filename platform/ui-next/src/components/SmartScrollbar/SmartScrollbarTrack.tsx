@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { useSmartScrollbarContext } from './SmartScrollbar';
 
-// ── Baked Design 27 constants ──────────────────────────────────
+// ── Dot-grid pattern constants ──────────────────────────────────
 const DOT_SIZE = 2;
 const DOT_GAP = 4;
 const DOT_STEP = DOT_SIZE + DOT_GAP; // 6px

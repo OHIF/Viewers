@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { useSmartScrollbarContext } from './SmartScrollbar';
 
-// ── Baked Design 27 constants ──────────────────────────────────
+// ── Endpoint cap dimensions and color ───────────────────────────
 const CAP_SIZE = 4;
 const CAP_HEIGHT = CAP_SIZE / 2 + 1; // 3
 const CAP_COLOR = 'hsl(var(--neutral) / 1.0)';
