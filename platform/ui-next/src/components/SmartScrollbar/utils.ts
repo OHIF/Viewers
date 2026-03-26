@@ -38,8 +38,10 @@ export function getContiguousRuns(
     runs[runs.length - 1].isLast = true;
   }
 
-  // Filter to valid range
-  return runs.filter(r => r.start >= 0 && r.start < totalSlices);
+  // Filter to valid range and clamp lengths that extend past totalSlices
+  return runs
+    .filter(r => r.start >= 0 && r.start < totalSlices)
+    .map(r => ({ ...r, length: Math.min(r.length, totalSlices - r.start) }));
 }
 
 /**
