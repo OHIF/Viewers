@@ -60,11 +60,11 @@ export class RightPanelPageObject {
         await this.page.getByTestId('Rename').click();
         await this.DOMOverlayPageObject.dialog.input.fillAndSave(text);
       },
-      cancelRename: async (text?: string) => {
+      cancelRename: async (newName?: string) => {
         await actionsButton.click();
         await this.page.getByTestId('Rename').click();
-        if (text) {
-          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(text);
+        if (newName) {
+          await this.DOMOverlayPageObject.dialog.input.fillAndCancel(newName);
         } else {
           await this.DOMOverlayPageObject.dialog.input.cancel();
         }
@@ -174,8 +174,11 @@ export class RightPanelPageObject {
     };
   }
 
-  private getSegmentsVisibilityToggle(type: string) {
-    const button = this.page.getByTestId(`all-segments-visibility-toggle-${type}`);
+  private getSegmentsVisibilityToggle(type?: string) {
+    const testId = type
+      ? `all-segments-visibility-toggle-${type}`
+      : 'all-segments-visibility-toggle';
+    const button = this.page.getByTestId(testId);
     return {
       button,
       click: async () => {
@@ -199,10 +202,6 @@ export class RightPanelPageObject {
       locator: page.getByRole('button', { name: 'Segmentations' }),
       nthSegment(index: number) {
         return getSegmentByIdx(index);
-      },
-      selectNthSegment: async (index: number) => {
-        const segment = getSegmentByIdx(index);
-        await segment.title.click();
       },
       segmentByText(text: string) {
         return getSegmentByText(text);

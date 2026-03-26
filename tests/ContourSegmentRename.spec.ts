@@ -33,7 +33,7 @@ test('should rename contour segments', async ({
   await expect(segment1.title).toHaveText('Seg-2 (updated) / v2.0 #$^&&@*!!');
 });
 
-test('should not rename when dialog is cancelled without filling', async ({
+test('should not rename segment when dialog is cancelled without filling', async ({
   rightPanelPageObject,
 }) => {
   const segment = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
@@ -44,7 +44,7 @@ test('should not rename when dialog is cancelled without filling', async ({
   await expect(segment.title).toHaveText(defautSegment0Name);
 });
 
-test('should not rename when dialog is cancelled after filling', async ({
+test('should not rename segment when dialog is cancelled after filling', async ({
   rightPanelPageObject,
 }) => {
   const segment = rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0);
