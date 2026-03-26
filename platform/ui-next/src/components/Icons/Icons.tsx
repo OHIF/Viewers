@@ -239,6 +239,7 @@ import ReduceMenu from './Sources/ReduceMenu';
 import StatusAlert from './Sources/StatusAlert';
 import Undo from './Sources/Undo';
 import TabContours from './Sources/TabContours';
+import TabGallery from './Sources/TabGallery';
 import IllustrationNotFound from './Sources/IllustrationNotFound';
 //
 //
@@ -701,6 +702,8 @@ export const Icons = {
   'tab-4d': (props: IconProps) => Tab4D(props),
   'tab-patient-info': (props: IconProps) => TabPatientInfo(props),
   'tab-roi-threshold': (props: IconProps) => TabRoiThreshold(props),
+  'tab-gallery': (props: IconProps) => TabGallery(props),
+  TabGallery: (props: IconProps) => TabGallery(props),
   'icon-mpr': (props: IconProps) => IconMPR(props),
   'power-off': (props: IconProps) => PowerOff(props),
   'icon-multiple-patients': (props: IconProps) => MultiplePatients(props),

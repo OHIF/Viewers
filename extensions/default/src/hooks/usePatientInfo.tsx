@@ -4,7 +4,7 @@ import { utils, useSystem } from '@ohif/core';
 
 const { formatPN, formatDate } = utils;
 
-const SEX_MAP: Record<string, string> = { M: 'H', F: 'F', O: 'A' };
+const SEX_MAP: Record<string, string> = { M: 'Homme', F: 'Femme', O: 'Autre' };
 
 const calculateAge = (birthDate: string, studyDate: string): string | null => {
   if (!birthDate) {

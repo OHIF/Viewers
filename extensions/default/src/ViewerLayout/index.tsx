@@ -150,7 +150,7 @@ function ViewerLayout({
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
-    <div>
+    <div className="flex h-screen flex-col">
       <ViewerHeader
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
@@ -158,8 +158,7 @@ function ViewerLayout({
         appConfig={appConfig}
       />
       <div
-        className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-bkg-low"
-        style={{ height: 'calc(100vh - 52px' }}
+        className="relative flex min-h-0 flex-1 w-full flex-row flex-nowrap items-stretch overflow-hidden bg-bkg-low"
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}

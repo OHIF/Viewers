@@ -5,6 +5,7 @@ import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
 import PanelAssistantIA from './panels/PanelAssistantIA';
+import PanelGallery from './panels/PanelGallery';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import i18n from '@ohif/i18n';
 
@@ -83,6 +84,13 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconLabel: 'Assistant',
       label: 'Assistant',
       component: PanelAssistantIA,
+    },
+    {
+      name: 'panelGallery',
+      iconName: 'tab-gallery',
+      iconLabel: 'Photothèque',
+      label: 'Photothèque',
+      component: PanelGallery,
     },
     {
       name: 'panelPlugins',

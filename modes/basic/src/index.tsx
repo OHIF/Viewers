@@ -28,6 +28,7 @@ export const ohif = {
 
 export const cornerstone = {
   assistantIA: '@ohif/extension-cornerstone.panelModule.panelAssistantIA',
+  gallery: '@ohif/extension-cornerstone.panelModule.panelGallery',
   plugins: '@ohif/extension-cornerstone.panelModule.panelPlugins',
   cr: '@ohif/extension-cornerstone.panelModule.panelCR',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
@@ -286,6 +287,7 @@ export const basicLayout = {
     leftPanelResizable: true,
     rightPanels: [
       cornerstone.assistantIA,
+      cornerstone.gallery,
       cornerstone.plugins,
       cornerstone.cr,
       cornerstone.segmentation,

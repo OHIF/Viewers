@@ -31,6 +31,7 @@ export const longitudinalInstance = {
     leftPanels: [tracked.thumbnailList],
     rightPanels: [
       cornerstone.assistantIA,
+      cornerstone.gallery,
       cornerstone.plugins,
       cornerstone.cr,
       cornerstone.segmentation,
