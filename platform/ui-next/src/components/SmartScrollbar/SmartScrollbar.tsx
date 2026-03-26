@@ -5,7 +5,6 @@ import {
   useEffect,
   useRef,
   useCallback,
-  useId,
   Children,
   isValidElement,
   type RefObject,
@@ -52,7 +51,6 @@ export interface SmartScrollbarContextValue {
   effectiveWidth: number;
   trackWidth: number;
   fillPadding: number;
-  svgIdPrefix: string;
   stableLayerRef: RefObject<HTMLDivElement | null>;
 }
 
@@ -86,8 +84,6 @@ export function SmartScrollbar({
   children,
 }: SmartScrollbarProps) {
   validateChildren(children);
-
-  const svgIdPrefix = useId();
 
   // ── ResizeObserver for trackHeight ───────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
@@ -189,7 +185,6 @@ export function SmartScrollbar({
     effectiveWidth,
     trackWidth: TRACK_WIDTH,
     fillPadding: FILL_PADDING,
-    svgIdPrefix,
     stableLayerRef,
   };
 
