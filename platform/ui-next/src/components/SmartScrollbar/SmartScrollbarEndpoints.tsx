@@ -12,9 +12,9 @@ interface SmartScrollbarEndpointsProps {
 }
 
 export function SmartScrollbarEndpoints({ slices, className }: SmartScrollbarEndpointsProps) {
-  const { totalSlices, trackHeight, trackWidth, fillPadding, stableLayerRef } = useSmartScrollbarContext();
+  const { totalSlices, trackHeight, trackWidth, fillPadding, stableLayerEl } = useSmartScrollbarContext();
 
-  if (slices.size === 0 || trackHeight === 0 || !stableLayerRef.current) return null;
+  if (slices.size === 0 || trackHeight === 0 || !stableLayerEl) return null;
 
   const fillAreaTop = fillPadding;
   const fillAreaHeight = trackHeight - fillPadding * 2;
@@ -58,6 +58,6 @@ export function SmartScrollbarEndpoints({ slices, className }: SmartScrollbarEnd
         fill={CAP_COLOR}
       />
     </svg>,
-    stableLayerRef.current,
+    stableLayerEl,
   );
 }

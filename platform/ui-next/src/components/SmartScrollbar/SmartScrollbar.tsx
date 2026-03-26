@@ -7,7 +7,6 @@ import {
   useCallback,
   Children,
   isValidElement,
-  type RefObject,
 } from 'react';
 import { getIndicatorLayout } from './utils';
 import { SmartScrollbarIndicator } from './SmartScrollbarIndicator';
@@ -51,7 +50,7 @@ export interface SmartScrollbarContextValue {
   effectiveWidth: number;
   trackWidth: number;
   fillPadding: number;
-  stableLayerRef: RefObject<HTMLDivElement | null>;
+  stableLayerEl: HTMLDivElement | null;
 }
 
 const SmartScrollbarContext = createContext<SmartScrollbarContextValue | null>(null);
@@ -126,8 +125,10 @@ export function SmartScrollbar({
   const { leftPos } = getIndicatorLayout(TRACK_WIDTH, INDICATOR_SIZE, INDICATOR_BORDER_WIDTH);
   const hitZoneLeftExtension = Math.max(0, -leftPos);
 
-  // ── Stable layer ref (for elements that shouldn't move during contraction) ──
-  const stableLayerRef = useRef<HTMLDivElement>(null);
+  // ── Stable layer (for elements that shouldn't move during contraction) ──
+  // Uses useState + callback ref so React triggers a re-render when the
+  // DOM node mounts — ensuring endpoints render on the first valid pass.
+  const [stableLayerEl, setStableLayerEl] = useState<HTMLDivElement | null>(null);
 
   // ── Pointer helpers ──────────────────────────────────────────
   const clamp = useCallback(
@@ -185,7 +186,7 @@ export function SmartScrollbar({
     effectiveWidth,
     trackWidth: TRACK_WIDTH,
     fillPadding: FILL_PADDING,
-    stableLayerRef,
+    stableLayerEl,
   };
 
   return (
@@ -242,7 +243,7 @@ export function SmartScrollbar({
                 endpoints that must not jitter during width transitions. Children
                 render here via createPortal using stableLayerRef from context. */}
             <div
-              ref={stableLayerRef}
+              ref={setStableLayerEl}
               style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
             />
           </div>
