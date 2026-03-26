@@ -177,6 +177,44 @@ export function SmartScrollbar({
     []
   );
 
+  // ── Keyboard interaction (WAI-ARIA slider spec) ────────────
+  const PAGE_STEP = 10;
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      let next: number | null = null;
+
+      switch (e.key) {
+        case 'ArrowUp':
+        case 'ArrowLeft':
+          next = value - 1;
+          break;
+        case 'ArrowDown':
+        case 'ArrowRight':
+          next = value + 1;
+          break;
+        case 'PageUp':
+          next = value - PAGE_STEP;
+          break;
+        case 'PageDown':
+          next = value + PAGE_STEP;
+          break;
+        case 'Home':
+          next = 0;
+          break;
+        case 'End':
+          next = totalSlices - 1;
+          break;
+        default:
+          return;
+      }
+
+      e.preventDefault();
+      onValueChange(clamp(next));
+    },
+    [value, totalSlices, clamp, onValueChange]
+  );
+
   // ── Context value ────────────────────────────────────────────
   const ctx: SmartScrollbarContextValue = {
     value,
@@ -215,6 +253,7 @@ export function SmartScrollbar({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onKeyDown={handleKeyDown}
       >
         {trackHeight > 0 && (
           <div
