@@ -13,7 +13,7 @@ test.beforeEach(async ({
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).title.click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(0).click();
   await page.waitForTimeout(1000);
 });
 
@@ -44,10 +44,10 @@ test('when segment visibility is off it is not shown when clicked on', async ({
   const svgPathLocator = viewportPageObject.getById('default').svg('path');
   await expect(svgPathLocator, 'All segments to be hidden').toHaveCount(0);
 
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).title.click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
   await expect(svgPathLocator, 'All segments to remain hidden').toHaveCount(0);
 
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(2).title.click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(2).click();
   await expect(svgPathLocator, 'All segments to remain hidden').toHaveCount(0);
 });
 
@@ -93,7 +93,7 @@ test('should toggle an individual segment visibility - on/off', async ({
   viewportPageObject,
 }) => {
   // Establish known state by selecting segment 1
-  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).title.click();
+  await rightPanelPageObject.contourSegmentationPanel.panel.nthSegment(1).click();
   const svgPathLocator = viewportPageObject.getById('default').svg('path');
   await expect(svgPathLocator, 'Expected first segment SVG paths to be visible').toHaveCount(4);
 

@@ -87,7 +87,7 @@ export class RightPanelPageObject {
         return row.getByTestId('data-row-title');
       },
       click: async () => {
-        await row.click();
+        await row.getByTestId('data-row-title').click();
       },
       locator: row,
       toggleVisibility: async () => {
