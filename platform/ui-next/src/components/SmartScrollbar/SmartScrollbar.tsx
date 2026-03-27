@@ -67,6 +67,7 @@ interface SmartScrollbarProps {
   totalSlices: number;
   onValueChange: (index: number) => void;
   isLoading?: boolean;
+  enableKeyboardNavigation?: boolean;
   'aria-label'?: string;
   className?: string;
   children: React.ReactNode;
@@ -78,6 +79,7 @@ export function SmartScrollbar({
   totalSlices,
   onValueChange,
   isLoading = false,
+  enableKeyboardNavigation = false,
   'aria-label': ariaLabel = 'Scroll position',
   className,
   children,
@@ -253,7 +255,7 @@ export function SmartScrollbar({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onKeyDown={handleKeyDown}
+        onKeyDown={enableKeyboardNavigation ? handleKeyDown : undefined}
       >
         {trackHeight > 0 && (
           <div
