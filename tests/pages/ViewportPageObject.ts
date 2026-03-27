@@ -322,11 +322,11 @@ export class ViewportPageObject {
   }
 
   getNth(index: number): Promise<IViewportPageObject> {
-    const viewport = this.page.getByTestId('viewport-pane').nth(index);
+    const viewport = this.getNthLocator(index);
     return this.viewportPageObjectFactory(viewport);
   }
 
-  getNthPane(index: number): Locator {
+  getNthLocator(index: number): Locator {
     return this.page.getByTestId('viewport-pane').nth(index);
   }
 
