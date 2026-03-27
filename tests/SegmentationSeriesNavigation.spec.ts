@@ -9,21 +9,30 @@ test.beforeEach(async ({ page }) => {
 
 test('should keep the viewport rendered when navigating series with Page Down after adding a segmentation', async ({
   page,
+  leftPanelPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const totalPageDownPresses = 6;
+  // Study has 5 series; pressing 8 times verifies navigation remains stable even after
+  // reaching the client-created SEG display set appended by "Add Segmentation".
+  const totalPageDownPresses = 8;
 
   await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
-  await viewportPageObject.active.pane.click();
-  await viewportPageObject.active.pane.dblclick();
+  const thumbnailsLocator = leftPanelPageObject.thumbnails;
+  await expect
+    .poll(async () => {
+      return await thumbnailsLocator.count();
+    })
+    .toBeGreaterThanOrEqual(5);
+
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.pane.click();
+  await activeViewport.pane.dblclick();
 
   for (let i = 0; i < totalPageDownPresses; i++) {
     await press({ page, key: 'PageDown' });
-
-    const viewportInfoBottomRight =
-      viewportPageObject.active.overlayText.bottomRight.instanceNumber;
-    await expect(viewportInfoBottomRight).toBeVisible();
+    const currentActiveViewport = await viewportPageObject.active;
+    await expect(currentActiveViewport.overlayText.bottomRight.instanceNumber).toBeVisible();
   }
 });
