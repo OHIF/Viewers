@@ -5,6 +5,7 @@ import { metaData } from '@cornerstonejs/core';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getRenderableData from './getRenderableData';
+import getLabelForSRMeasurement from './getLabelForSRMeasurement';
 import toolNames from '../tools/toolNames';
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
@@ -62,7 +63,7 @@ export default function addSRAnnotation({ measurement, imageId = null, frameNumb
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
     },
     data: {
-      label: measurement.labels?.[0]?.value || undefined,
+      label: getLabelForSRMeasurement(measurement) ?? measurement.labels?.[0]?.value,
       displayText: measurement.displayText || undefined,
       handles: {
         textBox: measurement.textBox ?? {},
