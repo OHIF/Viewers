@@ -41,10 +41,12 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   // Wait for the SR to load and stabilize before taking screenshot
   await page.waitForTimeout(1000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot before hydration - use viewport locator instead of full page
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoordRectangle.scoordRectanglePreHydration
   );
 
@@ -86,7 +88,7 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   // Take screenshot after hydration showing the rectangle measurements - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoordRectangle.scoordRectanglePostHydration
   );
 
@@ -129,7 +131,7 @@ test('should hydrate SCOORD rectangle measurements correctly', async ({
   // Take screenshot showing the jump to measurement functionality - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement
   );
 });
@@ -180,10 +182,12 @@ test('should display SCOORD rectangle measurements correctly', async ({
   // Wait for rendering to complete before taking screenshot
   await page.waitForTimeout(2000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot showing the SCOORD rectangle measurements rendered correctly - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoordRectangle.scoordRectangleDisplayedCorrectly
   );
 
