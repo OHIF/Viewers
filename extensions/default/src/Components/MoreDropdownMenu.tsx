@@ -90,7 +90,7 @@ export default function MoreDropdownMenu(bindProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+            className="invisible group-hover:visible data-[state=open]:visible"
             onClick={e => {
               e.preventDefault();
               e.stopPropagation();

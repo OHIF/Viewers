@@ -216,58 +216,76 @@ const Thumbnail = ({
   };
 
   const renderListPreset = () => {
-    return (
-      <div
-        className="flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]"
-      >
-        <div className="relative flex h-[32px] w-full items-center gap-[8px] overflow-hidden">
-          <div
-            className={classnames(
-              'h-[32px] w-[4px] min-w-[4px] rounded',
-              isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-[#B9B9B9]',
-              loadingProgress && loadingProgress < 1 && 'bg-primary/25'
-            )}
-          ></div>
-          <div className="flex h-full w-[calc(100%-12px)] flex-col justify-start">
-            <div className="flex items-center gap-[7px]">
-              <div
-                className={classnames(
-                  'flex h-[19px] w-[23px] items-center justify-center rounded-[2px] text-[12px] font-medium leading-none text-[#D1D5DB]',
-                  isActive ? 'bg-transparent' : 'bg-[#5C5C5C]'
-                )}
-                data-cy="series-modality-label"
-              >
-                {modality}
-              </div>
-              <Tooltip>
-                <TooltipContent>{description}</TooltipContent>
-                <TooltipTrigger className="w-full overflow-hidden">
-                  <div
-                    className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-semibold text-white"
-                    data-cy="series-description-label"
-                  >
-                    {description}
-                  </div>
-                </TooltipTrigger>
-              </Tooltip>
-            </div>
+    const listModalityDisplay =
+      modality && modality.length > 6 ? modality.slice(0, 5) + '.' : modality;
+    const listModalityTruncated = modality && modality.length > 6;
 
-            <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-              <div className="text-muted-foreground text-[12px]">S:{seriesNumber}</div>
-              <div className="text-muted-foreground text-[12px]">
-                <div className="flex items-center gap-[4px]">
-                  {countIcon ? (
-                    React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
-                  ) : (
-                    <Icons.InfoSeries className="w-3" />
-                  )}
-                  <div>{numInstances}</div>
-                </div>
-              </div>
-            </div>
+    const listModalityBadge = (
+      <div
+        className={classnames(
+          "inline-flex shrink-0 items-center rounded px-1 py-[2px] font-['Inter'] text-[11px] font-semibold uppercase leading-tight",
+          isActive ? 'bg-[#CACACA] text-[#393939]' : 'text-white',
+          listModalityTruncated && !isActive && 'cursor-pointer'
+        )}
+        style={!isActive ? { backgroundColor: getModalityBg(modality) } : undefined}
+        data-cy="series-modality-label"
+      >
+        {listModalityDisplay}
+      </div>
+    );
+
+    return (
+      <div className="relative flex w-full items-center overflow-hidden py-[5px] pl-[14px] pr-[8px]">
+        {/* Barre colorée absolue collée à gauche */}
+        <div
+          className={classnames(
+            'absolute left-0 top-0 bottom-0 w-[3px] rounded-full',
+            isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-[#B9B9B9]',
+            loadingProgress && loadingProgress < 1 && 'bg-primary/25'
+          )}
+        />
+        {/* Badge modalité */}
+        <div className="mr-[8px] shrink-0">
+          {listModalityTruncated ? (
+            <Tooltip>
+              <TooltipTrigger asChild>{listModalityBadge}</TooltipTrigger>
+              <TooltipContent side="right">{modality}</TooltipContent>
+            </Tooltip>
+          ) : (
+            listModalityBadge
+          )}
+        </div>
+        {/* Contenu sur une seule ligne */}
+        <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+          <Tooltip>
+            <TooltipContent>{description}</TooltipContent>
+            <TooltipTrigger asChild>
+              <span
+                className="min-w-0 max-w-[51%] shrink overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-semibold text-white"
+                data-cy="series-description-label"
+              >
+                {description || 'Non défini.'}
+              </span>
+            </TooltipTrigger>
+          </Tooltip>
+          <span className="mx-[6px] shrink-0 text-[20px] leading-none text-white">·</span>
+          <span className="shrink-0 whitespace-nowrap text-[12px] text-[#BEBEBE]">
+            S: {seriesNumber}
+          </span>
+          <span className="mx-[6px] shrink-0 text-[20px] leading-none text-white">·</span>
+          <div className="flex shrink-0 items-center gap-[3px] text-[12px] text-[#BEBEBE]">
+            <span>{numInstances}</span>
+            {countIcon ? (
+              React.createElement(Icons[countIcon] || Icons.MissingIcon, {
+                className: 'w-3 text-[#BEBEBE]',
+              })
+            ) : (
+              <Icons.InfoSeries className="w-3 text-[#BEBEBE]" />
+            )}
           </div>
         </div>
-        <div className="flex h-full items-center gap-[4px]">
+        {/* Actions droite */}
+        <div className="flex shrink-0 items-center gap-[4px]">
           <DisplaySetMessageListTooltip
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
@@ -316,7 +334,7 @@ const Thumbnail = ({
         'group flex cursor-pointer select-none flex-col rounded outline-none',
         isActive ? 'bg-[#0076F7]' : 'bg-[#5C5C5C] hover:brightness-110',
         viewPreset === 'thumbnails' && 'h-[124px] w-[104px]',
-        viewPreset === 'list' && 'h-[40px] w-full'
+        viewPreset === 'list' && 'w-full overflow-hidden'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={

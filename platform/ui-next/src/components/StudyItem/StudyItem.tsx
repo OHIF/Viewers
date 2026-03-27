@@ -134,7 +134,7 @@ const StudyItem = ({
       <AccordionItem value="study-item">
         <AccordionTrigger
           className={classnames(
-            'bg-popover group min-h-[47.5px] w-full rounded py-[3px] hover:bg-[#0076F7]/80',
+            'bg-popover group min-h-[47.5px] w-full rounded py-[5px] hover:bg-[#0076F7]/80',
             'items-center gap-[10px] px-3'
           )}
         >
@@ -159,18 +159,18 @@ const StudyItem = ({
               </div>
             </div>
             {/* Ligne 2 : description */}
-            {description && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="w-full cursor-pointer overflow-hidden truncate whitespace-nowrap text-left text-[12px] text-white">
-                    {description}
-                  </div>
-                </TooltipTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-full cursor-pointer overflow-hidden truncate whitespace-nowrap text-left text-[12px] text-white">
+                  {description || 'Aucune description.'}
+                </div>
+              </TooltipTrigger>
+              {description && (
                 <TooltipContent side="bottom" align="start" className="max-w-xs">
                   {description}
                 </TooltipContent>
-              </Tooltip>
-            )}
+              )}
+            </Tooltip>
           </div>
           {StudyMenuItems && (
             <div className="flex shrink-0 items-center">
