@@ -25,7 +25,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   mainToolbarPageObject.measurementTools.ellipticalROI.click();
   await clearAllAnnotations(page);
 
-  await viewport.clickAt([
+  await (await viewportPageObject.active).clickAt([
     { x: 100, y: 100 },
     { x: 150, y: 150 },
   ]);
