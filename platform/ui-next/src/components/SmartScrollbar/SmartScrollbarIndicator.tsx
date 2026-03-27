@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSmartScrollbarContext } from './SmartScrollbar';
 import { getIndicatorLayout } from './utils';
 

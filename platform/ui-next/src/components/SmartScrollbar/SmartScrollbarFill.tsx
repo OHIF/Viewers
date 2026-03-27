@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useSmartScrollbarContext } from './SmartScrollbar';
 import { getContiguousRuns } from './utils';
 

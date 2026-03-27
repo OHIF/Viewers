@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import React, { useId } from 'react';
 import { useSmartScrollbarContext } from './SmartScrollbar';
 
 // ── Dot-grid pattern constants ──────────────────────────────────
