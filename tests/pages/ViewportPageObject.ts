@@ -125,8 +125,12 @@ export class ViewportPageObject {
     };
   }
 
-  private getViewportId(viewport: Locator): Promise<string> {
-    return viewport.locator('[data-viewportid]').getAttribute('data-viewportid');
+  private async getViewportId(viewport: Locator): Promise<string> {
+    const id = await viewport.locator('[data-viewportid]').getAttribute('data-viewportid');
+    if (id === null) {
+      throw new Error('Could not resolve data-viewportid from viewport locator');
+    }
+    return id;
   }
 
   private getOrientationMarkers(viewport: Locator) {
