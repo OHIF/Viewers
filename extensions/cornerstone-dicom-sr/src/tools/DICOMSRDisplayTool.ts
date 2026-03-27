@@ -25,12 +25,29 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   _getTextBoxLinesFromLabels(labels) {
     // TODO -> max 5 for now (label + shortAxis + longAxis), need a generic solution for this!
 
+    if (!labels?.length) {
+      return [];
+    }
+
     const labelLength = Math.min(labels.length, 5);
     const lines = [];
 
     for (let i = 0; i < labelLength; i++) {
       const labelEntry = labels[i];
-      lines.push(`${_labelToShorthand(labelEntry.label)}: ${labelEntry.value}`);
+      const shorthand = _labelToShorthand(labelEntry.label);
+      const value = labelEntry.value ?? '';
+
+      /** 
+       * Empty shorthand (CORNERSTONEFREETEXT, Length, etc.): show value only — avoids ": text" or
+       * "363698007: site" when label was a raw code (fixed at source for finding site).
+       */
+      if (shorthand === '' && value !== '') {
+        lines.push(String(value));
+      } else if (shorthand === '') {
+        continue;
+      } else {
+        lines.push(`${shorthand}: ${value}`);
+      }
     }
 
     return lines;
@@ -329,15 +346,19 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
 
     const { annotationUID, data = {} } = annotation;
-    const { labels } = data;
+    const { labels, label } = data;
     const { color } = options;
 
     let adaptedCanvasCoordinates = canvasCoordinates;
-    // adapt coordinates if there is an adapter
+
     if (typeof canvasCoordinatesAdapter === 'function') {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
-    const textLines = this._getTextBoxLinesFromLabels(labels);
+
+    const textLines =
+      typeof label === 'string' && label.length > 0
+        ? [label]
+        : this._getTextBoxLinesFromLabels(labels);
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
     if (!annotation.data?.handles?.textBox?.worldPosition) {

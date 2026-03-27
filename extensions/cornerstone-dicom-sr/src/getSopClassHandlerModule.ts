@@ -511,6 +511,10 @@ function _processTID1410Measurement(mergedContentSequence) {
 
   const NUMContentItems = mergedContentSequence.filter(group => group.ValueType === 'NUM');
 
+  const finding = mergedContentSequence.find(
+    item => item.ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.Finding
+  );
+
   const { ConceptNameCodeSequence: conceptNameItem } = graphicItem;
   const { CodeValue: graphicValue, CodingSchemeDesignator: graphicDesignator } = conceptNameItem;
   const graphicCode = `${graphicDesignator}:${graphicValue}`;
@@ -547,11 +551,17 @@ function _processTID1410Measurement(mergedContentSequence) {
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.FindingSiteSCT
   );
   if (findingSites.length) {
+    const siteItem = findingSites[0];
+    const conceptName = siteItem.ConceptNameCodeSequence;
     measurement.labels.push({
-      label: CodeNameCodeSequenceValues.FindingSiteSCT,
-      value: findingSites[0].ConceptCodeSequence.CodeMeaning,
+      label: conceptName?.CodeMeaning || 'Finding Site',
+      value: siteItem.ConceptCodeSequence.CodeMeaning,
     });
   }
+
+  const measurementWithFinding = measurement as Record<string, unknown>;
+  measurementWithFinding.srFinding = finding?.ConceptCodeSequence;
+  measurementWithFinding.srFindingSites = findingSites.map(fs => fs.ConceptCodeSequence).filter(Boolean);
 
   return measurement;
 }
@@ -659,6 +669,10 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       );
     }
   });
+
+  const measurementWithFinding = measurement as Record<string, unknown>;
+  measurementWithFinding.srFinding = finding?.ConceptCodeSequence;
+  measurementWithFinding.srFindingSites = findingSites.map(fs => fs.ConceptCodeSequence).filter(Boolean);
 
   return measurement;
 }

@@ -184,13 +184,21 @@ export default function hydrateStructuredReport(
             ? 'SRRectangleROI'
             : annotationType;
 
+      /** Use SR subtypes for Probe and RectangleROI - they show label (e.g. Lesion) instead of intensity/stats */
+      const srAnnotationType =
+        annotationType === 'Probe'
+          ? 'SRPoint'
+          : annotationType === 'RectangleROI'
+            ? 'SRRectangleROI'
+            : annotationType;
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         predecessorImageId: toolData.predecessorImageId,
         metadata: {
           ...referenceData,
-          toolName: toolNameForRendering,
+          toolName: srAnnotationType,
         },
       };
       utilities.updatePlaneRestriction(annotation.data.handles.points, annotation.metadata);
@@ -208,11 +216,11 @@ export default function hydrateStructuredReport(
         }
       });
 
-      const matchingMapping = mappings.find(m => m.annotationType === annotationType);
+      const matchingMapping = mappings.find(m => m.annotationType === srAnnotationType);
 
       const newAnnotationUID = measurementService.addRawMeasurement(
         source,
-        annotationType,
+        srAnnotationType,
         { annotation },
         matchingMapping.toMeasurementSchema,
         dataSource
@@ -223,7 +231,6 @@ export default function hydrateStructuredReport(
         code: annotation.data.finding,
       });
 
-      /** Always lock DICOM SR annotations to prevent accidental modification (medical device safety) */
       locking.setAnnotationLocked(newAnnotationUID, true);
 
       if (imageId && !imageIds.includes(imageId)) {

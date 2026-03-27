@@ -34,7 +34,8 @@ export default function init({
   addToolInstance(toolNames.SRArrowAnnotate, ArrowAnnotateTool);
   addToolInstance(toolNames.SRAngle, AngleTool);
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
-  /** SR subtypes: show label (e.g. Lesion) instead of intensity/stats; used only for hydration, not toolbar */
+
+  /** SR subtypes: show label (e.g. Lesion) instead of intensity/stats */
   addTool(SRPointTool);
   addToolInstance(toolNames.SRRectangleROI, RectangleROITool, {
     getTextLines: getSRRectangleROITextLines,
