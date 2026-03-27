@@ -15,7 +15,8 @@ test('should keep the viewport rendered when navigating series with Page Down af
 }) => {
   // Study has 5 series; pressing 8 times verifies navigation remains stable even after
   // reaching the client-created SEG display set appended by "Add Segmentation".
-  const totalPageDownPresses = 8;
+  const minimumSeriesExpected = 5;
+  const totalPageDownPresses = minimumSeriesExpected + 3;
 
   await rightPanelPageObject.labelMapSegmentationPanel.addSegmentationButton.click();
 
@@ -24,7 +25,7 @@ test('should keep the viewport rendered when navigating series with Page Down af
     .poll(async () => {
       return await thumbnailsLocator.count();
     })
-    .toBeGreaterThanOrEqual(5);
+    .toBeGreaterThanOrEqual(minimumSeriesExpected);
 
   const activeViewport = await viewportPageObject.active;
   await activeViewport.pane.click();
