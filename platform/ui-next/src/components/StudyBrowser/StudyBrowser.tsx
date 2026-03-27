@@ -65,7 +65,7 @@ const StudyBrowser = ({
         className="bg-bkg-low flex min-h-0 flex-1 flex-col gap-[4px]"
         data-cy={'studyBrowser-panel'}
       >
-        <div className="flex flex-col gap-[4px]">
+        <div className="flex flex-col gap-[4px] overflow-hidden px-2">
           {showSettings && (
             <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
               <>

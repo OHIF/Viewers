@@ -68,7 +68,7 @@ function usePatientInfo() {
       PatientID: instance.PatientID || null,
       PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
       PatientSex: SEX_MAP[instance.PatientSex] ?? instance.PatientSex ?? null,
-      PatientDOB: formatDate(instance.PatientBirthDate) || null,
+      PatientDOB: formatDate(instance.PatientBirthDate, 'DD/MM/YYYY') || null,
       PatientAge: calculateAge(instance.PatientBirthDate, instance.StudyDate),
       PatientWeight: weightRaw ? `${Math.round(parseFloat(weightRaw))}` : null,
       PatientSize: sizeRaw ? `${Math.round(parseFloat(sizeRaw) * 100)}` : null,

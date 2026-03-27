@@ -61,7 +61,7 @@ function Header({
         {...props}
       >
         <div className="relative py-[10px] items-center">
-          <div className="flex flex-col pl-[4px]">
+          <div className="flex flex-col">
             <div
               className={classNames(
                 'inline-flex items-center gap-1',
@@ -79,7 +79,7 @@ function Header({
             </div>
             {PatientInfo && <div className="mt-[6px]">{PatientInfo}</div>}
           </div>
-          <div className="absolute top-1/2 left-[280px] h-8 -translate-y-1/2">{Secondary}</div>
+          <div className="absolute top-1/2 left-[350px] h-8 -translate-y-1/2">{Secondary}</div>
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
             <div className="flex items-center justify-center space-x-2">{children}</div>
           </div>

@@ -15,24 +15,39 @@ const buildDemographicItems = (patientInfo: {
   PatientWeight?: string;
   PatientSize?: string;
   PatientAge?: string;
-}): string => {
-  const parts: string[] = [];
+  PatientDOB?: string;
+}): React.ReactNode[] => {
+  const items: React.ReactNode[] = [];
+
   if (patientInfo.PatientID) {
-    parts.push(`ID: ${patientInfo.PatientID}`);
+    items.push(<span key="id">ID: {patientInfo.PatientID}</span>);
   }
   if (patientInfo.PatientSex) {
-    parts.push(patientInfo.PatientSex);
+    items.push(<span key="sex">{patientInfo.PatientSex}</span>);
   }
   if (patientInfo.PatientWeight) {
-    parts.push(`${patientInfo.PatientWeight} kg`);
+    items.push(<span key="weight">{patientInfo.PatientWeight} kg</span>);
   }
   if (patientInfo.PatientSize) {
-    parts.push(`${patientInfo.PatientSize} cm`);
+    items.push(<span key="size">{patientInfo.PatientSize} cm</span>);
   }
   if (patientInfo.PatientAge) {
-    parts.push(`${patientInfo.PatientAge} ans`);
+    const ageNode = patientInfo.PatientDOB ? (
+      <Tooltip key="age">
+        <TooltipTrigger asChild>
+          <span className="cursor-pointer">{patientInfo.PatientAge} ans</span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          Date de naissance : {patientInfo.PatientDOB}
+        </TooltipContent>
+      </Tooltip>
+    ) : (
+      <span key="age">{patientInfo.PatientAge} ans</span>
+    );
+    items.push(ageNode);
   }
-  return parts.join(' | ');
+
+  return items;
 };
 
 function HeaderPatientInfo({ appConfig }: withAppTypes) {
@@ -56,7 +71,7 @@ function HeaderPatientInfo({ appConfig }: withAppTypes) {
 
   const hasStudySubtitle = Boolean(fullStudyDescription || studyDatePart);
 
-  const demographicLine = buildDemographicItems(patientInfo);
+  const demographicItems = buildDemographicItems(patientInfo);
 
   return (
     <div className="flex flex-col gap-[4px]">
@@ -69,7 +84,7 @@ function HeaderPatientInfo({ appConfig }: withAppTypes) {
               (isStudyDescriptionTruncated ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="cursor-default">{displayStudyDescription}</span>
+                    <span className="cursor-pointer">{displayStudyDescription}</span>
                   </TooltipTrigger>
                   <TooltipContent
                     side="bottom"
@@ -88,8 +103,15 @@ function HeaderPatientInfo({ appConfig }: withAppTypes) {
           </>
         )}
       </div>
-      {demographicLine && (
-        <div className="font-medium text-[16px] text-[#D1D5DB]">{demographicLine}</div>
+      {demographicItems.length > 0 && (
+        <div className="font-medium text-[16px] text-[#D1D5DB]">
+          {demographicItems.map((item, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && '\u00A0'}
+              {item}
+            </React.Fragment>
+          ))}
+        </div>
       )}
     </div>
   );

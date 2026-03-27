@@ -188,7 +188,7 @@ const SidePanel = ({
   onOpen,
   onClose,
   onActiveTabIndexChange,
-  expandedWidth = 280,
+  expandedWidth = 350,
   collapsedWidth = 25,
   expandedInsideBorderSize = 4,
   collapsedInsideBorderSize = 8,
