@@ -5,9 +5,8 @@ const navigateWithViewportArrow = async (
   direction: 'next' | 'prev',
   viewportId = 'default'
 ) => {
-  const viewport = viewportPageObject.getById(viewportId);
+  const viewport = await viewportPageObject.getById(viewportId);
   await viewport.navigationArrows[direction].click();
 };
 
 export { navigateWithViewportArrow };
-

@@ -16,7 +16,7 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    const appConfig = extensionManager._appConfig;
+    const appConfig = extensionManager.appConfig;
 
     const showPrompt = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
     let promptResult = showPrompt

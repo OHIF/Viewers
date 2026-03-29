@@ -44,7 +44,8 @@ test('checks saved segmentations loads and jumps to slices', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
-  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight.instanceNumber;
+  const activeViewport = await viewportPageObject.active;
+  const viewportInfoBottomRight = activeViewport.overlayText.bottomRight.instanceNumber;
   // Image loads on slice 1, confirm on slice 1
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
 
