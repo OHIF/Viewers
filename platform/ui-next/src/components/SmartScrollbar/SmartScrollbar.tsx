@@ -148,10 +148,7 @@ export function SmartScrollbar({
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      const trackEl =
-        (e.currentTarget as HTMLElement).querySelector('[data-scrollbar-track]') as HTMLElement
-        ?? e.currentTarget as HTMLElement;
-      trackTopRef.current = trackEl.getBoundingClientRect().top;
+      trackTopRef.current = e.currentTarget.getBoundingClientRect().top;
 
       isDraggingRef.current = true;
       setIsDragging(true);
@@ -270,7 +267,6 @@ export function SmartScrollbar({
             }}
           >
             <div
-              data-scrollbar-track
               className="relative"
               style={{
                 width: effectiveWidth,
