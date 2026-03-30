@@ -60,8 +60,18 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
     displaySetService.getDisplaySetByUID(displaySetUID)
   );
 
-  const backgroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds || []);
   const backgroundDisplaySet = viewportDisplaySets[0];
+  if (!backgroundDisplaySet) {
+    return {
+      viewportDisplaySets,
+      enhancedDisplaySets: otherDisplaySets.map(displaySet => ({
+        ...displaySet,
+        isOverlayable: false,
+      })),
+    };
+  }
+
+  const backgroundCanBeVolume = csUtils.isValidVolume(backgroundDisplaySet.imageIds || []);
 
   const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
     if (!backgroundDisplaySet.isReconstructable) {
