@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSmartScrollbarContext } from './SmartScrollbar';
+import { useSmartScrollbarLayoutContext, useSmartScrollbarScrollContext } from './SmartScrollbar';
 import { getIndicatorLayout } from './utils';
 
 // ── Indicator dimensions and colors ─────────────────────────────
@@ -13,14 +13,16 @@ interface SmartScrollbarIndicatorProps {
 }
 
 export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorProps) {
-  const { value, totalSlices, trackHeight, effectiveWidth, fillPadding } = useSmartScrollbarContext();
+  const { totalSlices, trackHeight, effectiveWidth, fillPadding } =
+    useSmartScrollbarLayoutContext();
+  const value = useSmartScrollbarScrollContext();
 
   if (trackHeight === 0) return null;
 
   const { totalWidth, totalHeight, fillWidth, fillHeight, leftPos } = getIndicatorLayout(
     effectiveWidth,
     INDICATOR_SIZE,
-    BORDER_WIDTH,
+    BORDER_WIDTH
   );
 
   const offsetY = (totalHeight - INDICATOR_SIZE) / 2;
@@ -28,10 +30,9 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
   const fillAreaHeight = trackHeight - fillPadding * 2;
   const maxY = fillAreaHeight - INDICATOR_SIZE;
   const y = fillAreaTop + (totalSlices <= 1 ? 0 : (value / (totalSlices - 1)) * maxY);
-
   return (
     <div
-      className={`absolute pointer-events-none ${className ?? ''}`}
+      className={`pointer-events-none absolute ${className ?? ''}`}
       style={{
         left: leftPos,
         top: y - offsetY,

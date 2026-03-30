@@ -1,5 +1,5 @@
 import React, { useId, useState, useEffect } from 'react';
-import { useSmartScrollbarContext } from './SmartScrollbar';
+import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
 
 // ── Dot-grid pattern constants ──────────────────────────────────
 const DOT_SIZE = 2;
@@ -16,7 +16,11 @@ interface SmartScrollbarTrackProps {
 function DotGrid({ w, h, patternId }: { w: number; h: number; patternId: string }) {
   const dotColor = `hsl(var(--neutral) / 0.5)`;
   return (
-    <svg width={w} height={h} className="absolute inset-0">
+    <svg
+      width={w}
+      height={h}
+      className="absolute inset-0"
+    >
       <defs>
         <pattern
           id={patternId}
@@ -24,10 +28,20 @@ function DotGrid({ w, h, patternId }: { w: number; h: number; patternId: string 
           height={DOT_STEP}
           patternUnits="userSpaceOnUse"
         >
-          <circle cx={DOT_RADIUS} cy={DOT_RADIUS} r={DOT_RADIUS} fill={dotColor} />
+          <circle
+            cx={DOT_RADIUS}
+            cy={DOT_RADIUS}
+            r={DOT_RADIUS}
+            fill={dotColor}
+          />
         </pattern>
         <clipPath id={`${patternId}-clip`}>
-          <rect x={0} y={0} width={w} height={h} />
+          <rect
+            x={0}
+            y={0}
+            width={w}
+            height={h}
+          />
         </clipPath>
       </defs>
       <rect
@@ -42,8 +56,11 @@ function DotGrid({ w, h, patternId }: { w: number; h: number; patternId: string 
   );
 }
 
-export function SmartScrollbarTrack({ className, children }: SmartScrollbarTrackProps) {
-  const { trackHeight, effectiveWidth, isLoading } = useSmartScrollbarContext();
+export const SmartScrollbarTrack = React.memo(function SmartScrollbarTrack({
+  className,
+  children,
+}: SmartScrollbarTrackProps) {
+  const { trackHeight, effectiveWidth, isLoading } = useSmartScrollbarLayoutContext();
   const patternId = useId();
 
   // Keep the dot grid mounted long enough to fade out, then unmount entirely.
@@ -67,12 +84,21 @@ export function SmartScrollbarTrack({ className, children }: SmartScrollbarTrack
       {dotGridMounted && (
         <div
           className="absolute inset-0"
-          style={{ width: w, height: h, opacity: isLoading ? 1 : 0, transition: `opacity ${FADE_DURATION_MS}ms ease` }}
+          style={{
+            width: w,
+            height: h,
+            opacity: isLoading ? 1 : 0,
+            transition: `opacity ${FADE_DURATION_MS}ms ease`,
+          }}
         >
-          <DotGrid w={w} h={h} patternId={patternId} />
+          <DotGrid
+            w={w}
+            h={h}
+            patternId={patternId}
+          />
         </div>
       )}
       {children}
     </div>
   );
-}
+});

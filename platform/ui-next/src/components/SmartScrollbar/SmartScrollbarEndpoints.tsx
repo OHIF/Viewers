@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { useSmartScrollbarContext } from './SmartScrollbar';
+import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
 
 // ── Endpoint cap dimensions and color ───────────────────────────
 const CAP_SIZE = 4;
@@ -12,8 +12,12 @@ interface SmartScrollbarEndpointsProps {
   className?: string;
 }
 
-export function SmartScrollbarEndpoints({ slices, className }: SmartScrollbarEndpointsProps) {
-  const { totalSlices, trackHeight, trackWidth, fillPadding, stableLayerEl } = useSmartScrollbarContext();
+export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoints({
+  slices,
+  className,
+}: SmartScrollbarEndpointsProps) {
+  const { totalSlices, trackHeight, trackWidth, fillPadding, stableLayerEl } =
+    useSmartScrollbarLayoutContext();
 
   if (slices.size === 0 || trackHeight === 0 || !stableLayerEl) return null;
 
@@ -33,14 +37,13 @@ export function SmartScrollbarEndpoints({ slices, className }: SmartScrollbarEnd
   const halfCap = CAP_SIZE / 2;
   const topEdge = fillAreaTop + (minSlice / totalSlices) * fillAreaHeight;
   const bottomEdge = fillAreaTop + ((maxSlice + 1) / totalSlices) * fillAreaHeight;
-
   // Portal into the stable layer so position isn't affected by the
   // contracting track div's width transition.
   return createPortal(
     <svg
       width={trackWidth}
       height={trackHeight}
-      className={`absolute inset-0 pointer-events-none ${className ?? ''}`}
+      className={`pointer-events-none absolute inset-0 ${className ?? ''}`}
     >
       {/* Top cap */}
       <rect
@@ -59,6 +62,6 @@ export function SmartScrollbarEndpoints({ slices, className }: SmartScrollbarEnd
         fill={CAP_COLOR}
       />
     </svg>,
-    stableLayerEl,
+    stableLayerEl
   );
-}
+});

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useSmartScrollbarContext } from './SmartScrollbar';
+import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
 import { getContiguousRuns } from './utils';
 
 interface SmartScrollbarFillProps {
@@ -8,8 +8,13 @@ interface SmartScrollbarFillProps {
   loadingClassName?: string;
 }
 
-export function SmartScrollbarFill({ slices, className, loadingClassName }: SmartScrollbarFillProps) {
-  const { totalSlices, trackHeight, effectiveWidth, fillPadding, isLoading } = useSmartScrollbarContext();
+export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
+  slices,
+  className,
+  loadingClassName,
+}: SmartScrollbarFillProps) {
+  const { totalSlices, trackHeight, effectiveWidth, fillPadding, isLoading } =
+    useSmartScrollbarLayoutContext();
 
   // slices is a mutated Set (same reference), so depend on .size to bust memo
   const slicesSize = slices.size;
@@ -24,10 +29,9 @@ export function SmartScrollbarFill({ slices, className, loadingClassName }: Smar
   const fillAreaTop = fillPadding;
   const fillAreaHeight = trackHeight - fillPadding * 2;
   const activeClass = isLoading && loadingClassName ? loadingClassName : className;
-
   return (
     <>
-      {runs.map((run) => {
+      {runs.map(run => {
         const top = fillAreaTop + (run.start / totalSlices) * fillAreaHeight;
         const height = (run.length / totalSlices) * fillAreaHeight;
 
@@ -47,4 +51,4 @@ export function SmartScrollbarFill({ slices, className, loadingClassName }: Smar
       })}
     </>
   );
-}
+});
