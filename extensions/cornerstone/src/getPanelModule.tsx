@@ -80,7 +80,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     },
     {
       name: 'panelAssistantIA',
-      iconName: 'tab-assistant-ia',
+      iconName: 'RobotIA',
       iconLabel: 'Assistant',
       label: 'Assistant',
       component: PanelAssistantIA,

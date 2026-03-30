@@ -125,7 +125,7 @@ const getTabStyle = (numTabs: number) => {
 
 const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
   return classnames('h-full w-full flex items-center justify-center', {
-    'bg-customblue-40': isActiveTab,
+    'bg-[#0076F7]': isActiveTab,
     rounded: isActiveTab,
   });
 };
@@ -295,7 +295,7 @@ const SidePanel = ({
           data-cy={`side-panel-header-${side}`}
         >
           <div className="flex h-[38px] w-[38px] items-center justify-center rounded p-[10px]">
-            <Icons.ReduceMenu className="rotate-180 transform text-white" />
+            <Icons.ReduceMenu className={classnames('text-white', { 'rotate-180 transform': side === 'left' })} />
           </div>
         </div>
         <div
@@ -362,9 +362,7 @@ const SidePanel = ({
         data-cy={`side-panel-header-${side}`}
       >
         <div className="flex h-[38px] w-[38px] items-center justify-center rounded p-[10px]">
-          {React.createElement(Icons[openStateIconName[side]] || Icons.MissingIcon, {
-            className: 'text-white',
-          })}
+          <Icons.ReduceMenu className={classnames('text-white', { 'rotate-180 transform': side === 'right' })} />
         </div>
       </div>
     );
@@ -455,8 +453,79 @@ const SidePanel = ({
   const getOpenStateComponent = () => {
     return (
       <>
-        <div className="bg-bkg-low flex h-[40px] flex-shrink-0 select-none rounded-t p-2">
-          {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
+        <div className={classnames(
+          'bg-bkg-low flex-shrink-0 select-none rounded-t px-2',
+          tabs.length === 1 ? 'flex h-[40px] pt-2 pb-2' : 'flex flex-col pt-1 pb-0'
+        )}>
+          {tabs.length === 1 ? (
+            getOneTabComponent()
+          ) : (
+            <>
+              {/* Ligne 1 : icône fermeture */}
+              <div className="relative flex h-[40px] items-center">
+                {getCloseIcon()}
+              </div>
+              {/* Ligne 2 : onglets */}
+              <div className="flex justify-center pb-1">
+                <div className={classnames('bg-primary-dark text-primary flex flex-wrap')}>
+                  {tabs.map((tab, tabIndex) => {
+                    const { disabled } = tab;
+                    const numCols = getNumGridColumns(tabs.length, gridWidth);
+                    return (
+                      <React.Fragment key={tabIndex}>
+                        {tabIndex % numCols !== 0 && (
+                          <div
+                            className={classnames(
+                              'flex h-[28px] w-[2px] items-center bg-black',
+                              tabSpacerWidth
+                            )}
+                          >
+                            <div className="bg-primary-dark h-[20px] w-full"></div>
+                          </div>
+                        )}
+                        <Tooltip key={tabIndex}>
+                          <TooltipTrigger>
+                            <div
+                              className={getTabClassNames(
+                                numCols,
+                                tabs.length,
+                                tabIndex,
+                                tabIndex === activeTabIndex,
+                                disabled
+                              )}
+                              style={getTabStyle(tabs.length)}
+                              onClick={() => {
+                                return disabled ? null : updateActiveTabIndex(tabIndex);
+                              }}
+                              data-cy={`${tab.name}-btn`}
+                            >
+                              <div
+                                className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
+                              >
+                                {React.createElement(Icons[tab.iconName] || Icons.MissingIcon, {
+                                  className: classnames({
+                                    'text-primary': true,
+                                    'ohif-disabled': disabled,
+                                  }),
+                                  style: {
+                                    width: '22px',
+                                    height: '22px',
+                                  },
+                                })}
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            {getToolTipContent(tab.label, disabled)}
+                          </TooltipContent>
+                        </Tooltip>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <Separator
           orientation="horizontal"

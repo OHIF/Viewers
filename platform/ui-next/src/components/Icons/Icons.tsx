@@ -63,6 +63,7 @@ import TabPatientInfo from './Sources/TabPatientInfo';
 import TabRoiThreshold from './Sources/TabRoiThreshold';
 import TabSegmentation from './Sources/TabSegmentation';
 import TabAssistantIA from './Sources/TabAssistantIA';
+import RobotIA from './Sources/RobotIA';
 import TabPlugin from './Sources/TabPlugin';
 import TabCR from './Sources/TabCR';
 import TabStudies from './Sources/TabStudies';
@@ -553,6 +554,7 @@ export const Icons = {
   TabRoiThreshold,
   TabSegmentation,
   TabAssistantIA,
+  RobotIA,
   TabPlugin,
   TabCR,
   TabStudies,
