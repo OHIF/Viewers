@@ -2,21 +2,20 @@ import { Page } from '@playwright/test';
 
 export class DataOverlayPageObject {
   readonly page: Page;
+  readonly viewportId: string;
 
-  constructor(page: Page) {
+  constructor(page: Page, viewportId: string) {
     this.page = page;
+    this.viewportId = viewportId;
   }
 
-  async toggle(viewportId: string = 'default') {
-    await this.page.getByTestId(`dataOverlayMenu-${viewportId}-btn`).click();
+  async toggle() {
+    await this.page.getByTestId(`dataOverlayMenu-${this.viewportId}-btn`).click();
   }
 
-  async closeMenu(viewportId: string = 'default') {
-    await this.toggle(viewportId);
-  }
-
-  async addSegmentation(segmentation: string, viewportId: string = 'default') {
-    await this.openAddSegmentationDropdown(viewportId);
+  async addSegmentation(segmentation: string) {
+    await this.page.getByTestId(`AddSegmentationDataOverlay-${this.viewportId}`).click();
+    await this.page.getByText('SELECT A SEGMENTATION').click();
     await this.page.getByTestId(segmentation).click();
   }
 
