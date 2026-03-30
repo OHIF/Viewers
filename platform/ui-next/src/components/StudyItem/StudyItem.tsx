@@ -60,7 +60,7 @@ const OverflowModalityBadges = ({ mods, maxWidth }: { mods: string[]; maxWidth: 
       {hidden.length > 0 && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="inline-flex shrink-0 cursor-pointer items-center rounded bg-[#0076F7] px-1 py-[2px] font-['Inter'] text-[11px] font-semibold leading-tight text-white">
+            <span className="inline-flex shrink-0 cursor-pointer items-center rounded bg-[#555555] px-1 py-[2px] font-['Inter'] text-[11px] font-semibold leading-tight text-white">
               +{hidden.length}
             </span>
           </TooltipTrigger>

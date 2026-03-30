@@ -16,6 +16,9 @@ const ohif = {
 const cornerstone = {
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+  assistantIA: '@ohif/extension-cornerstone.panelModule.panelAssistantIA',
+  gallery: '@ohif/extension-cornerstone.panelModule.panelGallery',
+  cr: '@ohif/extension-cornerstone.panelModule.panelCR',
 };
 
 const tracked = {
@@ -315,7 +318,14 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
-              rightPanels: [usAnnotation.panel, cornerstone.segmentation, tracked.measurements],
+              rightPanels: [
+                cornerstone.assistantIA,
+                cornerstone.gallery,
+                cornerstone.cr,
+                usAnnotation.panel,
+                cornerstone.segmentation,
+                tracked.measurements,
+              ],
               rightPanelResizable: true,
               viewports: [
                 {

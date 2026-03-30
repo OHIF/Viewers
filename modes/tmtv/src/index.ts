@@ -26,6 +26,12 @@ const tmtv = {
   tmtv: '@ohif/extension-tmtv.panelModule.tmtv',
 };
 
+const cornerstoneExtra = {
+  assistantIA: '@ohif/extension-cornerstone.panelModule.panelAssistantIA',
+  gallery: '@ohif/extension-cornerstone.panelModule.panelGallery',
+  cr: '@ohif/extension-cornerstone.panelModule.panelCR',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -238,7 +244,13 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ohif.thumbnailList],
               leftPanelResizable: true,
               leftPanelClosed: true,
-              rightPanels: [tmtv.tmtv, tmtv.petSUV],
+              rightPanels: [
+                cornerstoneExtra.assistantIA,
+                cornerstoneExtra.gallery,
+                cornerstoneExtra.cr,
+                tmtv.tmtv,
+                tmtv.petSUV,
+              ],
               rightPanelResizable: true,
               viewports: [
                 {

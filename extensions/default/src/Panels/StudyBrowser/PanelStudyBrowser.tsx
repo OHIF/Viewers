@@ -466,15 +466,6 @@ function PanelStudyBrowser({
             </button>
           ) : null}
         </div>
-        {availableModalities.length > 0 && (
-          <div className="px-2 pt-[8px]">
-            <ModalityFilter
-              modalities={availableModalities}
-              selectedModalities={modalityFilter}
-              onApply={setModalityFilter}
-            />
-          </div>
-        )}
         <Separator
           orientation="horizontal"
           className="bg-bkg-low"
@@ -496,6 +487,15 @@ function PanelStudyBrowser({
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
+        modalityFilterNode={
+          availableModalities.length > 0 ? (
+            <ModalityFilter
+              modalities={availableModalities}
+              selectedModalities={modalityFilter}
+              onApply={setModalityFilter}
+            />
+          ) : null
+        }
         viewPresets={viewPresets}
         ThumbnailMenuItems={MoreDropdownMenu({
           commandsManager,

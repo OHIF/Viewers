@@ -111,7 +111,7 @@ const getTabClassNames = (
   isActiveTab: boolean,
   isTabDisabled: boolean
 ) =>
-  classnames('h-[28px] mb-[2px] cursor-pointer text-white bg-black', {
+  classnames('h-[28px] cursor-pointer text-white bg-black', {
     'hover:text-primary': !isActiveTab && !isTabDisabled,
     'rounded-l': tabIndex % numColumns === 0,
     'rounded-r': (tabIndex + 1) % numColumns === 0 || tabIndex === numTabs - 1,
@@ -279,8 +279,12 @@ const SidePanel = ({
     updateActiveTabIndex(activeTabIndexProp ?? 0);
   }, [activeTabIndexProp, updateActiveTabIndex]);
 
+  const visibleTabs = (Array.isArray(tabs) ? tabs : [tabs]).filter(
+    tab => tab.name !== 'panelPlugins'
+  );
+
   const getCloseStateComponent = () => {
-    const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
+    const _childComponents = visibleTabs;
     return (
       <div className="relative flex w-full flex-col">
         <div
@@ -455,9 +459,9 @@ const SidePanel = ({
       <>
         <div className={classnames(
           'bg-bkg-low flex-shrink-0 select-none rounded-t px-2',
-          tabs.length === 1 ? 'flex h-[40px] pt-2 pb-2' : 'flex flex-col pt-1 pb-0'
+          visibleTabs.length === 1 ? 'flex h-[40px] pt-2 pb-2' : 'flex flex-col pt-1 pb-0'
         )}>
-          {tabs.length === 1 ? (
+          {visibleTabs.length === 1 ? (
             getOneTabComponent()
           ) : (
             <>
@@ -467,40 +471,31 @@ const SidePanel = ({
               </div>
               {/* Ligne 2 : onglets */}
               <div className="flex justify-center pb-1">
-                <div className={classnames('bg-primary-dark text-primary flex flex-wrap')}>
-                  {tabs.map((tab, tabIndex) => {
+                <div className={classnames('bg-primary-dark text-primary flex flex-wrap rounded')}>
+                  {visibleTabs.map((tab, tabIndex) => {
                     const { disabled } = tab;
-                    const numCols = getNumGridColumns(tabs.length, gridWidth);
+                    const numCols = getNumGridColumns(visibleTabs.length, gridWidth);
                     return (
                       <React.Fragment key={tabIndex}>
-                        {tabIndex % numCols !== 0 && (
-                          <div
-                            className={classnames(
-                              'flex h-[28px] w-[2px] items-center bg-black',
-                              tabSpacerWidth
-                            )}
-                          >
-                            <div className="bg-primary-dark h-[20px] w-full"></div>
-                          </div>
-                        )}
+                        {/* séparateurs entre onglets supprimés */}
                         <Tooltip key={tabIndex}>
                           <TooltipTrigger>
                             <div
                               className={getTabClassNames(
                                 numCols,
-                                tabs.length,
+                                visibleTabs.length,
                                 tabIndex,
                                 tabIndex === activeTabIndex,
                                 disabled
                               )}
-                              style={getTabStyle(tabs.length)}
+                              style={getTabStyle(visibleTabs.length)}
                               onClick={() => {
                                 return disabled ? null : updateActiveTabIndex(tabIndex);
                               }}
                               data-cy={`${tab.name}-btn`}
                             >
                               <div
-                                className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
+                                className={getTabIconClassNames(visibleTabs.length, tabIndex === activeTabIndex)}
                               >
                                 {React.createElement(Icons[tab.iconName] || Icons.MissingIcon, {
                                   className: classnames({

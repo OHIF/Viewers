@@ -13,6 +13,9 @@ const ohif = {
 
 export const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  assistantIA: '@ohif/extension-cornerstone.panelModule.panelAssistantIA',
+  gallery: '@ohif/extension-cornerstone.panelModule.panelGallery',
+  cr: '@ohif/extension-cornerstone.panelModule.panelCR',
 };
 
 const dicomvideo = {
@@ -94,7 +97,12 @@ function modeFactory({ modeConfiguration }) {
               leftPanelResizable: true,
               leftPanelClosed: true, // we have problem with rendering thumbnails for microscopy images
               // rightPanelClosed: true, // we do not have the save microscopy measurements yet
-              rightPanels: [ohif.rightPanel],
+              rightPanels: [
+                cornerstone.assistantIA,
+                cornerstone.gallery,
+                cornerstone.cr,
+                ohif.rightPanel,
+              ],
               rightPanelResizable: true,
               viewports: [
                 {

@@ -88,8 +88,8 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     {
       name: 'panelGallery',
       iconName: 'tab-gallery',
-      iconLabel: 'Photothèque',
-      label: 'Photothèque',
+      iconLabel: 'Images clés',
+      label: 'Images clés',
       component: PanelGallery,
     },
     {

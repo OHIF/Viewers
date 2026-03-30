@@ -23,6 +23,7 @@ const StudyBrowser = ({
   viewPresets,
   ThumbnailMenuItems,
   StudyMenuItems,
+  modalityFilterNode,
 }: withAppTypes) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -67,15 +68,18 @@ const StudyBrowser = ({
       >
         <div className="flex flex-col gap-[4px] overflow-hidden px-2">
           {showSettings && (
-            <div className="bg-bkg-low flex w-full items-center gap-[8px] pt-[8px]">
-              <div className="min-w-0 flex-1 basis-0 overflow-hidden">
-                <StudyBrowserViewOptions
-                  tabs={tabs}
-                  onSelectTab={onClickTab}
-                  activeTabName={activeTabName}
-                />
+            <div className="bg-bkg-low flex flex-col gap-[8px] pt-[8px]">
+              <div className="flex w-full items-center gap-[8px]">
+                <div className="min-w-0 flex-1 basis-0 overflow-hidden">
+                  <StudyBrowserViewOptions
+                    tabs={tabs}
+                    onSelectTab={onClickTab}
+                    activeTabName={activeTabName}
+                  />
+                </div>
+                <StudyBrowserSort servicesManager={servicesManager} />
               </div>
-              <StudyBrowserSort servicesManager={servicesManager} />
+              {modalityFilterNode}
             </div>
           )}
           <div className="mt-[15px]">{getTabContent()}</div>

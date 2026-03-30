@@ -205,6 +205,9 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [ohif.thumbnailList],
               leftPanelResizable: true,
               rightPanels: [
+                cornerstone.assistantIA,
+                cornerstone.gallery,
+                cornerstone.cr,
                 cornerstone.labelMapSegmentationPanel,
                 cornerstone.contourSegmentationPanel,
               ],

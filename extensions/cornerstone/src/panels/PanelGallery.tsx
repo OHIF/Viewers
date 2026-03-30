@@ -196,7 +196,7 @@ export default function PanelGallery(): React.ReactNode {
   return (
     <div className="flex flex-1 flex-col overflow-hidden bg-[#1e1e1e]">
       <div className="shrink-0 border-b border-[#333] px-4 py-3">
-        <h2 className="text-sm font-semibold text-white">Photothèque</h2>
+        <h2 className="font-semibold text-white" style={{ fontSize: '14px' }}>Images clés</h2>
       </div>
 
       <ScrollArea className="flex-1">
@@ -240,10 +240,11 @@ export default function PanelGallery(): React.ReactNode {
                     <ActionBtn size="sm" onClick={e => handleDownload(img, e)} title="Télécharger">
                       <Icons.ByName name="DownloadImage" className="h-3.5 w-3.5" />
                     </ActionBtn>
-                    <div className="mx-0.5 h-3 w-px bg-[#444]" />
+                    {/* Action Modifier cachée temporairement */}
+                    {/* <div className="mx-0.5 h-3 w-px bg-[#444]" />
                     <ActionBtn size="sm" onClick={e => { e?.stopPropagation(); }} title="Modifier">
                       <Icons.ByName name="EditImage" className="h-3.5 w-3.5" />
-                    </ActionBtn>
+                    </ActionBtn> */}
                     <div className="mx-0.5 h-3 w-px bg-[#444]" />
                     <ActionBtn size="sm" variant="danger" onClick={e => openDeleteConfirm(img, e)} title="Supprimer">
                       <Icons.ByName name="DeleteImage" className="h-3.5 w-3.5" />
@@ -282,9 +283,10 @@ export default function PanelGallery(): React.ReactNode {
                 <ActionBtn onClick={() => currentImage && handleDownload(currentImage)} title="Télécharger">
                   <Icons.ByName name="DownloadImage" className="h-4 w-4" />
                 </ActionBtn>
-                <ActionBtn onClick={() => {}} title="Modifier">
+                {/* Action Modifier cachée temporairement */}
+                {/* <ActionBtn onClick={() => {}} title="Modifier">
                   <Icons.ByName name="EditImage" className="h-4 w-4" />
-                </ActionBtn>
+                </ActionBtn> */}
                 <ActionBtn
                   onClick={() => currentImage && openDeleteConfirm(currentImage)}
                   title="Supprimer"
