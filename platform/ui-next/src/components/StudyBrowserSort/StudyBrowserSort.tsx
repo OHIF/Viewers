@@ -51,43 +51,50 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
   }, [displaySetService, selectedSort, sortDirection]);
 
   return (
-    <div className="flex w-[50%] items-center gap-1">
-      <DropdownMenu>
-      <Tooltip>
-          <TooltipTrigger className="w-full overflow-hidden focus:outline-none focus:ring-0 focus-visible:outline-none">
-            <DropdownMenuTrigger className="flex h-[28px] w-full items-center justify-start overflow-hidden whitespace-nowrap rounded border-0 bg-[#3a3a3a] px-3 text-sm text-white focus:outline-none data-[state=open]:outline-none data-[state=open]:ring-0">
-              {selectedSort.label}
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{selectedSort.label}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent className="bg-[#3a3a3a]">
-          {sortFunctions.map(sort => (
-            <DropdownMenuItem
-              key={sort.label}
-              className="text-sm text-white hover:bg-[#4a4a4a]"
-              onClick={() => handleSortChange(sort)}
+    <div className="contents">
+      <div className="min-w-0 flex-1 basis-0 overflow-hidden">
+        <div className="w-full min-w-0">
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger className="w-full overflow-hidden focus:outline-none focus:ring-0 focus-visible:outline-none">
+                <DropdownMenuTrigger className="relative flex h-[28px] w-full items-center justify-start overflow-hidden whitespace-nowrap rounded border-0 bg-[#3a3a3a] px-3 text-sm text-white focus:outline-none data-[state=open]:outline-none data-[state=open]:ring-0">
+                  <span className="overflow-hidden text-ellipsis">{selectedSort.label}</span>
+                  <Icons.ChevronOpen className="absolute right-0 top-1/2 h-6 w-6 -translate-y-1/2 opacity-70" />
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>{selectedSort.label}</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent className="bg-[#3a3a3a]">
+              {sortFunctions.map(sort => (
+                <DropdownMenuItem
+                  key={sort.label}
+                  className="text-sm text-white hover:bg-[#4a4a4a]"
+                  onClick={() => handleSortChange(sort)}
+                >
+                  {sort.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <div className="shrink-0">
+        <Tooltip>
+          <TooltipTrigger className="focus:outline-none focus:ring-0 focus-visible:outline-none">
+            <button
+              onClick={toggleSortDirection}
+              className="flex h-[28px] w-[28px] items-center justify-center rounded bg-[#3a3a3a] focus:outline-none"
             >
-              {sort.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <Tooltip>
-        <TooltipTrigger className="focus:outline-none focus:ring-0 focus-visible:outline-none">
-          <button
-            onClick={toggleSortDirection}
-            className="flex h-[28px] w-[28px] items-center justify-center rounded bg-[#3a3a3a] focus:outline-none"
-          >
-            {sortDirection === 'ascending' ? (
-              <Icons.SortingAscending className="h-3 w-3 text-white" />
-            ) : (
-              <Icons.SortingDescending className="h-3 w-3 text-white" />
-            )}
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>Sort direction</TooltipContent>
-      </Tooltip>
+              {sortDirection === 'ascending' ? (
+                <Icons.SortAZ className="h-4 w-4 text-white" />
+              ) : (
+                <Icons.SortZA className="h-4 w-4 text-white" />
+              )}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Sort direction</TooltipContent>
+        </Tooltip>
+      </div>
     </div>
   );
 }

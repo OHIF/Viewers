@@ -67,15 +67,15 @@ const StudyBrowser = ({
       >
         <div className="flex flex-col gap-[4px] overflow-hidden px-2">
           {showSettings && (
-            <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
-              <>
+            <div className="bg-bkg-low flex h-[48px] w-full items-center gap-[8px] py-[10px]">
+              <div className="min-w-0 flex-1 basis-0 overflow-hidden">
                 <StudyBrowserViewOptions
                   tabs={tabs}
                   onSelectTab={onClickTab}
                   activeTabName={activeTabName}
                 />
-                <StudyBrowserSort servicesManager={servicesManager} />
-              </>
+              </div>
+              <StudyBrowserSort servicesManager={servicesManager} />
             </div>
           )}
           {getTabContent()}
