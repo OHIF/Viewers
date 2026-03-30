@@ -272,6 +272,7 @@ export default function PanelAssistantIA(): React.ReactNode {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
+  const [sendingTabId, setSendingTabId] = useState<string | null>(null);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const [showArchived, setShowArchived] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -289,6 +290,7 @@ export default function PanelAssistantIA(): React.ReactNode {
   const draftCounterRef = useRef(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reflectionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleNewChat = useCallback(() => {
     const key = `draft-${draftCounterRef.current++}`;
@@ -538,6 +540,13 @@ export default function PanelAssistantIA(): React.ReactNode {
     return () => { if (reflectionIntervalRef.current) { clearInterval(reflectionIntervalRef.current); reflectionIntervalRef.current = null; } };
   }, [sending]);
 
+  useEffect(() => {
+    const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement | null;
+    if (viewport) {
+      viewport.scrollTop = viewport.scrollHeight;
+    }
+  }, [conversations, sending, selectedConversationId]);
+
   const fileToBase64 = useCallback((file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -622,6 +631,8 @@ export default function PanelAssistantIA(): React.ReactNode {
     setMessage('');
     clearAllPendingImages();
     setSending(true);
+    const activeTabId = selectedDraftKey ?? (selectedConversationId != null ? `conv-${selectedConversationId}` : null);
+    setSendingTabId(activeTabId);
     setLastSentContent(text);
     setError(null);
     setErrorLog(null);
@@ -655,6 +666,7 @@ export default function PanelAssistantIA(): React.ReactNode {
         setError(msg);
       } finally {
         setSending(false);
+        setSendingTabId(null);
         setLastSentContent(null);
       }
       return;
@@ -681,6 +693,7 @@ export default function PanelAssistantIA(): React.ReactNode {
       setError(e instanceof Error ? e.message : 'Erreur envoi');
     } finally {
       setSending(false);
+      setSendingTabId(null);
       setLastSentContent(null);
     }
   };
@@ -708,7 +721,9 @@ export default function PanelAssistantIA(): React.ReactNode {
 
   const selectedConversation = selectedConversationId != null ? conversations.find(c => c.id === selectedConversationId) ?? null : null;
   const someImagesStillUploading = pendingImages.some(p => p.status === 'uploading');
-  const hasStartedCurrentConversation = sending || (selectedConversationId != null && (selectedConversation?.messages?.length ?? 0) > 0);
+  const currentTabId = selectedDraftKey ?? (selectedConversationId != null ? `conv-${selectedConversationId}` : null);
+  const isCurrentTabSending = sending && sendingTabId === currentTabId;
+  const hasStartedCurrentConversation = isCurrentTabSending || (selectedConversationId != null && (selectedConversation?.messages?.length ?? 0) > 0);
   const showHistoryRecap = !hasStartedCurrentConversation;
 
   const lastThreeConversations = [...conversations]
@@ -1012,7 +1027,7 @@ export default function PanelAssistantIA(): React.ReactNode {
       {showHistoryRecap && renderInputZone()}
 
       {/* Content area */}
-      <ScrollArea className="flex-1">
+      <ScrollArea ref={scrollAreaRef} className="flex-1">
         <div className="flex flex-col gap-4 p-3 text-white">
           {error && (
             <div className="rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -1040,7 +1055,7 @@ export default function PanelAssistantIA(): React.ReactNode {
                   )}
                 </div>
               ))}
-              {sending && lastSentContent && (
+              {isCurrentTabSending && lastSentContent && (
                 <div className="flex flex-col gap-2">
                   <div className="self-end rounded-2xl bg-[#333] px-4 py-2 text-sm text-white">{lastSentContent}</div>
                   <div className="text-xs italic text-[#808080]">Réflexion pendant {reflectionSeconds} s</div>
