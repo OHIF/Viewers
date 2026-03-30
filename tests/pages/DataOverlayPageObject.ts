@@ -9,13 +9,16 @@ export class DataOverlayPageObject {
     this.viewportId = viewportId;
   }
 
+  get menu() {
+    return this.page.getByTestId(`viewport-data-overlay-menu-${this.viewportId}`);
+  }
+
   async toggle() {
     await this.page.getByTestId(`dataOverlayMenu-${this.viewportId}-btn`).click();
   }
 
   async addSegmentation(segmentation: string) {
-    await this.page.getByTestId(`AddSegmentationDataOverlay-${this.viewportId}`).click();
-    await this.page.getByText('SELECT A SEGMENTATION').click();
+    await this.openAddSegmentationDropdown();
     await this.page.getByTestId(segmentation).click();
   }
 
@@ -29,8 +32,8 @@ export class DataOverlayPageObject {
     await this.page.getByTestId(`overlay-ds-remove-button-${segmentation}`).click();
   }
 
-  async openAddSegmentationDropdown(viewportId: string = 'default') {
-    await this.page.getByTestId(`AddSegmentationDataOverlay-${viewportId}`).click();
+  async openAddSegmentationDropdown() {
+    await this.page.getByTestId(`AddSegmentationDataOverlay-${this.viewportId}`).click();
     await this.page.getByText('SELECT A SEGMENTATION').click();
   }
 
@@ -41,12 +44,15 @@ export class DataOverlayPageObject {
   }
 
   getOverlaySegmentationRow(label: string) {
-    const locator = this.page.getByTestId(`overlay-ds-select-value-${label.toUpperCase()}`);
-    return locator;
+    return this.menu.getByTestId(`overlay-ds-select-value-${label.toUpperCase()}`);
   }
 
-  async changeBackgroundDisplaySet(backgroundLabel: string, viewportId: string = 'default') {
-    await this.page.getByTestId(`overlay-background-ds-select-${viewportId}`).click();
+  get overlaySegmentationRows() {
+    return this.menu.locator('[data-cy^="overlay-ds-select-value-"]');
+  }
+
+  async changeBackgroundDisplaySet(backgroundLabel: string) {
+    await this.page.getByTestId(`overlay-background-ds-select-${this.viewportId}`).click();
     await this.page.getByTestId(backgroundLabel).click();
   }
 }
