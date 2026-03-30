@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
-import { useViewportGrid, StudyBrowser, Separator, Icons } from '@ohif/ui-next';
+import { useViewportGrid, StudyBrowser, Separator, Icons, ModalityFilter } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
@@ -56,6 +56,8 @@ function PanelStudyBrowser({
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
 
   const [seriesFilter, setSeriesFilter] = useState('');
+  /** null = "Toutes" (pas de filtre actif), string[] = modalités sélectionnées */
+  const [modalityFilter, setModalityFilter] = useState<string[] | null>(null);
 
   // multiple can be true or false
   const updateActionIconValue = actionIcon => {
@@ -350,21 +352,35 @@ function PanelStudyBrowser({
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
+  /** Toutes les modalités uniques présentes dans l'onglet actif */
+  const availableModalities = useMemo(() => {
+    const activeTab = tabs.find(t => t.name === activeTabName);
+    const mods = new Set<string>();
+    activeTab?.studies?.forEach(study => {
+      study.displaySets?.forEach(ds => {
+        if (ds.modality) mods.add(ds.modality.trim().toUpperCase());
+      });
+    });
+    return Array.from(mods).sort();
+  }, [tabs, activeTabName]);
+
   const filteredTabs = useMemo(() => {
     const q = seriesFilter.trim();
-    if (!q) {
-      return tabs;
-    }
     return tabs.map(tab => ({
       ...tab,
       studies: tab.studies?.map(study => ({
         ...study,
-        displaySets: study.displaySets?.filter(ds =>
-          ds.seriesNumber != null && ds.seriesNumber.toString().includes(q)
-        ),
+        displaySets: study.displaySets?.filter(ds => {
+          const matchesSearch =
+            !q || (ds.seriesNumber != null && ds.seriesNumber.toString().includes(q));
+          const matchesModality =
+            modalityFilter === null ||
+            (ds.modality && modalityFilter.includes(ds.modality.trim().toUpperCase()));
+          return matchesSearch && matchesModality;
+        }),
       })),
     }));
-  }, [tabs, seriesFilter]);
+  }, [tabs, seriesFilter, modalityFilter]);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
@@ -450,6 +466,15 @@ function PanelStudyBrowser({
             </button>
           ) : null}
         </div>
+        {availableModalities.length > 0 && (
+          <div className="px-2 pt-[8px]">
+            <ModalityFilter
+              modalities={availableModalities}
+              selectedModalities={modalityFilter}
+              onApply={setModalityFilter}
+            />
+          </div>
+        )}
         <Separator
           orientation="horizontal"
           className="bg-bkg-low"

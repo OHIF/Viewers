@@ -49,6 +49,7 @@ import { StudyItem } from './StudyItem';
 import { StudyBrowser } from './StudyBrowser';
 import { StudyBrowserSort } from './StudyBrowserSort';
 import { StudyBrowserViewOptions } from './StudyBrowserViewOptions';
+import { ModalityFilter } from './ModalityFilter';
 import { Thumbnail } from './Thumbnail';
 import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
@@ -194,6 +195,7 @@ export {
   StudyBrowser,
   StudyBrowserSort,
   StudyBrowserViewOptions,
+  ModalityFilter,
   Thumbnail,
   ThumbnailList,
   PanelSection,

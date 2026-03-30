@@ -67,7 +67,7 @@ const StudyBrowser = ({
       >
         <div className="flex flex-col gap-[4px] overflow-hidden px-2">
           {showSettings && (
-            <div className="bg-bkg-low flex h-[48px] w-full items-center gap-[8px] py-[10px]">
+            <div className="bg-bkg-low flex w-full items-center gap-[8px] pt-[8px]">
               <div className="min-w-0 flex-1 basis-0 overflow-hidden">
                 <StudyBrowserViewOptions
                   tabs={tabs}
@@ -78,7 +78,7 @@ const StudyBrowser = ({
               <StudyBrowserSort servicesManager={servicesManager} />
             </div>
           )}
-          {getTabContent()}
+          <div className="mt-[15px]">{getTabContent()}</div>
         </div>
       </div>
     </ScrollArea>
