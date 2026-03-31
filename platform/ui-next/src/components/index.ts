@@ -1,13 +1,14 @@
 import { Button, buttonVariants } from './Button';
 import {
   SmartScrollbar,
-  useSmartScrollbarContext,
+  useSmartScrollbarLayoutContext,
+  useSmartScrollbarScrollContext,
   SmartScrollbarTrack,
   SmartScrollbarFill,
   SmartScrollbarIndicator,
   SmartScrollbarEndpoints,
 } from './SmartScrollbar';
-import type { SmartScrollbarContextValue } from './SmartScrollbar';
+import type { SmartScrollbarLayoutContextValue } from './SmartScrollbar';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
   Command,
@@ -280,7 +281,8 @@ export {
   CinePlayer,
   LayoutSelector,
   SmartScrollbar,
-  useSmartScrollbarContext,
+  useSmartScrollbarLayoutContext,
+  useSmartScrollbarScrollContext,
   SmartScrollbarTrack,
   SmartScrollbarFill,
   SmartScrollbarIndicator,

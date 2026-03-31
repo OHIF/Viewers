@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  useMemo,
   Children,
   isValidElement,
 } from 'react';
@@ -15,7 +16,7 @@ import { SmartScrollbarIndicator } from './SmartScrollbarIndicator';
 function validateChildren(children: React.ReactNode): void {
   let hasIndicator = false;
 
-  Children.forEach(children, (child) => {
+  Children.forEach(children, child => {
     if (!isValidElement(child)) return;
     if (child.type === SmartScrollbarIndicator) hasIndicator = true;
   });
@@ -23,7 +24,7 @@ function validateChildren(children: React.ReactNode): void {
   if (!hasIndicator) {
     throw new Error(
       'SmartScrollbar: <SmartScrollbarIndicator> is a required child. ' +
-      'Users will not see their current scroll position without it.'
+        'Users will not see their current scroll position without it.'
     );
   }
 }
@@ -36,10 +37,9 @@ const INDICATOR_SIZE = 8;
 const INDICATOR_BORDER_WIDTH = 1;
 const SETTLE_DELAY = 600;
 
-// ── Context ────────────────────────────────────────────────────
-export interface SmartScrollbarContextValue {
-  value: number;
-  totalSlices: number;
+// ── Contexts ───────────────────────────────────────────────────
+export interface SmartScrollbarLayoutContextValue {
+  total: number;
   trackHeight: number;
   isLoading: boolean;
   effectiveWidth: number;
@@ -48,18 +48,27 @@ export interface SmartScrollbarContextValue {
   stableLayerEl: HTMLDivElement | null;
 }
 
-const SmartScrollbarContext = createContext<SmartScrollbarContextValue | null>(null);
+const SmartScrollbarLayoutContext = createContext<SmartScrollbarLayoutContextValue | null>(null);
+const SmartScrollbarScrollContext = createContext<number | null>(null);
 
-export function useSmartScrollbarContext(): SmartScrollbarContextValue {
-  const ctx = useContext(SmartScrollbarContext);
-  if (!ctx) throw new Error('SmartScrollbar compound components must be used inside <SmartScrollbar>');
+export function useSmartScrollbarLayoutContext(): SmartScrollbarLayoutContextValue {
+  const ctx = useContext(SmartScrollbarLayoutContext);
+  if (!ctx)
+    throw new Error('SmartScrollbar compound components must be used inside <SmartScrollbar>');
   return ctx;
+}
+
+export function useSmartScrollbarScrollContext(): number {
+  const value = useContext(SmartScrollbarScrollContext);
+  if (value === null)
+    throw new Error('SmartScrollbar compound components must be used inside <SmartScrollbar>');
+  return value;
 }
 
 // ── Props ──────────────────────────────────────────────────────
 interface SmartScrollbarProps {
   value: number;
-  totalSlices: number;
+  total: number;
   onValueChange: (index: number) => void;
   isLoading?: boolean;
   enableKeyboardNavigation?: boolean;
@@ -71,7 +80,7 @@ interface SmartScrollbarProps {
 // ── Component ──────────────────────────────────────────────────
 export function SmartScrollbar({
   value,
-  totalSlices,
+  total,
   onValueChange,
   isLoading = false,
   enableKeyboardNavigation = false,
@@ -129,16 +138,16 @@ export function SmartScrollbar({
 
   // ── Pointer helpers ──────────────────────────────────────────
   const clamp = useCallback(
-    (val: number) => Math.max(0, Math.min(totalSlices - 1, val)),
-    [totalSlices]
+    (val: number) => Math.max(0, Math.min(total - 1, val)),
+    [total]
   );
 
   const indexFromPointerY = useCallback(
     (clientY: number) => {
       const ratio = Math.max(0, Math.min(1, (clientY - trackTopRef.current) / trackHeight));
-      return Math.round(ratio * (totalSlices - 1));
+      return Math.round(ratio * (total - 1));
     },
-    [trackHeight, totalSlices]
+    [trackHeight, total]
   );
 
   const handlePointerDown = useCallback(
@@ -162,14 +171,11 @@ export function SmartScrollbar({
     [clamp, indexFromPointerY, onValueChange]
   );
 
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      isDraggingRef.current = false;
-      setIsDragging(false);
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    },
-    []
-  );
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  }, []);
 
   // ── Keyboard interaction (WAI-ARIA slider spec) ────────────
   const PAGE_STEP = 10;
@@ -197,7 +203,7 @@ export function SmartScrollbar({
           next = 0;
           break;
         case 'End':
-          next = totalSlices - 1;
+          next = total - 1;
           break;
         default:
           return;
@@ -206,81 +212,81 @@ export function SmartScrollbar({
       e.preventDefault();
       onValueChange(clamp(next));
     },
-    [value, totalSlices, clamp, onValueChange]
+    [value, total, clamp, onValueChange]
   );
 
-  // ── Context value ────────────────────────────────────────────
-  const ctx: SmartScrollbarContextValue = {
-    value,
-    totalSlices,
+  // ── Context values ───────────────────────────────────────────
+  const layoutCtx = useMemo<SmartScrollbarLayoutContextValue>(() => ({
+    total,
     trackHeight,
     isLoading,
     effectiveWidth,
     trackWidth: TRACK_WIDTH,
     fillPadding: FILL_PADDING,
     stableLayerEl,
-  };
-
+  }), [total, trackHeight, isLoading, effectiveWidth, stableLayerEl]);
   return (
-    <SmartScrollbarContext.Provider value={ctx}>
-      <div
-        ref={containerRef}
-        role="slider"
-        aria-valuenow={value}
-        aria-valuemin={0}
-        aria-valuemax={totalSlices - 1}
-        aria-orientation="vertical"
-        aria-label={ariaLabel}
-        tabIndex={0}
-        className={className}
-        style={{
-          width: TRACK_WIDTH + hitZoneLeftExtension,
-          height: '100%',
-          position: 'relative',
-          marginLeft: -hitZoneLeftExtension,
-          cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none',
-        }}
-        onPointerEnter={() => setIsHovered(true)}
-        onPointerLeave={() => setIsHovered(false)}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onKeyDown={enableKeyboardNavigation ? handleKeyDown : undefined}
-      >
-        {trackHeight > 0 && (
-          <div
-            style={{
-              position: 'absolute',
-              right: 0,
-              top: 0,
-              width: TRACK_WIDTH,
-              height: trackHeight,
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
+    <SmartScrollbarLayoutContext.Provider value={layoutCtx}>
+      <SmartScrollbarScrollContext.Provider value={value}>
+        <div
+          ref={containerRef}
+          role="slider"
+          aria-valuenow={value}
+          aria-valuemin={0}
+          aria-valuemax={total - 1}
+          aria-orientation="vertical"
+          aria-label={ariaLabel}
+          tabIndex={0}
+          className={className}
+          style={{
+            width: TRACK_WIDTH + hitZoneLeftExtension,
+            height: '100%',
+            position: 'relative',
+            marginLeft: -hitZoneLeftExtension,
+            cursor: isDragging ? 'grabbing' : 'grab',
+            touchAction: 'none',
+          }}
+          onPointerEnter={() => setIsHovered(true)}
+          onPointerLeave={() => setIsHovered(false)}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onKeyDown={enableKeyboardNavigation ? handleKeyDown : undefined}
+        >
+          {trackHeight > 0 && (
             <div
-              className="relative"
               style={{
-                width: effectiveWidth,
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                width: TRACK_WIDTH,
                 height: trackHeight,
-                transition: 'width 300ms ease',
+                display: 'flex',
+                justifyContent: 'center',
               }}
             >
-              {children}
-            </div>
-            {/* Stable layer — always TRACK_WIDTH, never contracts. For elements like
+              <div
+                className="relative"
+                style={{
+                  width: effectiveWidth,
+                  height: trackHeight,
+                  transition: 'width 300ms ease',
+                }}
+              >
+                {children}
+              </div>
+              {/* Stable layer — always TRACK_WIDTH, never contracts. For elements like
                 endpoints that must not jitter during width transitions. Children
                 render here via createPortal using stableLayerRef from context. */}
-            <div
-              ref={setStableLayerEl}
-              style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
-            />
-          </div>
-        )}
-      </div>
-    </SmartScrollbarContext.Provider>
+              <div
+                ref={setStableLayerEl}
+                style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+              />
+            </div>
+          )}
+        </div>
+      </SmartScrollbarScrollContext.Provider>
+    </SmartScrollbarLayoutContext.Provider>
   );
 }
