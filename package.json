@@ -79,7 +79,9 @@
     "link-list": "npm ls --depth=0 --link=true",
     "cs3d:checkout": "cd libs/@cornerstonejs && git fetch && git checkout",
     "cs3d:check": "node .scripts/cs3d-check.mjs",
-    "cs3d:build": "cd libs/@cornerstonejs && yarn install && yarn run build:esm",
+    "cs3d:build": "cd libs/@cornerstonejs && yarn run build:esm",
+    "cs3d:watch": "cd libs/@cornerstonejs && yarn run build:esm:watch",
+    "cs3d:install": "cd libs/@cornerstonejs && yarn install",
     "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
     "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs ."
   },
