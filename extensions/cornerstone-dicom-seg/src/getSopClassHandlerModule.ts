@@ -50,7 +50,7 @@ function _getDisplaySetsFromSeries(
     StudyInstanceUID,
     SOPClassHandlerId,
     SOPClassUID,
-    FrameOfReferenceUID,
+    frameOfReferenceUID: FrameOfReferenceUID,
     referencedImages: null,
     referencedSeriesInstanceUID: null,
     referencedDisplaySetInstanceUID: null,
@@ -106,7 +106,7 @@ function _getDisplaySetsFromSeries(
         if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
           displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
           displaySet.isReconstructable = addedDisplaySet.isReconstructable;
-          displaySet.FrameOfReferenceUID = addedDisplaySet.FrameOfReferenceUID;
+          displaySet.frameOfReferenceUID = addedDisplaySet.frameOfReferenceUID;
           unsubscribe();
         }
       }
@@ -114,7 +114,7 @@ function _getDisplaySetsFromSeries(
   } else {
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
     displaySet.isReconstructable = referencedDisplaySet.isReconstructable;
-    displaySet.FrameOfReferenceUID = referencedDisplaySet.FrameOfReferenceUID;
+    displaySet.frameOfReferenceUID = referencedDisplaySet.frameOfReferenceUID;
   }
 
   displaySet.load = async ({ headers }) =>
