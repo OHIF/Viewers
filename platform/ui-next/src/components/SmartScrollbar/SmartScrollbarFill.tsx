@@ -3,25 +3,24 @@ import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
 import { getContiguousRuns } from './utils';
 
 interface SmartScrollbarFillProps {
-  slices: Set<number>;
+  marked: Set<number>;
   className?: string;
   loadingClassName?: string;
 }
 
 export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
-  slices,
+  marked,
   className,
   loadingClassName,
 }: SmartScrollbarFillProps) {
-  const { totalSlices, trackHeight, effectiveWidth, fillPadding, isLoading } =
+  const { total, trackHeight, effectiveWidth, fillPadding, isLoading } =
     useSmartScrollbarLayoutContext();
 
-  // slices is a mutated Set (same reference), so depend on .size to bust memo
-  const slicesSize = slices.size;
+  // marked is a mutated Set (same reference), so depend on .size to bust memo
   const runs = useMemo(
-    () => getContiguousRuns(slices, totalSlices),
+    () => getContiguousRuns(marked, total),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [slicesSize, totalSlices]
+    [marked.size, total]
   );
 
   if (runs.length === 0 || trackHeight === 0) return null;
@@ -32,8 +31,8 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   return (
     <>
       {runs.map(run => {
-        const top = fillAreaTop + (run.start / totalSlices) * fillAreaHeight;
-        const height = (run.length / totalSlices) * fillAreaHeight;
+        const top = fillAreaTop + (run.start / total) * fillAreaHeight;
+        const height = (run.length / total) * fillAreaHeight;
 
         return (
           <div

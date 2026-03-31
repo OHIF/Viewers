@@ -13,7 +13,7 @@ interface SmartScrollbarIndicatorProps {
 }
 
 export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorProps) {
-  const { totalSlices, trackHeight, effectiveWidth, fillPadding } =
+  const { total, trackHeight, effectiveWidth, fillPadding } =
     useSmartScrollbarLayoutContext();
   const value = useSmartScrollbarScrollContext();
 
@@ -29,7 +29,7 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
   const fillAreaTop = fillPadding;
   const fillAreaHeight = trackHeight - fillPadding * 2;
   const maxY = fillAreaHeight - INDICATOR_SIZE;
-  const y = fillAreaTop + (totalSlices <= 1 ? 0 : (value / (totalSlices - 1)) * maxY);
+  const y = fillAreaTop + (total <= 1 ? 0 : (value / (total - 1)) * maxY);
   return (
     <div
       className={`pointer-events-none absolute ${className ?? ''}`}

@@ -8,25 +8,25 @@ const CAP_HEIGHT = CAP_SIZE / 2 + 1; // 3
 const CAP_COLOR = 'hsl(var(--neutral) / 1.0)';
 
 interface SmartScrollbarEndpointsProps {
-  slices: Set<number>;
+  marked: Set<number>;
   className?: string;
 }
 
 export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoints({
-  slices,
+  marked,
   className,
 }: SmartScrollbarEndpointsProps) {
-  const { totalSlices, trackHeight, trackWidth, fillPadding, stableLayerEl } =
+  const { total, trackHeight, trackWidth, fillPadding, stableLayerEl } =
     useSmartScrollbarLayoutContext();
 
-  if (slices.size === 0 || trackHeight === 0 || !stableLayerEl) return null;
+  if (marked.size === 0 || trackHeight === 0 || !stableLayerEl) return null;
 
   const fillAreaTop = fillPadding;
   const fillAreaHeight = trackHeight - fillPadding * 2;
 
   let minSlice = Infinity;
   let maxSlice = -Infinity;
-  for (const s of slices) {
+  for (const s of marked) {
     if (s < minSlice) minSlice = s;
     if (s > maxSlice) maxSlice = s;
   }
@@ -35,8 +35,8 @@ export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoin
   // stationary during contraction/expansion transitions.
   const cx = trackWidth / 2;
   const halfCap = CAP_SIZE / 2;
-  const topEdge = fillAreaTop + (minSlice / totalSlices) * fillAreaHeight;
-  const bottomEdge = fillAreaTop + ((maxSlice + 1) / totalSlices) * fillAreaHeight;
+  const topEdge = fillAreaTop + (minSlice / total) * fillAreaHeight;
+  const bottomEdge = fillAreaTop + ((maxSlice + 1) / total) * fillAreaHeight;
   // Portal into the stable layer so position isn't affected by the
   // contracting track div's width transition.
   return createPortal(

@@ -44,7 +44,7 @@ const SETTLE_DELAY = 600;
 
 // ── Contexts ───────────────────────────────────────────────────
 export interface SmartScrollbarLayoutContextValue {
-  totalSlices: number;
+  total: number;
   trackHeight: number;
   isLoading: boolean;
   effectiveWidth: number;
@@ -73,7 +73,7 @@ export function useSmartScrollbarScrollContext(): number {
 // ── Props ──────────────────────────────────────────────────────
 interface SmartScrollbarProps {
   value: number;
-  totalSlices: number;
+  total: number;
   onValueChange: (index: number) => void;
   isLoading?: boolean;
   enableKeyboardNavigation?: boolean;
@@ -85,7 +85,7 @@ interface SmartScrollbarProps {
 // ── Component ──────────────────────────────────────────────────
 export function SmartScrollbar({
   value,
-  totalSlices,
+  total,
   onValueChange,
   isLoading = false,
   enableKeyboardNavigation = false,
@@ -143,16 +143,16 @@ export function SmartScrollbar({
 
   // ── Pointer helpers ──────────────────────────────────────────
   const clamp = useCallback(
-    (val: number) => Math.max(0, Math.min(totalSlices - 1, val)),
-    [totalSlices]
+    (val: number) => Math.max(0, Math.min(total - 1, val)),
+    [total]
   );
 
   const indexFromPointerY = useCallback(
     (clientY: number) => {
       const ratio = Math.max(0, Math.min(1, (clientY - trackTopRef.current) / trackHeight));
-      return Math.round(ratio * (totalSlices - 1));
+      return Math.round(ratio * (total - 1));
     },
-    [trackHeight, totalSlices]
+    [trackHeight, total]
   );
 
   const handlePointerDown = useCallback(
@@ -208,7 +208,7 @@ export function SmartScrollbar({
           next = 0;
           break;
         case 'End':
-          next = totalSlices - 1;
+          next = total - 1;
           break;
         default:
           return;
@@ -217,19 +217,19 @@ export function SmartScrollbar({
       e.preventDefault();
       onValueChange(clamp(next));
     },
-    [value, totalSlices, clamp, onValueChange]
+    [value, total, clamp, onValueChange]
   );
 
   // ── Context values ───────────────────────────────────────────
   const layoutCtx = useMemo<SmartScrollbarLayoutContextValue>(() => ({
-    totalSlices,
+    total,
     trackHeight,
     isLoading,
     effectiveWidth,
     trackWidth: TRACK_WIDTH,
     fillPadding: FILL_PADDING,
     stableLayerEl,
-  }), [totalSlices, trackHeight, isLoading, effectiveWidth, stableLayerEl]);
+  }), [total, trackHeight, isLoading, effectiveWidth, stableLayerEl]);
   return (
     <SmartScrollbarLayoutContext.Provider value={layoutCtx}>
       <SmartScrollbarScrollContext.Provider value={value}>
@@ -238,7 +238,7 @@ export function SmartScrollbar({
           role="slider"
           aria-valuenow={value}
           aria-valuemin={0}
-          aria-valuemax={totalSlices - 1}
+          aria-valuemax={total - 1}
           aria-orientation="vertical"
           aria-label={ariaLabel}
           tabIndex={0}
