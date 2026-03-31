@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.46...v3.13.0-beta.47) (2026-03-28)
+
+**Note:** Version bump only for package @ohif/extension-ultrasound-pleura-bline
+
+
+
+
+
 # [3.13.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.45...v3.13.0-beta.46) (2026-03-27)
 
 **Note:** Version bump only for package @ohif/extension-ultrasound-pleura-bline
