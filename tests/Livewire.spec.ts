@@ -75,6 +75,7 @@ test('should restore viewport interactivity after deleting an in-progress Livewi
     { x: 523, y: 232 },
   ]);
 
+  // Ensure the three points clicked above are rendered in the DOM before pressing Backspace
   await expect(activeViewport.svg('circle')).toHaveCount(3);
   await press({ page, key: 'Backspace' });
 
