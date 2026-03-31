@@ -66,13 +66,13 @@ const segmentationRepresentationModifiedCallback = async (
 
   const sharedDisplaySetExists = isAnyDisplaySetCommon(sourceDisplaySetUIDs, targetDisplaySetUIDs);
 
-  if (!sharedDisplaySetExists && !viewport.getFrameOfReferenceUID()) {
-    return;
-  }
-
   const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
   const sourceFrameOfReferenceUID =
     getEnabledElementByViewportId(sourceViewportId)?.viewport?.getFrameOfReferenceUID();
+
+  if (!sharedDisplaySetExists && !targetFrameOfReferenceUID) {
+    return;
+  }
 
   if (!sharedDisplaySetExists && targetFrameOfReferenceUID !== sourceFrameOfReferenceUID) {
     return;
