@@ -34,6 +34,10 @@ export class DataOverlayPageObject {
 
   async openAddSegmentationDropdown() {
     await this.page.getByTestId(`AddSegmentationDataOverlay-${this.viewportId}`).click();
+    await this.clickSelectSegmentation();
+  }
+
+  async clickSelectSegmentation() {
     await this.page.getByText('SELECT A SEGMENTATION').click();
   }
 

@@ -7,6 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('should only show segmentations matching the background Frame of Reference', async ({
+  page,
   viewportPageObject,
 }) => {
   const segmentationLabelsFOR1 = ['Segmentation FOR1SEG', 'FoR 1 RTstructRTSTRUCT'];
@@ -19,13 +20,11 @@ test('should only show segmentations matching the background Frame of Reference'
 
   const segmentationLabels = await dataOverlay.getDropdownOptionLabels();
   expect(segmentationLabels.sort()).toEqual([...segmentationLabelsFOR1].sort());
-  await dataOverlay.toggle();
-  await expect(dataOverlay.menu).not.toBeVisible();
 
-  await dataOverlay.toggle();
+  await page.keyboard.press('Escape');
+
   await dataOverlay.changeBackgroundDisplaySet('CT Std (FoR 2)-CT');
-  await dataOverlay.openAddSegmentationDropdown();
-
+  await dataOverlay.clickSelectSegmentation();
   const segmentationLabelsAfterBgChange = await dataOverlay.getDropdownOptionLabels();
   expect(segmentationLabelsAfterBgChange).not.toEqual(segmentationLabelsFOR1);
   expect(segmentationLabelsAfterBgChange.sort()).toEqual([...segmentationLabelsFOR2].sort());
