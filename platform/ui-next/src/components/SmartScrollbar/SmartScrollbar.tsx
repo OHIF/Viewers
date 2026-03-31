@@ -12,11 +12,7 @@ import { getIndicatorLayout } from './utils';
 import { SmartScrollbarIndicator } from './SmartScrollbarIndicator';
 
 // ── Child validation ────────────────────────────────────────────
-let _warnedNoIndicator = false;
-
 function validateChildren(children: React.ReactNode): void {
-  if (process.env.NODE_ENV === 'production') return;
-
   let hasIndicator = false;
 
   Children.forEach(children, (child) => {
@@ -24,11 +20,10 @@ function validateChildren(children: React.ReactNode): void {
     if (child.type === SmartScrollbarIndicator) hasIndicator = true;
   });
 
-  if (!hasIndicator && !_warnedNoIndicator) {
-    _warnedNoIndicator = true;
-    console.warn(
-      'SmartScrollbar: no <SmartScrollbarIndicator> found. ' +
-      'The user will not see their current scroll position.'
+  if (!hasIndicator) {
+    throw new Error(
+      'SmartScrollbar: <SmartScrollbarIndicator> is a required child. ' +
+      'Users will not see their current scroll position without it.'
     );
   }
 }
