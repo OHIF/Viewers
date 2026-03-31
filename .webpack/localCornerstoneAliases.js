@@ -7,6 +7,7 @@
  */
 const path = require('path');
 const fs = require('fs');
+const { normalizeWindowsDriveLetter } = require('./helpers/normalizeWindowsDriveLetter.js');
 
 const PACKAGES = {
   adapters: 'packages/adapters',
@@ -24,7 +25,8 @@ const PACKAGES = {
  * @returns {Record<string, string>}
  */
 function getLocalCornerstoneAliases(repoRoot) {
-  const cs3dRoot = path.join(repoRoot, 'libs', '@cornerstonejs');
+  const root = normalizeWindowsDriveLetter(path.resolve(repoRoot));
+  const cs3dRoot = path.join(root, 'libs', '@cornerstonejs');
   const aliases = {};
   for (const [name, rel] of Object.entries(PACKAGES)) {
     const abs = path.join(cs3dRoot, rel);
@@ -37,8 +39,9 @@ function getLocalCornerstoneAliases(repoRoot) {
       // `@cornerstonejs/tools/enums` — the bundler would resolve them under the package
       // root instead of via package.json "exports". Subpaths must resolve through
       // node_modules (e.g. after `yarn cs3d:link`) so exports apply; the main entry
-      // still pins to this built dist tree.
-      aliases[`@cornerstonejs/${name}$`] = distEsmIndex;
+      // still pins to this built dist tree. Normalize drive letter so webpack matches
+      // symlink realpath casing on Windows.
+      aliases[`@cornerstonejs/${name}$`] = normalizeWindowsDriveLetter(distEsmIndex);
     }
   }
   return aliases;

@@ -56,6 +56,14 @@ export default function PanelRoiThresholdSegmentation() {
   const stats = segmentationService.getSegmentationGroupStats(segmentationIds);
   const tmtvValue = stats?.tmtv;
 
+  // Calculate ready status on stats to allow for waiting for stats to finish calculating
+  const segmentStatsReady =
+    segmentations.length > 0 &&
+    segmentations.every(
+      seg =>
+        seg.segments?.[1]?.cachedStats?.namedStats?.lesionGlycolysis?.value !== undefined
+    );
+
   const handleExportCSV = () => {
     if (!segmentations.length) {
       return;
@@ -71,7 +79,10 @@ export default function PanelRoiThresholdSegmentation() {
   return (
     <div className="mb-1 flex flex-col">
       <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
-        <div className="bg-popover flex items-baseline justify-between px-2 py-1">
+        <div
+          className="bg-popover flex items-baseline justify-between px-2 py-1"
+          data-cy={segmentStatsReady ? 'tmtvSegmentStatsReady' : 'tmtvSegmentStatsNotReady'}
+        >
           <div className="py-1">
             <span className="text-muted-foreground text-base font-bold uppercase">{'TMTV: '}</span>
             <span className="text-foreground">{tmtvValue ? `${tmtvValue.toFixed(3)} mL` : ''}</span>
