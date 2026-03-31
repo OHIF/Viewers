@@ -20,28 +20,10 @@ import loadDynamicConfig from './loadDynamicConfig';
 export { history } from './utils/history';
 export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
 
-function loadLocalOverride() {
-  const base = typeof window !== 'undefined' && (window.PUBLIC_URL || '/');
-  const url = base.replace(/\/?$/, '/') + 'config/local.override.json';
-  return fetch(url)
-    .then(res => (res.ok ? res.json() : null))
-    .catch(() => null);
-}
-
-function mergeConfig(base, override) {
-  if (!override || typeof override !== 'object') return base;
-  return { ...base, ...override };
-}
-
 loadDynamicConfig(window.config).then(async config_json => {
   // Reset Dynamic config if defined
   if (config_json !== null) {
     window.config = config_json;
-  }
-
-  const localOverride = await loadLocalOverride();
-  if (localOverride) {
-    window.config = mergeConfig(window.config || {}, localOverride);
   }
 
   /**

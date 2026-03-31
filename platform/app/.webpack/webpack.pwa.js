@@ -1,6 +1,7 @@
 // https://developers.google.com/web/tools/workbox/guides/codelabs/webpack
 // ~~ WebPack
 const path = require('path');
+const fs = require('fs');
 const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
@@ -28,6 +29,20 @@ const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
+
+// Generate local-override-config.js from local.override.json (gitignored, local dev only).
+// Patches window.config right after app-config.js loads in the browser.
+const LOCAL_OVERRIDE_PATH = path.join(PUBLIC_DIR, 'config/local.override.json');
+const LOCAL_OVERRIDE_JS_PATH = path.join(__dirname, '../../../.local-override-config.js');
+if (fs.existsSync(LOCAL_OVERRIDE_PATH)) {
+  const override = JSON.parse(fs.readFileSync(LOCAL_OVERRIDE_PATH, 'utf8'));
+  fs.writeFileSync(
+    LOCAL_OVERRIDE_JS_PATH,
+    `(function(){var o=${JSON.stringify(override)};if(!window.config)return;Object.keys(o).forEach(function(k){if(o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k])&&window.config[k]&&typeof window.config[k]==='object'){Object.assign(window.config[k],o[k])}else{window.config[k]=o[k]}})})();\n`
+  );
+} else {
+  fs.writeFileSync(LOCAL_OVERRIDE_JS_PATH, '');
+}
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
 // const MillionLint = require('@million/lint');
@@ -116,6 +131,11 @@ module.exports = (env, argv) => {
           {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
+          },
+          // Copy local override config (generated above from local.override.json)
+          {
+            from: LOCAL_OVERRIDE_JS_PATH,
+            to: `${DIST_DIR}/local-override-config.js`,
           },
         ],
       }),
