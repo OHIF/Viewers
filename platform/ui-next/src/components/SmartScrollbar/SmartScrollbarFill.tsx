@@ -1,26 +1,27 @@
 import React, { useMemo } from 'react';
 import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
-import { getContiguousRuns } from './utils';
+import { computeContiguousRuns } from './utils';
 
 interface SmartScrollbarFillProps {
-  marked: Set<number>;
+  marked: Uint8Array;
+  version: number;
   className?: string;
   loadingClassName?: string;
 }
 
 export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   marked,
+  version,
   className,
   loadingClassName,
 }: SmartScrollbarFillProps) {
   const { total, trackHeight, effectiveWidth, fillPadding, isLoading } =
     useSmartScrollbarLayoutContext();
 
-  // marked is a mutated Set (same reference), so depend on .size to bust memo
+  // marked is a stable ref; version changing is what drives recomputation.
   const runs = useMemo(
-    () => getContiguousRuns(marked, total),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [marked.size, total]
+    () => computeContiguousRuns(marked),
+    [marked, version]
   );
 
   if (runs.length === 0 || trackHeight === 0) return null;
@@ -28,6 +29,7 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   const fillAreaTop = fillPadding;
   const fillAreaHeight = trackHeight - fillPadding * 2;
   const activeClass = isLoading && loadingClassName ? loadingClassName : className;
+
   return (
     <>
       {runs.map(run => {

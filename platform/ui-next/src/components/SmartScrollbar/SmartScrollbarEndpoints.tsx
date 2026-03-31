@@ -8,28 +8,43 @@ const CAP_HEIGHT = CAP_SIZE / 2 + 1; // 3
 const CAP_COLOR = 'hsl(var(--neutral) / 1.0)';
 
 interface SmartScrollbarEndpointsProps {
-  marked: Set<number>;
+  marked: Uint8Array;
+  version: number;
   className?: string;
 }
 
 export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoints({
   marked,
+  // `marked` is mutated in-place (stable reference). We accept `version` only to
+  // invalidate React.memo and force a re-render when the bytes change. The
+  // leading underscore indicates the value is intentionally unused in this component.
+  version: _version,
   className,
 }: SmartScrollbarEndpointsProps) {
   const { total, trackHeight, trackWidth, fillPadding, stableLayerEl } =
     useSmartScrollbarLayoutContext();
 
-  if (marked.size === 0 || trackHeight === 0 || !stableLayerEl) return null;
+  // Scan for the first and last set byte in O(n) — much cheaper than a Set
+  // iteration and naturally gives us the two endpoints we need.
+  let minSlice = -1;
+  let maxSlice = -1;
+  for (let i = 0; i < marked.length; i++) {
+    if (marked[i]) {
+      minSlice = i;
+      break;
+    }
+  }
+  for (let i = marked.length - 1; i >= 0; i--) {
+    if (marked[i]) {
+      maxSlice = i;
+      break;
+    }
+  }
+
+  if (minSlice === -1 || trackHeight === 0 || !stableLayerEl) return null;
 
   const fillAreaTop = fillPadding;
   const fillAreaHeight = trackHeight - fillPadding * 2;
-
-  let minSlice = Infinity;
-  let maxSlice = -Infinity;
-  for (const s of marked) {
-    if (s < minSlice) minSlice = s;
-    if (s > maxSlice) maxSlice = s;
-  }
 
   // Use trackWidth (always 8px) not effectiveWidth — endpoints must stay
   // stationary during contraction/expansion transitions.
@@ -37,6 +52,7 @@ export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoin
   const halfCap = CAP_SIZE / 2;
   const topEdge = fillAreaTop + (minSlice / total) * fillAreaHeight;
   const bottomEdge = fillAreaTop + ((maxSlice + 1) / total) * fillAreaHeight;
+
   // Portal into the stable layer so position isn't affected by the
   // contracting track div's width transition.
   return createPortal(

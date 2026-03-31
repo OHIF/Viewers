@@ -6,42 +6,31 @@ export interface ContiguousRun {
 }
 
 /**
- * Given a Set of indices and a total count, returns contiguous runs
- * sorted by start index. Each run includes metadata about whether
- * it's the first/last run for border-radius decisions.
+ * Given a Uint8Array where each non-zero byte represents a set position,
+ * returns contiguous runs in a single O(n) pass. No sorting or heap
+ * allocations inside the loop.
  */
-export function getContiguousRuns(
-  indices: Set<number>,
-  total: number
-): ContiguousRun[] {
-  if (indices.size === 0) return [];
-
-  const sorted = Array.from(indices).sort((a, b) => a - b);
+export function computeContiguousRuns(bytes: Uint8Array): ContiguousRun[] {
   const runs: ContiguousRun[] = [];
-  let runStart = sorted[0];
-  let runLength = 1;
+  const n = bytes.length;
+  let i = 0;
 
-  for (let i = 1; i < sorted.length; i++) {
-    if (sorted[i] === sorted[i - 1] + 1) {
-      runLength++;
-    } else {
-      runs.push({ start: runStart, length: runLength, isFirst: false, isLast: false });
-      runStart = sorted[i];
-      runLength = 1;
-    }
+  while (i < n) {
+    while (i < n && bytes[i] === 0) i++;
+    if (i >= n) break;
+
+    const start = i;
+    while (i < n && bytes[i] !== 0) i++;
+
+    runs.push({ start, length: i - start, isFirst: false, isLast: false });
   }
-  runs.push({ start: runStart, length: runLength, isFirst: false, isLast: false });
 
-  // Mark first and last
   if (runs.length > 0) {
     runs[0].isFirst = true;
     runs[runs.length - 1].isLast = true;
   }
 
-  // Filter to valid range and clamp lengths that extend past total
-  return runs
-    .filter(r => r.start >= 0 && r.start < total)
-    .map(r => ({ ...r, length: Math.min(r.length, total - r.start) }));
+  return runs;
 }
 
 /**

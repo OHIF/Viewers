@@ -7,8 +7,8 @@ import {
   SmartScrollbarFill,
   SmartScrollbarIndicator,
   SmartScrollbarEndpoints,
+  useByteArray,
 } from './SmartScrollbar';
-import type { SmartScrollbarLayoutContextValue } from './SmartScrollbar';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
   Command,
@@ -287,4 +287,5 @@ export {
   SmartScrollbarFill,
   SmartScrollbarIndicator,
   SmartScrollbarEndpoints,
+  useByteArray,
 };
