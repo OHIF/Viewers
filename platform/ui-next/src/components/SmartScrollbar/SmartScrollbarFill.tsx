@@ -4,6 +4,12 @@ import { computeContiguousRuns, computePixelFilledFromMarked } from './utils';
 
 interface SmartScrollbarFillProps {
   marked: Uint8Array;
+  /**
+   * Change token that MUST be bumped when the contents of `marked` change while
+   * the `marked` array reference stays the same (in-place mutation).
+   *
+   * Recommended: manage `marked` + `version` together via `useByteArray()`.
+   */
   version: number;
   className?: string;
   loadingClassName?: string;
@@ -21,7 +27,7 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   const runs = useMemo(() => {
     // Render fill in pixel space so the fill never overstates coverage when
     // many indices map into a single pixel row (subpixel heights).
-    const pixelCount = trackHeight - fillPadding * 2;
+    const pixelCount = Math.max(0, Math.floor(trackHeight - fillPadding * 2));
     const pixelFilled = computePixelFilledFromMarked(marked, pixelCount);
     return computeContiguousRuns(pixelFilled);
   }, [marked, version, trackHeight, fillPadding]);

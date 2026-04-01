@@ -10,6 +10,12 @@ const CAP_COLOR = 'hsl(var(--neutral) / 1.0)';
 
 interface SmartScrollbarEndpointsProps {
   marked: Uint8Array;
+  /**
+   * Change token that MUST be bumped when the contents of `marked` change while
+   * the `marked` array reference stays the same (in-place mutation).
+   *
+   * Recommended: manage `marked` + `version` together via `useByteArray()`.
+   */
   version: number;
   className?: string;
 }
@@ -26,7 +32,8 @@ export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoin
     useSmartScrollbarLayoutContext();
 
   const fillAreaTop = fillPadding;
-  const pixelCount = trackHeight - fillPadding * 2;
+  const pixelCount = Math.max(0, Math.floor(trackHeight - fillPadding * 2));
+  if (pixelCount === 0) return null;
   const pixelFilled = computePixelFilledFromMarked(marked, pixelCount);
 
   // Scan for the first and last filled pixel row in O(n) so endpoints align
