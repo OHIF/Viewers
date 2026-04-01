@@ -21,8 +21,7 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   className,
   loadingClassName,
 }: SmartScrollbarFillProps) {
-  const { trackHeight, effectiveWidth, fillPadding, isLoading } =
-    useSmartScrollbarLayoutContext();
+  const { trackHeight, effectiveWidth, fillPadding, isLoading } = useSmartScrollbarLayoutContext();
 
   const runs = useMemo(() => {
     // Render fill in pixel space so the fill never overstates coverage when
@@ -39,13 +38,13 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
 
   return (
     <>
-      {runs.map(run => {
+      {runs.map((run, index) => {
         const top = fillAreaTop + run.start;
         const height = run.length;
 
         return (
           <div
-            key={`fill-${run.start}`}
+            key={index}
             className={`absolute ${activeClass ?? ''}`}
             style={{
               left: 0,

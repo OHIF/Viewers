@@ -21,6 +21,13 @@ describe('computePixelFilledFromMarked', () => {
     expect(Array.from(result)).toEqual([1, 0, 1]);
   });
 
+  it('downsamples conservatively with uneven bucket sizes (requires rounding)', () => {
+    // total=5, pixelCount=4 => buckets [0..1), [1..2), [2..3), [3..5)
+    const marked = u8([1, 1, 1, 1, 0]);
+    const result = computePixelFilledFromMarked(marked, 4);
+    expect(Array.from(result)).toEqual([1, 1, 1, 0]);
+  });
+
   it('upsamples by filling the full pixel span of each marked item when pixelCount > total', () => {
     // total=4, pixelCount=7 =>
     // item 0 spans pixels [0..1) (requires rounding)
@@ -28,6 +35,13 @@ describe('computePixelFilledFromMarked', () => {
     const marked = u8([1, 0, 1, 0]);
     const result = computePixelFilledFromMarked(marked, 7);
     expect(Array.from(result)).toEqual([1, 0, 0, 1, 1, 0, 0]);
+  });
+
+  it('upsamples correctly when a marked item maps to a single pixel row', () => {
+    // total=6, pixelCount=7 => items 0..4 each map to exactly 1 pixel; item 5 maps to 2 pixels.
+    const marked = u8([0, 0, 0, 1, 0, 1]); // item 3 => pixel 3; item 5 => pixels 5-6
+    const result = computePixelFilledFromMarked(marked, 7);
+    expect(Array.from(result)).toEqual([0, 0, 0, 1, 0, 1, 1]);
   });
 
   it('uses Math.floor(pixelCount) for output length (downsample branch)', () => {
