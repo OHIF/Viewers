@@ -4,16 +4,17 @@ const path = require('path');
 const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
+const { normalizeWindowsDriveLetter } = require('./../../../.webpack/helpers/normalizeWindowsDriveLetter.js');
 // ~~ Plugins
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-// ~~ Directories
-const SRC_DIR = path.join(__dirname, '../src');
-const DIST_DIR = path.join(__dirname, '../dist');
-const PUBLIC_DIR = path.join(__dirname, '../public');
+// ~~ Directories (uppercase Windows drive letter so webpack module ids stay consistent with CS3D aliases)
+const SRC_DIR = normalizeWindowsDriveLetter(path.join(__dirname, '../src'));
+const DIST_DIR = normalizeWindowsDriveLetter(path.join(__dirname, '../dist'));
+const PUBLIC_DIR = normalizeWindowsDriveLetter(path.join(__dirname, '../public'));
 // ~~ Env Vars
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
@@ -76,9 +77,9 @@ module.exports = (env, argv) => {
     resolve: {
       modules: [
         // Modules specific to this package
-        path.resolve(__dirname, '../node_modules'),
+        normalizeWindowsDriveLetter(path.resolve(__dirname, '../node_modules')),
         // Hoisted Yarn Workspace Modules
-        path.resolve(__dirname, '../../../node_modules'),
+        normalizeWindowsDriveLetter(path.resolve(__dirname, '../../../node_modules')),
         SRC_DIR,
       ],
     },

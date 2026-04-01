@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 3 : 0,
+  // OHIF Downstream (Cornerstone → OHIF CI): at most 2 runs per test (1 retry). Default CI: 3 retries → 4 runs.
+  retries: process.env.OHIF_DOWNSTREAM ? 1 : process.env.CI ? 3 : 0,
   workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
@@ -27,6 +28,13 @@ export default defineConfig({
     launchOptions: {
       // do not hide the scrollbars so that we can assert their look-and-feel
       ignoreDefaultArgs: ['--hide-scrollbars'],
+      // Reduce cross-OS text rasterization differences in screenshot baselines.
+      args: [
+        '--font-render-hinting=none',
+        '--disable-font-subpixel-positioning',
+        '--disable-lcd-text',
+        '--force-color-profile=srgb',
+      ],
     },
   },
 

@@ -238,6 +238,36 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         segmentations,
       });
 
+      const reports = Object.values(segReport);
+      if (reports.length === 0) {
+        uiNotificationService.show({
+          title: 'TMTV report',
+          message: 'No segmentation report data is available.',
+          type: 'warning',
+        });
+        return;
+      }
+
+      const hasLesionGlycolysisStat = (report: Record<string, unknown>) => {
+        const tlg = report['namedStats_lesionGlycolysis'];
+        return (
+          tlg != null &&
+          typeof tlg === 'object' &&
+          'value' in tlg &&
+          (tlg as { value: unknown }).value !== undefined
+        );
+      };
+
+      if (reports.some(report => !hasLesionGlycolysisStat(report))) {
+        uiNotificationService.show({
+          title: 'TMTV report',
+          message:
+            'Segmentation metabolic statistics are not ready yet. Wait for stats to finish calculating, then try again.',
+          type: 'warning',
+        });
+        return;
+      }
+
       let total_tlg = 0;
       for (const segmentationId in segReport) {
         const report = segReport[segmentationId];

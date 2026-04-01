@@ -14,6 +14,7 @@
     "target": "ES2022",
     "outDir": "./dist",
     "paths": {
+      "testEnv": ["tests/testEnv.ts"],
       "@ohif/core": ["platform/core/src"],
       "@ohif/ui": ["platform/ui/src"],
       "@ohif/ui-next": ["platform/ui-next/src"],

@@ -49,6 +49,45 @@ const EVENTS = {
 const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
 
+function getOrderedVolumeActorReferencedIds(viewport: Types.IVolumeViewport): string[] {
+  const actors = viewport.getActors?.() ?? [];
+  return actors
+    .filter(ae => ae.actor?.getClassName?.() === 'vtkVolume')
+    .map(ae => ae.referencedId)
+    .filter(Boolean) as string[];
+}
+
+function volumeIdPrefixesMatch(a: string[], bPrefixLen: number, b: string[]): boolean {
+  if (bPrefixLen > b.length) {
+    return false;
+  }
+  for (let i = 0; i < bPrefixLen; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Only treat base volumes as identical (skip setVolumes) when the enabled viewport
+ * already matches the desired OHIF viewport type. Otherwise stack → MPR (same volumeId)
+ * can incorrectly skip rebuilding the volume viewport.
+ */
+function viewportMatchesDesiredVolumePresentation(
+  viewport: Types.IViewport,
+  viewportInfo: ViewportInfo
+): boolean {
+  const desiredType = viewportInfo.getViewportType();
+  if (viewport.type !== desiredType) {
+    return false;
+  }
+  return (
+    desiredType === csEnums.ViewportType.ORTHOGRAPHIC ||
+    desiredType === csEnums.ViewportType.VOLUME_3D
+  );
+}
+
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
 export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
 
@@ -1119,7 +1158,41 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    await viewport.setVolumes(volumeInputArray);
+    const baseVolumeInputs = filteredVolumeInputArray.map(({ volumeInput }) => volumeInput);
+    const nextBaseVolumeIds = baseVolumeInputs.map(v => v.volumeId);
+    const existingVolumeIds = getOrderedVolumeActorReferencedIds(viewport);
+
+    let skippedIdenticalBaseVolumes = false;
+
+    if (baseVolumeInputs.length) {
+      const singleBaseViewport = nextBaseVolumeIds.length === 1;
+
+      if (
+        singleBaseViewport &&
+        nextBaseVolumeIds.length &&
+        existingVolumeIds.length >= nextBaseVolumeIds.length &&
+        volumeIdPrefixesMatch(existingVolumeIds, nextBaseVolumeIds.length, nextBaseVolumeIds) &&
+        viewportMatchesDesiredVolumePresentation(viewport, viewportInfo)
+      ) {
+        // Same primary volume already loaded (e.g. labelmap / extra actors after it) — avoid
+        // setVolumes(), which tears down all actors and blanks MPR during SEG hydrate.
+        skippedIdenticalBaseVolumes = true;
+      } else if (
+        existingVolumeIds.length &&
+        nextBaseVolumeIds.length > existingVolumeIds.length &&
+        volumeIdPrefixesMatch(existingVolumeIds, existingVolumeIds.length, nextBaseVolumeIds) &&
+        typeof viewport.addVolumes === 'function'
+      ) {
+        const toAdd = baseVolumeInputs.slice(existingVolumeIds.length);
+        if (toAdd.length) {
+          await viewport.addVolumes(toAdd);
+        }
+      } else {
+        await viewport.setVolumes(baseVolumeInputs);
+      }
+    } else if (volumeInputArray.length) {
+      await viewport.setVolumes(volumeInputArray);
+    }
 
     if (overlayProcessingResults?.length) {
       overlayProcessingResults.forEach(({ addOverlayFn }) => {
@@ -1138,8 +1211,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     this.setPresentations(viewport.id, presentations);
+    // Presentations apply segmentation (hydrated labelmap etc.) after the render above — redraw so
+    // every orthographic/3D tile shows the updated scene (fixes MPR siblings blank after SEG hydrate).
+    viewport.render();
 
-    if (!presentations.positionPresentation) {
+    if (!presentations.positionPresentation && !skippedIdenticalBaseVolumes) {
       const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
       if (imageIndex !== undefined) {

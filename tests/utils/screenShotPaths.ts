@@ -1,3 +1,5 @@
+import { screenshotPathForOhifDownstream } from './ohifDownstreamScreenshot';
+
 /**
  * Paths to the screenshots of the tests.
  */
@@ -52,7 +54,9 @@ const screenShotPaths = {
     threeDMainDisplayedCorrectly: 'threeDMainDisplayedCorrectly.png',
   },
   threeDPrimary: {
-    threeDPrimaryDisplayedCorrectly: 'threeDPrimaryDisplayedCorrectly.png',
+    threeDPrimaryDisplayedCorrectly: screenshotPathForOhifDownstream(
+      'threeDPrimaryDisplayedCorrectly.png'
+    ),
   },
   threeDOnly: {
     threeDOnlyDisplayedCorrectly: 'threeDOnlyDisplayedCorrectly.png',

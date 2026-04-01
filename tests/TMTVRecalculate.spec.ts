@@ -6,8 +6,7 @@ test.skip('should update SUV values correctly.', async ({
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-  const mode = 'tmtv';
-  await visitStudy(page, studyInstanceUID, mode, 10000);
+  await visitStudy(page, studyInstanceUID, { mode: 'tmtv' });
 
   // Create ROI
   await page.getByTestId('petSUV-btn').click();

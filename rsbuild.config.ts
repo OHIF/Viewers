@@ -4,6 +4,10 @@ import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
 import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
 import fs from 'fs';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { getLocalCornerstoneAliases } = require('./.webpack/localCornerstoneAliases.js');
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
 const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
@@ -26,6 +30,8 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 // Add port constant
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
+
+const POLYSEG_WASM_MODULE = require.resolve('@icr/polyseg-wasm', { paths: [__dirname] });
 
 export default defineConfig({
   source: {
@@ -94,6 +100,8 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
       '@routes': path.resolve(__dirname, './platform/app/src/routes'),
       '@state': path.resolve(__dirname, './platform/app/src/state'),
+      ...getLocalCornerstoneAliases(__dirname),
+      '@icr/polyseg-wasm': POLYSEG_WASM_MODULE,
     },
   },
   output: {

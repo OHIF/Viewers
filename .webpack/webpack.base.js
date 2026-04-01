@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 
 const webpack = require('webpack');
+const { getLocalCornerstoneAliases } = require('./localCornerstoneAliases.js');
+const { normalizeWindowsDriveLetter } = require('./helpers/normalizeWindowsDriveLetter.js');
 
 // ~~ PLUGINS
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -36,6 +38,14 @@ const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8
 //
 dotenv.config();
 
+// Pin to workspace install when @cornerstonejs/* is linked (resolved entry file, not package root)
+const REPO_ROOT = normalizeWindowsDriveLetter(path.resolve(__dirname, '..'));
+const POLYSEG_WASM_MODULE = normalizeWindowsDriveLetter(
+  require.resolve('@icr/polyseg-wasm', {
+    paths: [REPO_ROOT],
+  })
+);
+
 const defineValues = {
   /* Application */
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -63,6 +73,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   const isProdBuild = NODE_ENV === 'production';
   const isQuickBuild = QUICK_BUILD === 'true';
 
+  const srcDir = normalizeWindowsDriveLetter(SRC_DIR);
+
   const config = {
     mode: isProdBuild ? 'production' : 'development',
     devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
@@ -80,7 +92,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       // clean: true,
       publicPath: '/',
     },
-    context: SRC_DIR,
+    context: srcDir,
     stats: {
       colors: true,
       hash: true,
@@ -196,21 +208,26 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       mainFields: ['module', 'browser', 'main'],
       alias: {
         // Viewer project
-        '@': path.resolve(__dirname, '../platform/app/src'),
-        '@components': path.resolve(__dirname, '../platform/app/src/components'),
-        '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
-        '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
-        '@state': path.resolve(__dirname, '../platform/app/src/state'),
+        '@': normalizeWindowsDriveLetter(path.resolve(__dirname, '../platform/app/src')),
+        '@components': normalizeWindowsDriveLetter(
+          path.resolve(__dirname, '../platform/app/src/components')
+        ),
+        '@hooks': normalizeWindowsDriveLetter(path.resolve(__dirname, '../platform/app/src/hooks')),
+        '@routes': normalizeWindowsDriveLetter(path.resolve(__dirname, '../platform/app/src/routes')),
+        '@state': normalizeWindowsDriveLetter(path.resolve(__dirname, '../platform/app/src/state')),
+        ...getLocalCornerstoneAliases(REPO_ROOT),
+        // Linked @cornerstonejs/polymorphic-segmentation workers resolve from realpath; pin WASM to workspace install
+        '@icr/polyseg-wasm': POLYSEG_WASM_MODULE,
       },
       // Which directories to search when resolving modules
       modules: [
         // Modules specific to this package
-        path.resolve(__dirname, '../node_modules'),
+        normalizeWindowsDriveLetter(path.resolve(__dirname, '../node_modules')),
         // Hoisted Yarn Workspace Modules
-        path.resolve(__dirname, '../../../node_modules'),
-        path.resolve(__dirname, '../platform/app/node_modules'),
-        path.resolve(__dirname, '../platform/ui/node_modules'),
-        SRC_DIR,
+        normalizeWindowsDriveLetter(path.resolve(__dirname, '../../../node_modules')),
+        normalizeWindowsDriveLetter(path.resolve(__dirname, '../platform/app/node_modules')),
+        normalizeWindowsDriveLetter(path.resolve(__dirname, '../platform/ui/node_modules')),
+        srcDir,
       ],
       // Attempt to resolve these extensions in order.
       extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
@@ -220,7 +237,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         fs: false,
         path: false,
         zlib: false,
-        buffer: require.resolve('buffer'),
+        buffer: normalizeWindowsDriveLetter(require.resolve('buffer')),
       },
     },
     plugins: [

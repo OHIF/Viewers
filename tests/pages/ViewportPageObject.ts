@@ -1,11 +1,17 @@
 import { Locator, Page } from '@playwright/test';
 import {
+  applyViewportScreenshotStabilization,
+  assertViewportOverlayText,
+  checkForScreenshot,
+  defaultOverlayScreenshotStabilization,
   getMousePosition,
+  restoreViewportScreenshotStabilization,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,
   simulateNormalizedClicksOnElement,
   simulateNormalizedDragOnElement,
 } from '../utils';
+import type { ViewportScreenshotStabilization } from '../utils';
 import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 
@@ -15,6 +21,30 @@ type NormalizedDragParams = {
   start: { x: number; y: number };
   end: { x: number; y: number };
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
+};
+
+type ViewportScreenshotOptions = {
+  attempts?: number;
+  delay?: number;
+  maxDiffPixelRatio?: number;
+  threshold?: number;
+  normalizedClip?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  fullPage?: boolean;
+  /** Forwarded to Playwright `locator.screenshot({ timeout })`. Default 5000 in {@link checkForScreenshot}. */
+  screenshotTimeout?: number;
+  locator?: Locator;
+  hideSelectors?: string[];
+  /**
+   * When set, stabilizes listed overlay rows and/or SVG annotation text boxes before each
+   * screenshot attempt (purple placeholder boxes, transparent text). Omitted fields unchanged.
+   * @default {@link defaultOverlayScreenshotStabilization}
+   */
+  stabilization?: ViewportScreenshotStabilization;
 };
 
 export interface IOverlayText {
@@ -98,6 +128,61 @@ export class ViewportPageObject {
 
   constructor(page: Page) {
     this.page = page;
+  }
+
+  async checkForScreenshot(
+    screenshotPath: string | string[],
+    {
+      locator,
+      hideSelectors = ['[data-testid="viewport-action-arrows"]'],
+      stabilization = defaultOverlayScreenshotStabilization,
+      ...options
+    }: ViewportScreenshotOptions = {}
+  ) {
+    const screenshotLocator = locator ?? this.grid;
+
+    if (stabilization) {
+      await assertViewportOverlayText(this.page, stabilization);
+    }
+
+    await this.page.evaluate(selectors => {
+      selectors.forEach(selector => {
+        document.querySelectorAll<HTMLElement>(selector).forEach(element => {
+          if (!element.hasAttribute('data-screenshot-prev-visibility')) {
+            element.setAttribute('data-screenshot-prev-visibility', element.style.visibility || '');
+          }
+          element.style.visibility = 'hidden';
+        });
+      });
+    }, hideSelectors);
+
+    try {
+      await checkForScreenshot({
+        page: this.page,
+        locator: screenshotLocator,
+        screenshotPath,
+        ...options,
+        beforeScreenshot: stabilization
+          ? async () => {
+              await restoreViewportScreenshotStabilization(this.page);
+              await applyViewportScreenshotStabilization(this.page, stabilization);
+            }
+          : undefined,
+      });
+    } finally {
+      await restoreViewportScreenshotStabilization(this.page);
+      await this.page.evaluate(selectors => {
+        selectors.forEach(selector => {
+          document.querySelectorAll<HTMLElement>(selector).forEach(element => {
+            const previousVisibility = element.getAttribute('data-screenshot-prev-visibility');
+            if (previousVisibility !== null) {
+              element.style.visibility = previousVisibility;
+              element.removeAttribute('data-screenshot-prev-visibility');
+            }
+          });
+        });
+      }, hideSelectors);
+    }
   }
 
   private getAnnotation(viewport: Locator, nth: number) {

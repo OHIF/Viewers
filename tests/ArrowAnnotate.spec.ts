@@ -1,13 +1,27 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  type ViewportScreenshotStabilization,
+  screenShotPaths,
+  test,
+  visitStudyRendered,
+} from './utils';
+
+/** Stabilizes overlays and the arrow text box; `annotationText` matches what was just saved or renamed. */
+function arrowAnnotateStabilization(annotationText: string): ViewportScreenshotStabilization {
+  return {
+    seriesDate: '22-May-2014',
+    seriesDescription: '2.0',
+    windowLevel: 'W: 230 L: 100',
+    imageInfo: 'I:1 (1/2)',
+    annotations: [{ type: 'arrowAnnotate', text: annotationText, size: 220 }],
+  };
+}
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudyRendered(page, studyInstanceUID);
 });
 
 test('should display the arrow tool and allow free-form text to be entered', async ({
-  page,
   DOMOverlayPageObject,
   mainToolbarPageObject,
   rightPanelPageObject,
@@ -29,13 +43,15 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
-  await checkForScreenshot({
-    page,
-    maxDiffPixelRatio: 0.0075,
-    screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
-  });
+  await viewportPageObject.checkForScreenshot(
+    screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
+    {
+      maxDiffPixelRatio: 0.0075,
+      stabilization: arrowAnnotateStabilization('Ringo Starr was the drummer for The Beatles'),
+    }
+  );
 
   // Now edit the arrow text and the label should not change.
 
@@ -43,13 +59,15 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await DOMOverlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
-  await checkForScreenshot({
-    page,
-    maxDiffPixelRatio: 0.0075,
-    screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
-  });
+  await viewportPageObject.checkForScreenshot(
+    screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
+    {
+      maxDiffPixelRatio: 0.0075,
+      stabilization: arrowAnnotateStabilization('Neil Peart was the drummer for Rush'),
+    }
+  );
 
   // Now edit the label and the text should not change.
 
@@ -57,11 +75,13 @@ test('should display the arrow tool and allow free-form text to be entered', asy
     .nthMeasurement(0)
     .actions.rename('Drummer annotation arrow');
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
-  await checkForScreenshot({
-    page,
-    maxDiffPixelRatio: 0.0075,
-    screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
-  });
+  await viewportPageObject.checkForScreenshot(
+    screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
+    {
+      maxDiffPixelRatio: 0.0075,
+      stabilization: arrowAnnotateStabilization('Drummer annotation arrow'),
+    }
+  );
 });

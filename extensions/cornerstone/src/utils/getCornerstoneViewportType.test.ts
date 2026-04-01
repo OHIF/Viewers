@@ -68,6 +68,15 @@ describe('getCornerstoneViewportType', () => {
     expect(result).toBe(Enums.ViewportType.STACK);
   });
 
+  it('should ignore overlay displaySet viewportType so MPR stays volume with SEG+CT', () => {
+    const displaySets = [
+      { viewportType: 'stack', isOverlayDisplaySet: true },
+      { viewportType: undefined, isOverlayDisplaySet: undefined },
+    ] as Types.DisplaySet[];
+    const result = getCornerstoneViewportType('volume', displaySets);
+    expect(result).toBe(Enums.ViewportType.ORTHOGRAPHIC);
+  });
+
   it('should use displaySet viewportType with case insensitive matching', () => {
     const displaySets = [{ viewportType: 'VIDEO' }] as Types.DisplaySet[];
     const result = getCornerstoneViewportType('stack', displaySets);

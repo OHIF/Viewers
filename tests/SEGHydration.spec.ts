@@ -1,22 +1,22 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import { screenShotPaths, test, visitStudyRendered } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudyRendered(page, studyInstanceUID);
 });
 
 test('should hydrate SEG reports correctly', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
+  mainToolbarPageObject,
   rightPanelPageObject,
+  viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
   await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-  await page.waitForTimeout(5000);
-  await checkForScreenshot(page, page, screenShotPaths.segHydration.segPreHydration);
+  await viewportPageObject.checkForScreenshot(screenShotPaths.segHydration.segPreHydration);
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -39,6 +39,6 @@ test('should hydrate SEG reports correctly', async ({
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-  await page.waitForTimeout(5000);
-  await checkForScreenshot(page, page, screenShotPaths.segHydration.segPostHydration);
+  await mainToolbarPageObject.waitForViewportsRendered();
+  await viewportPageObject.checkForScreenshot(screenShotPaths.segHydration.segPostHydration);
 });

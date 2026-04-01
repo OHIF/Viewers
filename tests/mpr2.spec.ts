@@ -1,14 +1,12 @@
-import { test, visitStudy, checkForScreenshot, screenShotPaths } from './utils';
+import { checkForScreenshot, screenShotPaths, test, visitStudyRendered } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID =
     '1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046&hangingprotocolid=mpr';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 10000);
+  await visitStudyRendered(page, studyInstanceUID);
 });
 
 test('should properly display MPR for MR', async ({ page, mainToolbarPageObject }) => {
-  await mainToolbarPageObject.waitForVolumeLoad();
   await page.getByTestId('side-panel-header-right').click();
   // await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   await checkForScreenshot(page, page, screenShotPaths.mpr2.mprDisplayedCorrectly);

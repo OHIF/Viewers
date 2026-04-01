@@ -2,8 +2,11 @@ import { test, visitStudy, expect } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.2.276.0.7230010.3.1.2.296485376.1.1665793212.499772';
-  const mode = 'microscopy';
-  await visitStudy(page, studyInstanceUID, mode, 5000);
+  await visitStudy(page, studyInstanceUID, {
+    mode: 'microscopy',
+    settleMs: 5000,
+    skipCornerstoneRenderedWait: true,
+  });
 });
 test('should rename a microscopy measurement label', async ({
   page,

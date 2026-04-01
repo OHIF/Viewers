@@ -1,6 +1,21 @@
-import { visitStudy } from './visitStudy';
+import {
+  visitStudy,
+  visitStudyRendered,
+  waitForViewportGridCornerstoneRendered,
+  DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS,
+} from './visitStudy';
 import { addOHIFConfiguration } from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
+import {
+  applyViewportScreenshotStabilization,
+  assertViewportOverlayText,
+  restoreViewportScreenshotStabilization,
+  shouldAssertViewportOverlayText,
+  DEFAULT_OVERLAY_CHAR_WIDTH_PX,
+  DEFAULT_OVERLAY_MIN_HEIGHT_PX,
+  defaultOverlayScreenshotStabilization,
+} from './viewportScreenshotStabilization';
+import { isOhifDownstream, screenshotPathForOhifDownstream } from './ohifDownstreamScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
   simulateClicksOnElement,
@@ -21,11 +36,31 @@ import { getSvgPath } from './getSvgPath';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import { CLICK_NO_NAV_WAIT } from './clickOptions';
 
+export type { VisitStudyOptions, WaitForViewportGridCornerstoneRenderedOptions } from './visitStudy';
+export type {
+  ViewportOverlayStabilizeField,
+  ViewportAnnotationStabilizeSpec,
+  ViewportScreenshotStabilization,
+} from './viewportScreenshotStabilization';
 export {
+  CLICK_NO_NAV_WAIT,
   visitStudy,
+  visitStudyRendered,
+  waitForViewportGridCornerstoneRendered,
+  DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS,
   addOHIFConfiguration,
   checkForScreenshot,
+  applyViewportScreenshotStabilization,
+  assertViewportOverlayText,
+  restoreViewportScreenshotStabilization,
+  shouldAssertViewportOverlayText,
+  DEFAULT_OVERLAY_CHAR_WIDTH_PX,
+  DEFAULT_OVERLAY_MIN_HEIGHT_PX,
+  defaultOverlayScreenshotStabilization,
+  isOhifDownstream,
+  screenshotPathForOhifDownstream,
   screenShotPaths,
   simulateClicksOnElement,
   simulateDoubleClickOnElement,

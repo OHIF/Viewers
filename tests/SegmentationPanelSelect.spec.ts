@@ -7,8 +7,7 @@ test('checks that segmentations created from series with no series description a
   page,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.32722.99.99.62087908186665265759322018723889952421';
-  const mode = 'segmentation'; // To also test add/remove
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' }); // segmentation mode for add/remove
 
   const segmentationPanel = rightPanelPageObject.contourSegmentationPanel.menuButton;
 

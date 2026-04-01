@@ -93,6 +93,12 @@ function getRuntimeLoadModesExtensions(modules) {
       '  }'
     );
   });
+  // Peer WASM for Cornerstone polySeg: must resolve from the viewer when @cornerstonejs/* is linked
+  dynamicLoad.push(
+    '  if( module==="@icr/polyseg-wasm") {',
+    '    return import("@icr/polyseg-wasm");',
+    '  }'
+  );
   // TODO - handle more cases for import than just default
   dynamicLoad.push(
     '  return (await window.browserImportFunction(module)).default;',

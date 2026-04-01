@@ -2,8 +2,7 @@ import { expect, scrollVolumeViewport, test, visitStudy } from './utils';
 
 test.skip('PT should show slice closest to CT', async ({ page, viewportPageObject }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-  const mode = 'tmtv';
-  await visitStudy(page, studyInstanceUID, mode);
+  await visitStudy(page, studyInstanceUID, { mode: 'tmtv' });
 
   const viewport1 = await viewportPageObject.getNth(1);
   const viewport2 = await viewportPageObject.getNth(2);

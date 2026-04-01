@@ -156,6 +156,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
       case 'SET_DISPLAYSETS_FOR_VIEWPORTS': {
         const { payload } = action;
         const viewports = new Map(state.viewports);
+        let mutated = false;
 
         payload.forEach(updatedViewport => {
           const { viewportId, displaySetInstanceUIDs } = updatedViewport;
@@ -165,6 +166,8 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
           }
 
           const previousViewport = viewports.get(viewportId);
+
+          mutated = true;
 
           // remove options that were meant for one time usage
           if (previousViewport?.viewportOptions?.initialImageOptions) {
@@ -223,6 +226,10 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
             ...newViewport,
           });
         });
+
+        if (!mutated) {
+          return state;
+        }
 
         return { ...state, viewports };
       }

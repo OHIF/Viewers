@@ -1,15 +1,16 @@
+import { noGpu } from 'testEnv';
 import { addLengthMeasurement, expect, scrollVolumeViewport, test, visitStudy } from './utils';
 
 test.beforeEach(async ({ page }) => {
   // Using same one as JumpToMeasurementMPR.spec.ts
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 });
 
 test('checks if Measurements right panel can be hidden/displayed', async ({
   rightPanelPageObject,
 }) => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
   const measurementsPanel = rightPanelPageObject.measurementsPanel.panel.locator;
   const segmentationPanel = rightPanelPageObject.labelMapSegmentationPanel.panel.locator;
 
@@ -50,6 +51,7 @@ test('checks if measurement item can be relabeled under Measurements panel', asy
   DOMOverlayPageObject,
   rightPanelPageObject,
 }) => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
   const relabelText = 'Relabel 12345';
   // Add measurement
   await addLengthMeasurement(page);
@@ -78,6 +80,7 @@ test('checks if measurement item can be relabeled through the context menu on th
   rightPanelPageObject,
   viewportPageObject,
 }) => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
   const relabelText = 'Relabel 12345';
 
   // Add measurement
@@ -118,6 +121,7 @@ test('checks if image would jump when clicked on a measurement item', async ({
   rightPanelPageObject,
   viewportPageObject,
 }) => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
   const activeViewport = await viewportPageObject.active;
   const viewportInfoBottomRight = activeViewport.overlayText.bottomRight.instanceNumber;
 
@@ -149,6 +153,7 @@ test('checks if measurement item can be deleted under Measurements panel', async
   DOMOverlayPageObject,
   rightPanelPageObject,
 }) => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
   // Add 3 measurements
   await addLengthMeasurement(page);
 
@@ -193,6 +198,7 @@ test('checks if measurement item can be deleted through the context menu on the 
   rightPanelPageObject,
   viewportPageObject,
 }) => {
+  test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
   // Add measurement
   await addLengthMeasurement(page);
   await expect(DOMOverlayPageObject.viewport.measurementTracking.locator).toBeVisible();

@@ -4,8 +4,7 @@ import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.3671.4754.298665348758363466150039312520';
-  const mode = 'segmentation';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
 });
 
 test('should overlay an unhydrated SEG over a display set that the SEG does NOT reference', async ({

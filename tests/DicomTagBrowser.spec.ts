@@ -3,8 +3,7 @@ import { assertBoundingBoxIsContainedWithin } from './utils/assertions';
 
 test('should display the dicom tag browser', async ({ page, mainToolbarPageObject }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   await checkForScreenshot(
@@ -19,8 +18,7 @@ test('should render the scroll bar with the correct look-and-feel', async ({
   mainToolbarPageObject,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   await checkForScreenshot({
@@ -36,10 +34,9 @@ test('should display the long series name properly within the series select butt
   DOMOverlayPageObject,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.5099.8010.217836670708542506360829799868';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
 
@@ -69,8 +66,7 @@ test('should open DICOM Tag Browser from empty viewport and show default series'
   DOMOverlayPageObject,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 
   // Switch to 3x3 layout
   await mainToolbarPageObject.layoutSelection.click();
@@ -96,8 +92,7 @@ test('should open DICOM Tag Browser with active viewport series when viewport ha
   DOMOverlayPageObject,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-2-2').click();

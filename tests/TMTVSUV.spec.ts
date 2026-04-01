@@ -6,8 +6,7 @@ test('should restrict the percentage of max SUV to be between 0 and 1', async ({
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-  const mode = 'tmtv';
-  await visitStudy(page, studyInstanceUID, mode, 10000);
+  await visitStudy(page, studyInstanceUID, { mode: 'tmtv' });
 
   const viewport = await viewportPageObject.getById('ptAXIAL');
   await viewport.normalizedClickAt([{ x: 0.5, y: 0.5 }]);

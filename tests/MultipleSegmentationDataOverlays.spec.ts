@@ -4,8 +4,7 @@ import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.32722.99.99.239341353911714368772597187099978969331';
-  const mode = 'viewer';
-  await visitStudy(page, studyInstanceUID, mode, 2000);
+  await visitStudy(page, studyInstanceUID);
 });
 
 test('should display multiple segmentation overlays (both SEG and RT)', async ({
@@ -21,21 +20,21 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await dataOverlayPageObject.addSegmentation('Segmentation');
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await dataOverlayPageObject.addSegmentation('3d_lowres-tta_nnU-Net_Segmentation');
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
@@ -59,7 +58,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Navigate to image 56.
   await press({ page, key: 'ArrowDown', nTimes: 55 });
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   await checkForScreenshot({
     page,
@@ -71,7 +70,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await dataOverlayPageObject.addSegmentation('Series 3 - RTSTRUCT');
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await mainToolbarPageObject.waitForViewportsRendered();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });

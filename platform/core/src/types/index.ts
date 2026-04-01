@@ -24,7 +24,7 @@ export type * from './Color';
  * Export the types used within the various services and managers, but
  * not the services/managers themselves, which are exported at the top level.
  */
-export {
+export type {
   Extensions,
   HangingProtocol,
   Services,

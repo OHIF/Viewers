@@ -1,10 +1,16 @@
-import { expect } from 'playwright-test-coverage';
+import { test } from 'playwright-test-coverage';
+import type { TestInfo } from '@playwright/test';
 import { Locator, Page } from 'playwright';
+import { existsSync } from 'fs';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { getComparator } from 'playwright-core/lib/utils';
 
 type CheckForScreenshotProps = {
   page: Page;
   locator?: Locator | Page;
-  screenshotPath: string;
+  /** One baseline, or several tried in order until one matches (e.g. Linux vs Windows GPU). */
+  screenshotPath: string | string[];
   attempts?: number;
   delay?: number;
   maxDiffPixelRatio?: number;
@@ -16,7 +22,146 @@ type CheckForScreenshotProps = {
     height: number;
   };
   fullPage?: boolean;
+  /** Playwright `locator.screenshot({ timeout })` — default 5000. */
+  screenshotTimeout?: number;
+  /** Runs before each screenshot capture (including each retry attempt). */
+  beforeScreenshot?: () => Promise<void>;
 };
+
+/** GitHub Actions: re-run with debug logging sets these (runner / step / diagnostic). */
+function isGithubActionsScreenshotDebug(): boolean {
+  const e = process.env;
+  return (
+    e.RUNNER_DEBUG === '1' ||
+    e.ACTIONS_RUNNER_DEBUG === 'true' ||
+    e.ACTIONS_STEP_DEBUG === 'true'
+  );
+}
+
+async function writeComparisonArtifacts(
+  testInfo: TestInfo,
+  screenshotFileName: string,
+  actual: Buffer,
+  expected: Buffer,
+  diff: Buffer | undefined
+): Promise<void> {
+  const outBase = testInfo.outputPath(screenshotFileName);
+  const ext = path.extname(outBase);
+  const base = outBase.slice(0, -ext.length);
+  await fs.mkdir(path.dirname(outBase), { recursive: true });
+  await fs.writeFile(`${base}-actual${ext}`, actual);
+  await fs.writeFile(`${base}-expected${ext}`, expected);
+  if (diff?.length) {
+    await fs.writeFile(`${base}-diff${ext}`, diff);
+  }
+}
+
+/**
+ * One screenshot capture per attempt; compare against each baseline in order.
+ * Writes actual/expected/diff under tests/test-results when:
+ * - GitHub debug logging is enabled: every failed baseline comparison in that attempt
+ * - otherwise: only on the last attempt, one triple for the primary baseline (paths[0])
+ */
+async function runScreenshotCheckAttempt(
+  locator: Locator | Page,
+  paths: string[],
+  options: {
+    maxDiffPixelRatio: number;
+    threshold: number;
+    clip?: { x: number; y: number; width: number; height: number };
+    fullPage: boolean;
+    screenshotTimeout: number;
+    beforeScreenshot?: () => Promise<void>;
+  },
+  attemptIndex: number,
+  totalAttempts: number
+): Promise<void> {
+  const testInfo = test.info();
+  const updateSnapshots = testInfo.config.updateSnapshots;
+  const debugAllFailures = isGithubActionsScreenshotDebug();
+  const writeOneOnFinalFailure = attemptIndex === totalAttempts - 1 && !debugAllFailures;
+
+  if (options.beforeScreenshot) {
+    await options.beforeScreenshot();
+  }
+
+  const screenshotOptions = {
+    animations: 'disabled' as const,
+    caret: 'hide' as const,
+    clip: options.clip,
+    fullPage: options.fullPage,
+    scale: 'css' as const,
+    timeout: options.screenshotTimeout,
+  };
+
+  const actual = await locator.screenshot(screenshotOptions);
+  const comparator = getComparator('image/png');
+  const cmpOpts = {
+    threshold: options.threshold,
+    maxDiffPixelRatio: options.maxDiffPixelRatio,
+  };
+
+  let lastError: Error | undefined;
+  let primaryMismatch: {
+    expected: Buffer;
+    diff?: Buffer;
+  } | null = null;
+
+  for (let pi = 0; pi < paths.length; pi++) {
+    const p = paths[pi];
+    const expectedPath = testInfo.snapshotPath(p, { kind: 'screenshot' });
+    const expectedExists = existsSync(expectedPath);
+
+    if (!expectedExists) {
+      if (updateSnapshots === 'none') {
+        throw new Error(`A snapshot doesn't exist at ${expectedPath}.`);
+      }
+      await fs.mkdir(path.dirname(expectedPath), { recursive: true });
+      await fs.writeFile(expectedPath, actual);
+      return;
+    }
+
+    const expected = await fs.readFile(expectedPath);
+    const cmpResult = comparator(actual, expected, cmpOpts);
+
+    if (!cmpResult) {
+      return;
+    }
+
+    if (updateSnapshots === 'all' || updateSnapshots === 'changed') {
+      await fs.writeFile(expectedPath, actual);
+      return;
+    }
+
+    lastError = new Error(
+      `Screenshot comparison failed for ${p}: ${cmpResult.errorMessage ?? 'unknown'}`
+    );
+
+    if (pi === 0) {
+      primaryMismatch = { expected, diff: cmpResult.diff };
+    }
+
+    if (debugAllFailures) {
+      await writeComparisonArtifacts(testInfo, p, actual, expected, cmpResult.diff);
+    }
+  }
+
+  if (writeOneOnFinalFailure && primaryMismatch) {
+    await writeComparisonArtifacts(
+      testInfo,
+      paths[0],
+      actual,
+      primaryMismatch.expected,
+      primaryMismatch.diff
+    );
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  throw new Error('Screenshot comparison failed');
+}
 
 const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
   const {
@@ -28,7 +173,14 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     threshold = 0.05,
     normalizedClip,
     fullPage = false,
+    screenshotTimeout = 5000,
+    beforeScreenshot,
   } = props;
+
+  const paths = Array.isArray(screenshotPath) ? screenshotPath : [screenshotPath];
+  if (paths.length === 0) {
+    throw new Error('checkForScreenshot requires at least one screenshotPath');
+  }
 
   let { locator = page } = props;
 
@@ -36,7 +188,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
 
   for (let i = 0; i < attempts; i++) {
     try {
-      let clip;
+      let clip: { x: number; y: number; width: number; height: number } | undefined;
       if (normalizedClip) {
         let boundingBox;
         if (locator === page) {
@@ -58,23 +210,30 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
         };
       }
 
-      await expect(locator).toHaveScreenshot(screenshotPath, {
-        maxDiffPixelRatio,
-        threshold,
-        clip,
-        fullPage,
-      });
+      await runScreenshotCheckAttempt(
+        locator,
+        paths,
+        {
+          maxDiffPixelRatio,
+          threshold,
+          clip,
+          fullPage,
+          screenshotTimeout,
+          beforeScreenshot,
+        },
+        i,
+        attempts
+      );
       return true;
     } catch (error) {
       if (i === attempts - 1) {
         console.debug('Screenshot comparison failed after all attempts');
-        throw error; // Throw the original error with details instead of a generic message
+        throw error;
       }
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
-  // This is a fallback in case the loop exits unexpectedly
   throw new Error('Screenshot comparison failed: loop exited without match or proper error');
 };
 
@@ -82,10 +241,12 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
  * Checks if a screenshot of a specific element matches the expected screenshot.
  * It retries the check for a specified number of attempts with a delay between each attempt.
  * By default, the number of attempts is 10 and the delay is 500 milliseconds which results in a maximum wait time of 5 seconds.
- * Instead of sleeping idle prior to calling this function, simply adjust the attempts and delay parameters to achieve the desired wait time.
+ * On failure, actual/expected/diff are written under tests/test-results only on the final attempt (one set for the primary baseline),
+ * or on every failed baseline when GitHub Actions debug logging is enabled (RUNNER_DEBUG=1, ACTIONS_RUNNER_DEBUG=true, or ACTIONS_STEP_DEBUG=true).
+ * Baseline updates (--update-snapshots) write only to tests/screenshots/...
  * @param pageOrProps - The page to interact with or an object containing page and other properties
  * @param locator - The element to check for screenshot
- * @param screenshotPath - The path to save the screenshot
+ * @param screenshotPath - Baseline filename(s). A single string, or multiple strings tried in order until one matches.
  * @param attempts - The number of attempts to check for screenshot
  * @param delay - The delay between attempts
  * @returns  True if the screenshot matches, otherwise throws an error
@@ -93,7 +254,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
 const checkForScreenshot = async (
   pageOrProps: Page | CheckForScreenshotProps,
   locator?: Locator | Page,
-  screenshotPath?: string,
+  screenshotPath?: string | string[],
   attempts?: number,
   delay?: number
 ) => {
@@ -103,7 +264,7 @@ const checkForScreenshot = async (
     return await _checkForScreenshot({
       page: pageOrProps as Page,
       locator,
-      screenshotPath,
+      screenshotPath: screenshotPath as string | string[],
       attempts,
       delay,
     });

@@ -7,8 +7,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
   viewportPageObject,
 }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
-  const mode = 'tmtv';
-  await visitStudy(page, studyInstanceUID, mode, 10000);
+  await visitStudy(page, studyInstanceUID, { mode: 'tmtv' });
 
   // Show sidebar
   await leftPanelPageObject.toggle();

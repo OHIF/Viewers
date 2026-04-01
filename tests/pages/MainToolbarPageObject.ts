@@ -1,4 +1,11 @@
 import { Page } from '@playwright/test';
+import {
+  DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS,
+  waitForViewportGridCornerstoneRendered,
+} from '../utils';
+
+/** MPR / axial-primary and 3D hanging-protocol presets can schedule navigations that do not settle before Playwright's action timeout; skip post-click navigation wait and rely on waitForViewportsRendered(). */
+const LAYOUT_PRESET_CLICK_OPTIONS = { noWaitAfter: true } as const;
 
 export class MainToolbarPageObject {
   readonly page: Page;
@@ -7,9 +14,14 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
-  async waitForVolumeLoad(): Promise<void> {
-    await this.page.waitForTimeout(2000);
-    await this.page.waitForLoadState('networkidle', { timeout: 120000 });
+  /**
+   * Waits until the viewport grid is present and every in-grid Cornerstone viewport is
+   * `rendered` with volumes loaded — same gate as {@link visitStudyRendered}.
+   */
+  async waitForViewportsRendered(options?: { timeout?: number }): Promise<void> {
+    await waitForViewportGridCornerstoneRendered(this.page, {
+      timeout: options?.timeout ?? DEFAULT_VIEWPORT_GRID_RENDER_TIMEOUT_MS,
+    });
   }
 
   get crosshairs() {
@@ -41,7 +53,8 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -51,8 +64,8 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
-            await self.waitForVolumeLoad();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -62,8 +75,8 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
-            await self.waitForVolumeLoad();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -73,8 +86,8 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
-            await self.waitForVolumeLoad();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -84,8 +97,8 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
-            await self.waitForVolumeLoad();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
+            await self.waitForViewportsRendered();
           },
         };
       },
@@ -95,8 +108,8 @@ export class MainToolbarPageObject {
           button,
           async click() {
             await layoutSelection.click();
-            await button.click();
-            await self.waitForVolumeLoad();
+            await button.click(LAYOUT_PRESET_CLICK_OPTIONS);
+            await self.waitForViewportsRendered();
           },
         };
       },
