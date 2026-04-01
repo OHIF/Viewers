@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
-import { computeContiguousRuns } from './utils';
+import { computeContiguousRuns, computePixelFilledFromMarked } from './utils';
 
 interface SmartScrollbarFillProps {
   marked: Uint8Array;
@@ -15,26 +15,27 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
   className,
   loadingClassName,
 }: SmartScrollbarFillProps) {
-  const { total, trackHeight, effectiveWidth, fillPadding, isLoading } =
+  const { trackHeight, effectiveWidth, fillPadding, isLoading } =
     useSmartScrollbarLayoutContext();
 
-  // marked is a stable ref; version changing is what drives recomputation.
-  const runs = useMemo(
-    () => computeContiguousRuns(marked),
-    [marked, version]
-  );
+  const runs = useMemo(() => {
+    // Render fill in pixel space so the fill never overstates coverage when
+    // many indices map into a single pixel row (subpixel heights).
+    const pixelCount = trackHeight - fillPadding * 2;
+    const pixelFilled = computePixelFilledFromMarked(marked, pixelCount);
+    return computeContiguousRuns(pixelFilled);
+  }, [marked, version, trackHeight, fillPadding]);
 
   if (runs.length === 0 || trackHeight === 0) return null;
 
   const fillAreaTop = fillPadding;
-  const fillAreaHeight = trackHeight - fillPadding * 2;
   const activeClass = isLoading && loadingClassName ? loadingClassName : className;
 
   return (
     <>
       {runs.map(run => {
-        const top = fillAreaTop + (run.start / total) * fillAreaHeight;
-        const height = (run.length / total) * fillAreaHeight;
+        const top = fillAreaTop + run.start;
+        const height = run.length;
 
         return (
           <div
@@ -44,7 +45,7 @@ export const SmartScrollbarFill = React.memo(function SmartScrollbarFill({
               left: 0,
               top,
               width: effectiveWidth,
-              height: Math.max(1, height),
+              height,
               transition: 'width 300ms ease, left 300ms ease',
             }}
           />

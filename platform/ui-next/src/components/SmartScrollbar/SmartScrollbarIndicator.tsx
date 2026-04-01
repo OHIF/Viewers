@@ -17,7 +17,7 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
     useSmartScrollbarLayoutContext();
   const value = useSmartScrollbarScrollContext();
 
-  if (trackHeight === 0) return null;
+  if (trackHeight === 0 || total <= 1) return null;
 
   const { totalWidth, totalHeight, fillWidth, fillHeight, leftPos } = getIndicatorLayout(
     effectiveWidth,
@@ -27,9 +27,16 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
 
   const offsetY = (totalHeight - INDICATOR_SIZE) / 2;
   const fillAreaTop = fillPadding;
-  const fillAreaHeight = trackHeight - fillPadding * 2;
-  const maxY = fillAreaHeight - INDICATOR_SIZE;
-  const y = fillAreaTop + (total <= 1 ? 0 : (value / (total - 1)) * maxY);
+  const pixelCount = Math.max(0, Math.floor(trackHeight - fillPadding * 2));
+  if (pixelCount === 0) return null;
+
+  // Align the indicator with the item’s pixel bucket(s) so it sits “over” the
+  // same pixel-space mapping used by fill/endpoints.
+  const clampedValue = Math.max(0, Math.min(total - 1, value));
+  const itemStartPx = Math.floor((clampedValue * pixelCount) / total);
+  const maxTopInFill = Math.max(0, pixelCount - INDICATOR_SIZE);
+  const topInFill = Math.max(0, Math.min(maxTopInFill, itemStartPx));
+  const y = fillAreaTop + topInFill;
   return (
     <div
       className={`pointer-events-none absolute ${className ?? ''}`}

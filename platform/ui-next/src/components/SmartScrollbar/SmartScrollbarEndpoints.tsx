@@ -1,6 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { useSmartScrollbarLayoutContext } from './SmartScrollbar';
+import { computePixelFilledFromMarked } from './utils';
 
 // ── Endpoint cap dimensions and color ───────────────────────────
 const CAP_SIZE = 4;
@@ -21,37 +22,38 @@ export const SmartScrollbarEndpoints = React.memo(function SmartScrollbarEndpoin
   version: _version,
   className,
 }: SmartScrollbarEndpointsProps) {
-  const { total, trackHeight, trackWidth, fillPadding, stableLayerEl } =
+  const { trackHeight, trackWidth, fillPadding, stableLayerEl } =
     useSmartScrollbarLayoutContext();
 
-  // Scan for the first and last set byte in O(n) — much cheaper than a Set
-  // iteration and naturally gives us the two endpoints we need.
-  let minSlice = -1;
-  let maxSlice = -1;
-  for (let i = 0; i < marked.length; i++) {
-    if (marked[i]) {
-      minSlice = i;
-      break;
-    }
-  }
-  for (let i = marked.length - 1; i >= 0; i--) {
-    if (marked[i]) {
-      maxSlice = i;
-      break;
-    }
-  }
-
-  if (minSlice === -1 || trackHeight === 0 || !stableLayerEl) return null;
-
   const fillAreaTop = fillPadding;
-  const fillAreaHeight = trackHeight - fillPadding * 2;
+  const pixelCount = trackHeight - fillPadding * 2;
+  const pixelFilled = computePixelFilledFromMarked(marked, pixelCount);
+
+  // Scan for the first and last filled pixel row in O(n) so endpoints align
+  // exactly with the fill rendering in pixel space.
+  let firstFilledPixel = -1;
+  let lastFilledPixel = -1;
+  for (let pixel = 0; pixel < pixelFilled.length; pixel++) {
+    if (pixelFilled[pixel]) {
+      firstFilledPixel = pixel;
+      break;
+    }
+  }
+  for (let pixel = pixelFilled.length - 1; pixel >= 0; pixel--) {
+    if (pixelFilled[pixel]) {
+      lastFilledPixel = pixel;
+      break;
+    }
+  }
+
+  if (firstFilledPixel === -1 || trackHeight === 0 || !stableLayerEl) return null;
 
   // Use trackWidth (always 8px) not effectiveWidth — endpoints must stay
   // stationary during contraction/expansion transitions.
   const cx = trackWidth / 2;
   const halfCap = CAP_SIZE / 2;
-  const topEdge = fillAreaTop + (minSlice / total) * fillAreaHeight;
-  const bottomEdge = fillAreaTop + ((maxSlice + 1) / total) * fillAreaHeight;
+  const topEdge = fillAreaTop + firstFilledPixel;
+  const bottomEdge = fillAreaTop + (lastFilledPixel + 1);
 
   // Portal into the stable layer so position isn't affected by the
   // contracting track div's width transition.
