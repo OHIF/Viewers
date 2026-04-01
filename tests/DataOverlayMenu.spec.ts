@@ -11,7 +11,7 @@ test('should display added, selected and removed segmentation promptly', async (
   await visitStudy(page, studyInstanceUID, { mode: 'segmentation' });
 
   // Add a segmentation overlay and ensure the overlay menu reflects this change.
-  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
 

@@ -34,6 +34,7 @@ export class DOMOverlayPageObject {
       get input() {
         const locator = page.getByTestId('dialog-input');
         const saveButton = page.getByTestId('input-dialog-save-button');
+        const cancelButton = page.getByTestId('input-dialog-cancel-button');
         return {
           locator,
           fill: async (text: string) => {
@@ -45,6 +46,13 @@ export class DOMOverlayPageObject {
           },
           save: async () => {
             await saveButton.click(CLICK_NO_NAV_WAIT);
+          },
+          fillAndCancel: async (text: string) => {
+            await locator.fill(text);
+            await cancelButton.click();
+          },
+          cancel: async () => {
+            await cancelButton.click();
           },
         };
       },

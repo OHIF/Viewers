@@ -98,7 +98,8 @@ test('checks if measurement item can be relabeled through the context menu on th
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu
-  await viewportPageObject.active.nthAnnotation(0).contextMenu.open();
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
   const addLabelButton = DOMOverlayPageObject.viewport.annotationContextMenu.addLabel;
@@ -121,7 +122,8 @@ test('checks if image would jump when clicked on a measurement item', async ({
   viewportPageObject,
 }) => {
   test.skip(noGpu, 'No reliable GPU in this CI environment for 3D rendering');
-  const viewportInfoBottomRight = viewportPageObject.active.overlayText.bottomRight.instanceNumber;
+  const activeViewport = await viewportPageObject.active;
+  const viewportInfoBottomRight = activeViewport.overlayText.bottomRight.instanceNumber;
 
   // Image loads on slice 1, confirm on slice 1 then add measurement
   await expect(viewportInfoBottomRight).toContainText('1/', { timeout: 10000 });
@@ -204,7 +206,8 @@ test('checks if measurement item can be deleted through the context menu on the 
 
   // Right click and click rename
   await page.waitForTimeout(200); // small delay for context menu
-  await viewportPageObject.active.nthAnnotation(0).contextMenu.open();
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.nthAnnotation(0).contextMenu.open();
   await page.waitForTimeout(200); // small delay for context menu
 
   const deleteButton = DOMOverlayPageObject.viewport.annotationContextMenu.delete;
@@ -213,6 +216,6 @@ test('checks if measurement item can be deleted through the context menu on the 
 
   // Open measurement panel and confirm measurement is gone
   await rightPanelPageObject.measurementsPanel.select();
-  await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeHidden();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeHidden();
   expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
 });

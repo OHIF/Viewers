@@ -31,7 +31,8 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await mainToolbarPageObject.measurementTools.arrowAnnotate.click();
 
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 164, y: 234 },
     { x: 344, y: 232 },
   ]);
@@ -54,7 +55,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   // Now edit the arrow text and the label should not change.
 
-  await viewportPageObject.active.doubleClickAt({ x: 164, y: 234 });
+  await activeViewport.doubleClickAt({ x: 164, y: 234 });
 
   await DOMOverlayPageObject.dialog.input.fillAndSave('Neil Peart was the drummer for Rush');
 

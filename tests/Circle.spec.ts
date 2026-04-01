@@ -12,7 +12,8 @@ test('should display the circle tool', async ({
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.circleROI.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 480, y: 205 },
     { x: 488, y: 247 },
   ]);

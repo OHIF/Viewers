@@ -16,7 +16,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   await rightPanelPageObject.toggle();
 
   // Add multiple segmentation overlays and ensure the overlay menu reflects this change.
-  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
 

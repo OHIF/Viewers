@@ -24,6 +24,8 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
   rightPanelPageObject,
   viewportPageObject,
 }) => {
+  const activeViewport = await viewportPageObject.active;
+
   // First load
   await leftPanelPageObject.loadSeriesByModality('RTSTRUCT');
   await page.waitForTimeout(5000);
@@ -36,7 +38,7 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.rtHydrationDisableConfirmation.firstLoadPostHydration
   );
 
@@ -47,7 +49,7 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.rtHydrationDisableConfirmation.viewportAfterFirstDelete
   );
 
@@ -64,7 +66,7 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.rtHydrationDisableConfirmation.secondLoadPostHydration
   );
 
@@ -74,7 +76,7 @@ test('should auto hydrate RT STRUCT on the second load and keep viewport stable 
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.rtHydrationDisableConfirmation.viewportAfterSecondDelete
   );
 });

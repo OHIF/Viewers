@@ -25,8 +25,10 @@ test('should navigate SR measurements with next/prev arrows after hydration for 
   const measurementCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(measurementCount).toBeGreaterThan(1);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Navigate to first image
-  await viewportPageObject.active.pane.click();
+  await activeViewport.pane.click();
   await press({ page, key: 'Home' });
   await page.waitForTimeout(2000);
 
@@ -35,9 +37,9 @@ test('should navigate SR measurements with next/prev arrows after hydration for 
 
   await expectRowSelected(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1));
 
-  await expect(viewportPageObject.active.svg('circle')).toBeVisible();
+  await expect(activeViewport.svg('circle')).toBeVisible();
 
-  const secondAnnotation = viewportPageObject.active.nthAnnotation(0);
+  const secondAnnotation = activeViewport.nthAnnotation(0);
   await expect(secondAnnotation.locator).toBeVisible();
   await expect(secondAnnotation.text.locator).toBeVisible();
 
@@ -46,9 +48,9 @@ test('should navigate SR measurements with next/prev arrows after hydration for 
 
   await expectRowSelected(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0));
 
-  await expect(viewportPageObject.active.svg('circle')).toBeVisible();
+  await expect(activeViewport.svg('circle')).toBeVisible();
 
-  const firstAnnotation = viewportPageObject.active.nthAnnotation(0);
+  const firstAnnotation = activeViewport.nthAnnotation(0);
   await expect(firstAnnotation.locator).toBeVisible();
   await expect(firstAnnotation.text.locator).toBeVisible();
 });
@@ -71,23 +73,25 @@ test('should keep arrows visible and functional after clicking measurement in ri
   const measurementCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
   expect(measurementCount).toBeGreaterThan(1);
 
+  const activeViewport = await viewportPageObject.active;
+
   // click on first measurement
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeVisible();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeVisible();
 
-  await expect(viewportPageObject.active.navigationArrows.next.button).toBeVisible();
-  await expect(viewportPageObject.active.navigationArrows.prev.button).toBeVisible();
+  await expect(activeViewport.navigationArrows.next.button).toBeVisible();
+  await expect(activeViewport.navigationArrows.prev.button).toBeVisible();
 
   // navigate to second measurement
   await navigateWithViewportArrow(viewportPageObject, 'next');
 
   await expectRowSelected(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(1));
-  await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeVisible();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeVisible();
 
   // navigate back to first measurement
   await navigateWithViewportArrow(viewportPageObject, 'prev');
 
   await expectRowSelected(rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0));
-  await expect(viewportPageObject.active.nthAnnotation(0).locator).toBeVisible();
+  await expect(activeViewport.nthAnnotation(0).locator).toBeVisible();
 });

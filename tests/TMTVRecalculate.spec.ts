@@ -13,7 +13,8 @@ test.skip('should update SUV values correctly.', async ({
   await mainToolbarPageObject.measurementTools.ellipticalROI.click();
   await clearAllAnnotations(page);
 
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 100, y: 100 },
     { x: 150, y: 150 },
   ]);

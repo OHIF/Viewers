@@ -19,9 +19,10 @@ test('should rename a microscopy measurement label', async ({
 
   await mainToolbarPageObject.measurementTools.line.click();
 
-  await viewportPageObject.active.clickAt([{ x: 400, y: 200 }]);
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([{ x: 400, y: 200 }]);
   await page.waitForTimeout(200);
-  await viewportPageObject.active.clickAt([{ x: 550, y: 250 }]);
+  await activeViewport.clickAt([{ x: 550, y: 250 }]);
 
   const measurementRow = rightPanelPageObject.microscopyPanel.nthMeasurement(0);
   await expect(measurementRow.locator).toBeVisible();

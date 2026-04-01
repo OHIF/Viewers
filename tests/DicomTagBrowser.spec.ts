@@ -72,7 +72,7 @@ test('should open DICOM Tag Browser from empty viewport and show default series'
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-2-2').click();
 
-  await viewportPageObject.getNth(6).pane.click();
+  await viewportPageObject.getNthLocator(6).click();
 
   await mainToolbarPageObject.moreTools.tagBrowser.click();
 
@@ -97,7 +97,7 @@ test('should open DICOM Tag Browser with active viewport series when viewport ha
   await mainToolbarPageObject.layoutSelection.click();
   await page.getByTestId('Layout-2-2').click();
 
-  await viewportPageObject.getNth(2).pane.click();
+  await (await viewportPageObject.getNth(2)).pane.click();
 
   await mainToolbarPageObject.moreTools.tagBrowser.click();
 

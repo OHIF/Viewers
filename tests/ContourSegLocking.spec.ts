@@ -22,7 +22,7 @@ test('should not allow contours to be edited in basic viewer mode', async ({
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportPageObject.getById('default').svg();
+  const svgPathLocatorPreEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -38,7 +38,7 @@ test('should not allow contours to be edited in basic viewer mode', async ({
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportPageObject.getById('default').svg();
+  const svgPathLocatorPostEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),
@@ -75,7 +75,7 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportPageObject.getById('default').svg();
+  const svgPathLocatorPreEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -91,7 +91,7 @@ test('should not allow contours to be edited when panelSegmentation.disableEditi
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportPageObject.getById('default').svg();
+  const svgPathLocatorPostEdit = (await viewportPageObject.getById('default')).svg();
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),
@@ -128,7 +128,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
   // Wait for the segmentation to hydrate.
   await page.waitForTimeout(5000);
 
-  const svgPathLocatorPreEdit = viewportPageObject.getById('default').svg('path');
+  const svgPathLocatorPreEdit = (await viewportPageObject.getById('default')).svg('path');
 
   expect(
     await svgPathLocatorPreEdit.count(),
@@ -144,7 +144,7 @@ test('should allow contours to be edited when panelSegmentation.disableEditing i
     end: { x: 0.1, y: -0.2 },
   });
 
-  const svgPathLocatorPostEdit = viewportPageObject.getById('default').svg('path');
+  const svgPathLocatorPostEdit = (await viewportPageObject.getById('default')).svg('path');
 
   expect(
     await svgPathLocatorPostEdit.getAttribute('d'),

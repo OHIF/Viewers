@@ -14,17 +14,16 @@ test('should overlay an unhydrated SEG over a display set that the SEG does NOT 
 }) => {
   await leftPanelPageObject.loadSeriesByDescription('Apparent Diffusion Coefficient');
 
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
+  await dataOverlayPageObject.toggle();
 
-  await viewportPageObject
-    .getById('default')
-    .overlayMenu.dataOverlay.addSegmentation('T2 Weighted Axial Segmentations');
+  await dataOverlayPageObject.addSegmentation('T2 Weighted Axial Segmentations');
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
-  await viewportPageObject.getById('default').overlayMenu.dataOverlay.toggle();
+  await dataOverlayPageObject.toggle();
   await page.waitForTimeout(5000);
 
   await checkForScreenshot(

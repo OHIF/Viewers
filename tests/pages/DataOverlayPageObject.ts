@@ -3,16 +3,18 @@ import { CLICK_NO_NAV_WAIT } from '../utils/clickOptions';
 
 export class DataOverlayPageObject {
   readonly page: Page;
+  readonly viewportId: string;
 
-  constructor(page: Page) {
+  constructor(page: Page, viewportId: string) {
     this.page = page;
+    this.viewportId = viewportId;
   }
 
-  async toggle(viewportId: string = 'default') {
+  async toggle(viewportId: string = this.viewportId) {
     await this.page.getByTestId(`dataOverlayMenu-${viewportId}-btn`).click(CLICK_NO_NAV_WAIT);
   }
 
-  async addSegmentation(segmentation: string, viewportId: string = 'default') {
+  async addSegmentation(segmentation: string, viewportId: string = this.viewportId) {
     await this.page.getByTestId(`AddSegmentationDataOverlay-${viewportId}`).click(CLICK_NO_NAV_WAIT);
     await this.page.getByText('SELECT A SEGMENTATION').click(CLICK_NO_NAV_WAIT);
     await this.page.getByTestId(segmentation).click(CLICK_NO_NAV_WAIT);

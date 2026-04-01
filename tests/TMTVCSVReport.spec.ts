@@ -12,7 +12,8 @@ test('should create and download the TMTV CSV report correctly', async ({
   await rightPanelPageObject.tmtvPanel.addSegmentationButton.click();
   await rightPanelPageObject.tmtvPanel.tools.brush.click();
 
-  await viewportPageObject.getById('ctAXIAL').normalizedClickAt([{ x: 0.5, y: 0.5 }]);
+  const viewport = await viewportPageObject.getById('ctAXIAL');
+  await viewport.normalizedClickAt([{ x: 0.5, y: 0.5 }]);
 
   await page.waitForTimeout(5000);
 

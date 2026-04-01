@@ -51,7 +51,6 @@ export interface IOverlayText {
   get windowLevel(): Locator;
   get instanceNumber(): Locator;
 }
-
 function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
   const locator = viewport.getByTestId(id);
   return {
@@ -126,11 +125,9 @@ export interface IViewportPageObject {
 
 export class ViewportPageObject {
   readonly page: Page;
-  private readonly dataOverlayPageObject: DataOverlayPageObject;
 
   constructor(page: Page) {
     this.page = page;
-    this.dataOverlayPageObject = new DataOverlayPageObject(page);
   }
 
   async checkForScreenshot(
@@ -213,6 +210,14 @@ export class ViewportPageObject {
     };
   }
 
+  private async getViewportId(viewport: Locator): Promise<string> {
+    const id = await viewport.locator('[data-viewportid]').getAttribute('data-viewportid');
+    if (id === null) {
+      throw new Error('Could not resolve data-viewportid from viewport locator');
+    }
+    return id;
+  }
+
   private getOrientationMarkers(viewport: Locator) {
     return {
       topMid: viewport.locator('.top-mid.orientation-marker'),
@@ -231,9 +236,9 @@ export class ViewportPageObject {
     };
   }
 
-  private getOverlayMenu(viewport: Locator) {
+  private async getOverlayMenu(viewport: Locator) {
     return {
-      dataOverlay: this.dataOverlayPageObject,
+      dataOverlay: new DataOverlayPageObject(this.page, await this.getViewportId(viewport)),
       get orientation() {
         const button = viewport.locator('[data-cy^="orientationMenu"]');
         return {
@@ -280,7 +285,7 @@ export class ViewportPageObject {
     };
   }
 
-  private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
+  private async viewportPageObjectFactory(viewport: Locator): Promise<IViewportPageObject> {
     return {
       nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
       doubleClickAt: async (point: { x: number; y: number }) => {
@@ -318,7 +323,7 @@ export class ViewportPageObject {
       },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
-      overlayMenu: this.getOverlayMenu(viewport),
+      overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
@@ -327,7 +332,7 @@ export class ViewportPageObject {
     };
   }
 
-  get active(): IViewportPageObject {
+  get active(): Promise<IViewportPageObject> {
     const viewport = this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
     return this.viewportPageObjectFactory(viewport);
   }
@@ -398,15 +403,19 @@ export class ViewportPageObject {
 
   async getAll(): Promise<IViewportPageObject[]> {
     const viewports = await this.page.getByTestId('viewport-pane').all();
-    return viewports.map(viewport => this.viewportPageObjectFactory(viewport));
+    return await Promise.all(viewports.map(viewport => this.viewportPageObjectFactory(viewport)));
   }
 
-  getNth(index: number): IViewportPageObject {
-    const viewport = this.page.getByTestId('viewport-pane').nth(index);
+  getNth(index: number): Promise<IViewportPageObject> {
+    const viewport = this.getNthLocator(index);
     return this.viewportPageObjectFactory(viewport);
   }
 
-  getById(viewportId: string): IViewportPageObject {
+  getNthLocator(index: number): Locator {
+    return this.page.getByTestId('viewport-pane').nth(index);
+  }
+
+  getById(viewportId: string): Promise<IViewportPageObject> {
     const viewport = this.page.locator(
       `[data-cy="viewport-pane"]:has(div[data-viewportid="${viewportId}"])`
     );
