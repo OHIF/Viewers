@@ -28,7 +28,7 @@ test('should overlay an unhydrated segmentation over a display set that the segm
   const segmentationName = 'Segmentation FOR1';
 
   // Add segmentation to viewport 0 (series referenced by segmentation)
-  const dataOverlayPageObject = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getNth(0)).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation(segmentationName);
 
@@ -42,7 +42,7 @@ test('should overlay an unhydrated segmentation over a display set that the segm
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.segDataOverlayForReferencedDisplaySetNoHydration.overlayRefFirstImage
   );
 
@@ -53,7 +53,7 @@ test('should overlay an unhydrated segmentation over a display set that the segm
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.segDataOverlayForReferencedDisplaySetNoHydration.overlayRefMiddleImage
   );
 
@@ -64,6 +64,7 @@ test('should overlay an unhydrated segmentation over a display set that the segm
 
   await page.waitForTimeout(5000);
 
+  // Confirm segmentation visible and centered on all relevant viewports
   await checkForScreenshot(
     page,
     viewportPageObject.grid,
@@ -80,17 +81,16 @@ test.skip('should overlay unhydrated segmentation on non-referenced then referen
   const segmentationName = 'Segmentation FOR1';
 
   // Add segmentation to viewport 1 (series not referenced by segmentation)
-  await viewportPageObject.getNth(1).pane.click();
-  const viewportIdUnref = await viewportPageObject.getNth(1).viewportId;
-  const dataOverlayPageObjectUnref = viewportPageObject.getNth(1).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
-  await dataOverlayPageObjectUnref.addSegmentation(segmentationName, viewportIdUnref);
+  await (await viewportPageObject.getNth(1)).pane.click();
+  const dataOverlayPageObjectUnref = (await viewportPageObject.getNth(1)).overlayMenu.dataOverlay;
+  await dataOverlayPageObjectUnref.toggle();
+  await dataOverlayPageObjectUnref.addSegmentation(segmentationName);
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide overlay menu.
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
+  await dataOverlayPageObjectUnref.toggle();
 
   // Segmentation should be added automatically to other vp
 
@@ -101,6 +101,7 @@ test.skip('should overlay unhydrated segmentation on non-referenced then referen
 
   await page.waitForTimeout(5000);
 
+  // Confirm segmentation visible and centered on all relevant viewports
   await checkForScreenshot(
     page,
     viewportPageObject.grid,
@@ -117,7 +118,7 @@ test('segmentation should still be available in drop down when deleted from view
   const segmentationNameFoR1 = 'Segmentation FOR1';
 
   // Add segmentation with FoR1 to viewport 0 (series referenced by segmentation)
-  const dataOverlayPageObject = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getNth(0)).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation(segmentationNameFoR1);
 
@@ -146,7 +147,7 @@ test('segmentation should still be available in drop down when deleted from view
   // Double check second add worked properly
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.segDataOverlayForReferencedDisplaySetNoHydration.overlayRefFirstImage
   );
 
@@ -157,19 +158,20 @@ test('segmentation should still be available in drop down when deleted from view
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.segDataOverlayForReferencedDisplaySetNoHydration.overlayRefMiddleImage
   );
 
   // Use panel to focus all images to centre of segmentation
-  //await labelMapSegmentationPanel.nthSegment(0).click();
-  //await labelMapSegmentationPanel.moreMenu.button.hover(); // Prevent segmentation data overlay
+  await labelMapSegmentationPanel.nthSegment(0).click();
+  await labelMapSegmentationPanel.moreMenu.button.hover(); // Prevent segmentation data overlay
 
-  //await page.waitForTimeout(5000);
+  await page.waitForTimeout(5000);
 
-  //await checkForScreenshot(
-  //  page,
-  //  viewportPageObject.grid,
-  //  screenShotPaths.segDataOverlayForReferencedDisplaySetNoHydration.overlayRefUnrefMiddleImage
-  //);
+  // Confirm segmentation visible and centered on all relevant viewports
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.segDataOverlayForReferencedDisplaySetNoHydration.overlayRefUnrefMiddleImage
+  );
 });

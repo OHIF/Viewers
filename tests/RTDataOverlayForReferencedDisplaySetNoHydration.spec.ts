@@ -28,7 +28,7 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
   const segmentationName = 'FoR 1 RTstruct';
 
   // Add segmentation to viewport 0 (series referenced by RTStruct)
-  const dataOverlayPageObject = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getNth(0)).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation(segmentationName);
 
@@ -42,7 +42,7 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefFirstImage
   );
 
@@ -53,7 +53,7 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefMiddleImage
   );
 
@@ -64,6 +64,7 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
 
   //await page.waitForTimeout(5000);
 
+  //// Confirm segmentation visible and centered on all relevant viewports
   //await checkForScreenshot(
   //  page,
   //  viewportPageObject.grid,
@@ -79,18 +80,17 @@ test.skip('should overlay unhydrated RTSTRUCT on non-referenced then referenced 
 }) => {
   const segmentationName = 'FoR 1 RTstruct';
 
-  // Add segmentation to viewport 1 (series not referenced by RTStruct)
-  await viewportPageObject.getNth(1).pane.click();
-  const viewportIdUnref = await viewportPageObject.getNth(1).viewportId;
-  const dataOverlayPageObjectUnref = viewportPageObject.getNth(1).overlayMenu.dataOverlay;
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
-  await dataOverlayPageObjectUnref.addSegmentation(segmentationName, viewportIdUnref);
+  // Add segmentation to viewport 1 (series not referenced by segmentation)
+  await (await viewportPageObject.getNth(1)).pane.click();
+  const dataOverlayPageObjectUnref = (await viewportPageObject.getNth(1)).overlayMenu.dataOverlay;
+  await dataOverlayPageObjectUnref.toggle();
+  await dataOverlayPageObjectUnref.addSegmentation(segmentationName);
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide overlay menu.
-  await dataOverlayPageObjectUnref.toggle(viewportIdUnref);
+  await dataOverlayPageObjectUnref.toggle();
 
   // Segmentation should be added automatically to other vp
 
@@ -101,6 +101,7 @@ test.skip('should overlay unhydrated RTSTRUCT on non-referenced then referenced 
 
   await page.waitForTimeout(5000);
 
+  // Confirm segmentation visible and centered on all relevant viewports
   await checkForScreenshot(
     page,
     viewportPageObject.grid,
@@ -117,7 +118,7 @@ test('segmentation should still be available in drop down when deleted from view
   const segmentationNameFoR1 = 'FoR 1 RTstruct';
 
   // Add segmentation with FoR1 to viewport 0 (series referenced by RTStruct)
-  const dataOverlayPageObject = viewportPageObject.getNth(0).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getNth(0)).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation(segmentationNameFoR1);
 
@@ -146,7 +147,7 @@ test('segmentation should still be available in drop down when deleted from view
   // Double check second add worked properly
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefFirstImage
   );
 
@@ -157,7 +158,7 @@ test('segmentation should still be available in drop down when deleted from view
 
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    (await viewportPageObject.active).pane,
     screenShotPaths.rtDataOverlayForReferencedDisplaySetNoHydration.overlayRefMiddleImage
   );
 
@@ -167,6 +168,7 @@ test('segmentation should still be available in drop down when deleted from view
 
   //await page.waitForTimeout(5000);
 
+  //// Confirm segmentation visible and centered on all relevant viewports
   //await checkForScreenshot(
   //  page,
   //  viewportPageObject.grid,

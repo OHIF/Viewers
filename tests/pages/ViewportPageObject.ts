@@ -80,7 +80,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
-  viewportId: Promise<string>;
+  viewportId: Promise<string | null>;
   navigationArrows: {
     locator: Locator;
     prev: {
