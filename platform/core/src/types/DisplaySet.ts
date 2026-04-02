@@ -57,6 +57,12 @@ export type DisplaySet = {
    */
   referencedDisplaySetInstanceUID?: string;
 
+  /**
+   * The FrameOfReferenceUID shared by every frame within this display set.
+   * It will be undefined if the frames do not all share the same Frame of Reference.
+   */
+  frameOfReferenceUID?: string;
+
   SeriesDate?: string;
   SeriesTime?: string;
   instance?: InstanceMetadata;
