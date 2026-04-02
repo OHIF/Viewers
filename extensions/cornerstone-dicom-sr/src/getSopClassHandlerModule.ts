@@ -230,7 +230,7 @@ async function _load(
 
 function _measurementBelongsToDisplaySet({ measurement, displaySet }) {
   return (
-    measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.FrameOfReferenceUID
+    measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.frameOfReferenceUID
   );
 }
 

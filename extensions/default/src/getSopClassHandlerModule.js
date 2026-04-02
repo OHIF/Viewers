@@ -113,7 +113,7 @@ const makeDisplaySet = (instances, index) => {
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
-    FrameOfReferenceUID: instance.FrameOfReferenceUID,
+    frameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
   const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
