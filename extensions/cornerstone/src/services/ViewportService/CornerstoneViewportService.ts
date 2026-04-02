@@ -870,28 +870,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
-      viewport.setProperties({ ...properties });
-      this.setPresentations(viewport.id, presentations, viewportInfo);
+    await viewport.setStack(imageIds, initialImageIndexToUse);
+    viewport.setProperties({ ...properties });
+    this.setPresentations(viewport.id, presentations, viewportInfo);
 
-      if (overlayProcessingResults?.length) {
-        overlayProcessingResults.forEach(overlayProcessingResult => {
-          if (overlayProcessingResult?.addOverlayFn) {
-            overlayProcessingResult.addOverlayFn();
-          }
-        });
-      }
+    await this._addOverlayRepresentations(overlayProcessingResults);
 
-      if (displayArea) {
-        viewport.setDisplayArea(displayArea);
-      }
-      if (rotation) {
-        viewport.setProperties({ rotation });
-      }
-      if (flipHorizontal) {
-        viewport.setCamera({ flipHorizontal: true });
-      }
-    });
+    if (displayArea) {
+      viewport.setDisplayArea(displayArea);
+    }
+    if (rotation) {
+      viewport.setProperties({ rotation });
+    }
+    if (flipHorizontal) {
+      viewport.setCamera({ flipHorizontal: true });
+    }
   }
 
   private _getInitialImageIndexForViewport(
@@ -1120,14 +1113,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     await viewport.setVolumes(volumeInputArray);
-
-    if (overlayProcessingResults?.length) {
-      overlayProcessingResults.forEach(({ addOverlayFn }) => {
-        if (addOverlayFn) {
-          addOverlayFn();
-        }
-      });
-    }
+    await this._addOverlayRepresentations(overlayProcessingResults);
     viewport.render();
 
     volumesProperties.forEach(({ properties, volumeId }) => {
@@ -1193,7 +1179,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   private addOverlayRepresentationForDisplaySet(
     displaySet: OhifTypes.DisplaySet,
     viewport: Types.IViewport
-  ) {
+  ): Promise<void> {
     const { segmentationService } = this.servicesManager.services;
     const segmentationId = displaySet.displaySetInstanceUID;
 
@@ -1203,18 +1189,36 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         : csToolsEnums.SegmentationRepresentations.Contour;
 
     const { predecessorImageId } = displaySet;
-    segmentationService.addSegmentationRepresentation(viewport.id, {
-      segmentationId,
-      predecessorImageId,
-      type: representationType,
-      config: {
-        blendMode:
-          viewport?.getBlendMode?.() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
-      },
-    });
-
+    const segmentationRepresentationPromise = segmentationService.addSegmentationRepresentation(
+      viewport.id,
+      {
+        segmentationId,
+        predecessorImageId,
+        type: representationType,
+        config: {
+          blendMode:
+            viewport?.getBlendMode?.() === 1
+              ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+              : undefined,
+        },
+      }
+    );
     // store the segmentation presentation id in the viewport info
     this.storePresentation({ viewportId: viewport.id });
+    return segmentationRepresentationPromise;
+  }
+
+  private async _addOverlayRepresentations(
+    overlayProcessingResults?: Array<{ addOverlayFn?: () => Promise<void> }>
+  ): Promise<void> {
+    if (!overlayProcessingResults?.length) {
+      return;
+    }
+    for (const overlayProcessingResult of overlayProcessingResults) {
+      if (overlayProcessingResult?.addOverlayFn) {
+        await overlayProcessingResult.addOverlayFn();
+      }
+    }
   }
 
   // Todo: keepCamera is an interim solution until we have a better solution for
@@ -1272,7 +1276,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     if (viewport instanceof ECGViewport) {
-      return this._setEcgViewport(viewport as unknown as Types.IECGViewport, viewportData as StackViewportData);
+      return this._setEcgViewport(
+        viewport as unknown as Types.IECGViewport,
+        viewportData as StackViewportData
+      );
     }
 
     return this._setOtherViewport(
