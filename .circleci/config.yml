@@ -136,6 +136,7 @@ jobs:
                                      # CVE-2026-26996 - minimatch via other packages are strictly for building and CI/CD purposes; no user supplied expressions are passed to minimatch
               "GHSA-7r86-cg39-jmmj"  # CVE-2026-27903 - minimatch same as above
               "GHSA-23c5-xmqv-rm74"  # CVE-2026-27904 - minimatch same as above
+              "GHSA-c2c7-rcm5-vvqj"  # CVE-2026-33671 - picomatch is generally used for development and CI/CD purposes
             )
 
             # Build ignore flags
