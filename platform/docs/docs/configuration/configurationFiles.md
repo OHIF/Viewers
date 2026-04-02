@@ -133,6 +133,7 @@ Here are a list of some options available:
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
+- `volumeAutoDecimationThreshold`: (number, optional) If set, volumes with voxel count above this value are automatically decimated when loaded (e.g. for 3D viewports), reducing memory use. Default in `config/default.js` is `500_000_000` (500M voxels). When unset or undefined, auto-decimation is disabled. Users can still change decimation manually via the viewport Volume Downsizing menu.
 - `modesConfiguration`: Allows overriding modes configuration.
   - Example config:
   ```js

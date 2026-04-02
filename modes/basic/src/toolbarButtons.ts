@@ -111,6 +111,19 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'volumeOptionsMenu',
+    uiType: 'ohif.volumeOptionsMenu',
+    props: {
+      icon: 'icon-mpr',
+      label: i18n.t('Buttons:Volume Options'),
+      tooltip: i18n.t('Buttons:Volume options and downsizing'),
+      evaluate: {
+        name: 'evaluate.volumeOptionsMenu',
+        hideWhenDisabled: true,
+      },
+    },
+  },
+  {
     id: 'windowLevelMenuEmbedded',
     uiType: 'ohif.windowLevelMenuEmbedded',
     props: {
@@ -608,6 +621,21 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-3d-rotate',
       label: i18n.t('Buttons:3D Rotate'),
+      commands: setToolActiveToolbar,
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: i18n.t('Buttons:Select a 3D viewport to enable this tool'),
+      },
+    },
+  },
+  {
+    id: 'VolumeCropping',
+    uiType: 'ohif.toolButton',
+    props: {
+      type: 'tool',
+      icon: 'tool-crop',
+      label: i18n.t('Buttons:Volume Cropping'),
+      tooltip: i18n.t('Buttons:Volume Cropping'),
       commands: setToolActiveToolbar,
       evaluate: {
         name: 'evaluate.cornerstoneTool',

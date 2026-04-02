@@ -9,6 +9,18 @@
   -ms-user-select: none;
 }
 
+/* Overlay container sits on top of the viewport so overlay text is visible (above canvas) */
+.cornerstone-overlays-container {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.cornerstone-overlays-container .overlay-text {
+  pointer-events: none;
+}
+
 .cornerstone-viewport-element {
   width: 100%;
   height: 100%;

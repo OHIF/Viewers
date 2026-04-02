@@ -1,3 +1,5 @@
+import { getVolumeOptions } from '@ohif/core';
+
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -271,6 +273,13 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: toolNames.AdvancedMagnify,
       },
       { toolName: toolNames.ReferenceLines },
+      {
+        toolName: 'VolumeCroppingControl',
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        configuration: {
+          viewportIndicators: false,
+        },
+      },
     ],
   };
 
@@ -282,9 +291,37 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   );
 
   const { toolNames, Enums } = utilityModule.exports;
+  const rotateSampleDistanceFactor = getVolumeOptions().rotateSampleDistanceFactor;
 
   const tools = {
     active: [
+      {
+        toolName: 'VolumeCropping',
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary },
+          {
+            mouseButton: Enums.MouseBindings.Primary,
+            modifierKey: Enums.KeyboardBindings.Shift,
+          },
+        ],
+        configuration: {
+          showHandles: false,
+          sphereRadius: 8,
+          sphereColors: {
+            SAGITTAL: [1, 1, 0],
+            CORONAL: [0, 1, 0],
+            AXIAL: [1, 0, 0],
+            corners: [0, 0, 1],
+          },
+          showCornerSpheres: true,
+          initialCropFactor: 0.08,
+          rotateSampleDistanceFactor,
+          rotateClippingPlanesIncrementDegrees: 30,
+          orientationMarker: {
+            enabled: false,
+          },
+        },
+      },
       {
         toolName: toolNames.TrackballRotateTool,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
@@ -301,6 +338,18 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   };
 
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
+
+  if (toolNames.OrientationController) {
+    const volume3DToolGroup = toolGroupService.getToolGroup('volume3d');
+    const orientationControllerConfig = {
+      colorScheme: 'gray',
+      keepOrientationUp: true,
+      letterColorScheme: 'white',
+      size: 0.028,
+    };
+    volume3DToolGroup.addTool(toolNames.OrientationController, orientationControllerConfig);
+    volume3DToolGroup.setToolEnabled(toolNames.OrientationController);
+  }
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {

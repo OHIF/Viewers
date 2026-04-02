@@ -9,10 +9,75 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  useNorm16Texture: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   // filterQueryParam: false,
+    // If set, volumes above this voxel count are auto-decimated on load (e.g. 500M).
+    customizationService: [
+      {
+        volumeDecimation: {
+          volumeAutoDecimationThreshold: 10_000_000,
+          dangerouslyTurnOffDecimationNotification: false,
+        },
+      },
+      {
+        volumeDownsampling: {
+          highGpu: {
+            rotateSampleDistanceFactor: 2,
+            sampleDistanceMultiplier: 1,
+          },
+          midGpu: {
+            rotateSampleDistanceFactor: 2,
+            sampleDistanceMultiplier: 2,
+          },
+          lowGpu: {
+            rotateSampleDistanceFactor: 3,
+            sampleDistanceMultiplier: 2,
+          },
+          thresholdHighPercent: 100,
+          thresholdMidPercent: 90,
+        },
+      },
+      {
+        cornerstoneTools: {
+          OrientationController: {
+            colorScheme: 'gray',
+            keepOrientationUp: true,
+            letterColorScheme: 'white',
+            size: 0.028,
+          },
+        },
+      },
+      {
+        'ohif.hotkeyBindings': {
+          $push: [
+            {
+              commandName: 'toggle3Dhandles',
+              label: 'Toggle 3D Handles',
+              commandOptions: { toolName: 'VolumeCroppingTool' },
+              keys: ['x'],
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'toggleCropping',
+              label: 'Toggle Cropping',
+              commandOptions: { toolName: 'VolumeCroppingTool' },
+              keys: ['y'],
+              context: 'CORNERSTONE',
+            },
+            {
+              commandName: 'togglePlaneRotation',
+              label: 'Toggle Plane Rotation',
+              commandOptions: {},
+              keys: ['s'],
+              context: 'CORNERSTONE',
+            },
+          ],
+        },
+      },
+    ],
   defaultDataSourceName: 'ohif',
   dataSources: [
     {

@@ -17,6 +17,10 @@ export interface GridViewportOptions {
   //
   displayArea?: unknown;
   viewReference?: unknown;
+  /** IJK decimation applied when loading volume data (e.g. from auto-decimation). */
+  ijkDecimation?: [number, number, number];
+  /** Shown in viewport overlay when volume was auto-decimated. */
+  autoDecimationInfo?: { message: string };
 }
 
 export interface GridViewport {

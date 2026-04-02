@@ -7,6 +7,8 @@ import {
   Types as CoreTypes,
   BaseVolumeViewport,
   getRenderingEngines,
+  cache,
+  volumeLoader,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -1001,6 +1003,140 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
     },
+    activateVolumeCroppingControl: () => {
+      const VOLUME_CROPPING = 'VolumeCropping';
+      const VOLUME_CROPPING_CONTROL = 'VolumeCroppingControl';
+      const volume3d = toolGroupService.getToolGroup('volume3d');
+      const volume3dHasViewports = volume3d?.viewportsInfo?.length > 0;
+      if (volume3dHasViewports && volume3d?.hasTool(VOLUME_CROPPING)) {
+        volume3d.setToolActive(VOLUME_CROPPING, {
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        });
+        const croppingTool = volume3d.getToolInstance(VOLUME_CROPPING);
+        if (
+          croppingTool?.originalClippingPlanes?.length === 0 &&
+          croppingTool.onSetToolActive
+        ) {
+          croppingTool.onSetToolActive();
+        }
+      }
+      toolGroupService.getToolGroupIds().forEach(toolGroupId => {
+        const tg = toolGroupService.getToolGroup(toolGroupId);
+        if (tg?.hasTool(VOLUME_CROPPING_CONTROL)) {
+          tg.setToolEnabled(VOLUME_CROPPING_CONTROL);
+          tg.setToolActive(VOLUME_CROPPING_CONTROL, {
+            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+          });
+        }
+      });
+    },
+    toggleCropping: (options?: { visible?: boolean }) => {
+      const volume3d = toolGroupService.getToolGroup('volume3d');
+      const croppingTool = volume3d?.getToolInstance?.('VolumeCropping');
+      if (
+        !croppingTool ||
+        typeof croppingTool.setClippingPlanesVisible !== 'function'
+      ) {
+        return;
+      }
+      const visible =
+        options?.visible ?? !croppingTool.getClippingPlanesVisible?.();
+
+      const volume3dHasViewports = volume3d?.viewportsInfo?.length > 0;
+      if (volume3dHasViewports && volume3d?.hasTool('VolumeCropping')) {
+        volume3d.setToolActive('VolumeCropping', {
+          bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        });
+        if (
+          visible &&
+          croppingTool.originalClippingPlanes?.length === 0 &&
+          croppingTool.onSetToolActive
+        ) {
+          croppingTool.onSetToolActive();
+        }
+      }
+      const VOLUME_CROPPING_CONTROL = 'VolumeCroppingControl';
+      toolGroupService.getToolGroupIds().forEach(toolGroupId => {
+        const tg = toolGroupService.getToolGroup(toolGroupId);
+        if (!tg?.hasTool(VOLUME_CROPPING_CONTROL)) {
+          return;
+        }
+        if (visible) {
+          tg.setToolEnabled(VOLUME_CROPPING_CONTROL);
+          tg.setToolActive(VOLUME_CROPPING_CONTROL, {
+            bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+          });
+        } else if (toolGroupId !== 'volume3d') {
+          tg.setToolDisabled(VOLUME_CROPPING_CONTROL);
+        }
+      });
+      croppingTool.setClippingPlanesVisible(visible);
+
+      // Re-enable OrientationController when cropping is turned off.
+      // It may have been disabled during a decimation reload to work around
+      // the actor-order issue (see reloadVolumeWithDecimation).
+      if (!visible) {
+        try {
+          if (volume3d?.hasTool?.(toolNames.OrientationController)) {
+            volume3d.setToolEnabled(toolNames.OrientationController);
+          }
+        } catch (err) {
+          console.warn('Failed to re-enable OrientationController after cropping off', err);
+        }
+      }
+    },
+    toggle3Dhandles: () => {
+      const { viewportGridService } = servicesManager.services;
+      const { activeViewportId } = viewportGridService.getState();
+
+      const allToolGroups = ToolGroupManager.getAllToolGroups?.() || [];
+      let toolGroup;
+      for (const tg of allToolGroups) {
+        if (tg.viewportsInfo?.some(vp => vp.viewportId === activeViewportId)) {
+          toolGroup = tg;
+          break;
+        }
+      }
+
+      if (!toolGroup) {
+        return;
+      }
+      const tool = toolGroup.getToolInstance('VolumeCropping');
+      if (!tool?.setHandlesVisible) {
+        return;
+      }
+      if (tool.originalClippingPlanes?.length === 0) {
+        tool.onSetToolActive?.();
+      }
+      const current = tool.getHandlesVisible?.() ?? false;
+      tool.setHandlesVisible(!current);
+    },
+    togglePlaneRotation: () => {
+      const { viewportGridService } = servicesManager.services;
+      const { activeViewportId } = viewportGridService.getState();
+
+      const allToolGroups = ToolGroupManager.getAllToolGroups?.() || [];
+      let toolGroup;
+      for (const tg of allToolGroups) {
+        if (tg.viewportsInfo?.some(vp => vp.viewportId === activeViewportId)) {
+          toolGroup = tg;
+          break;
+        }
+      }
+
+      if (!toolGroup) {
+        return;
+      }
+      const tool = toolGroup.getToolInstance('VolumeCropping');
+      if (!tool?.setRotatePlanesOnDrag) {
+        return;
+      }
+      if (tool.originalClippingPlanes?.length === 0) {
+        tool.onSetToolActive?.();
+      }
+      const current = tool.getRotatePlanesOnDrag?.() ?? false;
+      tool.setRotatePlanesOnDrag(!current);
+    },
     toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
       const toolName = itemId || value;
       toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
@@ -1440,13 +1576,25 @@ function commandsModule({
       viewport.render();
     },
 
+    setSampleDistanceMultiplier: ({ sampleDistanceMultiplier, viewportId }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport) {
+        return;
+      }
+      const preset = viewport.viewportProperties?.preset;
+      viewport.setProperties({
+        preset,
+        sampleDistanceMultiplier,
+      });
+    },
+
     /**
      * Sets the volume quality for a given viewport.
      * @param {string} viewportId - The ID of the viewport to set the volume quality.
      * @param {number} volumeQuality - The desired quality level of the volume rendering.
      */
 
-    setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
+    setVolumeRenderingQuality: ({ viewportId, volumeQuality }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const { actor } = viewport.getActors()[0];
       const mapper = actor.getMapper();
@@ -1463,6 +1611,382 @@ function commandsModule({
       mapper.setMaximumSamplesPerRay(samplesPerRay);
       mapper.setSampleDistance(sampleDistance);
       viewport.render();
+    },
+
+    /**
+     * Reloads the volume for the viewport with the given IJK decimation.
+     * Affects all viewports showing the same volume. Uses original imageIds
+     * from the display set / data source, purges the old volume from cache,
+     * creates and displays the new decimated volume, restores preset/VOI and
+     * re-enables OrientationController for 3D.
+     */
+    reloadVolumeWithDecimation: async ({ viewportId, ijkDecimation }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(
+        viewportId
+      ) as CoreTypes.IVolumeViewport | undefined;
+      if (!viewport) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No viewport found',
+          type: 'error',
+        });
+        return;
+      }
+
+      // Workaround: OrientationController overlay actors can become getActors()[0],
+      // causing VolumeCroppingTool to apply clipping to the wrong actor.
+      // Disable it during reload; only re-enable when cropping is off.
+      const volume3dToolGroup = toolGroupService.getToolGroup('volume3d');
+      const croppingTool = volume3dToolGroup?.getToolInstance?.(
+        'VolumeCropping'
+      ) as {
+        getClippingPlanesVisible?: () => boolean;
+        clippingPlanesVisible?: boolean;
+        setClippingPlanesVisible?: (visible: boolean) => void;
+        originalClippingPlanes?: unknown[];
+      } | null;
+
+      const wasCroppingVisible =
+        croppingTool?.getClippingPlanesVisible?.() ??
+        croppingTool?.clippingPlanesVisible ??
+        false;
+
+      try {
+        if (volume3dToolGroup?.hasTool?.(toolNames.OrientationController)) {
+          volume3dToolGroup.setToolDisabled(toolNames.OrientationController);
+        }
+      } catch (err) {
+        console.warn('Failed to disable OrientationController before decimation reload', err);
+      }
+
+      if (croppingTool) {
+        if (Array.isArray(croppingTool.originalClippingPlanes)) {
+          croppingTool.originalClippingPlanes.length = 0;
+        }
+        if (wasCroppingVisible && croppingTool.setClippingPlanesVisible) {
+          try {
+            croppingTool.setClippingPlanesVisible(false);
+          } catch (err) {
+            console.warn(
+              'Failed to hide cropping planes before decimation reload',
+              err
+            );
+          }
+        }
+      }
+      //  End workaround
+      //
+
+      const currentVolumeId = viewport.getVolumeId?.();
+      if (!currentVolumeId) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No volume in viewport',
+          type: 'error',
+        });
+        return;
+      }
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine?.();
+      if (!renderingEngine) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No rendering engine',
+          type: 'error',
+        });
+        return;
+      }
+      const allViewports = renderingEngine.getViewports();
+      const affectedViewports = allViewports.filter((vp: CoreTypes.IViewport) => {
+        if (
+          'hasVolumeId' in vp &&
+          typeof (vp as CoreTypes.IVolumeViewport).hasVolumeId === 'function'
+        ) {
+          return (vp as CoreTypes.IVolumeViewport).hasVolumeId(currentVolumeId);
+        }
+        return false;
+      }) as CoreTypes.IVolumeViewport[];
+
+      const viewportPropertiesMap = new Map<
+        string,
+        { properties?: unknown; viewportProperties?: unknown; preset?: unknown }
+      >();
+      affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+        const props = (
+          vp as unknown as {
+            getProperties?: () => unknown;
+            viewportProperties?: { preset?: unknown };
+          }
+        ).getProperties?.();
+        const vpProps = (
+          vp as unknown as { viewportProperties?: { preset?: unknown } }
+        ).viewportProperties;
+        viewportPropertiesMap.set(vp.id, {
+          properties: props,
+          viewportProperties: vpProps,
+          preset: vpProps?.preset,
+        });
+      });
+
+      let decimationValues: [number, number, number];
+      if (
+        ijkDecimation &&
+        Array.isArray(ijkDecimation) &&
+        ijkDecimation.length >= 3
+      ) {
+        decimationValues = [
+          ijkDecimation[0],
+          ijkDecimation[1],
+          ijkDecimation[2],
+        ];
+      } else {
+        decimationValues = [1, 1, 1];
+      }
+
+      const displaySetUIDs =
+        viewportGridService.getDisplaySetsUIDsForViewport?.(viewportId);
+      if (!displaySetUIDs?.length) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No display sets for viewport',
+          type: 'error',
+        });
+        return;
+      }
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+      if (!displaySet) {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'Display set not found',
+          type: 'error',
+        });
+        return;
+      }
+
+      const displaySetAsAny = displaySet as {
+        images?: { imageId: string }[];
+        imageIds?: string[];
+      };
+      let originalImageIds: string[];
+      if (displaySetAsAny.images?.length) {
+        originalImageIds = displaySetAsAny.images.map(
+          (img: { imageId: string }) => img.imageId
+        );
+      } else if (displaySetAsAny.imageIds?.length) {
+        originalImageIds = displaySetAsAny.imageIds;
+      } else {
+        uiNotificationService.show({
+          title: 'Volume Reload Failed',
+          message: 'No image IDs in display set',
+          type: 'error',
+        });
+        return;
+      }
+
+      affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+        const actors = vp.getActors?.() ?? [];
+        const volumeActorUIDs = actors
+          .filter(
+            (a: { referencedId?: string }) => a.referencedId === currentVolumeId
+          )
+          .map((a: { uid?: string }) => a.uid);
+        if (volumeActorUIDs.length) {
+          vp.removeActors?.(volumeActorUIDs);
+        }
+      });
+
+      try {
+        const oldVolume = cache.getVolume(currentVolumeId);
+        if (oldVolume) {
+          if (
+            typeof (oldVolume as { cancelLoading?: () => void })
+              .cancelLoading === 'function'
+          ) {
+            (oldVolume as { cancelLoading: () => void }).cancelLoading();
+          }
+          if (
+            (oldVolume as { imageData?: { delete: () => void } }).imageData
+          ) {
+            (oldVolume as { imageData: { delete: () => void } }).imageData.delete();
+          }
+        }
+        cache.removeVolumeLoadObject(currentVolumeId);
+      } catch (e) {
+        console.error('Failed to remove old volume from cache:', e);
+      }
+
+      const parts = currentVolumeId.split(':');
+      const baseVolumeId =
+        parts[0] === 'decimatedVolumeLoader' && parts.length >= 3
+          ? parts.slice(1, -1).join(':')
+          : currentVolumeId;
+      const decimationSuffix = decimationValues.join('_');
+      const newVolumeId = `decimatedVolumeLoader:${baseVolumeId}:${decimationSuffix}`;
+
+      const newVolume = await volumeLoader.createAndCacheVolume(newVolumeId, {
+        imageIds: originalImageIds,
+        progressiveRendering: true,
+        ijkDecimation: decimationValues,
+      });
+      const volumeWithLoad = newVolume as unknown as {
+        load?: () => void | Promise<void>;
+      };
+      if (typeof volumeWithLoad.load === 'function') {
+        await Promise.resolve(volumeWithLoad.load());
+      }
+
+      const csUtilsApplyPreset = (csUtils as {
+        applyPreset?: (actor: unknown, preset: unknown) => void;
+      }).applyPreset;
+      for (const vp of affectedViewports) {
+        const vpType = vp.type;
+        const savedProps = viewportPropertiesMap.get(vp.id);
+        if (vpType === CoreEnums.ViewportType.VOLUME_3D) {
+          await vp.setVolumes?.([
+            {
+              volumeId: newVolumeId,
+              callback: ({ volumeActor }: { volumeActor: unknown }) => {
+                if (
+                  savedProps?.preset &&
+                  typeof csUtilsApplyPreset === 'function'
+                ) {
+                  csUtilsApplyPreset(volumeActor, savedProps.preset);
+                } else if (
+                  savedProps?.properties &&
+                  (savedProps.properties as { voiRange?: unknown })?.voiRange
+                ) {
+                  try {
+                    (
+                      volumeActor as {
+                        getProperty: () => {
+                          setRGBTransferFunction: (
+                            i: number,
+                            r: unknown
+                          ) => void;
+                        };
+                      }
+                    )
+                      .getProperty()
+                      .setRGBTransferFunction(
+                        0,
+                        (savedProps.properties as { voiRange: unknown }).voiRange
+                      );
+                  } catch (err) {
+                    console.error(
+                      'Failed to restore properties for viewport',
+                      vp.id,
+                      err
+                    );
+                  }
+                }
+              },
+            },
+          ]);
+          if (
+            typeof (vp as unknown as { resetCamera?: () => void })
+              .resetCamera === 'function'
+          ) {
+            (vp as unknown as { resetCamera: () => void }).resetCamera();
+          }
+        } else {
+          await vp.setVolumes?.([{ volumeId: newVolumeId }]);
+          if (savedProps?.properties) {
+            vp.setProperties?.(
+              savedProps.properties as Parameters<
+                CoreTypes.IVolumeViewport['setProperties']
+              >[0]
+            );
+          }
+        }
+        if (
+          typeof (vp as unknown as { resetCamera?: () => void })
+            .resetCamera === 'function'
+        ) {
+          (vp as unknown as { resetCamera: () => void }).resetCamera();
+        }
+      }
+
+      try {
+        const volume3dToolGroup = toolGroupService.getToolGroup('volume3d');
+        if (
+          !wasCroppingVisible &&
+          volume3dToolGroup?.hasTool?.(toolNames.OrientationController)
+        ) {
+          volume3dToolGroup.setToolEnabled(toolNames.OrientationController);
+        }
+      } catch (err) {
+        console.warn(
+          'Failed to re-enable OrientationController after decimation reload',
+          err
+        );
+      }
+
+      if (wasCroppingVisible) {
+        try {
+          commandsManager.runCommand(
+            'toggleCropping',
+            { visible: true },
+            'CORNERSTONE'
+          );
+        } catch (err) {
+          console.warn(
+            'Failed to restore cropping after decimation reload',
+            err
+          );
+        }
+      }
+
+      // Persist decimation settings in OHIF viewport options so overlays and
+      // other UI can reflect the current decimation immediately.
+      const isManualDecimated =
+        decimationValues[0] !== 1 || decimationValues[1] !== 1 || decimationValues[2] !== 1;
+      const manualDecimationInfo = isManualDecimated
+        ? { message: `Volume reduced` }
+        : undefined;
+
+      affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+        try {
+          const viewportInfo = cornerstoneViewportService.getViewportInfo(vp.id);
+          const prevOptions =
+            (viewportInfo?.getViewportOptions?.() as unknown as Record<string, unknown>) ?? {};
+
+          viewportInfo?.setViewportOptions?.({
+            ...(prevOptions as any),
+            ijkDecimation: decimationValues,
+            autoDecimationInfo: manualDecimationInfo,
+          });
+        } catch (err) {
+          console.warn('Failed to update viewport options after decimation reload', vp.id, err);
+        }
+      });
+
+      renderingEngine.render();
+      requestAnimationFrame(() => {
+        affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
+          try {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(vp.id);
+            const rawViewportData = viewportInfo?.getViewportData?.();
+            const viewportDataForEvent =
+              rawViewportData == null
+                ? null
+                : Array.isArray(rawViewportData)
+                  ? [...rawViewportData]
+                  : typeof rawViewportData === 'object'
+                    ? { ...(rawViewportData as any) }
+                    : rawViewportData;
+            cornerstoneViewportService._broadcastEvent?.(
+              cornerstoneViewportService.EVENTS?.VIEWPORT_DATA_CHANGED ??
+                'VIEWPORT_DATA_CHANGED',
+              { viewportId: vp.id, viewportData: viewportDataForEvent }
+            );
+          } catch (err) {
+            console.warn(
+              'Failed to broadcast viewport data changed',
+              vp.id,
+              err
+            );
+          }
+        });
+      });
     },
 
     /**
@@ -2125,6 +2649,80 @@ function commandsModule({
       viewportInfo.setOrientation(orientation);
     },
     /**
+     * Sets the 3D volume viewport camera to look from a standard anatomical direction (S, P, R, L, A, I).
+     * Only applies to VOLUME_3D viewports.
+     */
+    setViewport3DViewDirection: ({
+      viewportId,
+      direction,
+    }: {
+      viewportId: string;
+      direction: 'S' | 'P' | 'R' | 'L' | 'A' | 'I';
+    }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || viewport.type !== CoreEnums.ViewportType.VOLUME_3D) {
+        return;
+      }
+      const camera = viewport.getCamera();
+      const focalPoint = camera.focalPoint as [number, number, number];
+      const position = camera.position as [number, number, number];
+      const dir = vec3.sub(vec3.create(), position, focalPoint);
+      const distance = Math.max(vec3.length(dir), 1e-6);
+      // RAS: R +x, A +y, S +z. Look from = camera position axis; viewUp chosen so anatomy is upright.
+      const axes: Record<string, { offset: [number, number, number]; viewUp: [number, number, number] }> = {
+        S: { offset: [0, 0, 1], viewUp: [0, 1, 0] },
+        I: { offset: [0, 0, -1], viewUp: [0, 1, 0] },
+        R: { offset: [-1, 0, 0], viewUp: [0, 0, 1] },
+        L: { offset: [1, 0, 0], viewUp: [0, 0, 1] },
+        A: { offset: [0, -1, 0], viewUp: [0, 0, 1] },
+        P: { offset: [0, 1, 0], viewUp: [0, 0, 1] },
+      };
+      const { offset, viewUp } = axes[direction];
+      if (!offset) return;
+      const newPosition = vec3.add(
+        vec3.create(),
+        focalPoint,
+        vec3.scale(vec3.create(), vec3.fromValues(...offset), distance)
+      ) as CoreTypes.Point3;
+      viewport.setCamera({
+        position: newPosition,
+        focalPoint: focalPoint as CoreTypes.Point3,
+        viewUp: viewUp as CoreTypes.Point3,
+      });
+      viewport.render();
+    },
+    /**
+     * Rotates the 3D volume viewport camera by an angle (degrees) around the z-axis.
+     * Camera position and viewUp orbit around z; focal point unchanged. Used for spin animation.
+     * Only applies to VOLUME_3D viewports.
+     */
+    rotateViewport3DBy: ({
+      viewportId,
+      angle,
+    }: {
+      viewportId: string;
+      angle: number;
+    }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport || viewport.type !== CoreEnums.ViewportType.VOLUME_3D) {
+        return;
+      }
+      const camera = viewport.getCamera();
+      const focalPoint = camera.focalPoint as [number, number, number];
+      const position = camera.position as [number, number, number];
+      const viewUp = camera.viewUp as [number, number, number];
+      const zAxis: [number, number, number] = [0, 0, 1];
+      const rotAngle = (angle * Math.PI) / 180;
+      const rotMat = mat4.identity(new Float32Array(16));
+      mat4.rotate(rotMat, rotMat, rotAngle, zAxis);
+      const offset = vec3.sub(vec3.create(), position, focalPoint);
+      const newOffset = vec3.transformMat4(vec3.create(), offset, rotMat);
+      const newPosition = vec3.add(vec3.create(), focalPoint, newOffset) as CoreTypes.Point3;
+      const newViewUp = vec3.transformMat4(vec3.create(), viewUp, rotMat) as CoreTypes.Point3;
+      viewport.setCamera({ position: newPosition, viewUp: newViewUp });
+      viewport.render();
+    },
+    /**
      * Toggles the horizontal flip state of the viewport.
      */
     toggleViewportHorizontalFlip: ({ viewportId }: { viewportId?: string } = {}) => {
@@ -2594,6 +3192,18 @@ function commandsModule({
     toggleCine: {
       commandFn: actions.toggleCine,
     },
+    activateVolumeCroppingControl: {
+      commandFn: actions.activateVolumeCroppingControl,
+    },
+    toggleCropping: {
+      commandFn: actions.toggleCropping,
+    },
+    toggle3Dhandles: {
+      commandFn: actions.toggle3Dhandles,
+    },
+    togglePlaneRotation: {
+      commandFn: actions.togglePlaneRotation,
+    },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,
     },
@@ -2615,8 +3225,20 @@ function commandsModule({
     setViewportPreset: {
       commandFn: actions.setViewportPreset,
     },
-    setVolumeRenderingQulaity: {
-      commandFn: actions.setVolumeRenderingQulaity,
+    setSampleDistanceMultiplier: {
+      commandFn: actions.setSampleDistanceMultiplier,
+    },
+    setViewport3DViewDirection: {
+      commandFn: actions.setViewport3DViewDirection,
+    },
+    rotateViewport3DBy: {
+      commandFn: actions.rotateViewport3DBy,
+    },
+    setVolumeRenderingQuality: {
+      commandFn: actions.setVolumeRenderingQuality,
+    },
+    reloadVolumeWithDecimation: {
+      commandFn: actions.reloadVolumeWithDecimation,
     },
     shiftVolumeOpacityPoints: {
       commandFn: actions.shiftVolumeOpacityPoints,
@@ -2750,6 +3372,8 @@ function commandsModule({
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
     setViewportOrientation: actions.setViewportOrientation,
+    setViewport3DViewDirection: actions.setViewport3DViewDirection,
+    rotateViewport3DBy: actions.rotateViewport3DBy,
     hydrateSecondaryDisplaySet: actions.hydrateSecondaryDisplaySet,
     getVolumeIdForDisplaySet: actions.getVolumeIdForDisplaySet,
     triggerCreateAnnotationMemo: actions.triggerCreateAnnotationMemo,

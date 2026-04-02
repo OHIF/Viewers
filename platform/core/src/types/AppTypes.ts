@@ -146,6 +146,8 @@ declare global {
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
       };
+      volumeAutoDecimationThreshold?: number;
+      dangerouslyTurnOffDecimationNotification?: boolean;
     }
 
     export interface Test {

@@ -1,4 +1,4 @@
-import OHIF, { errorHandler } from '@ohif/core';
+import OHIF, { errorHandler, getVolumeOptions, setVolumeOptions } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -17,6 +17,7 @@ import {
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
+  decimatedVolumeLoader,
 } from '@cornerstonejs/core/loaders';
 
 import RequestTypes from '@cornerstonejs/core/enums/RequestType';
@@ -40,6 +41,7 @@ import { usePositionPresentationStore } from './stores/usePositionPresentationSt
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
 import { initializeWebWorkerProgressHandler } from './utils/initWebWorkerProgressHandler';
+import gpuPerformanceTest from './utils/gpuPerformanceTest';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -65,6 +67,41 @@ export default async function init({
   await cs3DInit({
     peerImport: appConfig.peerImport,
   });
+
+  const volumeOptions = getVolumeOptions();
+  if (!volumeOptions.gpuTestResults) {
+    try {
+      const isCypress =
+        typeof window !== 'undefined' && Boolean((window as any).Cypress);
+
+      if (isCypress || Boolean(appConfig.useCPURendering)) {
+        // Avoid WebGL/GPU probing in Cypress/CI runs, or when CPU rendering is forced.
+        setVolumeOptions({
+          gpuTestResults: {
+            generalPerformanceScore: 100,
+            renderer: isCypress
+              ? 'Cypress (GPU test skipped)'
+              : 'CPU rendering forced (GPU test skipped)',
+            maxTextureSize: 0,
+            memoryUsedMB: 0,
+            memoryLimitMB: 0,
+            triangleRendering: 0,
+            textureUpload: 0,
+            bufferOperations: 0,
+          },
+          rotateSampleDistanceFactor: 2,
+          sampleDistanceMultiplier: 1,
+        });
+      } else {
+        await gpuPerformanceTest(appConfig);
+      }
+    } catch (error) {
+      console.warn(
+        'GPU performance test failed, using default settings:',
+        error
+      );
+    }
+  }
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
@@ -153,6 +190,13 @@ export default async function init({
   );
 
   const metadataProvider = OHIF.classes.MetadataProvider;
+
+  volumeLoader.registerVolumeLoader(
+    'decimatedVolumeLoader',
+    (volumeId: string, options: any) => {
+      return decimatedVolumeLoader(volumeId, options);
+    }
+  );
 
   volumeLoader.registerVolumeLoader(
     'cornerstoneStreamingImageVolume',
@@ -264,12 +308,64 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
-  const getDisplaySetFromVolumeId = (volumeId: string) => {
+  const getDisplaySetFromVolume = (volume: { volumeId: string; imageIds: string[] }) => {
+    const { volumeId, imageIds } = volume;
+
+    // Prefer resolving display set UID from volumeId. This is more reliable than
+    // matching on imageIds when decimated loaders generate different ids.
+    try {
+      const parts = volumeId.split(':');
+      const isDecimated = parts[0] === 'decimatedVolumeLoader' && parts.length >= 4;
+      const maybeDecimationSuffix = parts[parts.length - 1];
+      const hasDecimationSuffix = /^\d+_\d+_\d+$/.test(maybeDecimationSuffix);
+      const baseParts = isDecimated && hasDecimationSuffix ? parts.slice(1, -1) : parts;
+
+      // Expected base formats:
+      // - <volumeLoaderSchema>:<displaySetInstanceUID>[:viewportTypeSuffix]
+      // - (wrapped) decimatedVolumeLoader:<baseVolumeIdWithSuffix>:i_j_k
+      const displaySetInstanceUID = baseParts.length >= 2 ? baseParts[1] : undefined;
+      if (displaySetInstanceUID) {
+        const direct = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        if (direct) {
+          return direct;
+        }
+      }
+    } catch {
+      // Fall back to imageId matching.
+    }
+
     const allDisplaySets = displaySetService.getActiveDisplaySets();
-    const volume = cornerstone.cache.getVolume(volumeId);
-    const imageIds = volume.imageIds;
     return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
   };
+
+  const volumeLoadedHandler = (evt: { detail: { volume: { volumeId: string; imageIds: string[] } } }) => {
+    const { volume } = evt.detail;
+
+    if (!volume?.volumeId || !volume?.imageIds) {
+      return;
+    }
+
+    const displaySet = getDisplaySetFromVolume(volume);
+    if (!displaySet) {
+      return;
+    }
+
+    const actualImageCount = volume.imageIds.length;
+    type WithFrameCount = typeof displaySet & {
+      numImageFrames?: number;
+      setAttributes?: (attrs: { numImageFrames?: number }) => void;
+    };
+    const ds = displaySet as WithFrameCount;
+    if (ds.numImageFrames !== actualImageCount && typeof ds.setAttributes === 'function') {
+      ds.setAttributes({ numImageFrames: actualImageCount });
+      displaySetService.setDisplaySetMetadataInvalidated(
+        displaySet.displaySetInstanceUID,
+        false
+      );
+    }
+  };
+
+  eventTarget.addEventListener(EVENTS.VOLUME_LOADED, volumeLoadedHandler);
 
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;

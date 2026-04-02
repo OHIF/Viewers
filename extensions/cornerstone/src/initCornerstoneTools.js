@@ -45,6 +45,9 @@ import {
   SculptorTool,
   SplineContourSegmentationTool,
   LabelMapEditWithContourTool,
+  VolumeCroppingTool,
+  VolumeCroppingControlTool,
+  OrientationControllerTool,
 } from '@cornerstonejs/tools';
 import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
@@ -106,6 +109,9 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SplineROITool);
   addTool(LivewireContourTool);
   addTool(OrientationMarkerTool);
+  if (OrientationControllerTool) {
+    addTool(OrientationControllerTool);
+  }
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
@@ -117,6 +123,8 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SculptorTool);
   addTool(SplineContourSegmentationTool);
   addTool(LabelMapEditWithContourTool);
+  addTool(VolumeCroppingTool);
+  addTool(VolumeCroppingControlTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -180,6 +188,9 @@ const toolNames = {
   SculptorTool: SculptorTool.toolName,
   SplineContourSegmentation: SplineContourSegmentationTool.toolName,
   LabelMapEditWithContourTool: LabelMapEditWithContourTool.toolName,
+  VolumeCropping: VolumeCroppingTool.toolName,
+  VolumeCroppingControl: VolumeCroppingControlTool.toolName,
+  OrientationController: OrientationControllerTool.toolName,
 };
 
 export { toolNames };

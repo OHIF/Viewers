@@ -13,6 +13,7 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import { Volume3dSpinDriver } from '../components/ViewportOrientationMenu/Volume3dSpinDriver';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
@@ -280,7 +281,12 @@ const OHIFCornerstoneViewport = React.memo(
           initialImageIndex
         );
 
-        const presentations = getViewportPresentations(viewportId, viewportOptions);
+        const optionsToUse =
+          'viewportOptions' in viewportData && viewportData.viewportOptions
+            ? viewportData.viewportOptions
+            : viewportOptions;
+
+        const presentations = getViewportPresentations(viewportId, optionsToUse);
 
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
         // Used for segmentation hydration right now, since the logic to decide whether
@@ -295,7 +301,7 @@ const OHIFCornerstoneViewport = React.memo(
         cornerstoneViewportService.setViewportData(
           viewportId,
           viewportData,
-          viewportOptions,
+          optionsToUse,
           displaySetOptions,
           presentations
         );
@@ -353,6 +359,7 @@ const OHIFCornerstoneViewport = React.memo(
             />
           )}
         </div>
+        <Volume3dSpinDriver viewportId={viewportId} />
         {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
         <OHIFViewportActionCorners viewportId={viewportId} />
       </React.Fragment>
