@@ -119,6 +119,7 @@ import {
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
+import { ColorPicker } from './ColorPicker';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
@@ -269,5 +270,6 @@ export {
   ProgressLoadingBar,
   ViewportDialog,
   CinePlayer,
-  LayoutSelector
+  LayoutSelector,
+  ColorPicker,
 };
