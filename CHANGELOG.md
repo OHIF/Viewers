@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.50...v3.13.0-beta.51) (2026-04-03)
+
+
+### Bug Fixes
+
+* **security:** Update yarn.lock that was missed in PR [#5936](https://github.com/OHIF/Viewers/issues/5936). ([#5940](https://github.com/OHIF/Viewers/issues/5940)) ([84ddf78](https://github.com/OHIF/Viewers/commit/84ddf78c879a7cb1aa62c3aaef4428adf67065da))
+
+
+
+
+
 # [3.13.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.49...v3.13.0-beta.50) (2026-04-02)
 
 
