@@ -8,19 +8,18 @@ summary: Guide to writing and running end-to-end tests for OHIF Viewer using Pla
 
 
 :::note
-You might need to run the `bun playwright install ` for the first time if you have not
+You might need to run `npx playwright install` the first time you set up
+Playwright locally.
 :::
 
 # Running the tests
 
 ```bash
-#
-# run the tests
-bun test:e2e:ui
+yarn test:e2e:ui
 ```
 
 
-# Writing PlayWright Tests
+# Writing Playwright Tests
 
 Our Playwright tests are written using the Playwright test framework. We use these tests to test our OHIF Viewer and ensure that it is working as expected.
 
@@ -91,7 +90,14 @@ test.describe('Some test', async () => {
 });
 ```
 
-The test will automatically fail the first time you run it, it will however generate the screenshot for you, you will notice 3 new entries in the `tests/screenshots` folder, under `chromium/your-test.spec.js/measurementAdded.png`, `firefox/your-test.spec.js/measurementAdded.png` and `webkit/your-test.spec.js/measurementAdded.png` folders. You can now run the test again and it will use those screenshots to compare against the current state of the example. Please verify that the ground truth screenshots are correct before committing them or testing against them.
+The test will automatically fail the first time you run it, but it will also
+generate the missing screenshot for you. In the current default configuration,
+that snapshot will be written under
+`tests/screenshots/chromium/your-test.spec.ts/measurementAdded.png`. If you
+enable additional browser projects in `playwright.config.ts`, Playwright will
+create matching snapshots for those projects as well. Please verify that the
+ground-truth screenshots are correct before committing them or testing against
+them.
 
 ## Simulating mouse drags
 
@@ -125,7 +131,8 @@ Our simulate drag utility can simulate a drag on any element, and avoid going ou
 
 ## Running the tests
 
-After you have wrote your tests, you can run them by using the following command:
+After you have written your tests, you can run them by using the following
+command:
 
 ```bash
 yarn test:e2e:ci
@@ -137,15 +144,26 @@ If you want to use headed mode, you can use the following command:
 yarn test:e2e:headed
 ```
 
-You will see the test results in your terminal, if you want an indepth report, you can use the following command:
+You will see the test results in your terminal. If you want a more detailed
+report, you can use the following command:
 
 ```bash
-yarn playwright show-report tests/playwright-report
+npx playwright show-report tests/playwright-report
 ```
 
 ## Serving the viewer manually for development
 
-By default, when you run the tests, it will call the `yarn start` command to serve the viewer first, then run the tests, if you would like to serve the viewer manually, you can use the same command. The viewer will be available at `http://localhost:3000`. This could speed up your development process since playwright will skip this step and use the existing server on port 3000.
+By default, Playwright starts the viewer for you using the e2e configuration in
+`playwright.config.ts`. If you would like to serve the viewer manually while you
+iterate on a test, run:
+
+```bash
+npx cross-env APP_CONFIG=config/e2e.js OHIF_PORT=3335 yarn start
+```
+
+The viewer will then be available at `http://localhost:3335`, which matches the
+default Playwright base URL. When that server is already running, Playwright
+will reuse it instead of starting a new one.
 
 ## Accessing services, managers, configs and cornerstone in your tests
 

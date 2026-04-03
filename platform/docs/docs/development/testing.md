@@ -26,65 +26,69 @@ Running unit test will generate a report at the end showing the successful and
 unsuccessful tests with detailed explanations.
 
 ## End-to-end test
-For running the OHIF e2e test you need to run the following steps:
+OHIF's primary end-to-end suite now runs with Playwright from the repository
+root.
 
-- Open a new terminal, and from the root of the OHIF mono repo, run the following command:
+Start by checking out the test data:
 
-  ```bash
-  yarn test:data
-  ```
+```bash
+yarn test:data
+```
 
-  This will download the required data to run the e2e tests (it might take a while).
-  The `test:data` only needs to be run once and checks the data out. Read more about
-  test data [below](#test-data).
+Then run one of the Playwright workflows:
 
-- Run the viewer with e2e config
+```bash
+yarn test:e2e:ci
+```
 
-  ```bash
-  APP_CONFIG=config/e2e.js yarn start
-  ```
+For interactive local work, the following commands are often more convenient:
 
-  You should be able to see test studies in the study list
+```bash
+yarn test:e2e:ui
+yarn test:e2e:headed
+yarn test:e2e:debug
+```
 
-  ![OHIF-e2e-test-studies](../assets/img/OHIF-e2e-test-studies.png)
+If you prefer to keep the viewer running in a separate terminal while iterating
+on tests, start it with the same configuration used by Playwright:
 
-- Open a new terminal inside the OHIF project, and run the e2e cypress test
+```bash
+npx cross-env APP_CONFIG=config/e2e.js OHIF_PORT=3335 yarn start
+```
 
-  ```bash
-  yarn test:e2e
-  ```
+New end-to-end coverage should be added under the repository-level `tests/`
+directory and documented in the dedicated [Playwright guide](./playwright-testing.md).
+Legacy Cypress commands still exist in `platform/app/package.json` for older
+package-local workflows, but Playwright is the default path for new regression
+coverage.
 
-  You should be able to see the cypress window open
+## Test Data
 
-  ![e2e-cypress](../assets/img/e2e-cypress.png)
+The testing data is stored in two OHIF repositories. The first contains the
+binary DICOM data, at [viewer-testdata](https://github.com/OHIF/viewer-testdata.git)
+while the second module contains data in the DICOMweb format, installed as a
+submodule into OHIF in the `testdata` directory. This is retrieved via the
+command
 
-  Run the tests by clicking on the `Run #number integration tests` .
+```bash
+yarn test:data
+```
 
-  A new window will open, and you will see e2e tests being executed one after
-  each other.
+or the equivalent command `git submodule update --init`.
 
-  ![e2e-cypress-final](../assets/img/e2e-cypress-final.png)
+When adding new data, run:
 
-  ## Test Data
-  The testing data is stored in two OHIF repositories.  The first contains the
-  binary DICOM data, at [viewer-testdata](https://github.com/OHIF/viewer-testdata.git)
-  while the second module contains data in the DICOMweb format, installed as a submodule
-  into OHIF in the `testdata` directory.  This is retrieved via the command
-  ```bash
-  yarn test:data
-  ```
-  or the equivalent command `git submodule update --init`
-  When adding new data, run:
-  ```
-  npm install -g dicomp10-to-dicomweb
-  mkdicomweb -d dicomweb dcm
-  ```
-  to update the local dicomweb submodule in viewer-testdata.  Then, commit
-  that data and update the submodules used in OHIF and in the viewer-testdata
-  parent modules.
+```bash
+npm install -g dicom10-to-dicomweb
+mkdicomweb -d dicomweb dcm
+```
 
-  All data MUST be fully anonymized and allowed to be used for open access.
-  Any attributions should be included in the DCM directory.
+to update the local dicomweb submodule in viewer-testdata. Then commit that
+data and update the submodules used in OHIF and in the viewer-testdata parent
+modules.
+
+All data MUST be fully anonymized and allowed to be used for open access. Any
+attributions should be included in the DCM directory.
 
 ## Testing Philosophy
 

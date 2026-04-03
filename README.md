@@ -16,9 +16,6 @@ provided by the <a href="https://ohif.org/">Open Health Imaging Foundation (OHIF
 <div align="center">
   📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
 </div>
-<div align="center">
-  📰 <a href="https://ohif.org/news/"><strong>Join OHIF Newsletter</strong></a> 📰
-</div>
 
 
 
@@ -98,7 +95,7 @@ forking).
 
 - [Report a Bug 🐛](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Report+%3Abug%3A%2CAwaiting+Reproduction&projects=&template=bug-report.yml&title=%5BBug%5D+)
 - [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&projects=&template=feature-request.yml&title=%5BFeature+Request%5D+)
-- [Ask a Question 🤗](community.ohif.org)
+- [Ask a Question 🤗](https://community.ohif.org)
 - [Slack Channel](https://join.slack.com/t/cornerstonejs/shared_invite/zt-1r8xb2zau-dOxlD6jit3TN0Uwf928w9Q)
 
 For commercial support, academic collaborations, and answers to common
@@ -196,40 +193,35 @@ you'll see the following:
 
 ```bash
 .
-├── extensions               #
-│   ├── _example             # Skeleton of example extension
-│   ├── default              # basic set of useful functionalities (datasources, panels, etc)
-│   ├── cornerstone       # image rendering and tools w/ Cornerstone3D
-│   ├── cornerstone-dicom-sr # DICOM Structured Report rendering and export
-│   ├── cornerstone-dicom-sr # DICOM Structured Report rendering and export
-│   ├── cornerstone-dicom-seg # DICOM Segmentation rendering and export
-│   ├── cornerstone-dicom-rt # DICOM RTSTRUCT rendering
-│   ├── cornerstone-microscopy # Whole Slide Microscopy rendering
-│   ├── dicom-pdf # PDF rendering
-│   ├── dicom-video # DICOM RESTful Services
-│   ├── measurement-tracking # Longitudinal measurement tracking
-│   ├── tmtv # Total Metabolic Tumor Volume (TMTV) calculation
-|
-
-│
-├── modes                    #
-│   ├── _example             # Skeleton of example mode
-│   ├── basic-dev-mode       # Basic development mode
-│   ├── longitudinal         # Longitudinal mode (measurement tracking)
-│   ├── tmtv       # Total Metabolic Tumor Volume (TMTV) calculation mode
-│   └── microscopy          # Whole Slide Microscopy mode
-│
-├── platform                 #
-│   ├── core                 # Business Logic
-│   ├── i18n                 # Internationalization Support
-│   ├── ui                   # React component library
-│   ├── docs                 # Documentation
-│   └── viewer               # Connects platform and extension projects
-│
-├── ...                      # misc. shared configuration
-├── lerna.json               # MonoRepo (Lerna) settings
-├── package.json             # Shared devDependencies and commands
-└── README.md                # This file
+├── extensions
+│   ├── cornerstone              # Cornerstone3D rendering and tools
+│   ├── cornerstone-dicom-rt     # DICOM RTSTRUCT rendering
+│   ├── cornerstone-dicom-seg    # DICOM segmentation rendering
+│   ├── cornerstone-dicom-sr     # DICOM structured report support
+│   ├── default                  # Data sources, panels, and default layout
+│   ├── dicom-microscopy         # Whole slide microscopy
+│   ├── dicom-pdf                # PDF rendering
+│   ├── dicom-video              # DICOM video support
+│   ├── measurement-tracking     # Measurement tracking workflow pieces
+│   └── ...
+├── modes
+│   ├── basic                    # General-purpose viewer mode
+│   ├── basic-dev-mode           # Development-focused mode
+│   ├── longitudinal             # Measurement tracking mode
+│   ├── microscopy               # Whole slide microscopy mode
+│   ├── segmentation             # Segmentation-focused mode
+│   └── ...
+├── platform
+│   ├── app                      # App shell, routes, and runtime wiring
+│   ├── cli                      # Extension and mode scaffolding tools
+│   ├── core                     # Shared services and business logic
+│   ├── docs                     # Documentation site
+│   ├── i18n                     # Internationalization support
+│   ├── ui                       # Current React component library
+│   └── ui-next                  # Next-generation UI components
+├── tests                        # Playwright end-to-end test suite
+├── testdata                     # DICOMweb test data submodule
+└── package.json                 # Shared scripts and workspace config
 ```
 
 ## Acknowledgments
