@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { CommandsManager, HotkeysManager } from '../classes';
+import { CommandsManager, HotkeysManager, MouseBindingsManager } from '../classes';
 import { ExtensionManager } from '../extensions';
 import { ServicesManager } from '../services';
 
@@ -9,6 +9,7 @@ interface SystemContextProviderProps {
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
   hotkeysManager: HotkeysManager;
+  mouseBindingsManager: MouseBindingsManager;
 }
 
 const systemContext = createContext(null);
@@ -22,9 +23,18 @@ export function SystemContextProvider({
   commandsManager,
   extensionManager,
   hotkeysManager,
+  mouseBindingsManager,
 }: SystemContextProviderProps) {
   return (
-    <Provider value={{ servicesManager, commandsManager, extensionManager, hotkeysManager }}>
+    <Provider
+      value={{
+        servicesManager,
+        commandsManager,
+        extensionManager,
+        hotkeysManager,
+        mouseBindingsManager,
+      }}
+    >
       {children}
     </Provider>
   );

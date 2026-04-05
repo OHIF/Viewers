@@ -50,6 +50,16 @@ import { buildButtonCommands } from './buildButtonCommands';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
 import { ModifierKeyCodeToName, ModifierKeyNameToCode } from './modifierKeyUtils';
+import {
+  MOUSE_MODIFIER_KEYS,
+  USER_PREFERRED_MOUSE_MODIFIER_ACTIONS_STORAGE_KEY,
+  getDefaultMouseModifierAssignments,
+  normalizeMouseModifierAssignments,
+  getStoredMouseModifierAssignments,
+  setStoredMouseModifierAssignments,
+  getMouseModifierForAction,
+  applyMouseModifierActions,
+} from './mouseModifierPreferences';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -108,6 +118,14 @@ const utils = {
   downloadDicom,
   ModifierKeyCodeToName,
   ModifierKeyNameToCode,
+  MOUSE_MODIFIER_KEYS,
+  USER_PREFERRED_MOUSE_MODIFIER_ACTIONS_STORAGE_KEY,
+  getDefaultMouseModifierAssignments,
+  normalizeMouseModifierAssignments,
+  getStoredMouseModifierAssignments,
+  setStoredMouseModifierAssignments,
+  getMouseModifierForAction,
+  applyMouseModifierActions,
 };
 
 export {
@@ -152,6 +170,14 @@ export {
   downloadDicom,
   ModifierKeyCodeToName,
   ModifierKeyNameToCode,
+  MOUSE_MODIFIER_KEYS,
+  USER_PREFERRED_MOUSE_MODIFIER_ACTIONS_STORAGE_KEY,
+  getDefaultMouseModifierAssignments,
+  normalizeMouseModifierAssignments,
+  getStoredMouseModifierAssignments,
+  setStoredMouseModifierAssignments,
+  getMouseModifierForAction,
+  applyMouseModifierActions,
 };
 
 export default utils;

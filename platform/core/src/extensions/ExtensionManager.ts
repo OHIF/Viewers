@@ -1,7 +1,7 @@
 import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
 import { PubSubService, ServiceProvidersManager } from '../services';
-import { HotkeysManager, CommandsManager } from '../classes';
+import { HotkeysManager, MouseBindingsManager, CommandsManager } from '../classes';
 import type { DataSourceDefinition } from '../types';
 import type AppTypes from '../types/AppTypes';
 
@@ -13,6 +13,7 @@ export interface ExtensionConstructor {
   serviceProvidersManager: ServiceProvidersManager;
   commandsManager: CommandsManager;
   hotkeysManager: HotkeysManager;
+  mouseBindingsManager: MouseBindingsManager;
   appConfig: AppTypes.Config;
 }
 
@@ -75,6 +76,7 @@ export default class ExtensionManager extends PubSubService {
   private _commandsManager: CommandsManager;
   private _servicesManager: AppTypes.ServicesManager;
   private _hotkeysManager: HotkeysManager;
+  private _mouseBindingsManager: MouseBindingsManager;
   private _serviceProvidersManager: ServiceProvidersManager;
   private modulesMap: Record<string, unknown>;
   private modules: Record<string, any[]>;
@@ -94,6 +96,7 @@ export default class ExtensionManager extends PubSubService {
     servicesManager,
     serviceProvidersManager,
     hotkeysManager,
+    mouseBindingsManager,
     appConfig = {},
   }: ExtensionConstructor) {
     super(ExtensionManager.EVENTS);
@@ -105,6 +108,7 @@ export default class ExtensionManager extends PubSubService {
     this._servicesManager = servicesManager;
     this._serviceProvidersManager = serviceProvidersManager;
     this._hotkeysManager = hotkeysManager;
+    this._mouseBindingsManager = mouseBindingsManager;
     this._appConfig = appConfig;
 
     this.modulesMap = {};
@@ -154,6 +158,7 @@ export default class ExtensionManager extends PubSubService {
       _servicesManager,
       _commandsManager,
       _hotkeysManager,
+      _mouseBindingsManager,
       _extensionLifeCycleHooks,
     } = this;
     const services = this.getUniqueServicesList(_servicesManager);
@@ -173,6 +178,7 @@ export default class ExtensionManager extends PubSubService {
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
           hotkeysManager: _hotkeysManager,
+          mouseBindingsManager: _mouseBindingsManager,
           extensionManager: this,
         });
       }
@@ -180,8 +186,13 @@ export default class ExtensionManager extends PubSubService {
   }
 
   public onModeExit(): void {
-    const { registeredExtensionIds, _servicesManager, _commandsManager, _extensionLifeCycleHooks } =
-      this;
+    const {
+      registeredExtensionIds,
+      _servicesManager,
+      _commandsManager,
+      _mouseBindingsManager,
+      _extensionLifeCycleHooks,
+    } = this;
     const services = this.getUniqueServicesList(_servicesManager);
 
     registeredExtensionIds.forEach(extensionId => {
@@ -191,6 +202,7 @@ export default class ExtensionManager extends PubSubService {
         onModeExit({
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
+          mouseBindingsManager: _mouseBindingsManager,
         });
       }
     });
@@ -279,6 +291,7 @@ export default class ExtensionManager extends PubSubService {
         serviceProvidersManager: this._serviceProvidersManager,
         commandsManager: this._commandsManager,
         hotkeysManager: this._hotkeysManager,
+        mouseBindingsManager: this._mouseBindingsManager,
         extensionManager: this,
         appConfig: this._appConfig,
         configuration,
@@ -465,6 +478,7 @@ export default class ExtensionManager extends PubSubService {
         commandsManager: this._commandsManager,
         servicesManager: this._servicesManager,
         hotkeysManager: this._hotkeysManager,
+        mouseBindingsManager: this._mouseBindingsManager,
         extensionManager: this,
         configuration,
       });

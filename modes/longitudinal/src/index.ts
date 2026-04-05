@@ -1,14 +1,14 @@
 import i18n from 'i18next';
 import { id } from './id';
 import { initToolGroups, toolbarButtons, cornerstone,
+  onModeEnterBase,
   ohif,
-  dicomsr,
-  dicomvideo,
   basicLayout,
   basicRoute,
   extensionDependencies as basicDependencies,
   mode as basicMode,
   modeInstance as basicModeInstance,
+  registerCrosshairsMouseModifierActions,
  } from '@ohif/mode-basic';
 
 export const tracked = {
@@ -59,6 +59,10 @@ export const modeInstance = {
     id,
     routeName: 'viewer',
     displayName: i18n.t('Modes:Basic Viewer'),
+    onModeEnter(args: withAppTypes) {
+      onModeEnterBase.call(this, args);
+      registerCrosshairsMouseModifierActions(args);
+    },
     routes: [
       longitudinalRoute
     ],

@@ -4,6 +4,7 @@ import {
   ServicesManager,
   ServiceProvidersManager,
   HotkeysManager,
+  MouseBindingsManager,
   UINotificationService,
   UIModalService,
   UIDialogService,
@@ -40,6 +41,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   const servicesManager = new ServicesManager(commandsManager);
   const serviceProvidersManager = new ServiceProvidersManager();
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
+  const mouseBindingsManager = new MouseBindingsManager();
 
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
@@ -56,6 +58,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     servicesManager,
     serviceProvidersManager,
     hotkeysManager,
+    mouseBindingsManager,
     appConfig,
   });
 
@@ -144,6 +147,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     servicesManager,
     serviceProvidersManager,
     hotkeysManager,
+    mouseBindingsManager,
   };
 }
 

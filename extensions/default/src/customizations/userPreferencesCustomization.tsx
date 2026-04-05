@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
+import { useSystem, hotkeys as hotkeysModule, utils } from '@ohif/core';
 import { UserPreferencesModal, FooterAction } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 import i18n from '@ohif/i18n';
@@ -17,17 +17,34 @@ interface HotkeyDefinitions {
   [key: string]: HotkeyDefinition;
 }
 
+type MouseModifierKey = 'ctrl' | 'shift' | 'alt' | 'meta';
+type MouseModifierAssignments = Partial<Record<MouseModifierKey, string>>;
+
+interface MouseModifierActionDefinition {
+  id: string;
+  label: string;
+  defaultModifier?: MouseModifierKey;
+  onChange?: (modifierKey?: MouseModifierKey) => void;
+}
+
+const NONE_MOUSE_MODIFIER_ACTION = '__none__';
+const mouseModifierKeys: MouseModifierKey[] = ['ctrl', 'shift', 'alt', 'meta'];
+
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
-  const { hotkeysManager, servicesManager } = useSystem();
+  const { hotkeysManager, mouseBindingsManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
-  const { customizationService, toolbarService, viewportGridService } =
-    servicesManager.services;
+  const { customizationService, toolbarService, viewportGridService } = servicesManager.services;
+  const rawMouseModifierActions =
+    (mouseBindingsManager.getActionDefinitions() as MouseModifierActionDefinition[]) || [];
   const rawMouseShortcuts =
     customizationService.getCustomization('ohif.hotkeyBindings.mouseShortcuts') || [];
   const initialMouseShortcuts = rawMouseShortcuts.map(shortcut => ({
     ...shortcut,
     keys: typeof shortcut.keys === 'function' ? shortcut.keys() : shortcut.keys,
+    defaultKeys:
+      typeof shortcut.defaultKeys === 'function' ? shortcut.defaultKeys() : shortcut.defaultKeys,
   }));
+  const initialMouseModifierAssignments = mouseBindingsManager.getBindings();
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -62,6 +79,8 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const [state, setState] = useState({
     hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
+    mouseModifierActions: rawMouseModifierActions,
+    mouseModifierAssignments: initialMouseModifierAssignments,
     mouseShortcuts: initialMouseShortcuts,
   });
 
@@ -91,12 +110,42 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     }));
   };
 
+  const onMouseModifierActionChangeHandler = (
+    modifierKey: MouseModifierKey,
+    nextActionId?: string
+  ) => {
+    setState(prev => {
+      const nextAssignments = { ...prev.mouseModifierAssignments } as MouseModifierAssignments;
+
+      if (!nextActionId) {
+        delete nextAssignments[modifierKey];
+      } else {
+        mouseModifierKeys.forEach(existingModifierKey => {
+          if (nextAssignments[existingModifierKey] === nextActionId) {
+            delete nextAssignments[existingModifierKey];
+          }
+        });
+
+        nextAssignments[modifierKey] = nextActionId;
+      }
+
+      return {
+        ...prev,
+        mouseModifierAssignments: nextAssignments,
+      };
+    });
+  };
+
   const onResetHandler = () => {
     setState(state => ({
       ...state,
       languageValue: defaultLanguage.value,
       hotkeyDefinitions: resolvedHotkeyDefaults,
-      mouseShortcuts: initialMouseShortcuts,
+      mouseModifierAssignments: mouseBindingsManager.getDefaultBindings(),
+      mouseShortcuts: initialMouseShortcuts.map(shortcut => ({
+        ...shortcut,
+        keys: shortcut.defaultKeys ?? shortcut.keys,
+      })),
     }));
 
     hotkeysManager.restoreDefaultBindings();
@@ -142,6 +191,16 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     [displayNames, i18nextInstance, t]
   );
 
+  const getModifierLabel = React.useCallback(
+    (modifierKey: MouseModifierKey) => {
+      const keyCode = utils.ModifierKeyNameToCode[modifierKey];
+      const fallbackLabel = (keyCode && utils.ModifierKeyCodeToName[keyCode]) || modifierKey;
+
+      return t(`HotkeyKeys.${modifierKey}`, { defaultValue: fallbackLabel });
+    },
+    [t]
+  );
+
   return (
     <UserPreferencesModal>
       <UserPreferencesModal.Body>
@@ -171,9 +230,64 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
           </Select>
         </div>
 
+        {state.mouseModifierActions.length > 0 && (
+          <>
+            <UserPreferencesModal.SubHeading>
+              {t('Mouse Modifiers')}
+            </UserPreferencesModal.SubHeading>
+            <div className="overflow-x-auto">
+              <div className="grid min-w-[44rem] grid-cols-4 gap-3">
+                {mouseModifierKeys.map(modifierKey => (
+                  <div
+                    key={modifierKey}
+                    className="space-y-2"
+                  >
+                    <span className="text-foreground block text-sm font-medium">
+                      {getModifierLabel(modifierKey)}
+                    </span>
+                    <Select
+                      value={
+                        state.mouseModifierAssignments[modifierKey] ?? NONE_MOUSE_MODIFIER_ACTION
+                      }
+                      onValueChange={value =>
+                        onMouseModifierActionChangeHandler(
+                          modifierKey,
+                          value === NONE_MOUSE_MODIFIER_ACTION ? undefined : value
+                        )
+                      }
+                    >
+                      <SelectTrigger
+                        className="bg-background text-foreground w-full"
+                        aria-label={getModifierLabel(modifierKey)}
+                      >
+                        <SelectValue placeholder={t('No Action', { defaultValue: 'No Action' })} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={NONE_MOUSE_MODIFIER_ACTION}>
+                          {t('No Action', { defaultValue: 'No Action' })}
+                        </SelectItem>
+                        {state.mouseModifierActions.map(action => (
+                          <SelectItem
+                            key={action.id}
+                            value={action.id}
+                          >
+                            {t(action.label)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
         {state.mouseShortcuts.length > 0 && (
           <>
-            <UserPreferencesModal.SubHeading>{t('Mouse Shortcuts')}</UserPreferencesModal.SubHeading>
+            <UserPreferencesModal.SubHeading>
+              {t('Mouse Shortcuts')}
+            </UserPreferencesModal.SubHeading>
             <UserPreferencesModal.HotkeysGrid>
               {state.mouseShortcuts.map((shortcut, index) => (
                 <UserPreferencesModal.MouseShortcut
@@ -220,20 +334,26 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
           </FooterAction.Secondary>
           <FooterAction.Primary
             onClick={() => {
-              if (state.languageValue !== currentLanguage.value) {
-                i18n.changeLanguage(state.languageValue);
-                window.location.reload();
-                return;
-              }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
+
+              const normalizedMouseModifierAssignments =
+                mouseBindingsManager.setBindings(state.mouseModifierAssignments);
+
+              mouseBindingsManager.applyBindings(normalizedMouseModifierAssignments);
 
               for (const shortcut of state.mouseShortcuts) {
                 shortcut.onChange?.(shortcut.keys);
               }
 
-              if (state.mouseShortcuts.length > 0) {
+              if (state.mouseModifierActions.length > 0 || state.mouseShortcuts.length > 0) {
                 const viewportId = viewportGridService.getActiveViewportId();
                 toolbarService.refreshToolbarState({ viewportId });
+              }
+
+              if (state.languageValue !== currentLanguage.value) {
+                i18n.changeLanguage(state.languageValue);
+                window.location.reload();
+                return;
               }
 
               hotkeysModule.stopRecord();

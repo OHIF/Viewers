@@ -99,6 +99,7 @@ const createRoutes = ({
   servicesManager,
   commandsManager,
   hotkeysManager,
+  mouseBindingsManager,
   showStudyList,
 }: withAppTypes) => {
   const routes =
@@ -109,6 +110,7 @@ const createRoutes = ({
       servicesManager,
       commandsManager,
       hotkeysManager,
+      mouseBindingsManager,
     }) || [];
 
   const { customizationService } = servicesManager.services;

@@ -21,6 +21,7 @@ export default function ModeRoute({
   servicesManager,
   commandsManager,
   hotkeysManager,
+  mouseBindingsManager,
 }: withAppTypes) {
   const [appConfig] = useAppConfig();
 
@@ -248,6 +249,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        mouseBindingsManager,
         appConfig,
       });
 
@@ -288,6 +290,7 @@ export default function ModeRoute({
             servicesManager,
             extensionManager,
             hotkeysManager,
+            mouseBindingsManager,
             studyInstanceUIDs,
             dataSource,
             filters,
@@ -318,6 +321,7 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        mouseBindingsManager,
       });
     });
 
@@ -336,6 +340,7 @@ export default function ModeRoute({
       }
       // Clean up hotkeys
       hotkeysManager.destroy();
+      mouseBindingsManager.destroy();
 
       // The unsubscriptions must occur before the extension onModeExit
       // in order to prevent exceptions during cleanup caused by spurious events
@@ -357,6 +362,7 @@ export default function ModeRoute({
     servicesManager,
     extensionManager,
     hotkeysManager,
+    mouseBindingsManager,
     studyInstanceUIDs,
     refresh,
   ]);
@@ -435,5 +441,6 @@ ModeRoute.propTypes = {
   extensionManager: PropTypes.object,
   servicesManager: PropTypes.object,
   hotkeysManager: PropTypes.object,
+  mouseBindingsManager: PropTypes.object,
   commandsManager: PropTypes.object,
 };

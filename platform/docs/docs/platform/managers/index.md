@@ -63,6 +63,16 @@ features.
                 For keyboard keys assignment to commands
             </td>
         </tr>
+        <tr>
+            <td>
+                <a href="./mouse-bindings">
+                    Mouse Bindings Manager
+                </a>
+            </td>
+            <td>
+                For mode-specific mouse binding action definitions and persisted user assignments
+            </td>
+        </tr>
     </tbody>
 </table>
 

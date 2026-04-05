@@ -11,6 +11,7 @@ import {
   ExtensionManager,
   CommandsManager,
   HotkeysManager,
+  MouseBindingsManager,
   ServiceProvidersManager,
   SystemContextProvider,
   ViewportRefsProvider,
@@ -41,7 +42,8 @@ let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
   servicesManager: AppTypes.ServicesManager,
   serviceProvidersManager: ServiceProvidersManager,
-  hotkeysManager: HotkeysManager;
+  hotkeysManager: HotkeysManager,
+  mouseBindingsManager: MouseBindingsManager;
 
 const routerFutureFlags: BrowserRouterProps['future'] = {
   v7_startTransition: true,
@@ -88,6 +90,7 @@ function App({
   servicesManager = init.servicesManager;
   serviceProvidersManager = init.serviceProvidersManager;
   hotkeysManager = init.hotkeysManager;
+  mouseBindingsManager = init.mouseBindingsManager;
 
   // Set appConfig
   const appConfigState = init.appConfig;
@@ -118,7 +121,16 @@ function App({
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
-    [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
+    [
+      SystemContextProvider,
+      {
+        commandsManager,
+        extensionManager,
+        hotkeysManager,
+        mouseBindingsManager,
+        servicesManager,
+      },
+    ],
     [ViewportRefsProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
@@ -153,6 +165,7 @@ function App({
     servicesManager,
     commandsManager,
     hotkeysManager,
+    mouseBindingsManager,
     routerBasename,
     showStudyList,
   });

@@ -28,6 +28,7 @@ export default function buildModeRoutes({
   servicesManager,
   commandsManager,
   hotkeysManager,
+  mouseBindingsManager,
 }: withAppTypes) {
   const routes = [];
   const dataSourceNames = [];
@@ -53,6 +54,7 @@ export default function buildModeRoutes({
           servicesManager={servicesManager}
           commandsManager={commandsManager}
           hotkeysManager={hotkeysManager}
+          mouseBindingsManager={mouseBindingsManager}
         />
       );
 
@@ -75,6 +77,7 @@ export default function buildModeRoutes({
         servicesManager={servicesManager}
         commandsManager={commandsManager}
         hotkeysManager={hotkeysManager}
+        mouseBindingsManager={mouseBindingsManager}
       />
     );
 

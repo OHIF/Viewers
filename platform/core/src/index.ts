@@ -1,6 +1,6 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
 import { ServiceProvidersManager, ServicesManager } from './services';
-import classes, { CommandsManager, HotkeysManager } from './classes';
+import classes, { CommandsManager, HotkeysManager, MouseBindingsManager } from './classes';
 import { SystemContextProvider, useSystem } from './contextProviders/SystemProvider';
 import { ViewportRefsProvider } from './hooks/useViewportRef';
 
@@ -55,6 +55,7 @@ const OHIF = {
   CommandsManager,
   ExtensionManager,
   HotkeysManager,
+  MouseBindingsManager,
   ServicesManager,
   ServiceProvidersManager,
   //
@@ -99,6 +100,7 @@ export {
   CommandsManager,
   ExtensionManager,
   HotkeysManager,
+  MouseBindingsManager,
   ServicesManager,
   ServiceProvidersManager,
   SystemContextProvider,

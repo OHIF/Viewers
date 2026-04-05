@@ -2,6 +2,7 @@ import update from 'immutability-helper';
 import { ToolbarService, utils } from '@ohif/core';
 
 import initToolGroups from './initToolGroups';
+import { createCrosshairsMouseModifierActions } from './utils/crosshairsMouseModifierActions';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 
@@ -131,7 +132,17 @@ export function isValidMode({ modalities }) {
   };
 }
 
-export function onModeEnter({
+export function registerCrosshairsMouseModifierActions({
+  mouseBindingsManager,
+  commandsManager,
+}: withAppTypes) {
+  const mouseModifierActions = createCrosshairsMouseModifierActions(commandsManager);
+
+  mouseBindingsManager.setActionDefinitions(mouseModifierActions);
+  mouseBindingsManager.applyBindings();
+}
+
+export function onModeEnterBase({
   servicesManager,
   extensionManager,
   commandsManager,
@@ -140,60 +151,11 @@ export function onModeEnter({
 }: withAppTypes) {
   const { measurementService, toolbarService, toolGroupService, customizationService } =
     servicesManager.services;
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.tools'
-  );
-  const { Enums } = utilityModule.exports;
 
   measurementService.clearMeasurements();
 
   // Init Default and SR ToolGroups
   initToolGroups(extensionManager, toolGroupService, commandsManager);
-
-  customizationService.setCustomizations({
-    'ohif.hotkeyBindings.mouseShortcuts': [
-      {
-        label: 'Crosshairs Jump to Click',
-        keys: () => {
-          const config = toolGroupService.getToolConfiguration('mpr', 'Crosshairs');
-          const code = config?.jumpOnClick?.modifierKey;
-          return code != null
-            ? utils.ModifierKeyCodeToName[code]?.toLowerCase()
-            : undefined;
-        },
-        onChange: (newKeys: string) => {
-          const config = toolGroupService.getToolConfiguration('mpr', 'Crosshairs');
-          if (!config) {
-            return;
-          }
-          const nextModifierKey =
-            utils.ModifierKeyNameToCode[newKeys] ?? config.jumpOnClick?.modifierKey;
-
-          toolGroupService.setToolConfiguration('mpr', 'Crosshairs', {
-            ...config,
-            jumpOnClick: {
-              ...config.jumpOnClick,
-              modifierKey: nextModifierKey,
-            },
-          });
-
-          const toolGroup = toolGroupService.getToolGroup('mpr');
-          const currentMode = toolGroup?.getToolOptions('Crosshairs')?.mode;
-
-          if (currentMode === Enums.ToolModes.Active) {
-            toolGroup.setToolActive('Crosshairs', {
-              bindings: [
-                {
-                  mouseButton: Enums.MouseBindings.Primary,
-                  modifierKey: nextModifierKey,
-                },
-              ],
-            });
-          }
-        },
-      },
-    ],
-  });
 
   toolbarService.register(this.toolbarButtons);
 
@@ -397,7 +359,10 @@ export const modeInstance = {
   /**
    * Lifecycle hooks
    */
-  onModeEnter,
+  onModeEnter(args: withAppTypes) {
+    onModeEnterBase.call(this, args);
+    registerCrosshairsMouseModifierActions(args);
+  },
   onModeExit,
   validationTags: {
     study: [],
@@ -439,4 +404,4 @@ export const mode = {
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
+export { initToolGroups, toolbarButtons, createCrosshairsMouseModifierActions };

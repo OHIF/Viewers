@@ -1077,6 +1077,67 @@ function commandsModule({
         }
       });
     },
+    setCrosshairsJumpModifier({
+      toolGroupId = 'mpr',
+      modifierKey,
+    }: {
+      toolGroupId?: string;
+      modifierKey?: string | number;
+    }) {
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+
+      if (!toolGroup || !toolGroup.hasTool(toolNames.Crosshairs)) {
+        return;
+      }
+
+      const toolInstance = toolGroup.getToolInstance(toolNames.Crosshairs);
+      const config = toolInstance?.configuration;
+
+      if (!config) {
+        return;
+      }
+
+      const nextModifierKey =
+        typeof modifierKey === 'string'
+          ? utils.ModifierKeyNameToCode[modifierKey.toLowerCase()]
+          : typeof modifierKey === 'number'
+            ? modifierKey
+            : undefined;
+
+      toolGroupService.setToolConfiguration(toolGroupId, toolNames.Crosshairs, {
+        ...config,
+        jumpOnClick: {
+          ...config.jumpOnClick,
+          enabled: nextModifierKey != null,
+          modifierKey: nextModifierKey,
+        },
+      });
+
+      const currentMode = toolGroup.getToolOptions(toolNames.Crosshairs)?.mode;
+      const isOn =
+        currentMode === Enums.ToolModes.Active ||
+        currentMode === Enums.ToolModes.Passive ||
+        currentMode === Enums.ToolModes.Enabled;
+
+      if (isOn) {
+        toolGroup.setToolDisabled(toolNames.Crosshairs);
+
+        if (nextModifierKey != null) {
+          toolGroup.setToolActive(toolNames.Crosshairs, {
+            bindings: [
+              {
+                mouseButton: Enums.MouseBindings.Primary,
+                modifierKey: nextModifierKey,
+              },
+            ],
+          });
+        } else {
+          toolGroup.setToolPassive(toolNames.Crosshairs);
+        }
+      }
+
+      toolbarService.refreshToolbarState({ toolGroupId });
+    },
     setToolActiveToolbar: ({ value, itemId, toolName, toolGroupIds = [], bindings }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
       toolName = toolName || itemId || value;
@@ -2677,6 +2738,9 @@ function commandsModule({
     },
     togglePassiveDisabledToolbar: {
       commandFn: actions.togglePassiveDisabledToolbar,
+    },
+    setCrosshairsJumpModifier: {
+      commandFn: actions.setCrosshairsJumpModifier,
     },
     updateStoredPositionPresentation: {
       commandFn: actions.updateStoredPositionPresentation,

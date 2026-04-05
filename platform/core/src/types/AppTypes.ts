@@ -18,6 +18,8 @@ import type { MultiMonitorService } from '../services/MultiMonitorService';
 
 import ServicesManagerType from '../services/ServicesManager';
 import CommandsManagerType from '../classes/CommandsManager';
+import HotkeysManagerType from '../classes/HotkeysManager';
+import MouseBindingsManagerType from '../classes/MouseBindingsManager';
 import ExtensionManagerType from '../extensions/ExtensionManager';
 
 import Hotkey from '../classes/Hotkey';
@@ -40,6 +42,8 @@ declare global {
   namespace AppTypes {
     export type ServicesManager = ServicesManagerType;
     export type CommandsManager = CommandsManagerType;
+    export type HotkeysManager = HotkeysManagerType;
+    export type MouseBindingsManager = MouseBindingsManagerType;
     export type ExtensionManager = ExtensionManagerType;
     export type HangingProtocolService = HangingProtocolServiceType;
     export type CustomizationService = CustomizationServiceType;
@@ -60,6 +64,8 @@ declare global {
     export interface Managers {
       servicesManager?: ServicesManager;
       commandsManager?: CommandsManager;
+      hotkeysManager?: HotkeysManager;
+      mouseBindingsManager?: MouseBindingsManager;
       extensionManager?: ExtensionManager;
     }
 
