@@ -140,6 +140,10 @@ export function onModeEnter({
 }: withAppTypes) {
   const { measurementService, toolbarService, toolGroupService, customizationService } =
     servicesManager.services;
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+  const { Enums } = utilityModule.exports;
 
   measurementService.clearMeasurements();
 
@@ -162,14 +166,30 @@ export function onModeEnter({
           if (!config) {
             return;
           }
+          const nextModifierKey =
+            utils.ModifierKeyNameToCode[newKeys] ?? config.jumpOnClick?.modifierKey;
+
           toolGroupService.setToolConfiguration('mpr', 'Crosshairs', {
             ...config,
             jumpOnClick: {
               ...config.jumpOnClick,
-              modifierKey:
-                utils.ModifierKeyNameToCode[newKeys] ?? config.jumpOnClick?.modifierKey,
+              modifierKey: nextModifierKey,
             },
           });
+
+          const toolGroup = toolGroupService.getToolGroup('mpr');
+          const currentMode = toolGroup?.getToolOptions('Crosshairs')?.mode;
+
+          if (currentMode === Enums.ToolModes.Active) {
+            toolGroup.setToolActive('Crosshairs', {
+              bindings: [
+                {
+                  mouseButton: Enums.MouseBindings.Primary,
+                  modifierKey: nextModifierKey,
+                },
+              ],
+            });
+          }
         },
       },
     ],

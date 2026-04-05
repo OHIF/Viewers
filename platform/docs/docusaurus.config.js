@@ -129,9 +129,9 @@ module.exports = {
         // respectPrefersColorScheme: true,
       },
       announcementBar: {
-        id: 'ohif311_multimodality_rt_ultrasound',
+        id: 'ohif312_segmentation_tools',
         content:
-          'OHIF v3.11 is here! New features include multimodality fusion with viewport overlays, RT Dose visualization, dedicated ultrasound mode, DICOM Labelmap support, and advanced RT Structure Set visualization. Read the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p11/">here</a>!',
+          'OHIF v3.12 is here! New features include the Freehand Tool, Spline Tool, Livewire Tool, Sculptor Tool, contour combine and cleanup utilities, and a unified segmentation panel. Read the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p12/">here</a>!',
       },
       prism: {
         theme: require('prism-react-renderer').themes.github,
