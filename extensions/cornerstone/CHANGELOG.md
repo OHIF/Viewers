@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.50...v3.13.0-beta.51) (2026-04-03)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.49...v3.13.0-beta.50) (2026-04-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.48...v3.13.0-beta.49) (2026-04-02)
+
+
+### Bug Fixes
+
+* **segmentation:** restrict overlay segmentation menu to same frame of reference as viewport background display set  ([#5900](https://github.com/OHIF/Viewers/issues/5900)) ([b9029ef](https://github.com/OHIF/Viewers/commit/b9029ef6f8d63a0e36ec929310c1c5ad3f563ef8))
+
+
+
+
+
+# [3.13.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.47...v3.13.0-beta.48) (2026-04-01)
+
+
+### Bug Fixes
+
+* **measurement:** Restore viewport interactivity when deleting in-progress Spline or Livewire measurement ([#5905](https://github.com/OHIF/Viewers/issues/5905)) ([7929f08](https://github.com/OHIF/Viewers/commit/7929f0898f1bf882682a912b1c32d93d0944726f))
+
+
+
+
+
+# [3.13.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.46...v3.13.0-beta.47) (2026-03-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.45...v3.13.0-beta.46) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.44...v3.13.0-beta.45) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.43...v3.13.0-beta.44) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [3.13.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.42...v3.13.0-beta.43) (2026-03-17)
 
 

@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.50...v3.13.0-beta.51) (2026-04-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.49...v3.13.0-beta.50) (2026-04-02)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.48...v3.13.0-beta.49) (2026-04-02)
+
+
+### Bug Fixes
+
+* **segmentation:** restrict overlay segmentation menu to same frame of reference as viewport background display set  ([#5900](https://github.com/OHIF/Viewers/issues/5900)) ([b9029ef](https://github.com/OHIF/Viewers/commit/b9029ef6f8d63a0e36ec929310c1c5ad3f563ef8))
+
+
+
+
+
+# [3.13.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.47...v3.13.0-beta.48) (2026-04-01)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.46...v3.13.0-beta.47) (2026-03-28)
+
+
+### Bug Fixes
+
+* prevent black viewport when navigating series with client-created segmentation ([#5919](https://github.com/OHIF/Viewers/issues/5919)) ([e66fb5a](https://github.com/OHIF/Viewers/commit/e66fb5a2b8c93a60ea20d315f73def7a02ea205f))
+
+
+
+
+
+# [3.13.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.45...v3.13.0-beta.46) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.44...v3.13.0-beta.45) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.43...v3.13.0-beta.44) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.13.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.42...v3.13.0-beta.43) (2026-03-17)
 
 

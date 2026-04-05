@@ -13,7 +13,8 @@ test('should not fire MEASUREMENT_ADDED when clicking the annotation text', asyn
   viewportPageObject,
 }) => {
   await mainToolbarPageObject.measurementTools.freehandROI.click();
-  await viewportPageObject.active.normalizedDragAt({
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.normalizedDragAt({
     start: { x: 0.35, y: 0.35 },
     end: { x: 0.6, y: 0.55 },
     config: { steps: 20, delay: 30 },
@@ -23,11 +24,10 @@ test('should not fire MEASUREMENT_ADDED when clicking the annotation text', asyn
 
   const measurementAdded = await subscribeToMeasurementAdded(page);
   try {
-    const annotation = viewportPageObject.active.nthAnnotation(0);
+    const annotation = activeViewport.nthAnnotation(0);
     await annotation.text.click();
 
     await expect(measurementAdded.waitFired(1000)).rejects.toThrow();
-
   } finally {
     await measurementAdded.unsubscribe();
   }
