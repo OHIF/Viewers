@@ -1051,13 +1051,29 @@ function commandsModule({
         }
 
         const currentMode = toolGroup.getToolOptions(toolName).mode;
-        const isOn = currentMode === Enums.ToolModes.Passive ||
-                     currentMode === Enums.ToolModes.Enabled;
+        const isOn =
+          currentMode === Enums.ToolModes.Active ||
+          currentMode === Enums.ToolModes.Passive ||
+          currentMode === Enums.ToolModes.Enabled;
 
         if (isOn) {
           toolGroup.setToolDisabled(toolName);
         } else {
-          toolGroup.setToolPassive(toolName);
+          const toolInstance = toolGroup.getToolInstance(toolName);
+          const jumpOnClick = toolInstance?.configuration?.jumpOnClick;
+
+          if (jumpOnClick?.enabled && jumpOnClick.modifierKey != null) {
+            toolGroup.setToolActive(toolName, {
+              bindings: [
+                {
+                  mouseButton: Enums.MouseBindings.Primary,
+                  modifierKey: jumpOnClick.modifierKey,
+                },
+              ],
+            });
+          } else {
+            toolGroup.setToolPassive(toolName);
+          }
         }
       });
     },
