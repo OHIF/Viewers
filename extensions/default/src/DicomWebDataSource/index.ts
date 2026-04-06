@@ -294,11 +294,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
                 utils.toBlob(
                     await this.bulkDataURI({
                       BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                      defaultType: JPEG,
-                      mediaTypes: [JPEG],
+                      defaultType: Jpeg,
+                      mediaTypes: [Jpeg],
                       thumbnail: true,
                     }),
-                    JPEG
+                    Jpeg
                 )
             );
           }.bind(this);
@@ -312,11 +312,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
                 utils.toBlob(
                     await this.bulkDataURI({
                         BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                        defaultType: JPEG,
-                        mediaTypes: [JPEG],
+                        defaultType: Jpeg,
+                        mediaTypes: [Jpeg],
                         thumbnail: true,
                     }),
-                    JPEG
+                    Jpeg
                 )
             );
           }.bind(this);
