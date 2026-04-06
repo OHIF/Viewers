@@ -433,7 +433,10 @@ export function extractHTMLFromPayload(data: string): string {
 // TODO: Switch over to using DicomBufferCODEC from dcmjs once PR #455 is merged and a new release
 // is provided
 export function toUTF8(data: string, initialEncoding: string = 'latin1'): string {
-  return Buffer.from(data, initialEncoding).toString('utf-8');
+  const bytes = Uint8Array.from(data, c => c.charCodeAt(0));
+  // TextDecoder accepts the IANA label that matches the DICOM encoding
+  const decoder = new TextDecoder(initialEncoding);
+  return decoder.decode(bytes);
 }
 
 /**
