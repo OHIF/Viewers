@@ -6,13 +6,7 @@ import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupported
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
 import { metaData } from '@cornerstonejs/core';
 
-const {
-  isImage,
-  sortStudyInstances,
-  instancesSortCriteria,
-  sopClassDictionary,
-  isDisplaySetReconstructable,
-} = utils;
+const { isImage, sortStudyInstances, sopClassDictionary, isDisplaySetReconstructable } = utils;
 const { ImageSet } = classes;
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
@@ -119,7 +113,7 @@ const makeDisplaySet = (instances, index) => {
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
-    FrameOfReferenceUID: instance.FrameOfReferenceUID,
+    frameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
   const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
@@ -267,6 +261,7 @@ const sopClassUids = [
   sopClassDictionary.XRay3DAngiographicImageStorage,
   sopClassDictionary.XRay3DCraniofacialImageStorage,
   sopClassDictionary.BreastTomosynthesisImageStorage,
+  sopClassDictionary.CornealTopographyMapStorage,
   sopClassDictionary.BreastProjectionXRayImageStorageForPresentation,
   sopClassDictionary.BreastProjectionXRayImageStorageForProcessing,
   sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForPresentation,

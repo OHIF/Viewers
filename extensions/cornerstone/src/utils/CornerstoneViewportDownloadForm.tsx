@@ -118,29 +118,50 @@ const CornerstoneViewportDownloadForm = ({
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
     try {
+      // Capture current viewport state
+      // - properties: VOI, colormap, interpolation, etc.
+      // - viewPresentation: flip/rotate/zoom presentation state added for
+      //   saving flip and rotation for capture
+      // - viewReference: image/volume reference
+      const properties = viewport.getProperties();
+      const viewPresentation = viewport.getViewPresentation?.();
+      const viewRef = viewport.getViewReference?.();
+
       if (downloadViewport instanceof StackViewport) {
         const imageId = viewport.getCurrentImageId();
-        const properties = viewport.getProperties();
-
         await downloadViewport.setStack([imageId]);
-        downloadViewport.setProperties(properties);
       } else if (downloadViewport instanceof BaseVolumeViewport) {
         const volumeIds = viewport.getAllVolumeIds();
-        downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
+        await downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
       }
 
+      // Apply presentation state so captured image preserves flip/rotate
+      if (viewPresentation && downloadViewport.setViewPresentation) {
+        downloadViewport.setViewPresentation(viewPresentation);
+      }
+
+      // Apply viewport display properties
+      downloadViewport.setProperties(properties);
+
+      // Ensure correct image/volume reference
+      if (viewRef && downloadViewport.setViewReference) {
+        downloadViewport.setViewReference(viewRef);
+      }
+
+      downloadViewport.render();
+
+      // Re-apply segmentation overlays to the download viewport
       if (segmentationRepresentations?.length) {
         segmentationRepresentations.forEach(segRepresentation => {
           const { segmentationId, colorLUTIndex, type } = segRepresentation;
+
           if (type === Enums.SegmentationRepresentations.Labelmap) {
             segmentation.addLabelmapRepresentationToViewportMap({
               [downloadViewport.id]: [
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Labelmap,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
@@ -152,9 +173,7 @@ const CornerstoneViewportDownloadForm = ({
                 {
                   segmentationId,
                   type: Enums.SegmentationRepresentations.Contour,
-                  config: {
-                    colorLUTOrIndex: colorLUTIndex,
-                  },
+                  config: { colorLUTOrIndex: colorLUTIndex },
                 },
               ],
             });
@@ -230,6 +249,48 @@ const CornerstoneViewportDownloadForm = ({
     downloadUrl(canvas.toDataURL(`image/${fileType}`, 1.0), { filename });
   };
 
+  const handleCopyToClipboard = async () => {
+    const divForDownloadViewport = document.querySelector(
+      `div[data-viewport-uid="${VIEWPORT_ID}"]`
+    );
+
+    if (!divForDownloadViewport) {
+      console.debug('No viewport found for copy');
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(divForDownloadViewport as HTMLElement);
+
+      // Clipboard API only supports PNG format in most browsers
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Failed to create blob from canvas'));
+            }
+          },
+          'image/png',
+          1.0
+        );
+      });
+
+      // Copy to clipboard using the Clipboard API
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'image/png': blob,
+        }),
+      ]);
+
+      console.log('Image copied to clipboard successfully');
+    } catch (error) {
+      console.error('Failed to copy image to clipboard:', error);
+      throw error;
+    }
+  };
+
   const ViewportDownloadFormNew = customizationService.getCustomization(
     'ohif.captureViewportModal'
   );
@@ -247,6 +308,7 @@ const CornerstoneViewportDownloadForm = ({
       onEnableViewport={handleEnableViewport}
       onDisableViewport={handleDisableViewport}
       onDownload={handleDownload}
+      onCopyToClipboard={handleCopyToClipboard}
       warningState={warningState}
     />
   );
