@@ -239,6 +239,9 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     disabled: [
       {
         toolName: toolNames.Crosshairs,
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary, modifierKey: Enums.KeyboardBindings.Shift },
+        ],
         configuration: {
           viewportIndicators: true,
           viewportIndicatorsConfig: {

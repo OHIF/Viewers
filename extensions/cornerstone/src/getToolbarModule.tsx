@@ -442,19 +442,21 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
           return getDisabledState(disabledText);
         }
 
-        const currentMode = toolGroup.getToolOptions(toolName).mode;
-        // Matches the isOn check in toggleCrosshairsToolbar (commandsModule.ts).
-        // Both must agree on which modes count as "on" — this evaluator uses it to show the
-        // toggled button state, the command uses it to decide whether to disable or enable.
-        // If adding Active mode support (e.g. modifier key), update both.
-        const isOn = currentMode === Enums.ToolModes.Passive ||
-                     currentMode === Enums.ToolModes.Enabled;
+        const { mode } = toolGroup.getToolOptions(toolName) ?? {};
+        const isOn =
+          mode === Enums.ToolModes.Passive ||
+          mode === Enums.ToolModes.Active ||
+          mode === Enums.ToolModes.Enabled;
+
+        const toolBindings = toolGroupService.getToolBindings(toolGroup.id, toolName);
+        const hasModifierKey =
+          toolBindings?.some(binding => binding.modifierKey != null) ?? false;
 
         return {
           disabled: false,
           isActive: false,
           isToggled: isOn,
-          icon: isOn ? 'tool-crosshair-checked' : 'tool-crosshair',
+          icon: isOn && hasModifierKey ? 'tool-crosshair-checked' : 'tool-crosshair',
         };
       },
     },

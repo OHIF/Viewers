@@ -17,9 +17,31 @@ interface HotkeyDefinitions {
   [key: string]: HotkeyDefinition;
 }
 
+const MODIFIER_OPTIONS = [
+  { value: '16', label: 'Shift' },
+  { value: '17', label: 'Ctrl' },
+  { value: '18', label: 'Alt' },
+  { value: '91', label: 'Meta' },
+];
+
+const TOOL_BINDINGS_STORAGE_KEY = 'user-preferred-tool-bindings';
+
+function getCrosshairModifier(toolGroupService: any): string | null {
+  if (!toolGroupService) {
+    return null;
+  }
+  const bindings = toolGroupService.getToolBindings('mpr', 'Crosshairs');
+  if (!bindings?.length) {
+    return null;
+  }
+  const mod = bindings[0].modifierKey;
+  return mod != null ? String(mod) : null;
+}
+
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
-  const { hotkeysManager } = useSystem();
+  const { hotkeysManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
+  const toolGroupService = (servicesManager as any)?.services?.toolGroupService;
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -51,9 +73,15 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
 
   const currentLanguage = currentLanguageFn();
 
+  const initialCrosshairModifier = useMemo(
+    () => getCrosshairModifier(toolGroupService),
+    [toolGroupService]
+  );
+
   const [state, setState] = useState({
     hotkeyDefinitions: initialHotkeyDefinitions,
     languageValue: currentLanguage.value,
+    crosshairModifier: initialCrosshairModifier,
   });
 
   const onLanguageChangeHandler = (value: string) => {
@@ -78,9 +106,11 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
       ...state,
       languageValue: defaultLanguage.value,
       hotkeyDefinitions: resolvedHotkeyDefaults,
+      crosshairModifier: initialCrosshairModifier,
     }));
 
     hotkeysManager.restoreDefaultBindings();
+    localStorage.removeItem(TOOL_BINDINGS_STORAGE_KEY);
   };
 
   const displayNames = React.useMemo(() => {
@@ -165,6 +195,40 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             />
           ))}
         </UserPreferencesModal.HotkeysGrid>
+
+        {state.crosshairModifier != null && (
+          <>
+            <UserPreferencesModal.SubHeading>
+              {t('ModifierKeys', { defaultValue: 'Modifier Keys' })}
+            </UserPreferencesModal.SubHeading>
+            <div className="flex items-center gap-4">
+              <span className="text-foreground text-sm">
+                {t('CrosshairsModifier', { defaultValue: 'Crosshairs' })}
+              </span>
+              <Select
+                value={state.crosshairModifier}
+                onValueChange={val => setState(s => ({ ...s, crosshairModifier: val }))}
+              >
+                <SelectTrigger className="w-28">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MODIFIER_OPTIONS.map(opt => (
+                    <SelectItem
+                      key={opt.value}
+                      value={opt.value}
+                    >
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-muted-foreground text-sm">
+                {t('PlusLeftClick', { defaultValue: '+ Left Click' })}
+              </span>
+            </div>
+          </>
+        )}
       </UserPreferencesModal.Body>
       <FooterAction>
         <FooterAction.Left>
@@ -191,6 +255,19 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                 return; // Exit early since we're reloading
               }
               hotkeysManager.setHotkeys(state.hotkeyDefinitions);
+
+              if (toolGroupService && state.crosshairModifier != null) {
+                const bindings = [
+                  { mouseButton: 1, modifierKey: Number(state.crosshairModifier) },
+                ];
+                toolGroupService.setToolBindings('mpr', 'Crosshairs', bindings);
+                toolGroupService.applyToolBindings('mpr', 'Crosshairs');
+                localStorage.setItem(
+                  TOOL_BINDINGS_STORAGE_KEY,
+                  JSON.stringify({ mpr: { Crosshairs: bindings } })
+                );
+              }
+
               hotkeysModule.stopRecord();
               hotkeysModule.unpause();
               hide();
