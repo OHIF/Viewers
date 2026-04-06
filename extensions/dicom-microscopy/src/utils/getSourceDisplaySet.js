@@ -22,7 +22,7 @@ export default function getSourceDisplaySet(allDisplaySets, microscopySRDisplayS
   const referencedDisplaySet = otherDisplaySets.find(
     displaySet =>
       displaySet.Modality === 'SM' &&
-      (displaySet.frameOfReferenceUID === ReferencedFrameOfReferenceUID ||
+      (displaySet.FrameOfReferenceUID === ReferencedFrameOfReferenceUID ||
         // sometimes each depth instance has the different FrameOfReferenceID
         displaySet.othersFrameOfReferenceUID.includes(ReferencedFrameOfReferenceUID))
   );

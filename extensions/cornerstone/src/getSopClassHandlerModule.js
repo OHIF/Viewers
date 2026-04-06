@@ -82,7 +82,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
-    frameOfReferenceUID: FrameOfReferenceUID,
+    FrameOfReferenceUID,
     SOPClassHandlerId,
     SOPClassUID,
     SeriesDescription: SeriesDescription || 'Microscopy Data',
