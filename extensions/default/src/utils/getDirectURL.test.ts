@@ -32,7 +32,7 @@ describe('getDirectURL', () => {
 
   const config: GetDirectURLConfig = {
     singlepart: true,
-    defaultType: 'video/mp4',
+    defaultType: utils.MimeOptions.Mp4,
   };
 
   const params: GetDirectURLParams = {
