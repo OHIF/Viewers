@@ -145,7 +145,21 @@ function commandsModule({
 
   function _getActiveViewportToolGroupId() {
     const viewport = _getActiveViewportEnabledElement();
-    return toolGroupService.getToolGroupForViewport(viewport.id);
+    const toolGroup = viewport && toolGroupService.getToolGroupForViewport(viewport.id);
+    return toolGroup?.id;
+  }
+
+  function _usesPrimaryActivation(bindings) {
+    if (!bindings?.length) {
+      return true;
+    }
+
+    return bindings.some(
+      binding =>
+        binding.mouseButton === Enums.MouseBindings.Primary &&
+        binding.modifierKey == null &&
+        binding.numTouchPoints == null
+    );
   }
 
   function _getActiveSegmentationInfo() {
@@ -1014,52 +1028,45 @@ function commandsModule({
 
       toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
     },
-    toggleActiveDisabledToolbar({ value, itemId, toolGroupId }) {
+    toggleActiveDisabledToolbar({ value, itemId, toolGroupId, toolGroupIds }) {
       const toolName = itemId || value;
-      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
-      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-      if (!toolGroup || !toolGroup.hasTool(toolName)) {
-        return;
-      }
+      const resolvedToolGroupIds = toolGroupIds?.length
+        ? toolGroupIds
+        : [toolGroupId ?? _getActiveViewportToolGroupId()];
 
-      const toolIsActive = [
-        Enums.ToolModes.Active,
-        Enums.ToolModes.Enabled,
-        Enums.ToolModes.Passive,
-      ].includes(toolGroup.getToolOptions(toolName).mode);
-
-      toolIsActive
-        ? toolGroup.setToolDisabled(toolName)
-        : actions.setToolActive({ toolName, toolGroupId });
-
-      // we should set the previously active tool to active after we set the
-      // current tool disabled
-      if (toolIsActive) {
-        const prevToolName = toolGroup.getPrevActivePrimaryToolName();
-        if (prevToolName !== toolName) {
-          actions.setToolActive({ toolName: prevToolName, toolGroupId });
-        }
-      }
-    },
-    toggleCrosshairsToolbar({ value, itemId, toolGroupIds = ['mpr'] }) {
-      const toolName = itemId || value;
-
-      toolGroupIds.forEach(toolGroupId => {
+      resolvedToolGroupIds.forEach(toolGroupId => {
         const toolGroup = toolGroupService.getToolGroup(toolGroupId);
         if (!toolGroup || !toolGroup.hasTool(toolName)) {
           return;
         }
 
-        const currentMode = toolGroup.getToolOptions(toolName).mode;
-        const isOn =
-          currentMode === Enums.ToolModes.Passive ||
-          currentMode === Enums.ToolModes.Active ||
-          currentMode === Enums.ToolModes.Enabled;
+        const toolIsActive = [
+          Enums.ToolModes.Active,
+          Enums.ToolModes.Enabled,
+          Enums.ToolModes.Passive,
+        ].includes(toolGroup.getToolOptions(toolName).mode);
 
-        if (isOn) {
+        if (toolIsActive) {
           toolGroup.setToolDisabled(toolName);
-        } else {
+
           const bindings = toolGroupService.getToolBindings(toolGroupId, toolName);
+
+          if (_usesPrimaryActivation(bindings)) {
+            // we should set the previously active tool to active after we set the
+            // current tool disabled
+            const prevToolName = toolGroup.getPrevActivePrimaryToolName();
+            if (prevToolName !== toolName) {
+              actions.setToolActive({ toolName: prevToolName, toolGroupId });
+            }
+          }
+
+          return;
+        }
+
+        const bindings = toolGroupService.getToolBindings(toolGroupId, toolName);
+        if (_usesPrimaryActivation(bindings)) {
+          actions.setToolActive({ toolName, toolGroupId, bindings });
+        } else {
           toolGroup.setToolActive(toolName, { bindings });
         }
       });
@@ -2661,9 +2668,6 @@ function commandsModule({
     },
     toggleActiveDisabledToolbar: {
       commandFn: actions.toggleActiveDisabledToolbar,
-    },
-    toggleCrosshairsToolbar: {
-      commandFn: actions.toggleCrosshairsToolbar,
     },
     updateStoredPositionPresentation: {
       commandFn: actions.updateStoredPositionPresentation,

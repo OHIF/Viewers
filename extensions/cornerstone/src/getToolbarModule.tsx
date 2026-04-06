@@ -430,8 +430,8 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
       },
     },
     {
-      name: 'evaluate.cornerstoneTool.crosshairToggle',
-      evaluate: ({ viewportId, button, disabledText }) => {
+      name: 'evaluate.cornerstoneTool.toggleWithModifier',
+      evaluate: ({ viewportId, button, disabledText, toggledOnIcon, defaultIcon }) => {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
         if (!toolGroup) {
           return;
@@ -443,7 +443,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         }
 
         const { mode } = toolGroup.getToolOptions(toolName) ?? {};
-        const isOn =
+        const isToggled =
           mode === Enums.ToolModes.Passive ||
           mode === Enums.ToolModes.Active ||
           mode === Enums.ToolModes.Enabled;
@@ -455,8 +455,11 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
         return {
           disabled: false,
           isActive: false,
-          isToggled: isOn,
-          icon: isOn && hasModifierKey ? 'tool-crosshair-checked' : 'tool-crosshair',
+          isToggled,
+          icon:
+            isToggled && hasModifierKey && toggledOnIcon
+              ? toggledOnIcon
+              : defaultIcon ?? button.props.icon,
         };
       },
     },

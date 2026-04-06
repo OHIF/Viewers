@@ -24,24 +24,39 @@ const MODIFIER_OPTIONS = [
   { value: '91', label: 'Meta' },
 ];
 
-const TOOL_BINDINGS_STORAGE_KEY = 'user-preferred-tool-bindings';
+const DEFAULT_TOOL_BINDINGS_STORAGE_KEY = 'user-preferred-tool-bindings';
 
-function getCrosshairModifier(toolGroupService: any): string | null {
+function getToolBindingsStorageKey(customizationService: any): string {
+  const customizationValue = customizationService?.getCustomization(
+    'ohif.userPreferences.toolBindingsStorageKey'
+  );
+
+  return typeof customizationValue === 'string' && customizationValue.length > 0
+    ? customizationValue
+    : DEFAULT_TOOL_BINDINGS_STORAGE_KEY;
+}
+
+function getToolModifier(toolGroupService: any, toolGroupId: string, toolName: string): string | null {
   if (!toolGroupService) {
     return null;
   }
-  const bindings = toolGroupService.getToolBindings('mpr', 'Crosshairs');
+  const bindings = toolGroupService.getToolBindings(toolGroupId, toolName);
   if (!bindings?.length) {
     return null;
   }
-  const mod = bindings[0].modifierKey;
-  return mod != null ? String(mod) : null;
+  const modifierBinding = bindings.find(
+    binding => binding.modifierKey != null && binding.numTouchPoints == null
+  );
+
+  return modifierBinding?.modifierKey != null ? String(modifierBinding.modifierKey) : null;
 }
 
 function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
   const toolGroupService = (servicesManager as any)?.services?.toolGroupService;
+  const customizationService = (servicesManager as any)?.services?.customizationService;
+  const toolBindingsStorageKey = getToolBindingsStorageKey(customizationService);
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -74,7 +89,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const currentLanguage = currentLanguageFn();
 
   const initialCrosshairModifier = useMemo(
-    () => getCrosshairModifier(toolGroupService),
+    () => getToolModifier(toolGroupService, 'mpr', 'Crosshairs'),
     [toolGroupService]
   );
 
@@ -110,7 +125,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     }));
 
     hotkeysManager.restoreDefaultBindings();
-    localStorage.removeItem(TOOL_BINDINGS_STORAGE_KEY);
+    localStorage.removeItem(toolBindingsStorageKey);
   };
 
   const displayNames = React.useMemo(() => {
@@ -263,7 +278,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                 toolGroupService.setToolBindings('mpr', 'Crosshairs', bindings);
                 toolGroupService.applyToolBindings('mpr', 'Crosshairs');
                 localStorage.setItem(
-                  TOOL_BINDINGS_STORAGE_KEY,
+                  toolBindingsStorageKey,
                   JSON.stringify({ mpr: { Crosshairs: bindings } })
                 );
               }
@@ -283,4 +298,5 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
 
 export default {
   'ohif.userPreferencesModal': UserPreferencesModalDefault,
+  'ohif.userPreferences.toolBindingsStorageKey': DEFAULT_TOOL_BINDINGS_STORAGE_KEY,
 };

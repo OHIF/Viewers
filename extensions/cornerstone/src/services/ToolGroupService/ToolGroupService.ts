@@ -36,6 +36,7 @@ export default class ToolGroupService {
   cornerstoneViewportService: any;
   viewportGridService: any;
   uiNotificationService: any;
+  customizationService: any;
   private toolGroupIds: Set<string> = new Set();
   private toolBindingsMap: Map<string, Map<string, Array<Record<string, unknown>>>> = new Map();
   /**
@@ -45,11 +46,17 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(servicesManager: AppTypes.ServicesManager) {
-    const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
+    const {
+      cornerstoneViewportService,
+      viewportGridService,
+      uiNotificationService,
+      customizationService,
+    } =
       servicesManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
     this.uiNotificationService = uiNotificationService;
+    this.customizationService = customizationService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
@@ -368,7 +375,7 @@ export default class ToolGroupService {
 
   private _loadPersistedBindings(toolGroupId: string): void {
     try {
-      const stored = localStorage.getItem('user-preferred-tool-bindings');
+      const stored = localStorage.getItem(this._getToolBindingsStorageKey());
       if (!stored) {
         return;
       }
@@ -383,6 +390,16 @@ export default class ToolGroupService {
     } catch {
       // ignore corrupt localStorage
     }
+  }
+
+  private _getToolBindingsStorageKey(): string {
+    const customizationValue = this.customizationService?.getCustomization(
+      'ohif.userPreferences.toolBindingsStorageKey'
+    );
+
+    return typeof customizationValue === 'string' && customizationValue.length > 0
+      ? customizationValue
+      : 'user-preferred-tool-bindings';
   }
 
   private _onToolActivated = (evt: Types.EventTypes.ToolActivatedEventType) => {

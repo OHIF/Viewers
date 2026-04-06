@@ -249,7 +249,6 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
             xOffset: 0.95,
             yOffset: 0.05,
           },
-          disableOnPassive: false,
           autoPan: {
             enabled: false,
             panSize: 10,
