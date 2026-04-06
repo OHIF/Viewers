@@ -329,16 +329,16 @@ export default class MicroscopyService extends PubSubService {
     const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
     const smDisplaySet = displaySets.find(ds => ds.Modality === 'SM');
 
-    const { frameOfReferenceUID, othersFrameOfReferenceUID } = smDisplaySet;
+    const { FrameOfReferenceUID, othersFrameOfReferenceUID } = smDisplaySet;
 
     if (!studyMetadata) {
       return;
     }
 
-    let derivedDisplaySets = frameOfReferenceUID
+    let derivedDisplaySets = FrameOfReferenceUID
       ? displaySets.filter(
           ds =>
-            ds.ReferencedFrameOfReferenceUID === frameOfReferenceUID ||
+            ds.ReferencedFrameOfReferenceUID === FrameOfReferenceUID ||
             // sometimes each depth instance has the different FrameOfReferenceID
             othersFrameOfReferenceUID.includes(ds.ReferencedFrameOfReferenceUID)
         )

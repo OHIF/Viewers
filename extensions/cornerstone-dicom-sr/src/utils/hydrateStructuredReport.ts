@@ -145,7 +145,7 @@ export default function hydrateStructuredReport(
 
   for (const FrameOfReferenceUID of frameOfReferenceUIDs) {
     const displaySetsFOR = displaySetService.getDisplaySetsBy(
-      ds => ds.frameOfReferenceUID === FrameOfReferenceUID && !ds.isDerivedDisplaySet
+      ds => ds.FrameOfReferenceUID === FrameOfReferenceUID && !ds.isDerivedDisplaySet
     );
     const ds = chooseDisplaySet(displaySetsFOR, FrameOfReferenceUID);
     if (!ds) {
@@ -335,7 +335,7 @@ function getReferenceData3D(toolData, servicesManager: Types.ServicesManager) {
   const { points } = toolData.annotation.data.handles;
   const { displaySetService } = servicesManager.services;
   const displaySetsFOR = displaySetService.getDisplaySetsBy(
-    ds => ds.frameOfReferenceUID === FrameOfReferenceUID
+    ds => ds.FrameOfReferenceUID === FrameOfReferenceUID
   );
   if (!displaySetsFOR.length || !points?.length) {
     return {
