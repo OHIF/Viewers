@@ -23,7 +23,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
 ): JSX.Element {
   const data = props.content;
   const [mime, setMime] = useState<string>(utils.MimeOptions.Default);
-  const [textContent, setTextContent] = useState<string>("");
+  const [textContent, setTextContent] = useState<string>(null);
 
   useEffect(() => {
     data.text().then(
@@ -42,7 +42,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
     );
   })
 
-    if (textContent == null) {
+    if (textContent === null) {
         return (<LoadingSpinner />);
     }
 
