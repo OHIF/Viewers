@@ -178,7 +178,7 @@ describe('getDirectURL', () => {
 
     expect(result).toContain('blob:');
     expect(global.URL.createObjectURL).toHaveBeenCalledWith(
-        utils.toBlob(arr, utils.MimeOptions.AcceptMp4)
+        utils.toBlob(arr, utils.MimeOptions.Mp4)
     );
   });
 
