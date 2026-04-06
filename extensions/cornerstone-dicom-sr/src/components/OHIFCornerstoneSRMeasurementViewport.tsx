@@ -240,12 +240,13 @@ async function _getViewportReferencedDisplaySetData(
   displaySetService
 ) {
   const { measurements } = displaySet;
-  const measurement = measurements[measurementSelected];
 
   if (!Array.isArray(measurements) || !measurements.length) {
     // Make sure the view port moves on if there are no measurement images to pull.
     return NULL_DISPLAYSET;
   }
+
+  const measurement = measurements[measurementSelected];
 
   const { displaySetInstanceUID } = measurement;
   if (!displaySet.keyImageDisplaySet) {
