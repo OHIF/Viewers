@@ -18,7 +18,6 @@ export const HTML_REGEX =
  * malicious payloads that might be living in the user's data repository (e.g. VNA).
  */
 export const htmlSanitizerOptions = {
-  allowVulnerableTags: true, //We block most styles below, but we should allow some styles through for now so documents can display.
   allowedTags: [
     'html',
     'meta',
@@ -27,7 +26,6 @@ export const htmlSanitizerOptions = {
     'br',
     'strong',
     'em',
-    'style',
     'title',
     'body',
     'li',
