@@ -23,7 +23,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
 ): JSX.Element {
   const data = props.content;
   const [mime, setMime] = useState<string>(utils.MimeOptions.Default);
-  const [textContent, setTextContent] = useState<string>(null);
+  const [textContent, setTextContent] = useState<string | null>(null);
 
   useEffect(() => {
     data.text().then(
