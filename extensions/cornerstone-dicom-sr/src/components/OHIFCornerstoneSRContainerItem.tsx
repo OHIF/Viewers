@@ -13,7 +13,8 @@ import { CodeNameCodeSequenceValues } from '../enums';
 const EMPTY_TAG_VALUE = '[empty]';
 const encodings = {
   'default': 'latin1',
-  'ISO 2022 IR 100': 'latin1'
+  'ISO_IR 192': 'utf-8',
+  'ISO 2022 IR 100': 'latin1',
 }
 
 function OHIFCornerstoneSRContainerItem(props) {
