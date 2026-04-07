@@ -18,6 +18,7 @@ import PanelService from './PanelService';
 import WorkflowStepsService from './WorkflowStepsService';
 import StudyPrefetcherService from './StudyPrefetcherService';
 import { MultiMonitorService } from './MultiMonitorService';
+import ViewedImagesService from './ViewedImagesService';
 
 import type Services from '../types/Services';
 
@@ -44,4 +45,5 @@ export {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  ViewedImagesService,
 };

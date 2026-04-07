@@ -180,6 +180,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     useSelectedSegmentationsForViewportStore
       .getState()
       .clearSelectedSegmentationsForViewportStore();
+    servicesManager.services.viewedImagesService?.clearViewedImages();
     segmentationService.removeAllSegmentations();
   },
 

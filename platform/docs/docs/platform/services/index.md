@@ -107,6 +107,17 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
+                <a href="./data/ViewedImagesService">
+                    ViewedImagesService
+                </a>
+            </td>
+            <td>Data Service</td>
+            <td>
+                viewedImagesService
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./ui/viewport-grid-service">
                     ViewportGridService
                 </a>

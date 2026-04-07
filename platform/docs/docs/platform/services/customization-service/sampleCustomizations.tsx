@@ -159,6 +159,168 @@ window.config = {
   },
 ];
 
+export const viewportScrollbarCustomizations = [
+  {
+    id: 'viewportScrollbar.variant',
+    description:
+      "Controls which scrollbar implementation is rendered. Use 'progress' for ViewportSliceProgressScrollbar and 'legacy' for ViewportImageScrollbar.",
+    default: 'progress',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.variant': {
+        $set: 'legacy',
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.showLoadedEndpoints',
+    description:
+      'Shows/hides loaded-range endpoint caps in full progress mode (stack or acquisition-plane volume).',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadedEndpoints': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.showLoadedFill',
+    description: 'Shows/hides the loaded/cached fill track in full progress mode.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadedFill': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.showViewedFill',
+    description: 'Shows/hides the viewed fill track in full progress mode.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showViewedFill': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.showLoadingPattern',
+    description:
+      'Shows/hides the dotted loading pattern for full progress mode. Minimal mode always disables this pattern.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadingPattern': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.viewedDwellMs',
+    description:
+      'Minimum time in milliseconds before the current slice is marked as viewed in full progress mode. 0 marks immediately.',
+    default: 0,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.viewedDwellMs': {
+        $set: 500,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.loadedBatchIntervalMs',
+    description:
+      'Batch interval in milliseconds for loaded/cached byte-array version updates in full progress mode.',
+    default: 50,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.loadedBatchIntervalMs': {
+        $set: 100,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.indicator',
+    description:
+      'Outer size (totalWidth × totalHeight, border included) and renderIndicator for the progress scrollbar indicator. renderIndicator receives React.createElement for config file compatibility. All three properties must be provided or the default pill is used.',
+    default: '{}',
+    configuration: `
+// function ViewportScrollbarThumb() {
+//   const w = 14;
+//   const h = 8;
+//   const bw = 1; // ring inset if matching the default pill style
+//   const fillW = Math.max(0, w - 2 * bw);
+//   const fillH = Math.max(0, h - 2 * bw);
+//   return (
+//     <svg width={w} height={h} viewBox={\`0 0 \${w} \${h}\`}>
+//       <rect x={0} y={0} width={w} height={h} fill="hsl(var(--primary) / 0.35)" />
+//       <rect x={bw} y={bw} width={fillW} height={fillH} fill="hsl(var(--primary))" />
+//     </svg>
+//   );
+// }
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.indicator': {
+        $set: {
+          totalWidth: 14,
+          totalHeight: 8,
+          renderIndicator: createElement => createElement(ViewportScrollbarThumb),
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+];
+
 export const customizations = [
   {
     id: 'ohif.hotkeyBindings',

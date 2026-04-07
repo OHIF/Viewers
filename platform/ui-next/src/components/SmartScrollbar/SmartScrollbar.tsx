@@ -9,8 +9,8 @@ import React, {
   Children,
   isValidElement,
 } from 'react';
-import { getIndicatorLayout } from './utils';
 import { SmartScrollbarIndicator } from './SmartScrollbarIndicator';
+import { DEFAULT_INDICATOR_CONFIG } from './defaultSmartScrollbarIndicatorConfig';
 
 // ── Child validation ────────────────────────────────────────────
 function validateChildren(children: React.ReactNode): void {
@@ -33,9 +33,44 @@ function validateChildren(children: React.ReactNode): void {
 const TRACK_WIDTH = 8;
 const RESTING_WIDTH = 4;
 const FILL_PADDING = 3;
-const INDICATOR_SIZE = 8;
-const INDICATOR_BORDER_WIDTH = 1;
 const SETTLE_DELAY = 600;
+
+/** Package-internal type; not re-exported from `@ohif/ui-next` barrels. */
+export interface SmartScrollbarIndicatorConfig {
+  totalWidth?: number;
+  totalHeight?: number;
+  renderIndicator?: (createElement: typeof React.createElement) => React.ReactNode;
+}
+
+/**
+ * Maps a raw record payload into partial `SmartScrollbarIndicatorConfig`.
+ *
+ * Supported keys on `raw`:
+ * - `totalWidth`, `totalHeight` — positive numbers
+ * - `renderIndicator` — `(createElement) => ReactNode`
+ */
+function normalizeIndicatorRecord(
+  raw: Record<string, unknown> | null | undefined
+): SmartScrollbarIndicatorConfig {
+  if (raw == null) {
+    return {};
+  }
+  const config: SmartScrollbarIndicatorConfig = {};
+  if (typeof raw.totalWidth === 'number' && raw.totalWidth > 0) {
+    config.totalWidth = raw.totalWidth;
+  }
+  if (typeof raw.totalHeight === 'number' && raw.totalHeight > 0) {
+    config.totalHeight = raw.totalHeight;
+  }
+
+  if (typeof raw.renderIndicator === 'function') {
+    config.renderIndicator = raw.renderIndicator as (
+      createElement: typeof React.createElement
+    ) => React.ReactNode;
+  }
+
+  return config;
+}
 
 // ── Contexts ───────────────────────────────────────────────────
 export interface SmartScrollbarLayoutContextValue {
@@ -46,6 +81,9 @@ export interface SmartScrollbarLayoutContextValue {
   trackWidth: number;
   fillPadding: number;
   stableLayerEl: HTMLDivElement | null;
+  indicatorTotalWidth: number;
+  indicatorTotalHeight: number;
+  renderIndicator: (createElement: typeof React.createElement) => React.ReactNode;
 }
 
 const SmartScrollbarLayoutContext = createContext<SmartScrollbarLayoutContextValue | null>(null);
@@ -74,6 +112,10 @@ interface SmartScrollbarProps {
   enableKeyboardNavigation?: boolean;
   'aria-label'?: string;
   className?: string;
+  /**
+   * Indicator payload parsed inside the component.
+   */
+  indicator?: Record<string, unknown>;
   children: React.ReactNode;
 }
 
@@ -86,9 +128,23 @@ export function SmartScrollbar({
   enableKeyboardNavigation = false,
   'aria-label': ariaLabel = 'Scroll position',
   className,
+  indicator,
   children,
 }: SmartScrollbarProps) {
   validateChildren(children);
+
+  const resolvedIndicator = useMemo(() => {
+    const defaultIndicatorConfig = DEFAULT_INDICATOR_CONFIG;
+    const parsed = normalizeIndicatorRecord(indicator);
+    if (parsed.totalWidth && parsed.totalHeight && parsed.renderIndicator) {
+      return {
+        totalWidth: parsed.totalWidth,
+        totalHeight: parsed.totalHeight,
+        renderIndicator: parsed.renderIndicator,
+      };
+    }
+    return defaultIndicatorConfig;
+  }, [indicator]);
 
   // ── ResizeObserver for trackHeight ───────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
@@ -97,6 +153,12 @@ export function SmartScrollbar({
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    const syncTrackHeight = () => {
+      const measuredHeight = el.getBoundingClientRect().height;
+      setTrackHeight(prev => (prev === measuredHeight ? prev : measuredHeight));
+    };
+    // Capture an immediate measurement so we don't rely solely on async ResizeObserver delivery.
+    syncTrackHeight();
     const ro = new ResizeObserver(([entry]) => {
       setTrackHeight(entry.contentRect.height);
     });
@@ -127,9 +189,8 @@ export function SmartScrollbar({
   const isExpanded = !hasSettled || isHovered || isDragging;
   const effectiveWidth = isExpanded ? TRACK_WIDTH : RESTING_WIDTH;
 
-  // ── Hit zone extension ───────────────────────────────────────
-  const { leftPos } = getIndicatorLayout(TRACK_WIDTH, INDICATOR_SIZE, INDICATOR_BORDER_WIDTH);
-  const hitZoneLeftExtension = Math.max(0, -leftPos);
+  // ── Hit zone: extend past `TRACK_WIDTH` on both sides when the pill is wider than the track ──
+  const hitZoneSideExtension = Math.max(0, resolvedIndicator.totalWidth / 2 - TRACK_WIDTH / 2);
 
   // ── Stable layer (for elements that shouldn't move during contraction) ──
   // Uses useState + callback ref so React triggers a re-render when the
@@ -137,13 +198,13 @@ export function SmartScrollbar({
   const [stableLayerEl, setStableLayerEl] = useState<HTMLDivElement | null>(null);
 
   // ── Pointer helpers ──────────────────────────────────────────
-  const clamp = useCallback(
-    (val: number) => Math.max(0, Math.min(total - 1, val)),
-    [total]
-  );
+  const clamp = useCallback((val: number) => Math.max(0, Math.min(total - 1, val)), [total]);
 
   const indexFromPointerY = useCallback(
     (clientY: number) => {
+      if (trackHeight <= 0) {
+        return 0;
+      }
       const ratio = Math.max(0, Math.min(1, (clientY - trackTopRef.current) / trackHeight));
       return Math.round(ratio * (total - 1));
     },
@@ -153,6 +214,9 @@ export function SmartScrollbar({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       trackTopRef.current = e.currentTarget.getBoundingClientRect().top;
+      if (trackHeight <= 0) {
+        return;
+      }
 
       isDraggingRef.current = true;
       setIsDragging(true);
@@ -160,7 +224,7 @@ export function SmartScrollbar({
 
       onValueChange(clamp(indexFromPointerY(e.clientY)));
     },
-    [clamp, indexFromPointerY, onValueChange]
+    [clamp, indexFromPointerY, onValueChange, trackHeight]
   );
 
   const handlePointerMove = useCallback(
@@ -216,15 +280,30 @@ export function SmartScrollbar({
   );
 
   // ── Context values ───────────────────────────────────────────
-  const layoutCtx = useMemo<SmartScrollbarLayoutContextValue>(() => ({
-    total,
-    trackHeight,
-    isLoading,
-    effectiveWidth,
-    trackWidth: TRACK_WIDTH,
-    fillPadding: FILL_PADDING,
-    stableLayerEl,
-  }), [total, trackHeight, isLoading, effectiveWidth, stableLayerEl]);
+  const layoutCtx = useMemo<SmartScrollbarLayoutContextValue>(
+    () => ({
+      total,
+      trackHeight,
+      isLoading,
+      effectiveWidth,
+      trackWidth: TRACK_WIDTH,
+      fillPadding: FILL_PADDING,
+      stableLayerEl,
+      indicatorTotalWidth: resolvedIndicator.totalWidth,
+      indicatorTotalHeight: resolvedIndicator.totalHeight,
+      renderIndicator: resolvedIndicator.renderIndicator,
+    }),
+    [
+      total,
+      trackHeight,
+      isLoading,
+      effectiveWidth,
+      stableLayerEl,
+      resolvedIndicator.totalWidth,
+      resolvedIndicator.totalHeight,
+      resolvedIndicator.renderIndicator,
+    ]
+  );
   return (
     <SmartScrollbarLayoutContext.Provider value={layoutCtx}>
       <SmartScrollbarScrollContext.Provider value={value}>
@@ -239,10 +318,10 @@ export function SmartScrollbar({
           tabIndex={0}
           className={className}
           style={{
-            width: TRACK_WIDTH + hitZoneLeftExtension,
+            width: TRACK_WIDTH + hitZoneSideExtension * 2,
             height: '100%',
             position: 'relative',
-            marginLeft: -hitZoneLeftExtension,
+            marginLeft: -hitZoneSideExtension,
             cursor: isDragging ? 'grabbing' : 'grab',
             touchAction: 'none',
           }}
@@ -258,7 +337,7 @@ export function SmartScrollbar({
             <div
               style={{
                 position: 'absolute',
-                right: 0,
+                right: hitZoneSideExtension,
                 top: 0,
                 width: TRACK_WIDTH,
                 height: trackHeight,

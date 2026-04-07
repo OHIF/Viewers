@@ -74,24 +74,3 @@ export function computePixelFilledFromMarked(
 
   return pixelFilled;
 }
-
-/**
- * Compute the indicator's total visual dimensions and horizontal position.
- * Design 27: pill shape, center position, 1px border.
- */
-export function getIndicatorLayout(
-  trackWidth: number,
-  indicatorSize: number,
-  borderWidth: number,
-): { totalWidth: number; totalHeight: number; fillWidth: number; fillHeight: number; leftPos: number } {
-  const visualSize = indicatorSize * 1.25;
-  const fillWidth = visualSize;
-  const fillHeight = Math.round(visualSize / 2); // pill = half height
-  const totalWidth = fillWidth + borderWidth * 2;
-  const totalHeight = fillHeight + borderWidth * 2;
-
-  const centerX = trackWidth / 2;
-  const leftPos = centerX - totalWidth / 2;
-
-  return { totalWidth, totalHeight, fillWidth, fillHeight, leftPos };
-}

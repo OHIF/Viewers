@@ -23,6 +23,7 @@ We maintain the following non-ui Services:
 - [Measurement Service](../data/MeasurementService.md)
 - [Customization Service](./../customization-service/customizationService.md)
 - [Panel Service](../data/PanelService.md)
+- [Viewed Images Service](../data/ViewedImagesService.md)
 
 ## Service Architecture
 
