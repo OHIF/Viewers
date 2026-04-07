@@ -5,6 +5,7 @@ import {
   LeftPanelPageObject,
   RightPanelPageObject,
   ViewportPageObject,
+  NotFoundStudyPageObject,
 } from '../pages';
 
 type PageObjects = {
@@ -13,6 +14,7 @@ type PageObjects = {
   leftPanelPageObject: LeftPanelPageObject;
   rightPanelPageObject: RightPanelPageObject;
   viewportPageObject: ViewportPageObject;
+  notFoundStudyPageObject: NotFoundStudyPageObject;
 };
 
 export const test = base.extend<PageObjects>({
@@ -30,6 +32,9 @@ export const test = base.extend<PageObjects>({
   },
   viewportPageObject: async ({ page }, use) => {
     await use(new ViewportPageObject(page));
+  },
+  notFoundStudyPageObject: async ({ page }, use) => {
+    await use(new NotFoundStudyPageObject(page));
   },
 });
 

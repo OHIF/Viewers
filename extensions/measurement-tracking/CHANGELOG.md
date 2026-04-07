@@ -3,6 +3,558 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.52...v3.13.0-beta.53) (2026-04-06)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.51...v3.13.0-beta.52) (2026-04-06)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.50...v3.13.0-beta.51) (2026-04-03)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.49...v3.13.0-beta.50) (2026-04-02)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.48...v3.13.0-beta.49) (2026-04-02)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.47...v3.13.0-beta.48) (2026-04-01)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.46...v3.13.0-beta.47) (2026-03-28)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.45...v3.13.0-beta.46) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.44...v3.13.0-beta.45) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.43...v3.13.0-beta.44) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.42...v3.13.0-beta.43) (2026-03-17)
+
+
+### Bug Fixes
+
+* **SR:** Added support for spline and live wire SR items. ([#5870](https://github.com/OHIF/Viewers/issues/5870)) ([1d4802c](https://github.com/OHIF/Viewers/commit/1d4802c2a38dd75dca7afca87913e100453c9135))
+
+
+
+
+
+# [3.13.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.41...v3.13.0-beta.42) (2026-03-17)
+
+
+### Features
+
+* Add combined build ([#5895](https://github.com/OHIF/Viewers/issues/5895)) ([1df671e](https://github.com/OHIF/Viewers/commit/1df671e9ab67d43f98bf09f6838ddc0a5f220277))
+
+
+
+
+
+# [3.13.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.40...v3.13.0-beta.41) (2026-03-16)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.39...v3.13.0-beta.40) (2026-03-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.38...v3.13.0-beta.39) (2026-03-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.37...v3.13.0-beta.38) (2026-03-12)
+
+
+### Bug Fixes
+
+* **segmentation:** Display "No description S:{series number} {modality}" for segmentations with no label. ([#5874](https://github.com/OHIF/Viewers/issues/5874)) ([7b5d0ce](https://github.com/OHIF/Viewers/commit/7b5d0ce40e5422ccfce6091ac3d7559586cbe57e))
+
+
+
+
+
+# [3.13.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.36...v3.13.0-beta.37) (2026-03-12)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.35...v3.13.0-beta.36) (2026-03-11)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.34...v3.13.0-beta.35) (2026-03-09)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.33...v3.13.0-beta.34) (2026-03-09)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.32...v3.13.0-beta.33) (2026-03-05)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.31...v3.13.0-beta.32) (2026-03-05)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.30...v3.13.0-beta.31) (2026-03-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.29...v3.13.0-beta.30) (2026-03-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.28...v3.13.0-beta.29) (2026-03-04)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.27...v3.13.0-beta.28) (2026-03-03)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.26...v3.13.0-beta.27) (2026-03-02)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.25...v3.13.0-beta.26) (2026-02-28)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.24...v3.13.0-beta.25) (2026-02-26)
+
+
+### Bug Fixes
+
+* Update CS3D 4.18.2 ([#5837](https://github.com/OHIF/Viewers/issues/5837)) ([5370b93](https://github.com/OHIF/Viewers/commit/5370b9382e7bfddeadd69bab9e653f5f997a6e19))
+
+
+
+
+
+# [3.13.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.23...v3.13.0-beta.24) (2026-02-24)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.22...v3.13.0-beta.23) (2026-02-23)
+
+
+### Bug Fixes
+
+* palette color 8 encoded 16 ([#5823](https://github.com/OHIF/Viewers/issues/5823)) ([eeca1f7](https://github.com/OHIF/Viewers/commit/eeca1f7a7b529d1700f5d281a6fd98074547ffe9)), closes [#5813](https://github.com/OHIF/Viewers/issues/5813)
+
+
+
+
+
+# [3.13.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.21...v3.13.0-beta.22) (2026-02-23)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.20...v3.13.0-beta.21) (2026-02-23)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.19...v3.13.0-beta.20) (2026-02-21)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.18...v3.13.0-beta.19) (2026-02-20)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.17...v3.13.0-beta.18) (2026-02-19)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.16...v3.13.0-beta.17) (2026-02-19)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.15...v3.13.0-beta.16) (2026-02-18)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.14...v3.13.0-beta.15) (2026-02-17)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.13...v3.13.0-beta.14) (2026-02-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.12...v3.13.0-beta.13) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.11...v3.13.0-beta.12) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.10...v3.13.0-beta.11) (2026-02-12)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.9...v3.13.0-beta.10) (2026-02-11)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.9) (2026-02-11)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.8) (2026-02-11)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.6...v3.13.0-beta.7) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.5...v3.13.0-beta.6) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.4...v3.13.0-beta.5) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.3...v3.13.0-beta.4) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.2...v3.13.0-beta.3) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.1...v3.13.0-beta.2) (2026-02-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.0...v3.13.0-beta.1) (2026-02-09)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.13.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.135...v3.13.0-beta.0) (2026-02-07)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.134...v3.12.0-beta.135) (2026-02-05)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.133...v3.12.0-beta.134) (2026-02-05)
+
+
+### Bug Fixes
+
+* **HistoryMemo:** Segmentation delete wasn't remembered ([#5775](https://github.com/OHIF/Viewers/issues/5775)) ([48f2f6f](https://github.com/OHIF/Viewers/commit/48f2f6fb13f9ba0aa03ad51afd2812466bcb2f58))
+
+
+
+
+
+# [3.12.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.132...v3.12.0-beta.133) (2026-02-04)
+
+
+### Bug Fixes
+
+* **jump-to-label-map:** Use `undefined` for viewportId for arrow navigation. ([#5774](https://github.com/OHIF/Viewers/issues/5774)) ([512aa3b](https://github.com/OHIF/Viewers/commit/512aa3b07f4c783040acd67e3fd2103559a06522))
+
+
+
+
+
+# [3.12.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.131...v3.12.0-beta.132) (2026-01-30)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.130...v3.12.0-beta.131) (2026-01-30)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.129...v3.12.0-beta.130) (2026-01-28)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.129](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.128...v3.12.0-beta.129) (2026-01-27)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.128](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.127...v3.12.0-beta.128) (2026-01-27)
+
+
+### Bug Fixes
+
+* **TMTV:** Consider blend mode when adding segmentation representations. OHIF-2416, OHIF-2369 ([#5735](https://github.com/OHIF/Viewers/issues/5735)) ([06612fe](https://github.com/OHIF/Viewers/commit/06612fe177e2c31c33fa5c81c092b830a337cac2))
+
+
+
+
+
+# [3.12.0-beta.127](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.126...v3.12.0-beta.127) (2026-01-22)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.126](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.125...v3.12.0-beta.126) (2026-01-22)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.124...v3.12.0-beta.125) (2026-01-21)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.12.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.123...v3.12.0-beta.124) (2026-01-16)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
 # [3.12.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.12.0-beta.122...v3.12.0-beta.123) (2026-01-14)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking
