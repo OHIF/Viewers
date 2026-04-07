@@ -9,7 +9,6 @@ import {utils} from "@ohif/core";
 import { OHIFCornerstoneSREncapsulatedPDFReport } from './OHIFCornerstoneSREncapsulatedPDFReport';
 import { useState } from 'react';
 import OHIFLazyMarkdownComponent from './OHIFLazyMarkdown';
-import css from './OHIFCornerstoneSREncapsulatedReport.module.css';
 import LoadingSpinner from "@ohif/ui-next/components/Icons/Sources/LoadingSpinner";
 
 export interface ReportContentDisplayProps {
@@ -27,7 +26,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
 
   useEffect(() => {
     data.text().then(
-      content => {
+      (content) => {
         const decoded = props.expectB64 ? fromBase64(content) : content;
         // Sometimes, we may receive a mime of text/plain because the originator based it on the extension of the file instead
         // of conducting a more thorough search by peaking at the contents and testing.
@@ -38,9 +37,8 @@ export function OHIFCornerstoneSREncapsulatedReport(
         setTextContent(utf8Text);
         setMime(correctMime);
       },
-      [data, props.expectB64, props.encoding, textContent, mime]
     );
-  })
+  }, [data, props.expectB64, props.encoding, textContent, mime])
 
     if (textContent === null) {
         return (<LoadingSpinner />);
