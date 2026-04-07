@@ -216,32 +216,36 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
             <UserPreferencesModal.SubHeading>
               {t('ModifierKeys', { defaultValue: 'Modifier Keys' })}
             </UserPreferencesModal.SubHeading>
-            <div className="flex items-center gap-4">
-              <span className="text-foreground text-sm">
-                {t('CrosshairsModifier', { defaultValue: 'Crosshairs' })}
-              </span>
-              <Select
-                value={state.crosshairModifier}
-                onValueChange={val => setState(s => ({ ...s, crosshairModifier: val }))}
-              >
-                <SelectTrigger className="w-28">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MODIFIER_OPTIONS.map(opt => (
-                    <SelectItem
-                      key={opt.value}
-                      value={opt.value}
-                    >
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span className="text-muted-foreground text-sm">
-                {t('PlusLeftClick', { defaultValue: '+ Left Click' })}
-              </span>
-            </div>
+            <UserPreferencesModal.HotkeysGrid>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-foreground text-base">
+                  {t('CrosshairsModifier', { defaultValue: 'Crosshairs' })}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground text-sm">
+                    {t('PlusLeftClick', { defaultValue: 'Left Click +' })}
+                  </span>
+                  <Select
+                    value={state.crosshairModifier}
+                    onValueChange={val => setState(s => ({ ...s, crosshairModifier: val }))}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MODIFIER_OPTIONS.map(opt => (
+                        <SelectItem
+                          key={opt.value}
+                          value={opt.value}
+                        >
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </UserPreferencesModal.HotkeysGrid>
           </>
         )}
       </UserPreferencesModal.Body>
