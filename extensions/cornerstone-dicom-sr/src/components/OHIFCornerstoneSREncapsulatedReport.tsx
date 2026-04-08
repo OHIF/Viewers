@@ -20,7 +20,7 @@ export interface ReportContentDisplayProps {
 export function OHIFCornerstoneSREncapsulatedReport(
   props: ReportContentDisplayProps
 ): JSX.Element {
-  const data = props.content;
+  const [data, setData] = useState<Blob>(props.content);
   const [mime, setMime] = useState<string>(utils.MimeOptions.Default);
   const [textContent, setTextContent] = useState<string | null>(null);
 
@@ -35,10 +35,11 @@ export function OHIFCornerstoneSREncapsulatedReport(
         const utf8Text = toUTF8(decoded, props.encoding);
 
         setTextContent(utf8Text);
+        setData(utils.toBlob(decoded, correctMime));
         setMime(correctMime);
       },
     );
-  }, [data, props.expectB64, props.encoding])
+  }, [data, props.expectB64, props.encoding]);
 
     if (textContent === null) {
         return (<LoadingSpinner />);
