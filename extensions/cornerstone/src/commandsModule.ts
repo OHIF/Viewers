@@ -1209,8 +1209,18 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
+      // Capture the preset before reset and re-apply it after reset so preset
+      // appearance is preserved. This is because resetProperties() restores the
+      // transfer function to grayscale nodes captured at volume load time,
+      // which is before the initial preset (e.g. skin color) was ever applied.
+      const { preset } = viewport.getProperties?.() ?? {};
+
       viewport.resetProperties?.();
       viewport.resetCamera();
+
+      if (preset) {
+        viewport.setProperties({ preset });
+      }
 
       viewport.render();
     },
