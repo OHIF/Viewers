@@ -57,6 +57,9 @@ const screenShotPaths = {
   threeDOnly: {
     threeDOnlyDisplayedCorrectly: 'threeDOnlyDisplayedCorrectly.png',
   },
+  reset3D: {
+    colorPresetPreservedAfterReset: 'colorPresetPreservedAfterReset.png',
+  },
   axialPrimary: {
     axialPrimaryDisplayedCorrectly: 'axialPrimaryDisplayedCorrectly.png',
   },
