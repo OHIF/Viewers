@@ -1333,8 +1333,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    if (displaySet.frameOfReferenceUID) {
-      return displaySet.frameOfReferenceUID;
+    if (displaySet.FrameOfReferenceUID) {
+      return displaySet.FrameOfReferenceUID;
     }
 
     if (displaySet.Modality === 'SEG') {
