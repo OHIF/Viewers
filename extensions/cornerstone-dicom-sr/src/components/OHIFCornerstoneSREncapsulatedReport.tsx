@@ -25,7 +25,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
   const [textContent, setTextContent] = useState<string | null>(null);
 
   useEffect(() => {
-    data.text().then(
+    props.content.text().then(
       (content) => {
         const decoded = props.expectB64 ? fromBase64(content) : content;
         // Sometimes, we may receive a mime of text/plain because the originator based it on the extension of the file instead
