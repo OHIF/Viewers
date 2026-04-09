@@ -9,6 +9,7 @@ import {
   ContentSequenceItem,
   DICOMStandardReport,
 } from './srTypes';
+import { defaultDicomEncoding } from './constants';
 
 export function getCodeMeaningFromConceptNameCodeSequence(
   conceptNameCodeSequence: ConceptNameCodeSequence
@@ -24,6 +25,10 @@ export function getCodeValueFromConceptNameCodeSequence(
 
 export function getContentSequenceFromSR(root: DICOMStandardReport): ContentSequence{
   return root.ContentSequence ? root.ContentSequence : [];
+}
+
+export function getDicomEncodingFromSR(root: DICOMStandardReport): string {
+  return root.SpecificCharacterSet ? root.SpecificCharacterSet : defaultDicomEncoding;
 }
 
 export function asStandardReport(root): DICOMStandardReport {
