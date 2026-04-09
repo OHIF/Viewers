@@ -39,7 +39,7 @@ export function OHIFCornerstoneSREncapsulatedReport(
         setMime(correctMime);
       },
     );
-  }, [data, props.expectB64, props.encoding]);
+  }, [props.content, props.expectB64, props.encoding]);
 
     if (textContent === null) {
         return (<LoadingSpinner />);

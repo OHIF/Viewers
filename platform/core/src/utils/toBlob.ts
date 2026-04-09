@@ -65,6 +65,11 @@ export function b64ToBlob(b64Data: string, contentType: string = MimeOptions.Raw
     return toBlob(byteArrays, contentType);
 }
 
+/**
+ * Alias of `b64ToBlob` for backwards compatibility.
+ */
+export const b64toBlob = b64ToBlob;
+
 export function csvToBlob(csvString: string): Blob {
     return toBlob(csvString, MimeOptions.Csv)
 }
