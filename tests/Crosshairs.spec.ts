@@ -5,41 +5,48 @@ import {
   visitStudy,
 } from './utils/index.js';
 
+/** Slower than default actionTimeout (10s); MPR crosshair SVG can lag on busy CI workers. */
+const CROSSHAIRS_DOM_TIMEOUT_MS = 30_000;
+
 async function getLayerSignature(page, layerId: string) {
   const layer = page.locator(`#${layerId}`);
   const lineCount = await layer.locator('line').count();
   const circleCount = await layer.locator('circle').count();
   const rectCount = await layer.locator('rect').count();
   const signatureParts: string[] = [];
+  const t = { timeout: CROSSHAIRS_DOM_TIMEOUT_MS };
 
   for (let i = 0; i < lineCount; i++) {
     const line = layer.locator('line').nth(i);
+    await line.waitFor({ state: 'attached', ...t });
     const [x1, y1, x2, y2] = await Promise.all([
-      line.getAttribute('x1'),
-      line.getAttribute('y1'),
-      line.getAttribute('x2'),
-      line.getAttribute('y2'),
+      line.getAttribute('x1', t),
+      line.getAttribute('y1', t),
+      line.getAttribute('x2', t),
+      line.getAttribute('y2', t),
     ]);
     signatureParts.push(`line:${x1}|${y1}|${x2}|${y2}`);
   }
 
   for (let i = 0; i < circleCount; i++) {
     const circle = layer.locator('circle').nth(i);
+    await circle.waitFor({ state: 'attached', ...t });
     const [cx, cy, r] = await Promise.all([
-      circle.getAttribute('cx'),
-      circle.getAttribute('cy'),
-      circle.getAttribute('r'),
+      circle.getAttribute('cx', t),
+      circle.getAttribute('cy', t),
+      circle.getAttribute('r', t),
     ]);
     signatureParts.push(`circle:${cx}|${cy}|${r}`);
   }
 
   for (let i = 0; i < rectCount; i++) {
     const rect = layer.locator('rect').nth(i);
+    await rect.waitFor({ state: 'attached', ...t });
     const [x, y, width, height] = await Promise.all([
-      rect.getAttribute('x'),
-      rect.getAttribute('y'),
-      rect.getAttribute('width'),
-      rect.getAttribute('height'),
+      rect.getAttribute('x', t),
+      rect.getAttribute('y', t),
+      rect.getAttribute('width', t),
+      rect.getAttribute('height', t),
     ]);
     signatureParts.push(`rect:${x}|${y}|${width}|${height}`);
   }
@@ -48,11 +55,10 @@ async function getLayerSignature(page, layerId: string) {
 }
 
 async function getCrosshairsSignature(page) {
-  const [axial, sagittal, coronal] = await Promise.all([
-    getLayerSignature(page, 'svg-layer-mpr-axial'),
-    getLayerSignature(page, 'svg-layer-mpr-sagittal'),
-    getLayerSignature(page, 'svg-layer-mpr-coronal'),
-  ]);
+  // Read layers sequentially so we are not racing three heavy SVG trees on one page (flaky on CI).
+  const axial = await getLayerSignature(page, 'svg-layer-mpr-axial');
+  const sagittal = await getLayerSignature(page, 'svg-layer-mpr-sagittal');
+  const coronal = await getLayerSignature(page, 'svg-layer-mpr-coronal');
   return `${axial}||${sagittal}||${coronal}`;
 }
 
@@ -63,13 +69,14 @@ async function areLayerLinesAxisAligned(page, layerId: string) {
     return false;
   }
 
+  const t = { timeout: CROSSHAIRS_DOM_TIMEOUT_MS };
   for (let i = 0; i < 4; i++) {
     const line = lines.nth(i);
     const [x1, y1, x2, y2] = await Promise.all([
-      line.getAttribute('x1'),
-      line.getAttribute('y1'),
-      line.getAttribute('x2'),
-      line.getAttribute('y2'),
+      line.getAttribute('x1', t),
+      line.getAttribute('y1', t),
+      line.getAttribute('x2', t),
+      line.getAttribute('y2', t),
     ]);
     const isVertical = x1 === x2;
     const isHorizontal = y1 === y2;

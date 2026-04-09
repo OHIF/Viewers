@@ -305,6 +305,7 @@ export class ViewportPageObject {
       await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       const circleLocator = locator.locator('circle').nth(1);
+      await circleLocator.waitFor({ state: 'attached', timeout: crosshairHoverTimeout });
       await circleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       await page.mouse.down();
