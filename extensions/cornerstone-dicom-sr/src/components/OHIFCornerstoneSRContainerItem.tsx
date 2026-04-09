@@ -9,28 +9,32 @@ import {
   getCodeValueFromConceptNameCodeSequence,
 } from '../utils/srInspection';
 import { CodeNameCodeSequenceValues } from '../enums';
+import { emptyTagValue, encodings, defaultDicomEncoding, defaultWebEncoding } from '../utils/constants';
 
-const EMPTY_TAG_VALUE = '[empty]';
-const encodings = {
-  'default': 'latin1',
-  'ISO_IR 192': 'utf-8',
-  'ISO 2022 IR 100': 'latin1',
+
+interface OHIFCornerstoneSRContainerItemProps {
+  contentItem: object,
+  nodeIndexesTree: Array<number>,
+  continuityOfContent: string,
+  rootDicomEncoding?: string,
 }
 
-function OHIFCornerstoneSRContainerItem(props) {
-  const { contentItem, nodeIndexesTree, continuityOfContent } = props;
+function OHIFCornerstoneSRContainerItem(props: OHIFCornerstoneSRContainerItemProps) {
+  const { contentItem, nodeIndexesTree, continuityOfContent, rootDicomEncoding } = props;
   const { ConceptNameCodeSequence } = asStandardReportContentItem(contentItem);
   const codeMeaning = getCodeMeaningFromConceptNameCodeSequence(ConceptNameCodeSequence);
   const codeValue = getCodeValueFromConceptNameCodeSequence(ConceptNameCodeSequence);
   const isChildFirstNode = nodeIndexesTree[nodeIndexesTree.length - 1] === 0;
-  const formattedValue = formatContentItemValue(contentItem) ?? EMPTY_TAG_VALUE;
+  const formattedValue = formatContentItemValue(contentItem) ?? emptyTagValue;
   const startWithAlphaNumCharRegEx = /^[a-zA-Z0-9]/;
   const isContinuous = continuityOfContent === 'CONTINUOUS';
   const addExtraSpace =
     isContinuous && !isChildFirstNode && startWithAlphaNumCharRegEx.test(formattedValue?.[0]);
   //TODO: phase out once we have dcmjs PR #455 merged in and a new version of dcmjs. A comprehensive mapping is present there.
-  const dicomEncoding = contentItem ? contentItem.SpecificCharacterSet : 'ISO 2022 IR 100'
-  const webEncoding = dicomEncoding in encodings ? encodings[dicomEncoding] : encodings['default'];
+  let nodeDicomEncoding: string | null = contentItem ? contentItem.SpecificCharacterSet : null;
+  nodeDicomEncoding = nodeDicomEncoding ?? rootDicomEncoding
+  nodeDicomEncoding = nodeDicomEncoding ?? defaultDicomEncoding
+  const webEncoding = encodings.get(nodeDicomEncoding) ?? defaultWebEncoding;
 
     // Collapse sequences of white space preserving newline characters
   let className = 'whitespace-pre-line';
@@ -71,11 +75,5 @@ function OHIFCornerstoneSRContainerItem(props) {
     </>
   );
 }
-
-OHIFCornerstoneSRContainerItem.propTypes = {
-  contentItem: PropTypes.object,
-  nodeIndexesTree: PropTypes.arrayOf(PropTypes.number),
-  continuityOfContent: PropTypes.string,
-};
 
 export { OHIFCornerstoneSRContainerItem };

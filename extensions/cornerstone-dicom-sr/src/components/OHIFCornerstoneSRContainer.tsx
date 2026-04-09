@@ -4,7 +4,7 @@ import { OHIFCornerstoneSRContainerItem } from './OHIFCornerstoneSRContainerItem
 import {
   getCodeMeaningFromConceptNameCodeSequence,
   getContentSequenceFromSR,
-  asStandardReport,
+  asStandardReport, getDicomEncodingFromSR,
 } from '../utils/srInspection';
 
 /**
@@ -36,6 +36,7 @@ export function OHIFCornerstoneSRContainer(props) {
   const { ContinuityOfContent, ConceptNameCodeSequence } = container;
   const codeMeaning = getCodeMeaningFromConceptNameCodeSequence(ConceptNameCodeSequence);
   const contentSequence = getContentSequenceFromSR(container);
+  const rootDicomEncoding = getDicomEncodingFromSR(container);
   let childContainerIndex = 1;
 
   const contentItems = contentSequence.map((contentItem, i) => {
@@ -54,6 +55,7 @@ export function OHIFCornerstoneSRContainer(props) {
         container: contentItem,
         nodeIndexesTree: childNodeLevel,
         containerNumberedTree: childContainerNumberedTree,
+        rootDicomEncoding: rootDicomEncoding
       };
     } else {
       Component = OHIFCornerstoneSRContainerItem;
@@ -61,6 +63,7 @@ export function OHIFCornerstoneSRContainer(props) {
         contentItem,
         nodeIndexesTree: childNodeLevel,
         continuityOfContent: ContinuityOfContent,
+        rootDicomEncoding: rootDicomEncoding
       };
     }
 
@@ -107,4 +110,9 @@ OHIFCornerstoneSRContainer.propTypes = {
    *  2. Findings
    * */
   containerNumberedTree: PropTypes.arrayOf(PropTypes.number),
+  /**
+   * Last known DICOM encoding in tree per the header. Helps with supporting encoding changes in subtrees which
+   * is done by `Philips/CareStream PACS`.
+   */
+  rootDicomEncoding: PropTypes.string,
 };
