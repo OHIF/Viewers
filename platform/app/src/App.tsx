@@ -34,6 +34,7 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import JwtAuthRoutes from './utils/JwtAuthRoutes';
 import { ShepherdJourneyProvider } from 'react-shepherd';
 import './App.css';
 
@@ -164,6 +165,10 @@ function App({
         routerBasename={routerBasename}
         userAuthenticationService={userAuthenticationService}
       />
+    );
+  } else {
+    authRoutes = (
+      <JwtAuthRoutes userAuthenticationService={userAuthenticationService} />
     );
   }
 

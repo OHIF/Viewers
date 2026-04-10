@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { ekkoHeaders } from './ekkoFetch';
 import {
   Button,
   Input,
@@ -369,7 +370,7 @@ export default function PanelAssistantIA(): React.ReactNode {
     async (conversationId: number) => {
       if (!baseUrl) return;
       const url = API_CONVERSATION_ARCHIVE(baseUrl, conversationId);
-      const res = await fetch(url, { method: 'POST' });
+      const res = await fetch(url, { method: 'POST', headers: ekkoHeaders() });
       if (!res.ok) {
         const errBody = await res.text();
         setError(errBody || `Erreur archivage: ${res.status}`);
@@ -463,7 +464,7 @@ export default function PanelAssistantIA(): React.ReactNode {
     let lastRoute = '';
     try {
       lastRoute = 'GET /api/study/external/{externalId}';
-      const studyRes = await fetch(studyUrl);
+      const studyRes = await fetch(studyUrl, { headers: ekkoHeaders() });
       if (!studyRes.ok) {
         const errBody = await studyRes.text();
         setErrorLog({ route: lastRoute, url: studyUrl, message: errBody || `Study: ${studyRes.status}`, status: studyRes.status, timestamp: new Date().toISOString(), method: 'GET' });
@@ -483,7 +484,7 @@ export default function PanelAssistantIA(): React.ReactNode {
       }
 
       lastRoute = 'GET /api/study/agents';
-      const agentsRes = await fetch(agentsUrl);
+      const agentsRes = await fetch(agentsUrl, { headers: ekkoHeaders() });
       if (!agentsRes.ok) {
         const errBody = await agentsRes.text();
         setErrorLog({ route: lastRoute, url: agentsUrl, message: errBody || `Agents: ${agentsRes.status}`, status: agentsRes.status, timestamp: new Date().toISOString(), method: 'GET' });
@@ -522,7 +523,7 @@ export default function PanelAssistantIA(): React.ReactNode {
     if (!historyOpen || !baseUrl || !externalId) return;
     setHistoryLoading(true);
     const studyUrl = API_STUDY_EXTERNAL(baseUrl, externalId, true);
-    fetch(studyUrl)
+    fetch(studyUrl, { headers: ekkoHeaders() })
       .then(res => res.ok ? res.json() : Promise.reject(new Error(`Study: ${res.status}`)))
       .then((data: Study) => setHistoryConversations(Array.isArray(data.conversations) ? data.conversations : []))
       .catch(() => setHistoryConversations([]))
@@ -561,7 +562,7 @@ export default function PanelAssistantIA(): React.ReactNode {
       if (!baseUrl || !study) throw new Error('Configuration manquante');
       const url = API_STUDY_IMAGE(baseUrl, study.id);
       const base64 = await fileToBase64(file);
-      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename: file.name, base64 }) });
+      const res = await fetch(url, { method: 'POST', headers: ekkoHeaders(true), body: JSON.stringify({ filename: file.name, base64 }) });
       if (!res.ok) { const errBody = await res.text(); throw new Error(errBody || `Upload image: ${res.status}`); }
       const data = (await parseJsonResponse(res)) as Record<string, unknown>;
       const returnedId = (data?.id ?? data?.image_id) as number | undefined;
@@ -645,7 +646,7 @@ export default function PanelAssistantIA(): React.ReactNode {
       const body: { study_id: number; agent_id: number; message: string; image_ids?: number[] } = { study_id: study.id, agent_id: selectedAgentId, message: text };
       if (imageIds.length > 0) body.image_ids = imageIds;
       try {
-        const res = await fetch(createUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const res = await fetch(createUrl, { method: 'POST', headers: ekkoHeaders(true), body: JSON.stringify(body) });
         const data = (await parseJsonResponse(res)) as { conversation?: Conversation; error?: string };
         if (!res.ok) {
           setErrorLog({ route: 'POST /api/study/conversation/create', url: createUrl, message: data?.error || `Erreur ${res.status}`, status: res.status, timestamp: new Date().toISOString(), method: 'POST', requestBody: JSON.stringify(body) });
@@ -676,7 +677,7 @@ export default function PanelAssistantIA(): React.ReactNode {
     if (imageIds.length > 0) messageBody.image_ids = imageIds;
     const messageUrl = API_CONVERSATION_MESSAGE(baseUrl, selectedConversationId);
     try {
-      const res = await fetch(messageUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(messageBody) });
+      const res = await fetch(messageUrl, { method: 'POST', headers: ekkoHeaders(true), body: JSON.stringify(messageBody) });
       const data = (await parseJsonResponse(res)) as { conversation?: Conversation; message?: MessageItem; error?: string };
       if (!res.ok) {
         setErrorLog({ route: 'POST /api/study/conversation/{id}/message', url: messageUrl, message: data?.error || `Erreur ${res.status}`, status: res.status, timestamp: new Date().toISOString(), method: 'POST', requestBody: JSON.stringify(messageBody) });

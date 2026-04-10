@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { ekkoHeaders } from './ekkoFetch';
 import {
   ScrollArea,
   Icons,
@@ -102,7 +103,7 @@ export default function PanelGallery(): React.ReactNode {
     if (!baseUrl || !externalId) return;
     setLoading(true);
     setError(null);
-    const studyRes = await fetch(API_STUDY_EXTERNAL(baseUrl, externalId));
+    const studyRes = await fetch(API_STUDY_EXTERNAL(baseUrl, externalId), { headers: ekkoHeaders() });
     if (!studyRes.ok) {
       setError("Impossible de charger l'étude.");
       setLoading(false);
@@ -110,7 +111,7 @@ export default function PanelGallery(): React.ReactNode {
     }
     const study = await studyRes.json();
     setStudyId(study.id);
-    const imagesRes = await fetch(API_STUDY_IMAGES(baseUrl, study.id));
+    const imagesRes = await fetch(API_STUDY_IMAGES(baseUrl, study.id), { headers: ekkoHeaders() });
     if (!imagesRes.ok) {
       setError('Impossible de charger les images.');
       setLoading(false);
@@ -164,7 +165,7 @@ export default function PanelGallery(): React.ReactNode {
   const handleDeleteConfirm = useCallback(async () => {
     if (!deleteTarget || studyId === null || !baseUrl) return;
     setIsDeleting(true);
-    const res = await fetch(API_STUDY_IMAGE_DELETE(baseUrl, studyId, deleteTarget.id), { method: 'DELETE' });
+    const res = await fetch(API_STUDY_IMAGE_DELETE(baseUrl, studyId, deleteTarget.id), { method: 'DELETE', headers: ekkoHeaders() });
     setIsDeleting(false);
     if (!res.ok) { setShowDeleteConfirm(false); return; }
 

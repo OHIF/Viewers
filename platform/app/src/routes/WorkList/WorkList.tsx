@@ -724,6 +724,15 @@ function WorkList({
         navigate(`/logout?redirect_uri=${encodeURIComponent(window.location.href)}`);
       },
     });
+  } else {
+    menuOptions.push({
+      icon: 'power-off',
+      title: 'Déconnexion',
+      onClick: () => {
+        localStorage.removeItem('ekko_jwt_token');
+        navigate('/login');
+      },
+    });
   }
 
   const LoadingIndicatorProgress = customizationService.getCustomization(
