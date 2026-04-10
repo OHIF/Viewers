@@ -110,7 +110,7 @@ module.exports = (env, argv) => {
               ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
-          // Copy ONNX Runtime Web dist to /ort (includes ort-wasm-simd-threaded.jsep.wasm for WebGPU)
+          // Copy ONNX Runtime Web dist to /ort (WebGPU: asyncify WASM in current onnxruntime-web)
           ...(onnxDistFrom
             ? [{ from: onnxDistFrom, to: `${DIST_DIR}/ort` }]
             : []),

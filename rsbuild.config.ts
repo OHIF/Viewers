@@ -100,7 +100,7 @@ export default defineConfig({
     copy: [
       // Copy plugin files (handled by writePluginImportsFile)
       ...(writePluginImportsFile(SRC_DIR, DIST_DIR) || []),
-      // Copy ONNX Runtime Web dist for SAM segmentation (includes ort-wasm-simd-threaded.jsep.wasm for WebGPU)
+      // Copy ONNX Runtime Web dist for SAM (WebGPU uses ort-wasm-simd-threaded.asyncify.* in recent ORT)
       ...(function () {
         const candidates = [
           path.resolve(__dirname, 'node_modules/onnxruntime-web/dist'),
