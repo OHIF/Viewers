@@ -155,7 +155,7 @@ export default function USAnnotationPanel() {
    * Render helpers so the JSX doesn’t become spaghetti.     */
   const renderWorkflowToggles = () => (
     <PanelSection.Content>
-      <div className="space-y-3 p-2 text-sm text-white">
+      <div className="text-foreground space-y-3 p-2 text-sm">
         <div className="flex items-center">
           <Switch
             id="depth-guide-switch"
@@ -260,15 +260,14 @@ export default function USAnnotationPanel() {
             id="show-overlay-switch"
             checked={showOverlay}
             onCheckedChange={() => setShowOverlayCommand(!showOverlay)}
-            className="data-[state=checked]:bg-blue-500"
           />
-          <label htmlFor="show-overlay-switch" className="cursor-pointer text-blue-300">
+          <label htmlFor="show-overlay-switch" className="text-muted-foreground cursor-pointer">
             {t('Show Overlay')}
           </label>
         </div>
 
         {/* Divider */}
-        <hr className="border-t border-gray-800" />
+        <hr className="border-input/50 border-t" />
       </div>
     </PanelSection.Content>
   );
@@ -297,11 +296,11 @@ export default function USAnnotationPanel() {
         <div className="w-full overflow-hidden">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="border-b border-blue-900 text-blue-300">
+              <tr className="text-muted-foreground border-input/50 border-b">
                 <th></th>
-                <th className="py-2 px-3 text-left">{t('Frame')}</th>
-                <th className="py-2 px-3 text-center">{t('Pleura lines')}</th>
-                <th className="py-2 px-3 text-center">{t('B-lines')}</th>
+                <th className="py-2 px-2 text-left font-normal">{t('Frame')}</th>
+                <th className="py-2 px-2 text-center font-normal">{t('Pleura lines')}</th>
+                <th className="py-2 px-2 text-center font-normal">{t('B-lines')}</th>
                 <th className="w-10"></th>
               </tr>
             </thead>
@@ -309,23 +308,23 @@ export default function USAnnotationPanel() {
               {annotatedFrames.map(item => (
                 <tr
                   key={item.frame}
-                  className={`border-b border-blue-900 ${
+                  className={`border-input/50 border-b ${
                     item.frame === 5 ? 'bg-cyan-800 bg-opacity-30' : ''
                   }`}
                   onClick={() => handleRowClick(item)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <td className="py-3 px-3">{item.index}</td>
-                  <td className="py-3 px-3">{item.frame + 1}</td>
-                  <td className="py-3 px-3 text-center">{item.pleura}</td>
-                  <td className="py-3 px-3 text-center">{item.bLine}</td>
-                  <td className="py-3 px-3 text-right">
+                  <td className="py-2 px-2">{item.index}</td>
+                  <td className="py-2 px-2">{item.frame + 1}</td>
+                  <td className="py-2 px-2 text-center">{item.pleura}</td>
+                  <td className="py-2 px-2 text-center">{item.bLine}</td>
+                  <td className="py-2 px-2 text-right">
                     {item.frame === 5 && (
                       <div className="flex items-center justify-end">
-                        <Button variant="ghost" className="p-0 text-blue-300">
+                        <Button variant="ghost" className="p-0">
                           <Icons.EyeVisible />
                         </Button>
-                        <Button variant="ghost" className="ml-2 p-0 text-blue-300">
+                        <Button variant="ghost" className="ml-2 p-0">
                           <Icons.More />
                         </Button>
                       </div>
@@ -396,7 +395,7 @@ export default function USAnnotationPanel() {
    *  🖼  Final Render                                      */
   return (
     <div
-      className="h-full bg-black text-white"
+      className="text-foreground h-full bg-background"
       style={{ minWidth: 240, maxWidth: 480, width: '100%' }}
     >
       {/* Workflow */}

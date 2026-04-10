@@ -19,7 +19,7 @@ const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
 }) => {
   return (
-    <div className="absolute flex h-full w-full items-center justify-center text-white">
+    <div className="text-foreground absolute flex h-full w-full items-center justify-center">
       <div>
         <h4>{message}</h4>
       </div>
@@ -36,7 +36,7 @@ const NotFoundStudy = () => {
   const { showStudyList } = appConfig;
 
   return (
-    <div className="absolute flex h-full w-full items-center justify-center text-white">
+    <div className="text-foreground absolute flex h-full w-full items-center justify-center">
       <div>
         <h4 data-cy="study-not-found-message">
           One or more of the requested studies are not available at this time.
@@ -48,7 +48,7 @@ const NotFoundStudy = () => {
           >
             Return to the{' '}
             <Link
-              className="text-primary-light"
+              className="text-highlight"
               to="/"
             >
               study list

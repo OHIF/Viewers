@@ -279,14 +279,6 @@ function commandsModule({
       downloadBlob(blob, {
         filename: `ultrasound_annotations_${new Date().toISOString().slice(0, 10)}.json`,
       });
-
-      // Append to the document, click to download, and remove
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      // Clean up by revoking the URL
-      URL.revokeObjectURL(url);
     },
   };
 

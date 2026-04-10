@@ -398,11 +398,30 @@ function commandsModule({
 
       const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
 
+      // Check if the segment has voxels before computing bidirectional measurement
+      const uniqueSegmentIndices = cstUtils.segmentation.getUniqueSegmentIndices(targetId);
+      const hasVoxels = uniqueSegmentIndices.includes(targetIndex);
+
+      if (!hasVoxels) {
+        uiNotificationService.show({
+          title: i18n.t('SegmentationPanel:Segment Bidirectional'),
+          message: i18n.t(
+            'SegmentationPanel:Draw a segment before using bidirectional measurement'
+          ),
+          type: 'warning',
+        });
+        return;
+      }
+
       // Get bidirectional measurement data
       const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
         segmentationId: targetId,
         segmentIndices: [targetIndex],
       });
+
+      if (!bidirectionalData.length) {
+        return;
+      }
 
       const activeViewportId = viewportGridService.getActiveViewportId();
 
@@ -1735,12 +1754,14 @@ function commandsModule({
      * Removes a segmentation from the viewport
      * @param props.segmentationId - The ID of the segmentation to remove
      */
-    removeSegmentationFromViewportCommand: ({ segmentationId }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      segmentationService.removeSegmentationRepresentations(
-        viewportGridService.getActiveViewportId(),
-        { segmentationId }
-      );
+    removeSegmentationFromViewportCommand: ({ segmentationId: displaySetInstanceUID }) => {
+      const { viewportGridService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+
+      commandsManager.runCommand('removeDisplaySetLayer', {
+        viewportId,
+        displaySetInstanceUID,
+      });
     },
 
     /**

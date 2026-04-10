@@ -87,7 +87,7 @@ function PanelStudyBrowser({
         commandsManager,
         servicesManager,
         isHangingProtocolLayout,
-        appConfig: extensionManager._appConfig,
+        appConfig: extensionManager.appConfig,
       };
 
       const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
@@ -410,7 +410,7 @@ function PanelStudyBrowser({
         />
         <Separator
           orientation="horizontal"
-          className="bg-black"
+          className="bg-background"
           thickness="2px"
         />
       </>

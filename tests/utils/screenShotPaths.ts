@@ -124,10 +124,6 @@ const screenShotPaths = {
     srPreHydration: 'srPreHydration.png',
     srJumpToMeasurement: 'srJumpToMeasurement.png',
   },
-  srHydrationThenReload: {
-    srAfterHydration: 'srAfterHydration.png',
-    srAfterReload: 'srAfterReload.png',
-  },
   segHydration: {
     segPostHydration: 'segPostHydration.png',
     segPreHydration: 'segPreHydration.png',
@@ -180,6 +176,12 @@ const screenShotPaths = {
   rtHydration2: {
     rtPostHydration: 'rtPostHydration.png',
     rtPreHydration: 'rtPreHydration.png',
+  },
+  rtHydrationDisableConfirmation: {
+    firstLoadPostHydration: 'firstLoadPostHydration.png',
+    viewportAfterFirstDelete: 'viewportAfterFirstDelete.png',
+    secondLoadPostHydration: 'secondLoadPostHydration.png',
+    viewportAfterSecondDelete: 'viewportAfterSecondDelete.png',
   },
   crosshairs: {
     crosshairsRendered: 'crosshairsRendered.png',
