@@ -41,8 +41,13 @@ echo "Enabling Corepack and Yarn..."
 corepack enable
 corepack prepare yarn@1.22.22 --activate
 
-echo "Installing Bun via npm..."
-npm install -g bun
+echo "Installing Bun (yarn global add)..."
+yarn global add bun
+YARN_GLOBAL_BIN="$(yarn global bin)"
+export PATH="${YARN_GLOBAL_BIN}:${PATH}"
+if [ -n "${BASH_ENV:-}" ]; then
+  echo "export PATH=\"${YARN_GLOBAL_BIN}:\$PATH\"" >> "$BASH_ENV"
+fi
 
 # Verify installations
 echo "Installation complete!"
