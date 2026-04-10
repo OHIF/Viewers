@@ -1,9 +1,15 @@
 {
+  "Back to": "Volver a {{location}}",
+  "Close": "Cerrar",
   "Image": "Imagen",
   "Layout": "Formato",
+  "LOAD": "CARGAR",
   "Measurements": "Medidas",
+  "mm": "mm",
   "More": "Más",
   "Next": "Siguiente",
+  "No": "No",
+  "NoStudyDate": "Sin fecha de estudio",
   "Play": "Play",
   "Previous": "Anterior",
   "Reset": "Restaurar",
@@ -11,5 +17,13 @@
   "Series": "Secuencia",
   "Show": "Mostrar",
   "Stop": "Detener",
-  "StudyDate": "Fecha de estudo"
+  "StudyDate": "Fecha de estudio",
+  "Yes": "Sí",
+  "Cancel": "Cancelar",
+  "Save": "Guardar",
+  "localDateFormat": "DD-MMM-YYYY",
+  "Back": "Atrás",
+  "Foreground": "Primer plano",
+  "SELECT A FOREGROUND": "SELECCIONAR UN PRIMER PLANO",
+  "SELECT A SEGMENTATION": "SELECCIONAR UNA SEGMENTACIÓN"
 }

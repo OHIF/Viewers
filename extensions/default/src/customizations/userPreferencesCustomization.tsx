@@ -123,6 +123,14 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
     [displayNames, i18nextInstance, t]
   );
 
+  const sortedLanguages = React.useMemo(() => {
+    return [...availableLanguages].sort((a, b) => {
+      const labelA = getLanguageLabel(a.value, a.label).toLowerCase();
+      const labelB = getLanguageLabel(b.value, b.label).toLowerCase();
+      return labelA.localeCompare(labelB);
+    });
+  }, [availableLanguages, getLanguageLabel]);
+
   return (
     <UserPreferencesModal>
       <UserPreferencesModal.Body>
@@ -140,7 +148,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
               <SelectValue placeholder={t('Select language')} />
             </SelectTrigger>
             <SelectContent>
-              {availableLanguages.map(lang => (
+              {sortedLanguages.map(lang => (
                 <SelectItem
                   key={lang.value}
                   value={lang.value}

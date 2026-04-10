@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
+import { utils, DicomMetadataStore } from '@ohif/core';
 import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '../../hooks';
 import { useAppConfig } from '@state';
@@ -13,6 +13,112 @@ import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
+
+/**
+ * Publishes imagingstudy-open events for the given study instance UIDs
+ * @param {string[]} studyInstanceUIDs - Array of study instance UIDs
+ * @param {object} servicesManager - Services manager instance
+ * @param {object} commandsManager - Commands manager instance
+ */
+function publishImagingStudyOpenEvents(studyInstanceUIDs, servicesManager, commandsManager) {
+  try {
+    const castService = servicesManager.services.castService;
+    if (!castService) {
+      console.debug('Mode: CastService not available, skipping imagingstudy-open');
+      return;
+    }
+
+    const hub = castService.getHub();
+    if (!hub || !hub.subscribed || !hub.name) {
+      console.debug('Mode: Hub not configured or not subscribed, skipping imagingstudy-open');
+      return;
+    }
+
+    // Use DicomMetadataStore to get study data and create message inline
+
+    // Publish event for each study
+    if (studyInstanceUIDs && Array.isArray(studyInstanceUIDs)) {
+      studyInstanceUIDs.forEach(studyInstanceUID => {
+        const study = DicomMetadataStore.getStudy(studyInstanceUID);
+        if (!study) {
+          console.warn('Mode: Study not found in metadata store:', studyInstanceUID);
+          return;
+        }
+
+        // Get patient information from the first instance of the first series
+        let patientId = '';
+        let patientName = '';
+        let accessionNumber = '';
+
+        if (study.series && study.series.length > 0) {
+          const firstSeries = study.series[0];
+          if (firstSeries.instances && firstSeries.instances.length > 0) {
+            const firstInstance = firstSeries.instances[0];
+            patientId = firstInstance.PatientID || '';
+            patientName = firstInstance.PatientName || '';
+            accessionNumber = firstInstance.AccessionNumber || study.AccessionNumber || '';
+          }
+        }
+
+        const patientIdentifierValue = patientId || 'unknown';
+
+        const castMessage = {
+          timestamp: '',
+          id: '',
+          event: {
+            'hub.topic': '',
+            'hub.event': 'imagingstudy-open',
+            context: [
+              {
+                key: 'patient',
+                resource: {
+                  resourceType: 'Patient',
+                  id: patientIdentifierValue,
+                  identifier: [
+                    {
+                      system: 'urn:oid:2.16.840.1.113883.4.2',
+                      value: patientIdentifierValue,
+                    },
+                  ],
+                  name: patientName ? [{ text: patientName }] : undefined,
+                },
+              },
+              {
+                key: 'study',
+                resource: {
+                  resourceType: 'ImagingStudy',
+                  id: studyInstanceUID,
+                  uid: 'urn:oid:' + studyInstanceUID,
+                  identifier: accessionNumber
+                    ? [
+                        {
+                          system: 'urn:oid:2.16.840.1.113883.4.2',
+                          value: accessionNumber,
+                        },
+                      ]
+                    : [],
+                  patient: {
+                    reference: 'Patient/' + patientIdentifierValue,
+                  },
+                  status: 'available',
+                },
+              },
+            ],
+          },
+        };
+
+        console.debug('Mode: Publishing imagingstudy-open for study:', studyInstanceUID);
+        castService.castPublish(castMessage, hub).catch(err => {
+          console.warn('Mode: Failed to publish imagingstudy-open event:', err);
+        });
+      });
+    }
+  } catch (error) {
+    // Silently fail if cast extension is not available
+    console.debug('Mode: Could not publish imagingstudy-open events:', error.message);
+  }
+}
+
 
 export default function ModeRoute({
   mode,
@@ -319,6 +425,9 @@ export default function ModeRoute({
         extensionManager,
         commandsManager,
       });
+
+      // Publish imagingstudy-open events for opened studies
+      publishImagingStudyOpenEvents(studyInstanceUIDs, servicesManager, commandsManager);
     });
 
     return () => {

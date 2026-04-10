@@ -1,0 +1,19 @@
+{
+  "Active viewport has no displayed image": "La vista activa no mostra cap imatge",
+  "Cancel": "$t(Common:Cancel)",
+  "Download": "Descarregar",
+  "The file name cannot be empty.": "El nom del fitxer no pot estar buit.",
+  "File Type": "Tipus de fitxer",
+  "File Name": "Nom del fitxer",
+  "formTitle": "Especifiqueu les dimensions, el nom del fitxer i el tipus desitjat per a la imatge exportada.",
+  "Image height (px)": "Alçada de la imatge (px)",
+  "Image Preview": "Vista prèvia de la imatge",
+  "Image preview": "Vista prèvia de la imatge",
+  "Image width (px)": "Amplada de la imatge (px)",
+  "keepAspectRatio": "Mantenir la relació d'aspecte",
+  "loadingPreview": "Carregant vista prèvia de la imatge...",
+  "The minimum valid height is 100px.": "L'alçada mínima vàlida és de 100px.",
+  "The minimum valid width is 100px.": "L'amplada mínima vàlida és de 100px.",
+  "Show Annotations": "Mostrar anotacions",
+  "Please specify the dimensions, filename, and desired type for the output image.": "Especifiqueu les dimensions, el nom del fitxer i el tipus desitjat per a la imatge exportada."
+}

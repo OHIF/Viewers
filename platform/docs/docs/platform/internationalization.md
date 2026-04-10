@@ -365,8 +365,6 @@ Languages:
 
 [German](https://www.locize.io/register?invitation=gChNiVi66YINTPpbKESVAVYPapwg3DkpvMSSomLTvVqBJTXrdmPvxi0WZYHER11q)
 
-[Dutch](https://www.locize.io/register?invitation=2PGe7I184aN0cazM4GXMhzeLtGTf9Zen5uyOEFhHQ8vYkfKHkgR0mJ8dwbNlIeCG)
-
 [Turkish](https://www.locize.io/register?invitation=NOMIXsfneqPbFDqjce5wI7Z6p2swXSjc0rHOH4KLcM6qXSNA4LGyJaLxS7nqWAe3)
 
 [Chinese](https://www.locize.io/register?invitation=lrcUbt7DvV4aJmQeEA4SMAj5xNWr3rltOcaZW1cFc6eod0nvzSPFU4V383tDHGGn)

@@ -1,0 +1,6 @@
+{
+  "Field can't be empty": "El camp no pot estar buit",
+  "Hotkey is already in use": "\"{{action}}\" ja està utilitzant la drecera \"{{pressedKeys}}\".",
+  "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut": "No és possible definir només tecles modificadores (ctrl, alt i shift) com a drecera",
+  "Shortcut combination is not allowed": "La combinació de drecera {{pressedKeys}} no està permesa"
+}

@@ -1123,8 +1123,8 @@ export const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'actions-simplify',
-      label: 'Simplify Contours',
-      tooltip: 'Simplify Contours',
+      label: i18n.t('SegmentationPanel:Simplify Contours'),
+      tooltip: i18n.t('SegmentationPanel:Simplify Contours'),
       commands: ['toggleActiveSegmentationUtility'],
       evaluate: [
         {
@@ -1139,8 +1139,8 @@ export const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'actions-smooth',
-      label: 'Smooth Contours',
-      tooltip: 'Smooth Contours',
+      label: i18n.t('SegmentationPanel:Smooth Contours'),
+      tooltip: i18n.t('SegmentationPanel:Smooth Contours'),
       commands: ['toggleActiveSegmentationUtility'],
       evaluate: [
         {
@@ -1155,8 +1155,8 @@ export const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'actions-combine',
-      label: 'Combine Contours',
-      tooltip: 'Combine Contours',
+      label: i18n.t('SegmentationPanel:Combine Contours'),
+      tooltip: i18n.t('SegmentationPanel:Combine Contours'),
       commands: ['toggleActiveSegmentationUtility'],
       evaluate: [
         {

@@ -1,0 +1,15 @@
+{
+  "Grayscale": "Escala de grises",
+  "X Ray": "Rayos X",
+  "Isodose": "Isodosis",
+  "hsv": "HSV",
+  "hot_iron": "Hierro caliente",
+  "red_hot": "Rojo caliente",
+  "s_pet": "PET",
+  "perfusion": "Perfusión",
+  "rainbow_2": "Arcoíris 2",
+  "suv": "SUV",
+  "ge_256": "GE 256",
+  "ge": "GE",
+  "siemens": "Siemens"
+}

@@ -1,0 +1,21 @@
+{
+  "AccessionNumber": "Número d'accés",
+  "ClearFilters": "Esborrar filtres",
+  "Description": "Descripció",
+  "Empty": "Buit",
+  "Filter list to 100 studies or less to enable sorting": "Filtreu la llista a 100 estudis o menys per habilitar l'ordenació",
+  "Instances": "Instàncies",
+  "Modality": "Modalitat",
+  "MRN": "MRN",
+  "Next": "Següent >",
+  "No studies available": "No hi ha estudis disponibles",
+  "Number of studies": "Nombre d'estudis",
+  "Page": "Pàgina",
+  "PatientName": "Nom del pacient",
+  "Previous": "< Enrere",
+  "Results per page": "Resultats per pàgina",
+  "Studies": "Estudis",
+  "StudyDate": "Data d'estudi",
+  "StudyList": "Llista d'estudis",
+  "Upload": "Pujar"
+}
