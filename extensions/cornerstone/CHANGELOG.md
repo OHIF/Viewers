@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.54...v3.13.0-beta.55) (2026-04-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.13.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.53...v3.13.0-beta.54) (2026-04-08)
+
+
+### Bug Fixes
+
+* **cornerstone:** read FrameOfReferenceUID from display set in viewport service ([#5950](https://github.com/OHIF/Viewers/issues/5950)) ([d219171](https://github.com/OHIF/Viewers/commit/d219171e25caf5a7c575080f63819d6f4fe45016))
+
+
+
+
+
 # [3.13.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.52...v3.13.0-beta.53) (2026-04-06)
 
 
