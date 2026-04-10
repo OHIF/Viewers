@@ -288,38 +288,36 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         if (dicomWebConfig.thumbnailRendering === 'thumbnail') {
           return async function getThumbnailSrc() {
             const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/thumbnail?accept=image/jpeg`;
+            const {Jpeg, AcceptJpeg} = utils.MimeOptions;
+            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/thumbnail?${AcceptJpeg}`;
             return URL.createObjectURL(
-              new Blob(
-                [
-                  await this.bulkDataURI({
-                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                    defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
-                    thumbnail: true,
-                  }),
-                ],
-                { type: 'image/jpeg' }
-              )
+                utils.toBlob(
+                    await this.bulkDataURI({
+                      BulkDataURI: bulkDataURI.replace('wadors:', ''),
+                      defaultType: Jpeg,
+                      mediaTypes: [Jpeg],
+                      thumbnail: true,
+                    }),
+                    Jpeg
+                )
             );
           }.bind(this);
         }
         if (dicomWebConfig.thumbnailRendering === 'rendered') {
           return async function getThumbnailSrc() {
             const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered?accept=image/jpeg`;
+            const {Jpeg, AcceptJpeg} = utils.MimeOptions;
+            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered?${AcceptJpeg}`;
             return URL.createObjectURL(
-              new Blob(
-                [
-                  await this.bulkDataURI({
-                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                    defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
-                    thumbnail: true,
-                  }),
-                ],
-                { type: 'image/jpeg' }
-              )
+                utils.toBlob(
+                    await this.bulkDataURI({
+                        BulkDataURI: bulkDataURI.replace('wadors:', ''),
+                        defaultType: Jpeg,
+                        mediaTypes: [Jpeg],
+                        thumbnail: true,
+                    }),
+                    Jpeg
+                )
             );
           }.bind(this);
         }

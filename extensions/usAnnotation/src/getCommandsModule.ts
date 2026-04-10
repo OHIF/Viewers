@@ -4,7 +4,7 @@ import { eventTarget, triggerEvent, utilities } from '@cornerstonejs/core';
 import getInstanceByImageId from './getInstanceByImageId';
 import { setShowPercentage } from './PleuraBlinePercentage';
 
-const { downloadBlob } = utils;
+const { downloadBlob, toBlob, MimeOptions } = utils;
 
 const { transformWorldToIndex } = utilities;
 
@@ -275,7 +275,7 @@ function commandsModule({
       const jsonString = JSON.stringify(json, null, 2);
 
       // Create a blob with the JSON data
-      const blob = new Blob([jsonString], { type: 'application/json' });
+      const blob = toBlob(jsonString, MimeOptions.Json);
       downloadBlob(blob, {
         filename: `ultrasound_annotations_${new Date().toISOString().slice(0, 10)}.json`,
       });

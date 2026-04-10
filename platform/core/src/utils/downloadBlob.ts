@@ -1,3 +1,5 @@
+import {csvToBlob, MimeOptions, toBlob} from "./toBlob";
+
 /**
  * Converts a blob to a URL and downloads immediate
  */
@@ -13,7 +15,7 @@ export function downloadBlob(content, options?) {
  * @param filename
  */
 export function downloadDicom(buffer: ArrayBuffer, options) {
-  const blob = new Blob([buffer], { type: 'application/dicom' });
+  const blob = toBlob(buffer, MimeOptions.Dicom);
   downloadBlob(blob, options);
 }
 
@@ -31,6 +33,6 @@ export function downloadUrl(url, options?) {
 }
 
 export function downloadCsv(csvString: string, options?) {
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const blob = csvToBlob(csvString)
   downloadBlob(blob, options);
 }

@@ -15,7 +15,7 @@ const { structuredCloneWithFunctions } = utils;
  * This list used to include SM, for whole slide imaging, but this is now supported
  * by cornerstone.  Others of these may get added.
  */
-export const NON_IMAGE_MODALITIES = ['SEG', 'RTSTRUCT', 'RTPLAN', 'PR', 'SR'];
+export const NON_RENDERABLE_MODALITIES = ['SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
 
 export const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -367,7 +367,7 @@ export const modeInstance = {
   sopClassHandlers,
   toolbarButtons,
   enableSegmentationEdit: false,
-  nonModeModalities: NON_IMAGE_MODALITIES,
+  nonModeModalities: NON_RENDERABLE_MODALITIES,
 };
 
 /**

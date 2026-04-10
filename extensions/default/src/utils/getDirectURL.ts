@@ -22,7 +22,7 @@ const getDirectURL = (config, params) => {
   const {
     instance,
     tag = 'PixelData',
-    defaultType = 'video/mp4',
+    defaultType = utils.MimeOptions.Mp4,
     singlepart: fetchPart = 'video',
     url = null,
   } = params;
@@ -38,7 +38,7 @@ const getDirectURL = (config, params) => {
     }
 
     if (value.InlineBinary) {
-      const blob = utils.b64toBlob(value.InlineBinary, defaultType);
+      const blob = utils.b64ToBlob(value.InlineBinary, defaultType);
       value.DirectRetrieveURL = URL.createObjectURL(blob);
       return value.DirectRetrieveURL;
     }
@@ -50,7 +50,8 @@ const getDirectURL = (config, params) => {
           mediaType: defaultType,
         };
         return value.retrieveBulkData(options).then(arr => {
-          value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
+          const blob = utils.toBlob(arr, defaultType);
+          value.DirectRetrieveURL = URL.createObjectURL(blob);
           return value.DirectRetrieveURL;
         });
       }

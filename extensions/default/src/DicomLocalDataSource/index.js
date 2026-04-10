@@ -118,9 +118,7 @@ function createDicomLocalApi(dicomLocalConfig) {
         const value = instance[tag];
         if (value instanceof Array && value[0] instanceof ArrayBuffer) {
           return URL.createObjectURL(
-            new Blob([value[0]], {
-              type: defaultType,
-            })
+              utils.toBlob(value[0], defaultType)
           );
         }
       },
