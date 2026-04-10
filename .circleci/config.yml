@@ -92,7 +92,7 @@ jobs:
       TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     working_directory: ~/ViewersV3
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.11
     resource_class: large
     steps:
       - checkout
@@ -131,7 +131,7 @@ jobs:
     environment:
       TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.11
     working_directory: ~/ViewersV3
     steps:
       - restore_cache:
@@ -248,8 +248,8 @@ workflows:
             branches:
               only:
                 - master
-                - idc-v3-viewer-prod
-                - idc-v3-viewer-test
+                - idc-v3-viewer-prod-*
+                - idc-v3-viewer-test-*
       - deploy_job:
           requires:
             - build_job
