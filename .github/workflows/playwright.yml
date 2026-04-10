@@ -104,7 +104,7 @@ jobs:
         if: steps.cs3d-check.outputs.enabled == 'true' && steps.cs3d-ref.outputs.type == 'version'
         run: |
           node .scripts/cs3d-set-version.mjs "${CS3D_VERSION}"
-          bun install
+          bun install --config=./bunfig.update-lockfile.toml
         env:
           CS3D_VERSION: ${{ steps.cs3d-ref.outputs.version }}
 
