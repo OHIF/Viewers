@@ -26,8 +26,8 @@ apt-get update -qq
 apt-get upgrade -y
 
 apt-get install -y	git
-apt-get install -y make # needed by bun install...
-apt-get install -y g++ # needed by bun install...
+apt-get install -y make # native builds (bun / node-gyp)
+apt-get install -y g++
 
 #
 # Following instructions at https://github.com/nodesource/distributions/blob/master/README.md#deb
@@ -36,9 +36,10 @@ apt-get install -y g++ # needed by bun install...
 curl -sL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
 
-# Install yarn and bun using npm (more reliable than curl)
-echo "Installing Yarn via npm..."
-npm install -g yarn
+# Yarn via Corepack — matches package.json "packageManager" (yarn@1.22.22)
+echo "Enabling Corepack and Yarn..."
+corepack enable
+corepack prepare yarn@1.22.22 --activate
 
 echo "Installing Bun via npm..."
 npm install -g bun
