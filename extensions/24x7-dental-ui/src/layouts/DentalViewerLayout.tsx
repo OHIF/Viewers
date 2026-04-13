@@ -13,7 +13,7 @@ export function createDentalViewerLayout(extensionManager: any) {
 
     if (!DefaultLayout) {
       console.error(
-        '[dental-ui] Default ViewerLayout not found — check extension registration order.'
+        '[24x7-dental-ui] Default ViewerLayout not found — check extension registration order.'
       );
       return null;
     }
