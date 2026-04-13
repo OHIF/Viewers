@@ -255,13 +255,35 @@ export class ViewportPageObject {
   get crosshairs() {
     const page = this.page;
 
+    const crosshairHoverTimeout = 20000;
+
+    async function getSlabHandleLocator(locator: Locator) {
+      const startTime = Date.now();
+      const rectLocator = locator.locator('rect').first();
+      const circleLocator = locator.locator('circle').first();
+
+      while (Date.now() - startTime < crosshairHoverTimeout) {
+        if ((await rectLocator.count()) > 0) {
+          return rectLocator;
+        }
+
+        if ((await circleLocator.count()) > 0) {
+          return circleLocator;
+        }
+
+        await page.waitForTimeout(250);
+      }
+
+      throw new Error('Could not find slab thickness handle for crosshairs interaction');
+    }
+
     async function increaseSlabThickness(locator: Locator, lineNumber: number, axis: string) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
-      await lineLocator.hover({ force: true });
+      await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      const circleLocator = locator.locator('rect').first();
-      await circleLocator.hover({ force: true });
+      const slabHandleLocator = await getSlabHandleLocator(locator);
+      await slabHandleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       await page.mouse.down();
 
@@ -280,10 +302,11 @@ export class ViewportPageObject {
     async function rotateCrosshairs(locator: Locator, lineNumber: number) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
-      await lineLocator.hover({ force: true });
+      await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       const circleLocator = locator.locator('circle').nth(1);
-      await circleLocator.hover({ force: true });
+      await circleLocator.waitFor({ state: 'attached', timeout: crosshairHoverTimeout });
+      await circleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       await page.mouse.down();
 
