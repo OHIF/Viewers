@@ -29,7 +29,6 @@ const FILTER_OPTIONS = [
   { value: 'CrownWidth', label: 'Crown Width' },
   { value: 'RootLength', label: 'Root Length' },
 ] as const;
-
 type FilterValue = (typeof FILTER_OPTIONS)[number]['value'];
 
 const SORT_OPTIONS = [
@@ -38,9 +37,7 @@ const SORT_OPTIONS = [
   { value: 'az', label: 'Name A → Z' },
   { value: 'za', label: 'Name Z → A' },
 ] as const;
-
 type SortValue = (typeof SORT_OPTIONS)[number]['value'];
-
 function SortWrapper({
   items = [],
   sortOrder,
@@ -79,11 +76,13 @@ function ControlsBar({
   onFilterChange,
   sortOrder,
   onSortChange,
+  onDownload,
 }: {
   activeFilter: FilterValue;
   onFilterChange: (v: FilterValue) => void;
   sortOrder: SortValue;
   onSortChange: (v: SortValue) => void;
+  onDownload: () => void;
 }) {
   return (
     <div className="border-border bg-background/50 space-y-2 border-b px-2 py-2">
@@ -118,6 +117,15 @@ function ControlsBar({
             ))}
           </SelectContent>
         </Select>
+
+        <button
+          type="button"
+          title="Download as JSON"
+          onClick={onDownload}
+          className="border-input text-foreground/70 hover:bg-muted hover:text-foreground flex h-6 select-none items-center gap-1 rounded border bg-transparent px-2 text-[10px] font-semibold transition-colors"
+        >
+          ↓ JSON
+        </button>
       </div>
     </div>
   );
@@ -139,6 +147,33 @@ function PanelDentalMeasurements(props: any) {
     [activeFilter]
   );
 
+  const handleDownload = useCallback(() => {
+    if (!measurementService) return;
+    const raw = measurementService.getMeasurements(measurementFilter);
+
+    const exportData = raw.map((m: any) => ({
+      uid: m.uid,
+      label: m.label ?? null,
+      toolName: m.toolName,
+      value: m.displayText?.primary?.join(' ') ?? null,
+      location: m.displayText?.secondary?.join(' ') ?? null,
+      referenceSeriesUID: m.referenceSeriesUID ?? null,
+      referencedImageId: m.referencedImageId ?? null,
+      points: m.points ?? null,
+      data: m.data ?? null,
+    }));
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dental-measurements-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [measurementService, measurementFilter]);
+
   const EmptyComponent = () => (
     <div data-cy="dentalMeasurements-panel">
       <MeasurementTable title="Dental Measurements" isExpanded={false}>
@@ -150,12 +185,11 @@ function PanelDentalMeasurements(props: any) {
   const actions = {
     createSR: undefined,
     onDelete: () => {
-      if (measurementService) {
-        measurementService
-          .getMeasurements()
-          .filter(m => DENTAL_TOOL_NAMES.has(m.toolName))
-          .forEach(m => measurementService.remove(m.uid));
-      }
+      if (!measurementService) return;
+      measurementService
+        .getMeasurements()
+        .filter(m => DENTAL_TOOL_NAMES.has(m.toolName))
+        .forEach(m => measurementService.remove(m.uid));
     },
   };
 
@@ -174,6 +208,7 @@ function PanelDentalMeasurements(props: any) {
         onFilterChange={setActiveFilter}
         sortOrder={sortOrder}
         onSortChange={setSortOrder}
+        onDownload={handleDownload}
       />
 
       <ScrollArea className="flex-1">
