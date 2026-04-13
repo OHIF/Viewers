@@ -64,10 +64,21 @@ const dentalThemeToggleButton = {
   props: {},
 } as const;
 
-export const toolbarButtons = [...basicToolbarButtons, dentalThemeToggleButton];
+const dentalBrandTitleButton = {
+  id: 'DentalBrandTitle',
+  uiType: 'dental.brandTitle',
+  props: {},
+} as const;
+
+export const toolbarButtons = [
+  ...basicToolbarButtons,
+  dentalThemeToggleButton,
+  dentalBrandTitleButton,
+];
 
 export const toolbarSections = {
   ...basicToolbarSections,
+  [TOOLBAR_SECTIONS.secondary]: ['DentalBrandTitle'],
   [TOOLBAR_SECTIONS.primary]: [
     ...basicToolbarSections[TOOLBAR_SECTIONS.primary],
     'DentalThemeToggle',
