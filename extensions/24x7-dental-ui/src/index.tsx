@@ -2,6 +2,7 @@ import React from 'react';
 import { id } from './id';
 import DentalBrandTitle from './components/DentalBrandTitle';
 import DentalThemeToggleButton from './components/DentalThemeToggleButton';
+import ToothSelectorButton from './components/ToothSelectorButton';
 import { createDentalViewerLayout } from './layouts/DentalViewerLayout';
 import { dentalThemeManager } from './dentalThemeManager';
 import './styles/dental-theme.css';
@@ -20,6 +21,10 @@ export default {
       {
         name: 'dental.brandTitle',
         defaultComponent: DentalBrandTitle,
+      },
+      {
+        name: 'dental.toothSelector',
+        defaultComponent: ToothSelectorButton,
       },
     ];
   },
