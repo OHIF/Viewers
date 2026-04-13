@@ -84,6 +84,10 @@ module.exports = (env, argv) => {
           __dirname,
           'C:/Users/denni/Documents/Projects/24x7-ohif/modes/24x7-dental-ui/node_modules'
         ),
+        path.resolve(
+          __dirname,
+          'C:/Users/denni/Documents/Projects/24x7-ohif/extensions/24x7-dental-ui/node_modules'
+        ),
       ],
     },
     plugins: [

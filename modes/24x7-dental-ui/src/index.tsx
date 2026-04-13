@@ -1,8 +1,11 @@
 import i18n from 'i18next';
+import { ToolbarService } from '@ohif/core';
 import { id } from './id';
 import {
   initToolGroups,
-  toolbarButtons,
+  toolbarButtons as basicToolbarButtons,
+  toolbarSections as basicToolbarSections,
+  onModeExit as basicOnModeExit,
   cornerstone,
   ohif,
   basicLayout,
@@ -12,6 +15,8 @@ import {
   modeInstance as basicModeInstance,
 } from '@ohif/mode-basic';
 import dentalTranslations from './i18n/locales/en-US/Modes.json';
+
+const { TOOLBAR_SECTIONS } = ToolbarService;
 
 const namespaces = ['en-US', 'en-GB', 'en'];
 namespaces.forEach(locale => {
@@ -27,6 +32,7 @@ export const tracked = {
 export const extensionDependencies = {
   ...basicDependencies,
   '@ohif/extension-measurement-tracking': '^3.0.0',
+  '@ohif/extension-24x7-dental-ui': '^1.0.0',
 };
 
 export const dentalInstance = {
@@ -52,6 +58,27 @@ export const dentalRoute = {
   layoutInstance: dentalInstance,
 };
 
+const dentalThemeToggleButton = {
+  id: 'DentalThemeToggle',
+  uiType: 'dental.themeToggle',
+  props: {},
+} as const;
+
+export const toolbarButtons = [...basicToolbarButtons, dentalThemeToggleButton];
+
+export const toolbarSections = {
+  ...basicToolbarSections,
+  [TOOLBAR_SECTIONS.primary]: [
+    ...basicToolbarSections[TOOLBAR_SECTIONS.primary],
+    'DentalThemeToggle',
+  ],
+};
+
+function onModeExit(this: typeof modeInstance, args: withAppTypes): void {
+  basicOnModeExit.call(this, args);
+  document.documentElement.classList.remove('dental-theme');
+}
+
 export const modeInstance = {
   ...basicModeInstance,
   id,
@@ -59,6 +86,9 @@ export const modeInstance = {
   displayName: i18n.t('Modes:Dental View'),
   routes: [dentalRoute],
   extensions: extensionDependencies,
+  toolbarButtons,
+  toolbarSections,
+  onModeExit,
 };
 
 const mode = {
@@ -69,4 +99,4 @@ const mode = {
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
+export { initToolGroups };
