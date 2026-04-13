@@ -109,6 +109,7 @@ export const modeInstance = {
   id,
   routeName: 'dental',
   displayName: i18n.t('Modes:Dental View'),
+  hangingProtocol: '@24x7-dental-ui/hp2x2',
   routes: [dentalRoute],
   extensions: extensionDependencies,
   toolbarButtons,
