@@ -4,13 +4,6 @@ interface LoginPageProps {
   onSignIn: () => void;
 }
 
-/**
- * LoginPage – shown when a user is not authenticated.
- *
- * Provides a "Sign in with Google" button that triggers a Firebase
- * Google OAuth redirect flow. On successful sign-in, the user is
- * redirected back to "/" (the OHIF study list).
- */
 function LoginPage({ onSignIn }: LoginPageProps) {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +13,6 @@ function LoginPage({ onSignIn }: LoginPageProps) {
     setError(null);
     try {
       onSignIn();
-      // Page will redirect to Google — no further code runs here.
     } catch (err: any) {
       console.error('Google sign-in error:', err);
       setError(err.message || 'Sign-in failed. Please try again.');
@@ -31,7 +23,6 @@ function LoginPage({ onSignIn }: LoginPageProps) {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-black">
       <div className="flex w-full max-w-sm flex-col items-center gap-6 rounded-xl border border-white/10 bg-white/5 p-10">
-        {/* Logo / Title */}
         <div className="flex flex-col items-center gap-2">
           <img
             src="/ohif-logo-light.svg"
@@ -45,20 +36,17 @@ function LoginPage({ onSignIn }: LoginPageProps) {
           <p className="text-sm text-white/50">Sign in to continue</p>
         </div>
 
-        {/* Error message */}
         {error && (
           <div className="w-full rounded-md bg-red-500/20 px-4 py-2 text-center text-sm text-red-400">
             {error}
           </div>
         )}
 
-        {/* Google Sign-In Button */}
         <button
           onClick={handleGoogleSignIn}
           disabled={isSigningIn}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-white/20 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {/* Google G icon */}
           <svg
             width="18"
             height="18"

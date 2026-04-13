@@ -1,10 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
-/**
- * Firebase configuration loaded from environment variables.
- * Set these in platform/app/.env (never commit real values to source control).
- */
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -14,7 +10,6 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-// Avoid re-initializing on hot reloads
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const firebaseAuth = getAuth(app);
