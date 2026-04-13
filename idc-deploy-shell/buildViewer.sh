@@ -17,6 +17,10 @@
 
 if [ "${CONFIG_ONLY}" != "True" ]; then
   export PUBLIC_URL='/v3/'
+  # Disable all minification
+  if [ "${DISABLE_MIN}" == "True" ]; then
+    sed -i -ze 's/return config;/config.optimization.minimize = false;\n  return config;/' ../.webpack/webpack.base.js
+  fi
   # Bump Node memory
   export NODE_OPTIONS="--max-old-space-size=6000"
   # Same as root `install:frozen`: install exactly from yarn.lock (no resolver drift after dropping bun from CI).

@@ -25,11 +25,13 @@ commands:
             CLIENT_EMAIL=${DEPLOYMENT_CLIENT_EMAIL_IDC_DEV}
             PROJECT_ID=${DEPLOYMENT_PROJECT_ID_IDC_DEV}
             BUCKET=${DEPLOYMENT_BUCKET_IDC_DEV}
+            DISABLE_MIN=True
             if [[ ${TIER} == "PROD" ]]; then
               KEY=${DEPLOYMENT_KEY_IDC_PROD}
               CLIENT_EMAIL=${DEPLOYMENT_CLIENT_EMAIL_IDC_PROD}
               PROJECT_ID=${DEPLOYMENT_PROJECT_ID_IDC_PROD}
               BUCKET=${DEPLOYMENT_BUCKET_IDC_PROD}
+              DISABLE_MIN=False
               echo "Using production project and related deployment SA and bucket."
             elif [[ ${TIER} == "TEST" ]]; then
               KEY=${DEPLOYMENT_KEY_IDC_TEST}
@@ -47,6 +49,7 @@ commands:
             echo "export DEPLOYMENT_CLIENT_EMAIL=${CLIENT_EMAIL}" >> $BASH_ENV
             echo "export DEPLOYMENT_PROJECT_ID=${PROJECT_ID}" >> $BASH_ENV
             echo "export DEPLOYMENT_BUCKET=${BUCKET}" >> $BASH_ENV
+            echo "export DISABLE_MIN=${DISABLE_MIN}" >> $BASH_ENV
 
             echo "Project settings assigned:"
             echo "Deployment client: ${CLIENT_EMAIL}"
