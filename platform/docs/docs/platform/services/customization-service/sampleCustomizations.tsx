@@ -290,28 +290,30 @@ window.config = {
       'Outer size (totalWidth × totalHeight, border included) and renderIndicator for the progress scrollbar indicator. renderIndicator receives React for config file compatibility. All three properties must be provided or the default pill is used.',
     default: '{}',
     configuration: `
-// function ViewportScrollbarThumb() {
-//   const w = 14;
-//   const h = 8;
-//   const bw = 1; // ring inset if matching the default pill style
-//   const fillW = Math.max(0, w - 2 * bw);
-//   const fillH = Math.max(0, h - 2 * bw);
-//   return (
-//     <svg width={w} height={h} viewBox={\`0 0 \${w} \${h}\`}>
-//       <rect x={0} y={0} width={w} height={h} fill="hsl(var(--primary) / 0.35)" />
-//       <rect x={bw} y={bw} width={fillW} height={fillH} fill="hsl(var(--primary))" />
-//     </svg>
-//   );
-// }
 window.config = {
   // rest of window config
   customizationService: [
     {
       'viewportScrollbar.indicator': {
-        $set: {
-          totalWidth: 14,
-          totalHeight: 8,
-          renderIndicator: React => React.createElement(ViewportScrollbarThumb),
+        totalWidth: 10,
+        totalHeight: 10,
+        renderIndicator: function (React) {
+          return React.createElement(
+            'svg',
+            { width: 10, height: 10, viewBox: '0 0 10 10' },
+            React.createElement('circle', {
+              cx: 5,
+              cy: 5,
+              r: 5,
+              fill: 'hsl(213 22% 59% / 0.9)',
+            }),
+            React.createElement('circle', {
+              cx: 5,
+              cy: 5,
+              r: 4,
+              fill: 'hsl(0 0% 98% / 0.9)',
+            })
+          );
         },
       },
     },
