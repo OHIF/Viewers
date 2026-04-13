@@ -1,4 +1,5 @@
 const DENTAL_THEME_CLASS = 'dental-theme' as const;
+const STORAGE_KEY = 'dentalThemeActive';
 
 type ThemeListener = () => void;
 
@@ -26,12 +27,34 @@ function setActive(active: boolean): void {
     document.documentElement.classList.remove(DENTAL_THEME_CLASS);
   }
 
+  try {
+    localStorage.setItem(STORAGE_KEY, String(active));
+  } catch {
+    // storage unavailable — ignore
+  }
+
   notifyListeners();
 }
 
-function reset(): void {
-  setActive(false);
+function restore(): void {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'true') {
+      document.documentElement.classList.add(DENTAL_THEME_CLASS);
+    }
+  } catch {
+    // storage unavailable — ignore
+  }
 }
+
+function reset(): void {
+  if (isActive()) {
+    document.documentElement.classList.remove(DENTAL_THEME_CLASS);
+    notifyListeners();
+  }
+}
+
+restore();
 
 export const dentalThemeManager = {
   DENTAL_THEME_CLASS,
@@ -39,4 +62,5 @@ export const dentalThemeManager = {
   setActive,
   subscribe,
   reset,
+  restore,
 } as const;

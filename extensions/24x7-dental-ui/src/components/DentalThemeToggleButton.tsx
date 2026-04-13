@@ -33,6 +33,9 @@ export default function DentalThemeToggleButton(): React.ReactElement {
   const [isDentalTheme, setIsDentalTheme] = useState<boolean>(() => dentalThemeManager.isActive());
 
   useEffect(() => {
+    dentalThemeManager.restore();
+    setIsDentalTheme(dentalThemeManager.isActive());
+
     const unsubscribe = dentalThemeManager.subscribe(() => {
       setIsDentalTheme(dentalThemeManager.isActive());
     });
