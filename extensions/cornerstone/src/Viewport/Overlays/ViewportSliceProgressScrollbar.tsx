@@ -405,7 +405,7 @@ function ViewportSliceProgressScrollbar({
         right: 0,
         top: 0,
         height: '100%',
-        padding: '5px 5px 0 5px',
+        padding: '8px 5px',
         zIndex: 10,
       }}
     >
@@ -435,15 +435,15 @@ function ViewportSliceProgressScrollbar({
               <SmartScrollbarFill
                 marked={loadedBytes}
                 version={loadedVersion}
-                className="bg-neutral/55"
-                loadingClassName="bg-neutral/35"
+                className="bg-neutral/25"
+                loadingClassName="bg-neutral/50"
               />
             )}
             {isFullMode && showViewedFill && (
               <SmartScrollbarFill
                 marked={viewedBytes}
                 version={viewedVersion}
-                className="bg-primary/70"
+                className="bg-primary/35"
               />
             )}
           </SmartScrollbarTrack>

@@ -367,7 +367,7 @@ function OverlayItem(props) {
       title={title}
     >
       {label ? <span className="mr-1 shrink-0">{label}</span> : null}
-      <span className="ml-0 mr-2 shrink-0">{value}</span>
+      <span className="ml-0 shrink-0">{value}</span>
     </div>
   );
 }
