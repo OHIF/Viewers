@@ -34,6 +34,7 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import FirebaseAuthRoutes from './utils/FirebaseAuthRoutes';
 import { ShepherdJourneyProvider } from 'react-shepherd';
 import './App.css';
 
@@ -157,7 +158,10 @@ function App({
     showStudyList,
   });
 
-  if (oidc) {
+  // Only mount OIDC routes when the config actually has OIDC entries.
+  // `oidc` is always an array (default []), so `if (oidc)` was always true —
+  // that caused OpenIdConnectRoutes to mount even with no OIDC config.
+  if (oidc?.length) {
     authRoutes = (
       <OpenIdConnectRoutes
         oidc={oidc}
@@ -167,6 +171,10 @@ function App({
     );
   }
 
+  // Use Firebase auth when no OIDC config is present and Firebase is configured.
+  const firebaseEnabled =
+    !oidc?.length && !!process.env.REACT_APP_FIREBASE_API_KEY;
+
   return (
     <CombinedProviders>
       <BrowserRouter
@@ -174,7 +182,13 @@ function App({
         future={routerFutureFlags}
       >
         {authRoutes}
-        {appRoutes}
+        {firebaseEnabled ? (
+          <FirebaseAuthRoutes userAuthenticationService={userAuthenticationService}>
+            {appRoutes}
+          </FirebaseAuthRoutes>
+        ) : (
+          appRoutes
+        )}
       </BrowserRouter>
     </CombinedProviders>
   );

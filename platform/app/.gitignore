@@ -1,3 +1,8 @@
 .vercel
 test-results
 store.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
