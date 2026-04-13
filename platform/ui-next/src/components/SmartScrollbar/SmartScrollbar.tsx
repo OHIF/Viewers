@@ -39,7 +39,7 @@ const SETTLE_DELAY = 600;
 export interface SmartScrollbarIndicatorConfig {
   totalWidth?: number;
   totalHeight?: number;
-  renderIndicator?: (createElement: typeof React.createElement) => React.ReactNode;
+  renderIndicator?: (react: typeof React) => React.ReactNode;
 }
 
 /**
@@ -47,7 +47,7 @@ export interface SmartScrollbarIndicatorConfig {
  *
  * Supported keys on `raw`:
  * - `totalWidth`, `totalHeight` — positive numbers
- * - `renderIndicator` — `(createElement) => ReactNode`
+ * - `renderIndicator` — `(React) => ReactNode`
  */
 function normalizeIndicatorRecord(
   raw: Record<string, unknown> | null | undefined
@@ -64,9 +64,7 @@ function normalizeIndicatorRecord(
   }
 
   if (typeof raw.renderIndicator === 'function') {
-    config.renderIndicator = raw.renderIndicator as (
-      createElement: typeof React.createElement
-    ) => React.ReactNode;
+    config.renderIndicator = raw.renderIndicator as (react: typeof React) => React.ReactNode;
   }
 
   return config;
@@ -83,7 +81,7 @@ export interface SmartScrollbarLayoutContextValue {
   stableLayerEl: HTMLDivElement | null;
   indicatorTotalWidth: number;
   indicatorTotalHeight: number;
-  renderIndicator: (createElement: typeof React.createElement) => React.ReactNode;
+  renderIndicator: (react: typeof React) => React.ReactNode;
 }
 
 const SmartScrollbarLayoutContext = createContext<SmartScrollbarLayoutContextValue | null>(null);

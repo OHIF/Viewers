@@ -50,7 +50,7 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
         transition: 'left 300ms ease, opacity 300ms ease',
       }}
     >
-      {renderIndicator(React.createElement)}
+      {renderIndicator(React)}
     </div>
   );
 }
