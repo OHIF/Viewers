@@ -44,5 +44,5 @@ function DefaultIndicator() {
 export const DEFAULT_INDICATOR_CONFIG: SmartScrollbarIndicatorConfig = {
   totalWidth: TOTAL_WIDTH,
   totalHeight: TOTAL_HEIGHT,
-  renderIndicator: (_createElement: typeof React.createElement) => <DefaultIndicator />,
+  renderIndicator: (_react: typeof React) => <DefaultIndicator />,
 };

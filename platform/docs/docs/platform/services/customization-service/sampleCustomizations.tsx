@@ -287,7 +287,7 @@ window.config = {
   {
     id: 'viewportScrollbar.indicator',
     description:
-      'Outer size (totalWidth × totalHeight, border included) and renderIndicator for the progress scrollbar indicator. renderIndicator receives React.createElement for config file compatibility. All three properties must be provided or the default pill is used.',
+      'Outer size (totalWidth × totalHeight, border included) and renderIndicator for the progress scrollbar indicator. renderIndicator receives React for config file compatibility. All three properties must be provided or the default pill is used.',
     default: '{}',
     configuration: `
 // function ViewportScrollbarThumb() {
@@ -311,7 +311,7 @@ window.config = {
         $set: {
           totalWidth: 14,
           totalHeight: 8,
-          renderIndicator: createElement => createElement(ViewportScrollbarThumb),
+          renderIndicator: React => React.createElement(ViewportScrollbarThumb),
         },
       },
     },
