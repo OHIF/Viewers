@@ -29,6 +29,12 @@ export const tracked = {
   viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
+export const dental = {
+  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
+  viewerLayout: '@ohif/extension-24x7-dental-ui.layoutTemplateModule.dentalViewerLayout',
+};
+
 export const extensionDependencies = {
   ...basicDependencies,
   '@ohif/extension-measurement-tracking': '^3.0.0',
@@ -37,7 +43,7 @@ export const extensionDependencies = {
 
 export const dentalInstance = {
   ...basicLayout,
-  id: ohif.layout,
+  id: dental.viewerLayout,
   props: {
     ...basicLayout.props,
     leftPanels: [tracked.thumbnailList],
