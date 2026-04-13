@@ -75,6 +75,7 @@ export interface SmartScrollbarLayoutContextValue {
   total: number;
   trackHeight: number;
   isLoading: boolean;
+  isDragging: boolean;
   effectiveWidth: number;
   trackWidth: number;
   fillPadding: number;
@@ -283,6 +284,7 @@ export function SmartScrollbar({
       total,
       trackHeight,
       isLoading,
+      isDragging,
       effectiveWidth,
       trackWidth: TRACK_WIDTH,
       fillPadding: FILL_PADDING,
@@ -295,6 +297,7 @@ export function SmartScrollbar({
       total,
       trackHeight,
       isLoading,
+      isDragging,
       effectiveWidth,
       stableLayerEl,
       resolvedIndicator.totalWidth,
