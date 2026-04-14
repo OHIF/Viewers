@@ -80,23 +80,6 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo / titre */}
         <div className="mb-8 text-center">
-          <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#0076F7]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-7 w-7 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <line x1="9" y1="9" x2="15" y2="9" />
-              <line x1="9" y1="12" x2="15" y2="12" />
-              <line x1="9" y1="15" x2="12" y2="15" />
-            </svg>
-          </div>
           <h1 className="text-2xl font-bold text-white">PACS IA</h1>
           <p className="mt-1 text-sm text-[#666]">Système d&apos;imagerie médicale</p>
         </div>
@@ -204,7 +187,7 @@ export default function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-[#444]">
-          © {new Date().getFullYear()} PACS IA — Logiciel médical
+          © {new Date().getFullYear()} PACS IA
         </p>
       </div>
     </div>
