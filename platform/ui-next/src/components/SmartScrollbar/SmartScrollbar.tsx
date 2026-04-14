@@ -204,7 +204,14 @@ export function SmartScrollbar({
       if (trackHeight <= 0) {
         return 0;
       }
-      const ratio = Math.max(0, Math.min(1, (clientY - trackTopRef.current) / trackHeight));
+
+      // Map pointer Y within the same padded fill strip used by fill/indicator.
+      const fillTop = trackTopRef.current + FILL_PADDING;
+      const fillHeight = trackHeight - FILL_PADDING * 2;
+      if (fillHeight <= 0) {
+        return 0;
+      }
+      const ratio = Math.max(0, Math.min(1, (clientY - fillTop) / fillHeight));
       return Math.round(ratio * (total - 1));
     },
     [trackHeight, total]
