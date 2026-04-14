@@ -72,6 +72,8 @@ export type DicomWebConfig = {
   onConfiguration: (config: DicomWebConfig, params) => DicomWebConfig;
   /** Whether to use the static WADO client */
   staticWado?: boolean;
+  /** Whether to send Authorization headers with requests (default true) */
+  sendAuthorizationHeader?: boolean;
   /** User authentication service */
   userAuthenticationService: Record<string, unknown>;
 };
@@ -143,6 +145,9 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
       getAuthorizationHeader = () => {
+        if (dicomWebConfig.sendAuthorizationHeader === false) {
+          return {} as HeadersInterface;
+        }
         const xhrRequestHeaders: HeadersInterface = {};
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
         if (authHeaders && authHeaders.Authorization) {
@@ -180,11 +185,15 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         }
       };
 
+      const initialHeaders = dicomWebConfig.sendAuthorizationHeader === false
+        ? {}
+        : userAuthenticationService.getAuthorizationHeader();
+
       qidoConfig = {
         url: dicomWebConfig.qidoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
-        headers: userAuthenticationService.getAuthorizationHeader(),
+        headers: initialHeaders,
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
@@ -193,7 +202,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         url: dicomWebConfig.wadoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
-        headers: userAuthenticationService.getAuthorizationHeader(),
+        headers: initialHeaders,
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };

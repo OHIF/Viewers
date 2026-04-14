@@ -28,7 +28,6 @@ export default function initWADOImageLoader(
     beforeSend: function (xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource
       const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};
-      const headers = userAuthenticationService.getAuthorizationHeader();
       const acceptHeader = utils.generateAcceptHeader(
         sourceConfig.acceptHeader,
         sourceConfig.requestTransferSyntaxUID,
@@ -39,8 +38,11 @@ export default function initWADOImageLoader(
         Accept: acceptHeader,
       };
 
-      if (headers) {
-        Object.assign(xhrRequestHeaders, headers);
+      if (sourceConfig.sendAuthorizationHeader !== false) {
+        const headers = userAuthenticationService.getAuthorizationHeader();
+        if (headers) {
+          Object.assign(xhrRequestHeaders, headers);
+        }
       }
 
       return xhrRequestHeaders;
