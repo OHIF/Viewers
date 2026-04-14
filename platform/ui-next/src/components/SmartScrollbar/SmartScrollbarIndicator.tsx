@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSmartScrollbarLayoutContext, useSmartScrollbarScrollContext } from './SmartScrollbar';
+import { computeIndicatorTopOffsetInFill } from './utils';
 
 interface SmartScrollbarIndicatorProps {
   className?: string;
@@ -16,28 +17,30 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
     renderIndicator,
   } = useSmartScrollbarLayoutContext();
 
-  const totalWidth = indicatorTotalWidth;
-  const totalHeight = indicatorTotalHeight;
   const value = useSmartScrollbarScrollContext();
 
   if (trackHeight === 0 || total <= 1) {
     return null;
   }
 
-  const leftPos = effectiveWidth / 2 - totalWidth / 2;
+  // Horizontal: center on the contracting inner width (not the full physical track).
+  const leftPos = effectiveWidth / 2 - indicatorTotalWidth / 2;
 
   const fillAreaTop = fillPadding;
+  // Vertical: same fill strip as SmartScrollbarFill — full track height minus padding.
   const pixelCount = Math.max(0, Math.floor(trackHeight - fillPadding * 2));
   if (pixelCount === 0) {
     return null;
   }
 
-  // Align the indicator with the item’s pixel bucket(s) so it sits “over” the
-  // same pixel-space mapping used by fill/endpoints.
   const clampedValue = Math.max(0, Math.min(total - 1, value));
-  const itemStartPx = Math.floor((clampedValue * pixelCount) / total);
-  const maxTopInFill = Math.max(0, pixelCount - totalHeight);
-  const topPos = fillAreaTop + Math.min(maxTopInFill, itemStartPx);
+  const topOffsetInFill = computeIndicatorTopOffsetInFill(
+    clampedValue,
+    total,
+    pixelCount,
+    indicatorTotalHeight
+  );
+  const topPos = fillAreaTop + topOffsetInFill;
 
   return (
     <div
@@ -45,8 +48,8 @@ export function SmartScrollbarIndicator({ className }: SmartScrollbarIndicatorPr
       style={{
         left: leftPos,
         top: topPos,
-        width: totalWidth,
-        height: totalHeight,
+        width: indicatorTotalWidth,
+        height: indicatorTotalHeight,
         transition: 'left 300ms ease, opacity 300ms ease',
       }}
     >
