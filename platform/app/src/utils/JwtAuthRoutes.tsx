@@ -30,9 +30,6 @@ function JwtAuthRoutesInner({ userAuthenticationService }: JwtAuthRoutesProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Activer le mode auth
-    userAuthenticationService.set({ enabled: true });
-
     const getAuthorizationHeader = () => {
       const token = localStorage.getItem(JWT_TOKEN_KEY);
       if (!token) return {};
@@ -49,9 +46,17 @@ function JwtAuthRoutesInner({ userAuthenticationService }: JwtAuthRoutesProps) {
       handleUnauthenticated,
     });
 
-    // Valider le token existant au montage
     const token = localStorage.getItem(JWT_TOKEN_KEY);
-    if (!token) return;
+
+    if (!token) {
+      userAuthenticationService.set({ enabled: true });
+      return;
+    }
+
+    // Token présent : activer l'auth ET poser un user provisoire en une seule
+    // mise à jour d'état pour éviter que PrivateRoute ne redirige vers /login
+    // pendant la validation asynchrone du token.
+    userAuthenticationService.set({ enabled: true, user: { token } });
 
     const baseUrl = getBaseUrl();
     if (!baseUrl) return;
@@ -65,11 +70,11 @@ function JwtAuthRoutesInner({ userAuthenticationService }: JwtAuthRoutesProps) {
           userAuthenticationService.setUser(data.user);
         } else {
           localStorage.removeItem(JWT_TOKEN_KEY);
+          userAuthenticationService.set({ user: null });
         }
       })
       .catch(() => {
-        // En cas d'erreur réseau, on garde le token et laisse l'app fonctionner.
-        // Le PrivateRoute redirigera si nécessaire.
+        // En cas d'erreur réseau, on garde le token et le user provisoire.
       });
   }, []);
 
