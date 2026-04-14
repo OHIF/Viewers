@@ -29,14 +29,40 @@ const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
 // Generate local-override-config.js at project root so output.copy can include it in dist/.
 // It patches window.config right after app-config.js loads.
+// dataSources is merged by sourceName: existing entries are updated, new ones are appended.
 const LOCAL_OVERRIDE_PATH = path.resolve(PUBLIC_DIR, 'config/local.override.json');
 const LOCAL_OVERRIDE_JS_PATH = path.resolve(__dirname, '.local-override-config.js');
 if (fs.existsSync(LOCAL_OVERRIDE_PATH)) {
   const override = JSON.parse(fs.readFileSync(LOCAL_OVERRIDE_PATH, 'utf8'));
-  fs.writeFileSync(
-    LOCAL_OVERRIDE_JS_PATH,
-    `(function(){var o=${JSON.stringify(override)};if(!window.config)return;Object.keys(o).forEach(function(k){if(o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k])&&window.config[k]&&typeof window.config[k]==='object'){Object.assign(window.config[k],o[k])}else{window.config[k]=o[k]}})})();\n`
-  );
+  // Ancien code (simple, sans merge dataSources par sourceName) :
+  // fs.writeFileSync(
+  //   LOCAL_OVERRIDE_JS_PATH,
+  //   `(function(){var o=${JSON.stringify(override)};if(!window.config)return;Object.keys(o).forEach(function(k){if(o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k])&&window.config[k]&&typeof window.config[k]==='object'){Object.assign(window.config[k],o[k])}else{window.config[k]=o[k]}})})();\n`
+  // );
+  const overrideIIFE = `(function(){
+var o=${JSON.stringify(override)};
+if(!window.config)return;
+Object.keys(o).forEach(function(k){
+  if(k==='dataSources'&&Array.isArray(o[k])&&Array.isArray(window.config[k])){
+    o[k].forEach(function(ds){
+      var idx=window.config[k].findIndex(function(e){return e.sourceName===ds.sourceName});
+      if(idx!==-1){
+        var cfg=window.config[k][idx].configuration||{};
+        if(ds.configuration){Object.assign(cfg,ds.configuration)}
+        Object.assign(window.config[k][idx],ds);
+        window.config[k][idx].configuration=cfg;
+      }else{
+        window.config[k].push(ds);
+      }
+    });
+  }else if(o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k])&&window.config[k]&&typeof window.config[k]==='object'){
+    Object.assign(window.config[k],o[k]);
+  }else{
+    window.config[k]=o[k];
+  }
+});
+})();`;
+  fs.writeFileSync(LOCAL_OVERRIDE_JS_PATH, overrideIIFE + '\n');
 } else {
   fs.writeFileSync(LOCAL_OVERRIDE_JS_PATH, '');
 }

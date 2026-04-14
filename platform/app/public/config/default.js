@@ -248,29 +248,39 @@ window.config = {
       },
     },
 
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
-      sourceName: 'dicomwebproxy',
-      configuration: {
-        friendlyName: 'dicomweb delegating proxy',
-        name: 'dicomwebproxy',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
-      sourceName: 'dicomjson',
-      configuration: {
-        friendlyName: 'dicom json',
-        name: 'json',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
-      sourceName: 'dicomlocal',
-      configuration: {
-        friendlyName: 'dicom local',
-      },
-    },
+    // Non utilisé — data sources OHIF génériques (non utilisées dans votre configuration) :
+    //
+    // • dicomwebproxy — Proxy DICOMweb (OHIF relaie les requêtes vers un serveur tiers).
+    // • dicomjson     — Chargement d'études depuis un JSON OHIF (démos / contenu statique).
+    // • dicomlocal    — Glisser-déposer de fichiers DICOM locaux (« ouvrir un fichier »).
+    //
+    // Ces entrées ne déclarent que des sources disponibles ; elles ne s'activent que si on
+    // y accède explicitement (ex. ?datasources=dicomlocal). Aucun impact sur le viewer
+    // en usage normal. Vous pouvez les supprimer si vous n'en avez pas besoin.
+
+    // {
+    //   namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
+    //   sourceName: 'dicomwebproxy',
+    //   configuration: {
+    //     friendlyName: 'dicomweb delegating proxy',
+    //     name: 'dicomwebproxy',
+    //   },
+    // },
+    // {
+    //   namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
+    //   sourceName: 'dicomjson',
+    //   configuration: {
+    //     friendlyName: 'dicom json',
+    //     name: 'json',
+    //   },
+    // },
+    // {
+    //   namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
+    //   sourceName: 'dicomlocal',
+    //   configuration: {
+    //     friendlyName: 'dicom local',
+    //   },
+    // },
   ],
   /** Ekko Pacs API — URL de base. Si vide, le panel utilise proxyPath (origin + /ekko-pacs-api) : à n'utiliser que si un proxy est configuré sur le serveur. */
   ekkoPacsApi: {
