@@ -1,6 +1,6 @@
 import { utils, Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
-import { metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
+import { imageLoader, metaData, eventTarget, utilities as csUtils } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
@@ -8,6 +8,44 @@ import { SOPClassHandlerId } from './id';
 import { dicomlabToRGB } from './utils/dicomlabToRGB';
 
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.66.4', '1.2.840.10008.5.1.4.1.1.66.7'];
+const LABELMAP_SEG_SOP_CLASS_UID = '1.2.840.10008.5.1.4.1.1.66.7';
+
+function getFrameImageIds(segImageId: string, numberOfFrames: number) {
+  const frameMatch = segImageId.match(/(.*\/frames\/)(\d+)(.*)$/);
+  if (!frameMatch || numberOfFrames <= 1) {
+    return [segImageId];
+  }
+
+  const prefix = frameMatch[1];
+  const suffix = frameMatch[3] || '';
+  const frameImageIds: string[] = [];
+
+  for (let frameNumber = 1; frameNumber <= numberOfFrames; frameNumber++) {
+    frameImageIds.push(`${prefix}${frameNumber}${suffix}`);
+  }
+
+  return frameImageIds;
+}
+
+async function decodeSegImageDataWithLogging(segImageId: string) {
+  const instanceMeta = metaData.get('instance', segImageId);
+  const multiframe = instanceMeta?.dataset ?? instanceMeta;
+
+  const numberOfFrames = Number(multiframe?.NumberOfFrames) || 1;
+  const frameImageIds = getFrameImageIds(segImageId, numberOfFrames);
+  const decodedFramePixelData = await Promise.all(
+    frameImageIds.map(async frameImageId => {
+      const segImage = await imageLoader.loadImage(frameImageId);
+      return segImage?.getPixelData?.();
+    })
+  );
+  const decodedPixelData =
+    decodedFramePixelData.length === 1
+      ? decodedFramePixelData[0]
+      : decodedFramePixelData;
+
+  return decodedPixelData;
+}
 
 const loadPromises = {};
 
@@ -226,6 +264,11 @@ async function _loadSegments({
     {
       metadataProvider: metaData,
       tolerance,
+      parserType:
+        segDisplaySet.SOPClassUID === LABELMAP_SEG_SOP_CLASS_UID
+          ? 'labelmap'
+          : 'bitmap',
+      decodeImageData: decodeSegImageDataWithLogging,
     }
   );
 

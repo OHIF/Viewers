@@ -1,6 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 import OHIF from '@ohif/core';
-import dcmjs from 'dcmjs';
+import { datasetToDicomBlob } from '../utils/dicomWriter';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 const { EVENTS } = DicomMetadataStore;
@@ -174,7 +174,7 @@ function createDicomLocalApi(dicomLocalConfig) {
     },
     store: {
       dicom: naturalizedReport => {
-        const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+        const reportBlob = datasetToDicomBlob(naturalizedReport);
 
         //Create a URL for the binary.
         var objectUrl = URL.createObjectURL(reportBlob);
