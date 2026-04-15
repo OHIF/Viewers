@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.55...v3.13.0-beta.56) (2026-04-10)
+
+
+### Bug Fixes
+
+* A couple of changes to enable cs3d integration build ([#5944](https://github.com/OHIF/Viewers/issues/5944)) ([f6bbd5c](https://github.com/OHIF/Viewers/commit/f6bbd5c779e4692dc47c93327a890661b8dcc174))
+
+
+
+
+
+# [3.13.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.54...v3.13.0-beta.55) (2026-04-10)
+
+
+### Bug Fixes
+
+* ignore auth in git ([#5955](https://github.com/OHIF/Viewers/issues/5955)) ([961eea1](https://github.com/OHIF/Viewers/commit/961eea1c39c37a940c1707c3dfafcede5f4af994))
+
+
+
+
+
 # [3.13.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.53...v3.13.0-beta.54) (2026-04-08)
 
 
