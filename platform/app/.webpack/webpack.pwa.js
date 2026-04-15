@@ -1,7 +1,6 @@
 // https://developers.google.com/web/tools/workbox/guides/codelabs/webpack
 // ~~ WebPack
 const path = require('path');
-const fs = require('fs');
 const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 const webpackBase = require('./../../../.webpack/webpack.base.js');
@@ -35,13 +34,6 @@ const writePluginImportFile = require('./writePluginImportsFile.js');
 const open = process.env.OHIF_OPEN !== 'false';
 
 const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
-
-// ONNX Runtime Web dist (WASM + JSEP for WebGPU). Try root then app node_modules.
-const onnxDistCandidates = [
-  path.resolve(__dirname, '../../../node_modules/onnxruntime-web/dist'),
-  path.resolve(__dirname, '../../node_modules/onnxruntime-web/dist'),
-];
-const onnxDistFrom = onnxDistCandidates.find((p) => fs.existsSync(p));
 
 const setHeaders = (res, path) => {
   if (path.indexOf('.gz') !== -1) {
@@ -110,10 +102,10 @@ module.exports = (env, argv) => {
               ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
-          // Copy ONNX Runtime Web dist to /ort (WebGPU: asyncify WASM in current onnxruntime-web)
-          ...(onnxDistFrom
-            ? [{ from: onnxDistFrom, to: `${DIST_DIR}/ort` }]
-            : []),
+          {
+            from: '../../../node_modules/onnxruntime-web/dist',
+            to: `${DIST_DIR}/ort`,
+          },
           // Short term solution to make sure GCloud config is available in output
           // for our docker implementation
           {
