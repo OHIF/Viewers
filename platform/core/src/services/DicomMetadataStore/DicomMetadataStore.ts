@@ -320,4 +320,3 @@ const DicomMetadataStore = Object.assign(
 
 export { DicomMetadataStore };
 export default DicomMetadataStore;
-window._model=_model
