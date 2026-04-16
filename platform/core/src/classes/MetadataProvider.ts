@@ -60,7 +60,15 @@ class MetadataProvider {
       return;
     }
 
-    return (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
+    const result = (frameNumber && combineFrameInstance(frameNumber, instance)) || instance;
+
+    // We reassign the imageId on the instance because multiframe images processed
+    // through combineFrameInstance will mistakenly get the first imageId.
+    // This happens because the DICOM web data store only keeps the first instance.
+    if (result) {
+      result.imageId = imageId;
+    }
+    return result;
   }
 
   get(query, imageId, options = { fallback: false }) {
@@ -423,33 +431,6 @@ class MetadataProvider {
     return metadata;
   }
 
-  /**
-   * Retrieves the frameNumber information, depending on the url style
-   * wadors /frames/1
-   * wadouri &frame=1
-   * @param {*} imageId
-   * @returns
-   */
-  getFrameInformationFromURL(imageId) {
-    function getInformationFromURL(informationString, separator) {
-      let result = '';
-      const splittedStr = imageId.split(informationString)[1];
-      if (splittedStr.includes(separator)) {
-        result = splittedStr.split(separator)[0];
-      } else {
-        result = splittedStr;
-      }
-      return result;
-    }
-
-    if (imageId.includes('/frames')) {
-      return getInformationFromURL('/frames', '/');
-    }
-    if (imageId.includes('&frame=')) {
-      return getInformationFromURL('&frame=', '&');
-    }
-    return;
-  }
 
   getUIDsFromImageID(imageId) {
     if (imageId.startsWith('wadors:')) {
@@ -488,12 +469,11 @@ class MetadataProvider {
     imageURI = imageURI.split('&frame=')[0];
 
     const uids = this.imageURIToUIDs.get(imageURI);
-    const frameNumber = this.getFrameInformationFromURL(imageId) || '1';
+    // uids already have the information about frameNumber as each data source
+    // will add it at ingestion
+    const frameNumber = uids.frameNumber || '1';
 
-    if (uids && frameNumber !== undefined) {
-      return { ...uids, frameNumber };
-    }
-    return uids;
+    return { ...uids, frameNumber };
   }
 }
 
