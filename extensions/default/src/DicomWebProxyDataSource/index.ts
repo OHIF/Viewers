@@ -1,5 +1,11 @@
 import { IWebApiDataSource } from '@ohif/core';
 import { createDicomWebApi } from '../DicomWebDataSource/index';
+import {
+  resolveDicomWebProxyConfigPolicy,
+  fetchConfigJson,
+  applyConfigUrlTrustToEndpoints,
+} from '../utils/secureConfigFetch';
+import { createTrustAwareServicesManager } from './createTrustAwareServicesManager';
 
 /**
  * This datasource is initialized with a url that returns a JSON object with a
@@ -20,16 +26,25 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       if (!url) {
         throw new Error(`No url for '${name}'`);
       } else {
-        const response = await fetch(url);
-        const data = await response.json();
+        const evaluatedUrl = resolveDicomWebProxyConfigPolicy(url, {
+          trustedOrigins: dicomWebProxyConfig.trustedOrigins,
+          trustLocalhostHttp: dicomWebProxyConfig.trustLocalhostHttp,
+          configFetchAuthMode: dicomWebProxyConfig.configFetchAuthMode,
+        });
+        const data = await fetchConfigJson(evaluatedUrl);
         if (!data.servers?.dicomWeb?.[0]) {
           throw new Error('Invalid configuration returned by url');
         }
-
-        dicomWebDelegate = createDicomWebApi(
+        const delegatedConfig = applyConfigUrlTrustToEndpoints(
           data.servers.dicomWeb[0].configuration || data.servers.dicomWeb[0],
-          servicesManager
+          evaluatedUrl.isTrusted
         );
+        const delegatedServicesManager = createTrustAwareServicesManager(
+          servicesManager,
+          evaluatedUrl.isTrusted
+        );
+
+        dicomWebDelegate = createDicomWebApi(delegatedConfig as any, delegatedServicesManager);
         dicomWebDelegate.initialize({ params, query });
       }
     },
@@ -54,9 +69,11 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
     store: {
       dicom: (...args) => dicomWebDelegate.store.dicom(...args),
     },
+    reject: (...args) => dicomWebDelegate.reject?.(...args),
     deleteStudyMetadataPromise: (...args) => dicomWebDelegate.deleteStudyMetadataPromise(...args),
     getImageIdsForDisplaySet: (...args) => dicomWebDelegate.getImageIdsForDisplaySet(...args),
     getImageIdsForInstance: (...args) => dicomWebDelegate.getImageIdsForInstance(...args),
+    getConfig: (...args) => dicomWebDelegate.getConfig(...args),
     getStudyInstanceUIDs({ params, query }) {
       let studyInstanceUIDs = [];
 

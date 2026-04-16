@@ -66,6 +66,42 @@ http://localhost:3000/viewer?StudyInstanceUIDs=1.2.3.4.5.6.6.7&token=e123125jsdf
 
 
 
+## Securing dynamic datasource URLs
+When using `dicomwebproxy` or `dicomjson` data sources with a runtime `?url=...` query parameter,
+configure explicit trust boundaries to prevent credential exfiltration.
+
+Use these datasource configuration options:
+
+- `trustedOrigins`: Exact `https://` origin allowlist for config publishers that are trusted to receive credentials and forward authenticated DICOMweb access (for example, `https://config.example.com`).
+- `trustLocalhostHttp`: Treat `http://localhost` and `http://127.0.0.1` as trusted (development-only).
+- `configFetchAuthMode`: For trusted config URL origins only, choose whether the config fetch itself uses credentials (`'include'` or `'omit'`, default: `'include'`).
+
+Policy summary:
+
+- For `dicomjson`, untrusted non-local `?url` origins are blocked.
+- For `dicomjson`, localhost HTTP is only allowed when `trustLocalhostHttp=true`.
+- Trusted `dicomjson` config URL origins use `configFetchAuthMode` to decide config-fetch credentials.
+- For `dicomwebproxy`, if the config URL origin is trusted then the returned DICOMweb endpoints may receive bearer-token/cookie auth.
+- For `dicomwebproxy`, if the config URL origin is untrusted then the returned DICOMweb endpoints operate without forwarded credentials.
+- `configFetchAuthMode` does not control downstream DICOMweb bearer-token forwarding.
+
+Example:
+
+```js
+dataSources: [
+  {
+    namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
+    sourceName: 'dicomwebproxy',
+    configuration: {
+      name: 'dicomwebproxy',
+      trustedOrigins: ['https://config.example.com'],
+      trustLocalhostHttp: false,
+      configFetchAuthMode: 'include',
+    },
+  },
+]
+```
+
 ## Implicit Flow vs Authorization Code Flow
 
 The Viewer supports both the Implicit Flow and the Authorization Code Flow. The Implicit Flow is the default currently, as it is easier to set up and use. However, you can opt for better security by using the Authorization Code Flow. To do so, add `useAuthorizationCodeFlow` to the configuration and change the `response_type` from `id_token token` to `code`.
