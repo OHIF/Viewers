@@ -252,9 +252,7 @@ window.config = {
         friendlyName: 'dicomweb delegating proxy',
         name: 'dicomwebproxy',
         // Security controls for runtime ?url=... datasource loading:
-        trustedOrigins: ['https://www.google.com'],
-        trustLocalhostHttp: true,
-        // configFetchAuthMode: 'omit',
+        // trustedOrigins: ['https://config.example.com'],
         // trustLocalhostHttp: false,
         // configFetchAuthMode: 'include',
         // Any ?url origin may be fetched, but only trustedOrigins (and optionally
