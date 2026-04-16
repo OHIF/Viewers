@@ -469,6 +469,11 @@ class MetadataProvider {
     imageURI = imageURI.split('&frame=')[0];
 
     const uids = this.imageURIToUIDs.get(imageURI);
+
+    if (!uids) {
+      return;
+    }
+
     // uids already have the information about frameNumber as each data source
     // will add it at ingestion
     const frameNumber = uids.frameNumber || '1';
