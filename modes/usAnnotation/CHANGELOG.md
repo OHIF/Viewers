@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.58...v3.13.0-beta.59) (2026-04-16)
+
+
+### Bug Fixes
+
+* Use newer ONNX version and load without errors ([#5854](https://github.com/OHIF/Viewers/issues/5854)) ([cc5dc20](https://github.com/OHIF/Viewers/commit/cc5dc201649bcbfb4cfad21141dbd56000d30f53)), closes [#5875](https://github.com/OHIF/Viewers/issues/5875) [#5884](https://github.com/OHIF/Viewers/issues/5884) [#5886](https://github.com/OHIF/Viewers/issues/5886) [#5893](https://github.com/OHIF/Viewers/issues/5893) [#5874](https://github.com/OHIF/Viewers/issues/5874) [#5865](https://github.com/OHIF/Viewers/issues/5865)
+
+
+
+
+
 # [3.13.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.57...v3.13.0-beta.58) (2026-04-14)
 
 **Note:** Version bump only for package @ohif/mode-ultrasound-pleura-bline
