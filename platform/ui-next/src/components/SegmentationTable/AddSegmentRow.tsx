@@ -13,6 +13,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
     onToggleSegmentationRepresentationVisibility,
     data,
     showAddSegment,
+    segmentationRepresentationTypes
   } = useSegmentationTableContext('AddSegmentRow');
 
   // Try to get from expanded context first, then fall back to active segmentation
@@ -47,6 +48,10 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
 
   const allowAddSegment = showAddSegment && !disableEditing;
 
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+  ? `-${segmentationRepresentationTypes[0]}`
+  : '';
+
   return (
     <div className="my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
       <div className="mt-1 flex-1">
@@ -65,6 +70,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
       <Button
         size="icon"
         variant="ghost"
+        data-cy={`all-segments-visibility-toggle${dataCyTypeSuffix}`}
         onClick={() =>
           onToggleSegmentationRepresentationVisibility(segmentationId, representation?.type)
         }

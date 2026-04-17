@@ -67,10 +67,9 @@ function CustomizableViewportOverlay({
 }) {
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
-  const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const [annotationState, setAnnotationState] = useState(0);
-  const { isViewportBackgroundLight: isLight } = useViewportRendering(viewportId);
+  const { isViewportBackgroundLight: isLight, windowLevel: voi } = useViewportRendering(viewportId);
   const { imageIndex } = imageSliceData;
 
   // Historical usage defined the overlays as separate items due to lack of
@@ -109,30 +108,6 @@ function CustomizableViewportOverlay({
       referenceInstance,
     };
   }, [viewportData, viewportId, instanceNumber, cornerstoneViewportService]);
-
-  /**
-   * Updating the VOI when the viewport changes its voi
-   */
-  useEffect(() => {
-    const updateVOI = eventDetail => {
-      const { range } = eventDetail.detail;
-
-      if (!range) {
-        return;
-      }
-
-      const { lower, upper } = range;
-      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
-
-      setVOI({ windowCenter, windowWidth });
-    };
-
-    element.addEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
-
-    return () => {
-      element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
-    };
-  }, [viewportId, viewportData, voi, element]);
 
   const annotationModified = useCallback(evt => {
     if (evt.detail.annotation.metadata.toolName === UltrasoundPleuraBLineTool.toolName) {
@@ -226,6 +201,7 @@ function CustomizableViewportOverlay({
       scale,
       instanceNumber,
       annotationState,
+      isLight,
     ]
   );
 
@@ -402,6 +378,7 @@ function OverlayItem(props) {
  */
 function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
   const { windowWidth, windowCenter } = voi;
+  const { title } = customization;
   if (typeof windowCenter !== 'number' || typeof windowWidth !== 'number') {
     return null;
   }
@@ -410,6 +387,7 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
     <div
       className="overlay-item flex flex-row"
       style={{ color: customization?.color }}
+      title={title}
     >
       <span className="mr-0.5 shrink-0 opacity-[0.70]">W:</span>
       <span className="mr-2.5 shrink-0">{windowWidth.toFixed(0)}</span>
@@ -443,11 +421,13 @@ function InstanceNumberOverlayItem({
   customization,
 }: OverlayItemProps) {
   const { imageIndex, numberOfSlices } = imageSliceData;
+  const { title } = customization;
 
   return (
     <div
       className="overlay-item flex flex-row"
       style={{ color: (customization && customization.color) || undefined }}
+      title={title}
     >
       <span>
         {instanceNumber !== undefined && instanceNumber !== null ? (

@@ -19,7 +19,7 @@ test.describe('3D four up Test', async () => {
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await page.waitForTimeout(5000);
+    await mainToolbarPageObject.waitForVolumeLoad();
 
     await checkForScreenshot(
       page,

@@ -177,6 +177,12 @@ const screenShotPaths = {
     rtPostHydration: 'rtPostHydration.png',
     rtPreHydration: 'rtPreHydration.png',
   },
+  rtHydrationDisableConfirmation: {
+    firstLoadPostHydration: 'firstLoadPostHydration.png',
+    viewportAfterFirstDelete: 'viewportAfterFirstDelete.png',
+    secondLoadPostHydration: 'secondLoadPostHydration.png',
+    viewportAfterSecondDelete: 'viewportAfterSecondDelete.png',
+  },
   crosshairs: {
     crosshairsRendered: 'crosshairsRendered.png',
     crosshairsRotated: 'crosshairsRotated.png',

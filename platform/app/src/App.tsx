@@ -184,12 +184,16 @@ App.propTypes = {
   config: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({
-      routerBasename: PropTypes.string.isRequired,
+      routerBasename: PropTypes.string,
       oidc: PropTypes.array,
       whiteLabeling: PropTypes.object,
       extensions: PropTypes.array,
+      showLoadingIndicator: PropTypes.bool,
+      showStudyList: PropTypes.bool,
+      modes: PropTypes.array,
+      dataSources: PropTypes.array,
     }),
-  ]).isRequired,
+  ]),
   /* Extensions that are "bundled" or "baked-in" to the application.
    * These would be provided at build time as part of they entry point. */
   defaultExtensions: PropTypes.array,

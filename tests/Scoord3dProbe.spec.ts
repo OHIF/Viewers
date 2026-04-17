@@ -40,10 +40,12 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Wait for the SR to load and stabilize before taking screenshot
   await page.waitForTimeout(1000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot before hydration - use viewport locator instead of full page
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbePreHydration
   );
 
@@ -85,7 +87,7 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Take screenshot after hydration showing the probe measurements - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbePostHydration
   );
 
@@ -131,7 +133,7 @@ test('should hydrate SCOORD3D probe measurements correctly', async ({
   // Take screenshot showing the jump to measurement functionality - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement
   );
 });
@@ -182,10 +184,12 @@ test('should display SCOORD3D probe measurements correctly', async ({
   // Wait for rendering to complete before taking screenshot
   await page.waitForTimeout(2000);
 
+  const activeViewport = await viewportPageObject.active;
+
   // Take screenshot showing the SCOORD3D probe measurements rendered correctly - use viewport locator
   await checkForScreenshot(
     page,
-    viewportPageObject.active.pane,
+    activeViewport.pane,
     screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly
   );
 

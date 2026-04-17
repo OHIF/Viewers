@@ -8,5 +8,6 @@ test.beforeEach(async ({ page }) => {
 
 test('should invert the image', async ({ page, mainToolbarPageObject }) => {
   await mainToolbarPageObject.moreTools.invert.click();
+  await mainToolbarPageObject.waitForVolumeLoad();
   await checkForScreenshot(page, page, screenShotPaths.invert.invertDisplayedCorrectly);
 });

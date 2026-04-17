@@ -10,34 +10,32 @@ test.beforeEach(async ({ page }) => {
 
 test('should display multiple segmentation overlays (both SEG and RT)', async ({
   page,
+  mainToolbarPageObject,
   rightPanelPageObject,
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
 
   // Add multiple segmentation overlays and ensure the overlay menu reflects this change.
-  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await dataOverlayPageObject.addSegmentation('Segmentation');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   await dataOverlayPageObject.addSegmentation('3d_lowres-tta_nnU-Net_Segmentation');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
@@ -61,7 +59,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Navigate to image 56.
   await press({ page, key: 'ArrowDown', nTimes: 55 });
 
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,
@@ -73,8 +71,7 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
 
   await dataOverlayPageObject.addSegmentation('Series 3 - RTSTRUCT');
 
-  // A short wait after each overlay is selected to ensure it loads.
-  await page.waitForTimeout(5000);
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   // Adding an overlay should not show the LOAD button.
   assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });

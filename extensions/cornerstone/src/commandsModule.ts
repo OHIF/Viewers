@@ -398,11 +398,30 @@ function commandsModule({
 
       const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
 
+      // Check if the segment has voxels before computing bidirectional measurement
+      const uniqueSegmentIndices = cstUtils.segmentation.getUniqueSegmentIndices(targetId);
+      const hasVoxels = uniqueSegmentIndices.includes(targetIndex);
+
+      if (!hasVoxels) {
+        uiNotificationService.show({
+          title: i18n.t('SegmentationPanel:Segment Bidirectional'),
+          message: i18n.t(
+            'SegmentationPanel:Draw a segment before using bidirectional measurement'
+          ),
+          type: 'warning',
+        });
+        return;
+      }
+
       // Get bidirectional measurement data
       const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
         segmentationId: targetId,
         segmentIndices: [targetIndex],
       });
+
+      if (!bidirectionalData.length) {
+        return;
+      }
 
       const activeViewportId = viewportGridService.getActiveViewportId();
 
@@ -445,7 +464,7 @@ function commandsModule({
         measurement => measurement.segmentIndex === targetIndex
       );
       commandsManager.run('jumpToMeasurement', {
-        uid: activeBidirectional.annotationUID,
+        uid: activeBidirectional?.annotationUID,
       });
     },
     interpolateLabelmap: () => {
@@ -737,6 +756,9 @@ function commandsModule({
      * Also marks any provided display measurements isActive value
      */
     jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
+      if (!uid) {
+        return;
+      }
       measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
       for (const measurement of displayMeasurements) {
         measurement.isActive = measurement.uid === uid;

@@ -61,5 +61,14 @@ tests/playwright-report/
 
 **/.claude/settings.local.json
 
+# cornerstone3D local linking
+libs/
+
 # Backup files
 *~
+
+# cornerstone3D local linking
+libs/
+link-cs3d.js
+unlink-cs3d.js
+auth.json
