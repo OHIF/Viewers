@@ -3,6 +3,146 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.58...v3.13.0-beta.59) (2026-04-16)
+
+
+### Bug Fixes
+
+* Use newer ONNX version and load without errors ([#5854](https://github.com/OHIF/Viewers/issues/5854)) ([cc5dc20](https://github.com/OHIF/Viewers/commit/cc5dc201649bcbfb4cfad21141dbd56000d30f53)), closes [#5875](https://github.com/OHIF/Viewers/issues/5875) [#5884](https://github.com/OHIF/Viewers/issues/5884) [#5886](https://github.com/OHIF/Viewers/issues/5886) [#5893](https://github.com/OHIF/Viewers/issues/5893) [#5874](https://github.com/OHIF/Viewers/issues/5874) [#5865](https://github.com/OHIF/Viewers/issues/5865)
+
+
+
+
+
+# [3.13.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.57...v3.13.0-beta.58) (2026-04-14)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.56...v3.13.0-beta.57) (2026-04-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.55...v3.13.0-beta.56) (2026-04-10)
+
+
+### Bug Fixes
+
+* A couple of changes to enable cs3d integration build ([#5944](https://github.com/OHIF/Viewers/issues/5944)) ([f6bbd5c](https://github.com/OHIF/Viewers/commit/f6bbd5c779e4692dc47c93327a890661b8dcc174))
+
+
+
+
+
+# [3.13.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.54...v3.13.0-beta.55) (2026-04-10)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.53...v3.13.0-beta.54) (2026-04-08)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.52...v3.13.0-beta.53) (2026-04-06)
+
+
+### Reverts
+
+* rename DisplaySet.frameOfReferenceUID back to FrameOfReferenceUID ([#5943](https://github.com/OHIF/Viewers/issues/5943)) ([0e933c2](https://github.com/OHIF/Viewers/commit/0e933c256e07b7cda35ed2ba3cfb1ab35d895d57))
+
+
+
+
+
+# [3.13.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.51...v3.13.0-beta.52) (2026-04-06)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.50...v3.13.0-beta.51) (2026-04-03)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.49...v3.13.0-beta.50) (2026-04-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.48...v3.13.0-beta.49) (2026-04-02)
+
+
+### Bug Fixes
+
+* **segmentation:** restrict overlay segmentation menu to same frame of reference as viewport background display set  ([#5900](https://github.com/OHIF/Viewers/issues/5900)) ([b9029ef](https://github.com/OHIF/Viewers/commit/b9029ef6f8d63a0e36ec929310c1c5ad3f563ef8))
+
+
+
+
+
+# [3.13.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.47...v3.13.0-beta.48) (2026-04-01)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.46...v3.13.0-beta.47) (2026-03-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.45...v3.13.0-beta.46) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.44...v3.13.0-beta.45) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.13.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.43...v3.13.0-beta.44) (2026-03-27)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
 # [3.13.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.42...v3.13.0-beta.43) (2026-03-17)
 
 

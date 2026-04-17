@@ -464,7 +464,7 @@ function commandsModule({
         measurement => measurement.segmentIndex === targetIndex
       );
       commandsManager.run('jumpToMeasurement', {
-        uid: activeBidirectional.annotationUID,
+        uid: activeBidirectional?.annotationUID,
       });
     },
     interpolateLabelmap: () => {
@@ -756,6 +756,9 @@ function commandsModule({
      * Also marks any provided display measurements isActive value
      */
     jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
+      if (!uid) {
+        return;
+      }
       measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
       for (const measurement of displayMeasurements) {
         measurement.isActive = measurement.uid === uid;

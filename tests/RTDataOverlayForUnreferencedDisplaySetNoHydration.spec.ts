@@ -12,7 +12,7 @@ test('should overlay an unhydrated RTSTRUCT over a display set that the RTSTRUCT
   page,
   viewportPageObject,
 }) => {
-  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('Contours on PET');
 
