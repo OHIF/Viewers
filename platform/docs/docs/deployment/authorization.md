@@ -72,18 +72,28 @@ configure explicit trust boundaries to prevent credential exfiltration.
 
 Use these datasource configuration options:
 
-- `trustedOrigins`: Exact `https://` origin allowlist for config publishers that are trusted to receive credentials and forward authenticated DICOMweb access (for example, `https://config.example.com`).
-- `trustLocalhostHttp`: Treat `http://localhost` and `http://127.0.0.1` as trusted (development-only).
-- `configFetchAuthMode`: For trusted config URL origins only, choose whether the config fetch itself uses credentials (`'include'` or `'omit'`, default: `'include'`).
+- `dangerouslyAllowedOriginsForAuthenticatedEnvironments`: Origin allowlist used only when the viewer is running in an authenticated environment. Entries may use `http://` or `https://` and can include localhost origins.
+
+Allowed entry format for `dangerouslyAllowedOriginsForAuthenticatedEnvironments`:
+
+- Must be a bare origin only: `scheme://host[:port]`
+- `http://` and `https://` are both allowed
+- Localhost is allowed when explicitly listed (for example, `http://localhost:5000`)
+- Must not include username/password, path, query string, or hash
+- Invalid entries are ignored and logged as misconfigured
 
 Policy summary:
 
-- For `dicomjson`, untrusted non-local `?url` origins are blocked.
-- For `dicomjson`, localhost HTTP is only allowed when `trustLocalhostHttp=true`.
-- Trusted `dicomjson` config URL origins use `configFetchAuthMode` to decide config-fetch credentials.
-- For `dicomwebproxy`, if the config URL origin is trusted then the returned DICOMweb endpoints may receive bearer-token/cookie auth.
-- For `dicomwebproxy`, if the config URL origin is untrusted then the returned DICOMweb endpoints operate without forwarded credentials.
-- `configFetchAuthMode` does not control downstream DICOMweb bearer-token forwarding.
+- In unauthenticated environments, any HTTP(S) `?url=` origin is allowed.
+- In authenticated environments, `?url=` origins must be present in `dangerouslyAllowedOriginsForAuthenticatedEnvironments`, otherwise loading fails closed.
+- In unauthenticated environments, config URLs are fetched with:
+  - `method: 'GET'`
+  - `mode: 'cors'`
+  - `credentials: 'omit'`
+  - `redirect: 'error'`
+  - `referrerPolicy: 'no-referrer'`
+- In authenticated environments, allowlisted config URLs are fetched using simple fetch behavior.
+- Returned datasource configuration payloads are consumed as-is (no additional URL/config scrubbing).
 
 Example:
 
@@ -94,9 +104,10 @@ dataSources: [
     sourceName: 'dicomwebproxy',
     configuration: {
       name: 'dicomwebproxy',
-      trustedOrigins: ['https://config.example.com'],
-      trustLocalhostHttp: false,
-      configFetchAuthMode: 'include',
+      dangerouslyAllowedOriginsForAuthenticatedEnvironments: [
+        'https://config.example.com',
+        'http://localhost:5000',
+      ],
     },
   },
 ]

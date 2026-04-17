@@ -252,11 +252,11 @@ window.config = {
         friendlyName: 'dicomweb delegating proxy',
         name: 'dicomwebproxy',
         // Security controls for runtime ?url=... datasource loading:
-        // trustedOrigins: ['https://config.example.com'],
-        // trustLocalhostHttp: false,
-        // configFetchAuthMode: 'include',
-        // Any ?url origin may be fetched, but only trustedOrigins (and optionally
-        // localhost http) may receive credentials or forward bearer auth.
+        // In authenticated environments, runtime ?url origins must be allowlisted:
+        // dangerouslyAllowedOriginsForAuthenticatedEnvironments: [
+        //   'https://config.example.com',
+        //   'http://localhost:5000',
+        // ],
       },
     },
     {
@@ -266,11 +266,11 @@ window.config = {
         friendlyName: 'dicom json',
         name: 'json',
         // Security controls for runtime ?url=... datasource loading:
-        // trustedOrigins: ['https://config.example.com'],
-        // trustLocalhostHttp: false,
-        // configFetchAuthMode: 'include',
-        // For dicomjson, untrusted non-local ?url origins are blocked.
-        // localhost http is only allowed when trustLocalhostHttp=true.
+        // In authenticated environments, runtime ?url origins must be allowlisted:
+        // dangerouslyAllowedOriginsForAuthenticatedEnvironments: [
+        //   'https://config.example.com',
+        //   'http://localhost:5000',
+        // ],
       },
     },
     {

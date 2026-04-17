@@ -4,7 +4,7 @@ import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
-import { resolveDicomJsonConfigFetchPolicy, fetchConfigJson } from '../utils/secureConfigFetch';
+import { resolveConfigFetchPolicy, fetchConfigJson } from '../utils/secureConfigFetch';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -60,16 +60,16 @@ const findStudies = (key, value) => {
   return studies;
 };
 
-function createDicomJSONApi(dicomJsonConfig) {
+function createDicomJSONApi(dicomJsonConfig, servicesManager) {
+  const { userAuthenticationService } = servicesManager.services;
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
         url = query.get('url');
       }
-      const evaluatedUrl = resolveDicomJsonConfigFetchPolicy(url, {
-        trustedOrigins: dicomJsonConfig.trustedOrigins,
-        trustLocalhostHttp: dicomJsonConfig.trustLocalhostHttp,
-        configFetchAuthMode: dicomJsonConfig.configFetchAuthMode,
+      const evaluatedUrl = resolveConfigFetchPolicy(url, {
+        allowedOrigins: dicomJsonConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+        userAuthenticationService,
       });
       let metaData = getMetaDataByURL(evaluatedUrl.normalizedUrl);
 
@@ -257,6 +257,8 @@ function createDicomJSONApi(dicomJsonConfig) {
         console.warn(' DICOMJson store dicom not implemented');
       },
     },
+    reject: {},
+    deleteStudyMetadataPromise: () => {},
     getImageIdsForDisplaySet(displaySet) {
       const images = displaySet.images;
       const imageIds = [];
@@ -307,16 +309,16 @@ function createDicomJSONApi(dicomJsonConfig) {
       }
 
       try {
-        const evaluatedUrl = resolveDicomJsonConfigFetchPolicy(url, {
-          trustedOrigins: dicomJsonConfig.trustedOrigins,
-          trustLocalhostHttp: dicomJsonConfig.trustLocalhostHttp,
-          configFetchAuthMode: dicomJsonConfig.configFetchAuthMode,
+        const evaluatedUrl = resolveConfigFetchPolicy(url, {
+          allowedOrigins: dicomJsonConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+          userAuthenticationService,
         });
         return _store.studyInstanceUIDMap.get(evaluatedUrl.normalizedUrl);
       } catch {
         return;
       }
     },
+    getConfig: () => dicomJsonConfig,
   };
   return IWebApiDataSource.create(implementation);
 }

@@ -1,11 +1,6 @@
 import { IWebApiDataSource } from '@ohif/core';
 import { createDicomWebApi } from '../DicomWebDataSource/index';
-import {
-  resolveDicomWebProxyConfigPolicy,
-  fetchConfigJson,
-  applyConfigUrlTrustToEndpoints,
-} from '../utils/secureConfigFetch';
-import { createTrustAwareServicesManager } from './createTrustAwareServicesManager';
+import { resolveConfigFetchPolicy, fetchConfigJson } from '../utils/secureConfigFetch';
 
 /**
  * This datasource is initialized with a url that returns a JSON object with a
@@ -17,6 +12,7 @@ import { createTrustAwareServicesManager } from './createTrustAwareServicesManag
  */
 function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.ServicesManager) {
   const { name } = dicomWebProxyConfig;
+  const { userAuthenticationService } = servicesManager.services;
   let dicomWebDelegate = undefined;
 
   const implementation = {
@@ -26,25 +22,19 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       if (!url) {
         throw new Error(`No url for '${name}'`);
       } else {
-        const evaluatedUrl = resolveDicomWebProxyConfigPolicy(url, {
-          trustedOrigins: dicomWebProxyConfig.trustedOrigins,
-          trustLocalhostHttp: dicomWebProxyConfig.trustLocalhostHttp,
-          configFetchAuthMode: dicomWebProxyConfig.configFetchAuthMode,
+        const evaluatedUrl = resolveConfigFetchPolicy(url, {
+          allowedOrigins:
+            dicomWebProxyConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+          userAuthenticationService,
         });
         const data = await fetchConfigJson(evaluatedUrl);
         if (!data.servers?.dicomWeb?.[0]) {
           throw new Error('Invalid configuration returned by url');
         }
-        const delegatedConfig = applyConfigUrlTrustToEndpoints(
+        dicomWebDelegate = createDicomWebApi(
           data.servers.dicomWeb[0].configuration || data.servers.dicomWeb[0],
-          evaluatedUrl.isTrusted
+          servicesManager
         );
-        const delegatedServicesManager = createTrustAwareServicesManager(
-          servicesManager,
-          evaluatedUrl.isTrusted
-        );
-
-        dicomWebDelegate = createDicomWebApi(delegatedConfig as any, delegatedServicesManager);
         dicomWebDelegate.initialize({ params, query });
       }
     },

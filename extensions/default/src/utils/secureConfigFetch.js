@@ -1,56 +1,48 @@
 // @ts-nocheck
-const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1']);
 
-function isLocalhost(hostname = '') {
-  return LOCAL_HOSTNAMES.has(hostname);
-}
-
-function normalizeTrustedOrigins(trustedOrigins = []) {
-  if (!Array.isArray(trustedOrigins)) {
+function normalizeAllowedOrigins(allowedOrigins = []) {
+  if (!Array.isArray(allowedOrigins)) {
     return [];
   }
 
-  const configuredOrigins = trustedOrigins
+  const configuredOrigins = allowedOrigins
     .filter(origin => typeof origin === 'string')
     .map(origin => origin.trim())
     .filter(Boolean);
 
-  const validOrigins = configuredOrigins
+  return configuredOrigins
     .map(origin => {
-    let parsedOrigin;
-
-    try {
-      parsedOrigin = new URL(origin);
-    } catch {
-      console.error(`Invalid trusted origin "${origin}"`);
-      return null;
-    }
-
-    if (parsedOrigin.protocol !== 'https:') {
-      console.error(`trustedOrigins entries must be https URLs: "${origin}"`);
-      return null;
-    }
-
-    if (
-      parsedOrigin.username ||
-      parsedOrigin.password ||
-      parsedOrigin.pathname !== '/' ||
-      parsedOrigin.search ||
-      parsedOrigin.hash
-    ) {
-      console.error(`trustedOrigins entries must be bare origins: "${origin}"`);
-      return null;
-    }
-
-    return parsedOrigin.origin;
-  })
+      try {
+        const parsedOrigin = new URL(origin);
+        if (!['http:', 'https:'].includes(parsedOrigin.protocol)) {
+          console.error(
+            `[secureConfigFetch] Ignoring misconfigured allowed origin "${origin}". ` +
+              'Entries must use http:// or https://.'
+          );
+          return null;
+        }
+        if (
+          parsedOrigin.username ||
+          parsedOrigin.password ||
+          parsedOrigin.pathname !== '/' ||
+          parsedOrigin.search ||
+          parsedOrigin.hash
+        ) {
+          console.error(
+            `[secureConfigFetch] Ignoring misconfigured allowed origin "${origin}". ` +
+              'Entries must be bare origins only (scheme + host + optional port), with no username/password, path, query, or hash.'
+          );
+          return null;
+        }
+        return parsedOrigin.origin;
+      } catch {
+        console.error(
+          `[secureConfigFetch] Ignoring misconfigured allowed origin "${origin}". Entry is not a valid URL.`
+        );
+        return null;
+      }
+    })
     .filter(Boolean);
-
-  if (configuredOrigins.length > 0 && validOrigins.length === 0) {
-    throw new Error('No valid trustedOrigins configured');
-  }
-
-  return validOrigins;
 }
 
 function resolveConfigUrl(rawUrl) {
@@ -65,27 +57,8 @@ function resolveConfigUrl(rawUrl) {
   }
 }
 
-function stripUrlCredentials(parsedUrl) {
-  const strippedUrl = new URL(parsedUrl.toString());
-  strippedUrl.username = '';
-  strippedUrl.password = '';
-  return strippedUrl.toString();
-}
-
-function isTrustedConfigOrigin(parsedUrl, policy = {}) {
-  const { trustedOrigins = [], trustLocalhostHttp = false } = policy;
-  const normalizedTrustedOrigins = normalizeTrustedOrigins(trustedOrigins);
-
-  if (parsedUrl.protocol === 'http:' && isLocalhost(parsedUrl.hostname) && trustLocalhostHttp) {
-    return true;
-  }
-
-  return normalizedTrustedOrigins.includes(parsedUrl.origin);
-}
-
-function resolveDicomWebProxyConfigPolicy(rawUrl, policy = {}) {
-  const { configFetchAuthMode = 'include' } = policy;
-
+function resolveConfigFetchPolicy(rawUrl, policy = {}) {
+  const { allowedOrigins = [], userAuthenticationService } = policy;
   const parsedUrl = resolveConfigUrl(rawUrl);
   const protocol = parsedUrl.protocol.toLowerCase();
 
@@ -97,47 +70,37 @@ function resolveDicomWebProxyConfigPolicy(rawUrl, policy = {}) {
     throw new Error('URL fragments are not allowed for dynamic datasource configuration');
   }
 
-  const isTrusted = isTrustedConfigOrigin(parsedUrl, policy);
+  const isAuthenticated = Boolean(
+    userAuthenticationService?.getAuthorizationHeader?.()?.Authorization
+  );
 
-  return {
-    parsedUrl,
-    normalizedUrl: isTrusted ? parsedUrl.toString() : stripUrlCredentials(parsedUrl),
-    isTrusted,
-    credentialsMode: isTrusted && configFetchAuthMode === 'omit' ? 'omit' : isTrusted ? 'include' : 'omit',
-  };
-}
-
-function resolveDicomJsonConfigFetchPolicy(rawUrl, policy = {}) {
-  const { configFetchAuthMode = 'include' } = policy;
-  const parsedUrl = resolveConfigUrl(rawUrl);
-  const protocol = parsedUrl.protocol.toLowerCase();
-
-  if (!['http:', 'https:'].includes(protocol)) {
-    throw new Error('Only HTTP(S) URLs are allowed for dynamic datasource configuration');
-  }
-
-  if (parsedUrl.hash) {
-    throw new Error('URL fragments are not allowed for dynamic datasource configuration');
-  }
-
-  const isTrusted = isTrustedConfigOrigin(parsedUrl, policy);
-  if (!isTrusted) {
-    throw new Error(`Blocked untrusted dicomjson config URL origin: "${parsedUrl.origin}"`);
+  if (isAuthenticated) {
+    const normalizedAllowedOrigins = normalizeAllowedOrigins(allowedOrigins);
+    if (!normalizedAllowedOrigins.length || !normalizedAllowedOrigins.includes(parsedUrl.origin)) {
+      throw new Error(
+        `Blocked remote configuration origin "${parsedUrl.origin}" in authenticated environment`
+      );
+    }
   }
 
   return {
     parsedUrl,
     normalizedUrl: parsedUrl.toString(),
-    isTrusted: true,
-    credentialsMode: configFetchAuthMode === 'omit' ? 'omit' : 'include',
+    isAuthenticated,
   };
 }
 
 async function fetchConfigJson(normalizedPolicy) {
-  const { normalizedUrl, credentialsMode } = normalizedPolicy;
-  const response = await fetch(normalizedUrl, {
-    credentials: credentialsMode,
-  });
+  const { normalizedUrl, isAuthenticated } = normalizedPolicy;
+  const response = isAuthenticated
+    ? await fetch(normalizedUrl)
+    : await fetch(normalizedUrl, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit',
+        redirect: 'error',
+        referrerPolicy: 'no-referrer',
+      });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch dynamic datasource configuration (${response.status})`);
@@ -145,35 +108,7 @@ async function fetchConfigJson(normalizedPolicy) {
 
   return response.json();
 }
-
-function applyConfigUrlTrustToEndpoints(config, isTrusted) {
-  if (!config || typeof config !== 'object') {
-    return config;
-  }
-
-  const clonedConfig = { ...config };
-  const endpointFields = ['qidoRoot', 'wadoRoot', 'wadoUriRoot', 'wadoUri'];
-
-  endpointFields.forEach(field => {
-    const value = clonedConfig[field];
-    if (typeof value !== 'string' || isTrusted === true || !/^https?:\/\//i.test(value)) {
-      return;
-    }
-
-    try {
-      const parsedValue = new URL(value);
-      clonedConfig[field] = stripUrlCredentials(parsedValue);
-    } catch {
-      // Leave malformed endpoint values untouched; datasource will handle them downstream.
-    }
-  });
-
-  return clonedConfig;
-}
-
 export {
-  resolveDicomWebProxyConfigPolicy,
-  resolveDicomJsonConfigFetchPolicy,
+  resolveConfigFetchPolicy,
   fetchConfigJson,
-  applyConfigUrlTrustToEndpoints,
 };
