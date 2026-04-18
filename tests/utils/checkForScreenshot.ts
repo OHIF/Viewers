@@ -82,7 +82,7 @@ const _checkForScreenshot = async (props: CheckForScreenshotProps) => {
     page,
     screenshotPath,
     attempts = 10,
-    delay = 500,
+    delay = 1250,
     maxDiffPixelRatio = 0.02,
     threshold = 0.05,
     normalizedClip,
