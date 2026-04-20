@@ -25,47 +25,47 @@ export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle
   const bytesRef = useRef(new Uint8Array(size));
   const countRef = useRef(0);
   const [version, setVersion] = useState(0);
-  const intervalIdRef = useRef<number | null>(null);
+  const timeoutIdRef = useRef<number | null>(null);
 
-  const clearFlushInterval = useCallback(() => {
-    if (intervalIdRef.current !== null) {
-      window.clearInterval(intervalIdRef.current);
-      intervalIdRef.current = null;
+  const clearScheduledFlush = useCallback(() => {
+    if (timeoutIdRef.current !== null) {
+      window.clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
     }
   }, []);
 
   const flushScheduledVersion = useCallback(() => {
-    // End this interval window after the scheduled flush.
-    clearFlushInterval();
+    // End this timeout window after the scheduled flush.
+    clearScheduledFlush();
     setVersion(v => v + 1);
-  }, [clearFlushInterval]);
+  }, [clearScheduledFlush]);
 
   // Reset array only when size actually changes — skip on initial mount since
   // bytesRef is already initialised to the correct size via useRef.
   useEffect(() => {
     if (bytesRef.current.length === size) return;
-    // Drop any in-flight interval window when resetting the underlying array.
-    clearFlushInterval();
+    // Drop any in-flight timeout window when resetting the underlying array.
+    clearScheduledFlush();
     bytesRef.current = new Uint8Array(size);
     countRef.current = 0;
     setVersion(v => v + 1);
-  }, [size, clearFlushInterval]);
+  }, [size, clearScheduledFlush]);
 
   useEffect(() => {
-    // If interval timing changes mid-window, restart that window using the new timing.
-    const pendingIntervalId = intervalIdRef.current;
-    clearFlushInterval();
+    // If timing changes mid-window, restart that timeout using the new timing.
+    const pendingTimeoutId = timeoutIdRef.current;
+    clearScheduledFlush();
     if (batchIntervalMs <= 0) {
-      if (pendingIntervalId !== null) {
+      if (pendingTimeoutId !== null) {
         setVersion(v => v + 1);
       }
       return;
     }
-    if (pendingIntervalId !== null) {
-      intervalIdRef.current = window.setInterval(flushScheduledVersion, batchIntervalMs);
+    if (pendingTimeoutId !== null) {
+      timeoutIdRef.current = window.setTimeout(flushScheduledVersion, batchIntervalMs);
     }
-    return () => clearFlushInterval();
-  }, [batchIntervalMs, clearFlushInterval, flushScheduledVersion]);
+    return () => clearScheduledFlush();
+  }, [batchIntervalMs, clearScheduledFlush, flushScheduledVersion]);
 
   const bump = useCallback(() => {
     if (batchIntervalMs <= 0) {
@@ -73,8 +73,8 @@ export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle
       return;
     }
 
-    if (intervalIdRef.current === null) {
-      intervalIdRef.current = window.setInterval(flushScheduledVersion, batchIntervalMs);
+    if (timeoutIdRef.current === null) {
+      timeoutIdRef.current = window.setTimeout(flushScheduledVersion, batchIntervalMs);
     }
   }, [batchIntervalMs, flushScheduledVersion]);
 
