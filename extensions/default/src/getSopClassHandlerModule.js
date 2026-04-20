@@ -1,4 +1,5 @@
 import { utils, classes } from '@ohif/core';
+import { createNiftiImageIdsAndCacheMetadata } from '@cornerstonejs/nifti-volume-loader';
 import i18n from '@ohif/i18n';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
@@ -13,6 +14,23 @@ const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
 let appContext = {};
+
+const isAbsolutePathOrUrl = value =>
+  typeof value === 'string' &&
+  (/^[a-z]+:\/\//i.test(value) || value.startsWith('//') || value.startsWith('/'));
+
+const joinUrl = (baseUrl, path) => {
+  if (!baseUrl) {
+    return path;
+  }
+
+  try {
+    return new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
+  } catch (error) {
+    const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    return `${normalizedBaseUrl}${path.replace(/^\/+/, '')}`;
+  }
+};
 
 const getDynamicVolumeInfo = instances => {
   const { extensionManager } = appContext;
@@ -96,6 +114,14 @@ const makeDisplaySet = (instances, index) => {
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
+  const { niftiPrivateTagName, niftiBaseUrl } = dataSource.getConfig?.() || {};
+  const niftiPath = niftiPrivateTagName ? instance[niftiPrivateTagName] : undefined;
+  let niftiURL;
+
+  if (typeof niftiPath === 'string' && niftiPath.trim().length > 0) {
+    niftiURL = isAbsolutePathOrUrl(niftiPath) ? niftiPath : joinUrl(niftiBaseUrl, niftiPath);
+  }
+
   imageSet.setAttributes({
     volumeLoaderSchema,
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
@@ -123,6 +149,43 @@ const makeDisplaySet = (instances, index) => {
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
+
+  if (niftiURL) {
+    // If a downstream integration already exposes a NIfTI URL on the series,
+    // pass through the DICOM-derived metadata that a paired loader-side
+    // implementation can consume for VOI and series registration.
+    const dicomMetadata = {
+      Modality: instance.Modality,
+      SeriesInstanceUID: instance.SeriesInstanceUID,
+      SeriesNumber: instance.SeriesNumber,
+      SeriesDescription: instance.SeriesDescription,
+      WindowCenter: instance.WindowCenter,
+      WindowWidth: instance.WindowWidth,
+      VOILUTFunction: instance.VOILUTFunction,
+      RescaleSlope: instance.RescaleSlope,
+      RescaleIntercept: instance.RescaleIntercept,
+    };
+
+    imageSet.setAttributes({
+      niftiURL,
+      loadImageIds: async () => {
+        try {
+          const loadedImageIds = await createNiftiImageIdsAndCacheMetadata({
+            url: niftiURL,
+            dicomMetadata,
+          });
+
+          imageSet.setAttributes({
+            imageIds: loadedImageIds,
+            numImageFrames: Array.isArray(loadedImageIds) ? loadedImageIds.length : 0,
+            isReconstructable: true,
+          });
+        } catch (error) {
+          console.error('Error loading niftiURL:', error);
+        }
+      },
+    });
+  }
 
   const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
   let imageId = imageIds[Math.floor(imageIds.length / 2)];
