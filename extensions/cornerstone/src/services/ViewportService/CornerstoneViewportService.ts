@@ -57,12 +57,16 @@ function getOrderedVolumeActorReferencedIds(viewport: Types.IVolumeViewport): st
     .filter(Boolean) as string[];
 }
 
-function volumeIdPrefixesMatch(a: string[], bPrefixLen: number, b: string[]): boolean {
-  if (bPrefixLen > b.length) {
+function volumeIdPrefixesMatch(
+  existingIds: string[],
+  prefixLen: number,
+  targetIds: string[]
+): boolean {
+  if (prefixLen > targetIds.length) {
     return false;
   }
-  for (let i = 0; i < bPrefixLen; i++) {
-    if (a[i] !== b[i]) {
+  for (let i = 0; i < prefixLen; i++) {
+    if (existingIds[i] !== targetIds[i]) {
       return false;
     }
   }
@@ -70,15 +74,13 @@ function volumeIdPrefixesMatch(a: string[], bPrefixLen: number, b: string[]): bo
 }
 
 /**
- * Only treat base volumes as identical (skip setVolumes) when the enabled viewport
- * already matches the desired OHIF viewport type. Otherwise stack → MPR (same volumeId)
- * can incorrectly skip rebuilding the volume viewport.
+ * Returns true when the viewport type matches a volume-based presentation (ORTHOGRAPHIC or VOLUME_3D).
  */
 function viewportMatchesDesiredVolumePresentation(
   viewport: Types.IViewport,
-  viewportInfo: ViewportInfo
+  desiredViewportInfo: ViewportInfo
 ): boolean {
-  const desiredType = viewportInfo.getViewportType();
+  const desiredType = desiredViewportInfo.getViewportType();
   if (viewport.type !== desiredType) {
     return false;
   }
@@ -1160,6 +1162,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (baseVolumeInputs.length) {
       const singleBaseViewport = nextBaseVolumeIds.length === 1;
 
+      // Only skip setVolumes() when the viewport type already matches the desired OHIF type
+      // (ORTHOGRAPHIC / VOLUME_3D); otherwise a stack → MPR switch with the same volumeId
+      // would incorrectly skip rebuilding the viewport.
       if (
         singleBaseViewport &&
         nextBaseVolumeIds.length &&

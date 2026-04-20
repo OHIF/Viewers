@@ -24,6 +24,7 @@ import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 import {
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
+  waitForViewportRenderCycle,
 } from './waitForViewportsRendered';
 
 export {
@@ -50,6 +51,7 @@ export {
   navigateWithViewportArrow,
   waitForAnyViewportNeedsRender,
   waitForViewportsRendered,
+  waitForViewportRenderCycle,
   test,
   expect,
 };

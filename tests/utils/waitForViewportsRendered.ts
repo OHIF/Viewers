@@ -13,6 +13,37 @@ type WaitForViewportsRenderedOptions = {
   waitVolumeLoad?: boolean;
 };
 
+type WaitForRenderCycleToCompleteOptions = {
+  /**
+   * Timeout for waiting until at least one viewport reaches `needsRender`.
+   */
+  needsRenderTimeout?: number;
+  /**
+   * Timeout for waiting until all viewports are `rendered`
+   * (and optionally volume-loaded).
+   */
+  renderedTimeout?: number;
+  /**
+   * If true (default), also waits for any volume actors referenced by the
+   * viewports to report loaded during the rendered phase.
+   */
+  waitVolumeLoad?: boolean;
+};
+
+/**
+ * Waits for a full render cycle:
+ * 1) any viewport requests render (`needsRender`)
+ * 2) all viewports finish rendering (`rendered`)
+ */
+const waitForViewportRenderCycle = async (
+  page: Page,
+  options: WaitForRenderCycleToCompleteOptions = {}
+) => {
+  const { needsRenderTimeout = 5000, renderedTimeout = 15000, waitVolumeLoad = true } = options;
+  await waitForAnyViewportNeedsRender(page, { timeout: needsRenderTimeout });
+  await waitForViewportsRendered(page, { timeout: renderedTimeout, waitVolumeLoad });
+};
+
 /**
  * Waits until at least one viewport enters the 'needsRender' state, indicating
  * that a render has been requested but not yet started.
@@ -129,4 +160,4 @@ const waitForViewportsRendered = async (
   );
 };
 
-export { waitForViewportsRendered, waitForAnyViewportNeedsRender };
+export { waitForViewportsRendered, waitForAnyViewportNeedsRender, waitForViewportRenderCycle };

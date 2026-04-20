@@ -3,7 +3,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
-  waitForAnyViewportNeedsRender,
+  waitForViewportRenderCycle,
   waitForViewportsRendered,
 } from './utils';
 
@@ -43,15 +43,12 @@ test('should properly display MPR for MR', async ({
     screenShotPaths.segHydrationFromMPR.mprAfterSEG
   );
 
-  // start watching for viewport to need render
-  let needsRender = waitForAnyViewportNeedsRender(page);
+  // start watching for viewports to render
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-  // wait for render to start
-  await needsRender;
-
-  await waitForViewportsRendered(page);
+  await viewportRenderCycle;
 
   await checkForScreenshot(
     page,
@@ -59,13 +56,11 @@ test('should properly display MPR for MR', async ({
     screenShotPaths.segHydrationFromMPR.mprAfterSegHydrated
   );
 
-  const needsRenderAfterLayoutChange = waitForAnyViewportNeedsRender(page);
+  const viewportRenderAfterLayoutChange = waitForViewportRenderCycle(page);
 
   await mainToolbarPageObject.layoutSelection.axialPrimary.click();
 
-  await needsRenderAfterLayoutChange;
-
-  await waitForViewportsRendered(page);
+  await viewportRenderAfterLayoutChange;
 
   await checkForScreenshot(
     page,

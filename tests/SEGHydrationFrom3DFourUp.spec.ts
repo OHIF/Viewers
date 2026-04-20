@@ -6,7 +6,7 @@ import {
   test,
   visitStudy,
   waitForViewportsRendered,
-  waitForAnyViewportNeedsRender,
+  waitForViewportRenderCycle,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -45,17 +45,16 @@ test.describe('3D four up SEG hydration', async () => {
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
     );
 
-    // start watching for viewport to need render
-    const needsRender = waitForAnyViewportNeedsRender(page);
+    // start watching for viewports to render
+
+    // High rendered timeout needed: layout has 4 viewports (3D volume + MPR planes + SEG overlays),
+    // which can take significantly longer time to fully render
+    const viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 180000 });
 
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-    // wait for render to start
-    await needsRender;
-
-    // High timeout needed: layout has 4 viewports (3D volume + MPR planes + SEG overlays),
-    // which can take significantly longer time to fully render
-    await waitForViewportsRendered(page, { timeout: 180000 });
+    // Wait until all viewports have finished rendering
+    await viewportRenderCycle;
 
     await checkForScreenshot({
       page,

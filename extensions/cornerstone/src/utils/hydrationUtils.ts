@@ -31,8 +31,8 @@ function mergeVolumeSharingViewports(
   };
 
   if (Array.isArray(hangingProtocolUpdates)) {
-    for (const u of hangingProtocolUpdates) {
-      const entry = u as {
+    for (const hpUpdate of hangingProtocolUpdates) {
+      const entry = hpUpdate as {
         viewportId?: string;
         viewportOptions?: { viewportId?: string };
         displaySetInstanceUIDs?: string[];
