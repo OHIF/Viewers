@@ -1,4 +1,4 @@
-import { PubSubService } from '@ohif/core/src/services/_shared/pubSubServiceInterface';
+import { PubSubService } from '@ohif/core';
 
 export type ViewedDataPayload = {
   viewedDataId?: string;
