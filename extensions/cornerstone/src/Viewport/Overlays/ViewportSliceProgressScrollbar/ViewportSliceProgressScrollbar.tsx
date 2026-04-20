@@ -25,7 +25,7 @@ function ViewportSliceProgressScrollbar({
   setImageSliceData,
   servicesManager,
 }: ViewportSliceProgressScrollbarProps) {
-  const { cineService, cornerstoneViewportService, customizationService, viewedImagesService } =
+  const { cineService, cornerstoneViewportService, customizationService, viewedDataService } =
     servicesManager.services;
 
   const showLoadedEndpoints =
@@ -96,7 +96,7 @@ function ViewportSliceProgressScrollbar({
     imageIds,
     imageIdToIndex,
     viewedDwellMs,
-    viewedImagesService,
+    viewedDataService,
   });
 
   const onScrollbarValueChange = targetImageIndex => {

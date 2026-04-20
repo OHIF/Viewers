@@ -108,12 +108,12 @@ The following services is available in the `OHIF-v3`.
         <tr>
             <td>
                 <a href="./data/ViewedImagesService">
-                    ViewedImagesService
+                    ViewedDataService
                 </a>
             </td>
             <td>Data Service</td>
             <td>
-                viewedImagesService
+                viewedDataService
             </td>
         </tr>
         <tr>

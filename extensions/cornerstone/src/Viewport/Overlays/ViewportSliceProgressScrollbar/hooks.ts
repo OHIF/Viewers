@@ -211,7 +211,7 @@ export function useViewedSliceBytes({
   imageIds,
   imageIdToIndex,
   viewedDwellMs,
-  viewedImagesService,
+  viewedDataService,
 }: {
   isFullMode: boolean;
   numberOfSlices: number;
@@ -219,14 +219,14 @@ export function useViewedSliceBytes({
   imageIds: string[];
   imageIdToIndex: Map<string, number>;
   viewedDwellMs: number;
-  viewedImagesService: AppTypes.ViewedImagesService;
+  viewedDataService: AppTypes.ViewedDataService;
 }) {
   const viewedState = useByteArray(numberOfSlices || 0);
   const { resetWith: resetViewed, setByte: setViewedByte } = viewedState;
 
   /**
-   * Keeps the viewed byte array in sync with the global viewed-images store: seed from the store
-   * whenever stack / mode / slice count changes, then subscribe so `markImageViewed` updates stay
+   * Keeps the viewed byte array in sync with the global viewed-data store: seed from the store
+   * whenever stack / mode / slice count changes, then subscribe so `markDataViewed` updates stay
    * incremental. Seeding runs immediately before registering the listener in the same effect.
    */
   useEffect(() => {
@@ -234,37 +234,37 @@ export function useViewedSliceBytes({
       resetViewed(bytes => {
         for (let i = 0; i < bytes.length; i++) {
           const imageId = imageIds[i];
-          if (imageId && viewedImagesService?.isImageViewed(imageId)) {
+          if (imageId && viewedDataService?.isDataViewed(imageId)) {
             bytes[i] = 1;
           }
         }
       });
     }
 
-    if (!viewedImagesService) {
+    if (!viewedDataService) {
       return;
     }
 
-    const subscription = viewedImagesService.subscribeViewedImageChanges(
+    const subscription = viewedDataService.subscribeViewedDataChanges(
       ({
-        viewedImageId,
-        viewedImagesCleared,
+        viewedDataId,
+        viewedDataCleared,
       }: {
-        viewedImageId?: string;
-        viewedImagesCleared?: boolean;
+        viewedDataId?: string;
+        viewedDataCleared?: boolean;
       }) => {
         if (!isFullMode || !numberOfSlices) {
           return;
         }
 
-        if (viewedImagesCleared) {
+        if (viewedDataCleared) {
           resetViewed(bytes => {
             bytes.fill(0);
           });
           return;
         }
 
-        const index = imageIdToIndex.get(viewedImageId);
+        const index = imageIdToIndex.get(viewedDataId);
         if (index !== undefined) {
           setViewedByte(index);
         }
@@ -281,7 +281,7 @@ export function useViewedSliceBytes({
     imageIdToIndex,
     resetViewed,
     setViewedByte,
-    viewedImagesService,
+    viewedDataService,
   ]);
 
   /**
@@ -297,7 +297,7 @@ export function useViewedSliceBytes({
       setViewedByte(targetIndex);
       const imageId = imageIds[targetIndex];
       if (imageId) {
-        viewedImagesService?.markImageViewed(imageId);
+        viewedDataService?.markDataViewed(imageId);
       }
     };
 
@@ -320,7 +320,7 @@ export function useViewedSliceBytes({
     imageIds,
     setViewedByte,
     viewedDwellMs,
-    viewedImagesService,
+    viewedDataService,
   ]);
 
   return viewedState;

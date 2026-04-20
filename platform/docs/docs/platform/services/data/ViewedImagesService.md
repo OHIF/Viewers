@@ -1,77 +1,77 @@
 ---
 sidebar_position: 9
-sidebar_label: Viewed Images Service
-title: Viewed Images Service
-summary: Documentation for OHIF's ViewedImagesService, which tracks imageIds a user has viewed and publishes change events for incremental UI updates.
+sidebar_label: Viewed Data Service
+title: Viewed Data Service
+summary: Documentation for OHIF's ViewedDataService, which tracks dataIds a user has viewed and publishes change events for incremental UI updates.
 ---
 
-# Viewed Images Service
+# Viewed Data Service
 
 ## Overview
 
-`ViewedImagesService` tracks which imageIds have been marked as viewed in the
+`ViewedDataService` tracks which dataIds have been marked as viewed in the
 current session. Internally it stores ids in a `Set<string>` and publishes a
 single event whenever viewed state changes.
 
 Typical usage is to:
 
-- mark an image as viewed when users land on a slice
-- query whether an image has been viewed to seed UI state
+- mark a data item as viewed when users land on a slice
+- query whether a data item has been viewed to seed UI state
 - subscribe to viewed changes for incremental updates
 - clear viewed state when a context reset is needed
 
 ## Events
 
-The following events are published by `ViewedImagesService`.
+The following events are published by `ViewedDataService`.
 
 | Event | Description |
 | --- | --- |
-| `VIEWED_IMAGES_CHANGED` | Fired when one image is newly marked viewed, or when all viewed images are cleared. |
+| `VIEWED_DATA_CHANGED` | Fired when one data item is newly marked viewed, or when all viewed data is cleared. |
 
 ### Event payload
 
 ```ts
-type ViewedImagePayload = {
-  viewedImageId?: string;
-  viewedImagesCleared?: boolean;
+type ViewedDataPayload = {
+  viewedDataId?: string;
+  viewedDataCleared?: boolean;
 };
 ```
 
-- When a single image is marked viewed: `{ viewedImageId: string }`
-- When all viewed images are cleared: `{ viewedImagesCleared: true }`
+- When a single data item is marked viewed: `{ viewedDataId: string }`
+- When all viewed data is cleared: `{ viewedDataCleared: true }`
 
 ## API
 
-- `markImageViewed(imageId: string): void`
+- `markDataViewed(dataId: string): void`
 
-  Marks one image as viewed and emits `VIEWED_IMAGES_CHANGED` only if:
+  Marks one data item as viewed and emits `VIEWED_DATA_CHANGED` only if:
 
-  - `imageId` is truthy, and
+  - `dataId` is truthy, and
   - it was not already marked viewed.
 
-- `isImageViewed(imageId: string): boolean`
+- `isDataViewed(dataId: string): boolean`
 
 
-  Returns `true` if `imageId` is currently in the viewed set.
+  Returns `true` if `dataId` is currently in the viewed set.
 
-- `clearViewedImages(): void`
+- `clearViewedData(): void`
 
-    Clears all viewed imageIds and emits `VIEWED_IMAGES_CHANGED` with
-`{ viewedImagesCleared: true }`.
+    Clears all viewed dataIds and emits `VIEWED_DATA_CHANGED` with
+`{ viewedDataCleared: true }`.
 
-- `subscribeViewedImageChanges(listener): Subscription`
+- `subscribeViewedDataChanges(listener): Subscription`
 
-    Subscribes to `VIEWED_IMAGES_CHANGED` payloads.
+    Subscribes to `VIEWED_DATA_CHANGED` payloads.
 
   ```ts
-  const subscription = viewedImagesService.subscribeViewedImageChanges(payload => {
-    if (payload.viewedImagesCleared) {
+  const subscription = viewedDataService.subscribeViewedDataChanges(payload => {
+    if (payload.viewedDataCleared) {
       // reset local viewed state
       return;
     }
 
-    if (payload.viewedImageId) {
-      // mark one image as viewed locally
+    if (payload.viewedDataId) {
+      // mark one data item as viewed locally
     }
   });
 
@@ -81,6 +81,6 @@ type ViewedImagePayload = {
 
 ## Notes
 
-- Service registration name: `viewedImagesService`
-- Alternate registration name: `ViewedImagesService`
+- Service registration name: `viewedDataService`
+- Alternate registration name: `ViewedDataService`
 - The service is session-scoped in-memory state; it is not persisted by default.

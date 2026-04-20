@@ -21,7 +21,6 @@ import {
   WorkflowStepsService,
   StudyPrefetcherService,
   MultiMonitorService,
-  ViewedImagesService,
   // utils,
 } from '@ohif/core';
 
@@ -79,7 +78,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
     [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
-    ViewedImagesService.REGISTRATION,
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {
