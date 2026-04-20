@@ -70,6 +70,10 @@ function resolveConfigFetchPolicy(rawUrl, policy = {}) {
     throw new Error('URL fragments are not allowed for dynamic datasource configuration');
   }
 
+  if (parsedUrl.username || parsedUrl.password) {
+    throw new Error('URL userinfo is not allowed for dynamic datasource configuration');
+  }
+
   const isAuthenticated = Boolean(
     userAuthenticationService?.getAuthorizationHeader?.()?.Authorization
   );

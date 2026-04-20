@@ -23,8 +23,7 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
         throw new Error(`No url for '${name}'`);
       } else {
         const evaluatedUrl = resolveConfigFetchPolicy(url, {
-          allowedOrigins:
-            dicomWebProxyConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+          allowedOrigins: dicomWebProxyConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
           userAuthenticationService,
         });
         const data = await fetchConfigJson(evaluatedUrl);
@@ -59,11 +58,16 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
     store: {
       dicom: (...args) => dicomWebDelegate.store.dicom(...args),
     },
-    reject: (...args) => dicomWebDelegate.reject?.(...args),
-    deleteStudyMetadataPromise: (...args) => dicomWebDelegate.deleteStudyMetadataPromise(...args),
-    getImageIdsForDisplaySet: (...args) => dicomWebDelegate.getImageIdsForDisplaySet(...args),
-    getImageIdsForInstance: (...args) => dicomWebDelegate.getImageIdsForInstance(...args),
-    getConfig: (...args) => dicomWebDelegate.getConfig(...args),
+    reject: {
+      series: (...args) => dicomWebDelegate?.reject?.series?.(...args),
+    },
+    deleteStudyMetadataPromise: (...args) => dicomWebDelegate?.deleteStudyMetadataPromise?.(...args),
+    getImageIdsForDisplaySet: (...args) => dicomWebDelegate?.getImageIdsForDisplaySet?.(...args),
+    getImageIdsForInstance: (...args) => dicomWebDelegate?.getImageIdsForInstance?.(...args),
+    getConfig: (...args) =>
+      dicomWebDelegate?.getConfig?.(...args) ?? {
+        dicomUploadEnabled: false,
+      },
     getStudyInstanceUIDs({ params, query }) {
       let studyInstanceUIDs = [];
 

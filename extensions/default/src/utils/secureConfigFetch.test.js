@@ -47,15 +47,15 @@ describe('secureConfigFetch', () => {
       ).toThrow('Blocked remote configuration origin');
     });
 
-    it('preserves embedded userinfo in allowlisted origins', () => {
-      const result = resolveConfigFetchPolicy('https://user:pass@trusted.example.com/config.json', {
-        allowedOrigins: ['https://trusted.example.com'],
-        userAuthenticationService: {
-          getAuthorizationHeader: () => ({ Authorization: 'Bearer token123' }),
-        },
-      });
-
-      expect(result.normalizedUrl).toBe('https://user:pass@trusted.example.com/config.json');
+    it('rejects embedded userinfo in config URLs', () => {
+      expect(() =>
+        resolveConfigFetchPolicy('https://user:pass@trusted.example.com/config.json', {
+          allowedOrigins: ['https://trusted.example.com'],
+          userAuthenticationService: {
+            getAuthorizationHeader: () => ({ Authorization: 'Bearer token123' }),
+          },
+        })
+      ).toThrow('URL userinfo is not allowed for dynamic datasource configuration');
     });
   });
 
