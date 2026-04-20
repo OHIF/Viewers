@@ -37,6 +37,8 @@
     <script type="text/javascript">
       console.time('scriptToView');
       (function () {
+        // Keep this inline runtime base-path bootstrap in sync with
+        // platform/core/src/utils/publicUrl.ts.
         function normalizePublicUrl(value) {
           var rawValue = typeof value === 'string' ? value.trim() : '';
 
@@ -64,7 +66,7 @@
           var lowerPath = locationPath.toLowerCase();
           var viewerIndex = lowerPath.indexOf('/viewer');
 
-          if (viewerIndex >= 0) {
+          if (viewerIndex > 0) {
             return normalizePublicUrl(locationPath.substring(0, viewerIndex));
           }
 

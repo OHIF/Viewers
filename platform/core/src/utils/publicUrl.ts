@@ -38,7 +38,7 @@ export function getLocationBasePathFromPathname(pathname: string): string {
   const lowerPath = locationPath.toLowerCase();
   const viewerIndex = lowerPath.indexOf('/viewer');
 
-  if (viewerIndex >= 0) {
+  if (viewerIndex > 0) {
     return normalizePublicUrl(locationPath.substring(0, viewerIndex));
   }
 
@@ -90,7 +90,7 @@ export function getPublicSubPath(subPath: string): string {
     return `/${normalizedSubPath}`;
   }
 
-  const basePath = (window as any).__OHIF_BASE_PATH__ || (window as any).PUBLIC_URL || '/';
+  const basePath = resolveRuntimeBasePathFromWindow();
   const normalizedBasePath = normalizePublicUrl(basePath);
   const normalizedSubPath = subPath.replace(/^\/+/, '');
 

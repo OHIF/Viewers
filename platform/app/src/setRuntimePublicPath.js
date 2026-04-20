@@ -4,7 +4,7 @@ import {
   normalizePublicUrl,
   toRouterBasename,
   resolveRuntimeBasePathFromWindow,
-} from '../../core/src/utils/publicUrl';
+} from '@ohif/core';
 
 const runtimePublicUrl = resolveRuntimeBasePathFromWindow();
 
