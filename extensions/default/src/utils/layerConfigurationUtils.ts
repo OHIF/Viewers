@@ -67,8 +67,14 @@ export function configureViewportForLayerAddition(params: {
 
   // If a viewport type was already set do not reset it.
   if (!viewport.viewportOptions.viewportType) {
-    // Special handling for overlay display sets
-    if (requestedLayerDisplaySet.isOverlayDisplaySet) {
+    // If the live Cornerstone viewport is already orthographic (volume), keep it as
+    // 'volume'. Prevents accidentally downgrading a volume viewport to 'stack' when
+    // viewportOptions arrives without a viewportType (e.g. from the HP overlay path).
+    const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (csViewport?.type === 'orthographic') {
+      viewport.viewportOptions.viewportType = 'volume';
+      // Special handling for overlay display sets
+    } else if (requestedLayerDisplaySet.isOverlayDisplaySet) {
       // Do not force volume for SEG and RTSTRUCT if it and all the current display sets are for the same display set
       const isSameDisplaySet = currentDisplaySetUIDs.every(uid => {
         const currentDisplaySet = displaySetService.getDisplaySetByUID(uid);
