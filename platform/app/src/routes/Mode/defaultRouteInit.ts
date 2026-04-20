@@ -187,11 +187,7 @@ export async function defaultRouteInit(
   unsubscriptions.push(instanceAddedUnsubscribe);
 
   const firstStudyUID = studyInstanceUIDs?.[0];
-  const activeStudyUIDs = studyInstanceUIDs?.length
-    ? studyInstanceUIDs
-    : firstStudyUID
-      ? [firstStudyUID]
-      : [];
+  const activeStudyUIDs = studyInstanceUIDs?.length ? studyInstanceUIDs : [];
   const patientStudiesPromise = firstStudyUID
     ? fetchAndStorePatientStudies(firstStudyUID, dataSource)
     : Promise.resolve([]);
@@ -288,7 +284,6 @@ export async function defaultRouteInit(
     await Promise.allSettled(requiredSeriesPromises);
     applyHangingProtocol();
     startRemainingPromises(remainingPromises);
-    applyHangingProtocol();
   }
 
   const { requiredSeriesPromises, remainingPromises } = await collectSeriesPromises(allRetrieves);
@@ -298,10 +293,8 @@ export async function defaultRouteInit(
   log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
 
   await Promise.allSettled(requiredSeriesPromises);
-  await patientStudiesPromise;
   applyHangingProtocol();
   startRemainingPromises(remainingPromises);
-  applyHangingProtocol();
 
   void startPriorFetches().catch(error => {
     console.error(error);
