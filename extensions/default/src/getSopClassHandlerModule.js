@@ -1,5 +1,4 @@
 import { utils, classes } from '@ohif/core';
-import { createNiftiImageIdsAndCacheMetadata } from '@cornerstonejs/nifti-volume-loader';
 import i18n from '@ohif/i18n';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
@@ -14,6 +13,7 @@ const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
 let appContext = {};
+let niftiIntegrationConfig = {};
 
 const isAbsolutePathOrUrl = value =>
   typeof value === 'string' &&
@@ -114,7 +114,7 @@ const makeDisplaySet = (instances, index) => {
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
-  const { niftiPrivateTagName, niftiBaseUrl } = dataSource.getConfig?.() || {};
+  const { niftiPrivateTagName, niftiBaseUrl } = niftiIntegrationConfig;
   const niftiPath = niftiPrivateTagName ? instance[niftiPrivateTagName] : undefined;
   let niftiURL;
 
@@ -170,6 +170,9 @@ const makeDisplaySet = (instances, index) => {
       niftiURL,
       loadImageIds: async () => {
         try {
+          const { createNiftiImageIdsAndCacheMetadata } = await import(
+            '@cornerstonejs/nifti-volume-loader'
+          );
           const loadedImageIds = await createNiftiImageIdsAndCacheMetadata({
             url: niftiURL,
             dicomMetadata,
@@ -182,6 +185,7 @@ const makeDisplaySet = (instances, index) => {
           });
         } catch (error) {
           console.error('Error loading niftiURL:', error);
+          throw error;
         }
       },
     });
@@ -360,6 +364,9 @@ const sopClassUids = [
 
 function getSopClassHandlerModule(appContextParam) {
   appContext = appContextParam;
+  const { extensionManager } = appContext;
+  const activeDataSource = extensionManager?.getActiveDataSource?.()?.[0];
+  niftiIntegrationConfig = activeDataSource?.getConfig?.() || {};
 
   return [
     {
