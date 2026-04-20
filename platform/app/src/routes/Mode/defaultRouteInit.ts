@@ -72,7 +72,8 @@ async function fetchAndStorePatientStudies(studyInstanceUID: string, dataSource)
 
     let qidoStudiesForPatient = qidoForStudyUID;
     try {
-      qidoStudiesForPatient = await getStudiesForPatientByMRN(dataSource, qidoForStudyUID);
+      qidoStudiesForPatient =
+        (await getStudiesForPatientByMRN(dataSource, qidoForStudyUID)) ?? qidoForStudyUID;
     } catch (error) {
       console.warn('Could not fetch patient studies by MRN:', error);
     }
