@@ -36,9 +36,9 @@ export function toRouterBasename(value?: string): string {
 export function getLocationBasePathFromPathname(pathname: string): string {
   const locationPath = typeof pathname === 'string' && pathname.length > 0 ? pathname : '/';
   const lowerPath = locationPath.toLowerCase();
-  const viewerIndex = lowerPath.indexOf('/viewer');
+  const viewerIndex = lowerPath.lastIndexOf('/viewer');
 
-  if (viewerIndex > 0) {
+  if (viewerIndex >= 0) {
     return normalizePublicUrl(locationPath.substring(0, viewerIndex));
   }
 

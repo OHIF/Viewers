@@ -63,9 +63,9 @@
         function getLocationBasePathFromPathname(pathname) {
           var locationPath = typeof pathname === 'string' && pathname.length > 0 ? pathname : '/';
           var lowerPath = locationPath.toLowerCase();
-          var viewerIndex = lowerPath.indexOf('/viewer');
+          var viewerIndex = lowerPath.lastIndexOf('/viewer');
 
-          if (viewerIndex > 0) {
+          if (viewerIndex >= 0) {
             return normalizePublicUrl(locationPath.substring(0, viewerIndex));
           }
 
