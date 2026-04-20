@@ -13,7 +13,6 @@ const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
 const sopClassHandlerName = 'stack';
 let appContext = {};
-let niftiIntegrationConfig = {};
 
 const isAbsolutePathOrUrl = value =>
   typeof value === 'string' &&
@@ -114,7 +113,7 @@ const makeDisplaySet = (instances, index) => {
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
-  const { niftiPrivateTagName, niftiBaseUrl } = niftiIntegrationConfig;
+  const { niftiPrivateTagName, niftiBaseUrl } = dataSource.getConfig?.() || {};
   const niftiPath = niftiPrivateTagName ? instance[niftiPrivateTagName] : undefined;
   let niftiURL;
 
@@ -364,9 +363,6 @@ const sopClassUids = [
 
 function getSopClassHandlerModule(appContextParam) {
   appContext = appContextParam;
-  const { extensionManager } = appContext;
-  const activeDataSource = extensionManager?.getActiveDataSource?.()?.[0];
-  niftiIntegrationConfig = activeDataSource?.getConfig?.() || {};
 
   return [
     {
