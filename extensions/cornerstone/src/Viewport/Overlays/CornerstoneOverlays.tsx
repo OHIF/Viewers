@@ -56,7 +56,6 @@ function CornerstoneOverlays(props: withAppTypes) {
           element={element}
           imageSliceData={imageSliceData}
           setImageSliceData={setImageSliceData}
-          scrollbarHeight={scrollbarHeight}
           servicesManager={servicesManager}
         />
       ) : (
