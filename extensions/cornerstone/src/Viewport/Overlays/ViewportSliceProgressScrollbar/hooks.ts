@@ -1,152 +1,25 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { cache as cornerstoneCache, Enums, eventTarget, VolumeViewport3D } from '@cornerstonejs/core';
+import { useByteArray } from '@ohif/ui-next';
 import {
-  cache as cornerstoneCache,
-  Enums,
-  eventTarget,
-  VolumeViewport3D,
-  utilities as csUtils,
-} from '@cornerstonejs/core';
-import {
-  SmartScrollbar,
-  SmartScrollbarTrack,
-  SmartScrollbarFill,
-  SmartScrollbarIndicator,
-  SmartScrollbarEndpoints,
-  useByteArray,
-} from '@ohif/ui-next';
-import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+  getImageIdFromCacheEvent,
+  getImageIndexFromEvent,
+  isProgressFullMode,
+} from './helpers';
+import { ImageSliceData, ViewportData } from './types';
 
-type ViewportData = StackViewportData | VolumeViewportData;
-type ImageSliceData = {
-  imageIndex: number;
-  numberOfSlices: number;
-};
-type ViewportSliceProgressScrollbarProps = {
-  viewportData: ViewportData | null;
-  viewportId: string;
-  element: HTMLElement;
-  imageSliceData: ImageSliceData;
-  setImageSliceData: (data: ImageSliceData) => void;
-  servicesManager: AppTypes.ServicesManager;
-};
-
-function getImageIndexFromEvent(event): number | undefined {
-  const { imageIndex, newImageIdIndex = imageIndex, imageIdIndex } = event.detail;
-  return newImageIdIndex ?? imageIdIndex;
-}
-
-function getViewportImageIds(viewportData: ViewportData): string[] {
-  if (!viewportData?.data?.length) {
-    return [];
-  }
-
-  const firstData = viewportData.data[0];
-  const volumeImageIds = (firstData as any).volume?.imageIds as string[] | undefined;
-  const datumImageIds = (firstData as any).imageIds as string[] | undefined;
-
-  return volumeImageIds || datumImageIds || [];
-}
-
-function isProgressFullMode(viewportData: ViewportData, viewport): boolean {
-  if (!viewportData || !viewport || viewport instanceof VolumeViewport3D) {
-    return false;
-  }
-
-  if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    return true;
-  }
-
-  if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-    return !!viewport.isInAcquisitionPlane?.();
-  }
-
-  return false;
-}
-
-function getImageIdFromCacheEvent(event): string | undefined {
-  const detail = event?.detail;
-  return detail?.imageId || detail?.image?.imageId || detail?.cachedImage?.imageId;
-}
-
-function ViewportSliceProgressScrollbar({
+export function useProgressScrollbarMode({
   viewportData,
   viewportId,
   element,
-  imageSliceData,
-  setImageSliceData,
-  servicesManager,
-}: ViewportSliceProgressScrollbarProps) {
-  const { cineService, cornerstoneViewportService, customizationService, viewedImagesService } =
-    servicesManager.services;
+  cornerstoneViewportService,
+}: {
+  viewportData: ViewportData;
+  viewportId: string;
+  element: HTMLElement;
+  cornerstoneViewportService: AppTypes.CornerstoneViewportService;
+}) {
   const [isFullMode, setIsFullMode] = useState(false);
-
-  const showLoadedEndpoints =
-    customizationService.getCustomization('viewportScrollbar.showLoadedEndpoints') !== false;
-  const showLoadedFill =
-    customizationService.getCustomization('viewportScrollbar.showLoadedFill') !== false;
-  const showViewedFill =
-    customizationService.getCustomization('viewportScrollbar.showViewedFill') !== false;
-  const showLoadingPattern =
-    customizationService.getCustomization('viewportScrollbar.showLoadingPattern') !== false;
-  const viewedDwellMsRaw = customizationService.getCustomization('viewportScrollbar.viewedDwellMs');
-  const loadedBatchIntervalMsRaw = customizationService.getCustomization(
-    'viewportScrollbar.loadedBatchIntervalMs'
-  );
-  const viewedDwellMs =
-    typeof viewedDwellMsRaw === 'number' && viewedDwellMsRaw >= 0 ? viewedDwellMsRaw : 0;
-  const loadedBatchIntervalMs =
-    typeof loadedBatchIntervalMsRaw === 'number' && loadedBatchIntervalMsRaw >= 0
-      ? loadedBatchIntervalMsRaw
-      : 200;
-
-  const { numberOfSlices, imageIndex } = imageSliceData;
-  const {
-    bytes: loadedBytes,
-    version: loadedVersion,
-    isFull: isFullyLoaded,
-    setByte: setLoadedByte,
-    clearByte: clearLoadedByte,
-    resetWith: resetLoaded,
-  } = useByteArray(numberOfSlices || 0, loadedBatchIntervalMs);
-  const {
-    bytes: viewedBytes,
-    version: viewedVersion,
-    setByte: setViewedByte,
-    resetWith: resetViewed,
-  } = useByteArray(numberOfSlices || 0);
-
-  const imageIds = useMemo(() => getViewportImageIds(viewportData), [viewportData]);
-  const imageIdToIndex = useMemo(() => {
-    const map = new Map<string, number>();
-    for (let i = 0; i < imageIds.length; i++) {
-      const imageId = imageIds[i];
-      if (imageId) {
-        map.set(imageId, i);
-      }
-    }
-    return map;
-  }, [imageIds]);
-
-  const onScrollbarValueChange = targetImageIndex => {
-    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-    if (!viewport || viewport instanceof VolumeViewport3D) {
-      return;
-    }
-
-    const { isCineEnabled } = cineService.getState();
-
-    if (isCineEnabled) {
-      cineService.stopClip(element, { viewportId });
-      cineService.setCine({ id: viewportId, frameRate: undefined, isPlaying: false });
-    }
-
-    csUtils.jumpToSlice(viewport.element, {
-      imageIndex: targetImageIndex,
-      debounceLoading: true,
-    });
-  };
 
   /**
    * Tracks whether this viewport should render full progress UI (stack or acquisition-plane
@@ -177,6 +50,22 @@ function ViewportSliceProgressScrollbar({
     };
   }, [viewportData, viewportId, cornerstoneViewportService, element]);
 
+  return isFullMode;
+}
+
+export function useViewportSliceSync({
+  viewportData,
+  viewportId,
+  element,
+  cornerstoneViewportService,
+  setImageSliceData,
+}: {
+  viewportData: ViewportData;
+  viewportId: string;
+  element: HTMLElement;
+  cornerstoneViewportService: AppTypes.CornerstoneViewportService;
+  setImageSliceData: (data: ImageSliceData) => void;
+}) {
   /**
    * Keeps shared slice state in sync: first initialize from the live viewport snapshot, then
    * subscribe to navigation/render events for incremental updates while users scroll.
@@ -231,6 +120,25 @@ function ViewportSliceProgressScrollbar({
       element.removeEventListener(eventId, updateIndex);
     };
   }, [viewportData, element, viewportId, cornerstoneViewportService, setImageSliceData]);
+}
+
+export function useLoadedSliceBytes({
+  isFullMode,
+  numberOfSlices,
+  viewportData,
+  imageIds,
+  imageIdToIndex,
+  loadedBatchIntervalMs,
+}: {
+  isFullMode: boolean;
+  numberOfSlices: number;
+  viewportData: ViewportData;
+  imageIds: string[];
+  imageIdToIndex: Map<string, number>;
+  loadedBatchIntervalMs: number;
+}) {
+  const loadedState = useByteArray(numberOfSlices || 0, loadedBatchIntervalMs);
+  const { resetWith: resetLoaded, setByte: setLoadedByte, clearByte: clearLoadedByte } = loadedState;
 
   /**
    * Keeps the loaded byte array in sync with Cornerstone cache: seed from cache whenever stack /
@@ -292,6 +200,29 @@ function ViewportSliceProgressScrollbar({
     setLoadedByte,
     clearLoadedByte,
   ]);
+
+  return loadedState;
+}
+
+export function useViewedSliceBytes({
+  isFullMode,
+  numberOfSlices,
+  imageIndex,
+  imageIds,
+  imageIdToIndex,
+  viewedDwellMs,
+  viewedImagesService,
+}: {
+  isFullMode: boolean;
+  numberOfSlices: number;
+  imageIndex: number;
+  imageIds: string[];
+  imageIdToIndex: Map<string, number>;
+  viewedDwellMs: number;
+  viewedImagesService: AppTypes.ViewedImagesService;
+}) {
+  const viewedState = useByteArray(numberOfSlices || 0);
+  const { resetWith: resetViewed, setByte: setViewedByte } = viewedState;
 
   /**
    * Keeps the viewed byte array in sync with the global viewed-images store: seed from the store
@@ -392,81 +323,5 @@ function ViewportSliceProgressScrollbar({
     viewedImagesService,
   ]);
 
-  const isLoading = isFullMode && showLoadingPattern ? !isFullyLoaded : false;
-
-  if (!numberOfSlices || numberOfSlices <= 1) {
-    return null;
-  }
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        height: '100%',
-        padding: '8px 5px',
-        zIndex: 10,
-      }}
-    >
-      <div
-        style={{
-          position: 'relative',
-          height: '100%',
-          width: '11px',
-        }}
-      >
-        <SmartScrollbar
-          className="absolute inset-0"
-          value={imageIndex || 0}
-          total={numberOfSlices}
-          onValueChange={onScrollbarValueChange}
-          isLoading={isLoading}
-          enableKeyboardNavigation={false}
-          aria-label="Image navigation scrollbar"
-          indicator={
-            customizationService.getCustomization('viewportScrollbar.indicator') as
-              | Record<string, unknown>
-              | undefined
-          }
-        >
-          <SmartScrollbarTrack>
-            {isFullMode && showLoadedFill && (
-              <SmartScrollbarFill
-                marked={loadedBytes}
-                version={loadedVersion}
-                className="bg-neutral/25"
-                loadingClassName="bg-neutral/50"
-              />
-            )}
-            {isFullMode && showViewedFill && (
-              <SmartScrollbarFill
-                marked={viewedBytes}
-                version={viewedVersion}
-                className="bg-primary/35"
-              />
-            )}
-          </SmartScrollbarTrack>
-          <SmartScrollbarIndicator />
-          {isFullMode && showLoadedEndpoints && (
-            <SmartScrollbarEndpoints
-              marked={loadedBytes}
-              version={loadedVersion}
-            />
-          )}
-        </SmartScrollbar>
-      </div>
-    </div>
-  );
+  return viewedState;
 }
-
-ViewportSliceProgressScrollbar.propTypes = {
-  viewportData: PropTypes.object,
-  viewportId: PropTypes.string.isRequired,
-  element: PropTypes.instanceOf(Element),
-  imageSliceData: PropTypes.object.isRequired,
-  setImageSliceData: PropTypes.func.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
-
-export default ViewportSliceProgressScrollbar;

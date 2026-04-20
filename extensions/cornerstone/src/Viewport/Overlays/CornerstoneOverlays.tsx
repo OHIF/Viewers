@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
-import ViewportSliceProgressScrollbar from './ViewportSliceProgressScrollbar';
+import ViewportSliceProgressScrollbar from './ViewportSliceProgressScrollbar/ViewportSliceProgressScrollbar';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
