@@ -98,7 +98,7 @@ function ViewportSliceProgressScrollbar({
   const loadedBatchIntervalMs =
     typeof loadedBatchIntervalMsRaw === 'number' && loadedBatchIntervalMsRaw >= 0
       ? loadedBatchIntervalMsRaw
-      : 50;
+      : 200;
 
   const { numberOfSlices, imageIndex } = imageSliceData;
   const {
