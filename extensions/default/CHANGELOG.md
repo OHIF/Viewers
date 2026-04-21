@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.59...v3.13.0-beta.60) (2026-04-21)
+
+
+### Bug Fixes
+
+* **configuration:** Harden dynamic datasource URL trust boundaries and credential handling. ([#5963](https://github.com/OHIF/Viewers/issues/5963)) ([eede569](https://github.com/OHIF/Viewers/commit/eede569a88ed6a3177bbdea8552dfb93ca13cac5))
+
+
+
+
+
 # [3.13.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.58...v3.13.0-beta.59) (2026-04-16)
 
 **Note:** Version bump only for package @ohif/extension-default
