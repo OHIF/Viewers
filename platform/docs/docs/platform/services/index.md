@@ -107,7 +107,7 @@ The following services is available in the `OHIF-v3`.
         </tr>
         <tr>
             <td>
-                <a href="./data/ViewedImagesService">
+                <a href="./data/ViewedDataService">
                     ViewedDataService
                 </a>
             </td>
