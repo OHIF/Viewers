@@ -199,7 +199,7 @@ jobs:
               IS_PRERELEASE=true
             fi
 
-            RELEASE_PAYLOAD=$(cat <<EOF
+            RELEASE_PAYLOAD=$(cat \<<EOF
             {
               "tag_name": "${TAG}",
               "target_commitish": "${CIRCLE_SHA1}",
