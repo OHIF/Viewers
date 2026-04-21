@@ -33,6 +33,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     maxDiffPixelRatio: 0.0075,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly0,
   });
@@ -47,6 +48,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     maxDiffPixelRatio: 0.0075,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly1,
   });
@@ -61,6 +63,7 @@ test('should display the arrow tool and allow free-form text to be entered', asy
 
   await checkForScreenshot({
     page,
+    locator: viewportPageObject.grid,
     maxDiffPixelRatio: 0.0075,
     screenshotPath: screenShotPaths.arrowAnnotate.arrowAnnotateDisplayedCorrectly2,
   });
