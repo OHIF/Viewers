@@ -287,7 +287,7 @@ window.config = {
   {
     id: 'viewportScrollbar.loadedBatchIntervalMs',
     description:
-      'Batch interval in milliseconds for loaded/cached slice updates in full progress mode.',
+      'Coalesces loaded/cached slice state changes into a single UI update at the configured interval in full progress mode. Lower values feel more responsive but trigger more re-renders; higher values reduce render churn but can make progress updates appear delayed. Set to 0 for immediate updates.',
     default: 200,
     configuration: `
 window.config = {
