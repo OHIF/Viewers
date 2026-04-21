@@ -14,7 +14,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
-  const dataOverlayPageObject = viewportPageObject.getById('default').overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
   await dataOverlayPageObject.toggle();
   await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
 

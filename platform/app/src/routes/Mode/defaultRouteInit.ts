@@ -2,7 +2,7 @@ import { DicomMetadataStore, log, utils, Enums } from '@ohif/core';
 import getStudies from './studiesList';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
-const { seriesSortCriteria, getSplitParam } = utils;
+const { getSplitParam } = utils;
 
 /**
  * Initialize the route.
@@ -34,7 +34,10 @@ export async function defaultRouteInit(
     const displaySets = displaySetService.getActiveDisplaySets();
     // The display sets are not necessarily in load order, even though the
     // series got started in load order, so re-sort them before hanging
-    const sortCriteria = seriesSortCriteria.default;
+    const sortCriteria = customizationService.getCustomization('sortingCriteria') as (
+      a,
+      b
+    ) => number;
 
     if (!displaySets || !displaySets.length) {
       return;
@@ -49,7 +52,7 @@ export async function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId, {
+    hangingProtocolService.run({ studies, activeStudy, displaySets: sortedDisplaySets }, hangingProtocolId, {
       stageIndex,
     });
   }

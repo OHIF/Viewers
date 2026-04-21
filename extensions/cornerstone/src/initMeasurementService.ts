@@ -1,5 +1,5 @@
 import { eventTarget, Types } from '@cornerstonejs/core';
-import { Enums, annotation } from '@cornerstonejs/tools';
+import { Enums, annotation, cancelActiveManipulations } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
 import * as CSExtensionEnums from './enums';
@@ -503,6 +503,12 @@ const connectMeasurementServiceToTools = ({
     ({ source, measurement: removedMeasurementId }) => {
       if (source?.name && source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
+      }
+      // Cancel any active tool manipulation (e.g., Spline/Livewire) to avoid leaving the tool
+      // in a drawing state after deleting a not completed measurement, which can block viewport interactivity.
+      const element = getActiveViewportEnabledElement(viewportGridService)?.viewport?.element;
+      if (element) {
+        cancelActiveManipulations(element);
       }
       const removedAnnotation = annotation.state.getAnnotation(removedMeasurementId);
       removeAnnotation(removedMeasurementId);
