@@ -37,6 +37,62 @@ export const setToolActiveToolbar = {
 const toolbarButtonsValidated3d: Button[] = [
   // Window Level
   {
+    id: 'Length',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-length',
+      label: 'Length',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
+    id: 'RectangleROI',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-rectangle',
+      label: 'Rectangle',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
+    id: 'Angle',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-angle',
+      label: 'Angle',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
+    id: 'Probe',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-probe',
+      label: 'Probe',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
     id: 'WindowLevel',
     uiType: 'ohif.toolButtonList',
     props: {

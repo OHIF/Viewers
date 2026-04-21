@@ -20,6 +20,10 @@ function createTools(utilityModule) {
       { toolName: toolNames.StackScroll, bindings: [{ mouseButton: Enums.MouseBindings.Wheel }] },
     ],
     passive: [
+      { toolName: toolNames.Length },
+      { toolName: toolNames.Probe },
+      { toolName: toolNames.RectangleROI },
+      { toolName: toolNames.Angle },
       {
         toolName: 'CircularBrush',
         parentTool: 'Brush',
@@ -176,6 +180,12 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         toolName: toolNames.Pan,
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
       },
+    ],
+    passive: [
+      { toolName: toolNames.Length },
+      { toolName: toolNames.Probe },
+      { toolName: toolNames.RectangleROI },
+      { toolName: toolNames.Angle },
     ],
   };
 

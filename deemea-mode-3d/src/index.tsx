@@ -67,6 +67,10 @@ function modeFactory({ modeConfiguration }) {
       toolbarService?.addButtons(segmentationButtons);
 
       toolbarService.createButtonSection('primary', [
+        'Length',
+        'RectangleROI',
+        'Angle',
+        'Probe',
         'WindowLevel',
         'Pan',
         'Zoom',
