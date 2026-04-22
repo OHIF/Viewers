@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
-import { cache as cornerstoneCache, Enums, eventTarget, VolumeViewport3D } from '@cornerstonejs/core';
-import { useByteArray } from '@ohif/ui-next';
+import { useEffect, useRef, useState } from 'react';
 import {
-  getImageIdFromCacheEvent,
-  getImageIndexFromEvent,
-  isProgressFullMode,
-} from './helpers';
+  cache as cornerstoneCache,
+  Enums,
+  eventTarget,
+  utilities,
+  VolumeViewport3D,
+} from '@cornerstonejs/core';
+import { useByteArray } from '@ohif/ui-next';
+import { getImageIdFromCacheEvent, getImageIndexFromEvent, isProgressFullMode } from './helpers';
 import { ImageSliceData, ViewportData } from './types';
 
 export function useProgressScrollbarMode({
@@ -20,6 +22,7 @@ export function useProgressScrollbarMode({
   cornerstoneViewportService: AppTypes.CornerstoneViewportService;
 }) {
   const [isFullMode, setIsFullMode] = useState(false);
+  const lastViewPlaneNormalRef = useRef<number[] | null>(null);
 
   /**
    * Tracks whether this viewport should render full progress UI (stack or acquisition-plane
@@ -34,6 +37,11 @@ export function useProgressScrollbarMode({
 
     const updateMode = () => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const viewportImageData = viewport?.getImageData?.();
+      const nextViewPlaneNormal = viewport?.getCamera?.()?.viewPlaneNormal as number[] | undefined;
+      if (viewportImageData && nextViewPlaneNormal) {
+        lastViewPlaneNormalRef.current = [...nextViewPlaneNormal];
+      }
       const nextMode = isProgressFullMode(viewportData, viewport);
       setIsFullMode(prevMode => (prevMode === nextMode ? prevMode : nextMode));
     };
@@ -41,6 +49,17 @@ export function useProgressScrollbarMode({
     updateMode();
 
     const onCameraModified = () => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const nextViewPlaneNormal = viewport?.getCamera?.()?.viewPlaneNormal as number[] | undefined;
+      const previousViewPlaneNormal = lastViewPlaneNormalRef.current;
+
+      // Ignore camera updates that keep the same orientation (pan/zoom/scroll).
+      if (nextViewPlaneNormal && previousViewPlaneNormal) {
+        if (utilities.isEqual(nextViewPlaneNormal, previousViewPlaneNormal)) {
+          return;
+        }
+      }
+
       updateMode();
     };
     element.addEventListener(Enums.Events.CAMERA_MODIFIED, onCameraModified);
@@ -138,7 +157,11 @@ export function useLoadedSliceBytes({
   loadedBatchIntervalMs: number;
 }) {
   const loadedState = useByteArray(numberOfSlices || 0, loadedBatchIntervalMs);
-  const { resetWith: resetLoaded, setByte: setLoadedByte, clearByte: clearLoadedByte } = loadedState;
+  const {
+    resetWith: resetLoaded,
+    setByte: setLoadedByte,
+    clearByte: clearLoadedByte,
+  } = loadedState;
 
   /**
    * Keeps the loaded byte array in sync with Cornerstone cache: seed from cache whenever stack /
