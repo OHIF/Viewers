@@ -49,7 +49,7 @@ const EVENTS = {
 const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
 
-function getOrderedVolumeActorReferencedIds(viewport: Types.IVolumeViewport): string[] {
+function getVolumeActorReferencedIds(viewport: Types.IVolumeViewport): string[] {
   const actors = viewport.getActors?.() ?? [];
   return actors
     .filter(ae => ae.actor?.getClassName?.() === 'vtkVolume')
@@ -1155,7 +1155,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const baseVolumeInputs = filteredVolumeInputArray.map(({ volumeInput }) => volumeInput);
     const nextBaseVolumeIds = baseVolumeInputs.map(v => v.volumeId);
-    const existingVolumeIds = getOrderedVolumeActorReferencedIds(viewport);
+    const existingVolumeIds = getVolumeActorReferencedIds(viewport);
 
     let skippedIdenticalBaseVolumes = false;
 
@@ -1167,7 +1167,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // would incorrectly skip rebuilding the viewport.
       if (
         singleBaseViewport &&
-        nextBaseVolumeIds.length &&
         existingVolumeIds.length >= nextBaseVolumeIds.length &&
         volumeIdPrefixesMatch(existingVolumeIds, nextBaseVolumeIds.length, nextBaseVolumeIds) &&
         viewportMatchesDesiredVolumePresentation(viewport, viewportInfo)
