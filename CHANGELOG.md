@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.60...v3.13.0-beta.61) (2026-04-23)
+
+
+### Features
+
+* **slice scrollbar:** Integrate ViewportSliceProgressScrollbar with customizations and docs ([#5960](https://github.com/OHIF/Viewers/issues/5960)) ([8fc0dc1](https://github.com/OHIF/Viewers/commit/8fc0dc16e97f3262fdac902ecf2d7c20cb8f78cc))
+
+
+
+
+
 # [3.13.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.59...v3.13.0-beta.60) (2026-04-21)
 
 
