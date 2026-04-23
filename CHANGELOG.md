@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.61...v3.13.0-beta.62) (2026-04-23)
+
+
+### Bug Fixes
+
+* **security:** Patch protobufjs for CVE-2026-41242. ([#5974](https://github.com/OHIF/Viewers/issues/5974)) ([1fc97fe](https://github.com/OHIF/Viewers/commit/1fc97fea43cc5e6689bd0076b77a278c67252af7))
+
+
+
+
+
 # [3.13.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.60...v3.13.0-beta.61) (2026-04-23)
 
 
