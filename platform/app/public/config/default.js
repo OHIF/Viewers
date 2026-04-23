@@ -468,6 +468,34 @@ window.config = {
     },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'GPU_QA',
+      configuration: {
+        friendlyName: 'gpu-qa-didier',
+        name: 'gpu-qa-didier',
+        wadoUriRoot: 'https://gpu.qa.deemea.com/api/v1/didier',
+        qidoRoot: 'https://gpu.qa.deemea.com/api/v1/didier',
+        wadoRoot: 'https://gpu.qa.deemea.com/api/v1/didier',
+        qidoSupportsIncludeField: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: false,
+        staticWado: true,
+        singlepart: 'bulkdata,video',
+        // whether the data source should use retrieveBulkData to grab metadata,
+        // and in case of relative path, what would it be relative to, options
+        // are in the series level or study level (some servers like series some study)
+        bulkDataURI: {
+          enabled: true,
+          relativeResolution: 'studies',
+          transform: url => url.replace('/pixeldata.mp4', '/rendered'),
+        },
+        omitQuotationForMultipartRequest: true,
+      },
+    },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'SANTY',
       configuration: {
         friendlyName: 'santy-didier',
