@@ -471,26 +471,56 @@ Cypress.Commands.add('openPreferences', () => {
 });
 
 Cypress.Commands.add('scrollToIndex', index => {
-  // Workaround implemented based on Cypress issue:
-  // https://github.com/cypress-io/cypress/issues/1570#issuecomment-450966053
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-    window.HTMLInputElement.prototype,
-    'value'
-  ).set;
+  cy.get('.cornerstone-viewport-element:visible')
+    .first()
+    .then($viewportEl => {
+      cy.window().then(win => {
+        const cornerstone = win.cornerstone;
+        const element = $viewportEl[0];
+        const enabledElement =
+          cornerstone?.getEnabledElement?.(element) ||
+          cornerstone?.getEnabledElements?.().find(item => item.element === element);
 
-  cy.get('input.imageSlider[type=range]').then($range => {
-    // get the DOM node
-    const range = $range[0];
-    // set the value manually
-    nativeInputValueSetter.call(range, index);
-    // now dispatch the event
-    range.dispatchEvent(
-      new Event('change', {
-        value: index,
-        bubbles: true,
-      })
-    );
-  });
+        if (!enabledElement?.viewport) {
+          throw new Error('scrollToIndex: no enabled cornerstone viewport found');
+        }
+
+        const viewport = enabledElement.viewport;
+        const numberOfSlices = viewport.getNumberOfSlices?.() ?? 0;
+
+        if (!numberOfSlices) {
+          throw new Error('scrollToIndex: viewport has no slices');
+        }
+
+        const targetIndex = index < 0 ? numberOfSlices + index : index;
+
+        if (targetIndex < 0 || targetIndex >= numberOfSlices) {
+          throw new Error(
+            `scrollToIndex: index ${index} resolves to ${targetIndex}, but range is 0-${
+              numberOfSlices - 1
+            }`
+          );
+        }
+
+        return Cypress.Promise.resolve(
+          cornerstone.utilities.jumpToSlice(element, {
+            imageIndex: targetIndex,
+            debounceLoading: false,
+          })
+        ).then(() => {
+          const currentIndex = viewport.getCurrentImageIdIndex?.();
+
+          if (currentIndex !== targetIndex) {
+            throw new Error(
+              `scrollToIndex: expected slice ${targetIndex}, but viewport is at ${currentIndex}`
+            );
+          }
+        });
+      });
+    });
+
+  // Give the viewport a brief settle time after programmatic jump.
+  cy.wait(50);
 });
 
 Cypress.Commands.add('closePreferences', () => {
