@@ -39,6 +39,9 @@ export function useProgressScrollbarMode({
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
       const viewportImageData = viewport?.getImageData?.();
       const nextViewPlaneNormal = viewport?.getCamera?.()?.viewPlaneNormal as number[] | undefined;
+      // Do not update the lastViewPlaneNormalRef until we have a valid viewportImageData.
+      // Without viewportImageData, the viewport is not fully initialized and the isAcquisitionPlane
+      // check will not be accurate.
       if (viewportImageData && nextViewPlaneNormal) {
         lastViewPlaneNormalRef.current = [...nextViewPlaneNormal];
       }
