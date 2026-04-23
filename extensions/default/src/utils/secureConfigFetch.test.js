@@ -12,6 +12,7 @@ describe('secureConfigFetch', () => {
 
       expect(result.normalizedUrl).toBe('https://untrusted.example.com/config.json');
       expect(result.isAuthenticated).toBe(false);
+      expect(result.isSameOrigin).toBe(false);
     });
 
     it('blocks non-allowlisted origins in authenticated environments', () => {
@@ -35,6 +36,7 @@ describe('secureConfigFetch', () => {
 
       expect(result.normalizedUrl).toBe('http://localhost:5000/config.json');
       expect(result.isAuthenticated).toBe(true);
+      expect(result.isSameOrigin).toBe(false);
     });
 
     it('blocks authenticated fetch when allowlist is missing', () => {
@@ -56,6 +58,7 @@ describe('secureConfigFetch', () => {
 
       expect(result.normalizedUrl).toBe(`${window.location.origin}/protected/config.json`);
       expect(result.isAuthenticated).toBe(true);
+      expect(result.isSameOrigin).toBe(true);
     });
 
     it('rejects embedded userinfo in config URLs', () => {
@@ -92,6 +95,7 @@ describe('secureConfigFetch', () => {
       await fetchConfigJson({
         normalizedUrl: 'https://example.com/config.json',
         isAuthenticated: false,
+        isSameOrigin: false,
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
@@ -116,6 +120,7 @@ describe('secureConfigFetch', () => {
       await fetchConfigJson({
         normalizedUrl: `${window.location.origin}/protected/config.json`,
         isAuthenticated: false,
+        isSameOrigin: true,
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
@@ -133,6 +138,7 @@ describe('secureConfigFetch', () => {
       await fetchConfigJson({
         normalizedUrl: 'https://trusted.example.com/config.json',
         isAuthenticated: true,
+        isSameOrigin: false,
       });
 
       expect(global.fetch).toHaveBeenCalledWith('https://trusted.example.com/config.json');

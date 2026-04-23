@@ -92,12 +92,12 @@ function resolveConfigFetchPolicy(rawUrl, policy = {}) {
     parsedUrl,
     normalizedUrl: parsedUrl.toString(),
     isAuthenticated,
+    isSameOrigin,
   };
 }
 
 async function fetchConfigJson(normalizedPolicy) {
-  const { normalizedUrl, isAuthenticated } = normalizedPolicy;
-  const isSameOrigin = new URL(normalizedUrl, window.location.href).origin === window.location.origin;
+  const { normalizedUrl, isAuthenticated, isSameOrigin } = normalizedPolicy;
   const response = isAuthenticated || isSameOrigin
     ? await fetch(normalizedUrl)
     : await fetch(normalizedUrl, {
