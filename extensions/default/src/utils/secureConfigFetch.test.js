@@ -47,6 +47,17 @@ describe('secureConfigFetch', () => {
       ).toThrow('Blocked remote configuration origin');
     });
 
+    it('allows same-origin in authenticated environments without allowlist', () => {
+      const result = resolveConfigFetchPolicy('/protected/config.json', {
+        userAuthenticationService: {
+          getAuthorizationHeader: () => ({ Authorization: 'Bearer token123' }),
+        },
+      });
+
+      expect(result.normalizedUrl).toBe(`${window.location.origin}/protected/config.json`);
+      expect(result.isAuthenticated).toBe(true);
+    });
+
     it('rejects embedded userinfo in config URLs', () => {
       expect(() =>
         resolveConfigFetchPolicy('https://user:pass@trusted.example.com/config.json', {
@@ -71,7 +82,7 @@ describe('secureConfigFetch', () => {
       global.fetch = originalFetch;
     });
 
-    it('uses hardened fetch options in unauthenticated environments', async () => {
+    it('uses hardened fetch options for unauthenticated cross-origin requests', async () => {
       global.fetch.mockResolvedValue({
         status: 200,
         ok: true,
@@ -92,6 +103,23 @@ describe('secureConfigFetch', () => {
           redirect: 'error',
           referrerPolicy: 'no-referrer',
         })
+      );
+    });
+
+    it('uses simple fetch for unauthenticated same-origin requests', async () => {
+      global.fetch.mockResolvedValue({
+        status: 200,
+        ok: true,
+        json: async () => ({ ok: true }),
+      });
+
+      await fetchConfigJson({
+        normalizedUrl: `${window.location.origin}/protected/config.json`,
+        isAuthenticated: false,
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${window.location.origin}/protected/config.json`
       );
     });
 
