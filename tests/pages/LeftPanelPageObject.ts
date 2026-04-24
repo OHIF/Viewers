@@ -24,6 +24,28 @@ export class LeftPanelPageObject {
     await matchingThumbnail.dblclick();
   }
 
+  /**
+   * Double-clicks a series whose DICOM Series Number matches the thumbnail’s
+   * `data-series` attribute (and modality label). Thumbnail / sort order in the
+   * study list does not affect which series is chosen.
+   */
+  async loadSeriesByModalityAndSeriesNumber(modality: string, seriesNumber: number) {
+    const n = String(seriesNumber);
+    const matchingThumbnail = this.page
+      .locator(`[data-cy^="study-browser-thumbnail"][data-series="${n}"]`)
+      .filter({
+        has: this.page
+          .getByTestId('series-modality-label')
+          .getByText(modality, { exact: true }),
+      });
+    if ((await matchingThumbnail.count()) === 0) {
+      throw new Error(
+        `No study-browser thumbnail for modality "${modality}" and series number ${seriesNumber}`
+      );
+    }
+    await matchingThumbnail.first().dblclick();
+  }
+
   async loadSeriesByDescription(description: string, nth: number = 0) {
     const matchingThumbnail = this.thumbnails
       .filter({
