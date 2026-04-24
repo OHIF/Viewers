@@ -27,7 +27,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.topRight]: classNames(
     commonClasses,
-    'absolute top-[4px] right-[16px] right-viewport-scrollbar'
+    'absolute top-[4px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,
@@ -35,7 +35,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.bottomRight]: classNames(
     commonClasses,
-    'absolute bottom-[3px] right-[16px] right-viewport-scrollbar'
+    'absolute bottom-[3px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.topMiddle]: classNames(
     commonClasses,
@@ -52,7 +52,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.rightMiddle]: classNames(
     commonClasses,
-    'absolute right-[16px] top-1/2 -translate-y-1/2 right-viewport-scrollbar'
+    'absolute top-1/2 -translate-y-1/2 right-viewport-scrollbar'
   ),
 };
 

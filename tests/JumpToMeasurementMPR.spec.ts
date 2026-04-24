@@ -43,7 +43,8 @@ test('should hydrate in MPR correctly', async ({
   await page.waitForTimeout(5000);
 
   await mainToolbarPageObject.measurementTools.bidirectional.click();
-  await viewportPageObject.active.clickAt([
+  const activeViewport = await viewportPageObject.active;
+  await activeViewport.clickAt([
     { x: 405, y: 277 },
     { x: 515, y: 339 },
   ]);
