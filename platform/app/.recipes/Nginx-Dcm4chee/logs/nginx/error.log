@@ -1,0 +1,10 @@
+2026/04/26 19:11:27 [notice] 1#1: using the "epoll" event method
+2026/04/26 19:11:27 [notice] 1#1: nginx/1.29.8
+2026/04/26 19:11:27 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026/04/26 19:11:27 [notice] 1#1: OS: Linux 6.8.0-51-generic
+2026/04/26 19:11:27 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/04/26 19:11:27 [notice] 1#1: start worker processes
+2026/04/26 19:11:27 [notice] 1#1: start worker process 30
+2026/04/26 19:11:27 [notice] 1#1: start worker process 31
+2026/04/26 19:11:27 [notice] 1#1: start worker process 32
+2026/04/26 19:11:27 [notice] 1#1: start worker process 33

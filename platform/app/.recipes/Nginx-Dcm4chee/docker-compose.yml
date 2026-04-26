@@ -1,6 +1,6 @@
 services:
   ldap:
-    image: dcm4che/slapd-dcm4chee:2.6.3-29.0
+    image: dcm4che/slapd-dcm4chee:2.6.10-34.2
     logging:
       driver: json-file
       options:
@@ -12,7 +12,7 @@ services:
       - ~/dcm4chee-arc/ldap:/var/lib/ldap
       - ~/dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
   db:
-    image: dcm4che/postgres-dcm4chee:14.5-29
+    image: dcm4che/postgres-dcm4chee:17.4-34
     logging:
       driver: json-file
       options:
@@ -25,7 +25,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - ~/dcm4chee-arc/db:/var/lib/postgresql/data
   arc:
-    image: dcm4che/dcm4chee-arc-psql:5.29.0
+    image: dcm4che/dcm4chee-arc-psql:5.34.2
     logging:
       driver: json-file
       options:
