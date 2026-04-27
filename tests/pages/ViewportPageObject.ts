@@ -80,6 +80,7 @@ export interface IViewportPageObject {
   };
   pane: Locator;
   svg: (innerElement?: SvgInnerElement) => Locator;
+  viewportId: Promise<string | null>;
   navigationArrows: {
     locator: Locator;
     prev: {
@@ -235,6 +236,13 @@ export class ViewportPageObject {
           delay: params.config?.delay,
           steps: params.config?.steps,
         });
+      },
+      get viewportId() {
+        return viewport
+          .locator('[data-viewportid]')
+          .first()
+          .getAttribute('data-viewportid')
+          .then(id => id);
       },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),

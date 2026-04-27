@@ -27,6 +27,11 @@ export class DataOverlayPageObject {
     await this.page.getByTestId(`${to}-SEG`).click();
   }
 
+  async changeRTStruct(from: string, to: string) {
+    await this.page.getByTestId(`overlay-ds-select-value-${from.toUpperCase()}`).click();
+    await this.page.getByTestId(`${to}-RTSTRUCT`).click();
+  }
+
   async remove(segmentation: string) {
     await this.page.getByTestId(`overlay-ds-more-button-${segmentation}`).click();
     await this.page.getByTestId(`overlay-ds-remove-button-${segmentation}`).click();
