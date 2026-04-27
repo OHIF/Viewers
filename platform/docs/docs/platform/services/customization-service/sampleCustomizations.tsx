@@ -15,6 +15,12 @@ import progressLoading from '../../../assets/img/Loading-Indicator.png';
 import loadingIndicatorProgress from '../../../assets/img/loading-indicator-icon.png';
 import loadingIndicatorPercent from '../../../assets/img/loading-indicator-percent.png';
 import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
+import viewportScrollbarVariantProgress from '../../../assets/img/viewport-scrollbar-variant-progress.png';
+import viewportScrollbarVariantLegacy from '../../../assets/img/viewport-scrollbar-variant-legacy.png';
+import viewportScrollbarShowLoadedEndpoints from '../../../assets/img/viewport-scrollbar-showLoadedEndpoints.png';
+import viewportScrollbarShowLoadedFill from '../../../assets/img/viewport-scrollbar-showLoadedFill.png';
+import viewportScrollbarShowViewedFill from '../../../assets/img/viewport-scrollbar-showViewedFill.png';
+import viewportScrollbarShowLoadingPattern from '../../../assets/img/viewport-scrollbar-showLoadingPattern.png';
 import contextMenu from '../../../assets/img/context-menu.jpg';
 import viewportDownloadWarning from '../../../assets/img/viewport-download-warning.png';
 import segmentationOverlay from '../../../assets/img/segmentation-overlay.png';
@@ -155,6 +161,197 @@ window.config = {
     ],
     configuration: `
       // same as above
+  `,
+  },
+];
+
+export const viewportScrollbarCustomizations = [
+  {
+    id: 'viewportScrollbar.variant',
+    description: (
+      <>
+        Controls which scrollbar implementation is rendered. Use <code>progress</code> for{' '}
+        ViewportSliceProgressScrollbar and <code>legacy</code> for ViewportImageScrollbar.
+      </>
+    ),
+    default: 'progress',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.variant': {
+        $set: 'legacy',
+      },
+    },
+  ],
+};
+  `,
+    image: [
+      { img: viewportScrollbarVariantProgress, caption: 'progress (default)' },
+      { img: viewportScrollbarVariantLegacy, caption: 'legacy' },
+    ],
+  },
+  {
+    id: 'viewportScrollbar.showLoadedEndpoints',
+    description:
+      'Shows/hides loaded-range endpoint caps in full progress mode (stack or acquisition-plane volume).',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadedEndpoints': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowLoadedEndpoints, caption: 'Loaded-range endpoint caps' },
+  },
+  {
+    id: 'viewportScrollbar.showLoadedFill',
+    description: 'Shows/hides the loaded/cached fill track in full progress mode.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadedFill': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowLoadedFill, caption: 'Loaded/cached fill track' },
+  },
+  {
+    id: 'viewportScrollbar.showViewedFill',
+    description: 'Shows/hides the viewed fill track in full progress mode.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showViewedFill': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowViewedFill, caption: 'Viewed fill track' },
+  },
+  {
+    id: 'viewportScrollbar.showLoadingPattern',
+    description:
+      'Shows/hides the dotted loading pattern for full progress mode. Minimal mode always disables this pattern.',
+    default: true,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.showLoadingPattern': {
+        $set: false,
+      },
+    },
+  ],
+};
+  `,
+    image: { img: viewportScrollbarShowLoadingPattern, caption: 'Dotted loading pattern' },
+  },
+  {
+    id: 'viewportScrollbar.viewedDwellMs',
+    description:
+      'Minimum time in milliseconds the current slice must stay on screen before it is marked as viewed in full progress mode. 0 marks immediately.',
+    default: 0,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.viewedDwellMs': {
+        $set: 500,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.loadedBatchIntervalMs',
+    description:
+      'Coalesces loaded/cached slice state changes into a single UI update at the configured interval in full progress mode. Lower values feel more responsive but trigger more re-renders; higher values reduce render churn but can make progress updates appear delayed. Set to 0 for immediate updates.',
+    default: 200,
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.loadedBatchIntervalMs': {
+        $set: 100,
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportScrollbar.indicator',
+    description: (
+      <>
+        Outer size (<code>totalWidth</code> × <code>totalHeight</code>, border included) and{' '}
+        <code>renderIndicator</code> for the progress scrollbar indicator.{' '}
+        <code>renderIndicator</code> receives <code>React</code> for config file compatibility. All
+        three properties must be provided or the default pill is used. See{' '}
+        <a href="#viewport-scrollbar-indicator-advanced">Advanced</a> for TSX overrides and{' '}
+        <code>useSmartScrollbarLayoutContext</code>.
+      </>
+    ),
+    default: '{}',
+    configurationIntro: (
+      <p style={{ margin: 0 }}>
+        This example sets a <code>10×10</code> SVG indicator (muted outer circle, lighter inner
+        circle) via <code>React.createElement</code>, matching <code>totalWidth</code> and{' '}
+        <code>totalHeight</code>.
+      </p>
+    ),
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportScrollbar.indicator': {
+        totalWidth: 10,
+        totalHeight: 10,
+        renderIndicator: function (React) {
+          return React.createElement(
+            'svg',
+            { width: 10, height: 10, viewBox: '0 0 10 10' },
+            React.createElement('circle', {
+              cx: 5,
+              cy: 5,
+              r: 5,
+              fill: 'hsl(213 22% 59% / 0.9)',
+            }),
+            React.createElement('circle', {
+              cx: 5,
+              cy: 5,
+              r: 4,
+              fill: 'hsl(0 0% 98% / 0.9)',
+            })
+          );
+        },
+      },
+    },
+  ],
+};
   `,
   },
 ];
@@ -1895,76 +2092,149 @@ window.config = {
   },
 ];
 
+function normalizeCustomizationImageItem(item: unknown): {
+  img: unknown;
+  caption?: React.ReactNode;
+} {
+  if (
+    item !== null &&
+    typeof item === 'object' &&
+    'img' in item &&
+    typeof (item as { img: unknown }).img !== 'undefined'
+  ) {
+    const o = item as { img: unknown; caption?: React.ReactNode };
+    return { img: o.img, caption: o.caption };
+  }
+  return { img: item };
+}
+
 export const TableGenerator = (customizations: any[]) => {
-  return customizations.map(({ id, description, default: defaultValue, configuration, image }) => (
-    <div
-      key={id}
-      style={{ marginBottom: '2rem', borderRadius: '8px', padding: '1rem' }}
-    >
-      <h3
-        id={id.toLowerCase().replace(/\./g, '')}
-        style={{ marginBottom: '1rem', fontSize: '1.5rem' }}
+  return customizations.map(
+    ({ id, description, default: defaultValue, configuration, configurationIntro, image }) => (
+      <div
+        key={id}
+        style={{ marginBottom: '2rem', borderRadius: '8px', padding: '1rem' }}
       >
-        {id}
-      </h3>
-      <table style={{ width: '100%', tableLayout: 'fixed' }}>
-        <tbody>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>ID</th>
-            <td style={{ wordBreak: 'break-word' }}>
-              <code>{id}</code>
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Description</th>
-            <td>
-              <div>{description}</div>
-              {image && (
-                <div>
-                  {Array.isArray(image) ? (
-                    image.map((img, index) => (
-                      <Image
-                        key={index}
-                        img={img}
-                        alt={`${id}-${index + 1}`}
-                        style={{ width: '400px' }}
-                      />
-                    ))
-                  ) : (
-                    <Image
-                      img={image}
-                      alt={id}
-                      style={{ width: '400px' }}
-                    />
-                  )}
-                </div>
-              )}
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Default Value</th>
-            <td style={{ wordBreak: 'break-word' }}>
-              <pre>
-                {typeof defaultValue === 'string'
-                  ? defaultValue
-                  : JSON.stringify(defaultValue, null, 2)}
-              </pre>
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Example</th>
-            <td style={{ wordBreak: 'break-word' }}>
-              {configuration && (
-                <div>
-                  <pre>
-                    <code>{configuration}</code>
-                  </pre>
-                </div>
-              )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  ));
+        <h3
+          id={id.toLowerCase().replace(/\./g, '')}
+          style={{ marginBottom: '1rem', fontSize: '1.5rem' }}
+        >
+          {id}
+        </h3>
+        <table style={{ width: '100%', tableLayout: 'fixed' }}>
+          <tbody>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>ID</th>
+              <td style={{ wordBreak: 'break-word' }}>
+                <code>{id}</code>
+              </td>
+            </tr>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Description</th>
+              <td>
+                <div>{description}</div>
+                {image && (
+                  <div>
+                    {Array.isArray(image)
+                      ? image.map((item, index) => {
+                          const { img, caption } = normalizeCustomizationImageItem(item);
+                          const altText =
+                            typeof caption === 'string' && caption.length > 0
+                              ? `${id}: ${caption}`
+                              : `${id} screenshot ${index + 1}`;
+                          return (
+                            <figure
+                              key={index}
+                              style={{ margin: '0 0 1rem 0' }}
+                            >
+                              <Image
+                                img={img}
+                                alt={altText}
+                                style={{ width: '400px' }}
+                              />
+                              {caption != null && caption !== '' && (
+                                <figcaption
+                                  style={{
+                                    fontSize: '0.9rem',
+                                    marginTop: '0.35rem',
+                                    color: 'var(--ifm-color-emphasis-700)',
+                                  }}
+                                >
+                                  {caption}
+                                </figcaption>
+                              )}
+                            </figure>
+                          );
+                        })
+                      : (() => {
+                          const { img, caption } = normalizeCustomizationImageItem(image);
+                          const altText =
+                            typeof caption === 'string' && caption.length > 0
+                              ? `${id}: ${caption}`
+                              : id;
+                          return (
+                            <figure style={{ margin: 0 }}>
+                              <Image
+                                img={img}
+                                alt={altText}
+                                style={{ width: '400px' }}
+                              />
+                              {caption != null && caption !== '' && (
+                                <figcaption
+                                  style={{
+                                    fontSize: '0.9rem',
+                                    marginTop: '0.35rem',
+                                    color: 'var(--ifm-color-emphasis-700)',
+                                  }}
+                                >
+                                  {caption}
+                                </figcaption>
+                              )}
+                            </figure>
+                          );
+                        })()}
+                  </div>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>
+                Default Value
+              </th>
+              <td style={{ wordBreak: 'break-word' }}>
+                <pre>
+                  {typeof defaultValue === 'string'
+                    ? defaultValue
+                    : JSON.stringify(defaultValue, null, 2)}
+                </pre>
+              </td>
+            </tr>
+            <tr>
+              <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Example</th>
+              <td style={{ wordBreak: 'break-word' }}>
+                {configuration && (
+                  <div>
+                    {configurationIntro && (
+                      <div
+                        style={{
+                          marginBottom: '0.75rem',
+                          fontSize: '0.95rem',
+                          color: 'var(--ifm-color-emphasis-700)',
+                        }}
+                      >
+                        {configurationIntro}
+                      </div>
+                    )}
+                    <pre>
+                      <code>{configuration}</code>
+                    </pre>
+                  </div>
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )
+  );
 };
