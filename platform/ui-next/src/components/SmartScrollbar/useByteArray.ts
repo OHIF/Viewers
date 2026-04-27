@@ -1,5 +1,4 @@
-import debounce from 'lodash.debounce';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface ByteArrayHandle {
   bytes: Uint8Array;
@@ -16,45 +15,68 @@ export interface ByteArrayHandle {
  * detection via an incrementing version counter.
  *
  * @param size       - Number of positions (e.g. total slices in a viewport).
- * @param debounceMs - When > 0, version bumps are debounced by this many
- *                    milliseconds. Byte writes are always immediate. Use for
- *                    high-frequency sources (cache prefetch) to batch renders.
- *                    Omit or pass 0 for immediate re-renders (e.g. viewed tracking).
+ * @param batchIntervalMs - When > 0, writes are coalesced into a scheduled
+ *                          flush: the first write starts a timer, the next
+ *                          flush bumps `version`, and the timer stops. New
+ *                          writes start a new interval window. Omit or pass 0
+ *                          for immediate re-renders on every write.
  */
-export function useByteArray(size: number, debounceMs = 0): ByteArrayHandle {
+export function useByteArray(size: number, batchIntervalMs = 0): ByteArrayHandle {
   const bytesRef = useRef(new Uint8Array(size));
   const countRef = useRef(0);
   const [version, setVersion] = useState(0);
+  const timeoutIdRef = useRef<number | null>(null);
 
-  // Debounced bump — recreated when debounceMs changes; cancelled on unmount
-  // or when debounceMs changes, following the lodash.debounce pattern used
-  // throughout ui-next (InputFilter, CinePlayer).
-  const debouncedBump = useMemo(
-    () => (debounceMs > 0 ? debounce(() => setVersion(v => v + 1), debounceMs) : null),
-    [debounceMs]
-  );
+  const clearScheduledFlush = useCallback(() => {
+    if (timeoutIdRef.current !== null) {
+      window.clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
+    }
+  }, []);
 
-  useEffect(() => {
-    return () => debouncedBump?.cancel();
-  }, [debouncedBump]);
+  const flushScheduledVersion = useCallback(() => {
+    // End this timeout window after the scheduled flush.
+    clearScheduledFlush();
+    setVersion(v => v + 1);
+  }, [clearScheduledFlush]);
 
   // Reset array only when size actually changes — skip on initial mount since
   // bytesRef is already initialised to the correct size via useRef.
   useEffect(() => {
     if (bytesRef.current.length === size) return;
-    debouncedBump?.cancel();
+    // Drop any in-flight timeout window when resetting the underlying array.
+    clearScheduledFlush();
     bytesRef.current = new Uint8Array(size);
     countRef.current = 0;
     setVersion(v => v + 1);
-  }, [size, debouncedBump]);
+  }, [size, clearScheduledFlush]);
+
+  useEffect(() => {
+    // If timing changes mid-window, restart that timeout using the new timing.
+    const pendingTimeoutId = timeoutIdRef.current;
+    clearScheduledFlush();
+    if (batchIntervalMs <= 0) {
+      if (pendingTimeoutId !== null) {
+        setVersion(v => v + 1);
+      }
+      return;
+    }
+    if (pendingTimeoutId !== null) {
+      timeoutIdRef.current = window.setTimeout(flushScheduledVersion, batchIntervalMs);
+    }
+    return () => clearScheduledFlush();
+  }, [batchIntervalMs, clearScheduledFlush, flushScheduledVersion]);
 
   const bump = useCallback(() => {
-    if (debouncedBump) {
-      debouncedBump();
-    } else {
+    if (batchIntervalMs <= 0) {
       setVersion(v => v + 1);
+      return;
     }
-  }, [debouncedBump]);
+
+    if (timeoutIdRef.current === null) {
+      timeoutIdRef.current = window.setTimeout(flushScheduledVersion, batchIntervalMs);
+    }
+  }, [batchIntervalMs, flushScheduledVersion]);
 
   const setByte = useCallback(
     (index: number) => {
