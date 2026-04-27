@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.13.0-beta.34",
+  "version": "3.13.0-beta.64",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
@@ -16,6 +16,8 @@
     "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "yarn run build --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build"
   },

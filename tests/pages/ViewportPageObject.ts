@@ -17,6 +17,22 @@ type NormalizedDragParams = {
   config?: { button?: 'left' | 'right' | 'middle'; delay?: number; steps?: number };
 };
 
+export interface IOverlayText {
+  get windowLevel(): Locator;
+  get instanceNumber(): Locator;
+}
+function overlayTextFactory(viewport: Locator, id: string): IOverlayText {
+  const locator = viewport.getByTestId(id);
+  return {
+    get windowLevel() {
+      return locator.getByTitle('Window Level');
+    },
+    get instanceNumber() {
+      return locator.getByTitle('Instance Number');
+    },
+  };
+}
+
 export interface IViewportPageObject {
   nthAnnotation(nth: number): {
     locator: Locator;
@@ -46,10 +62,10 @@ export interface IViewportPageObject {
     bottomMid: Locator;
   };
   overlayText: {
-    topLeft: Locator;
-    topRight: Locator;
-    bottomLeft: Locator;
-    bottomRight: Locator;
+    topLeft: IOverlayText;
+    topRight: IOverlayText;
+    bottomLeft: IOverlayText;
+    bottomRight: IOverlayText;
   };
   overlayMenu: {
     dataOverlay: DataOverlayPageObject;
@@ -79,11 +95,9 @@ export interface IViewportPageObject {
 
 export class ViewportPageObject {
   readonly page: Page;
-  private readonly dataOverlayPageObject: DataOverlayPageObject;
 
   constructor(page: Page) {
     this.page = page;
-    this.dataOverlayPageObject = new DataOverlayPageObject(page);
   }
 
   private getAnnotation(viewport: Locator, nth: number) {
@@ -111,6 +125,14 @@ export class ViewportPageObject {
     };
   }
 
+  private async getViewportId(viewport: Locator): Promise<string> {
+    const id = await viewport.locator('[data-viewportid]').getAttribute('data-viewportid');
+    if (id === null) {
+      throw new Error('Could not resolve data-viewportid from viewport locator');
+    }
+    return id;
+  }
+
   private getOrientationMarkers(viewport: Locator) {
     return {
       topMid: viewport.locator('.top-mid.orientation-marker'),
@@ -122,16 +144,16 @@ export class ViewportPageObject {
 
   private getOverlayText(viewport: Locator) {
     return {
-      topLeft: viewport.getByTestId('viewport-overlay-top-left'),
-      topRight: viewport.getByTestId('viewport-overlay-top-right'),
-      bottomLeft: viewport.getByTestId('viewport-overlay-bottom-left'),
-      bottomRight: viewport.getByTestId('viewport-overlay-bottom-right'),
+      topLeft: overlayTextFactory(viewport, 'viewport-overlay-top-left'),
+      topRight: overlayTextFactory(viewport, 'viewport-overlay-top-right'),
+      bottomLeft: overlayTextFactory(viewport, 'viewport-overlay-bottom-left'),
+      bottomRight: overlayTextFactory(viewport, 'viewport-overlay-bottom-right'),
     };
   }
 
-  private getOverlayMenu(viewport: Locator) {
+  private async getOverlayMenu(viewport: Locator) {
     return {
-      dataOverlay: this.dataOverlayPageObject,
+      dataOverlay: new DataOverlayPageObject(this.page, await this.getViewportId(viewport)),
       get orientation() {
         const button = viewport.locator('[data-cy^="orientationMenu"]');
         return {
@@ -178,7 +200,7 @@ export class ViewportPageObject {
     };
   }
 
-  private viewportPageObjectFactory(viewport: Locator): IViewportPageObject {
+  private async viewportPageObjectFactory(viewport: Locator): Promise<IViewportPageObject> {
     return {
       nthAnnotation: (nth: number) => this.getAnnotation(viewport, nth),
       doubleClickAt: async (point: { x: number; y: number }) => {
@@ -216,7 +238,7 @@ export class ViewportPageObject {
       },
       orientationMarkers: this.getOrientationMarkers(viewport),
       overlayText: this.getOverlayText(viewport),
-      overlayMenu: this.getOverlayMenu(viewport),
+      overlayMenu: await this.getOverlayMenu(viewport),
       pane: viewport,
       svg: (innerElement?: SvgInnerElement) => {
         return this.getSvg(viewport, innerElement);
@@ -225,7 +247,7 @@ export class ViewportPageObject {
     };
   }
 
-  get active(): IViewportPageObject {
+  get active(): Promise<IViewportPageObject> {
     const viewport = this.page.locator('[data-cy="viewport-pane"][data-is-active="true"]');
     return this.viewportPageObjectFactory(viewport);
   }
@@ -233,13 +255,35 @@ export class ViewportPageObject {
   get crosshairs() {
     const page = this.page;
 
+    const crosshairHoverTimeout = 20000;
+
+    async function getSlabHandleLocator(locator: Locator) {
+      const startTime = Date.now();
+      const rectLocator = locator.locator('rect').first();
+      const circleLocator = locator.locator('circle').first();
+
+      while (Date.now() - startTime < crosshairHoverTimeout) {
+        if ((await rectLocator.count()) > 0) {
+          return rectLocator;
+        }
+
+        if ((await circleLocator.count()) > 0) {
+          return circleLocator;
+        }
+
+        await page.waitForTimeout(250);
+      }
+
+      throw new Error('Could not find slab thickness handle for crosshairs interaction');
+    }
+
     async function increaseSlabThickness(locator: Locator, lineNumber: number, axis: string) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
-      await lineLocator.hover({ force: true });
+      await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
-      const circleLocator = locator.locator('rect').first();
-      await circleLocator.hover({ force: true });
+      const slabHandleLocator = await getSlabHandleLocator(locator);
+      await slabHandleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       await page.mouse.down();
 
@@ -258,10 +302,11 @@ export class ViewportPageObject {
     async function rotateCrosshairs(locator: Locator, lineNumber: number) {
       const lineLocator = locator.locator('line').nth(lineNumber);
       await lineLocator.click({ force: true });
-      await lineLocator.hover({ force: true });
+      await lineLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       const circleLocator = locator.locator('circle').nth(1);
-      await circleLocator.hover({ force: true });
+      await circleLocator.waitFor({ state: 'attached', timeout: crosshairHoverTimeout });
+      await circleLocator.hover({ force: true, timeout: crosshairHoverTimeout });
 
       await page.mouse.down();
 
@@ -296,15 +341,19 @@ export class ViewportPageObject {
 
   async getAll(): Promise<IViewportPageObject[]> {
     const viewports = await this.page.getByTestId('viewport-pane').all();
-    return viewports.map(viewport => this.viewportPageObjectFactory(viewport));
+    return await Promise.all(viewports.map(viewport => this.viewportPageObjectFactory(viewport)));
   }
 
-  getNth(index: number): IViewportPageObject {
-    const viewport = this.page.getByTestId('viewport-pane').nth(index);
+  getNth(index: number): Promise<IViewportPageObject> {
+    const viewport = this.getNthLocator(index);
     return this.viewportPageObjectFactory(viewport);
   }
 
-  getById(viewportId: string): IViewportPageObject {
+  getNthLocator(index: number): Locator {
+    return this.page.getByTestId('viewport-pane').nth(index);
+  }
+
+  getById(viewportId: string): Promise<IViewportPageObject> {
     const viewport = this.page.locator(
       `[data-cy="viewport-pane"]:has(div[data-viewportid="${viewportId}"])`
     );
