@@ -97,6 +97,9 @@ const screenShotPaths = {
   reset: {
     resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
   },
+  zoomIn: {
+    magnifyViewportDisplayedCorrectly: 'magnifyViewportDisplayedCorrectly.png',
+  },
   rtDataOverlayForUnreferencedDisplaySetNoHydration: {
     overlayFirstImage: 'overlayFirstImage.png',
     overlayMiddleImage: 'overlayMiddleImage.png',
