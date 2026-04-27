@@ -12,6 +12,7 @@ describe('secureConfigFetch', () => {
 
       expect(result.normalizedUrl).toBe('https://untrusted.example.com/config.json');
       expect(result.isAuthenticated).toBe(false);
+      expect(result.isSameOrigin).toBe(false);
     });
 
     it('blocks non-allowlisted origins in authenticated environments', () => {
@@ -35,6 +36,7 @@ describe('secureConfigFetch', () => {
 
       expect(result.normalizedUrl).toBe('http://localhost:5000/config.json');
       expect(result.isAuthenticated).toBe(true);
+      expect(result.isSameOrigin).toBe(false);
     });
 
     it('blocks authenticated fetch when allowlist is missing', () => {
@@ -45,6 +47,18 @@ describe('secureConfigFetch', () => {
           },
         })
       ).toThrow('Blocked remote configuration origin');
+    });
+
+    it('allows same-origin in authenticated environments without allowlist', () => {
+      const result = resolveConfigFetchPolicy('/protected/config.json', {
+        userAuthenticationService: {
+          getAuthorizationHeader: () => ({ Authorization: 'Bearer token123' }),
+        },
+      });
+
+      expect(result.normalizedUrl).toBe(`${window.location.origin}/protected/config.json`);
+      expect(result.isAuthenticated).toBe(true);
+      expect(result.isSameOrigin).toBe(true);
     });
 
     it('rejects embedded userinfo in config URLs', () => {
@@ -71,7 +85,7 @@ describe('secureConfigFetch', () => {
       global.fetch = originalFetch;
     });
 
-    it('uses hardened fetch options in unauthenticated environments', async () => {
+    it('uses hardened fetch options for unauthenticated cross-origin requests', async () => {
       global.fetch.mockResolvedValue({
         status: 200,
         ok: true,
@@ -81,6 +95,7 @@ describe('secureConfigFetch', () => {
       await fetchConfigJson({
         normalizedUrl: 'https://example.com/config.json',
         isAuthenticated: false,
+        isSameOrigin: false,
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
@@ -95,6 +110,24 @@ describe('secureConfigFetch', () => {
       );
     });
 
+    it('uses simple fetch for unauthenticated same-origin requests', async () => {
+      global.fetch.mockResolvedValue({
+        status: 200,
+        ok: true,
+        json: async () => ({ ok: true }),
+      });
+
+      await fetchConfigJson({
+        normalizedUrl: `${window.location.origin}/protected/config.json`,
+        isAuthenticated: false,
+        isSameOrigin: true,
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${window.location.origin}/protected/config.json`
+      );
+    });
+
     it('uses simple fetch in authenticated environments', async () => {
       global.fetch.mockResolvedValue({
         status: 200,
@@ -105,6 +138,7 @@ describe('secureConfigFetch', () => {
       await fetchConfigJson({
         normalizedUrl: 'https://trusted.example.com/config.json',
         isAuthenticated: true,
+        isSameOrigin: false,
       });
 
       expect(global.fetch).toHaveBeenCalledWith('https://trusted.example.com/config.json');

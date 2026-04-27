@@ -61,6 +61,7 @@ function resolveConfigFetchPolicy(rawUrl, policy = {}) {
   const { allowedOrigins = [], userAuthenticationService } = policy;
   const parsedUrl = resolveConfigUrl(rawUrl);
   const protocol = parsedUrl.protocol.toLowerCase();
+  const isSameOrigin = parsedUrl.origin === window.location.origin;
 
   if (!['http:', 'https:'].includes(protocol)) {
     throw new Error('Only HTTP(S) URLs are allowed for dynamic datasource configuration');
@@ -78,7 +79,7 @@ function resolveConfigFetchPolicy(rawUrl, policy = {}) {
     userAuthenticationService?.getAuthorizationHeader?.()?.Authorization
   );
 
-  if (isAuthenticated) {
+  if (isAuthenticated && !isSameOrigin) {
     const normalizedAllowedOrigins = normalizeAllowedOrigins(allowedOrigins);
     if (!normalizedAllowedOrigins.length || !normalizedAllowedOrigins.includes(parsedUrl.origin)) {
       throw new Error(
@@ -91,12 +92,13 @@ function resolveConfigFetchPolicy(rawUrl, policy = {}) {
     parsedUrl,
     normalizedUrl: parsedUrl.toString(),
     isAuthenticated,
+    isSameOrigin,
   };
 }
 
 async function fetchConfigJson(normalizedPolicy) {
-  const { normalizedUrl, isAuthenticated } = normalizedPolicy;
-  const response = isAuthenticated
+  const { normalizedUrl, isAuthenticated, isSameOrigin } = normalizedPolicy;
+  const response = isAuthenticated || isSameOrigin
     ? await fetch(normalizedUrl)
     : await fetch(normalizedUrl, {
         method: 'GET',
