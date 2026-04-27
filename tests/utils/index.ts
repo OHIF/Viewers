@@ -24,6 +24,11 @@ import { getSvgPath } from './getSvgPath';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import {
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
+} from './waitForViewportsRendered';
 
 export {
   visitStudy,
@@ -48,6 +53,9 @@ export {
   subscribeToMeasurementAdded,
   getSvgPath,
   navigateWithViewportArrow,
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
   test,
   expect,
 };

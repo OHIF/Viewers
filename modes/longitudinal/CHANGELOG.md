@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.63...v3.13.0-beta.64) (2026-04-27)
+
+**Note:** Version bump only for package @ohif/mode-longitudinal
+
+
+
+
+
+# [3.13.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.62...v3.13.0-beta.63) (2026-04-27)
+
+**Note:** Version bump only for package @ohif/mode-longitudinal
+
+
+
+
+
 # [3.13.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.61...v3.13.0-beta.62) (2026-04-23)
 
 **Note:** Version bump only for package @ohif/mode-longitudinal
