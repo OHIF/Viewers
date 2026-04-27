@@ -1,6 +1,6 @@
 import OHIF from '@ohif/core';
 
-import { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv/src/types';
+import type { InstanceMetadata, PhilipsPETPrivateGroup } from '@cornerstonejs/calculate-suv/src/types';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 

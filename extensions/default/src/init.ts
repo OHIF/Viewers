@@ -1,5 +1,5 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
-import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
+import { calculateSUVScalingFactors } from '@cornerstonejs/metadata';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';

@@ -7,7 +7,7 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
-  async waitForVolumeLoad(): Promise<void> {
+  async waitForViewportsRendered(): Promise<void> {
     await this.page.waitForTimeout(2000);
     await this.page.waitForLoadState('networkidle', { timeout: 120000 });
   }
@@ -30,6 +30,7 @@ export class MainToolbarPageObject {
       button,
       async click() {
         await button.click();
+        await self.waitForViewportsRendered();
       },
     };
 
@@ -52,7 +53,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -63,7 +63,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -74,7 +73,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -85,7 +83,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -96,7 +93,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },

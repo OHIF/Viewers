@@ -18,6 +18,11 @@ module.exports = {
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/src/__mocks__/fileMock.js',
     '\\.(css|less)$': 'identity-obj-proxy',
+    // calculate-suv publishes under dist/ (not dist/esm), so map it explicitly
+    // before package-specific catch-all @cornerstonejs mappings.
+    '^@cornerstonejs/calculate-suv$': '<rootDir>/node_modules/@cornerstonejs/calculate-suv',
+    '^@cornerstonejs/calculate-suv/(.*)$':
+      '<rootDir>/node_modules/@cornerstonejs/calculate-suv/$1',
   },
   // Setup
   // setupFiles: ["jest-canvas-mock/lib/index.js"],

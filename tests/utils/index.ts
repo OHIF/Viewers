@@ -1,4 +1,4 @@
-import { visitStudy } from './visitStudy';
+import { visitStudy, visitStudyRendered } from './visitStudy';
 import {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
@@ -27,6 +27,7 @@ import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
 
 export {
   visitStudy,
+  visitStudyRendered,
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,
