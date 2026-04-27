@@ -1,3 +1,5 @@
+import type { Types } from '@ohif/core';
+
 /**
  * After SEG hydration we must refresh every viewport that shows the referenced volume so
  * presentations (including segmentation) apply to all MPR/3D tiles. Hanging-protocol matching
@@ -10,18 +12,15 @@
  * must list them; otherwise forcing a different UID onto a volume viewport can leave it blank.
  */
 function mergeVolumeSharingViewports(
-  hangingProtocolUpdates: unknown[] | null | undefined,
+  hangingProtocolUpdates: Types.HangingProtocol.ViewportUpdate[] | null | undefined,
   volumeUid: string | undefined,
   viewports: AppTypes.ViewportGrid.GridViewports
-): Array<{ viewportId: string; displaySetInstanceUIDs: string[] }> {
+): Types.HangingProtocol.ViewportUpdate[] {
   if (!volumeUid) {
-    return (hangingProtocolUpdates ?? []) as Array<{
-      viewportId: string;
-      displaySetInstanceUIDs: string[];
-    }>;
+    return (hangingProtocolUpdates ?? []) as Types.HangingProtocol.ViewportUpdate[];
   }
 
-  const byId = new Map<string, { viewportId: string; displaySetInstanceUIDs: string[] }>();
+  const byId = new Map<string, Types.HangingProtocol.ViewportUpdate>();
 
   const add = (viewportId: string, uids: string[]) => {
     if (!viewportId) {
@@ -31,12 +30,7 @@ function mergeVolumeSharingViewports(
   };
 
   if (Array.isArray(hangingProtocolUpdates)) {
-    for (const hpUpdate of hangingProtocolUpdates) {
-      const entry = hpUpdate as {
-        viewportId?: string;
-        viewportOptions?: { viewportId?: string };
-        displaySetInstanceUIDs?: string[];
-      };
+    for (const entry of hangingProtocolUpdates) {
       const vid = entry.viewportId ?? entry.viewportOptions?.viewportId;
       if (vid) {
         add(vid, entry.displaySetInstanceUIDs?.length ? entry.displaySetInstanceUIDs : [volumeUid]);
@@ -58,10 +52,7 @@ function mergeVolumeSharingViewports(
     Array.isArray(hangingProtocolUpdates) &&
     hangingProtocolUpdates.length > 0
   ) {
-    return hangingProtocolUpdates as Array<{
-      viewportId: string;
-      displaySetInstanceUIDs: string[];
-    }>;
+    return hangingProtocolUpdates;
   }
 
   return merged;

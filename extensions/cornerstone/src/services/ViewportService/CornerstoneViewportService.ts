@@ -52,8 +52,8 @@ const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
 function getVolumeActorReferencedIds(viewport: Types.IVolumeViewport): string[] {
   const actors = viewport.getActors?.() ?? [];
   return actors
-    .filter(ae => ae.actor?.getClassName?.() === 'vtkVolume')
-    .map(ae => ae.referencedId)
+    .filter(ac => ac.actor?.getClassName?.() === 'vtkVolume')
+    .map(ac => ac.referencedId)
     .filter(Boolean) as string[];
 }
 

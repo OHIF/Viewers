@@ -137,8 +137,9 @@ export function configureViewportForLayerRemoval(params: {
     viewport.viewportOptions = {};
   }
 
-  const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  viewport.viewportOptions.viewportType = csViewport?.type === 'orthographic' ? 'volume' : 'stack';
+  const csViewportOrthographic =
+    cornerstoneViewportService.getCornerstoneViewport(viewportId)?.type === 'orthographic';
+  viewport.viewportOptions.viewportType = csViewportOrthographic ? 'volume' : 'stack';
 
   // orientation
   if (!viewport.viewportOptions.orientation) {
