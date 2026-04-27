@@ -2096,6 +2096,15 @@ function commandsModule({
         displaySetInstanceUIDs,
       });
 
+      if (!updatedViewports?.length) {
+        return;
+      }
+
+      updatedViewports.forEach(({ viewportId: csViewportId }) => {
+        const csViewport = cornerstoneViewportService.getCornerstoneViewport(csViewportId);
+        csViewport?.setNeedsRender?.();
+      });
+
       actions.setDisplaySetsForViewports({
         viewportsToUpdate: updatedViewports.map(viewport => ({
           viewportId: viewport.viewportId,
