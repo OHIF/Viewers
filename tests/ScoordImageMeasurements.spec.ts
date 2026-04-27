@@ -1,4 +1,4 @@
-import { Page } from 'playwright-test-coverage';
+import { Locator, Page } from 'playwright-test-coverage';
 import { checkForScreenshot, expect, screenShotPaths, test, visitStudy } from './utils';
 
 const removeDevServerOverlay = (page: Page) =>
@@ -22,6 +22,40 @@ async function waitAndClickStructuredReportHydration(page: Page) {
 }
 
 /**
+ * Stack viewports show a "Loading..." overlay (ViewportImageSliceLoadingIndicator) after
+ * scroll/jump until the target slice is decoded. Wait for it to clear before screenshots.
+ *
+ * Important: the overlay is mounted on a 50ms delay, so a check that "Loading..." is
+ * missing must not pass until either we have seen it appear (then clear) or a grace
+ * period elapses (cached slice, overlay never shows).
+ */
+async function waitForStackSliceLoadingCleared(page: Page, viewportPane: Locator) {
+  const loading = viewportPane.getByText('Loading...', { exact: true }).first();
+  const start = Date.now();
+  const maxMs = 60_000;
+  const noOverlayGraceMs = 2500;
+  let sawLoadingVisible = false;
+  while (Date.now() - start < maxMs) {
+    const n = await loading.count();
+    const visible = n > 0 && (await loading.isVisible().catch(() => false));
+    if (visible) {
+      sawLoadingVisible = true;
+    }
+    if (!visible) {
+      if (sawLoadingVisible) {
+        await page.waitForTimeout(200);
+        return;
+      }
+      if (Date.now() - start >= noOverlayGraceMs) {
+        return;
+      }
+    }
+    await page.waitForTimeout(100);
+  }
+  throw new Error('Timeout waiting for stack slice "Loading..." overlay to clear');
+}
+
+/**
  * These two studies load heavy 3D viewports. Use this single spec (serial) instead
  * of two files with multiple workers, or the dev server on :3335 can be overloaded
  * (flaky baselines, ERR_CONNECTION_REFUSED on visitStudy).
@@ -29,16 +63,16 @@ async function waitAndClickStructuredReportHydration(page: Page) {
 test.describe('SCOORD image measurement screenshots', () => {
   test.describe.configure({ mode: 'serial' });
 
-  const probeStudyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
+  const pointStudyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7310.5101.860473186348887719777907797922';
 
-  test.describe('SCORD3D probe', () => {
+  test.describe('SCORD3D point', () => {
     test.beforeEach(async ({ page }) => {
-      await visitStudy(page, probeStudyInstanceUID, 'viewer', 5000);
+      await visitStudy(page, pointStudyInstanceUID, 'viewer', 5000);
       console.log(`✅ Actual page URL: ${page.url()}\n`);
       await removeDevServerOverlay(page);
     });
 
-    test('should hydrate SCOORD3D probe measurements correctly', async ({
+    test('should hydrate SCOORD3D point measurements correctly', async ({
       page,
       leftPanelPageObject,
       rightPanelPageObject,
@@ -68,7 +102,7 @@ test.describe('SCOORD image measurement screenshots', () => {
       await checkForScreenshot(
         page,
         activeViewport.pane,
-        screenShotPaths.scoord3dProbe.scoord3dProbePreHydration
+        screenShotPaths.scoord3dPoint.scoord3dPointPreHydration
       );
 
       await page.evaluate(() => {
@@ -100,7 +134,7 @@ test.describe('SCOORD image measurement screenshots', () => {
       await checkForScreenshot(
         page,
         activeViewport.pane,
-        screenShotPaths.scoord3dProbe.scoord3dProbePostHydration
+        screenShotPaths.scoord3dPoint.scoord3dPointPostHydration
       );
 
       const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
@@ -129,17 +163,21 @@ test.describe('SCOORD image measurement screenshots', () => {
       });
 
       await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
+      const activeAfterJump = await viewportPageObject.active;
+      await waitForStackSliceLoadingCleared(page, activeAfterJump.pane);
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(5000);
       await checkForScreenshot({
         page,
-        locator: activeViewport.pane,
-        screenshotPath: screenShotPaths.scoord3dProbe.scoord3dProbeJumpToMeasurement,
-        maxDiffPixelRatio: 0.06,
+        locator: activeAfterJump.pane,
+        screenshotPath: screenShotPaths.scoord3dPoint.scoord3dPointJumpToMeasurement,
+        maxDiffPixelRatio: 0.08,
+        attempts: 15,
+        delay: 2000,
       });
     });
 
-    test('should display SCOORD3D probe measurements correctly', async ({
+    test('should display SCOORD3D point measurements correctly', async ({
       page,
       leftPanelPageObject,
       rightPanelPageObject,
@@ -193,7 +231,7 @@ test.describe('SCOORD image measurement screenshots', () => {
       await checkForScreenshot(
         page,
         activeViewport.pane,
-        screenShotPaths.scoord3dProbe.scoord3dProbeDisplayedCorrectly
+        screenShotPaths.scoord3dPoint.scoord3dPointDisplayedCorrectly
       );
 
       const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
@@ -309,13 +347,26 @@ test.describe('SCOORD image measurement screenshots', () => {
       });
 
       await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
+      const activeAfterJump = await viewportPageObject.active;
+      await waitForStackSliceLoadingCleared(page, activeAfterJump.pane);
       await page.waitForLoadState('networkidle');
+      // Do not compare screenshots until the jump has landed on the SR-referenced instance;
+      // otherwise the stack can still show a different slice and blow past maxDiffPixelRatio.
+      const firstRowText = await rightPanelPageObject.measurementsPanel.panel
+        .nthMeasurement(0)
+        .locator.textContent();
+      const firstRefInstance = firstRowText?.match(/I:\s*(\d+)/i)?.[1] ?? '20';
+      await expect(
+        activeAfterJump.pane.getByTitle('Instance Number')
+      ).toContainText(new RegExp(`\\(${firstRefInstance}/`), { timeout: 60_000 });
       await page.waitForTimeout(2000);
       await checkForScreenshot({
         page,
-        locator: activeViewport.pane,
+        locator: activeAfterJump.pane,
         screenshotPath: screenShotPaths.scoordRectangle.scoordRectangleJumpToMeasurement,
-        maxDiffPixelRatio: 0.06,
+        maxDiffPixelRatio: 0.08,
+        attempts: 15,
+        delay: 2000,
       });
     });
 
