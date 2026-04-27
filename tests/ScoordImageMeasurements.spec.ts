@@ -54,7 +54,6 @@ test.describe('SCOORD image measurement screenshots', () => {
       await leftPanelPageObject.loadSeriesByModalityAndSeriesNumber('SR', 100);
       await page.waitForTimeout(2000);
       await waitAndClickStructuredReportHydration(page);
-      // Re-open MR so the active viewport is the 3D volume, not the SR document.
       await leftPanelPageObject.loadSeriesByModalityAndSeriesNumber('MR', 3);
       await page.waitForTimeout(2000);
       await page
@@ -87,7 +86,6 @@ test.describe('SCOORD image measurement screenshots', () => {
           viewport.render();
         }
       });
-
       await page.waitForTimeout(1000);
 
       await expect
@@ -105,12 +103,8 @@ test.describe('SCOORD image measurement screenshots', () => {
         screenShotPaths.scoord3dProbe.scoord3dProbePostHydration
       );
 
-      const measurementRows = page.getByTestId('data-row');
-      const rowCount = await measurementRows.count();
-      expect(
-        await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()
-      ).toBeGreaterThan(0);
-
+      const rowCount = await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount();
+      expect(rowCount).toBeGreaterThan(0);
       for (let i = 0; i < rowCount; i++) {
         const measurementText = await rightPanelPageObject.measurementsPanel.panel
           .nthMeasurement(i)
@@ -137,7 +131,6 @@ test.describe('SCOORD image measurement screenshots', () => {
       await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
-      // Scroll + jump has slightly more frame-to-frame pixel variance
       await checkForScreenshot({
         page,
         locator: activeViewport.pane,
@@ -167,7 +160,7 @@ test.describe('SCOORD image measurement screenshots', () => {
         .first()
         .waitFor({ state: 'visible', timeout: 60_000 });
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000);
 
       await expect
         .poll(
@@ -175,12 +168,6 @@ test.describe('SCOORD image measurement screenshots', () => {
           { timeout: 60_000 }
         )
         .toBeGreaterThan(0);
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(2000);
-
-      const activeViewport = await viewportPageObject.active;
-
-      await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
 
@@ -200,7 +187,8 @@ test.describe('SCOORD image measurement screenshots', () => {
         }
       });
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(8000);
+      const activeViewport = await viewportPageObject.active;
 
       await checkForScreenshot(
         page,
