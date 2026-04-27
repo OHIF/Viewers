@@ -6,10 +6,19 @@ test.beforeEach(async ({ page }) => {
   await visitStudyRendered(page, studyInstanceUID);
 });
 
-test('should properly display MPR for MR', async ({ page, mainToolbarPageObject }) => {
+test('should properly display MPR for MR', async ({
+  page,
+  mainToolbarPageObject,
+  viewportPageObject,
+}) => {
+  await mainToolbarPageObject.waitForVolumeLoad();
   await page.getByTestId('side-panel-header-right').click();
   // await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
-  await checkForScreenshot(page, page, screenShotPaths.mpr2.mprDisplayedCorrectly);
+  await checkForScreenshot({
+    page,
+    locator: viewportPageObject.grid,
+    screenshotPath: screenShotPaths.mpr2.mprDisplayedCorrectly,
+  });
 
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
@@ -33,5 +42,9 @@ test('should properly display MPR for MR', async ({ page, mainToolbarPageObject 
     }
   });
 
-  await checkForScreenshot(page, page, screenShotPaths.mpr2.mprDisplayedCorrectlyZoomed);
+  await checkForScreenshot({
+    page,
+    locator: viewportPageObject.grid,
+    screenshotPath: screenShotPaths.mpr2.mprDisplayedCorrectlyZoomed,
+  });
 });

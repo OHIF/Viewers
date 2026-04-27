@@ -1,5 +1,8 @@
 import { visitStudy, visitStudyRendered } from './visitStudy';
-import { addOHIFConfiguration } from './OHIFConfiguration';
+import {
+  addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
+} from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -26,6 +29,7 @@ export {
   visitStudy,
   visitStudyRendered,
   addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
