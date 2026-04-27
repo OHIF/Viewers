@@ -85,14 +85,17 @@ Allowed entry format for `dangerouslyAllowedOriginsForAuthenticatedEnvironments`
 Policy summary:
 
 - In unauthenticated environments, any HTTP(S) `?url=` origin is allowed.
-- In authenticated environments, `?url=` origins must be present in `dangerouslyAllowedOriginsForAuthenticatedEnvironments`, otherwise loading fails closed.
-- In unauthenticated environments, config URLs are fetched with:
+- In authenticated environments, same-origin `?url=` values are allowed by default.
+- In authenticated environments, cross-origin `?url=` values must be present in `dangerouslyAllowedOriginsForAuthenticatedEnvironments`, otherwise loading fails closed.
+- In unauthenticated environments, cross-origin config URLs are fetched with:
   - `method: 'GET'`
   - `mode: 'cors'`
   - `credentials: 'omit'`
   - `redirect: 'error'`
   - `referrerPolicy: 'no-referrer'`
-- In authenticated environments, allowlisted config URLs are fetched using simple fetch behavior.
+- In unauthenticated environments, same-origin config URLs use a plain `fetch()` call (browser default `credentials: 'same-origin'`).
+- Same-origin config URLs are fetched using simple fetch behavior (so same-origin session/cookie auth is preserved).
+- In authenticated environments, allowlisted cross-origin config URLs are fetched using simple fetch behavior.
 - Returned datasource configuration payloads are consumed as-is (no additional URL/config scrubbing).
 
 Example:
