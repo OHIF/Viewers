@@ -20,7 +20,7 @@ export class MagnifyGlassPageObject {
   }
 
   get locator(): Locator {
-    return this.page.locator('.magnifyTool');
+    return this.viewport.locator('.magnifyTool');
   }
 
   async drag({
