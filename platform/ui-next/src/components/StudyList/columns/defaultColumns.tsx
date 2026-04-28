@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../../DataTable';
 import { Icons } from '../../Icons';
-import type { StudyRow } from '../types/types';
+import type { StudyDateRangeFilter, StudyRow } from '../types/types';
 import { ActionCell } from '../components/ActionCell';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { formatStudyDate, parseStudyDateTimestamp } from '../utils/formatStudyDate';
@@ -73,6 +73,31 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       accessorFn: row => {
         const r = row as StudyRow;
         return formatStudyDate(r.date ?? '', r.time ?? '');
+      },
+      filterFn: (row, _colId, filter) => {
+        const range =
+          filter && typeof filter === 'object'
+            ? (filter as StudyDateRangeFilter)
+            : undefined;
+        const startDate = range?.startDate;
+        const endDate = range?.endDate;
+
+        if (!startDate && !endDate) {
+          return true;
+        }
+
+        const rowDate = String((row.original as StudyRow).date ?? '').replace(/\D/g, '');
+        if (!rowDate) {
+          return false;
+        }
+
+        if (startDate && rowDate < startDate) {
+          return false;
+        }
+        if (endDate && rowDate > endDate) {
+          return false;
+        }
+        return true;
       },
       header: ({ column }) => <DataTable.ColumnHeader column={column} />,
       cell: ({ row }) => {

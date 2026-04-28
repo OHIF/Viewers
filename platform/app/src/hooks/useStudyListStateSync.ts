@@ -5,7 +5,12 @@ import type { SortingState, PaginationState, ColumnFiltersState } from '@tanstac
 import qs from 'query-string';
 import useSearchParams from './useSearchParams';
 import useDebounce from './useDebounce';
-import { useSessionStorage, COLUMN_IDS, TEXT_FILTER_COLUMN_IDS } from '@ohif/ui-next';
+import {
+  useSessionStorage,
+  COLUMN_IDS,
+  TEXT_FILTER_COLUMN_IDS,
+  type StudyDateRangeFilter,
+} from '@ohif/ui-next';
 import { preserveQueryStrings } from '../utils/preserveQueryParameters';
 
 export type StudyListState = {
@@ -135,6 +140,18 @@ function parseFiltersFromURL(params: URLSearchParams): ColumnFiltersState {
     }
   }
 
+  const startDate = params.get('startdate');
+  const endDate = params.get('enddate');
+  if (startDate || endDate) {
+    filters.push({
+      id: COLUMN_IDS.STUDY_DATE_TIME,
+      value: {
+        ...(startDate ? { startDate } : {}),
+        ...(endDate ? { endDate } : {}),
+      },
+    });
+  }
+
   // Add other filter parsing as needed
   // For text filters like patientName, mrn, etc.
   TEXT_FILTER_COLUMN_IDS.forEach(key => {
@@ -175,6 +192,14 @@ function buildQueryFromState(state: StudyListState): string {
   state.filters.forEach(filter => {
     if (filter.id === COLUMN_IDS.MODALITIES && Array.isArray(filter.value)) {
       query.modalities = filter.value.join(',');
+    } else if (filter.id === COLUMN_IDS.STUDY_DATE_TIME) {
+      const dateRange = filter.value as StudyDateRangeFilter | undefined;
+      if (dateRange?.startDate) {
+        query.startDate = dateRange.startDate;
+      }
+      if (dateRange?.endDate) {
+        query.endDate = dateRange.endDate;
+      }
     } else if (typeof filter.value === 'string' && filter.value) {
       // Map column IDs to URL keys (lowercase)
       const urlKey = filter.id.toLowerCase();
