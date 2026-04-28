@@ -93,6 +93,7 @@ function DataSourceWrapper(props: withAppTypes) {
 
   const [data, setData] = useState(DEFAULT_DATA);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
   /**
    * The effect to initialize the data source whenever it changes. Similar to
@@ -114,6 +115,7 @@ function DataSourceWrapper(props: withAppTypes) {
   useEffect(() => {
     const dataSourceChangedCallback = () => {
       setIsLoading(false);
+      setHasFetchedOnce(false);
       setIsDataSourceInitialized(false);
       setDataSourcePath('');
       setDataSource(extensionManager.getActiveDataSource()[0]);
@@ -145,6 +147,7 @@ function DataSourceWrapper(props: withAppTypes) {
         studies: studies || [],
         queryFilterValues,
       });
+      setHasFetchedOnce(true);
       log.timeEnd(Enums.TimingEnum.SCRIPT_TO_VIEW);
       log.timeEnd(Enums.TimingEnum.SEARCH_TO_LIST);
 
@@ -201,8 +204,12 @@ function DataSourceWrapper(props: withAppTypes) {
       dataPath={dataSourcePath}
       dataSource={dataSource}
       isLoadingData={isLoading}
+      hasFetchedOnce={hasFetchedOnce}
       // To refresh the data, simply reset it to DEFAULT_DATA which invalidates it and triggers a new query to fetch the data.
-      onRefresh={() => setData(DEFAULT_DATA)}
+      onRefresh={() => {
+        setHasFetchedOnce(false);
+        setData(DEFAULT_DATA);
+      }}
     />
   );
 }

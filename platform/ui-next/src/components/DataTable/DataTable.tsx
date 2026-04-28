@@ -8,6 +8,7 @@ import React, {
   Children,
   isValidElement,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -61,6 +62,7 @@ export type DataTableProps<TData> = {
   onSortingChange?: OnChangeFn<SortingState>;
   onPaginationChange?: OnChangeFn<PaginationState>;
   onFiltersChange?: OnChangeFn<ColumnFiltersState>;
+  manualFiltering?: boolean;
   enforceSingleSelection?: boolean;
   onSelectionChange?: (rows: TData[]) => void;
   children: ReactNode;
@@ -81,6 +83,7 @@ function DataTableRoot<TData>({
   onSortingChange,
   onPaginationChange,
   onFiltersChange,
+  manualFiltering = false,
   enforceSingleSelection = true,
   onSelectionChange,
   children,
@@ -99,8 +102,9 @@ function DataTableRoot<TData>({
     onPaginationChange: onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: manualFiltering ? undefined : getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    manualFiltering,
     enableRowSelection: true,
     enableMultiRowSelection: !enforceSingleSelection,
     getRowId,
@@ -170,6 +174,11 @@ type TableProps = {
  */
 function Table<TData>({ children, className, tableClassName }: TableProps) {
   const { table } = useDataTable<TData>();
+  const rows =
+    typeof table.getPaginationRowModel === 'function'
+      ? table.getPaginationRowModel().rows
+      : table.getRowModel().rows;
+  const isEmpty = rows.length === 0;
 
   const renderColGroup = useCallback(
     () => (
@@ -230,9 +239,9 @@ function Table<TData>({ children, className, tableClassName }: TableProps) {
 
         {/* Scrollable body */}
         <div className="min-h-0 flex-1">
-          <ScrollArea className="h-full">
+          <ScrollArea className={cn('h-full', isEmpty && '[&>div>div]:!h-full')}>
             <BasicTable
-              className={cn('table-fixed', tableClassName)}
+              className={cn('h-full table-fixed', tableClassName)}
               containerClassName="h-full"
               noScroll
             >
@@ -295,6 +304,14 @@ type BodyProps<TData> = {
    * Message shown when there are no rows to render.
    */
   emptyMessage?: string;
+  /**
+   * When true and there are no rows, show loadingComponent centered instead of emptyMessage.
+   */
+  isLoading?: boolean;
+  /**
+   * Rendered in the empty body when isLoading is true (e.g. customization loading indicator).
+   */
+  loadingComponent?: ReactNode;
 };
 
 /**
@@ -302,7 +319,14 @@ type BodyProps<TData> = {
  * Automatically uses pagination if getPaginationRowModel is configured on the table.
  * Consumers can either rely on the default row renderer or provide a custom one.
  */
-function Body<TData>({ rowProps, emptyMessage = 'No results.' }: BodyProps<TData>) {
+function Body<TData>({
+  rowProps,
+  emptyMessage,
+  isLoading,
+  loadingComponent,
+}: BodyProps<TData>) {
+  const { t } = useTranslation('DataTable');
+  const resolvedEmptyMessage = emptyMessage ?? t('No results.');
   const { table } = useDataTable<TData>();
 
   // Automatically determine if pagination should be used
@@ -313,13 +337,22 @@ function Body<TData>({ rowProps, emptyMessage = 'No results.' }: BodyProps<TData
       : table.getRowModel().rows;
 
   if (!rows.length) {
+    if (isLoading && loadingComponent) {
+      return (
+        <BasicTableRow>
+          <BasicTableCell colSpan={table.getAllLeafColumns().length}>
+            <div className="flex h-full w-full items-center justify-center">{loadingComponent}</div>
+          </BasicTableCell>
+        </BasicTableRow>
+      );
+    }
     return (
       <BasicTableRow>
         <BasicTableCell
           colSpan={table.getAllLeafColumns().length}
-          className="h-24 text-center"
+          className="!pt-10 text-center align-text-top"
         >
-          {emptyMessage}
+          {resolvedEmptyMessage}
         </BasicTableCell>
       </BasicTableRow>
     );

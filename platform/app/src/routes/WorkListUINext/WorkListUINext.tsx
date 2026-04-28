@@ -17,6 +17,7 @@ type Props = withAppTypes & {
   dataTotal: number;
   dataSource: any;
   isLoadingData: boolean;
+  hasFetchedOnce?: boolean;
   dataPath?: string;
   onRefresh: () => void;
 };
@@ -28,12 +29,21 @@ export default function WorkListUINext({
   data,
   dataSource,
   isLoadingData,
+  hasFetchedOnce = false,
   dataPath,
   onRefresh,
   servicesManager,
   extensionManager,
 }: Props) {
   const [appConfig] = useAppConfig();
+  const { customizationService } = servicesManager.services;
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  ) as React.ComponentType<{ className?: string }> | undefined;
+  const [isFilterPending, setIsFilterPending] = useState(false);
+  const showStudyListLoading = Boolean(
+    (appConfig.showLoadingIndicator && isLoadingData) || !hasFetchedOnce || isFilterPending
+  );
 
   // Sync table state (sorting, pagination, filters) with URL and sessionStorage
   const { sorting, pagination, filters, setSorting, setPagination, setFilters } =
@@ -64,6 +74,13 @@ export default function WorkListUINext({
     return 30;
   }, []);
 
+  useEffect(() => {
+    if (isLoadingData) {
+      return;
+    }
+    setIsFilterPending(false);
+  }, [isLoadingData, data]);
+
   return (
     <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-black">
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
@@ -86,9 +103,18 @@ export default function WorkListUINext({
               filters={filters}
               onSortingChange={setSorting}
               onPaginationChange={setPagination}
-              onFiltersChange={setFilters}
-              enforceSingleSelection
-              showColumnVisibility
+              onFiltersChange={updater => {
+                setIsFilterPending(true);
+                setFilters(updater);
+              }}
+              isLoading={showStudyListLoading}
+              loadingComponent={
+                LoadingIndicatorProgress ? (
+                  <LoadingIndicatorProgress className="!relative bg-black" />
+                ) : (
+                  <div className="h-8 w-8" />
+                )
+              }
               title={'Study List'}
               onSelectionChange={sel => setSelected((sel as StudyRow[])[0] ?? null)}
               toolbarLeftComponent={logoComponent}
