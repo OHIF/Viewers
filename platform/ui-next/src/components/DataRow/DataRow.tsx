@@ -255,7 +255,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
           {/* Number Box */}
           {number !== null && (
             <div
-              className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
+              className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-background text-base ${
                 isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
               } overflow-hidden`}
             >
@@ -280,6 +280,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span
+                    data-cy="data-row-title"
                     className={`cursor-default text-base ${
                       isSelected ? 'text-highlight' : 'text-muted-foreground'
                     } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
@@ -296,6 +297,7 @@ const DataRowComponent = React.forwardRef<HTMLDivElement, DataRowProps>(
               </Tooltip>
             ) : (
               <span
+                data-cy="data-row-title"
                 className={`text-base ${
                   isSelected ? 'text-highlight' : 'text-muted-foreground'
                 } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
@@ -501,7 +503,7 @@ const StatusError: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
 const StatusInfo: React.FC<{ tooltip?: string }> = ({ tooltip }) => (
   <StatusIndicator
     tooltip={tooltip}
-    icon={<Icons.Info className="h-4 w-4 text-blue-500" />}
+    icon={<Icons.Info className="text-primary h-4 w-4" />}
     defaultTooltip="Info"
   />
 );

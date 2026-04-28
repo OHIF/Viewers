@@ -75,7 +75,7 @@ const DicomUploadProgressItem = memo(
         <div className="self-top flex w-0 shrink grow flex-col gap-1">
           <div className="flex gap-4">
             <div className="flex w-6 shrink-0 items-center justify-center">{getStatusIcon()}</div>
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-white">
+            <div className="text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
               {dicomFileUploader.getFileName()}
             </div>
           </div>

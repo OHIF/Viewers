@@ -5,6 +5,7 @@ import {
   SegmentationExpandedProvider,
   useSegmentationExpanded,
 } from './contexts';
+import { SegmentationLabel } from './SegmentationLabel';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -24,7 +25,7 @@ import {
 // Main header component
 const SegmentationCollapsedHeader = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-primary-dark flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
+    <div className="bg-muted flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
       {children}
     </div>
   );
@@ -32,12 +33,19 @@ const SegmentationCollapsedHeader = ({ children }: { children: React.ReactNode }
 
 // Dropdown menu component - specifically for dropdown menu content
 const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.ReactNode }) => {
+  const { segmentationRepresentationTypes } = useSegmentationTableContext(
+    'SegmentationCollapsedDropdownMenu'
+  );
+  const dataCyTypeSuffix = segmentationRepresentationTypes?.[0]
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
+          data-cy={`segmentation-collapsed-more-btn${dataCyTypeSuffix}`}
         >
           <Icons.More className="h-6 w-6" />
         </Button>
@@ -49,10 +57,9 @@ const SegmentationCollapsedDropdownMenu = ({ children }: { children: React.React
 
 // Selector component - for the segmentation selection dropdown
 const SegmentationCollapsedSelector = () => {
-  const { t } = useTranslation('SegmentationPanel.HeaderCollapsed');
-  const { data, onSegmentationClick, segmentationRepresentationType } = useSegmentationTableContext(
-    'SegmentationCollapsedSelector'
-  );
+  const { t } = useTranslation('SegmentationPanel');
+  const { data, onSegmentationClick, segmentationRepresentationTypes } =
+    useSegmentationTableContext('SegmentationCollapsedSelector');
   const { segmentation } = useSegmentationExpanded('SegmentationCollapsedSelector');
 
   if (!data?.length) {
@@ -63,21 +70,33 @@ const SegmentationCollapsedSelector = () => {
     // Only show segmentations of the representation type for this panel. Show all segmentations if no type is specified.
     .filter(
       seg =>
-        !segmentationRepresentationType ||
-        segmentationRepresentationType === seg.representation.type
+        !segmentationRepresentationTypes ||
+        segmentationRepresentationTypes.includes(seg.representation?.type)
     )
     .map(seg => ({
       id: seg.segmentation.segmentationId,
-      label: seg.segmentation.label,
+      segmentation: seg.segmentation,
     }));
+
+  const dataCyTypeSuffix = segmentationRepresentationTypes
+    ? `-${segmentationRepresentationTypes[0]}`
+    : '';
 
   return (
     <Select
       onValueChange={value => onSegmentationClick(value)}
       value={segmentation?.segmentationId}
     >
-      <SelectTrigger className="w-full overflow-hidden">
-        <SelectValue placeholder={t('Select a segmentation')} />
+      <SelectTrigger
+        className="w-full overflow-hidden"
+        data-cy={`segmentation-select${dataCyTypeSuffix}`}
+      >
+        <SelectValue
+          placeholder={t('Select a segmentation')}
+          data-cy={`segmentation-select-value${dataCyTypeSuffix}`}
+        >
+          <SegmentationLabel segmentation={segmentation} />
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {segmentations.map(seg => (
@@ -85,7 +104,7 @@ const SegmentationCollapsedSelector = () => {
             key={seg.id}
             value={seg.id}
           >
-            {seg.label}
+            <SegmentationLabel segmentation={seg.segmentation} />
           </SelectItem>
         ))}
       </SelectContent>
@@ -132,14 +151,14 @@ const SegmentationCollapsedContent = ({ children }: { children: React.ReactNode 
 const SegmentationCollapsedRoot: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
 }) => {
-  const { mode, data, segmentationRepresentationType, selectedSegmentationIdForType } =
+  const { mode, data, segmentationRepresentationTypes, selectedSegmentationIdForType } =
     useSegmentationTableContext('SegmentationCollapsed');
 
   // Find the segmentations for the representation type for this collapsed view.
   const segmentations = data.filter(
     segmentation =>
-      !segmentationRepresentationType ||
-      segmentationRepresentationType === segmentation.representation?.type
+      !segmentationRepresentationTypes ||
+      segmentationRepresentationTypes.includes(segmentation.representation?.type)
   );
 
   // Check if we should render.

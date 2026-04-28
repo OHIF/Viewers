@@ -66,7 +66,15 @@ const segmentationRepresentationModifiedCallback = async (
 
   const sharedDisplaySetExists = isAnyDisplaySetCommon(sourceDisplaySetUIDs, targetDisplaySetUIDs);
 
-  if (!sharedDisplaySetExists && !viewport.getFrameOfReferenceUID()) {
+  const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
+  const sourceFrameOfReferenceUID =
+    getEnabledElementByViewportId(sourceViewportId)?.viewport?.getFrameOfReferenceUID();
+
+  if (!sharedDisplaySetExists && !targetFrameOfReferenceUID) {
+    return;
+  }
+
+  if (!sharedDisplaySetExists && targetFrameOfReferenceUID !== sourceFrameOfReferenceUID) {
     return;
   }
 
@@ -91,7 +99,7 @@ const segmentationRepresentationModifiedCallback = async (
     type,
     config: {
       blendMode:
-        viewport.getBlendMode() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
+        viewport?.getBlendMode?.() === 1 ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND : undefined,
     },
   });
 };

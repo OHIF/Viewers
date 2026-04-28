@@ -1,3 +1,4 @@
+import { vec3 } from 'gl-matrix';
 import { PubSubService } from '@ohif/core';
 import { Types as OhifTypes } from '@ohif/core';
 import {
@@ -8,6 +9,7 @@ import {
   utilities as csUtils,
   VolumeViewport,
   VolumeViewport3D,
+  ECGViewport,
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
@@ -36,6 +38,8 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
+import getClosestOrientationFromIOP from '../../utils/isReferenceViewable';
+import { BlendModes } from '@cornerstonejs/core/enums';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -44,6 +48,47 @@ const EVENTS = {
 
 const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
 const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
+
+function getVolumeActorReferencedIds(viewport: Types.IVolumeViewport): string[] {
+  const actors = viewport.getActors?.() ?? [];
+  return actors
+    .filter(ac => ac.actor?.getClassName?.() === 'vtkVolume')
+    .map(ac => ac.referencedId)
+    .filter(Boolean) as string[];
+}
+
+function volumeIdPrefixesMatch(
+  existingIds: string[],
+  prefixLen: number,
+  targetIds: string[]
+): boolean {
+  if (prefixLen > targetIds.length) {
+    return false;
+  }
+  for (let i = 0; i < prefixLen; i++) {
+    if (existingIds[i] !== targetIds[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Returns true when the viewport type matches a volume-based presentation (ORTHOGRAPHIC or VOLUME_3D).
+ */
+function viewportMatchesDesiredVolumePresentation(
+  viewport: Types.IViewport,
+  desiredViewportInfo: ViewportInfo
+): boolean {
+  const desiredType = desiredViewportInfo.getViewportType();
+  if (viewport.type !== desiredType) {
+    return false;
+  }
+  return (
+    desiredType === csEnums.ViewportType.ORTHOGRAPHIC ||
+    desiredType === csEnums.ViewportType.VOLUME_3D
+  );
+}
 
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
 export const WITH_ORIENTATION = { withNavigation: true, withOrientation: true };
@@ -538,8 +583,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * viewport to display the image in where it matches, in order:
    *   * Active viewport that can be navigated to the given image without orientation change
    *   * Other viewport that can be navigated to the given image without orientation change
-   *   * Active viewport that can change orientation to display the image
-   *   * Other viewport that can change orientation to display the image
+   *   * Best-aligned viewport that can display the image with an orientation change
    *
    * It returns `null` otherwise, indicating that a viewport needs display set/type
    * changes in order to display the image.
@@ -562,7 +606,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (!activeViewport) {
       console.warn('No active viewport found for', activeViewportId);
     }
-    if (activeViewport?.isReferenceViewable(metadata, { withNavigation: true })) {
+    if (activeViewport?.isReferenceViewable(metadata, WITH_NAVIGATION)) {
       return activeViewportId;
     }
 
@@ -570,25 +614,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // without considering orientation changes.
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
-      if (viewport?.isReferenceViewable(metadata, { withNavigation: true })) {
+      if (viewport?.isReferenceViewable(metadata, WITH_NAVIGATION)) {
         return id;
       }
     }
 
-    // No viewport is in the right display set/orientation to show this, so see if
-    // the active viewport could change orientations to show this
-    if (
-      activeViewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
-    ) {
-      return activeViewportId;
-    }
+    // Compute view-plane alignment scores for all viewports to prefer the one
+    // requiring the least orientation change when navigation-only is not possible.
+    const viewportAlignmentData = this.getViewportAlignmentData(metadata);
 
     // See if any viewport could show this with an orientation change
-    for (const id of this.viewportsById.keys()) {
+    for (const { viewportId: id } of viewportAlignmentData) {
       const viewport = this.getCornerstoneViewport(id);
-      if (
-        viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
-      ) {
+      if (viewport?.isReferenceViewable(metadata, WITH_ORIENTATION)) {
         return id;
       }
     }
@@ -598,78 +636,89 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
+   * Given a metadata instance containing a planeRestriction, returns the
+   * ordered list of best orientation match viewport ids.
+   *
+   * This uses the planeRestriction preferentially as that one is more reliably
+   * filled than the viewport normal since it is created from data points on
+   * rehydration.
+   */
+  public getViewportAlignmentData(metadata) {
+    const viewportAlignmentData = [];
+    const { viewPlaneNormal: refViewPlaneNormal, planeRestriction } = metadata;
+    const inPlaneVector1 = planeRestriction?.inPlaneVector1;
+    const inPlaneVector2 = planeRestriction?.inPlaneVector2;
+
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      const { viewPlaneNormal } = viewport.getCamera();
+
+      if (!viewPlaneNormal) {
+        continue;
+      }
+      let alignmentScore = 0;
+      if (inPlaneVector1 || inPlaneVector2) {
+        const inPlane1Score = inPlaneVector1
+          ? -Math.abs(vec3.dot(viewPlaneNormal, inPlaneVector1))
+          : 0;
+        const inPlane2Score = inPlaneVector2
+          ? -Math.abs(vec3.dot(viewPlaneNormal, inPlaneVector2))
+          : 0;
+        alignmentScore = inPlane1Score + inPlane2Score;
+      } else if (refViewPlaneNormal) {
+        alignmentScore = Math.abs(vec3.dot(viewPlaneNormal, refViewPlaneNormal));
+      }
+      viewportAlignmentData.push({ viewportId: id, alignmentScore });
+    }
+
+    // Try best-aligned viewports first
+    viewportAlignmentData.sort((a, b) => b.alignmentScore - a.alignmentScore);
+    return viewportAlignmentData;
+  }
+
+  /**
    * Figures out which viewport to update when the viewport type needs to change.
-   * This may not be the active viewport if there is already a viewport showing
-   * the display set, but in the wrong orientation.
-   *
-   * The viewport will need to update the viewport type and/or display set to
-   * display the resulting data.
-   *
-   * The first choice will be a viewport already showing the correct display set,
-   * but showing it as a stack.
-   *
-   * Second choice is to see if there is a viewport already showing the right
-   * orientation for the image, but the wrong display set.  This fixes the
-   * case where the user is in MPR and a viewport other than active should be
-   * the one to change to display the iamge.
-   *
-   * Final choice is to use the provide activeViewportId.  This will cover
-   * changes to/from video and wsi viewports and other cases where no
-   * viewport is really even close to being able to display the measurement.
+   * Orchestrates the search strategies in order of preference.
    */
   public findUpdateableViewportConfiguration(activeViewportId: string, measurement) {
     const { metadata, displaySetInstanceUID } = measurement;
-    const { volumeId, referencedImageId } = metadata;
-    const { displaySetService, viewportGridService } = this.servicesManager.services;
+    const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
-    let { viewportType } = displaySet;
-    if (!viewportType) {
-      if (referencedImageId && !displaySet.isReconstructable) {
-        viewportType = csEnums.ViewportType.STACK;
-      } else if (volumeId) {
-        viewportType = 'volume';
-      }
+    // 1. Determine the target Viewport Type (Stack vs Volume)
+    const viewportType = this.determineTargetViewportType(displaySet, metadata);
+
+    // 2. Strategy: Find viewport already showing this volume
+    const volumeMatch = this.findViewportShowingVolume(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (volumeMatch) {
+      return volumeMatch;
     }
 
-    // Find viewports that could be updated to be volumes to show this view
-    // That prefers a viewport already showing the right display set.
-    if (volumeId) {
-      for (const id of this.viewportsById.keys()) {
-        const viewport = this.getCornerstoneViewport(id);
-        if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
-          return {
-            viewportId: id,
-            displaySetInstanceUID,
-            viewportOptions: { viewportType },
-          };
-        }
-      }
+    // 3. Strategy: Find viewport with compatible orientation (even if different display set)
+    const compatibleMatch = this.findViewportConvertibleToVolume(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (compatibleMatch) {
+      return compatibleMatch;
     }
 
-    // Find a viewport in the correct orientation showing a different display set
-    // which could be used to display the annotation.
-    const altMetadata = { ...metadata, volumeId: null, referencedImageId: null };
-    for (const id of this.viewportsById.keys()) {
-      const viewport = this.getCornerstoneViewport(id);
-      const viewportDisplaySetUID = viewportGridService.getDisplaySetsUIDsForViewport(id)?.[0];
-      if (!viewportDisplaySetUID || !viewport) {
-        continue;
-      }
-      if (volumeId) {
-        altMetadata.volumeId = viewportDisplaySetUID;
-      }
-      altMetadata.FrameOfReferenceUID = this._getFrameOfReferenceUID(viewportDisplaySetUID);
-      if (viewport.isReferenceViewable(altMetadata, { asVolume: true, withNavigation: true })) {
-        return {
-          viewportId: id,
-          displaySetInstanceUID,
-          viewportOptions: { viewportType },
-        };
-      }
+    // 4. Strategy: Find viewport with matching orientation via IOP
+    const orientationMatch = this.findViewportWithMatchingOrientation(
+      metadata,
+      displaySetInstanceUID,
+      viewportType
+    );
+    if (orientationMatch) {
+      return orientationMatch;
     }
 
-    // Just display in the active viewport
+    // 5. Fallback: Use the active viewport
     return {
       viewportId: activeViewportId,
       displaySetInstanceUID,
@@ -678,8 +727,112 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
+   * Determines if the viewport should be what is specified in
+   * the viewportType of the display set, or stack if the display
+   * set isn't reconstructable and there is a referenced image id, otherwise
+   * volume.
+   *
+   * Expect there to be more rules in the future for different types of annotations/settings
+   * such as 3d annotations.
+   */
+  public determineTargetViewportType(displaySet, metadata): string {
+    let { viewportType } = displaySet;
+
+    if (!viewportType) {
+      if (metadata.referencedImageId && !displaySet.isReconstructable) {
+        viewportType = csEnums.ViewportType.STACK;
+      } else if (metadata.volumeId) {
+        viewportType = 'volume';
+      }
+    }
+    return viewportType;
+  }
+
+  /**
+   * Find viewports that could be updated to be volumes to show this view.
+   * Prefers a viewport already showing the right display set.
+   */
+  public findViewportShowingVolume(metadata, displaySetInstanceUID, viewportType) {
+    if (!metadata.volumeId) {
+      return null;
+    }
+
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, { asVolume: true, withNavigation: true })) {
+        return {
+          viewportId: id,
+          displaySetInstanceUID,
+          viewportOptions: { viewportType },
+        };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a viewport that could be converted to a volume to show this annotation,
+   * already showing the right display set.
+   */
+  public findViewportConvertibleToVolume(metadata, displaySetInstanceUID, viewportType) {
+    const { viewportGridService } = this.servicesManager.services;
+    const altMetadata = { ...metadata, volumeId: null, referencedImageId: null };
+
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      const viewportDisplaySetUID = viewportGridService.getDisplaySetsUIDsForViewport(id)?.[0];
+
+      if (!viewportDisplaySetUID || !viewport) {
+        continue;
+      }
+
+      if (metadata.volumeId) {
+        altMetadata.volumeId = viewportDisplaySetUID;
+      }
+      altMetadata.FrameOfReferenceUID = this._getFrameOfReferenceUID(viewportDisplaySetUID);
+
+      if (viewport.isReferenceViewable(altMetadata, { asVolume: true, withNavigation: true })) {
+        return {
+          viewportId: id,
+          displaySetInstanceUID,
+          viewportOptions: { viewportType },
+        };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a viewport with the closest orientation but on a different display set.
+   */
+  public findViewportWithMatchingOrientation(metadata, displaySetInstanceUID, viewportType) {
+    const viewportAlignmentData = this.getViewportAlignmentData(metadata);
+    if (viewportAlignmentData?.length) {
+      return {
+        ...viewportAlignmentData[0],
+        displaySetInstanceUID,
+        viewportOptions: { viewportType },
+      };
+    }
+    return null;
+  }
+
+  /**
    * Sets the image data for the given viewport.
    */
+  private async _setEcgViewport(
+    viewport: Types.IECGViewport,
+    viewportData: StackViewportData
+  ): Promise<void> {
+    const [displaySet] = viewportData.data;
+    const imageId = displaySet.imageIds?.[0];
+    if (!imageId) {
+      console.error('[CornerstoneViewportService] ECG display set has no imageId');
+      return;
+    }
+    return viewport.setEcg(imageId);
+  }
+
   private async _setOtherViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
@@ -758,28 +911,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
 
-    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
-      viewport.setProperties({ ...properties });
-      this.setPresentations(viewport.id, presentations, viewportInfo);
+    await viewport.setStack(imageIds, initialImageIndexToUse);
+    viewport.setProperties({ ...properties });
+    this.setPresentations(viewport.id, presentations, viewportInfo);
 
-      if (overlayProcessingResults?.length) {
-        overlayProcessingResults.forEach(overlayProcessingResult => {
-          if (overlayProcessingResult?.addOverlayFn) {
-            overlayProcessingResult.addOverlayFn();
-          }
-        });
-      }
+    await this._addOverlayRepresentations(overlayProcessingResults);
 
-      if (displayArea) {
-        viewport.setDisplayArea(displayArea);
-      }
-      if (rotation) {
-        viewport.setProperties({ rotation });
-      }
-      if (flipHorizontal) {
-        viewport.setCamera({ flipHorizontal: true });
-      }
-    });
+    if (displayArea) {
+      viewport.setDisplayArea(displayArea);
+    }
+    if (rotation) {
+      viewport.setProperties({ rotation });
+    }
+    if (flipHorizontal) {
+      viewport.setCamera({ flipHorizontal: true });
+    }
   }
 
   private _getInitialImageIndexForViewport(
@@ -1007,15 +1153,45 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    await viewport.setVolumes(volumeInputArray);
+    const baseVolumeInputs = filteredVolumeInputArray.map(({ volumeInput }) => volumeInput);
+    const nextBaseVolumeIds = baseVolumeInputs.map(v => v.volumeId);
+    const existingVolumeIds = getVolumeActorReferencedIds(viewport);
 
-    if (overlayProcessingResults?.length) {
-      overlayProcessingResults.forEach(({ addOverlayFn }) => {
-        if (addOverlayFn) {
-          addOverlayFn();
+    let skippedIdenticalBaseVolumes = false;
+
+    if (baseVolumeInputs.length) {
+      const singleBaseViewport = nextBaseVolumeIds.length === 1;
+
+      // Only skip setVolumes() when the viewport type already matches the desired OHIF type
+      // (ORTHOGRAPHIC / VOLUME_3D); otherwise a stack → MPR switch with the same volumeId
+      // would incorrectly skip rebuilding the viewport.
+      if (
+        singleBaseViewport &&
+        existingVolumeIds.length >= nextBaseVolumeIds.length &&
+        volumeIdPrefixesMatch(existingVolumeIds, nextBaseVolumeIds.length, nextBaseVolumeIds) &&
+        viewportMatchesDesiredVolumePresentation(viewport, viewportInfo)
+      ) {
+        // Same primary volume already loaded (e.g. labelmap / extra actors after it) — avoid
+        // setVolumes(), which tears down all actors and blanks MPR during SEG hydrate.
+        skippedIdenticalBaseVolumes = true;
+      } else if (
+        existingVolumeIds.length &&
+        nextBaseVolumeIds.length > existingVolumeIds.length &&
+        volumeIdPrefixesMatch(existingVolumeIds, existingVolumeIds.length, nextBaseVolumeIds) &&
+        typeof viewport.addVolumes === 'function'
+      ) {
+        const toAdd = baseVolumeInputs.slice(existingVolumeIds.length);
+        if (toAdd.length) {
+          await viewport.addVolumes(toAdd);
         }
-      });
+      } else {
+        await viewport.setVolumes(baseVolumeInputs);
+      }
+    } else if (volumeInputArray.length) {
+      await viewport.setVolumes(volumeInputArray);
     }
+
+    await this._addOverlayRepresentations(overlayProcessingResults);
     viewport.render();
 
     volumesProperties.forEach(({ properties, volumeId }) => {
@@ -1026,8 +1202,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     this.setPresentations(viewport.id, presentations);
+    // Presentations apply segmentation (hydrated labelmap etc.) after the render above — redraw so
+    // every orthographic/3D tile shows the updated scene (fixes MPR siblings blank after SEG hydrate).
+    viewport.render();
 
-    if (!presentations.positionPresentation) {
+    if (!presentations.positionPresentation && !skippedIdenticalBaseVolumes) {
       const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
       if (imageIndex !== undefined) {
@@ -1081,7 +1260,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   private addOverlayRepresentationForDisplaySet(
     displaySet: OhifTypes.DisplaySet,
     viewport: Types.IViewport
-  ) {
+  ): Promise<void> {
     const { segmentationService } = this.servicesManager.services;
     const segmentationId = displaySet.displaySetInstanceUID;
 
@@ -1091,14 +1270,36 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         : csToolsEnums.SegmentationRepresentations.Contour;
 
     const { predecessorImageId } = displaySet;
-    segmentationService.addSegmentationRepresentation(viewport.id, {
-      segmentationId,
-      predecessorImageId,
-      type: representationType,
-    });
-
+    const segmentationRepresentationPromise = segmentationService.addSegmentationRepresentation(
+      viewport.id,
+      {
+        segmentationId,
+        predecessorImageId,
+        type: representationType,
+        config: {
+          blendMode:
+            viewport?.getBlendMode?.() === 1
+              ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+              : undefined,
+        },
+      }
+    );
     // store the segmentation presentation id in the viewport info
     this.storePresentation({ viewportId: viewport.id });
+    return segmentationRepresentationPromise;
+  }
+
+  private async _addOverlayRepresentations(
+    overlayProcessingResults?: Array<{ addOverlayFn?: () => Promise<void> }>
+  ): Promise<void> {
+    if (!overlayProcessingResults?.length) {
+      return;
+    }
+    for (const overlayProcessingResult of overlayProcessingResults) {
+      if (overlayProcessingResult?.addOverlayFn) {
+        await overlayProcessingResult.addOverlayFn();
+      }
+    }
   }
 
   // Todo: keepCamera is an interim solution until we have a better solution for
@@ -1155,6 +1356,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
+    if (viewport instanceof ECGViewport) {
+      return this._setEcgViewport(
+        viewport as unknown as Types.IECGViewport,
+        viewportData as StackViewportData
+      );
+    }
+
     return this._setOtherViewport(
       viewport,
       viewportData as StackViewportData,
@@ -1206,8 +1414,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    if (displaySet.frameOfReferenceUID) {
-      return displaySet.frameOfReferenceUID;
+    if (displaySet.FrameOfReferenceUID) {
+      return displaySet.FrameOfReferenceUID;
     }
 
     if (displaySet.Modality === 'SEG') {
@@ -1360,6 +1568,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
           type: representationType,
+          config: {
+            blendMode:
+              viewport?.getBlendMode?.() === 1
+                ? BlendModes.LABELMAP_EDGE_PROJECTION_BLEND
+                : undefined,
+          },
         });
       }
     });

@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger } from '../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip/Tooltip';
 import { ScrollArea } from '../../components';
 import { useDynamicMaxHeight } from '../../hooks/useDynamicMaxHeight';
+import { SegmentationLabel } from './SegmentationLabel';
 
 // The Header container component
 const SegmentationExpandedHeader = ({ children }: { children: React.ReactNode }) => {
@@ -53,7 +54,11 @@ const SegmentationExpandedDropdownMenu = ({ children }: { children: React.ReactN
 const SegmentationExpandedLabel = () => {
   const { segmentation } = useSegmentationExpanded('SegmentationExpandedLabel');
 
-  return <div className="pl-1.5">{segmentation.label}</div>;
+  return (
+    <div className="pl-1.5">
+      <SegmentationLabel segmentation={segmentation} />
+    </div>
+  );
 };
 
 // Info component - for the info tooltip
@@ -93,7 +98,7 @@ const SegmentationExpandedContent = ({ children }: { children: React.ReactNode }
 
 // Main compound component
 const SegmentationExpandedRoot = ({ children }) => {
-  const { data, activeSegmentationId, onSegmentationClick, mode, segmentationRepresentationType } =
+  const { data, activeSegmentationId, onSegmentationClick, mode, segmentationRepresentationTypes } =
     useSegmentationTableContext('SegmentationExpanded');
 
   const { ref: scrollableContainerRef, maxHeight } = useDynamicMaxHeight(data);
@@ -105,7 +110,7 @@ const SegmentationExpandedRoot = ({ children }) => {
 
   return (
     <ScrollArea
-      className={`bg-bkg-low space-y-px`}
+      className={`bg-background space-y-px`}
       showArrows={true}
     >
       <div
@@ -116,8 +121,8 @@ const SegmentationExpandedRoot = ({ children }) => {
         {data
           .filter(
             segmentationInfo =>
-              !segmentationRepresentationType ||
-              segmentationInfo.representation.type === segmentationRepresentationType
+              !segmentationRepresentationTypes ||
+              segmentationRepresentationTypes.includes(segmentationInfo.representation.type)
           )
           .map(segmentationInfo => {
             const isActive = segmentationInfo.segmentation.segmentationId === activeSegmentationId;

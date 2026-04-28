@@ -138,7 +138,7 @@ const WindowLevel = ({
         {showOpacitySlider && (
           <div className="mt-2">
             <div className="flex items-center justify-between gap-2 text-base">
-              <div className="text-xs text-white">Opacity</div>
+              <div className="text-foreground text-xs">Opacity</div>
               <div className="flex-1">
                 <Numeric.Container
                   mode="singleRange"

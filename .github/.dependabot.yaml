@@ -2,6 +2,8 @@ version: 2
 enable-beta-ecosystems: true
 updates:
   - package-ecosystem: 'bun'
+    # Disable all pull requests for bun version updates.
+    open-pull-requests-limit: 0
     directory: '/'
     schedule:
       interval: 'daily'
@@ -10,6 +12,8 @@ updates:
       prefix: 'chore'
       include: 'scope'
   - package-ecosystem: 'npm'
+    # Disable all pull requests for npm version updates.
+    open-pull-requests-limit: 0
     directory: '/'
     schedule:
       interval: 'daily'

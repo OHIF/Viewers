@@ -1,4 +1,8 @@
 import { visitStudy } from './visitStudy';
+import {
+  addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
+} from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -16,10 +20,20 @@ import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
 import { attemptAction } from './attemptAction';
 import { addLengthMeasurement } from './addLengthMeasurement';
+import { getSvgPath } from './getSvgPath';
+import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
+import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import {
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
+} from './waitForViewportsRendered';
 
 export {
   visitStudy,
+  addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
@@ -36,6 +50,12 @@ export {
   scrollVolumeViewport,
   attemptAction,
   addLengthMeasurement,
+  subscribeToMeasurementAdded,
+  getSvgPath,
+  navigateWithViewportArrow,
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
   test,
   expect,
 };
