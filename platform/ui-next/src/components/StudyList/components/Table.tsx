@@ -1,4 +1,5 @@
 import React, { type ReactNode, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DataTable, useDataTable } from '../../DataTable';
 import type { DataTableProps } from '../../DataTable/DataTable';
 import { Button } from '../../Button';
@@ -15,6 +16,8 @@ export type TableProps = Omit<DataTableProps<StudyRow>, 'children' | 'getRowId'>
   toolbarLeftComponent?: ReactNode;
   toolbarRightActionsComponent?: ReactNode;
   toolbarRightComponent?: ReactNode;
+  isLoading?: boolean;
+  loadingComponent?: ReactNode;
 };
 
 export function Table({
@@ -35,6 +38,9 @@ export function Table({
   toolbarLeftComponent,
   toolbarRightActionsComponent,
   toolbarRightComponent,
+  isLoading,
+  loadingComponent,
+  manualFiltering,
 }: TableProps) {
   return (
     <DataTable<StudyRow>
@@ -48,6 +54,7 @@ export function Table({
       onSortingChange={onSortingChange}
       onPaginationChange={onPaginationChange}
       onFiltersChange={onFiltersChange}
+      manualFiltering={manualFiltering}
       enforceSingleSelection={enforceSingleSelection}
       onSelectionChange={onSelectionChange}
     >
@@ -58,6 +65,8 @@ export function Table({
         toolbarLeftComponent={toolbarLeftComponent}
         toolbarRightActionsComponent={toolbarRightActionsComponent}
         toolbarRightComponent={toolbarRightComponent}
+        isLoading={isLoading}
+        loadingComponent={loadingComponent}
       />
     </DataTable>
   );
@@ -70,6 +79,8 @@ function TableContent({
   toolbarLeftComponent,
   toolbarRightActionsComponent,
   toolbarRightComponent,
+  isLoading,
+  loadingComponent,
 }: {
   title?: ReactNode;
   showColumnVisibility?: boolean;
@@ -77,7 +88,10 @@ function TableContent({
   toolbarLeftComponent?: ReactNode;
   toolbarRightActionsComponent?: ReactNode;
   toolbarRightComponent?: ReactNode;
+  isLoading?: boolean;
+  loadingComponent?: ReactNode;
 }) {
+  const { t } = useTranslation('StudyList');
   const { table } = useDataTable<StudyRow>();
   const modalityOptions = useMemo(() => {
     const rows = (table.options?.data as StudyRow[]) ?? [];
@@ -189,7 +203,9 @@ function TableContent({
           }}
         />
         <DataTable.Body<StudyRow>
-          emptyMessage="No results."
+          emptyMessage={t('No studies available')}
+          isLoading={isLoading}
+          loadingComponent={loadingComponent}
           rowProps={{
             className: 'group cursor-pointer',
             onClick: row => {

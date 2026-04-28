@@ -126,12 +126,15 @@ function Table({
   onSortingChange,
   onPaginationChange,
   onFiltersChange,
+  manualFiltering,
   sorting,
   pagination,
   filters,
   toolbarLeftComponent,
   toolbarRightComponent,
   toolbarRightActionsComponent,
+  isLoading,
+  loadingComponent,
   children,
 }: TableProps) {
   const { defaultPreviewSizePercent } = useLayout();
@@ -159,9 +162,12 @@ function Table({
             onSortingChange={onSortingChange}
             onPaginationChange={onPaginationChange}
             onFiltersChange={onFiltersChange}
+            manualFiltering={manualFiltering}
             sorting={sorting}
             pagination={pagination}
             filters={filters}
+            isLoading={isLoading}
+            loadingComponent={loadingComponent}
           />
         </div>
       </div>
