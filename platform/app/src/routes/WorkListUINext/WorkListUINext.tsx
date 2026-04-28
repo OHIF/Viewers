@@ -6,7 +6,7 @@ import { useAppConfig } from '@state';
 import { preserveQueryParameters } from '../../utils/preserveQueryParameters';
 import { useStudyListStateSync } from '../../hooks';
 
-import { StudyList, Icons, Button, useModal } from '@ohif/ui-next';
+import { StudyList, Icons, Button, useModal, InvestigationalUseDialog } from '@ohif/ui-next';
 import { useWorkListToolbarActions } from './useWorkListToolbarActions';
 
 import { utils, DicomMetadataStore, useSystem } from '@ohif/core';
@@ -66,6 +66,7 @@ export default function WorkListUINext({
 
   return (
     <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-black">
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="flex h-full min-h-0 flex-col">
         <div className="flex min-h-0 flex-1 flex-col">
           <StudyList
