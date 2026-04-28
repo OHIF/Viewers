@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { DataTable, useDataTable } from '../../DataTable';
 import type { DataTableProps } from '../../DataTable/DataTable';
 import { Button } from '../../Button';
+import { DatePickerWithRange } from '../../DateRange';
 import { InputMultiSelect } from '../../InputMultiSelect';
-import type { StudyRow } from '../types/types';
+import type { StudyDateRangeFilter, StudyRow } from '../types/types';
 import { tokenizeModalities } from '../utils/tokenizeModalities';
 import { useWorkflows } from './WorkflowsProvider';
 import { COLUMN_IDS } from '../columns/defaultColumns';
@@ -172,6 +173,29 @@ function TableContent({
                     Reset
                   </Button>
                 </div>
+              );
+            }
+            if (columnId === COLUMN_IDS.STUDY_DATE_TIME) {
+              const dateRange =
+                value && typeof value === 'object'
+                  ? (value as StudyDateRangeFilter)
+                  : {};
+              const startDate = dateRange.startDate ?? '';
+              const endDate = dateRange.endDate ?? '';
+
+              return (
+                <DatePickerWithRange
+                  id={COLUMN_IDS.STUDY_DATE_TIME}
+                  startDate={startDate}
+                  endDate={endDate}
+                  onChange={next => {
+                    const normalized = {
+                      ...(next.startDate ? { startDate: next.startDate } : {}),
+                      ...(next.endDate ? { endDate: next.endDate } : {}),
+                    };
+                    setValue(Object.keys(normalized).length > 0 ? normalized : undefined);
+                  }}
+                />
               );
             }
             if (columnId === COLUMN_IDS.MODALITIES) {

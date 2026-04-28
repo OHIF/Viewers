@@ -11,3 +11,8 @@ export type StudyRow = {
   accession: string;
   instances: number;
 };
+
+export type StudyDateRangeFilter = {
+  startDate?: string;
+  endDate?: string;
+};
