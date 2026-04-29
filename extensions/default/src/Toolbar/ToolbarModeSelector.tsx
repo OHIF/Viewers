@@ -65,7 +65,8 @@ async function fetchStudyEnvelope(StudyInstanceUID: string, dataSource): Promise
   const modalitiesStr = [...modalitySet].sort().join('/');
   // Normalize so validators reading study.modalities match modalitiesToCheck (same as remote search rows).
   const modalitiesNormalized = normalizeModalitiesString(modalitiesStr);
-  const inst0 = meta.series[0].instances?.[0];
+  const firstSeriesWithInstance = meta.series.find(s => s?.instances?.length);
+  const inst0 = firstSeriesWithInstance?.instances?.[0];
   const studyPayload = {
     studyInstanceUid: StudyInstanceUID,
     modalities: modalitiesNormalized,
