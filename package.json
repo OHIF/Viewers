@@ -78,7 +78,10 @@
     "lerna:customVersion": "node version.mjs",
     "link-list": "npm ls --depth=0 --link=true",
     "cs3d:checkout": "cd libs/@cornerstonejs && git fetch && git checkout",
-    "cs3d:build": "cd libs/@cornerstonejs && yarn install && yarn run build:esm",
+    "cs3d:check": "node .scripts/cs3d-check.mjs",
+    "cs3d:build": "cd libs/@cornerstonejs && yarn run build:esm",
+    "cs3d:watch": "cd libs/@cornerstonejs && yarn run build:esm:watch",
+    "cs3d:install": "cd libs/@cornerstonejs && yarn install",
     "cs3d:link": "node libs/@cornerstonejs/scripts/link-ohif-cornerstone-node-modules.mjs .",
     "cs3d:unlink": "node libs/@cornerstonejs/scripts/unlink-ohif-cornerstone-node-modules.mjs ."
   },
@@ -150,7 +153,7 @@
     "package-json": "8.1.1",
     "rollup": "2.80.0",
     "body-parser": "1.20.3",
-    "axios": "1.13.5",
+    "axios": "1.15.0",
     "core-js": "3.45.1",
     "@babel/runtime-corejs2": "7.26.10",
     "tapable": "2.2.2",
@@ -165,7 +168,8 @@
     "serialize-javascript": "7.0.4",
     "svgo": "3.3.3",
     "flatted": "3.4.2",
-    "handlebars": "4.7.9"
+    "handlebars": "4.7.9",
+    "protobufjs": "7.5.5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

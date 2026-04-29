@@ -3,6 +3,128 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.65...v3.13.0-beta.66) (2026-04-29)
+
+
+### Bug Fixes
+
+* **config url:** Hardening fetch options. ([#5985](https://github.com/OHIF/Viewers/issues/5985)) ([468e573](https://github.com/OHIF/Viewers/commit/468e5734a9ab02516430cc0dab5d7f2106dea950))
+
+
+
+
+
+# [3.13.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.64...v3.13.0-beta.65) (2026-04-29)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.63...v3.13.0-beta.64) (2026-04-27)
+
+
+### Bug Fixes
+
+* **seg:** prevent segmentations from spreading to all viewports before hydration confirmation in 3D four-up ([#5967](https://github.com/OHIF/Viewers/issues/5967)) ([f8ccf9f](https://github.com/OHIF/Viewers/commit/f8ccf9ff2ea9ab7c38bd427514a8ae87902822a3))
+
+
+
+
+
+# [3.13.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.62...v3.13.0-beta.63) (2026-04-27)
+
+
+### Bug Fixes
+
+* **security:** refine dynamic config URL trust policy and document trusted-origin behavior ([#5973](https://github.com/OHIF/Viewers/issues/5973)) ([f3cca21](https://github.com/OHIF/Viewers/commit/f3cca21e49729fbf4bab85aa1de64b9dcfebd0ce))
+
+
+
+
+
+# [3.13.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.61...v3.13.0-beta.62) (2026-04-23)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.60...v3.13.0-beta.61) (2026-04-23)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.59...v3.13.0-beta.60) (2026-04-21)
+
+
+### Bug Fixes
+
+* **configuration:** Harden dynamic datasource URL trust boundaries and credential handling. ([#5963](https://github.com/OHIF/Viewers/issues/5963)) ([eede569](https://github.com/OHIF/Viewers/commit/eede569a88ed6a3177bbdea8552dfb93ca13cac5))
+
+
+
+
+
+# [3.13.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.58...v3.13.0-beta.59) (2026-04-16)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.57...v3.13.0-beta.58) (2026-04-14)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.56...v3.13.0-beta.57) (2026-04-13)
+
+
+### Bug Fixes
+
+* Enhance multiframe instance handling and improve instance valida… ([#5956](https://github.com/OHIF/Viewers/issues/5956)) ([f5a66b9](https://github.com/OHIF/Viewers/commit/f5a66b9eea236cd3291eac857208d7465516c89a))
+
+
+
+
+
+# [3.13.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.55...v3.13.0-beta.56) (2026-04-10)
+
+
+### Bug Fixes
+
+* A couple of changes to enable cs3d integration build ([#5944](https://github.com/OHIF/Viewers/issues/5944)) ([f6bbd5c](https://github.com/OHIF/Viewers/commit/f6bbd5c779e4692dc47c93327a890661b8dcc174))
+
+
+
+
+
+# [3.13.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.54...v3.13.0-beta.55) (2026-04-10)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.13.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.53...v3.13.0-beta.54) (2026-04-08)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.13.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.52...v3.13.0-beta.53) (2026-04-06)
 
 
