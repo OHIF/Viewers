@@ -521,11 +521,23 @@ function _getComponentType(ds) {
 }
 
 function getImageIdForThumbnail(displaySet, imageIds) {
+  if (!Array.isArray(imageIds) || imageIds.length === 0) {
+    return;
+  }
+
   let imageId;
   if (displaySet.isDynamicVolume) {
-    const timePoints = displaySet.dynamicVolumeInfo.timePoints;
+    const timePoints = displaySet.dynamicVolumeInfo?.timePoints;
+    if (!Array.isArray(timePoints) || timePoints.length === 0) {
+      return;
+    }
+
     const middleIndex = Math.floor(timePoints.length / 2);
     const middleTimePointImageIds = timePoints[middleIndex];
+    if (!Array.isArray(middleTimePointImageIds) || middleTimePointImageIds.length === 0) {
+      return;
+    }
+
     imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
   } else {
     imageId = imageIds[Math.floor(imageIds.length / 2)];

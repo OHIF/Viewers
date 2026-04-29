@@ -5,6 +5,106 @@ import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 const { getSplitParam } = utils;
 
 /**
+ * Gets all studies for a patient by MRN from the first study.
+ */
+async function getStudiesForPatientByMRN(dataSource, qidoForStudyUID) {
+  const mrn = qidoForStudyUID[0]?.mrn;
+  if (!mrn) {
+    return qidoForStudyUID;
+  }
+
+  return dataSource.query.studies.search({ patientId: mrn, disableWildcard: true });
+}
+
+function normalizeModalities(modalities) {
+  if (Array.isArray(modalities)) {
+    return modalities.filter(Boolean);
+  }
+
+  if (typeof modalities === 'string') {
+    return modalities.split('\\').filter(Boolean);
+  }
+
+  return [];
+}
+
+function upsertStudyMetadata(studyMetadata) {
+  const existingStudy = DicomMetadataStore.getStudy(studyMetadata.StudyInstanceUID);
+
+  if (!existingStudy) {
+    DicomMetadataStore.addStudy(studyMetadata);
+    return;
+  }
+
+  const mergedModalities = Array.from(
+    new Set([
+      ...normalizeModalities(existingStudy.ModalitiesInStudy),
+      ...normalizeModalities(studyMetadata.ModalitiesInStudy),
+    ])
+  );
+
+  Object.assign(existingStudy, {
+    PatientID: studyMetadata.PatientID ?? existingStudy.PatientID,
+    PatientName: studyMetadata.PatientName ?? existingStudy.PatientName,
+    StudyDate: studyMetadata.StudyDate ?? existingStudy.StudyDate,
+    StudyTime: studyMetadata.StudyTime ?? existingStudy.StudyTime,
+    StudyDescription: studyMetadata.StudyDescription ?? existingStudy.StudyDescription,
+    ModalitiesInStudy: mergedModalities,
+    AccessionNumber: studyMetadata.AccessionNumber ?? existingStudy.AccessionNumber,
+    NumInstances: studyMetadata.NumInstances ?? existingStudy.NumInstances,
+  });
+}
+
+/**
+ * Fetches all studies for a patient by MRN from the first study
+ * and adds them to the DICOM metadata store.
+ */
+async function fetchAndStorePatientStudies(studyInstanceUID: string, dataSource) {
+  try {
+    const qidoForStudyUID = await dataSource.query.studies.search({
+      studyInstanceUid: studyInstanceUID,
+    });
+
+    if (!qidoForStudyUID?.length) {
+      console.warn('Could not find study:', studyInstanceUID);
+      return [];
+    }
+
+    let qidoStudiesForPatient = qidoForStudyUID;
+    try {
+      qidoStudiesForPatient =
+        (await getStudiesForPatientByMRN(dataSource, qidoForStudyUID)) ?? qidoForStudyUID;
+    } catch (error) {
+      console.warn('Could not fetch patient studies by MRN:', error);
+    }
+
+    const storedStudyUIDs = [];
+
+    qidoStudiesForPatient.forEach(study => {
+      const studyMetadata = {
+        StudyInstanceUID: study.studyInstanceUid,
+        PatientID: study.mrn,
+        PatientName: study.patientName,
+        StudyDate: study.date,
+        StudyTime: study.time,
+        StudyDescription: study.description,
+        ModalitiesInStudy: normalizeModalities(study.modalities),
+        AccessionNumber: study.accession,
+        NumInstances: study.instances,
+      };
+
+      upsertStudyMetadata(studyMetadata);
+      storedStudyUIDs.push(studyMetadata.StudyInstanceUID);
+    });
+
+    return storedStudyUIDs;
+  } catch (error) {
+    console.error('Error fetching patient studies:', error);
+    return [];
+  }
+}
+
+/**
  * Initialize the route.
  *
  * @param props.servicesManager to read services from
@@ -87,10 +187,16 @@ export async function defaultRouteInit(
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
+  const firstStudyUID = studyInstanceUIDs?.[0];
+  const activeStudyUIDs = studyInstanceUIDs?.length ? studyInstanceUIDs : [];
+  const patientStudiesPromise = firstStudyUID
+    ? fetchAndStorePatientStudies(firstStudyUID, dataSource)
+    : Promise.resolve([]);
+
   log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
   log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
 
-  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
+  const allRetrieves = activeStudyUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
@@ -118,43 +224,81 @@ export async function defaultRouteInit(
     displaySetFromUrl = true;
   }
 
-  await Promise.allSettled(allRetrieves).then(async promises => {
-    log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
-    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
-    log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
+  function startRemainingPromises(remainingPromises) {
+    remainingPromises.forEach(p => p.forEach(promise => promise.start()));
+  }
 
-    const allPromises = [];
+  async function collectSeriesPromises(retrieves) {
+    const settledRetrieves = await Promise.allSettled(retrieves);
+    const requiredSeriesPromises = [];
     const remainingPromises = [];
 
-    function startRemainingPromises(remainingPromises) {
-      remainingPromises.forEach(p => p.forEach(p => p.start()));
-    }
-
-    promises.forEach(promise => {
-      const retrieveSeriesMetadataPromise = promise.value;
-      if (!Array.isArray(retrieveSeriesMetadataPromise)) {
+    settledRetrieves.forEach(retrieve => {
+      if (retrieve.status !== 'fulfilled' || !Array.isArray(retrieve.value)) {
         return;
       }
 
       if (displaySetFromUrl) {
-        const requiredSeriesPromises = retrieveSeriesMetadataPromise.map(promise =>
-          promise.start()
-        );
-        allPromises.push(Promise.allSettled(requiredSeriesPromises));
-      } else {
-        const { requiredSeries, remaining } = hangingProtocolService.filterSeriesRequiredForRun(
-          hangingProtocolId,
-          retrieveSeriesMetadataPromise
-        );
-        const requiredSeriesPromises = requiredSeries.map(promise => promise.start());
-        allPromises.push(Promise.allSettled(requiredSeriesPromises));
-        remainingPromises.push(remaining);
+        requiredSeriesPromises.push(...retrieve.value.map(promise => promise.start()));
+        return;
       }
+
+      const { requiredSeries, remaining } = hangingProtocolService.filterSeriesRequiredForRun(
+        hangingProtocolId,
+        retrieve.value
+      );
+
+      requiredSeriesPromises.push(...requiredSeries.map(promise => promise.start()));
+      remainingPromises.push(remaining);
     });
 
-    await Promise.allSettled(allPromises).then(applyHangingProtocol);
-    startRemainingPromises(remainingPromises);
+    return { requiredSeriesPromises, remainingPromises };
+  }
+
+  async function startPriorFetches() {
+    const patientStudyUIDs = Array.from(new Set(await patientStudiesPromise));
+    const activeStudyUIDSet = new Set(activeStudyUIDs);
+    const priorStudyUIDs = patientStudyUIDs.filter(uid => uid && !activeStudyUIDSet.has(uid));
+
+    if (!priorStudyUIDs.length) {
+      return;
+    }
+
+    const priorRetrieves = priorStudyUIDs.map(StudyInstanceUID =>
+      dataSource.retrieve.series.metadata({
+        StudyInstanceUID,
+        filters,
+        returnPromises: true,
+        sortCriteria: customizationService.getCustomization('sortingCriteria'),
+      })
+    );
+
+    priorRetrieves.forEach(retrieve => {
+      retrieve.catch(error => {
+        console.error(error);
+      });
+    });
+
+    const { requiredSeriesPromises, remainingPromises } =
+      await collectSeriesPromises(priorRetrieves);
+
+    await Promise.allSettled(requiredSeriesPromises);
     applyHangingProtocol();
+    startRemainingPromises(remainingPromises);
+  }
+
+  const { requiredSeriesPromises, remainingPromises } = await collectSeriesPromises(allRetrieves);
+
+  log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
+  log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
+  log.time(Enums.TimingEnum.DISPLAY_SETS_TO_ALL_IMAGES);
+
+  await Promise.allSettled(requiredSeriesPromises);
+  applyHangingProtocol();
+  startRemainingPromises(remainingPromises);
+
+  void startPriorFetches().catch(error => {
+    console.error(error);
   });
 
   return unsubscriptions;
