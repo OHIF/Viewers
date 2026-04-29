@@ -154,6 +154,13 @@ const toolbarButtons = [
     },
   },
   {
+    id: 'Mode',
+    uiType: 'ohif.modeSelector',
+    props: {
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
     id: 'WindowLevel',
     uiType: 'ohif.toolButton',
     props: {

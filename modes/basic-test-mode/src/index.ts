@@ -98,6 +98,7 @@ function modeFactory() {
         'WindowLevelGroup',
         'Pan',
         'Capture',
+        'Mode',
         'Layout',
         'MPR',
         'Crosshairs',

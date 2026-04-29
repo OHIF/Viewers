@@ -5,3 +5,4 @@ export * from './ToolRowWrapper';
 export * from './ToolBoxWrapper';
 export * from './ToolbarDivider';
 export * from './ToolbarLayoutSelector';
+export { default as ToolbarModeSelector } from './ToolbarModeSelector';
