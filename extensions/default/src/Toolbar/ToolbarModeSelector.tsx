@@ -14,139 +14,43 @@ import {
   TooltipTrigger,
   useImageViewer,
 } from '@ohif/ui-next';
-import { CommandsManager, DicomMetadataStore, utils } from '@ohif/core';
-import { preserveQueryParameters } from '@ohif/app';
+import { CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import { useTranslation } from 'react-i18next';
 
-const { formatPN } = utils;
+import {
+  evaluateModeValidity,
+  fetchStudyEnvelope,
+  getDataSourcePathSegment,
+  modeIsValidForOrdering,
+  type StudyEnvelope,
+  usePreservedViewerSearch,
+  type LoadedModeRouteHint,
+} from '../utils/modeSelectorUtils';
 
-type StudyEnvelope = {
-  modalitiesToCheck: string;
-  study: Record<string, unknown>;
+type ToolbarMenuRow = {
+  mode: LoadedModeRouteHint & { displayName?: string; hide?: boolean; isValidMode?: unknown };
+  validity: Exclude<ReturnType<typeof evaluateModeValidity>, undefined>;
+  modeHref: { pathname: string; search: string };
+  isCurrentRoute: boolean;
+  isDisabled: boolean;
+  label: string;
 };
-
-function normalizeModalitiesString(raw?: string): string {
-  return (raw || '').replaceAll('/', '\\');
-}
-
-async function fetchStudyEnvelope(StudyInstanceUID: string, dataSource): Promise<StudyEnvelope | null> {
-  try {
-    const searchFn = dataSource?.query?.studies?.search;
-    if (searchFn) {
-      const rows = await searchFn({ studyInstanceUid: StudyInstanceUID });
-      const row = rows?.[0];
-      if (row) {
-        return {
-          modalitiesToCheck: normalizeModalitiesString(row.modalities),
-          study: { ...row },
-        };
-      }
-    }
-  } catch (_e) {
-    // Fallback to locally loaded metadata
-  }
-
-  const meta = DicomMetadataStore.getStudy(StudyInstanceUID);
-  if (!meta?.series?.length) {
-    return null;
-  }
-
-  const modalitySet = new Set<string>();
-  let numInstances = 0;
-
-  meta.series.forEach(series => {
-    if (series?.instances?.length) {
-      modalitySet.add(series.instances[0].Modality as string);
-      numInstances += series.instances.length;
-    }
-  });
-
-  const modalitiesStr = [...modalitySet].sort().join('/');
-  // Normalize so validators reading study.modalities match modalitiesToCheck (same as remote search rows).
-  const modalitiesNormalized = normalizeModalitiesString(modalitiesStr);
-  const firstSeriesWithInstance = meta.series.find(s => s?.instances?.length);
-  const inst0 = firstSeriesWithInstance?.instances?.[0];
-  const studyPayload = {
-    studyInstanceUid: StudyInstanceUID,
-    modalities: modalitiesNormalized,
-    mrn: inst0?.PatientID,
-    instances: numInstances,
-    description: inst0?.StudyDescription,
-    date: inst0?.StudyDate,
-    time: inst0?.StudyTime,
-    accession: inst0?.AccessionNumber,
-    patientName: inst0?.PatientName ? formatPN(inst0.PatientName) : '',
-    studyInstanceUID: StudyInstanceUID,
-    StudyInstanceUID,
-  };
-
-  return {
-    modalitiesToCheck: modalitiesNormalized,
-    study: studyPayload,
-  };
-}
-
-function modeIsValidForOrdering(mode, studyEnvelope: StudyEnvelope): boolean {
-  if (typeof mode.isValidMode !== 'function') {
-    return true;
-  }
-  try {
-    return !!mode.isValidMode.call(mode, {
-      modalities: studyEnvelope.modalitiesToCheck,
-      study: studyEnvelope.study,
-    })?.valid;
-  } catch (_e) {
-    return false;
-  }
-}
-
-function evaluateModeValidity(mode, studyEnvelope: StudyEnvelope, unevaluableMessage: string) {
-  if (typeof mode.isValidMode !== 'function') {
-    return { valid: true };
-  }
-  try {
-    return mode.isValidMode.call(mode, {
-      modalities: studyEnvelope.modalitiesToCheck,
-      study: studyEnvelope.study,
-    });
-  } catch (_e) {
-    return { valid: false, description: unevaluableMessage };
-  }
-}
-
-function getDataSourcePathSegment(locationPathname: string, loadedModes, extensionManager): string | undefined {
-  const routeNames = new Set((loadedModes || []).filter(Boolean).map(m => m.routeName).filter(Boolean));
-  const segs = locationPathname.split('/').filter(Boolean);
-
-  const modeSegmentIndex = segs.findIndex(seg => routeNames.has(seg));
-  if (modeSegmentIndex === -1 || modeSegmentIndex + 1 >= segs.length) {
-    return undefined;
-  }
-
-  const candidate = segs[modeSegmentIndex + 1];
-  if (
-    candidate &&
-    !routeNames.has(candidate) &&
-    extensionManager?.getDataSources?.(candidate)?.length
-  ) {
-    return candidate;
-  }
-  return undefined;
-}
-
-function usePreservedViewerSearch(locationSearch: string): string {
-  return useMemo(() => {
-    const next = new URLSearchParams(locationSearch);
-    preserveQueryParameters(next);
-    const s = next.toString();
-    return s ? `?${s}` : '';
-  }, [locationSearch]);
-}
 
 function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManager }) {
   const extensionManager = servicesManager.services.customizationService.extensionManager;
   const { t } = useTranslation('ToolbarModeSelector');
+
+  const labels = useMemo(
+    () => ({
+      browseModes: t('Browse modes'),
+      modes: t('Modes'),
+      loadingMetadata: t('Loading study metadata for modes…'),
+      unableToEvaluate: t('Unable to evaluate this mode'),
+      currentMode: t('Current mode'),
+    }),
+    [t]
+  );
 
   const location = useLocation();
   const preservedSearch = usePreservedViewerSearch(location.search);
@@ -159,7 +63,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
   const StudyInstanceUIDs = imageViewer?.StudyInstanceUIDs;
   const primaryUid = Array.isArray(StudyInstanceUIDs) ? StudyInstanceUIDs[0] : undefined;
 
-  const [studyEnvelope, setStudyEnvelope] = useState(null);
+  const [studyEnvelope, setStudyEnvelope] = useState<StudyEnvelope | null>(null);
   const [metadataLoadFinished, setMetadataLoadFinished] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -217,13 +121,40 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
   }, [groupEnabledModesFirst, modesForToolbar, studyEnvelope]);
 
   const buildHrefForMode = useCallback(
-    routeName => {
+    (routeName: string) => {
       const dsSuffix = getDataSourcePathSegment(location.pathname, loadedModes, extensionManager);
       const pathname = `/${routeName}${dsSuffix ? `/${dsSuffix}` : ''}`;
       return { pathname, search: preservedSearch };
     },
     [extensionManager, loadedModes, location.pathname, preservedSearch]
   );
+
+  const closePopover = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const modeMenuRows = useMemo((): ToolbarMenuRow[] => {
+    if (!studyEnvelope) {
+      return [];
+    }
+    const rows: ToolbarMenuRow[] = [];
+    for (const mode of comparableModesList) {
+      const validity = evaluateModeValidity(mode, studyEnvelope, labels.unableToEvaluate);
+      if (!validity || validity.valid === null) {
+        continue;
+      }
+      const routeName = mode.routeName;
+      if (!routeName) {
+        continue;
+      }
+      const modeHref = buildHrefForMode(routeName);
+      const isCurrentRoute = location.pathname === modeHref.pathname;
+      const isDisabled = validity.valid !== true || isCurrentRoute;
+      const label = mode.displayName || routeName;
+      rows.push({ mode, validity, modeHref, isCurrentRoute, isDisabled, label });
+    }
+    return rows;
+  }, [buildHrefForMode, comparableModesList, labels.unableToEvaluate, location.pathname, studyEnvelope]);
 
   if (modesForToolbar.length <= 1) {
     return null;
@@ -247,7 +178,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                 'inline-flex h-10 w-10 cursor-not-allowed items-center justify-center !rounded-lg',
                 'opacity-40 text-foreground/80 hover:bg-muted hover:text-highlight'
               )}
-              aria-label={t('Browse modes')}
+              aria-label={labels.browseModes}
               data-cy="mode-selector-trigger"
             >
               <Icons.ByName
@@ -260,7 +191,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
             side="bottom"
             className="max-w-[260px]"
           >
-            <p className="text-xs leading-snug">{t('Loading study metadata for modes…')}</p>
+            <p className="text-xs leading-snug">{labels.loadingMetadata}</p>
           </TooltipContent>
         </Tooltip>
       );
@@ -289,7 +220,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
               )}
               aria-haspopup="dialog"
               aria-expanded={open}
-              aria-label={t('Browse modes')}
+              aria-label={labels.browseModes}
               data-cy="mode-selector-trigger"
             >
               <Icons.ByName
@@ -303,7 +234,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
           side="bottom"
           sideOffset={6}
         >
-          <p className="text-xs">{t('Browse modes')}</p>
+          <p className="text-xs">{labels.browseModes}</p>
         </TooltipContent>
       </Tooltip>
       <PopoverContent
@@ -315,49 +246,38 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
         )}
       >
         <header className="border-b border-border/40 px-2.5 py-1.5">
-          <p className="text-muted-foreground text-xs">{t('Modes')}</p>
+          <p className="text-muted-foreground text-xs">{labels.modes}</p>
         </header>
 
         <ul
           role="menu"
           className="space-y-0.5 px-1.5 py-1.5"
         >
-          {comparableModesList.map(mode => {
-            const validity = evaluateModeValidity(
-              mode,
-              studyEnvelope,
-              t('Unable to evaluate this mode')
-            );
-
-            if (!validity || validity.valid === null) {
-              return null;
-            }
-
-            const modeHref = buildHrefForMode(mode.routeName);
-            const { pathname: targetPath } = modeHref;
-            const isCurrentRoute = location.pathname === targetPath;
-
-            const isDisabled = validity.valid !== true || isCurrentRoute;
-
-            const label = mode.displayName || mode.routeName;
-
-            return (
+          {modeMenuRows.map(
+            ({
+              mode: { routeName },
+              validity,
+              modeHref,
+              isCurrentRoute,
+              isDisabled,
+              label,
+            }) => (
               <li
-                key={mode.routeName}
+                key={routeName}
                 className="list-none"
               >
                 {!isDisabled ?
                   <Link
                     role="menuitem"
                     tabIndex={0}
-                    data-cy={`mode-selector-${mode.routeName}`}
+                    data-cy={`mode-selector-${routeName}`}
                     to={modeHref}
                     className={cn(
                       'group flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5',
                       'text-foreground outline-none ring-offset-background transition-colors duration-150',
                       'hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 active:bg-accent/90'
                     )}
-                    onClick={() => setOpen(false)}
+                    onClick={closePopover}
                   >
                     <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
                     <Icons.ChevronRight
@@ -371,14 +291,14 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                 : isCurrentRoute ?
                   <div
                     aria-current="true"
-                    aria-label={`${label} — ${t('Current mode')}`}
+                    aria-label={`${label} — ${labels.currentMode}`}
                     className={cn(
                       'relative flex w-full cursor-default items-center justify-between gap-2 overflow-hidden rounded-lg px-2 py-1.5',
                       'border border-primary/18 bg-gradient-to-br from-accent/85 via-accent/50 to-accent/30 text-foreground',
                       'shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] ring-1 ring-inset ring-border/50',
                       'dark:from-accent/35 dark:via-accent/25 dark:to-muted/55 dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] dark:ring-border/35'
                     )}
-                    data-cy={`mode-selector-current-${mode.routeName}`}
+                    data-cy={`mode-selector-current-${routeName}`}
                   >
                     <span className="min-w-0 flex-1 truncate text-left text-sm font-medium leading-snug tracking-tight text-foreground">
                       {label}
@@ -396,7 +316,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                         className={cn(
                           'flex w-full cursor-not-allowed rounded-lg px-2 py-1.5 text-muted-foreground opacity-[0.88]'
                         )}
-                        data-cy={`mode-selector-disabled-${mode.routeName}`}
+                        data-cy={`mode-selector-disabled-${routeName}`}
                       >
                         <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
                       </div>
@@ -415,8 +335,8 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                   )
                 }
               </li>
-            );
-          })}
+            )
+          )}
         </ul>
       </PopoverContent>
     </Popover>
