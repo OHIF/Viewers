@@ -188,6 +188,7 @@ function TableContent({
                   id={COLUMN_IDS.STUDY_DATE_TIME}
                   startDate={startDate}
                   endDate={endDate}
+                  inputClassName="h-7 px-2 py-1"
                   onChange={next => {
                     const normalized = {
                       ...(next.startDate ? { startDate: next.startDate } : {}),

@@ -14,6 +14,7 @@ export type DatePickerWithRangeProps = {
   endDate: string;
   /** Callback that received { startDate: string(YYYYMMDD), endDate: string(YYYYMMDD)} */
   onChange: (value: { startDate: string; endDate: string }) => void;
+  inputClassName?: string;
 };
 
 export function DatePickerWithRange({
@@ -22,6 +23,7 @@ export function DatePickerWithRange({
   startDate,
   endDate,
   onChange,
+  inputClassName,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & DatePickerWithRangeProps) {
   const { t } = useTranslation('DatePicker');
@@ -79,7 +81,10 @@ export function DatePickerWithRange({
   }, [startDate, endDate]);
 
   return (
-    <div className={cn('flex gap-2', className)}>
+    <div
+      className={cn('flex gap-2', className)}
+      {...props}
+    >
       <Popover.Popover>
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
@@ -93,6 +98,7 @@ export function DatePickerWithRange({
               onChange={e => handleInputChange(e, 'start')}
               className={cn(
                 'border-inputfield-main focus:border-inputfield-focus hover:text-foreground h-[32px] w-full justify-start rounded border bg-background py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-background',
+                inputClassName,
                 !start && 'text-muted-foreground'
               )}
               data-cy="input-date-range-start"
@@ -130,6 +136,7 @@ export function DatePickerWithRange({
               onChange={e => handleInputChange(e, 'end')}
               className={cn(
                 'border-inputfield-main focus:border-inputfield-focus hover:text-foreground h-full w-full justify-start rounded border bg-background py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-base font-normal hover:bg-background',
+                inputClassName,
                 !end && 'text-muted-foreground'
               )}
               data-cy="input-date-range-end"
