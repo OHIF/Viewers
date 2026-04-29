@@ -3,5 +3,6 @@
   "Modes": "Test Modes",
   "Loading study metadata for modes…": "Test Loading study metadata for modes…",
   "Current mode": "Test Current mode",
-  "Unable to evaluate this mode": "Test Unable to evaluate this mode"
+  "Unable to evaluate this mode": "Test Unable to evaluate this mode",
+  "No modes available": "Test No modes available"
 }

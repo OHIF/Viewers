@@ -63,9 +63,9 @@ export async function fetchStudyEnvelope(
   dataSource: DataSourceWithStudySearch | null | undefined
 ): Promise<StudyEnvelope | null> {
   try {
-    const searchFn = dataSource?.query?.studies?.search;
-    if (searchFn) {
-      const rows = await searchFn({ studyInstanceUid: StudyInstanceUID });
+    // Call as a method on query.studies so `this` inside search is bound (do not extract the function).
+    if (dataSource?.query?.studies?.search) {
+      const rows = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
       const row = rows?.[0];
       if (row) {
         return {
