@@ -208,6 +208,11 @@ export class ViewportPageObject {
     };
   }
 
+  /**
+   * Note: awaiting the returned methods (toSlice, toFirstSlice, toLastSlice, scrollBy)
+   * does not guarantee the viewport has finished rendering. Follow up with
+   * `waitForViewportsRendered` if you need pixel-stable state.
+   */
   private getSliceNavigation(viewport: Locator) {
     const page = this.page;
 
@@ -215,7 +220,7 @@ export class ViewportPageObject {
       const viewportId = await this.getViewportId(viewport);
       await page.evaluate(
         ({ commandsManager, viewportId, imageIndex }) => {
-          commandsManager.runCommand('jumpToImage', {
+          return commandsManager.runCommand('jumpToImage', {
             imageIndex,
             viewport: { id: viewportId },
           });
@@ -238,7 +243,7 @@ export class ViewportPageObject {
           if (!cornerstoneViewport) {
             return;
           }
-          cornerstoneViewport.scroll(delta);
+          return cornerstoneViewport.scroll(delta);
         },
         {
           viewportId,
