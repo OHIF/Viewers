@@ -13,6 +13,15 @@ server for the `OHIF Viewer`.
 
 ![user-study-list](../assets/img/user-study-list.png)
 
+## Study Limit
+
+To accommodate the various data sources that support various query parameters for
+paging and limiting results it was decided to handle paging in the OHIF client.
+This nicely handles those data sources that do not support paging and query limits.
+For those that support the `limit` query parameter, there is a data source
+configuration parameter `queryLimit` that will be passed for study list searches
+so as to cap the result. When not specified, this value defaults to `101`.
+
 ## Sorting
 
 When the Study List is opened, the application queries the PACS for 101 studies
