@@ -104,6 +104,7 @@
     "react-shepherd": "6.1.1",
     "shepherd.js": "13.0.3",
     "url-loader": "4.1.1",
+    "firebase": "11.6.0",
     "zustand": "4.5.5"
   },
   "devDependencies": {
