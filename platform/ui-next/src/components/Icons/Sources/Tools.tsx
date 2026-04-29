@@ -930,6 +930,108 @@ export const ToolCrosshair = (props: IconProps) => (
   </svg>
 );
 
+export const ToolScaleBar = (props: IconProps) => (
+  <svg
+    width="120"
+    height="28"
+    viewBox="0 0 120 28"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="scale-bar"
+      stroke="currentColor"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* Base Line */}
+      <line
+        x1="10"
+        y1="18"
+        x2="110"
+        y2="18"
+        strokeWidth="1.5"
+      />
+
+      {/* Tick Line */}
+      <line
+        x1="10"
+        y1="14"
+        x2="10"
+        y2="22"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="40"
+        y1="14"
+        x2="40"
+        y2="22"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="70"
+        y1="14"
+        x2="70"
+        y2="22"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="90"
+        y1="14"
+        x2="90"
+        y2="22"
+        strokeWidth="1.5"
+      />
+      <line
+        x1="110"
+        y1="14"
+        x2="110"
+        y2="22"
+        strokeWidth="1.5"
+      />
+
+      {/* Text : 1, 5, 10, 20 */}
+      <text
+        x="10"
+        y="10"
+        textAnchor="middle"
+        fontSize="6"
+        fill="currentColor"
+      >
+        1
+      </text>
+      <text
+        x="40"
+        y="10"
+        textAnchor="middle"
+        fontSize="6"
+        fill="currentColor"
+      >
+        5
+      </text>
+      <text
+        x="70"
+        y="10"
+        textAnchor="middle"
+        fontSize="6"
+        fill="currentColor"
+      >
+        10
+      </text>
+      <text
+        x="110"
+        y="10"
+        textAnchor="middle"
+        fontSize="6"
+        fill="currentColor"
+      >
+        20
+      </text>
+    </g>
+  </svg>
+);
+
 export const ToolDicomTagBrowser = (props: IconProps) => (
   <svg
     width="28px"
