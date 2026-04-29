@@ -1,7 +1,7 @@
 {
-  "Browse modes": "Browse modes",
+  "Browse modes": "Parcourir les modes",
   "Modes": "Modes",
-  "Loading study metadata for modes…": "Loading study metadata for modes…",
-  "Current mode": "Current mode",
-  "Unable to evaluate this mode": "Unable to evaluate this mode"
+  "Loading study metadata for modes…": "Chargement des métadonnées de l'étude pour les modes…",
+  "Current mode": "Mode actuel",
+  "Unable to evaluate this mode": "Impossible d'évaluer ce mode"
 }
