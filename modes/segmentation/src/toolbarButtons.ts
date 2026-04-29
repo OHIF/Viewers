@@ -784,10 +784,39 @@ export const toolbarButtons: Button[] = [
       ],
       commands: [
         'setToolActiveToolbar',
+        'setRegionSegmentPlusFloodFillConfiguration',
         {
           commandName: 'activateSelectedSegmentationOfType',
           commandOptions: {
             segmentationRepresentationType: 'Labelmap',
+          },
+        },
+      ],
+      options: [
+        {
+          name: i18n.t('Buttons:Max Delta K'),
+          id: 'region-segment-plus-max-delta-k',
+          type: 'range',
+          explicitRunOnly: true,
+          min: 1,
+          max: 1000,
+          step: 1,
+          value: 25,
+          commands: {
+            commandName: 'setRegionSegmentPlusFloodFillConfiguration',
+          },
+        },
+        {
+          name: i18n.t('Buttons:Max Delta IJ'),
+          id: 'region-segment-plus-max-delta-ij',
+          type: 'range',
+          explicitRunOnly: true,
+          min: 1,
+          max: 4096,
+          step: 1,
+          value: 100,
+          commands: {
+            commandName: 'setRegionSegmentPlusFloodFillConfiguration',
           },
         },
       ],
