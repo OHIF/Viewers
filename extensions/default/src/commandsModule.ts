@@ -1,5 +1,5 @@
 import { Types, DicomMetadataStore, utils } from '@ohif/core';
-import dcmjs from 'dcmjs';
+import { datasetToDicomBlob } from './utils/dicomWriter';
 
 const { downloadBlob } = utils;
 
@@ -788,7 +788,7 @@ const commandsModule = ({
           if (instances.length !== 1) {
             throw new Error('Download only supports a single DICOM instance');
           }
-          const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
+          const reportBlob = datasetToDicomBlob(instances[0]);
           downloadBlob(reportBlob, { filename: defaultFileName || 'dicom.dcm' });
         };
       }
@@ -800,10 +800,10 @@ const commandsModule = ({
           if (instances.length !== 1) {
             throw new Error('Copy to clipboard only supports a single DICOM instance');
           }
-          const reportBlob = dcmjs.data.datasetToBlob(instances[0]);
+          const reportBlob = datasetToDicomBlob(instances[0]);
           const type = defaultContentType || 'application/dicom';
           await navigator.clipboard.write([
-            new ClipboardItem({ [type]: new Blob([reportBlob], { type }) }),
+            new ClipboardItem({ [type]: reportBlob }),
           ]);
         };
       }
