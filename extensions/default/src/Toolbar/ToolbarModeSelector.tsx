@@ -48,6 +48,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
       loadingMetadata: t('Loading study metadata for modes…'),
       unableToEvaluate: t('Unable to evaluate this mode'),
       currentMode: t('Current mode'),
+      noModesAvailable: t('No modes available'),
     }),
     [t]
   );
@@ -253,7 +254,11 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
           role="menu"
           className="space-y-0.5 px-1.5 py-1.5"
         >
-          {modeMenuRows.map(
+          {modeMenuRows.length === 0 ?
+            <li className="list-none">
+              <p className="text-muted-foreground px-2 py-2 text-xs leading-snug">{labels.noModesAvailable}</p>
+            </li>
+          : modeMenuRows.map(
             ({
               mode: { routeName },
               validity,
@@ -308,7 +313,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                       className="h-3.5 w-3.5 shrink-0 self-center select-none opacity-0"
                     />
                   </div>
-                : (
+                : validity.description ?
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
@@ -321,22 +326,31 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                         <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
                       </div>
                     </TooltipTrigger>
-                    {validity.description ?
-                      <TooltipContent
-                        align="start"
-                        side="top"
-                        sideOffset={6}
-                        className="z-[220] max-w-[236px]"
-                      >
-                        <p className="text-xs leading-snug">{validity.description}</p>
-                      </TooltipContent>
-                    : null}
+                    <TooltipContent
+                      align="start"
+                      side="top"
+                      sideOffset={6}
+                      className="z-[220] max-w-[236px]"
+                    >
+                      <p className="text-xs leading-snug">{validity.description}</p>
+                    </TooltipContent>
                   </Tooltip>
+                : (
+                    <div
+                      role="presentation"
+                      className={cn(
+                        'flex w-full cursor-not-allowed rounded-lg px-2 py-1.5 text-muted-foreground opacity-[0.88]'
+                      )}
+                      data-cy={`mode-selector-disabled-${routeName}`}
+                    >
+                      <span className="min-w-0 flex-1 truncate text-left text-sm leading-snug">{label}</span>
+                    </div>
                   )
                 }
               </li>
             )
-          )}
+          )
+          }
         </ul>
       </PopoverContent>
     </Popover>

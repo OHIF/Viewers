@@ -3,5 +3,6 @@
   "Modes": "Modi",
   "Loading study metadata for modes…": "Studiemetadata voor modi laden…",
   "Current mode": "Huidige modus",
-  "Unable to evaluate this mode": "Kan deze modus niet evalueren"
+  "Unable to evaluate this mode": "Kan deze modus niet evalueren",
+  "No modes available": "Geen modi beschikbaar"
 }
