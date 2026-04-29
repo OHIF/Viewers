@@ -13,12 +13,20 @@
  */
 export default function fetchPaletteColorLookupTableData(item, tag, descriptorTag) {
   const { PaletteColorLookupTableUID } = item;
-  const paletteData = item[tag];
+  let paletteData = item[tag];
   if (paletteData === undefined && PaletteColorLookupTableUID === undefined) {
     return;
   }
+  // Handle dicomfile loader
+  if (typeof paletteData === 'object' && paletteData[0] instanceof ArrayBuffer) {
+    // Convert ArrayBuffer to Uint8Array for processing
+    paletteData = {
+      InlineBinary: btoa(String.fromCharCode.apply(null, new Uint8Array(paletteData[0]))),
+    };
+  }
+
   // performance optimization - read UID and cache by UID
-  return _getPaletteColor(item[tag], item[descriptorTag]);
+  return _getPaletteColor(paletteData, item[descriptorTag]);
 }
 
 function _getPaletteColor(paletteColorLookupTableData, lutDescriptor) {
