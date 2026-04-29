@@ -63,10 +63,12 @@ async function fetchStudyEnvelope(StudyInstanceUID: string, dataSource): Promise
   });
 
   const modalitiesStr = [...modalitySet].sort().join('/');
+  // Normalize so validators reading study.modalities match modalitiesToCheck (same as remote search rows).
+  const modalitiesNormalized = normalizeModalitiesString(modalitiesStr);
   const inst0 = meta.series[0].instances?.[0];
   const studyPayload = {
     studyInstanceUid: StudyInstanceUID,
-    modalities: modalitiesStr,
+    modalities: modalitiesNormalized,
     mrn: inst0?.PatientID,
     instances: numInstances,
     description: inst0?.StudyDescription,
@@ -79,9 +81,37 @@ async function fetchStudyEnvelope(StudyInstanceUID: string, dataSource): Promise
   };
 
   return {
-    modalitiesToCheck: normalizeModalitiesString(modalitiesStr),
+    modalitiesToCheck: modalitiesNormalized,
     study: studyPayload,
   };
+}
+
+function modeIsValidForOrdering(mode, studyEnvelope: StudyEnvelope): boolean {
+  if (typeof mode.isValidMode !== 'function') {
+    return true;
+  }
+  try {
+    return !!mode.isValidMode.call(mode, {
+      modalities: studyEnvelope.modalitiesToCheck,
+      study: studyEnvelope.study,
+    })?.valid;
+  } catch (_e) {
+    return false;
+  }
+}
+
+function evaluateModeValidity(mode, studyEnvelope: StudyEnvelope, unevaluableMessage: string) {
+  if (typeof mode.isValidMode !== 'function') {
+    return { valid: true };
+  }
+  try {
+    return mode.isValidMode.call(mode, {
+      modalities: studyEnvelope.modalitiesToCheck,
+      study: studyEnvelope.study,
+    });
+  } catch (_e) {
+    return { valid: false, description: unevaluableMessage };
+  }
 }
 
 function getDataSourcePathSegment(locationPathname: string, loadedModes, extensionManager): string | undefined {
@@ -176,25 +206,9 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
 
     if (groupEnabledModesFirst && studyEnvelope) {
       list.sort((a, b) => {
-        try {
-          const validA = !!(
-            typeof a.isValidMode === 'function' &&
-            a.isValidMode.call?.(a, {
-              modalities: studyEnvelope.modalitiesToCheck,
-              study: studyEnvelope.study,
-            })?.valid
-          );
-          const validB = !!(
-            typeof b.isValidMode === 'function' &&
-            b.isValidMode.call?.(b, {
-              modalities: studyEnvelope.modalitiesToCheck,
-              study: studyEnvelope.study,
-            })?.valid
-          );
-          return Number(validB) - Number(validA);
-        } catch (_e) {
-          return 0;
-        }
+        const validA = modeIsValidForOrdering(a, studyEnvelope);
+        const validB = modeIsValidForOrdering(b, studyEnvelope);
+        return Number(validB) - Number(validA);
       });
     }
 
@@ -308,19 +322,11 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
           className="space-y-0.5 px-1.5 py-1.5"
         >
           {comparableModesList.map(mode => {
-            if (!mode.isValidMode) {
-              return null;
-            }
-
-            let validity;
-            try {
-              validity = mode.isValidMode.call(mode, {
-                modalities: studyEnvelope.modalitiesToCheck,
-                study: studyEnvelope.study,
-              });
-            } catch (_e) {
-              validity = { valid: false, description: t('Unable to evaluate this mode') };
-            }
+            const validity = evaluateModeValidity(
+              mode,
+              studyEnvelope,
+              t('Unable to evaluate this mode')
+            );
 
             if (!validity || validity.valid === null) {
               return null;
