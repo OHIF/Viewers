@@ -2,10 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  // Heavy viewer specs share one webpack server on :3335; high parallelism starves GPU/volume decode on CI.
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
-  workers: process.env.CI ? 6 : undefined,
+  workers: process.env.CI ? 2 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [
