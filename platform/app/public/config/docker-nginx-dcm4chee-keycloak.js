@@ -2,6 +2,7 @@
 window.config = {
   routerBasename: '/ohif-viewer/',
   showStudyList: true,
+  hideUndoRedo: false,
   extensions: [],
   modes: [],
   // below flag is for performance reasons, but it might not work for all servers
