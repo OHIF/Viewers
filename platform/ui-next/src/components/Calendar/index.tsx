@@ -1,3 +1,3 @@
-import { Calendar } from './Calendar';
+import { Calendar, CalendarDayButton } from './Calendar';
 
-export { Calendar};
+export { Calendar, CalendarDayButton };
