@@ -132,8 +132,11 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
   const [metadataLoadFinished, setMetadataLoadFinished] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const dataSource =
-    extensionManager.getActiveDataSourceOrNull?.() ?? extensionManager.getActiveDataSource?.()?.[0];
+  const dataSource = useMemo(
+    () =>
+      extensionManager.getActiveDataSourceOrNull?.() ?? extensionManager.getActiveDataSource?.()?.[0],
+    [extensionManager]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -319,11 +322,12 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
               validity = { valid: false, description: t('Unable to evaluate this mode') };
             }
 
-            if (validity.valid === null) {
+            if (!validity || validity.valid === null) {
               return null;
             }
 
-            const { pathname: targetPath } = buildHrefForMode(mode.routeName);
+            const modeHref = buildHrefForMode(mode.routeName);
+            const { pathname: targetPath } = modeHref;
             const isCurrentRoute = location.pathname === targetPath;
 
             const isDisabled = validity.valid !== true || isCurrentRoute;
@@ -340,7 +344,7 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
                     role="menuitem"
                     tabIndex={0}
                     data-cy={`mode-selector-${mode.routeName}`}
-                    to={buildHrefForMode(mode.routeName)}
+                    to={modeHref}
                     className={cn(
                       'group flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5',
                       'text-foreground outline-none ring-offset-background transition-colors duration-150',
