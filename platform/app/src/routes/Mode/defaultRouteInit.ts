@@ -228,7 +228,7 @@ export async function defaultRouteInit(
     remainingPromises.forEach(p => p.forEach(promise => promise.start()));
   }
 
-  async function collectSeriesPromises(retrieves) {
+  async function collectSeriesPromises(retrieves, { includeDisplaySetFromUrl = false } = {}) {
     const settledRetrieves = await Promise.allSettled(retrieves);
     const requiredSeriesPromises = [];
     const remainingPromises = [];
@@ -238,7 +238,7 @@ export async function defaultRouteInit(
         return;
       }
 
-      if (displaySetFromUrl) {
+      if (includeDisplaySetFromUrl && displaySetFromUrl) {
         requiredSeriesPromises.push(...retrieve.value.map(promise => promise.start()));
         return;
       }
@@ -279,15 +279,18 @@ export async function defaultRouteInit(
       });
     });
 
-    const { requiredSeriesPromises, remainingPromises } =
-      await collectSeriesPromises(priorRetrieves);
+    const { requiredSeriesPromises, remainingPromises } = await collectSeriesPromises(
+      priorRetrieves
+    );
 
     await Promise.allSettled(requiredSeriesPromises);
     applyHangingProtocol();
     startRemainingPromises(remainingPromises);
   }
 
-  const { requiredSeriesPromises, remainingPromises } = await collectSeriesPromises(allRetrieves);
+  const { requiredSeriesPromises, remainingPromises } = await collectSeriesPromises(allRetrieves, {
+    includeDisplaySetFromUrl: true,
+  });
 
   log.timeEnd(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
   log.time(Enums.TimingEnum.DISPLAY_SETS_TO_FIRST_IMAGE);
