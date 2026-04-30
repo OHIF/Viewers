@@ -280,6 +280,14 @@ window.config = {
         friendlyName: 'dicom local',
       },
     },
+    {
+      namespace: '@ohif/extension-nof-ohif-viewer.dataSourcesModule.fhir',
+      sourceName: 'fhir',
+      configuration: {
+        friendlyName: 'FHIR R4 Data Source',
+        smartClientId: '',
+      },
+    },
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
