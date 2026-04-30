@@ -61,6 +61,7 @@ export default function ModeRoute({
 
   const {
     displaySetService,
+    viewportGridService,
     panelService,
     hangingProtocolService,
     userAuthenticationService,
@@ -198,6 +199,72 @@ export default function ModeRoute({
       layoutTemplateData.current = null;
     };
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
+
+  useEffect(() => {
+    // Emit active viewport selection (study + series) to parent app so it can
+    // sync right-side Result/Run against the exact selected series.
+    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
+      return;
+    }
+    if (!window.parent || window.parent === window) {
+      return;
+    }
+
+    const postSelection = () => {
+      try {
+        const gridState = viewportGridService?.getState?.();
+        const activeViewportId = gridState?.activeViewportId;
+        const activeViewport =
+          gridState?.viewports?.get?.(activeViewportId) ??
+          (activeViewportId && gridState?.viewports?.[activeViewportId]);
+
+        const viewportOptions = activeViewport?.viewportOptions ?? {};
+        const displaySetUID =
+          activeViewport?.displaySetInstanceUID ??
+          activeViewport?.displaySetInstanceUIDs?.[0] ??
+          activeViewport?.displaySets?.[0] ??
+          viewportOptions?.displaySetInstanceUID ??
+          viewportOptions?.displaySetInstanceUIDs?.[0] ??
+          viewportOptions?.displaySets?.[0];
+
+        const displaySet = displaySetUID ? displaySetService.getDisplaySetByUID(displaySetUID) : null;
+        const studyInstanceUID = displaySet?.StudyInstanceUID ?? studyInstanceUIDs?.[0] ?? '';
+        const seriesInstanceUID = displaySet?.SeriesInstanceUID ?? '';
+
+        window.parent.postMessage(
+          {
+            type: 'OHIF_SELECTION',
+            studyInstanceUIDs: studyInstanceUID,
+            seriesInstanceUIDs: seriesInstanceUID,
+            href: window.location.href,
+          },
+          '*'
+        );
+      } catch (error) {
+        // Keep silent to avoid impacting viewer runtime.
+      }
+    };
+
+    const subscriptions = [];
+    subscriptions.push(
+      viewportGridService?.subscribe?.(
+        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+        postSelection
+      )
+    );
+    subscriptions.push(
+      viewportGridService?.subscribe?.(viewportGridService.EVENTS.GRID_STATE_CHANGED, postSelection)
+    );
+    subscriptions.push(
+      displaySetService?.subscribe?.(displaySetService.EVENTS.DISPLAY_SETS_CHANGED, postSelection)
+    );
+
+    postSelection();
+
+    return () => {
+      subscriptions.forEach(sub => sub?.unsubscribe?.());
+    };
+  }, [ExtensionDependenciesLoaded, studyInstanceUIDs, viewportGridService, displaySetService]);
 
   useEffect(() => {
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {

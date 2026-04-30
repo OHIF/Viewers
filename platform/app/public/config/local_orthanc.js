@@ -18,9 +18,10 @@ window.config = {
       configuration: {
         friendlyName: 'local Orthanc DICOMWeb Server',
         name: 'DCM4CHEE',
-        wadoUriRoot: 'http://localhost/dicom-web',
-        qidoRoot: 'http://localhost/dicom-web',
-        wadoRoot: 'http://localhost/dicom-web',
+        // Route DICOMWeb through liverct-server so auth/cors are handled in one place.
+        wadoUriRoot: 'http://127.0.0.1:3001/api/orthanc/wado',
+        qidoRoot: 'http://127.0.0.1:3001/api/orthanc/dicom-web',
+        wadoRoot: 'http://127.0.0.1:3001/api/orthanc/dicom-web',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         dicomUploadEnabled: true,
