@@ -1,4 +1,4 @@
-import { visitStudy, visitStudyRendered } from './visitStudy';
+import { visitStudy } from './visitStudy';
 import {
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
@@ -32,7 +32,6 @@ import {
 
 export {
   visitStudy,
-  visitStudyRendered,
   addOHIFConfiguration,
   addOHIFGlobalCustomizations,
   checkForScreenshot,

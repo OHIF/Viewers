@@ -14,7 +14,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 }) => {
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await mainToolbarPageObject.waitForViewportsRendered();
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot(
     page,
@@ -35,7 +35,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  await mainToolbarPageObject.waitForViewportsRendered();
+  await mainToolbarPageObject.waitForVolumeLoad();
 
   await checkForScreenshot({
     page,

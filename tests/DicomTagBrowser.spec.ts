@@ -58,7 +58,7 @@ test('should display the long series name properly within the series select butt
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 
-  await mainToolbarPageObject.waitForViewportsRendered();
+  await mainToolbarPageObject.waitForVolumeLoad();
   await mainToolbarPageObject.moreTools.tagBrowser.click();
   const dicomTagBrowser = DOMOverlayPageObject.dialog.dicomTagBrowser;
 
