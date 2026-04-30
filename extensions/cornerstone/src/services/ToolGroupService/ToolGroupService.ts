@@ -23,6 +23,12 @@ type Tools = {
   disabled?: Tool[];
 };
 
+type ToolBindings = Array<Record<string, unknown>>;
+type PersistedToolBindings = Record<string, Record<string, ToolBindings>>;
+type ApplyToolBindingsOptions = {
+  replaceExisting?: boolean;
+};
+
 export default class ToolGroupService {
   public static REGISTRATION = {
     name: 'toolGroupService',
@@ -255,22 +261,50 @@ export default class ToolGroupService {
   public getToolBindings(
     toolGroupId: string,
     toolName: string
-  ): Array<Record<string, unknown>> | undefined {
+  ): ToolBindings | undefined {
     return this.toolBindingsMap.get(toolGroupId)?.get(toolName);
   }
 
-  public setToolBindings(
-    toolGroupId: string,
-    toolName: string,
-    bindings: Array<Record<string, unknown>>
-  ): void {
+  public setToolBindings(toolGroupId: string, toolName: string, bindings: ToolBindings): void {
     if (!this.toolBindingsMap.has(toolGroupId)) {
       this.toolBindingsMap.set(toolGroupId, new Map());
     }
     this.toolBindingsMap.get(toolGroupId).set(toolName, bindings);
   }
 
-  public applyToolBindings(toolGroupId: string, toolName: string): void {
+  public persistToolBindings(toolGroupId: string, toolName: string, bindings: ToolBindings): void {
+    const persistedBindings = this._readPersistedToolBindings();
+    if (!persistedBindings[toolGroupId]) {
+      persistedBindings[toolGroupId] = {};
+    }
+
+    persistedBindings[toolGroupId][toolName] = bindings;
+    this._writePersistedToolBindings(persistedBindings);
+  }
+
+  public removePersistedToolBindings(toolGroupId: string, toolName?: string): void {
+    const persistedBindings = this._readPersistedToolBindings();
+    if (!persistedBindings[toolGroupId]) {
+      return;
+    }
+
+    if (toolName) {
+      delete persistedBindings[toolGroupId][toolName];
+      if (!Object.keys(persistedBindings[toolGroupId]).length) {
+        delete persistedBindings[toolGroupId];
+      }
+    } else {
+      delete persistedBindings[toolGroupId];
+    }
+
+    this._writePersistedToolBindings(persistedBindings);
+  }
+
+  public applyToolBindings(
+    toolGroupId: string,
+    toolName: string,
+    options: ApplyToolBindingsOptions = {}
+  ): void {
     const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     if (!toolGroup || !toolGroup.hasTool(toolName)) {
       return;
@@ -285,6 +319,10 @@ export default class ToolGroupService {
       mode === Enums.ToolModes.Passive ||
       mode === Enums.ToolModes.Enabled
     ) {
+      if (options.replaceExisting) {
+        // Opt-in behavior for callers that need replacement semantics.
+        toolGroup.setToolDisabled(toolName);
+      }
       toolGroup.setToolActive(toolName, { bindings });
     }
   }
@@ -374,22 +412,43 @@ export default class ToolGroupService {
   }
 
   private _loadPersistedBindings(toolGroupId: string): void {
+    const toolGroupBindings = this._readPersistedToolBindings()[toolGroupId];
+    if (!toolGroupBindings) {
+      return;
+    }
+
+    for (const [toolName, bindings] of Object.entries(toolGroupBindings)) {
+      this.setToolBindings(toolGroupId, toolName, bindings as ToolBindings);
+    }
+  }
+
+  private _readPersistedToolBindings(): PersistedToolBindings {
     try {
       const stored = localStorage.getItem(this._getToolBindingsStorageKey());
       if (!stored) {
-        return;
+        return {};
       }
+
       const parsed = JSON.parse(stored);
-      const toolGroupBindings = parsed[toolGroupId];
-      if (!toolGroupBindings) {
-        return;
+      if (!parsed || typeof parsed !== 'object') {
+        return {};
       }
-      for (const [toolName, bindings] of Object.entries(toolGroupBindings)) {
-        this.setToolBindings(toolGroupId, toolName, bindings as Array<Record<string, unknown>>);
-      }
+
+      return parsed as PersistedToolBindings;
     } catch {
       // ignore corrupt localStorage
+      return {};
     }
+  }
+
+  private _writePersistedToolBindings(bindings: PersistedToolBindings): void {
+    const storageKey = this._getToolBindingsStorageKey();
+    if (!Object.keys(bindings).length) {
+      localStorage.removeItem(storageKey);
+      return;
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(bindings));
   }
 
   private _getToolBindingsStorageKey(): string {
