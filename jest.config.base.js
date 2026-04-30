@@ -20,9 +20,11 @@ module.exports = {
     '\\.(css|less)$': 'identity-obj-proxy',
     // calculate-suv publishes under dist/ (not dist/esm), so map it explicitly
     // before package-specific catch-all @cornerstonejs mappings.
-    '^@cornerstonejs/calculate-suv$': '<rootDir>/node_modules/@cornerstonejs/calculate-suv',
+    '^@cornerstonejs/calculate-suv$': '<rootDir>/../../node_modules/@cornerstonejs/calculate-suv',
     '^@cornerstonejs/calculate-suv/(.*)$':
-      '<rootDir>/node_modules/@cornerstonejs/calculate-suv/$1',
+      '<rootDir>/../../node_modules/@cornerstonejs/calculate-suv/$1',
+    '^@cornerstonejs/([^/]+)/(.*)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm/$2',
+    '^@cornerstonejs/([^/]+)$': '<rootDir>/../../node_modules/@cornerstonejs/$1/dist/esm',
   },
   // Setup
   // setupFiles: ["jest-canvas-mock/lib/index.js"],
