@@ -443,8 +443,19 @@ export default class ToolGroupService {
       return;
     }
 
+    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+
     for (const [toolName, bindings] of Object.entries(toolGroupBindings)) {
       this.setToolBindings(toolGroupId, toolName, bindings as ToolBindings);
+
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        continue;
+      }
+
+      const { mode } = toolGroup.getToolOptions(toolName);
+      if (mode === Enums.ToolModes.Active) {
+        this.applyToolBindings(toolGroupId, toolName, { replaceExisting: true });
+      }
     }
   }
 
