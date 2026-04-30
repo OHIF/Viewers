@@ -9,7 +9,7 @@ on:
           CS3D branch (e.g. main, origin:feat/foo) or version (e.g. 4.18.2, 4.19+, 4.x). Only used
           when ohif-integration label is present or via workflow_dispatch.
         required: false
-        default: 'beta'
+        default: '4.19+'
 
 permissions:
   contents: read
@@ -46,7 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           EVENT_NAME: ${{ github.event_name }}
-          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || 'beta' }}
+          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || '4.19+' }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
@@ -204,6 +204,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           EVENT_NAME: ${{ github.event_name }}
-          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || 'beta' }}
+          CS3D_REF_INPUT: ${{ github.event.inputs.cs3d_ref || '4.19+' }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
