@@ -193,6 +193,50 @@ function commandsModule({
     }
   }
 
+  function _clampToRange(value: number, min: number, max: number) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function _getRegionSegmentPlusLimits() {
+    const enabledElement = _getActiveViewportEnabledElement();
+    const viewport = enabledElement?.viewport;
+
+    if (!viewport) {
+      return {
+        maxDeltaK: 25,
+        maxDeltaIJ: 100,
+      };
+    }
+
+    let maxDeltaK = 25;
+    let maxDeltaIJ = 100;
+
+    if (viewport instanceof StackViewport) {
+      maxDeltaK = Math.max(1, viewport.getImageIds()?.length ?? 1);
+    } else if (viewport instanceof VolumeViewport) {
+      const sliceData = csUtils.getImageSliceDataForVolumeViewport(viewport);
+      maxDeltaK = Math.max(1, sliceData?.numberOfSlices ?? 1);
+    }
+
+    const imageData = viewport.getImageData?.();
+    const dimensions =
+      imageData?.imageData?.getDimensions?.() ??
+      imageData?.dimensions ??
+      (Array.isArray(imageData) ? imageData : undefined);
+
+    if (Array.isArray(dimensions) && dimensions.length >= 2) {
+      maxDeltaIJ = Math.max(1, dimensions[0], dimensions[1]);
+      if (dimensions.length >= 3) {
+        maxDeltaK = Math.max(maxDeltaK, dimensions[2] || 1);
+      }
+    }
+
+    return {
+      maxDeltaK,
+      maxDeltaIJ,
+    };
+  }
+
   /**
    * Creates a command function that sets a style property for segmentation types.
    * If type is provided, sets the property for that type only.
@@ -2021,6 +2065,37 @@ function commandsModule({
     },
     rejectPreview: () => {
       actions._handlePreviewAction('reject');
+      // ESC is commonly bound to rejectPreview in OHIF.
+      // Also cancel any in-flight tool operation so non-preview tools
+      // (e.g., one-click flood fill) can be interrupted consistently.
+      actions.cancelMeasurement();
+    },
+    cancelMeasurement: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+      const element = enabledElement?.viewport?.element;
+      const viewportId = viewportGridService.getActiveViewportId();
+
+      let cancelled = false;
+
+      if (element) {
+        const cancelledAnnotationUID = cornerstoneTools.cancelActiveManipulations(element);
+        cancelled = !!cancelledAnnotationUID;
+      }
+
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+      const activeToolName = toolGroupService.getActiveToolForViewport(viewportId);
+      const activeToolInstance = activeToolName
+        ? toolGroup?.getToolInstance(activeToolName)
+        : undefined;
+
+      if (activeToolInstance && typeof activeToolInstance.cancelActiveOperation === 'function') {
+        cancelled = activeToolInstance.cancelActiveOperation() || cancelled;
+      }
+
+      if (cancelled) {
+        const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+        renderingEngine.render();
+      }
     },
     clearMarkersForMarkerLabelmap: () => {
       const { viewport } = _getActiveViewportEnabledElement();
@@ -2103,6 +2178,71 @@ function commandsModule({
           });
         });
       }
+    },
+    setRegionSegmentPlusFloodFillConfiguration: ({ value, id, options }) => {
+      const viewportId = viewportGridService.getActiveViewportId();
+      const toolGroupId = toolGroupService.getToolGroupForViewport(viewportId)?.id;
+      const toolGroupIds = toolGroupId ? [toolGroupId] : toolGroupService.getToolGroupIds();
+
+      const maxDeltaKOptionId = 'region-segment-plus-max-delta-k';
+      const maxDeltaIJOptionId = 'region-segment-plus-max-delta-ij';
+      const toolButton = toolbarService.getButton('RegionSegmentPlus');
+      const buttonOptions = toolButton?.props?.options;
+      const optionList =
+        (Array.isArray(options) && options.length ? options : buttonOptions) ?? [];
+
+      const maxDeltaKOption = optionList.find(option => option.id === maxDeltaKOptionId);
+      const maxDeltaIJOption = optionList.find(option => option.id === maxDeltaIJOptionId);
+      const { maxDeltaK: maxAllowedK, maxDeltaIJ: maxAllowedIJ } = _getRegionSegmentPlusLimits();
+
+      if (maxDeltaKOption) {
+        maxDeltaKOption.max = maxAllowedK;
+      }
+      if (maxDeltaIJOption) {
+        maxDeltaIJOption.max = maxAllowedIJ;
+      }
+
+      const incomingValue = Number(value);
+      const currentK = Number(maxDeltaKOption?.value ?? 25);
+      const currentIJ = Number(maxDeltaIJOption?.value ?? 100);
+
+      const nextMaxDeltaK = _clampToRange(
+        id === maxDeltaKOptionId && Number.isFinite(incomingValue) ? incomingValue : currentK,
+        1,
+        maxAllowedK
+      );
+      const nextMaxDeltaIJ = _clampToRange(
+        id === maxDeltaIJOptionId && Number.isFinite(incomingValue) ? incomingValue : currentIJ,
+        1,
+        maxAllowedIJ
+      );
+
+      if (maxDeltaKOption) {
+        maxDeltaKOption.value = nextMaxDeltaK;
+      }
+      if (maxDeltaIJOption) {
+        maxDeltaIJOption.value = nextMaxDeltaIJ;
+      }
+
+      for (const tgId of toolGroupIds) {
+        const toolGroup = toolGroupService.getToolGroup(tgId);
+        if (!toolGroup?.hasTool(toolNames.RegionSegmentPlus)) {
+          continue;
+        }
+
+        toolGroup.setToolConfiguration(toolNames.RegionSegmentPlus, {
+          segmentationMode: 'floodfill_full',
+          hoverPrecheckEnabled: false,
+          intensityRangeStrategy: 'canvasDiskTriClassLarge',
+          maxDeltaK: nextMaxDeltaK,
+          maxDeltaIJ: nextMaxDeltaIJ,
+          preview: {
+            enabled: false,
+          },
+        });
+      }
+
+      toolbarService.refreshToolbarState({ viewportId });
     },
     increaseBrushSize: () => {
       _handleBrushSizeAction('increase');
@@ -2781,12 +2921,14 @@ function commandsModule({
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
+    cancelMeasurement: actions.cancelMeasurement,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
     interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
     clearMarkersForMarkerLabelmap: actions.clearMarkersForMarkerLabelmap,
     setBrushSize: actions.setBrushSize,
     setThresholdRange: actions.setThresholdRange,
+    setRegionSegmentPlusFloodFillConfiguration: actions.setRegionSegmentPlusFloodFillConfiguration,
     increaseBrushSize: actions.increaseBrushSize,
     decreaseBrushSize: actions.decreaseBrushSize,
     addNewSegment: actions.addNewSegment,
