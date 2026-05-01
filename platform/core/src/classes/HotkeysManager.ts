@@ -227,14 +227,8 @@ export class HotkeysManager {
    * @param hotkey - The hotkey definition object.
    * @throws {Error} Throws an error if no commandName is provided.
    */
-  registerHotkeys({
-    commandName,
-    commandOptions = {},
-    context,
-    keys,
-    label,
-    isEditable,
-  }: Hotkey): void {
+  registerHotkeys(hotkeyDefinition: Hotkey): void {
+    const { commandName, commandOptions = {}, context, keys } = hotkeyDefinition;
     if (!commandName) {
       throw new Error(`No command was defined for hotkey "${keys}"`);
     }
@@ -256,7 +250,7 @@ export class HotkeysManager {
       this._unbindHotkeys(commandName, existingHotkey.keys);
     }
 
-    this.hotkeyDefinitions[commandHash] = { commandName, commandOptions, keys, label, isEditable };
+    this.hotkeyDefinitions[commandHash] = { ...hotkeyDefinition };
     this._bindHotkeys(commandName, commandOptions, context, keys);
   }
 
