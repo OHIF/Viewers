@@ -191,6 +191,7 @@ export default async function init({
 
   // Add OHIF metadata providers after dicomImageLoader.init().
   // The linked metadata branch clears providers during loader init.
+  metaData.addProvider(csUtilities.genericMetadataProvider.get, 9998);
   metaData.addProvider(
     csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
       csUtilities.calibratedPixelSpacingMetadataProvider
