@@ -256,7 +256,7 @@ function TrackedMeasurementsContextProvider(
     simplifiedAndLoadSR: (ctx, evt, condMeta) => {
       return (
         appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
-        evt.data.isBackupSave === false
+        evt.data?.isBackupSave === false
       );
     },
     hasDirtyAndSimplified: (ctx, evt, condMeta) => {
