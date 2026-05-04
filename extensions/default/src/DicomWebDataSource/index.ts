@@ -16,7 +16,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStu
 import StaticWadoClient from './utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from './utils/fixBulkDataURI';
-import {HeadersInterface} from '@ohif/core/src/types/RequestHeaders';
+import { HeadersInterface } from '@ohif/core/src/types/RequestHeaders';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -47,6 +47,15 @@ export type DicomWebConfig = {
    thumbnail - render using the thumbnail endpoint on wadors using bulkDataURI, passing authentication params  to the url.
     rendered - should use the rendered endpoint instead of the thumbnail endpoint
 */
+  thumbnailRequestStrategy?: 'bulkDataRetrieve' | 'fetch';
+  /**
+   * Thumbnail data request strategy when `thumbnailRendering` is `thumbnail`/`rendered`; ignored for `wadors`/`thumbnailDirect`.
+   *
+   * - `bulkDataRetrieve` (default): Uses the DICOMweb client's bulk data retrieve API (`retrieveBulkData`)
+   * - `fetch`: `GET` the WADO-RS thumbnail or rendered resource URL with auth headers and use the
+   *          response body as a JPEG blob URL. For series-level context, if that `GET` fails, a single
+   *          QIDO instances query (`limit=1`) is used to obtain `SOPInstanceUID` and the fetch is retried once.
+   */
   /** Whether the server supports reject calls (i.e. DCM4CHEE) */
   supportsReject?: boolean;
   /** indicates if the retrieves can fetch singlepart. Options are bulkdata, video, image, or  true */
@@ -96,6 +105,18 @@ export type BulkDataURIConfig = {
    * series is the default, as the metadata retrieved is series level.
    */
   relativeResolution?: 'studies' | 'series';
+};
+
+type ThumbnailContext = {
+  StudyInstanceUID?: string;
+  SeriesInstanceUID?: string;
+  SOPInstanceUID?: string;
+};
+
+type ThumbnailFetchRequestResult = {
+  url: string;
+  endpointPath: string;
+  headers: Record<string, string>;
 };
 
 /**
@@ -158,7 +179,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        */
       generateWadoHeader = (options: HeaderOptions): HeadersInterface => {
         const authorizationHeader = getAuthorizationHeader();
-        if (options?.includeTransferSyntax!==false) {
+        if (options?.includeTransferSyntax !== false) {
           //Generate accept header depending on config params
           const formattedAcceptHeader = utils.generateAcceptHeader(
             dicomWebConfig.acceptHeader,
@@ -175,7 +196,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           // which the server expects Accept: application/dicom+json will still include that in the
           // header.
           return {
-            ...authorizationHeader
+            ...authorizationHeader,
           };
         }
       };
@@ -261,8 +282,16 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
 
-      getGetThumbnailSrc: function (instance, imageId) {
-        if (dicomWebConfig.thumbnailRendering === 'wadors') {
+      getGetThumbnailSrc: function (thumbnailContext: ThumbnailContext, imageId) {
+        const thumbnailRendering = dicomWebConfig.thumbnailRendering;
+        if (!thumbnailRendering) {
+          return function getThumbnailSrc() {
+            console.warn('thumbnailRendering is not configured; returning null thumbnail src.');
+            return null;
+          };
+        }
+
+        if (thumbnailRendering === 'wadors') {
           return function getThumbnailSrc(options) {
             if (!imageId) {
               return null;
@@ -273,10 +302,12 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
             return options.getImageSrc(imageId);
           };
         }
-        if (dicomWebConfig.thumbnailRendering === 'thumbnailDirect') {
+
+        // thumbnailDirect is for plain <img src> URLs without auth headers; never use fetch here.
+        if (thumbnailRendering === 'thumbnailDirect') {
           return function getThumbnailSrc() {
             return this.directURL({
-              instance: instance,
+              instance: thumbnailContext,
               defaultPath: '/thumbnail',
               defaultType: 'image/jpeg',
               singlepart: true,
@@ -285,46 +316,66 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           }.bind(this);
         }
 
-        if (dicomWebConfig.thumbnailRendering === 'thumbnail') {
+        const thumbnailRequestStrategy =
+          dicomWebConfig.thumbnailRequestStrategy || 'bulkDataRetrieve';
+        if (thumbnailRequestStrategy === 'fetch') {
           return async function getThumbnailSrc() {
-            const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/thumbnail?accept=image/jpeg`;
-            return URL.createObjectURL(
-              new Blob(
-                [
-                  await this.bulkDataURI({
-                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                    defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
-                    thumbnail: true,
-                  }),
-                ],
-                { type: 'image/jpeg' }
-              )
+            return fetchThumbnailWithQidoFallbackForSeries(
+              thumbnailContext,
+              thumbnailRendering,
+              dicomWebConfig.wadoRoot,
+              getAuthorizationHeader,
+              qidoDicomWebClient
             );
-          }.bind(this);
+          };
         }
-        if (dicomWebConfig.thumbnailRendering === 'rendered') {
-          return async function getThumbnailSrc() {
-            const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-            const bulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered?accept=image/jpeg`;
-            return URL.createObjectURL(
-              new Blob(
-                [
-                  await this.bulkDataURI({
-                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
-                    defaultType: 'image/jpeg',
-                    mediaTypes: ['image/jpeg'],
-                    thumbnail: true,
-                  }),
-                ],
-                { type: 'image/jpeg' }
-              )
-            );
-          }.bind(this);
-        }
-      },
 
+        if (thumbnailRendering === 'thumbnail') {
+          return async function getThumbnailSrc() {
+            const endpoint = buildThumbnailEndpointPath(thumbnailContext, 'thumbnail');
+            const bulkDataURI = `${dicomWebConfig.wadoRoot}${endpoint}`;
+            return URL.createObjectURL(
+              new Blob(
+                [
+                  await this.bulkDataURI({
+                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
+                    defaultType: 'image/jpeg',
+                    mediaTypes: ['image/jpeg'],
+                    thumbnail: true,
+                  }),
+                ],
+                { type: 'image/jpeg' }
+              )
+            );
+          }.bind(this);
+        }
+        if (thumbnailRendering === 'rendered') {
+          return async function getThumbnailSrc() {
+            const endpoint = buildThumbnailEndpointPath(thumbnailContext, 'rendered');
+            const bulkDataURI = `${dicomWebConfig.wadoRoot}${endpoint}`;
+            return URL.createObjectURL(
+              new Blob(
+                [
+                  await this.bulkDataURI({
+                    BulkDataURI: bulkDataURI.replace('wadors:', ''),
+                    defaultType: 'image/jpeg',
+                    mediaTypes: ['image/jpeg'],
+                    thumbnail: true,
+                  }),
+                ],
+                { type: 'image/jpeg' }
+              )
+            );
+          }.bind(this);
+        }
+
+        return function getThumbnailSrc() {
+          console.warn(
+            `Unsupported thumbnailRendering "${thumbnailRendering}"; returning null thumbnail src.`
+          );
+          return null;
+        };
+      },
       directURL: params => {
         return getDirectURL(
           {
@@ -739,6 +790,134 @@ function retrieveBulkData(value, options = {}) {
     value.Value = ret;
     return ret;
   });
+}
+
+function buildThumbnailEndpointPath(
+  thumbnailContext: ThumbnailContext,
+  thumbnailRendering: string
+): string {
+  const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = thumbnailContext;
+
+  return SeriesInstanceUID && SOPInstanceUID
+    ? `/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/${thumbnailRendering}`
+    : SeriesInstanceUID
+      ? `/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${thumbnailRendering}`
+      : `/studies/${StudyInstanceUID}/${thumbnailRendering}`;
+}
+
+function getThumbnailFetchRequest(
+  thumbnailContext: ThumbnailContext,
+  thumbnailRendering: string,
+  wadoRoot: string | undefined,
+  getAuthorizationHeader: () => HeadersInterface
+): ThumbnailFetchRequestResult {
+  const endpointPath = buildThumbnailEndpointPath(thumbnailContext, thumbnailRendering);
+
+  const headers: Record<string, string> = {
+    ...(getAuthorizationHeader() as Record<string, string>),
+    Accept: 'image/jpeg',
+  };
+
+  return {
+    url: `${wadoRoot}${endpointPath}`,
+    endpointPath,
+    headers,
+  };
+}
+
+async function fetchThumbnailObjectURL(
+  thumbnailContext: ThumbnailContext,
+  thumbnailRendering: string,
+  wadoRoot: string | undefined,
+  getAuthorizationHeader: () => HeadersInterface
+): Promise<string | null> {
+  const fetchRequest = getThumbnailFetchRequest(
+    thumbnailContext,
+    thumbnailRendering,
+    wadoRoot,
+    getAuthorizationHeader
+  );
+
+  try {
+    const response = await fetch(fetchRequest.url, {
+      method: 'GET',
+      headers: fetchRequest.headers,
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `thumbnail fetch failed with status ${response.status} for ${fetchRequest.endpointPath}`
+      );
+      return null;
+    }
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.warn('thumbnail fetch failed', error);
+    return null;
+  }
+}
+
+/**
+ * When thumbnailRequestStrategy is fetch: try WADO GET for the given context; if it fails and the
+ * context is series-level (no SOPInstanceUID), QIDO one instance and retry fetch once.
+ */
+async function fetchThumbnailWithQidoFallbackForSeries(
+  thumbnailContext: ThumbnailContext,
+  thumbnailRendering: string,
+  wadoRoot: string | undefined,
+  getAuthorizationHeader: () => HeadersInterface,
+  qidoClient: {
+    headers: HeadersInterface;
+    searchForInstances: (opts: unknown) => Promise<unknown[]>;
+  }
+): Promise<string | null> {
+  const sopInstanceUidTag = '00080018';
+
+  const initialThumbnailUrl = await fetchThumbnailObjectURL(
+    thumbnailContext,
+    thumbnailRendering,
+    wadoRoot,
+    getAuthorizationHeader
+  );
+  if (initialThumbnailUrl) {
+    return initialThumbnailUrl;
+  }
+  if (thumbnailContext.SOPInstanceUID) {
+    return null;
+  }
+  if (!thumbnailContext.StudyInstanceUID || !thumbnailContext.SeriesInstanceUID) {
+    return null;
+  }
+  try {
+    qidoClient.headers = getAuthorizationHeader();
+    const instances = await qidoClient.searchForInstances({
+      studyInstanceUID: thumbnailContext.StudyInstanceUID,
+      seriesInstanceUID: thumbnailContext.SeriesInstanceUID,
+      queryParams: {
+        limit: 1,
+        includefield: sopInstanceUidTag,
+      },
+    });
+    const firstInstance = instances?.[0] as Record<string, unknown> | undefined;
+    const sopAttr = firstInstance?.[sopInstanceUidTag] as { Value?: string[] } | undefined;
+    const sopValues = sopAttr?.Value;
+    const SOPInstanceUID =
+      Array.isArray(sopValues) && sopValues.length ? String(sopValues[0]) : undefined;
+    if (!SOPInstanceUID) {
+      return null;
+    }
+    return fetchThumbnailObjectURL(
+      { ...thumbnailContext, SOPInstanceUID },
+      thumbnailRendering,
+      wadoRoot,
+      getAuthorizationHeader
+    );
+  } catch (error) {
+    console.warn('thumbnail fetch QIDO fallback failed', error);
+    return null;
+  }
 }
 
 export { createDicomWebApi };

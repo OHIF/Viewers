@@ -1,20 +1,22 @@
 import * as React from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Thumbnail } from '../../Thumbnail';
 import { TooltipProvider } from '../../Tooltip';
-import type { StudyRow } from '../types/types';
+import {
+  PreviewThumbnailStatusState,
+  type PreviewThumbnailStatus,
+  type StudyRow,
+} from '../types/types';
 import { PreviewPatientSummary } from './PreviewPatientSummary';
 import { PreviewSeriesList } from './PreviewSeriesList';
 import { ToggleGroup, ToggleGroupItem } from '../../ToggleGroup';
 import { Icons } from '../../Icons';
 
-type SeriesViewMode = 'thumbnails' | 'list';
+type PreviewSeriesViewMode = 'thumbnails' | 'list';
 
 function PreviewContent({
   study,
   series = [],
-  thumbs = {},
+  forceListView = false,
 }: {
   study?: StudyRow | null;
   series?: Array<{
@@ -28,10 +30,18 @@ function PreviewContent({
     numSeriesInstances?: number;
     modality?: string;
     Modality?: string;
+    thumbnailStatus?: PreviewThumbnailStatus;
   }>;
-  thumbs?: Record<string, string | null>;
+  forceListView?: boolean;
 }) {
-  const [seriesViewMode, setSeriesViewMode] = React.useState<SeriesViewMode>('thumbnails');
+  const [seriesViewMode, setSeriesViewMode] = React.useState<PreviewSeriesViewMode>('thumbnails');
+  const effectiveSeriesViewMode: PreviewSeriesViewMode = forceListView ? 'list' : seriesViewMode;
+  const imagingSeries = series.filter(
+    s => s.thumbnailStatus?.status !== PreviewThumbnailStatusState.NotApplicable
+  );
+  const nonImagingSeries = series.filter(
+    s => s.thumbnailStatus?.status === PreviewThumbnailStatusState.NotApplicable
+  );
 
   // Handle empty state when no study is provided
   if (!study) {
@@ -44,17 +54,17 @@ function PreviewContent({
   }
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <TooltipProvider delayDuration={200}>
-        <div className="flex flex-col gap-3">
-          <PreviewPatientSummary data={study}>
-            <PreviewPatientSummary.Patient />
-            <PreviewPatientSummary.Workflows />
-          </PreviewPatientSummary>
-          <div className="text-muted-foreground flex h-5 w-full items-center justify-between gap-1 px-2 text-base">
-            <span className="leading-tight">
-              {series?.length ? study?.description || 'No Description' : 'No Series'}
-            </span>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col gap-3">
+        <PreviewPatientSummary data={study}>
+          <PreviewPatientSummary.Patient />
+          <PreviewPatientSummary.Workflows />
+        </PreviewPatientSummary>
+        <div className="text-muted-foreground flex h-5 w-full items-center justify-between gap-1 px-2 text-base">
+          <span className="leading-tight">
+            {series?.length ? study?.description || 'No Description' : 'No Series'}
+          </span>
+          {!forceListView && (
             <ToggleGroup
               type="single"
               value={seriesViewMode}
@@ -75,36 +85,82 @@ function PreviewContent({
                 <Icons.ListView />
               </ToggleGroupItem>
             </ToggleGroup>
-          </div>
-          {seriesViewMode === 'thumbnails' ? (
-            <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
-              {series?.map((s, i) => {
-                const seriesUID = s.seriesInstanceUid || s.SeriesInstanceUID || String(i);
-                const imageSrc = thumbs[seriesUID] || undefined;
-                return (
-                  <Thumbnail
-                    key={`series-${seriesUID}`}
-                    displaySetInstanceUID={`series-${seriesUID}`}
-                    imageSrc={imageSrc as any}
-                    imageAltText={s.description || s.SeriesDescription || ''}
-                    description={s.description || s.SeriesDescription || '(empty)'}
-                    seriesNumber={s.seriesNumber ?? s.SeriesNumber ?? ''}
-                    numInstances={s.numSeriesInstances ?? s.numInstances ?? 0}
-                    modality={s.modality || s.Modality || ''}
-                    isActive={false}
-                    onClick={() => {}}
-                    onDoubleClick={() => {}}
-                    viewPreset="thumbnails"
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <PreviewSeriesList series={series} />
           )}
         </div>
-      </TooltipProvider>
-    </DndProvider>
+        {effectiveSeriesViewMode === 'thumbnails' ? (
+          <div className="flex flex-col">
+            {imagingSeries.length > 0 && (
+              <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
+                {imagingSeries.map((seriesItem, index) => {
+                  const seriesUID =
+                    seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID || String(index);
+                  const thumbnailState = seriesItem.thumbnailStatus;
+                  const imageSrc =
+                    thumbnailState?.status === PreviewThumbnailStatusState.Ready
+                      ? thumbnailState.src
+                      : undefined;
+                  return (
+                    <Thumbnail
+                      key={`series-imaging-${seriesUID}`}
+                      displaySetInstanceUID={`series-${seriesUID}`}
+                      imageSrc={imageSrc as any}
+                      imageAltText={seriesItem.description || seriesItem.SeriesDescription || ''}
+                      description={
+                        seriesItem.description || seriesItem.SeriesDescription || '(empty)'
+                      }
+                      seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
+                      numInstances={seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0}
+                      modality={seriesItem.modality || seriesItem.Modality || ''}
+                      isActive={false}
+                      onClick={() => {}}
+                      onDoubleClick={() => {}}
+                      isDraggable={false}
+                      viewPreset="thumbnails"
+                      thumbnailType="thumbnail"
+                    >
+                      {thumbnailState?.status === PreviewThumbnailStatusState.NotAvailable && (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <Icons.SeriesPlaceholder className="text-muted-foreground" />
+                        </div>
+                      )}
+                    </Thumbnail>
+                  );
+                })}
+              </div>
+            )}
+            {nonImagingSeries.length > 0 && (
+              <div className="mt-1 grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] pr-2">
+                {nonImagingSeries.map((seriesItem, index) => {
+                  const seriesUID =
+                    seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID || String(index);
+                  return (
+                    <Thumbnail
+                      key={`series-non-imaging-${seriesUID}`}
+                      displaySetInstanceUID={`series-${seriesUID}`}
+                      imageAltText={seriesItem.description || seriesItem.SeriesDescription || ''}
+                      description={
+                        seriesItem.description || seriesItem.SeriesDescription || '(empty)'
+                      }
+                      seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
+                      numInstances={seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0}
+                      modality={seriesItem.modality || seriesItem.Modality || ''}
+                      isActive={false}
+                      onClick={() => {}}
+                      onDoubleClick={() => {}}
+                      isDraggable={false}
+                      viewPreset="list"
+                      thumbnailType="thumbnailNoImage"
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <PreviewSeriesList series={series} />
+        )}
+      </div>
+    </TooltipProvider>
   );
 }
 

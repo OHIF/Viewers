@@ -16,3 +16,22 @@ export type StudyDateRangeFilter = {
   startDate?: string;
   endDate?: string;
 };
+
+export const PreviewThumbnailStatusState = {
+  Loading: 'loading',
+  Ready: 'ready',
+  NotAvailable: 'notAvailable',
+  NotApplicable: 'notApplicable',
+} as const;
+
+export type PreviewThumbnailStatusState =
+  (typeof PreviewThumbnailStatusState)[keyof typeof PreviewThumbnailStatusState];
+
+type NonReadyPreviewThumbnailStatusState = Exclude<
+  PreviewThumbnailStatusState,
+  typeof PreviewThumbnailStatusState.Ready
+>;
+
+export type PreviewThumbnailStatus =
+  | { status: NonReadyPreviewThumbnailStatusState }
+  | { status: typeof PreviewThumbnailStatusState.Ready; src: string };

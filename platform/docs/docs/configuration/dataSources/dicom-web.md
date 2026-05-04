@@ -187,6 +187,35 @@ For DICOM video and PDF it has been found that Orthanc delivers multipart, while
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](../configurationFiles.md).
 
+#### `thumbnailRendering`
+
+Optional. Controls how thumbnail images are requested.
+
+| Value | Behavior |
+| ----- | -------- |
+| `wadors` (default) | Uses WADO-RS retrieval for thumbnail image content |
+| `thumbnailDirect` | Uses the thumbnail URL directly as the image source. Use this only when the archive serves that URL without auth headers |
+| `thumbnail` | Uses the WADO-RS `.../thumbnail` endpoint |
+| `rendered` | Uses the WADO-RS `.../rendered` endpoint |
+
+Use `thumbnail` or `rendered` when the archive supports dedicated thumbnail/rendered responses. If either is selected, `thumbnailRequestStrategy` controls how the image data is fetched.
+
+#### `thumbnailRequestStrategy`
+
+Optional. Controls how the app retrieves the data for various thumbnails (e.g. side study panel study browser and study list preview panel) when
+`thumbnailRendering` is `thumbnail` or `rendered`. It does not apply to `wadors` or `thumbnailDirect`.
+
+| Value | Behavior |
+| ----- | -------- |
+| `bulkDataRetrieve` (default) | Uses the DICOMweb client's bulk data retrieve API, consistent with other bulk data reads |
+| `fetch` | Performs an authenticated HTTP `GET` to the WADO-RS `.../thumbnail` or `.../rendered` URL and builds a blob URL from the JPEG response. Prefer this when the archive serves a plain image body and bulk data retrieve is incompatible or unreliable. |
+
+Example (Orthanc-style plain fetch for thumbnails):
+
+```js
+thumbnailRendering: 'rendered',
+thumbnailRequestStrategy: 'fetch',
+```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
