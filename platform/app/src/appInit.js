@@ -28,7 +28,7 @@ import loadModules, { loadModule as peerImport } from './pluginImports';
 import { publicUrl } from './utils/publicUrl';
 
 /**
- * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
+ * @param {object|function} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
  */
 async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
@@ -92,6 +92,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    */
   const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
+
+  const { customizationService } = servicesManager.services;
+  // There might be more defaults loaded here.
+  customizationService.init(extensionManager);
+  // After the default extensions are loaded, the customizations parameter ones can be loaded.
+  await customizationService.applyWindowUrlCustomizations();
 
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level
