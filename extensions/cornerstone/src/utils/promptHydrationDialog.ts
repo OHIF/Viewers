@@ -120,16 +120,25 @@ function promptHydrationDialog({
         }, 0);
       } else if (type === HydrationType.SR) {
         // SR has a different result structure
-        const hydrationResult = await hydrateCallback(displaySet);
-
-        resolve({
-          userResponse: promptResult,
-          displaySetInstanceUID: displaySet.displaySetInstanceUID,
-          srSeriesInstanceUID: displaySet.SeriesInstanceUID,
-          viewportId,
-          StudyInstanceUID: hydrationResult?.StudyInstanceUID,
-          SeriesInstanceUIDs: hydrationResult?.SeriesInstanceUIDs,
-        });
+        window.setTimeout(async () => {
+          try {
+            const hydrationResult = await hydrateCallback(displaySet);
+            if (!hydrationResult) {
+              reject(new Error('SR hydration returned no result'));
+              return;
+            }
+            resolve({
+              userResponse: promptResult,
+              displaySetInstanceUID: displaySet.displaySetInstanceUID,
+              srSeriesInstanceUID: displaySet.SeriesInstanceUID,
+              viewportId,
+              StudyInstanceUID: hydrationResult.StudyInstanceUID,
+              SeriesInstanceUIDs: hydrationResult.SeriesInstanceUIDs,
+            });
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
       }
     } else {
       if (type === HydrationType.SR) {
