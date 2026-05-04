@@ -1,4 +1,8 @@
-import { computeContiguousRuns, computePixelFilledFromMarked } from './utils';
+import {
+  computeContiguousRuns,
+  computeIndicatorTopOffsetInFill,
+  computePixelFilledFromMarked,
+} from './utils';
 
 function u8(values: number[]): Uint8Array {
   return new Uint8Array(values);
@@ -54,6 +58,43 @@ describe('computePixelFilledFromMarked', () => {
     const marked = u8([1, 0, 1]);
     expect(computePixelFilledFromMarked(marked, 7.9)).toHaveLength(7);
     expect(computePixelFilledFromMarked(marked, 7.1)).toHaveLength(7);
+  });
+});
+
+describe('computeIndicatorTopOffsetInFill', () => {
+  it('top-aligns first bucket, centers middle, bottom-aligns last (pixelCount > total)', () => {
+    const total = 3;
+    const pixelCount = 9;
+    const indicatorHeight = 2;
+    // Buckets: [0,3), [3,6), [6,9)
+    expect(computeIndicatorTopOffsetInFill(0, total, pixelCount, indicatorHeight)).toBe(0);
+    expect(computeIndicatorTopOffsetInFill(1, total, pixelCount, indicatorHeight)).toBe(3);
+    expect(computeIndicatorTopOffsetInFill(2, total, pixelCount, indicatorHeight)).toBe(7);
+  });
+
+  it('top-aligns to fill pixel row when total >= pixelCount (slices > pixels)', () => {
+    const total = 10;
+    const pixelCount = 3;
+    const indicatorHeight = 1;
+    // Same buckets as computePixelFilledFromMarked: row0 [0,3), row1 [3,6), row2 [6,10)
+    expect(computeIndicatorTopOffsetInFill(0, total, pixelCount, indicatorHeight)).toBe(0);
+    expect(computeIndicatorTopOffsetInFill(2, total, pixelCount, indicatorHeight)).toBe(0);
+    expect(computeIndicatorTopOffsetInFill(3, total, pixelCount, indicatorHeight)).toBe(1);
+    expect(computeIndicatorTopOffsetInFill(5, total, pixelCount, indicatorHeight)).toBe(1);
+    expect(computeIndicatorTopOffsetInFill(6, total, pixelCount, indicatorHeight)).toBe(2);
+    expect(computeIndicatorTopOffsetInFill(9, total, pixelCount, indicatorHeight)).toBe(2);
+  });
+
+  it('clamps when indicator is taller than remaining fill space', () => {
+    const total = 2;
+    const pixelCount = 5;
+    const indicatorHeight = 10;
+    expect(computeIndicatorTopOffsetInFill(0, total, pixelCount, indicatorHeight)).toBe(0);
+    expect(computeIndicatorTopOffsetInFill(1, total, pixelCount, indicatorHeight)).toBe(0);
+  });
+
+  it('returns 0 when pixelCount is 0', () => {
+    expect(computeIndicatorTopOffsetInFill(0, 5, 0, 4)).toBe(0);
   });
 });
 

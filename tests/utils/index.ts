@@ -1,5 +1,8 @@
 import { visitStudy } from './visitStudy';
-import { addOHIFConfiguration } from './OHIFConfiguration';
+import {
+  addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
+} from './OHIFConfiguration';
 import { checkForScreenshot } from './checkForScreenshot';
 import { screenShotPaths } from './screenShotPaths';
 import {
@@ -21,10 +24,16 @@ import { getSvgPath } from './getSvgPath';
 import { navigateWithViewportArrow } from './navigateWithViewportArrow';
 import { test, expect } from './fixture';
 import { subscribeToMeasurementAdded } from './subscribeToMeasurement';
+import {
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
+} from './waitForViewportsRendered';
 
 export {
   visitStudy,
   addOHIFConfiguration,
+  addOHIFGlobalCustomizations,
   checkForScreenshot,
   screenShotPaths,
   simulateClicksOnElement,
@@ -44,6 +53,9 @@ export {
   subscribeToMeasurementAdded,
   getSvgPath,
   navigateWithViewportArrow,
+  waitForAnyViewportNeedsRender,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
   test,
   expect,
 };

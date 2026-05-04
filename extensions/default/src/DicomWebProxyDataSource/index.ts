@@ -1,5 +1,6 @@
 import { IWebApiDataSource } from '@ohif/core';
 import { createDicomWebApi } from '../DicomWebDataSource/index';
+import { resolveConfigFetchPolicy, fetchConfigJson } from '../utils/secureConfigFetch';
 
 /**
  * This datasource is initialized with a url that returns a JSON object with a
@@ -11,6 +12,7 @@ import { createDicomWebApi } from '../DicomWebDataSource/index';
  */
 function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.ServicesManager) {
   const { name } = dicomWebProxyConfig;
+  const { userAuthenticationService } = servicesManager.services;
   let dicomWebDelegate = undefined;
 
   const implementation = {
@@ -20,12 +22,14 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
       if (!url) {
         throw new Error(`No url for '${name}'`);
       } else {
-        const response = await fetch(url);
-        const data = await response.json();
+        const evaluatedUrl = resolveConfigFetchPolicy(url, {
+          allowedOrigins: dicomWebProxyConfig.dangerouslyAllowedOriginsForAuthenticatedEnvironments,
+          userAuthenticationService,
+        });
+        const data = await fetchConfigJson(evaluatedUrl);
         if (!data.servers?.dicomWeb?.[0]) {
           throw new Error('Invalid configuration returned by url');
         }
-
         dicomWebDelegate = createDicomWebApi(
           data.servers.dicomWeb[0].configuration || data.servers.dicomWeb[0],
           servicesManager
@@ -54,9 +58,16 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
     store: {
       dicom: (...args) => dicomWebDelegate.store.dicom(...args),
     },
-    deleteStudyMetadataPromise: (...args) => dicomWebDelegate.deleteStudyMetadataPromise(...args),
-    getImageIdsForDisplaySet: (...args) => dicomWebDelegate.getImageIdsForDisplaySet(...args),
-    getImageIdsForInstance: (...args) => dicomWebDelegate.getImageIdsForInstance(...args),
+    reject: {
+      series: (...args) => dicomWebDelegate?.reject?.series?.(...args),
+    },
+    deleteStudyMetadataPromise: (...args) => dicomWebDelegate?.deleteStudyMetadataPromise?.(...args),
+    getImageIdsForDisplaySet: (...args) => dicomWebDelegate?.getImageIdsForDisplaySet?.(...args),
+    getImageIdsForInstance: (...args) => dicomWebDelegate?.getImageIdsForInstance?.(...args),
+    getConfig: (...args) =>
+      dicomWebDelegate?.getConfig?.(...args) ?? {
+        dicomUploadEnabled: false,
+      },
     getStudyInstanceUIDs({ params, query }) {
       let studyInstanceUIDs = [];
 
