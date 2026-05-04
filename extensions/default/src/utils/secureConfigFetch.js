@@ -97,16 +97,14 @@ function resolveConfigFetchPolicy(rawUrl, policy = {}) {
 }
 
 async function fetchConfigJson(normalizedPolicy) {
-  const { normalizedUrl, isAuthenticated, isSameOrigin } = normalizedPolicy;
-  const response = isAuthenticated || isSameOrigin
-    ? await fetch(normalizedUrl)
-    : await fetch(normalizedUrl, {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'omit',
-        redirect: 'error',
-        referrerPolicy: 'no-referrer',
-      });
+  const { normalizedUrl } = normalizedPolicy;
+  const response = await fetch(normalizedUrl, {
+    method: 'GET',
+    mode: 'cors',
+    credentials: 'same-origin',
+    redirect: 'error',
+    referrerPolicy: 'no-referrer',
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch dynamic datasource configuration (${response.status})`);
@@ -114,7 +112,4 @@ async function fetchConfigJson(normalizedPolicy) {
 
   return response.json();
 }
-export {
-  resolveConfigFetchPolicy,
-  fetchConfigJson,
-};
+export { resolveConfigFetchPolicy, fetchConfigJson };
