@@ -9,8 +9,13 @@ import { useStudyListStateSync } from '../../hooks';
 import { StudyList, Icons, Button, useModal, InvestigationalUseDialog } from '@ohif/ui-next';
 import { useWorkListToolbarActions } from './useWorkListToolbarActions';
 
-import { utils, DicomMetadataStore, useSystem } from '@ohif/core';
-import type { StudyRow } from '@ohif/ui-next';
+import { utils, useSystem } from '@ohif/core';
+import { thumbnailNoImageModalities } from '@ohif/core/src/utils/thumbnailNoImageModalities';
+import {
+  PreviewThumbnailStatusState,
+  type PreviewThumbnailStatus,
+  type StudyRow,
+} from '@ohif/ui-next';
 
 type Props = withAppTypes & {
   data: any[];
@@ -21,9 +26,6 @@ type Props = withAppTypes & {
   dataPath?: string;
   onRefresh: () => void;
 };
-
-// Modalities that should not attempt pixel-based thumbnail rendering
-const NON_IMAGE_MODALITIES = new Set(['RTDOSE', 'RTPLAN', 'RTSTRUCT']);
 
 export default function WorkListUINext({
   data,
@@ -131,7 +133,6 @@ export default function WorkListUINext({
             <StudyList.Preview>
               <SidePanelPreview
                 dataSource={dataSource}
-                extensionManager={extensionManager as any}
                 selected={selected}
               />
             </StudyList.Preview>
@@ -211,142 +212,102 @@ function StudyListSettingsPopover() {
 
 function SidePanelPreview({
   dataSource,
-  extensionManager,
   selected,
 }: {
   dataSource: any;
-  extensionManager: any;
   selected: StudyRow | null;
 }) {
   const [series, setSeries] = useState<any[]>([]);
-  const [thumbs, setThumbs] = useState<Record<string, string | null>>({});
   const { sortBySeriesDate } = utils as any;
+  const thumbnailRendering = (
+    dataSource?.getConfig?.()?.thumbnailRendering ??
+    dataSource?.getConfig?.()?.configuration?.thumbnailRendering
+  ) as string | undefined;
+  const forceListView =
+    thumbnailRendering === 'wadors' || thumbnailRendering === 'thumbnailDirect';
 
   useEffect(() => {
-    const run = async () => {
-      const sid = (selected as any)?.studyInstanceUid;
-      if (!sid) {
-        setSeries([]);
-        setThumbs({});
-        return;
-      }
-      try {
-        const s = await dataSource.query.series.search(sid);
-        const sorted = typeof sortBySeriesDate === 'function' ? sortBySeriesDate(s) : s;
-        setSeries(sorted ?? []);
-      } catch (e) {
-        console.warn(e);
-        setSeries([]);
-        setThumbs({});
-      }
-    };
-    run();
-  }, [dataSource, selected]);
-
-  useEffect(() => {
-    const sid = (selected as any)?.studyInstanceUid;
-    if (!sid || !series?.length) {
-      setThumbs({});
-      return;
-    }
-
     let cancelled = false;
 
-    const load = async () => {
-      try {
-        await dataSource.retrieve.series.metadata({ StudyInstanceUID: sid });
+    const run = async () => {
+      const studyInstanceUID = (selected as any)?.studyInstanceUid;
+      if (!studyInstanceUID) {
+        setSeries([]);
+        return;
+      }
 
-        const nextThumbs: Record<string, string | null> = {};
-        for (const s of series) {
-          const seriesUID = s.seriesInstanceUid || s.SeriesInstanceUID;
+      try {
+        const seriesList = await dataSource.query.series.search(studyInstanceUID);
+        if (cancelled) {
+          return;
+        }
+
+        const sortedSeriesList = sortBySeriesDate?.(seriesList) ?? [];
+        const normalizedSeriesList = sortedSeriesList.map(row => {
+          const modality = String(row.modality || row.Modality || '').toUpperCase();
+          const thumbnailStatus: PreviewThumbnailStatus = thumbnailNoImageModalities.includes(modality)
+            ? { status: PreviewThumbnailStatusState.NotApplicable }
+            : { status: PreviewThumbnailStatusState.Loading };
+          return {
+            ...row,
+            thumbnailStatus,
+          };
+        });
+
+        setSeries(normalizedSeriesList);
+
+        for (const row of normalizedSeriesList) {
+          const seriesUID = row.seriesInstanceUid || row.SeriesInstanceUID;
           if (!seriesUID) {
             continue;
           }
-          // Skip rendering thumbnails for non-image modalities (e.g., RTDOSE/RTPLAN/RTSTRUCT)
-          const modality = String(s.modality || s.Modality || '').toUpperCase();
-          if (NON_IMAGE_MODALITIES.has(modality)) {
-            nextThumbs[seriesUID] = null;
-            continue;
-          }
-          const seriesMeta = DicomMetadataStore.getSeries?.(sid, seriesUID);
-          const instance =
-            seriesMeta?.instances?.[Math.floor((seriesMeta?.instances?.length || 1) / 2)];
-          if (!instance) {
-            nextThumbs[seriesUID] = null;
+          if (row.thumbnailStatus?.status === PreviewThumbnailStatusState.NotApplicable) {
             continue;
           }
 
-          let imageId: string | undefined;
-          if (instance?.imageId) {
-            imageId = instance.imageId;
-          } else if (instance) {
+          void (async () => {
+            let src: string | null = null;
             try {
-              const ids = dataSource.getImageIdsForInstance({ instance });
-              imageId = Array.isArray(ids) ? ids[Math.floor(ids.length / 2)] : ids;
-            } catch {}
-          }
-
-          let src: string | null = null;
-          try {
-            if (instance && imageId) {
-              const cfg = dataSource.getConfig?.();
-              const rendering = cfg?.thumbnailRendering;
-
-              let opts: any = undefined;
-              if (rendering === 'wadors') {
-                try {
-                  const utilitiesModule = extensionManager?.getModuleEntry?.(
-                    '@ohif/extension-cornerstone.utilityModule.common'
-                  );
-                  const { cornerstone } =
-                    utilitiesModule?.exports?.getCornerstoneLibraries?.() || {};
-                  if (cornerstone?.utilities?.loadImageToCanvas) {
-                    const getImageSrc = (imageId: string) =>
-                      new Promise<string>((resolve, reject) => {
-                        try {
-                          const canvas = document.createElement('canvas');
-                          cornerstone.utilities
-                            .loadImageToCanvas({ canvas, imageId, thumbnail: true })
-                            .then(() => resolve(canvas.toDataURL()))
-                            .catch(reject);
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    opts = { getImageSrc };
-                  }
-                } catch {}
-              }
-
-              const getThumb = dataSource.retrieve.getGetThumbnailSrc(instance, imageId);
-              if (typeof getThumb === 'function') {
-                try {
-                  src = await getThumb(opts);
-                } catch {
-                  src = null;
-                }
-              }
+              const getThumbnailSrc = dataSource?.retrieve?.getGetThumbnailSrc?.(
+                { StudyInstanceUID: studyInstanceUID, SeriesInstanceUID: seriesUID },
+                undefined
+              );
+              src = (await getThumbnailSrc?.()) ?? null;
+            } catch {
+              src = null;
             }
-          } catch {}
-
-          nextThumbs[seriesUID] = src ?? null;
-        }
-
-        if (!cancelled) {
-          setThumbs(nextThumbs);
+            if (!cancelled) {
+              setSeries(prev =>
+                prev.map(seriesItem => {
+                  const itemUID = seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID;
+                  if (itemUID !== seriesUID) {
+                    return seriesItem;
+                  }
+                  return {
+                    ...seriesItem,
+                    thumbnailStatus: src
+                      ? { status: PreviewThumbnailStatusState.Ready, src }
+                      : { status: PreviewThumbnailStatusState.NotAvailable },
+                  };
+                })
+              );
+            }
+          })();
         }
       } catch (e) {
         if (!cancelled) {
-          setThumbs({});
+          console.warn('Failed to load preview series/thumbnails for selected study.', e);
+          setSeries([]);
         }
       }
     };
 
-    load();
+    void run();
+
     return () => {
       cancelled = true;
     };
-  }, [dataSource, extensionManager, series, selected]);
+  }, [dataSource, selected]);
 
   return (
     <StudyList.PreviewContainer>
@@ -357,7 +318,7 @@ function SidePanelPreview({
       <StudyList.PreviewContent
         study={selected as StudyRow | null}
         series={series}
-        thumbs={thumbs}
+        forceListView={forceListView}
       />
     </StudyList.PreviewContainer>
   );
