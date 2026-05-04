@@ -29,10 +29,8 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const onDelete = () => {
-    const hasDirtyMeasurements = measurementService
-      .getMeasurements()
-      .some(measurement => measurement.isDirty);
-    hasDirtyMeasurements
+    const hasMeasurements = measurementService.getMeasurements().length > 0;
+    hasMeasurements
       ? uiModalService.show({
           title: 'Untrack Study',
           content: UntrackSeriesModal,
