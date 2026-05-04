@@ -37,7 +37,7 @@ function PreviewContainerRoot({ children }: PreviewContainerProps) {
       {header}
       <ScrollArea className="flex-1">
         <div
-          className="px-3 pb-3"
+          className="pr-3 pb-3"
           style={{ paddingTop: 'var(--panel-right-top-pad, 59px)' }}
         >
           {content}
