@@ -145,5 +145,6 @@ export {
 export { OHIF };
 
 export type { Types };
+export type { SortDisplaySetsCopyOptions } from './utils/sortStudy';
 
 export default OHIF;

@@ -36,7 +36,9 @@ export default class ToolGroupService {
   cornerstoneViewportService: any;
   viewportGridService: any;
   uiNotificationService: any;
+  customizationService: any;
   private toolGroupIds: Set<string> = new Set();
+  private toolBindingsMap: Map<string, Map<string, Array<Record<string, unknown>>>> = new Map();
   /**
    * Service-specific
    */
@@ -44,11 +46,17 @@ export default class ToolGroupService {
   EVENTS: { [key: string]: string };
 
   constructor(servicesManager: AppTypes.ServicesManager) {
-    const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
+    const {
+      cornerstoneViewportService,
+      viewportGridService,
+      uiNotificationService,
+      customizationService,
+    } =
       servicesManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
     this.uiNotificationService = uiNotificationService;
+    this.customizationService = customizationService;
     this.listeners = {};
     this.EVENTS = EVENTS;
     Object.assign(this, pubSubServiceInterface);
@@ -122,6 +130,7 @@ export default class ToolGroupService {
   public destroy(): void {
     ToolGroupManager.destroy();
     this.toolGroupIds = new Set();
+    this.toolBindingsMap.clear();
 
     eventTarget.removeEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
@@ -198,6 +207,7 @@ export default class ToolGroupService {
     // this.changeConfigurationIfNecessary(toolGroup, volumeId);
     this._addTools(toolGroup, tools, configs);
     this._setToolsMode(toolGroup, tools);
+    this._loadPersistedBindings(toolGroupId);
   }
 
   public createToolGroupAndAddTools(toolGroupId: string, tools: Array<Tool>): Types.IToolGroup {
@@ -242,29 +252,92 @@ export default class ToolGroupService {
     return this.getToolGroup(toolGroupId)?.getActivePrimaryMouseButtonTool();
   }
 
+  public getToolBindings(
+    toolGroupId: string,
+    toolName: string
+  ): Array<Record<string, unknown>> | undefined {
+    return this.toolBindingsMap.get(toolGroupId)?.get(toolName);
+  }
+
+  public setToolBindings(
+    toolGroupId: string,
+    toolName: string,
+    bindings: Array<Record<string, unknown>>
+  ): void {
+    if (!this.toolBindingsMap.has(toolGroupId)) {
+      this.toolBindingsMap.set(toolGroupId, new Map());
+    }
+    this.toolBindingsMap.get(toolGroupId).set(toolName, bindings);
+  }
+
+  public applyToolBindings(toolGroupId: string, toolName: string): void {
+    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+    if (!toolGroup || !toolGroup.hasTool(toolName)) {
+      return;
+    }
+    const bindings = this.getToolBindings(toolGroupId, toolName);
+    if (!bindings) {
+      return;
+    }
+    const { mode } = toolGroup.getToolOptions(toolName);
+    if (
+      mode === Enums.ToolModes.Active ||
+      mode === Enums.ToolModes.Passive ||
+      mode === Enums.ToolModes.Enabled
+    ) {
+      toolGroup.setToolActive(toolName, { bindings });
+    }
+  }
+
+  public getAllToolBindings(): Array<{
+    toolGroupId: string;
+    toolName: string;
+    bindings: Array<Record<string, unknown>>;
+  }> {
+    const result = [];
+    for (const [toolGroupId, toolMap] of this.toolBindingsMap) {
+      for (const [toolName, bindings] of toolMap) {
+        result.push({ toolGroupId, toolName, bindings });
+      }
+    }
+    return result;
+  }
+
   private _setToolsMode(toolGroup, tools) {
     const { active, passive, enabled, disabled } = tools;
 
     if (active) {
       active.forEach(({ toolName, bindings }) => {
+        if (bindings) {
+          this.setToolBindings(toolGroup.id, toolName, bindings);
+        }
         toolGroup.setToolActive(toolName, { bindings });
       });
     }
 
     if (passive) {
-      passive.forEach(({ toolName }) => {
+      passive.forEach(({ toolName, bindings }) => {
+        if (bindings) {
+          this.setToolBindings(toolGroup.id, toolName, bindings);
+        }
         toolGroup.setToolPassive(toolName);
       });
     }
 
     if (enabled) {
-      enabled.forEach(({ toolName }) => {
+      enabled.forEach(({ toolName, bindings }) => {
+        if (bindings) {
+          this.setToolBindings(toolGroup.id, toolName, bindings);
+        }
         toolGroup.setToolEnabled(toolName);
       });
     }
 
     if (disabled) {
-      disabled.forEach(({ toolName }) => {
+      disabled.forEach(({ toolName, bindings }) => {
+        if (bindings) {
+          this.setToolBindings(toolGroup.id, toolName, bindings);
+        }
         toolGroup.setToolDisabled(toolName);
       });
     }
@@ -298,6 +371,35 @@ export default class ToolGroupService {
     if (tools.disabled) {
       addTools(tools.disabled);
     }
+  }
+
+  private _loadPersistedBindings(toolGroupId: string): void {
+    try {
+      const stored = localStorage.getItem(this._getToolBindingsStorageKey());
+      if (!stored) {
+        return;
+      }
+      const parsed = JSON.parse(stored);
+      const toolGroupBindings = parsed[toolGroupId];
+      if (!toolGroupBindings) {
+        return;
+      }
+      for (const [toolName, bindings] of Object.entries(toolGroupBindings)) {
+        this.setToolBindings(toolGroupId, toolName, bindings as Array<Record<string, unknown>>);
+      }
+    } catch {
+      // ignore corrupt localStorage
+    }
+  }
+
+  private _getToolBindingsStorageKey(): string {
+    const customizationValue = this.customizationService?.getCustomization(
+      'ohif.userPreferences.toolBindingsStorageKey'
+    );
+
+    return typeof customizationValue === 'string' && customizationValue.length > 0
+      ? customizationValue
+      : 'user-preferred-tool-bindings';
   }
 
   private _onToolActivated = (evt: Types.EventTypes.ToolActivatedEventType) => {

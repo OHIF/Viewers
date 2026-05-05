@@ -33,7 +33,7 @@ export async function addLengthMeasurement(
   const [x2, y2] = secondClick;
 
   const lengthButton = mainToolbarPageObject.measurementTools.selectedTool.button;
-  const viewport = viewportPageObject.active;
+  const viewport = await viewportPageObject.active;
 
   // Assert that the primary measurement button is 'Length' tool
   await expect(lengthButton).toHaveAttribute('data-tool', 'Length');

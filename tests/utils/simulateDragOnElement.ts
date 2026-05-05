@@ -17,6 +17,7 @@ export async function simulateNormalizedDragOnElement({
   button = 'left',
   delay = 50,
   steps = 10,
+  mouseUp = true,
 }: {
   locator: Locator;
   start: { x: number; y: number };
@@ -24,6 +25,7 @@ export async function simulateNormalizedDragOnElement({
   button?: 'left' | 'right' | 'middle';
   delay?: number;
   steps?: number;
+  mouseUp?: boolean;
 }) {
   const bBox = await locator.boundingBox();
   if (!bBox) {
@@ -42,7 +44,7 @@ export async function simulateNormalizedDragOnElement({
   // Get the page from the locator context
   const page = locator.page();
 
-  page.mouse.move(startPosition.x, startPosition.y);
+  await page.mouse.move(startPosition.x, startPosition.y);
 
   // Start drag
   await page.mouse.down({ button });
@@ -63,5 +65,7 @@ export async function simulateNormalizedDragOnElement({
   }
 
   // End drag
-  await page.mouse.up({ button });
+  if (mouseUp) {
+    await page.mouse.up({ button });
+  }
 }
