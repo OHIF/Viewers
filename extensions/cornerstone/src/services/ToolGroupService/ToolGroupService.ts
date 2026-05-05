@@ -307,6 +307,12 @@ export default class ToolGroupService {
     this._writePersistedToolBindings(persistedBindings);
   }
 
+  /**
+   * Applies the currently tracked bindings to the runtime tool instance.
+   *
+   * Note: this method may activate tools that are currently Passive or Enabled.
+   * Assigning bindings is treated as making the tool interactable.
+   */
   public applyToolBindings(
     toolGroupId: string,
     toolName: string,
