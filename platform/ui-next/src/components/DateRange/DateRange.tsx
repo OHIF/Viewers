@@ -15,6 +15,12 @@ export type DatePickerWithRangeProps = {
   /** Callback that received { startDate: string(YYYYMMDD), endDate: string(YYYYMMDD)} */
   onChange: (value: { startDate: string; endDate: string }) => void;
   inputClassName?: string;
+  /** Where the calendar icon sits inside each input. Defaults to 'right'. */
+  iconPosition?: 'left' | 'right';
+  /** Extra class names merged onto the calendar icon (e.g. to override color). */
+  iconClassName?: string;
+  /** When true, suppresses the default Start Date / End Date placeholders. */
+  hidePlaceholders?: boolean;
 };
 
 export function DatePickerWithRange({
@@ -24,6 +30,9 @@ export function DatePickerWithRange({
   endDate,
   onChange,
   inputClassName,
+  iconPosition = 'right',
+  iconClassName,
+  hidePlaceholders = false,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & DatePickerWithRangeProps) {
   const { t } = useTranslation('DatePicker');
@@ -88,11 +97,19 @@ export function DatePickerWithRange({
       <Popover.Popover>
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="text-foreground absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            {!start && (
+              <CalendarIcon
+                className={cn(
+                  'text-foreground absolute top-1/2 h-4 w-4 -translate-y-1/2 transform',
+                  iconPosition === 'left' ? 'left-2' : 'right-2',
+                  iconClassName
+                )}
+              />
+            )}
             <input
               id={`${id}-start`}
               type="text"
-              placeholder={t('Start Date', 'Start date')}
+              placeholder={hidePlaceholders ? '' : t('Start Date', 'Start date')}
               autoComplete="off"
               value={start}
               onChange={e => handleInputChange(e, 'start')}
@@ -126,11 +143,19 @@ export function DatePickerWithRange({
       >
         <Popover.PopoverTrigger asChild>
           <div className="relative w-full">
-            <CalendarIcon className="text-foreground absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+            {!end && (
+              <CalendarIcon
+                className={cn(
+                  'text-foreground absolute top-1/2 h-4 w-4 -translate-y-1/2 transform',
+                  iconPosition === 'left' ? 'left-2' : 'right-2',
+                  iconClassName
+                )}
+              />
+            )}
             <input
               id={`${id}-end`}
               type="text"
-              placeholder={t('End Date', 'End date')}
+              placeholder={hidePlaceholders ? '' : t('End Date', 'End date')}
               autoComplete="off"
               value={end}
               onChange={e => handleInputChange(e, 'end')}

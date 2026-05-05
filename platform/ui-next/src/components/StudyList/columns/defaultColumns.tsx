@@ -112,9 +112,9 @@ export function defaultColumns(): ColumnDef<StudyRow, unknown>[] {
       },
       meta: {
         label: 'Study Date',
-        headerClassName: 'min-w-[150px]',
-        cellClassName: 'min-w-[150px]',
-        minWidth: 150,
+        headerClassName: 'min-w-[195px]',
+        cellClassName: 'min-w-[195px]',
+        minWidth: 195,
       },
     },
     {
