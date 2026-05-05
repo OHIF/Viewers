@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -309,6 +309,27 @@ function SidePanelPreview({
     };
   }, [dataSource, selected]);
 
+  const handleThumbnailImageError = useCallback((seriesUID: string) => {
+    setSeries(prevSeriesList =>
+      prevSeriesList.map(seriesItem => {
+        const seriesItemUID = seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID;
+        if (seriesItemUID !== seriesUID) {
+          return seriesItem;
+        }
+        const thumbnailStatus = seriesItem.thumbnailStatus as PreviewThumbnailStatus | undefined;
+        if (thumbnailStatus?.status === PreviewThumbnailStatusState.Ready && thumbnailStatus.src?.startsWith('blob:')) {
+          try {
+            URL.revokeObjectURL(thumbnailStatus.src);
+          } catch {}
+        }
+        return {
+          ...seriesItem,
+          thumbnailStatus: { status: PreviewThumbnailStatusState.NotAvailable },
+        };
+      })
+    );
+  }, []);
+
   return (
     <StudyList.PreviewContainer>
       <StudyList.PreviewHeader>
@@ -319,6 +340,7 @@ function SidePanelPreview({
         study={selected as StudyRow | null}
         series={series}
         forceListView={forceListView}
+        onThumbnailImageError={handleThumbnailImageError}
       />
     </StudyList.PreviewContainer>
   );

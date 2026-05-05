@@ -339,7 +339,7 @@ function Body<TData>({
   if (!rows.length) {
     if (isLoading && loadingComponent) {
       return (
-        <BasicTableRow>
+        <BasicTableRow className="hover:bg-transparent hover:text-inherit hover:[&>td]:text-inherit hover:[&>th]:text-inherit">
           <BasicTableCell colSpan={table.getAllLeafColumns().length}>
             <div className="flex h-full w-full items-center justify-center">{loadingComponent}</div>
           </BasicTableCell>
@@ -347,7 +347,7 @@ function Body<TData>({
       );
     }
     return (
-      <BasicTableRow>
+      <BasicTableRow className="hover:bg-transparent hover:text-inherit hover:[&>td]:text-inherit hover:[&>th]:text-inherit">
         <BasicTableCell
           colSpan={table.getAllLeafColumns().length}
           className="!pt-10 text-center align-text-top"
