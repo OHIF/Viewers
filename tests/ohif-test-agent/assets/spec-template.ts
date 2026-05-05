@@ -4,6 +4,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportRenderCycle,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -27,6 +28,12 @@ test.describe('FEATURE NAME', () => {
     //    Prefer normalized (0–1) coordinates:
     //    const activeViewport = await viewportPageObject.active;
     //    await activeViewport.normalizedClickAt([{ x: 0.3, y: 0.3 }, { x: 0.7, y: 0.7 }]);
+
+    //    For actions that re-render the viewport, gate on the render cycle
+    //    instead of sleeping — start the watcher BEFORE the action:
+    //    const cycle = waitForViewportRenderCycle(page);
+    //    await action();
+    //    await cycle;
 
     // 3. Handle prompts (first measurement prompts for tracking; SEG/RT/SR prompts for hydration)
     //    await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();

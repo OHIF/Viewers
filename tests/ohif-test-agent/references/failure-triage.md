@@ -4,12 +4,34 @@ Before debugging, classify. Most OHIF test failures are timing or hydration — 
 
 | Category | Symptom | Fix |
 |----------|---------|-----|
-| Timing | Element not visible, action timeout | Add / increase the `delay` param of `visitStudy`; use `waitForTimeout` at known settle points; wrap the assertion in `expect.toPass({ timeout })` |
+| Timing | Element not visible, action timeout | Add / increase the `delay` param of `visitStudy`; for actions that re-render viewports, use `waitForViewportRenderCycle(page)` (started before the action) instead of `waitForTimeout`; wrap the assertion in `expect.toPass({ timeout })` |
 | Selector | Element not found | Verify `data-cy` on the target; confirm the panel is open (`toggle()` / `select()` before interacting); check for capital `D` in `DOMOverlayPageObject` when destructuring |
 | Hydration | Segmentation/RT not interactive | Ensure the `segmentationHydration.yes.click()` fired; add `waitForTimeout(3000)` after `loadSeriesByModality('SEG'\|'RTSTRUCT'\|'SR')` |
 | Data | Study not found, empty viewport | Confirm the UID is in the canonical list (see [patterns-by-feature.md](patterns-by-feature.md)); confirm the mode supports the feature (segmentation tools aren't in `viewer` mode) |
 | Visual drift | Screenshot mismatch but feature works | Re-generate the baseline with `yarn playwright test --update-snapshots`; consider raising `maxDiffPixelRatio` to `0.04` for 3D content |
 | Real regression | Feature is actually broken | Report as a bug — this is the test doing its job |
+
+## Prefer render-cycle waits over sleeps
+
+If you're tempted to add `await page.waitForTimeout(2000)` after an action, ask whether the action re-rendered the viewport. If it did, use:
+
+```ts
+const cycle = waitForViewportRenderCycle(page);
+await action();
+await cycle;
+await check();
+```
+
+The watcher must be created **before** the action — it waits for `needsRender` first, and that transition is gone by the time the action returns. See the "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) and [tests/SEGHydrationFromMPR.spec.ts](tests/SEGHydrationFromMPR.spec.ts).
+
+### When the cycle helper times out at `waitForAnyViewportNeedsRender`
+
+Symptom: the test fails inside `waitForAnyViewportNeedsRender` after 5s, with the action having actually completed in the UI. The action just doesn't transition the viewport through `needsRender` synchronously. Known cases:
+
+- Hanging-protocol changes.
+- **RTSTRUCT / contour segmentation hydration confirm.** SEG (labelmap) hydration does fire `needsRender`; contour does not. The fix is to gate on the actual end-state — for hydration in `beforeEach`, `await expect(page.getByTestId('data-row')).toHaveCount(N)` is the right wait.
+
+Don't react by raising the cycle's timeout — the transition isn't coming. Replace the cycle wrapper with an auto-retrying DOM/SVG assertion, or `expect.toPass({ timeout })` around the assertion block.
 
 ## The `toPass` pattern
 

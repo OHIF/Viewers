@@ -115,6 +115,59 @@ await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
 For 3D / MPR scenes, wrap stabilization in `attemptAction(() => reduce3DViewportSize(page), 10, 100)` or insert a `page.waitForTimeout(...)` after the layout change before asserting.
 
+## Wait for renders, don't sleep
+
+`page.waitForTimeout(...)` after an action that re-renders the viewport is a smell. The viewports tell us when they're done — use that signal. [tests/utils/waitForViewportsRendered.ts](tests/utils/waitForViewportsRendered.ts) exposes three helpers, all barrel-exported from `./utils`:
+
+- `waitForViewportRenderCycle(page)` — wait for the next full cycle: a viewport enters `needsRender`, then **all** viewports report `rendered` (and volumes are loaded, by default).
+- `waitForViewportsRendered(page)` — only the second half: wait until all viewports are `rendered`. Use this when the action has already requested a render before you started waiting (e.g. a layout change or `loadSeriesByDescription`).
+- `waitForAnyViewportNeedsRender(page)` — only the first half. Rarely needed directly.
+
+The canonical idiom — **start the watcher before the action, await it after**:
+
+```ts
+// start watching for the next render cycle
+const viewportRenderCycle = waitForViewportRenderCycle(page);
+
+await action(); // e.g. segmentationHydration.yes.click(), layoutSelection.MPR.click(), addSegmentation, etc.
+
+// wait for the render to finish
+await viewportRenderCycle;
+
+await check(); // e.g. checkForScreenshot, count assertion, overlay text
+```
+
+Why "start before"? `waitForViewportRenderCycle` first waits for a viewport to enter `needsRender`. If you start it **after** the action, that transition may already be over and you'll hang until the timeout. Starting it first captures the cycle the action is about to trigger.
+
+When to use which:
+
+| Situation | Helper |
+|-----------|--------|
+| Click that triggers a re-render and you want to assert after | `waitForViewportRenderCycle(page)` started before the click |
+| Layout switch / series load — render already in flight | `await waitForViewportsRendered(page)` after the call |
+| Compose with another await (e.g. screenshot the same time as load) | Save the promise, `await` it later |
+
+Replace patterns like this:
+
+```ts
+// ❌ Sleep-and-pray
+await action();
+await page.waitForTimeout(5000);
+await checkForScreenshot(...);
+
+// ✅ Wait on the actual signal
+const cycle = waitForViewportRenderCycle(page);
+await action();
+await cycle;
+await checkForScreenshot(...);
+```
+
+This shaves real wall-clock time off the suite and removes a class of flake (sleep too short → flake; sleep too long → slow). [tests/SEGHydrationFromMPR.spec.ts](tests/SEGHydrationFromMPR.spec.ts) is the canonical seed for this pattern.
+
+Caveats:
+- These helpers wait on Cornerstone viewport state. They won't help for purely DOM-side state (panel rows appearing, dialogs opening) — for those, prefer `expect(locator).toHaveCount(n)` / `toBeVisible()` which auto-retry, or `expect.toPass({ timeout })`.
+- For some actions (hanging-protocol changes are the documented example) the viewport doesn't transition through `needsRender` synchronously — those still need a short `waitForTimeout`. The source comment in `waitForViewportsRendered.ts` calls this out.
+
 ## Fixture-injected page objects
 
 Destructure these from the test function argument. **Never `new` them manually.**
@@ -184,6 +237,7 @@ Full mapping in [references/patterns-by-feature.md](references/patterns-by-featu
 8. When an assertion needs retry tolerance, wrap it in `expect.toPass({ timeout })`.
 9. Test in the correct mode — segmentation tools aren't available in `viewer` mode.
 10. If a utility isn't exported from `./utils`, import from the deeper path (see [references/utilities.md](references/utilities.md)).
+11. After an action that re-renders the viewport, prefer `waitForViewportRenderCycle(page)` (started before the action) over `page.waitForTimeout(...)`. See the "Wait for renders, don't sleep" section.
 
 ## Pre-output self-check (mandatory)
 
@@ -195,7 +249,8 @@ Before returning a generated OHIF test, confirm all items:
 4. Uses a valid canonical StudyInstanceUID and compatible mode.
 5. Handles hydration or measurement tracking prompts when the workflow requires them.
 6. Uses visual regression for canvas assertions and DOM assertions for panel/dialog/overlay text state.
-7. If execution was skipped, states that explicitly and provides concrete run commands.
+7. Replaces `page.waitForTimeout(...)` after viewport-rendering actions with `waitForViewportRenderCycle(page)` (started before the action) — keeps `waitForTimeout` only for non-render waits like the hydration prompt in `beforeEach`.
+8. If execution was skipped, states that explicitly and provides concrete run commands.
 
 ## Output contract (for non-executing agents)
 

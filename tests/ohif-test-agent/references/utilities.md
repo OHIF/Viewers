@@ -78,10 +78,11 @@ Read the one-line signature at the top of the utility's source file before calli
 
 ---
 
-## Two utility shapes worth flagging
+## Utility shapes worth flagging
 
-Most utilities are obvious once you read the source; these two are not, so they earn a mention:
+Most utilities are obvious once you read the source; these earn a mention:
 
+- **`waitForViewportRenderCycle(page, options?)`** — preferred replacement for `page.waitForTimeout(...)` after any viewport-mutating action (hydration confirm, layout change, segmentation add, series load, etc.). Start it **before** the action, await it after — it captures the `needsRender → rendered` transition the action triggers. Use `waitForViewportsRendered(page)` (the second-half-only variant) when the render is already in flight before you can attach a watcher. Source: [tests/utils/waitForViewportsRendered.ts](tests/utils/waitForViewportsRendered.ts). Seed: [tests/SEGHydrationFromMPR.spec.ts](tests/SEGHydrationFromMPR.spec.ts). The "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) covers the idiom in full.
 - **`subscribeToMeasurementAdded(page)`** — returns `{ waitFired(timeout?), unsubscribe() }`. Use in freehand/livewire/spline specs to assert the event fired. Always wrap in `try { ... } finally { await sub.unsubscribe() }` so a failing assertion doesn't leak the listener across tests.
 - **`attemptAction(action, attempts?, delay?)`** — retries a flaky async action without masking real failures. Mainly used to stabilize 3D scenes (`attemptAction(() => reduce3DViewportSize(page), 10, 100)`).
 
