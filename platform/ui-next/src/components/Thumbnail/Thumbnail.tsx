@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
@@ -58,8 +58,16 @@ const Thumbnail = ({
   onReject = () => {},
   onClickUntrack = () => {},
   ThumbnailMenuItems = () => {},
+  onImageLoadError = () => {},
 }: withAppTypes): React.ReactNode => {
   const [lastTap, setLastTap] = useState(0);
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
+
+  useEffect(() => {
+    setImageLoadFailed(false);
+  }, [imageSrc]);
+
+  const shouldRenderThumbnailImage = Boolean(imageSrc && !imageLoadFailed);
 
   const handleTouchEnd = e => {
     const currentTime = new Date().getTime();
@@ -82,12 +90,16 @@ const Thumbnail = ({
       >
         <div className="h-[114px] w-[128px]">
           <div className="relative bg-background">
-            {imageSrc ? (
+            {shouldRenderThumbnailImage ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
                 className="h-[114px] w-[128px] rounded object-contain"
                 crossOrigin="anonymous"
+                onError={() => {
+                  setImageLoadFailed(true);
+                  onImageLoadError();
+                }}
               />
             ) : (
               <div className="bg-background h-[114px] w-[128px] rounded">{children}</div>
@@ -349,6 +361,7 @@ Thumbnail.propTypes = {
   countIcon: PropTypes.string,
   isDraggable: PropTypes.bool,
   thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
+  onImageLoadError: PropTypes.func,
 };
 
 export { Thumbnail };

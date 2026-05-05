@@ -794,15 +794,25 @@ function retrieveBulkData(value, options = {}) {
 
 function buildThumbnailEndpointPath(
   thumbnailContext: ThumbnailContext,
-  thumbnailRendering: string
+  thumbnailRendering: string,
+  queryParams?: URLSearchParams
 ): string {
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = thumbnailContext;
 
-  return SeriesInstanceUID && SOPInstanceUID
-    ? `/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/${thumbnailRendering}`
-    : SeriesInstanceUID
-      ? `/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${thumbnailRendering}`
-      : `/studies/${StudyInstanceUID}/${thumbnailRendering}`;
+  const basePath =
+    SeriesInstanceUID && SOPInstanceUID
+      ? `/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/${thumbnailRendering}`
+      : SeriesInstanceUID
+        ? `/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${thumbnailRendering}`
+        : `/studies/${StudyInstanceUID}/${thumbnailRendering}`;
+
+  if (!queryParams) {
+    return basePath;
+  }
+
+  const queryString = queryParams.toString();
+
+  return queryString ? `${basePath}?${queryString}` : basePath;
 }
 
 function getThumbnailFetchRequest(
@@ -811,7 +821,12 @@ function getThumbnailFetchRequest(
   wadoRoot: string | undefined,
   getAuthorizationHeader: () => HeadersInterface
 ): ThumbnailFetchRequestResult {
-  const endpointPath = buildThumbnailEndpointPath(thumbnailContext, thumbnailRendering);
+  const endpointPath = buildThumbnailEndpointPath(
+    thumbnailContext,
+    thumbnailRendering,
+    // Thumbnails for some data source (e.g. dcm4chee) are pixelated by default, so we need to set the viewport to 256,256 to get a better thumbnail.
+    new URLSearchParams({ viewport: '256,256' })
+  );
 
   const headers: Record<string, string> = {
     ...(getAuthorizationHeader() as Record<string, string>),

@@ -17,6 +17,7 @@ function PreviewContent({
   study,
   series = [],
   forceListView = false,
+  onThumbnailImageError,
 }: {
   study?: StudyRow | null;
   series?: Array<{
@@ -33,6 +34,10 @@ function PreviewContent({
     thumbnailStatus?: PreviewThumbnailStatus;
   }>;
   forceListView?: boolean;
+  /**
+   * Called when the thumbnail src URL fails to decode in the browser (broken image).
+   */
+  onThumbnailImageError?: (seriesInstanceUid: string) => void;
 }) {
   const [seriesViewMode, setSeriesViewMode] = React.useState<PreviewSeriesViewMode>('thumbnails');
   const effectiveSeriesViewMode: PreviewSeriesViewMode = forceListView ? 'list' : seriesViewMode;
@@ -104,6 +109,7 @@ function PreviewContent({
                       key={`series-imaging-${seriesUID}`}
                       displaySetInstanceUID={`series-${seriesUID}`}
                       imageSrc={imageSrc as any}
+                      onImageLoadError={() => onThumbnailImageError?.(seriesUID)}
                       imageAltText={seriesItem.description || seriesItem.SeriesDescription || ''}
                       description={
                         seriesItem.description || seriesItem.SeriesDescription || '(empty)'
