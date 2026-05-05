@@ -45,6 +45,7 @@ import Redo from './Sources/Redo';
 import Refresh from './Sources/Refresh';
 import Rename from './Sources/Rename';
 import Series from './Sources/Series';
+import SeriesPlaceholder from './Sources/SeriesPlaceholder';
 import Settings from './Sources/Settings';
 import Show from './Sources/Show';
 import SidePanelCloseLeft from './Sources/SidePanelCloseLeft';
@@ -527,6 +528,7 @@ export const Icons = {
   Refresh,
   Rename,
   Series,
+  SeriesPlaceholder,
   Settings,
   SettingsStudyList,
   Show,
