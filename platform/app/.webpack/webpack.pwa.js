@@ -155,7 +155,15 @@ module.exports = (env, argv) => {
       },
       proxy: [
         {
-          '/dicomweb': 'http://localhost:5000',
+          context: ['/dicomweb'],
+          target: 'http://localhost:5000',
+        },
+        {
+          context: ['/fhir-proxy'],
+          target: 'http://localhost:3100',
+          changeOrigin: true,
+          pathRewrite: { '^/fhir-proxy': '' },
+          ws: true,
         },
       ],
       static: [
@@ -183,17 +191,15 @@ module.exports = (env, argv) => {
   });
 
   if (hasProxy) {
-    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy = [
-      {
-        context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
-        target: PROXY_DOMAIN,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
-        },
+    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || [];
+    mergedConfig.devServer.proxy.push({
+      context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
+      target: PROXY_DOMAIN,
+      changeOrigin: true,
+      pathRewrite: {
+        [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
       },
-    ];
+    });
   }
 
   if (isProdBuild) {
