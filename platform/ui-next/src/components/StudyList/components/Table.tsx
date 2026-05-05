@@ -188,7 +188,10 @@ function TableContent({
                   id={COLUMN_IDS.STUDY_DATE_TIME}
                   startDate={startDate}
                   endDate={endDate}
-                  inputClassName="h-7 px-2 py-1"
+                  inputClassName="h-7 pl-1.5 pr-0.5 py-1"
+                  iconPosition="left"
+                  iconClassName="text-primary"
+                  hidePlaceholders
                   onChange={next => {
                     const normalized = {
                       ...(next.startDate ? { startDate: next.startDate } : {}),
