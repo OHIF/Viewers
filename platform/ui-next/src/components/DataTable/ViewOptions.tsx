@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
 } from '../DropdownMenu';
+import { Icons } from '../Icons';
 
 import { useDataTable } from './context';
 import type { ColumnMeta } from './types';
@@ -22,10 +23,12 @@ export function ViewOptions<TData>({ buttonText = 'View' }: ViewOptionsProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
+          className="gap-1 text-sm"
         >
           {buttonText}
+          <Icons.ChevronDown className="h-2 w-2" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
