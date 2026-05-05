@@ -189,9 +189,9 @@ function TableContent({
                   startDate={startDate}
                   endDate={endDate}
                   inputClassName="h-7 pl-1.5 pr-0.5 py-1"
-                  iconPosition="left"
                   iconClassName="text-primary"
-                  hidePlaceholders
+                  startPlaceholder="Start"
+                  endPlaceholder="End"
                   onChange={next => {
                     const normalized = {
                       ...(next.startDate ? { startDate: next.startDate } : {}),
