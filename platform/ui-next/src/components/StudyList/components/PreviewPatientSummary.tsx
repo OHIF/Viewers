@@ -557,11 +557,12 @@ const WorkflowButtonInner = <T = any,>(
       <Button
         variant="ghost"
         size="sm"
-        className="bg-primary/20 text-primary ring-primary ring-offset-background ml-1 mb-1 h-6 w-32 ring-1 ring-offset-2"
+        className="bg-primary/20 text-primary ring-primary ring-offset-background ml-1 mb-1 h-6 w-32 overflow-hidden ring-1 ring-offset-2"
         disabled={computedDisabled}
         onClick={() => handleLaunch(labelValue)}
+        title={labelValue}
       >
-        {labelValue}
+        <span className="truncate">{labelValue}</span>
       </Button>
       <Button
         type="button"
@@ -617,11 +618,12 @@ const WorkflowButtonInner = <T = any,>(
               key={wf}
               variant="ghost"
               size="sm"
-              className="bg-primary/20 ml-1 mb-1 h-6 w-32"
+              className="bg-primary/20 ml-1 mb-1 h-6 w-32 overflow-hidden"
               disabled={computedDisabled}
               onClick={() => handleLaunch(wf)}
+              title={wf}
             >
-              {wf}
+              <span className="truncate">{wf}</span>
             </Button>
           ))}
         </div>
