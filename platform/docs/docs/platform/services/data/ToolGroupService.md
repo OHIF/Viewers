@@ -41,6 +41,14 @@ The `ToolGroupService` emits the following events:
 - `createToolGroupAndAddTools(toolGroupId, tools)`: Creates a new tool group and adds the specified tools to it.
 - `getToolConfiguration(toolGroupId, toolName)`: Retrieves the configuration for the specified tool in the given tool group.
 - `setToolConfiguration(toolGroupId, toolName, config)`: Sets the configuration for the specified tool in the given tool group.
+- `getActivePrimaryMouseButtonTool(toolGroupId?)`: Returns the active primary mouse button tool for the specified tool group, or for the active viewport's tool group when omitted.
+- `getToolBindings(toolGroupId, toolName)`: Returns the bindings from the service's internal binding map for the specified tool in the given tool group.
+- `setToolBindings(toolGroupId, toolName, bindings)`: Updates the service's internal binding map for the specified tool in the given tool group. This does not change the tool's active runtime mode by itself.
+- `getAllToolBindings()`: Returns all bindings currently stored in the service's internal binding map across tool groups.
+- `getDefaultToolBindings(toolGroupId, toolName)`: Returns the default bindings captured when the tool group was initialized.
+- `applyToolBindings(toolGroupId, toolName, options?)`: Reads the currently tracked bindings for that tool and applies them to the underlying runtime tool instance (via tool activation). This can activate tools that are currently `Passive` or `Enabled`, since assigning bindings is treated as making the tool interactable. Use this after `setToolBindings` when you want runtime behavior to update. Set `options.replaceExisting` to `true` to clear previous active bindings before applying.
+- `persistToolBindings(toolGroupId, toolName, bindings)`: Persists tool bindings for a specific tool in a tool group to user preferences storage.
+- `removePersistedToolBindings(toolGroupId, toolName?)`: Removes persisted tool bindings for a specific tool, or for the whole tool group when `toolName` is omitted.
 
 ## Usage
 
