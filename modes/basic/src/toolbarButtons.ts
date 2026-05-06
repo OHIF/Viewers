@@ -654,15 +654,18 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-crosshair',
       label: i18n.t('Buttons:Crosshairs'),
+      tooltip: i18n.t('Buttons:Click to toggle on or off'),
       commands: {
-        commandName: 'setToolActiveToolbar',
+        commandName: 'toggleActiveDisabledToolbar',
         commandOptions: {
           toolGroupIds: ['mpr'],
         },
       },
       evaluate: {
-        name: 'evaluate.cornerstoneTool',
+        name: 'evaluate.cornerstoneTool.toggleWithModifier',
         disabledText: i18n.t('Buttons:Select an MPR viewport to enable this tool'),
+        toggledOnIcon: 'tool-crosshair-checked',
+        defaultIcon: 'tool-crosshair',
       },
     },
   },
