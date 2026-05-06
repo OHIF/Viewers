@@ -255,7 +255,7 @@ test('checks that undo after delete-all restores measurements as tracked', async
 
   await waitForViewportsRendered(page);
 
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
 
   const activeViewport = await viewportPageObject.active;
 
@@ -287,7 +287,8 @@ test('checks that delete-all prompt reappears after undo', async ({
   await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
 
   await mainToolbarPageObject.undo.click();
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(1);
+
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(1);
 
   await rightPanelPageObject.measurementsPanel.panel.deleteAll();
   await expect(DOMOverlayPageObject.dialog.title).toHaveText('Untrack Study');
@@ -295,7 +296,7 @@ test('checks that delete-all prompt reappears after undo', async ({
   await DOMOverlayPageObject.dialog.confirmation.confirm.click();
   await expect(DOMOverlayPageObject.dialog.title).toBeHidden();
 
-  expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(0);
+  await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(0);
 });
 
 test.describe('simplified tracking mode', () => {
@@ -338,7 +339,7 @@ test.describe('simplified tracking mode', () => {
 
     await waitForViewportsRendered(page);
 
-    expect(await rightPanelPageObject.measurementsPanel.panel.getMeasurementCount()).toBe(2);
+    await expect(rightPanelPageObject.measurementsPanel.panel.rows).toHaveCount(2);
 
     const activeViewport = await viewportPageObject.active;
 
