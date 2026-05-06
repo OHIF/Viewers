@@ -326,6 +326,16 @@ export class MainToolbarPageObject {
           },
         };
       },
+      get magnify() {
+        const button = page.getByTestId('Magnify');
+        return {
+          button,
+          async click() {
+            await moreTools.click();
+            await button.click();
+          },
+        };
+      },
     };
   }
 

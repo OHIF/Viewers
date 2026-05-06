@@ -930,6 +930,68 @@ export const ToolCrosshair = (props: IconProps) => (
   </svg>
 );
 
+export const ToolCrosshairChecked = (props: IconProps) => (
+  <svg
+    width="28"
+    height="28"
+    viewBox="0 0 28 28"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g clipPath="url(#clip0_tool_crosshair_checked)">
+      <path
+        d="M14 3V9"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 14H9"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 25V19"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M25 14H19"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14.001 16.001C15.1056 16.001 16.001 15.1056 16.001 14.001C16.001 12.8964 15.1056 12.001 14.001 12.001C12.8964 12.001 12.001 12.8964 12.001 14.001C12.001 15.1056 12.8964 16.001 14.001 16.001Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22 17C24.7614 17 27 19.2386 27 22C27 24.7614 24.7614 27 22 27C19.2386 27 17 24.7614 17 22C17 19.2386 19.2386 17 22 17ZM24.7998 19.7998C24.5789 19.6344 24.2652 19.6796 24.0996 19.9004L21.4453 23.4385L19.8535 21.8467C19.6583 21.6514 19.3417 21.6514 19.1465 21.8467C18.9513 22.0419 18.9513 22.3585 19.1465 22.5537L21.1465 24.5537C21.2489 24.6561 21.3907 24.7094 21.5352 24.6992C21.6797 24.6889 21.8134 24.6159 21.9004 24.5L24.9004 20.5C25.0658 20.2791 25.0205 19.9654 24.7998 19.7998Z"
+        fill="currentColor"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_tool_crosshair_checked">
+        <rect
+          width="28"
+          height="28"
+          fill="white"
+        />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
 export const ToolDicomTagBrowser = (props: IconProps) => (
   <svg
     width="28px"
