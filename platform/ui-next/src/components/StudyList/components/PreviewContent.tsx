@@ -12,11 +12,12 @@ import { ToggleGroup, ToggleGroupItem } from '../../ToggleGroup';
 import { Icons } from '../../Icons';
 
 type PreviewSeriesViewMode = 'thumbnails' | 'list';
+type PreviewSeriesView = 'all' | PreviewSeriesViewMode;
 
 function PreviewContent({
   study,
   series = [],
-  forceListView = false,
+  seriesView = 'all',
   onThumbnailImageError,
 }: {
   study?: StudyRow | null;
@@ -33,14 +34,23 @@ function PreviewContent({
     Modality?: string;
     thumbnailStatus?: PreviewThumbnailStatus;
   }>;
-  forceListView?: boolean;
+  /**
+   * Controls which series views are available in the preview.
+   * - `'all'` (default): toggle visible; initially shows the thumbnails.
+   * - `'thumbnails'`: toggle hidden; locked to thumbnails view.
+   * - `'list'`: toggle hidden; locked to list view.
+   */
+  seriesView?: PreviewSeriesView;
   /**
    * Called when the thumbnail src URL fails to decode in the browser (broken image).
    */
   onThumbnailImageError?: (seriesInstanceUid: string) => void;
 }) {
+  const isToggleVisible = seriesView === 'all';
   const [seriesViewMode, setSeriesViewMode] = React.useState<PreviewSeriesViewMode>('thumbnails');
-  const effectiveSeriesViewMode: PreviewSeriesViewMode = forceListView ? 'list' : seriesViewMode;
+  const effectiveSeriesViewMode: PreviewSeriesViewMode = isToggleVisible
+    ? seriesViewMode
+    : seriesView;
   const imagingSeries = series.filter(
     s => s.thumbnailStatus?.status !== PreviewThumbnailStatusState.NotApplicable
   );
@@ -69,7 +79,7 @@ function PreviewContent({
           <span className="leading-tight">
             {series?.length ? study?.description || 'No Description' : 'No Series'}
           </span>
-          {!forceListView && (
+          {isToggleVisible && (
             <ToggleGroup
               type="single"
               value={seriesViewMode}
