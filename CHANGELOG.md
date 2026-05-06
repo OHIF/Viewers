@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.68...v3.13.0-beta.69) (2026-05-06)
+
+
+### Bug Fixes
+
+* **security:** Patch axios security vulnerabilities. ([#5998](https://github.com/OHIF/Viewers/issues/5998)) ([5e624f1](https://github.com/OHIF/Viewers/commit/5e624f13870cdb63300b82285b46d4b21b9d47c3))
+
+
+
+
+
 # [3.13.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.13.0-beta.67...v3.13.0-beta.68) (2026-05-05)
 
 
