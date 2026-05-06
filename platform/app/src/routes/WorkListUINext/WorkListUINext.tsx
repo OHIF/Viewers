@@ -134,6 +134,7 @@ export default function WorkListUINext({
               <SidePanelPreview
                 dataSource={dataSource}
                 selected={selected}
+                servicesManager={servicesManager}
               />
             </StudyList.Preview>
           </StudyList>
@@ -210,21 +211,42 @@ function StudyListSettingsPopover() {
   );
 }
 
+type PreviewSeriesView = 'all' | 'thumbnails' | 'list';
+const ALLOWED_PREVIEW_SERIES_VIEWS: ReadonlyArray<PreviewSeriesView> = [
+  'all',
+  'thumbnails',
+  'list',
+];
+
 function SidePanelPreview({
   dataSource,
   selected,
+  servicesManager,
 }: {
   dataSource: any;
   selected: StudyRow | null;
+  servicesManager: AppTypes.ServicesManager;
 }) {
   const [series, setSeries] = useState<any[]>([]);
   const { sortBySeriesDate } = utils as any;
-  const thumbnailRendering = (
-    dataSource?.getConfig?.()?.thumbnailRendering ??
-    dataSource?.getConfig?.()?.configuration?.thumbnailRendering
-  ) as string | undefined;
+  const { customizationService } = servicesManager.services;
+  const thumbnailRendering = dataSource?.getConfig?.()?.thumbnailRendering;
+  const thumbnailRequestStrategy =
+    dataSource?.getConfig?.()?.thumbnailRequestStrategy || 'bulkDataRetrieve';
   const forceListView =
-    thumbnailRendering === 'wadors' || thumbnailRendering === 'thumbnailDirect';
+    thumbnailRendering === 'wadors' ||
+    thumbnailRendering === 'thumbnailDirect' ||
+    thumbnailRequestStrategy === 'bulkDataRetrieve';
+
+  const customizationSeriesView = customizationService.getCustomization(
+    'workListUINext.previewSeriesView'
+  );
+  const configuredSeriesView: PreviewSeriesView = ALLOWED_PREVIEW_SERIES_VIEWS.includes(
+    customizationSeriesView as PreviewSeriesView
+  )
+    ? (customizationSeriesView as PreviewSeriesView)
+    : 'all';
+  const seriesView: PreviewSeriesView = forceListView ? 'list' : configuredSeriesView;
 
   useEffect(() => {
     let cancelled = false;
@@ -245,7 +267,9 @@ function SidePanelPreview({
         const sortedSeriesList = sortBySeriesDate?.(seriesList) ?? [];
         const normalizedSeriesList = sortedSeriesList.map(row => {
           const modality = String(row.modality || row.Modality || '').toUpperCase();
-          const thumbnailStatus: PreviewThumbnailStatus = thumbnailNoImageModalities.includes(modality)
+          const thumbnailStatus: PreviewThumbnailStatus = thumbnailNoImageModalities.includes(
+            modality
+          )
             ? { status: PreviewThumbnailStatusState.NotApplicable }
             : { status: PreviewThumbnailStatusState.Loading };
           return {
@@ -317,7 +341,10 @@ function SidePanelPreview({
           return seriesItem;
         }
         const thumbnailStatus = seriesItem.thumbnailStatus as PreviewThumbnailStatus | undefined;
-        if (thumbnailStatus?.status === PreviewThumbnailStatusState.Ready && thumbnailStatus.src?.startsWith('blob:')) {
+        if (
+          thumbnailStatus?.status === PreviewThumbnailStatusState.Ready &&
+          thumbnailStatus.src?.startsWith('blob:')
+        ) {
           try {
             URL.revokeObjectURL(thumbnailStatus.src);
           } catch {}
@@ -339,7 +366,7 @@ function SidePanelPreview({
       <StudyList.PreviewContent
         study={selected as StudyRow | null}
         series={series}
-        forceListView={forceListView}
+        seriesView={seriesView}
         onThumbnailImageError={handleThumbnailImageError}
       />
     </StudyList.PreviewContainer>
