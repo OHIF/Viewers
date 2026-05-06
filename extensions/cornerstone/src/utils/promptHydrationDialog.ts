@@ -68,7 +68,8 @@ function promptHydrationDialog({
   hydrateCallback,
   type,
 }: HydrationDialogProps): Promise<boolean | HydrationSRResult> {
-  const { uiViewportDialogService, customizationService } = servicesManager.services;
+  const { uiViewportDialogService, customizationService, cornerstoneViewportService } =
+    servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
   const appConfig = extensionManager.appConfig;
 
@@ -91,33 +92,52 @@ function promptHydrationDialog({
         callback();
       });
 
+      if (type === HydrationType.SEG || type === HydrationType.RTSTRUCT) {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          const waitForViewportDataChange = (
+            cornerstoneViewportService: AppTypes.CornerstoneViewportService,
+            viewportId: string
+          ) => {
+            return new Promise(resolve => {
+              const { unsubscribe } = cornerstoneViewportService.subscribe(
+                cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+                async ({ viewportId: updatedViewportId }) => {
+                  if (updatedViewportId === viewportId) {
+                    unsubscribe();
+                    resolve(true);
+                  }
+                }
+              );
+            });
+          };
+          // If viewport is not ready, wait for it to be ready before hydrating
+          await waitForViewportDataChange(cornerstoneViewportService, viewportId);
+        }
+      }
+
       if (type === HydrationType.SEG) {
-        // SEG needs setTimeout
-        window.setTimeout(async () => {
-          try {
-            const isHydrated = await hydrateCallback({
-              segDisplaySet: displaySet,
-              viewportId,
-            });
-            resolve(isHydrated);
-          } catch (error) {
-            reject(error);
-          }
-        }, 0);
+        try {
+          const isHydrated = await hydrateCallback({
+            segDisplaySet: displaySet,
+            viewportId,
+          });
+          resolve(isHydrated);
+        } catch (error) {
+          reject(error);
+        }
       } else if (type === HydrationType.RTSTRUCT) {
-        // RT hydration
-        window.setTimeout(async () => {
-          try {
-            const isHydrated = await hydrateCallback({
-              rtDisplaySet: displaySet,
-              viewportId,
-              servicesManager,
-            });
-            resolve(isHydrated);
-          } catch (error) {
-            reject(error);
-          }
-        }, 0);
+        try {
+          const isHydrated = await hydrateCallback({
+            rtDisplaySet: displaySet,
+            viewportId,
+            servicesManager,
+          });
+          resolve(isHydrated);
+        } catch (error) {
+          reject(error);
+        }
       } else if (type === HydrationType.SR) {
         // SR has a different result structure
         const hydrationResult = await hydrateCallback(displaySet);
