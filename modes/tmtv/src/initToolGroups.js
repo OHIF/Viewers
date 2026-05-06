@@ -133,6 +133,9 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     disabled: [
       {
         toolName: toolNames.Crosshairs,
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary, modifierKey: Enums.KeyboardBindings.Shift },
+        ],
         configuration: {
           disableOnPassive: true,
           autoPan: {
