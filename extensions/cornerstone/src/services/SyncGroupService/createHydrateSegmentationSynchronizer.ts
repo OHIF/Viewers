@@ -97,7 +97,9 @@ const segmentationRepresentationModifiedCallback = async (
     ? Surface
     : requestedRepresentation === Contour
       ? Contour
-      : Labelmap;
+      : requestedRepresentation && requestedRepresentation !== Surface
+        ? requestedRepresentation
+        : Labelmap;
 
   await segmentationService.addSegmentationRepresentation(targetViewportId, {
     segmentationId,
