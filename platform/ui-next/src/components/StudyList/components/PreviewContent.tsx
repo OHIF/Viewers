@@ -125,8 +125,8 @@ function PreviewContent({
                       thumbnailType="thumbnail"
                     >
                       {thumbnailState?.status === PreviewThumbnailStatusState.NotAvailable && (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <Icons.SeriesPlaceholder className="text-muted-foreground" />
+                        <div className="bg-muted/50 flex h-full w-full items-center justify-center rounded">
+                          <Icons.SeriesPlaceholder className="text-muted-foreground h-[40px] w-[60px] opacity-50" />
                         </div>
                       )}
                     </Thumbnail>
