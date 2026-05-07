@@ -1,24 +1,19 @@
-/**
- * Keys that are preserved as single-valued query parameters when navigating
- * between worklist and viewer modes.
- */
-export const preserveKeys = ['configUrl', 'multimonitor', 'screenNumber', 'hangingProtocolId'];
+import type CustomizationService from '@ohif/core/src/services/CustomizationService';
 
 /**
- * Keys that are preserved as multi-valued query parameters. Each occurrence
- * (and comma-delimited values within an occurrence) is appended back to the
- * outgoing query so repeated values survive navigation.
+ * Keys preserved when navigating between worklist and viewer modes.
+ * All preserved keys are handled as multi-valued query parameters.
  */
-export const preserveMultiKeys = ['customization'];
+export const PRESERVE_CUSTOMIZATION_KEYS_KEY = 'ohif.preserveCustomizationKeys';
+export const preserveKeys = [
+  'configUrl',
+  'multimonitor',
+  'screenNumber',
+  'hangingProtocolId',
+  'customization',
+];
 
-function preserve(query: URLSearchParams, current: URLSearchParams, key: string) {
-  const value = current.get(key);
-  if (value) {
-    query.append(key, value);
-  }
-}
-
-function preserveMulti(query: URLSearchParams, current: URLSearchParams, key: string) {
+function preserveKey(query: URLSearchParams, current: URLSearchParams, key: string) {
   const values = current.getAll(key);
   for (const value of values) {
     if (value) {
@@ -27,33 +22,33 @@ function preserveMulti(query: URLSearchParams, current: URLSearchParams, key: st
   }
 }
 
+function getPreserveKeys(customizationService?: CustomizationService): string[] {
+  const customKeys = customizationService?.getValue?.(PRESERVE_CUSTOMIZATION_KEYS_KEY, []) || [];
+  if (!customKeys?.length) {
+    return preserveKeys;
+  }
+
+  return [...preserveKeys, ...customKeys];
+}
+
 export function preserveQueryParameters(
   query: URLSearchParams,
+  customizationService?: CustomizationService,
   current: URLSearchParams = new URLSearchParams(window.location.search)
 ): void {
-  for (const key of preserveKeys) {
-    preserve(query, current, key);
-  }
-  for (const key of preserveMultiKeys) {
-    preserveMulti(query, current, key);
+  for (const key of getPreserveKeys(customizationService)) {
+    preserveKey(query, current, key);
   }
 }
 
 export function preserveQueryStrings(
   query: Record<string, string | string[]>,
+  customizationService?: CustomizationService,
   current: URLSearchParams = new URLSearchParams(window.location.search)
 ): void {
-  for (const key of preserveKeys) {
-    const value = current.get(key);
-    if (value) {
-      query[key] = value;
-    }
-  }
-  for (const key of preserveMultiKeys) {
+  for (const key of getPreserveKeys(customizationService)) {
     const values = current.getAll(key).filter(Boolean);
-    if (values.length === 1) {
-      query[key] = values[0];
-    } else if (values.length > 1) {
+    if (values.length) {
       query[key] = values;
     }
   }

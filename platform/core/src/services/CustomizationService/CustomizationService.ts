@@ -192,7 +192,7 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
-   * Depth-first dynamic import of URL customization modules 
+   * Depth-first dynamic import of URL customization modules
    * `requires` edges and `customization` field
    * references are loaded before dependents. Already-loaded modules are skipped.
    *
@@ -234,7 +234,14 @@ export default class CustomizationService extends PubSubService {
       .reduce(
         (prev, request) =>
           prev.then(() =>
-            this._urlCustomizationLoadOne(request, policy, importFn, logger, requestedSet, newlyLoaded)
+            this._urlCustomizationLoadOne(
+              request,
+              policy,
+              importFn,
+              logger,
+              requestedSet,
+              newlyLoaded
+            )
           ),
         Promise.resolve() as Promise<void>
       )
@@ -401,7 +408,10 @@ export default class CustomizationService extends PubSubService {
         if (policy.strict) {
           throw new Error(msg);
         }
-        logger.warn(`[customizationUrl] failed to import customization "${request.raw}" (${url})`, err);
+        logger.warn(
+          `[customizationUrl] failed to import customization "${request.raw}" (${url})`,
+          err
+        );
         return importFailedSentinel;
       })
       .then(importedOrSentinel => {
@@ -490,6 +500,14 @@ export default class CustomizationService extends PubSubService {
       this.transformedCustomizations.set(customizationId, newTransformed);
     }
     return newTransformed;
+  }
+
+  /**
+   * Returns a customization value, or the provided fallback when unset.
+   */
+  public getValue<T = Customization>(customizationId: string, fallbackValue?: T): T | undefined {
+    const value = this.getCustomization(customizationId);
+    return (value === undefined ? fallbackValue : (value as T)) as T | undefined;
   }
 
   /**
@@ -654,9 +672,10 @@ export default class CustomizationService extends PubSubService {
   }
 
   private setDefaultCustomization(id: string, value: Customization): void {
-    if (this.defaultCustomizations.has(id)) {
-      console.warn(`Trying to update existing default for customization ${id}`);
-    }
+    // There are two inits now, without a clear between them, so we can't warn about existing defaults
+    // if (this.defaultCustomizations.has(id)) {
+    //   console.warn(`Trying to update existing default for customization ${id}`);
+    // }
     this.transformedCustomizations.clear();
 
     const sourceCustomization = this.defaultCustomizations.get(id);
