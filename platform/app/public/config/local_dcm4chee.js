@@ -25,6 +25,7 @@ window.config = {
         enableStudyLazyLoad: true,
         thumbnailRendering: 'thumbnail',
         thumbnailRequestStrategy: 'fetch',
+        supportsWildcard: true,
         requestOptions: {
           auth: 'admin:admin',
         },
