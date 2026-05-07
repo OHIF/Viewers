@@ -27,6 +27,7 @@ import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
 import toNumber from './toNumber';
+import isEqual from './isEqual';
 import downloadCSVReport from './downloadCSVReport';
 import isEqualWithin from './isEqualWithin';
 import addAccessors from './addAccessors';
@@ -94,6 +95,7 @@ const utils = {
   debounce,
   roundNumber,
   toNumber,
+  isEqual,
   downloadCSVReport,
   splitComma,
   getSplitParam,
@@ -137,6 +139,7 @@ export {
   debounce,
   roundNumber,
   toNumber,
+  isEqual,
   downloadCSVReport,
   splitComma,
   getSplitParam,
