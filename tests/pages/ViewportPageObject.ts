@@ -10,7 +10,7 @@ import { DataOverlayPageObject } from './DataOverlayPageObject';
 import { DOMOverlayPageObject } from './DOMOverlayPageObject';
 import { MagnifyGlassPageObject } from './MagnifyGlassPageObject';
 
-type SvgInnerElement = 'circle' | 'path' | 'd';
+type SvgInnerElement = 'circle' | 'path' | 'd' | 'line';
 
 type NormalizedDragParams = {
   start: { x: number; y: number };

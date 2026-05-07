@@ -43,6 +43,9 @@ const machineConfiguration = {
     idle: {
       entry: 'clearContext',
       on: {
+        // No-op: idle entry already cleared context. Redo can still send
+        // CLEAR_TRACKING_CONTEXT (tracking memo); required when strict mode is on.
+        CLEAR_TRACKING_CONTEXT: {},
         TRACK_SERIES: [
           {
             target: 'promptLabelAnnotation',
@@ -135,6 +138,12 @@ const machineConfiguration = {
               'clearDisplaySetHydratedState',
               'clearAllMeasurements',
             ],
+          },
+        ],
+        CLEAR_TRACKING_CONTEXT: [
+          {
+            target: 'tracking',
+            actions: ['clearContext', 'setIsDirtyToClean', 'clearDisplaySetHydratedState'],
           },
         ],
         SET_TRACKED_SERIES: [

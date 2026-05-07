@@ -343,4 +343,22 @@ export class MainToolbarPageObject {
       },
     };
   }
+  get undo() {
+    const button = this.page.getByTestId('undo-btn');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
+  get redo() {
+    const button = this.page.getByTestId('redo-btn');
+    return {
+      button,
+      async click() {
+        await button.click();
+      },
+    };
+  }
 }

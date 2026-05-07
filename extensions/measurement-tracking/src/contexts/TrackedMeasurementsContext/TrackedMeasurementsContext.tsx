@@ -159,7 +159,13 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      measurementService.clearMeasurements();
+      const trackingContext = evt.trackedStudy
+        ? { StudyInstanceUID: evt.trackedStudy, SeriesInstanceUIDs: [...(evt.trackedSeries || [])] }
+        : undefined;
+      measurementService.clearMeasurements(
+        undefined,
+        trackingContext ? { trackingContext } : undefined
+      );
       measurementService.setIsMeasurementDeletedIndividually(false);
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
@@ -250,7 +256,7 @@ function TrackedMeasurementsContextProvider(
     simplifiedAndLoadSR: (ctx, evt, condMeta) => {
       return (
         appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
-        evt.data.isBackupSave === false
+        evt.data?.isBackupSave === false
       );
     },
     hasDirtyAndSimplified: (ctx, evt, condMeta) => {
@@ -373,6 +379,22 @@ function TrackedMeasurementsContextProvider(
     // so the command has to be registered in a React component.
     commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
       commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
+    });
+  }, [commandsManager, sendTrackedMeasurementsEvent]);
+
+  useEffect(() => {
+    commandsManager.registerCommand('DEFAULT', 'restoreTrackedSeries', {
+      commandFn: ({ StudyInstanceUID, SeriesInstanceUIDs }) =>
+        sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
+          StudyInstanceUID,
+          SeriesInstanceUIDs,
+        }),
+    });
+  }, [commandsManager, sendTrackedMeasurementsEvent]);
+
+  useEffect(() => {
+    commandsManager.registerCommand('DEFAULT', 'clearTrackedSeries', {
+      commandFn: () => sendTrackedMeasurementsEvent('CLEAR_TRACKING_CONTEXT'),
     });
   }, [commandsManager, sendTrackedMeasurementsEvent]);
 
