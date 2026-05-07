@@ -17,6 +17,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
 
   const { toolNames, Enums } = utilityModule.exports;
 
+  const SRUtilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
+  );
+  const SRToolNames = SRUtilityModule?.exports?.toolNames;
+
   const tools = {
     active: [
       {
@@ -81,6 +86,13 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
+      /** SR subtypes for hydrated DICOM SR annotations (render-only, show label instead of intensity/stats) */
+      ...(SRToolNames
+        ? [
+            { toolName: SRToolNames.SRPoint },
+            { toolName: SRToolNames.SRRectangleROI },
+          ]
+        : []),
     ],
     enabled: [
       { toolName: toolNames.ImageOverlayViewer },
@@ -153,6 +165,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
+      { toolName: SRToolNames.SRPoint },
       { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
@@ -176,6 +189,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const { cornerstoneViewportService } = serviceManager.services;
 
   const { toolNames, Enums } = utilityModule.exports;
+
+  const SRUtilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
+  );
+  const SRToolNames = SRUtilityModule?.exports?.toolNames;
 
   const tools = {
     active: [
@@ -235,6 +253,13 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           displayOnePointAsCrosshairs: true,
         },
       },
+      /** SR subtypes for hydrated DICOM SR annotations (render-only) */
+      ...(SRToolNames
+        ? [
+            { toolName: SRToolNames.SRPoint },
+            { toolName: SRToolNames.SRRectangleROI },
+          ]
+        : []),
     ],
     disabled: [
       {
