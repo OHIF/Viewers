@@ -1,4 +1,11 @@
-import { Page } from 'playwright-test-coverage';
+import type { Page } from '@playwright/test';
+
+type VisitStudyOptions = {
+  mode?: string;
+  delay?: number;
+  datasources?: string;
+  customization?: string;
+};
 
 /**
  * Visit the study
@@ -8,18 +15,40 @@ import { Page } from 'playwright-test-coverage';
  * @param delay - The delay to wait after visiting the study
  * @param datasources - the data source to load the study from
  */
-export async function visitStudy(
+export async function visitStudyOptions(
   page: Page,
   studyInstanceUID: string,
-  mode: string,
-  delay: number = 0,
-  datasources = 'ohif'
+  options: VisitStudyOptions = {}
 ) {
+  const mode = options.mode || 'viewer';
+  const resolvedDelay = options.delay ?? 0;
+  const resolvedDatasources = options.datasources || 'ohif';
+  const { customization } = options;
+
   // await page.goto(`/?resultsPerPage=100&datasources=${datasources}`);
   // await page.getByTestId(studyInstanceUID).click();
   // await page.getByRole('button', { name: mode }).click();
-  await page.goto(`/${mode}/${datasources}?StudyInstanceUIDs=${studyInstanceUID}`);
+  const params = new URLSearchParams({ StudyInstanceUIDs: studyInstanceUID });
+  if (customization) {
+    params.set('customization', customization);
+  }
+
+  await page.goto(`/${mode}/${resolvedDatasources}?${params.toString()}`);
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(delay);
+  await page.waitForTimeout(resolvedDelay);
+}
+
+export async function visitStudy(
+  page: Page,
+  studyInstanceUID: string,
+  mode = 'viewer',
+  delay: number = 0,
+  datasources = 'ohif'
+) {
+  return visitStudyOptions(page, studyInstanceUID, {
+    mode,
+    delay,
+    datasources,
+  });
 }
