@@ -52,7 +52,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -63,7 +62,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -74,7 +72,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -85,7 +82,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -96,7 +92,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
