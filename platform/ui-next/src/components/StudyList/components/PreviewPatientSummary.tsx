@@ -2,7 +2,7 @@
  * PreviewPatientSummary — compound component for patient header + workflow actions
  *
  * What it is
- * - A small set of primitives composed under a root provider: Patient, Workflows, Title, Subtitle, Meta, Actions, Action, Field, Section, Icon.
+ * - A compact summary API composed under a root provider: Patient and Workflows.
  * - All subcomponents read `data` from the nearest <PreviewPatientSummary> via context.
  *
  * Minimal usage
@@ -24,7 +24,6 @@
  * - platform/ui-next/src/components/StudyList/components/PreviewContent.tsx (in-context example, including empty state handling)
  */
 import * as React from 'react';
-import type { ElementType } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../../lib/utils';
 import { Icons } from '../../Icons/Icons';
@@ -241,218 +240,6 @@ function Subtitle<T = any>({
   );
 }
 
-function Meta({ className, children }: { className?: string; children?: React.ReactNode }) {
-  if (children == null) {
-    return null;
-  }
-  return (
-    <span className={cn('text-muted-foreground truncate text-sm leading-tight', className)}>
-      {children}
-    </span>
-  );
-}
-
-type ActionsProps = React.HTMLAttributes<HTMLDivElement> & {
-  direction?: 'column' | 'row';
-  gap?: number;
-  wrap?: boolean;
-  justify?: 'start' | 'end' | 'between' | 'center';
-};
-
-const Actions = React.forwardRef<HTMLDivElement, ActionsProps>(
-  (
-    {
-      direction = 'column',
-      gap = 2,
-      wrap = false,
-      justify = 'start',
-      className,
-      style,
-      children,
-      ...rest
-    },
-    ref
-  ) => {
-    const directionClass = direction === 'row' ? 'flex-row' : 'flex-col';
-
-    const justifyClassMap = {
-      start: 'justify-start',
-      end: 'justify-end',
-      between: 'justify-between',
-      center: 'justify-center',
-    } as const;
-    const justifyClass = justifyClassMap[justify] ?? justifyClassMap.start;
-
-    return (
-      <div
-        ref={ref}
-        className={cn('flex', directionClass, justifyClass, className)}
-        style={{ gap: `${gap * 0.25}rem`, flexWrap: wrap ? 'wrap' : undefined, ...style }}
-        {...rest}
-      >
-        {children}
-      </div>
-    );
-  }
-);
-Actions.displayName = 'PreviewPatientSummaryActions';
-
-type ActionOwnProps<T = any> = {
-  label?: React.ReactNode;
-  icon?: React.ReactNode;
-  onClick?: (data: T | null) => void;
-  disabled?: boolean;
-  disabledReason?: string;
-  className?: string;
-  children?: React.ReactNode;
-  as?: ElementType;
-  href?: string;
-  iconPosition?: 'start' | 'end';
-  iconSize?: number;
-};
-
-type ActionProps<T = any> = ActionOwnProps<T> &
-  Omit<React.HTMLAttributes<HTMLElement>, keyof ActionOwnProps<T> | 'onClick'>;
-
-const ActionInner = <T = any,>(
-  {
-    label,
-    icon,
-    onClick,
-    disabled,
-    disabledReason,
-    className,
-    children,
-    as: Component = 'button',
-    href,
-    iconPosition = 'end',
-    iconSize = 24,
-    style,
-    ...rest
-  }: ActionProps<T>,
-  ref: React.ForwardedRef<HTMLElement>
-) => {
-  const { data } = useSummaryContext<T>();
-  const isDisabled = disabled ?? !data;
-  const titleAttr = isDisabled && disabledReason ? String(disabledReason) : undefined;
-  const id = React.useId();
-  const reasonId = `${id}-reason`;
-
-  const iconNode = icon ? (
-    <span
-      className="text-primary shrink-0"
-      aria-hidden
-      style={{ width: iconSize, height: iconSize }}
-    >
-      {icon}
-    </span>
-  ) : null;
-
-  const leadingContent =
-    iconNode && iconPosition === 'start' ? (
-      <span className="text-foreground flex items-center gap-2 text-base font-medium leading-tight">
-        {iconNode}
-        {children ?? label}
-      </span>
-    ) : (
-      <span className="text-foreground text-base font-medium leading-tight">
-        {children ?? label}
-      </span>
-    );
-
-  const trailingContent = iconNode && iconPosition === 'end' ? iconNode : null;
-
-  const srOnly =
-    isDisabled && disabledReason ? (
-      <span
-        id={reasonId}
-        className="sr-only"
-      >
-        {disabledReason}
-      </span>
-    ) : null;
-
-  const commonClassName = cn(
-    'border-border/50 flex w-full items-center justify-between rounded-lg bg-muted px-4 py-3 text-left transition',
-    isDisabled
-      ? 'cursor-not-allowed opacity-50'
-      : 'hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-    className
-  );
-
-  const commonProps = {
-    className: commonClassName,
-    style,
-    'aria-disabled': isDisabled || undefined,
-    title: titleAttr,
-    'aria-describedby': isDisabled && disabledReason ? reasonId : undefined,
-  };
-
-  const handleActivate = (event: React.MouseEvent<HTMLElement>) => {
-    if (isDisabled) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-    onClick?.(data ?? null);
-  };
-
-  if (Component === 'button') {
-    return (
-      <button
-        ref={ref as React.Ref<HTMLButtonElement>}
-        type="button"
-        disabled={isDisabled}
-        onClick={handleActivate}
-        {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-        {...commonProps}
-      >
-        {srOnly}
-        {leadingContent}
-        {trailingContent}
-      </button>
-    );
-  }
-
-  if (Component === 'a') {
-    return (
-      <a
-        ref={ref as React.Ref<HTMLAnchorElement>}
-        href={isDisabled ? undefined : href}
-        onClick={handleActivate}
-        {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-        {...commonProps}
-      >
-        {srOnly}
-        {leadingContent}
-        {trailingContent}
-      </a>
-    );
-  }
-
-  const Comp = Component as ElementType;
-
-  return (
-    <Comp
-      ref={ref}
-      onClick={handleActivate}
-      {...(rest as Record<string, unknown>)}
-      {...commonProps}
-    >
-      {srOnly}
-      {leadingContent}
-      {trailingContent}
-    </Comp>
-  );
-};
-
-type ActionComponentType = <T = any>(
-  props: ActionProps<T> & { ref?: React.Ref<HTMLElement> }
-) => React.ReactElement | null;
-
-const Action = React.forwardRef(ActionInner) as ActionComponentType;
-Action.displayName = 'PreviewPatientSummaryAction';
-
 type WorkflowButtonProps<T = any> = {
   label?: React.ReactNode;
   onClick?: (data: T) => void;
@@ -632,11 +419,7 @@ const WorkflowButtonInner = <T = any,>(
   );
 };
 
-type WorkflowButtonComponent = <T = any>(
-  props: WorkflowButtonProps<T> & { ref?: React.Ref<HTMLElement> }
-) => React.ReactElement | null;
-
-const WorkflowButton = React.forwardRef(WorkflowButtonInner) as WorkflowButtonComponent;
+const WorkflowButton = React.forwardRef(WorkflowButtonInner);
 WorkflowButton.displayName = 'PreviewPatientSummaryWorkflowButton';
 
 type PatientProps = {
@@ -674,12 +457,7 @@ function Patient({
           size={33}
           className="text-primary"
         >
-          {icon ?? (
-            <Icons.PatientStudyList
-              width="100%"
-              height="100%"
-            />
-          )}
+          {icon ?? <Icons.PatientStudyList />}
         </Icon>
       )}
       <div className="flex h-[38px] min-w-0 flex-col justify-center gap-px">
@@ -700,111 +478,15 @@ function Patient({
  * - Shows default workflow badge and allows clearing it.
  */
 function Workflows<T = any>(props: WorkflowButtonProps<T>) {
-  return <WorkflowButton<T> {...props} />;
-}
-
-type EmptyProps = {
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
-  section?: SectionProps;
-};
-
-function Empty({ children, icon, section }: EmptyProps) {
-  const { data } = useSummaryContext<unknown>();
-  if (data) {
-    return null;
-  }
-
-  return (
-    <Section
-      variant="card"
-      {...section}
-    >
-      {icon ?? (
-        <Icon
-          size={33}
-          className="text-primary"
-        >
-          <Icons.PatientStudyList
-            width="100%"
-            height="100%"
-          />
-        </Icon>
-      )}
-      <div className="flex h-[38px] items-center">
-        <span className="text-muted-foreground text-base font-medium leading-tight">
-          {children ?? 'Select a study'}
-        </span>
-      </div>
-    </Section>
-  );
-}
-
-type FieldProps<T = any> = {
-  of: (data: T) => React.ReactNode;
-  hideWhenEmpty?: boolean;
-  muted?: boolean;
-  className?: string;
-  showTitleOnTruncate?: boolean;
-};
-
-function Field<T = any>({
-  of,
-  hideWhenEmpty = true,
-  muted,
-  className,
-  showTitleOnTruncate = true,
-}: FieldProps<T>) {
-  const { data } = useSummaryContext<T>();
-  const value = data ? of(data) : null;
-  const isEmpty = value === null || value === undefined || value === '';
-
-  if (hideWhenEmpty && isEmpty) {
-    return null;
-  }
-
-  return (
-    <span
-      className={cn(
-        muted ? 'text-muted-foreground' : 'text-foreground',
-        'truncate text-sm leading-tight',
-        className
-      )}
-      title={
-        showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
-          ? String(value)
-          : undefined
-      }
-    >
-      {value}
-    </span>
-  );
+  return <WorkflowButton {...props} />;
 }
 
 type PreviewPatientSummaryNamespace = typeof Root & {
-  Section: typeof Section;
-  Icon: typeof Icon;
-  Title: typeof Title;
-  Subtitle: typeof Subtitle;
-  Meta: typeof Meta;
-  Actions: typeof Actions;
-  Action: ActionComponentType;
   Patient: typeof Patient;
   Workflows: typeof Workflows;
-  Empty: typeof Empty;
-  Field: typeof Field;
 };
 
 export const PreviewPatientSummary: PreviewPatientSummaryNamespace = Object.assign(Root, {
-  Section,
-  Icon,
-  Title,
-  Subtitle,
-  Meta,
-  Actions,
-  Action,
   Patient,
   Workflows,
-  Empty,
-  Field,
 });
