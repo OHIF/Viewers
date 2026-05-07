@@ -260,10 +260,10 @@ test('checks that undo after delete-all restores measurements as tracked', async
   const activeViewport = await viewportPageObject.active;
 
   const firstMeasurementLine = activeViewport.svg('line').first();
-  await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray', '4,4');
+  await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray');
 
   const secondMeasurementLine = activeViewport.svg('line').nth(2);
-  await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray', '4,4');
+  await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray');
 });
 
 test('checks that delete-all prompt reappears after undo', async ({
@@ -343,10 +343,10 @@ test.describe('simplified tracking mode', () => {
 
     const activeViewport = await viewportPageObject.active;
 
-    const measurementLine = activeViewport.svg('line').first();
-    await expect(measurementLine).not.toHaveAttribute('stroke-dasharray', '4,4');
+    const firstMeasurementLine = activeViewport.svg('line').first();
+    await expect(firstMeasurementLine).not.toHaveAttribute('stroke-dasharray');
 
     const secondMeasurementLine = activeViewport.svg('line').nth(2);
-    await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray', '4,4');
+    await expect(secondMeasurementLine).not.toHaveAttribute('stroke-dasharray');
   });
 });
