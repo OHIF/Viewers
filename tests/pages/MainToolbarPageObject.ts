@@ -7,11 +7,6 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
-  async waitForVolumeLoad(): Promise<void> {
-    await this.page.waitForTimeout(2000);
-    await this.page.waitForLoadState('networkidle', { timeout: 120000 });
-  }
-
   get crosshairs() {
     const button = this.page.getByTestId('Crosshairs');
     return {
