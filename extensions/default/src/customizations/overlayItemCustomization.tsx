@@ -1,4 +1,5 @@
 import React from 'react';
+import { utils } from '@ohif/core';
 
 export default {
   'ohif.overlayItem': function (props) {
@@ -13,7 +14,8 @@ export default {
         : this.contentF && typeof this.contentF === 'function'
           ? this.contentF(props)
           : null;
-    if (!value) {
+    const displayValue = utils.formatValue(value);
+    if (!displayValue) {
       return null;
     }
 
@@ -24,7 +26,7 @@ export default {
         title={this.title || ''}
       >
         {this.label && <span className="mr-1 shrink-0">{this.label}</span>}
-        <span className="font-light">{value}</span>
+        <span className="font-light">{displayValue}</span>
       </span>
     );
   },
