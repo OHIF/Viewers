@@ -26,23 +26,23 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
     .dataOverlay;
   await dataOverlayPageObject.toggle();
-  const viewportRenderCycle1 = waitForViewportRenderCycle(page);
+  let viewportRenderCycle = waitForViewportRenderCycle(page);
   await dataOverlayPageObject.addSegmentation('2d-tta_nnU-Net_Segmentation');
-  await viewportRenderCycle1;
+  await viewportRenderCycle;
 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  const viewportRenderCycle2 = waitForViewportRenderCycle(page);
+  viewportRenderCycle = waitForViewportRenderCycle(page);
   await dataOverlayPageObject.addSegmentation('Segmentation');
-  await viewportRenderCycle2;
+  await viewportRenderCycle;
 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
-  const viewportRenderCycle3 = waitForViewportRenderCycle(page);
+  viewportRenderCycle = waitForViewportRenderCycle(page);
   await dataOverlayPageObject.addSegmentation('3d_lowres-tta_nnU-Net_Segmentation');
-  await viewportRenderCycle3;
+  await viewportRenderCycle;
 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
@@ -76,9 +76,9 @@ test('should display multiple segmentation overlays (both SEG and RT)', async ({
   // Now add the RT overlay
   await dataOverlayPageObject.toggle();
 
-  const viewportRenderCycle4 = waitForViewportRenderCycle(page);
+  viewportRenderCycle = waitForViewportRenderCycle(page);
   await dataOverlayPageObject.addSegmentation('Series 3 - RTSTRUCT');
-  await viewportRenderCycle4;
+  await viewportRenderCycle;
 
   // Adding an overlay should not show the LOAD button.
   await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
