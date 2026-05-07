@@ -85,7 +85,7 @@ function Root<T = any>({ data: dataProp, get, className, children }: RootProps<T
 
   return (
     <SummaryContext.Provider value={{ data, get: resolvedGetters }}>
-      <div className={cn('flex flex-col gap-1', className)}>{children}</div>
+      <div className={cn('flex w-full flex-col gap-1', className)}>{children}</div>
     </SummaryContext.Provider>
   );
 }

@@ -35,14 +35,7 @@ function PreviewContainerRoot({ children }: PreviewContainerProps) {
   return (
     <div className="bg-background relative flex h-full w-full flex-col">
       {header}
-      <ScrollArea className="flex-1">
-        <div
-          className="pr-3 pb-3"
-          style={{ paddingTop: 'var(--panel-right-top-pad, 59px)' }}
-        >
-          {content}
-        </div>
-      </ScrollArea>
+      <div className="direction-y flex min-h-0 flex-1 pr-3 pb-3 pt-[15px]">{content}</div>
     </div>
   );
 }
