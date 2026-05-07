@@ -5,6 +5,7 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportsRendered,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -18,7 +19,7 @@ test.describe('3D primary Test', async () => {
     await mainToolbarPageObject.layoutSelection.threeDPrimary.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
-    await mainToolbarPageObject.waitForVolumeLoad();
+    await waitForViewportsRendered(page);
     await checkForScreenshot(
       page,
       page,
