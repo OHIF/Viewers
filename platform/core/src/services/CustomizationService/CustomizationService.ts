@@ -473,6 +473,10 @@ export default class CustomizationService extends PubSubService {
       const payload = getUrlCustomizationModulePayload(entry.module);
       if (payload?.global && typeof payload.global === 'object') {
         this.setCustomizations(payload.global, CustomizationScope.Global);
+      } else if (!(payload as any)?.requires) {
+        console.warn(
+          `[customizationUrl] customization module "${entry.request.raw}" (${entry.url}) has no global payload and no requires; nothing was applied`
+        );
       }
     }
   }
@@ -666,8 +670,8 @@ export default class CustomizationService extends PubSubService {
 
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED, {
-      buttons: this.defaultCustomizations,
-      button: this.defaultCustomizations.get(id),
+      buttons: this.globalCustomizations,
+      button: this.globalCustomizations.get(id),
     });
   }
 
