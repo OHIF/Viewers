@@ -35,7 +35,11 @@ export function resolveCustomizationUrl(
     typeof window !== 'undefined' && window.location?.origin ? window.location.origin : '';
   const publicUrl = getViewerPublicUrl();
   const root = publicUrl?.startsWith('/') ? publicUrl : `/${publicUrl || ''}`;
-  const relative = joined.startsWith('./') ? joined.slice(2) : joined;
+  const relative = joined.startsWith('./')
+    ? joined.slice(2)
+    : joined.startsWith('/')
+      ? joined.slice(1)
+      : joined;
   const rootWithSlash = root.endsWith('/') ? root : `${root}/`;
   const path = `${rootWithSlash}${relative}`;
   return origin ? `${origin}${path}` : path;

@@ -44,8 +44,7 @@ describe('CustomizationService URL resolve', () => {
 
   it('resolves a relative absolute-path prefix against same origin', () => {
     const url = resolveCustomizationUrl(req('relative', 'foo'), policy);
-    expect(url.startsWith('https://viewer.example.com')).toBe(true);
-    expect(url.endsWith('/customAssets/foo.js')).toBe(true);
+    expect(url).toBe('https://viewer.example.com/customAssets/foo.js');
   });
 
   it('throws on unknown prefix', () => {
