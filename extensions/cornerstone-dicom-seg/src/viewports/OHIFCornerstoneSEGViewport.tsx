@@ -292,10 +292,12 @@ function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
 
   const { PixelMeasuresSequence } = SharedFunctionalGroup;
 
-  const PixelMeasures = Array.isArray(PixelMeasuresSequence)
-    ? PixelMeasuresSequence[0]
-    : PixelMeasuresSequence;
+  const PixelMeasures =
+    (Array.isArray(PixelMeasuresSequence) ? PixelMeasuresSequence[0] : PixelMeasuresSequence) || {};
 
+  if (!PixelMeasuresSequence || Object.keys(PixelMeasures).length === 0) {
+    console.warn('PixelMeasuresSequence missing from SEG instance metadata.');
+  }
   const { SpacingBetweenSlices, SliceThickness } = PixelMeasures;
 
   const image0 = referencedDisplaySet.images[0];
