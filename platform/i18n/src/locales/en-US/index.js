@@ -3,6 +3,7 @@ import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
 import DataSourceConfiguration from './DataSourceConfiguration.json';
+import DataTable from './DataTable.json';
 import DatePicker from './DatePicker.json';
 import ErrorBoundary from './ErrorBoundary.json';
 import Header from './Header.json';
@@ -39,6 +40,7 @@ export default {
     CineDialog,
     Common,
     DataSourceConfiguration,
+    DataTable,
     DatePicker,
     ErrorBoundary,
     Header,

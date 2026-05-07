@@ -41,7 +41,9 @@ const setHeaders = (res, path) => {
   } else if (path.indexOf('.br') !== -1) {
     res.setHeader('Content-Encoding', 'br');
   }
-  if (path.indexOf('.pdf') !== -1) {
+  if (path.indexOf('thumbnail') !== -1) {
+    res.setHeader('Content-Type', 'image/jpeg');
+  } else if (path.indexOf('.pdf') !== -1) {
     res.setHeader('Content-Type', 'application/pdf');
   } else if (path.indexOf('mp4') !== -1) {
     res.setHeader('Content-Type', 'video/mp4');

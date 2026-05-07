@@ -8,10 +8,9 @@ import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 import { CallbackCustomization } from 'platform/core/src/types';
 import { type TabsProps } from '@ohif/core/src/utils/createStudyBrowserTabs';
+import { thumbnailNoImageModalities } from '@ohif/core/src/utils/thumbnailNoImageModalities';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
-
-const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
 
 /**
  * Study Browser component that displays and manages studies and their display sets

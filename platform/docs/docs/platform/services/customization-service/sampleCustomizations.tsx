@@ -356,6 +356,37 @@ window.config = {
   },
 ];
 
+export const workListUINextCustomizations = [
+  {
+    id: 'workListUINext.previewSeriesView',
+    description: (
+      <>
+        Controls which series views are available in the WorkListUINext preview panel. Use{' '}
+        <code>'all'</code> (default customization value) to show the thumbnails/list toggle. The
+        initial preview view is thumbnails. Use <code>'thumbnails'</code> to lock the preview to
+        thumbnails, or <code>'list'</code> to lock it to the series list. The preview is forced to{' '}
+        <code>'list'</code> when the active data source declares <code>thumbnailRendering</code> as{' '}
+        <code>'wadors'</code> or <code>'thumbnailDirect'</code>, or declares{' '}
+        <code>thumbnailRequestStrategy</code> as <code>'bulkDataRetrieve'</code> (its default
+        value), regardless of this setting.
+      </>
+    ),
+    default: 'all',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'workListUINext.previewSeriesView': {
+        $set: 'list',
+      },
+    },
+  ],
+};
+  `,
+  },
+];
+
 export const customizations = [
   {
     id: 'ohif.hotkeyBindings',
