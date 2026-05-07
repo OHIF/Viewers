@@ -376,7 +376,14 @@ const connectMeasurementServiceToTools = ({
       });
     }
 
-    // If tracking context was provided, push a memo that restores it on undo.
+    // If tracking context was provided, push a memo that keeps XState in sync with
+    // Cornerstone's annotation history across unlimited undo/redo cycles:
+    //   undo  → re-populate trackedStudy/trackedSeries so the panel reflects the
+    //           restored annotations.
+    //   redo  → wipe trackedStudy/trackedSeries because the annotations have been
+    //           re-deleted by their own Cornerstone memos; no measurements are
+    //           deleted here (they are already gone), so CLEAR_TRACKING_CONTEXT is
+    //           used instead of UNTRACK_ALL to avoid a double-delete.
     if (trackingContext) {
       DefaultHistoryMemo.push({
         id: csUtils.uuidv4(),
@@ -384,6 +391,8 @@ const connectMeasurementServiceToTools = ({
         restoreMemo(undo?: boolean) {
           if (undo === true) {
             commandsManager.run('restoreTrackedSeries', trackingContext);
+          } else if (undo === false) {
+            commandsManager.run('clearTrackedSeries');
           }
         },
       });

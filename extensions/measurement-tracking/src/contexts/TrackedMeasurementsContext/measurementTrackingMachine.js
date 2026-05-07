@@ -137,6 +137,12 @@ const machineConfiguration = {
             ],
           },
         ],
+        CLEAR_TRACKING_CONTEXT: [
+          {
+            target: 'tracking',
+            actions: ['clearContext', 'setIsDirtyToClean', 'clearDisplaySetHydratedState'],
+          },
+        ],
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',

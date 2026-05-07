@@ -392,6 +392,12 @@ function TrackedMeasurementsContextProvider(
     });
   }, [commandsManager, sendTrackedMeasurementsEvent]);
 
+  useEffect(() => {
+    commandsManager.registerCommand('DEFAULT', 'clearTrackedSeries', {
+      commandFn: () => sendTrackedMeasurementsEvent('CLEAR_TRACKING_CONTEXT'),
+    });
+  }, [commandsManager, sendTrackedMeasurementsEvent]);
+
   return (
     <TrackedMeasurementsContext.Provider
       value={[trackedMeasurements, sendTrackedMeasurementsEvent]}
