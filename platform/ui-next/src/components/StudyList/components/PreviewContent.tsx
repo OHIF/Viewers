@@ -10,6 +10,7 @@ import { PreviewPatientSummary } from './PreviewPatientSummary';
 import { PreviewSeriesList } from './PreviewSeriesList';
 import { ToggleGroup, ToggleGroupItem } from '../../ToggleGroup';
 import { Icons } from '../../Icons';
+import { ScrollArea } from '../../ScrollArea';
 
 type PreviewSeriesViewMode = 'thumbnails' | 'list';
 type PreviewSeriesView = 'all' | PreviewSeriesViewMode;
@@ -70,7 +71,7 @@ function PreviewContent({
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex flex-col gap-3">
+      <div className="flex h-full min-h-0 w-full flex-col gap-3">
         <PreviewPatientSummary data={study}>
           <PreviewPatientSummary.Patient />
           <PreviewPatientSummary.Workflows />
@@ -102,79 +103,93 @@ function PreviewContent({
             </ToggleGroup>
           )}
         </div>
-        {effectiveSeriesViewMode === 'thumbnails' ? (
-          <div className="flex flex-col">
-            {imagingSeries.length > 0 && (
-              <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
-                {imagingSeries.map((seriesItem, index) => {
-                  const seriesUID =
-                    seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID || String(index);
-                  const thumbnailState = seriesItem.thumbnailStatus;
-                  const imageSrc =
-                    thumbnailState?.status === PreviewThumbnailStatusState.Ready
-                      ? thumbnailState.src
-                      : undefined;
-                  return (
-                    <Thumbnail
-                      key={`series-imaging-${seriesUID}`}
-                      displaySetInstanceUID={`series-${seriesUID}`}
-                      imageSrc={imageSrc as any}
-                      onImageLoadError={() => onThumbnailImageError?.(seriesUID)}
-                      imageAltText={seriesItem.description || seriesItem.SeriesDescription || ''}
-                      description={
-                        seriesItem.description || seriesItem.SeriesDescription || '(empty)'
-                      }
-                      seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
-                      numInstances={seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0}
-                      modality={seriesItem.modality || seriesItem.Modality || ''}
-                      isActive={false}
-                      onClick={() => {}}
-                      onDoubleClick={() => {}}
-                      isDraggable={false}
-                      viewPreset="thumbnails"
-                      thumbnailType="thumbnail"
-                    >
-                      {thumbnailState?.status === PreviewThumbnailStatusState.NotAvailable && (
-                        <div className="bg-muted/50 flex h-full w-full items-center justify-center rounded">
-                          <Icons.SeriesPlaceholder className="text-muted-foreground h-[40px] w-[60px] opacity-50" />
-                        </div>
-                      )}
-                    </Thumbnail>
-                  );
-                })}
-              </div>
-            )}
-            {nonImagingSeries.length > 0 && (
-              <div className="mt-1 grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] pr-2">
-                {nonImagingSeries.map((seriesItem, index) => {
-                  const seriesUID =
-                    seriesItem.seriesInstanceUid || seriesItem.SeriesInstanceUID || String(index);
-                  return (
-                    <Thumbnail
-                      key={`series-non-imaging-${seriesUID}`}
-                      displaySetInstanceUID={`series-${seriesUID}`}
-                      imageAltText={seriesItem.description || seriesItem.SeriesDescription || ''}
-                      description={
-                        seriesItem.description || seriesItem.SeriesDescription || '(empty)'
-                      }
-                      seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
-                      numInstances={seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0}
-                      modality={seriesItem.modality || seriesItem.Modality || ''}
-                      isActive={false}
-                      onClick={() => {}}
-                      onDoubleClick={() => {}}
-                      isDraggable={false}
-                      viewPreset="list"
-                      thumbnailType="thumbnailNoImage"
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ) : (
-          <PreviewSeriesList series={series} />
-        )}
+        <ScrollArea className="h-full w-full min-h-0 flex-1">
+          {effectiveSeriesViewMode === 'thumbnails' ? (
+            <div className="flex flex-col">
+                {imagingSeries.length > 0 && (
+                  <div className="grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] pr-2">
+                    {imagingSeries.map((seriesItem, index) => {
+                      const seriesUID =
+                        seriesItem.seriesInstanceUid ||
+                        seriesItem.SeriesInstanceUID ||
+                        String(index);
+                      const thumbnailState = seriesItem.thumbnailStatus;
+                      const imageSrc =
+                        thumbnailState?.status === PreviewThumbnailStatusState.Ready
+                          ? thumbnailState.src
+                          : undefined;
+                      return (
+                        <Thumbnail
+                          key={`series-imaging-${seriesUID}`}
+                          displaySetInstanceUID={`series-${seriesUID}`}
+                          imageSrc={imageSrc as any}
+                          onImageLoadError={() => onThumbnailImageError?.(seriesUID)}
+                          imageAltText={
+                            seriesItem.description || seriesItem.SeriesDescription || ''
+                          }
+                          description={
+                            seriesItem.description || seriesItem.SeriesDescription || '(empty)'
+                          }
+                          seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
+                          numInstances={
+                            seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0
+                          }
+                          modality={seriesItem.modality || seriesItem.Modality || ''}
+                          isActive={false}
+                          onClick={() => {}}
+                          onDoubleClick={() => {}}
+                          isDraggable={false}
+                          viewPreset="thumbnails"
+                          thumbnailType="thumbnail"
+                        >
+                          {thumbnailState?.status === PreviewThumbnailStatusState.NotAvailable && (
+                            <div className="bg-muted/50 flex h-full w-full items-center justify-center rounded">
+                              <Icons.SeriesPlaceholder className="text-muted-foreground h-[40px] w-[60px] opacity-50" />
+                            </div>
+                          )}
+                        </Thumbnail>
+                      );
+                    })}
+                  </div>
+                )}
+                {nonImagingSeries.length > 0 && (
+                  <div className="mt-1 grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] pr-2">
+                    {nonImagingSeries.map((seriesItem, index) => {
+                      const seriesUID =
+                        seriesItem.seriesInstanceUid ||
+                        seriesItem.SeriesInstanceUID ||
+                        String(index);
+                      return (
+                        <Thumbnail
+                          key={`series-non-imaging-${seriesUID}`}
+                          displaySetInstanceUID={`series-${seriesUID}`}
+                          imageAltText={
+                            seriesItem.description || seriesItem.SeriesDescription || ''
+                          }
+                          description={
+                            seriesItem.description || seriesItem.SeriesDescription || '(empty)'
+                          }
+                          seriesNumber={seriesItem.seriesNumber ?? seriesItem.SeriesNumber ?? ''}
+                          numInstances={
+                            seriesItem.numSeriesInstances ?? seriesItem.numInstances ?? 0
+                          }
+                          modality={seriesItem.modality || seriesItem.Modality || ''}
+                          isActive={false}
+                          onClick={() => {}}
+                          onDoubleClick={() => {}}
+                          isDraggable={false}
+                          viewPreset="list"
+                          thumbnailType="thumbnailNoImage"
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+            </div>
+          ) : (
+            <PreviewSeriesList series={series} />
+          )}
+        </ScrollArea>
       </div>
     </TooltipProvider>
   );
