@@ -28,7 +28,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-    preserveQueryParameters(searchQuery);
+    preserveQueryParameters(searchQuery, customizationService);
 
     navigate({
       pathname: '/',

@@ -200,7 +200,7 @@ function WorkList({
       }
     });
 
-    preserveQueryStrings(queryString);
+    preserveQueryStrings(queryString, customizationService);
 
     const search = qs.stringify(queryString, {
       skipNull: true,
@@ -417,7 +417,7 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
-              preserveQueryParameters(query);
+              preserveQueryParameters(query, customizationService);
 
               return (
                 mode.displayName && (
