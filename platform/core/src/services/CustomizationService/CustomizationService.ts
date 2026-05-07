@@ -306,25 +306,7 @@ export default class CustomizationService extends PubSubService {
         }
       }
     }
-    const bucket = payload.global;
-    if (bucket && typeof bucket === 'object') {
-      for (const value of Object.values(bucket)) {
-        this._collectUrlDependencyFromValue(value, refs);
-      }
-    }
     return Array.from(refs);
-  }
-
-  private _collectUrlDependencyFromValue(value: any, refs: Set<string>): void {
-    if (!value || typeof value !== 'object') return;
-    const customizationField = (value as any).customization;
-    if (typeof customizationField === 'string' && customizationField) {
-      refs.add(customizationField);
-    } else if (Array.isArray(customizationField)) {
-      for (const id of customizationField) {
-        if (typeof id === 'string' && id) refs.add(id);
-      }
-    }
   }
 
   private _urlDependencyToRequest(

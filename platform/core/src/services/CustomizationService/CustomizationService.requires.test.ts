@@ -35,15 +35,11 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     expect(importFn).toHaveBeenCalledTimes(1);
   });
 
-  it('loads dependencies first via the unified `customization` field', async () => {
+  it('loads dependencies first via module requires', async () => {
     const importFn = jest.fn(async (url: string) => {
       if (url.endsWith('/A.js')) {
         return {
-          customizations: {
-            global: {
-              'pkg.A': { customization: 'B' },
-            },
-          },
+          customizations: { global: { 'pkg.A': { value: 'A' } }, requires: ['B'] },
         };
       }
       if (url.endsWith('/B.js')) {
@@ -63,12 +59,12 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     const importFn = jest.fn(async (url: string) => {
       if (url.endsWith('/A.js')) {
         return {
-          customizations: { global: { 'pkg.A': { customization: 'B' } } },
+          customizations: { global: { 'pkg.A': { value: 'A' } }, requires: ['B'] },
         };
       }
       if (url.endsWith('/B.js')) {
         return {
-          customizations: { global: { 'pkg.B': { customization: 'A' } } },
+          customizations: { global: { 'pkg.B': { value: 'B' } }, requires: ['A'] },
         };
       }
       return {};
@@ -80,7 +76,7 @@ describe('CustomizationService.requires (URL customization modules)', () => {
     expect(importFn).toHaveBeenCalledTimes(2);
   });
 
-  it('skips dependency refs that are not URL-loadable customizations', async () => {
+  it('does not treat customization field refs as URL dependencies', async () => {
     const importFn = jest.fn(async () => ({
       customizations: {
         global: {
