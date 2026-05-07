@@ -28,3 +28,27 @@ test.describe('3D only Test', async () => {
     });
   });
 });
+
+test.describe('3D Reset Test', async () => {
+  test('should preserve color preset after resetting 3D viewport', async ({
+    page,
+    mainToolbarPageObject,
+    viewportPageObject,
+  }) => {
+    await mainToolbarPageObject.layoutSelection.threeDOnly.click();
+    await attemptAction(() => reduce3DViewportSize(page), 10, 100);
+    await mainToolbarPageObject.waitForVolumeLoad();
+
+    await mainToolbarPageObject.moreTools.reset.click();
+    await mainToolbarPageObject.waitForVolumeLoad();
+
+    const activeViewport = await viewportPageObject.active;
+
+    await checkForScreenshot({
+      page,
+      locator: activeViewport.pane,
+      screenshotPath: screenShotPaths.reset3D.colorPresetPreservedAfterReset,
+      maxDiffPixelRatio: 0.18,
+    });
+  });
+});
