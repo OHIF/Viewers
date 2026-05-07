@@ -236,6 +236,20 @@ When a customization is retrieved:
 As you have guessed the `.setCustomizations` accept a second argument which is the scope. By default it is set to `mode`.
 
 
+## Areas of Customization
+
+Use this introduction page for the core model (scope, priority, and syntax), then refer to focused pages for specific areas:
+
+- [Specific Customizations](./specificCustomizations.md): Built-in keys such as `ohif.preserveCustomizationKeys` and `ohif.customizationUrl`, including `?customization=` and `requires` behavior.
+- [Custom Routes](./customRoutes.md): Route-level customization through `routes.customRoutes`.
+- [Context Menu](./contextMenu.md): Context menu structures and interaction customization.
+- [Study Browser](./StudyBrowser.md): Study browser-specific configuration values.
+- [Viewport Overlay](./viewportOverlay.md): Overlay item configuration and layout.
+- [Viewport Scrollbar](./ViewportScrollbar.md): Scrollbar behavior and display customizations.
+- [Measurements](./Measurements.md): Measurement-related customization surface.
+- [Segmentation](./Segmentation.md): Segmentation-specific customization options.
+- [Advanced Customization](./advanced.md): `inheritsFrom`, `$transform`, and compositional patterns.
+
 ## Customization Syntax
 
 
