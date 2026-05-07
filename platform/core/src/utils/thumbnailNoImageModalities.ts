@@ -6,4 +6,5 @@ export const thumbnailNoImageModalities = [
   'RTDOSE',
   'DOC',
   'PMAP',
+  'RWV',
 ];
