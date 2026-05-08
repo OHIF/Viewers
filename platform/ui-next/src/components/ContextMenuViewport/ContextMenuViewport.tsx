@@ -20,7 +20,7 @@ const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
   return (
     <div
       data-cy="context-menu"
-      className="bg-popover text-popover-foreground relative z-50 block w-48 rounded border shadow-md"
+      className="bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95 relative z-50 w-48 overflow-hidden rounded-md border p-1 shadow-md"
       onContextMenu={e => e.preventDefault()}
     >
       {items.map((item, index) => (
@@ -28,7 +28,7 @@ const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
           key={index}
           data-cy="context-menu-item"
           onClick={() => item.action(item, props)}
-          className="hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center justify-between border-b border-border px-4 py-3 text-sm transition duration-300 last:border-b-0"
+          className="hover:bg-accent hover:text-accent-foreground flex cursor-pointer select-none items-center justify-between rounded-sm px-2 py-1.5 text-base outline-none"
         >
           <span>{item.label}</span>
           {item.iconRight && (
