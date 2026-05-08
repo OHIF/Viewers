@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
@@ -6,12 +6,36 @@ import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 
+const DraggableThumbnailContent = ({ dragData, children }: any) => {
+  const [, drag] = useDrag({
+    type: 'displayset',
+    item: { ...dragData },
+    canDrag: function () {
+      return Object.keys(dragData).length !== 0;
+    },
+  });
+
+  return (
+    <div
+      ref={drag}
+      className="h-full w-full"
+    >
+      {children}
+    </div>
+  );
+};
+
+const StaticThumbnailContent = ({ children }: any) => {
+  return <div className="h-full w-full">{children}</div>;
+};
+
 /**
  * Display a thumbnail for a display set.
  */
 const Thumbnail = ({
   displaySetInstanceUID,
   className,
+  children,
   imageSrc,
   imageAltText,
   description,
@@ -30,22 +54,20 @@ const Thumbnail = ({
   isTracked = false,
   canReject = false,
   dragData = {},
+  isDraggable = true,
   onReject = () => {},
   onClickUntrack = () => {},
   ThumbnailMenuItems = () => {},
+  onImageLoadError = () => {},
 }: withAppTypes): React.ReactNode => {
-  // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
-  // this will still allow for "drag", even if there is no drop target for the
-  // specified item.
-  const [collectedProps, drag, dragPreview] = useDrag({
-    type: 'displayset',
-    item: { ...dragData },
-    canDrag: function (monitor) {
-      return Object.keys(dragData).length !== 0;
-    },
-  });
-
   const [lastTap, setLastTap] = useState(0);
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
+
+  useEffect(() => {
+    setImageLoadFailed(false);
+  }, [imageSrc]);
+
+  const shouldRenderThumbnailImage = Boolean(imageSrc && !imageLoadFailed);
 
   const handleTouchEnd = e => {
     const currentTime = new Date().getTime();
@@ -68,15 +90,19 @@ const Thumbnail = ({
       >
         <div className="h-[114px] w-[128px]">
           <div className="relative bg-background">
-            {imageSrc ? (
+            {shouldRenderThumbnailImage ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
                 className="h-[114px] w-[128px] rounded object-contain"
                 crossOrigin="anonymous"
+                onError={() => {
+                  setImageLoadFailed(true);
+                  onImageLoadError();
+                }}
               />
             ) : (
-              <div className="bg-background h-[114px] w-[128px] rounded"></div>
+              <div className="bg-background h-[114px] w-[128px] rounded">{children}</div>
             )}
 
             {/* bottom left */}
@@ -269,7 +295,9 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
+        'bg-muted group flex select-none flex-col rounded outline-none',
+        isDraggable && 'hover:bg-primary/30 cursor-pointer',
+        !isDraggable && 'cursor-default',
         viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
         viewPreset === 'list' && 'h-[40px] w-full'
       )}
@@ -283,15 +311,19 @@ const Thumbnail = ({
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onTouchEnd={handleTouchEnd}
-      role="button"
+      role={isDraggable ? 'button' : undefined}
     >
-      <div
-        ref={drag}
-        className="h-full w-full"
-      >
-        {viewPreset === 'thumbnails' && renderThumbnailPreset()}
-        {viewPreset === 'list' && renderListPreset()}
-      </div>
+      {isDraggable ? (
+        <DraggableThumbnailContent dragData={dragData}>
+          {viewPreset === 'thumbnails' && renderThumbnailPreset()}
+          {viewPreset === 'list' && renderListPreset()}
+        </DraggableThumbnailContent>
+      ) : (
+        <StaticThumbnailContent>
+          {viewPreset === 'thumbnails' && renderThumbnailPreset()}
+          {viewPreset === 'list' && renderListPreset()}
+        </StaticThumbnailContent>
+      )}
     </div>
   );
 };
@@ -299,6 +331,7 @@ const Thumbnail = ({
 Thumbnail.propTypes = {
   displaySetInstanceUID: PropTypes.string.isRequired,
   className: PropTypes.string,
+  children: PropTypes.node,
   imageSrc: PropTypes.string,
   /**
    * Data the thumbnail should expose to a receiving drop target. Use a matching
@@ -326,7 +359,9 @@ Thumbnail.propTypes = {
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
+  isDraggable: PropTypes.bool,
   thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
+  onImageLoadError: PropTypes.func,
 };
 
 export { Thumbnail };
