@@ -28,13 +28,6 @@ function useSettingsPopoverContext() {
 }
 
 type SettingsPopoverProps = {
-  /** Controlled open state (optional). If omitted, component manages its own state. */
-  open?: boolean;
-  /** onOpenChange for controlled usage (optional). */
-  onOpenChange?: (open: boolean) => void;
-  /**
-   * Children must include exactly one <SettingsPopover.Trigger> and one <SettingsPopover.Content>.
-   */
   children?: React.ReactNode;
 };
 
@@ -57,26 +50,13 @@ SettingsPopoverTrigger.displayName = 'SettingsPopover.Trigger';
  *   <SettingsPopover.Content>
  *     <SettingsPopover.Workflow ... />
  *     <SettingsPopover.Divider />
- *     <SettingsPopover.Item href="/about">About</SettingsPopover.Item>
+ *     <SettingsPopover.Item onClick={...}>About</SettingsPopover.Item>
  *   </SettingsPopover.Content>
  * </SettingsPopover>
  */
-function SettingsPopoverRoot({ open, onOpenChange, children }: SettingsPopoverProps) {
-  const isControlled = typeof open === 'boolean';
-  const [internalOpen, setInternalOpen] = React.useState(false);
-
-  const isOpen = isControlled ? (open as boolean) : internalOpen;
-  const setOpen = React.useCallback(
-    (next: boolean) => {
-      if (!isControlled) {
-        setInternalOpen(next);
-      }
-      onOpenChange?.(next);
-    },
-    [isControlled, onOpenChange]
-  );
-
-  const close = React.useCallback(() => setOpen(false), [setOpen]);
+function SettingsPopoverRoot({ children }: SettingsPopoverProps) {
+  const [open, setOpen] = React.useState(false);
+  const close = React.useCallback(() => setOpen(false), []);
 
   // Extract the Trigger and Content nodes from children
   const childrenArray = React.Children.toArray(children);
@@ -105,7 +85,7 @@ function SettingsPopoverRoot({ open, onOpenChange, children }: SettingsPopoverPr
 
   return (
     <Popover
-      open={isOpen}
+      open={open}
       onOpenChange={setOpen}
     >
       <PopoverTrigger asChild>{triggerNode}</PopoverTrigger>
@@ -118,31 +98,15 @@ function SettingsPopoverRoot({ open, onOpenChange, children }: SettingsPopoverPr
 }
 
 type ContentProps = {
-  /** PopoverContent alignment (defaults to "end"). */
-  align?: React.ComponentProps<typeof PopoverContent>['align'];
-  /** PopoverContent side offset (defaults to 8). */
-  sideOffset?: number;
-  /** Optional className to extend PopoverContent. */
-  className?: string;
   children?: React.ReactNode;
 };
 
-/**
- * SettingsPopover.Content
- * Wraps the popover body content.
- */
-function SettingsPopoverContent({
-  align = 'end',
-  sideOffset = 8,
-  className,
-  children,
-}: ContentProps) {
+function SettingsPopoverContent({ children }: ContentProps) {
   return (
     <PopoverContent
-      align={align}
-      sideOffset={sideOffset}
-      className={['w-[315px] p-4', className].filter(Boolean).join(' ')}
-      // Prevents unwanted focus jumps when opening
+      align="end"
+      sideOffset={8}
+      className="w-[315px] p-4"
       onOpenAutoFocus={e => e.preventDefault()}
     >
       {children}
@@ -215,63 +179,23 @@ function Divider() {
 }
 
 type ItemProps = {
-  /** Item label */
   children: React.ReactNode;
-  /** Optional href for navigation */
-  href?: string;
-  /** Optional click handler (runs before closing) */
   onClick?: () => void;
-  /** Target for anchor links (e.g., "_blank") */
-  target?: string;
-  /** rel for anchor links */
-  rel?: string;
-  /** data-cy for testing */
-  dataCY?: string;
 };
 
-/**
- * SettingsPopover.Item
- * Generic item that matches existing popover styling.
- * Supports href (renders as anchor) or onClick (renders as button) and closes the popover afterwards.
- */
-function Item({ children, href, onClick, target, rel, dataCY }: ItemProps) {
+function Item({ children, onClick }: ItemProps) {
   const { close } = useSettingsPopoverContext();
 
-  const handleClick: React.MouseEventHandler<HTMLElement> = e => {
+  const handleClick = () => {
     onClick?.();
-    // Close popover after an action
     close();
   };
-
-  // Render as anchor if href provided; otherwise as button
-  if (href) {
-    return (
-      <Button
-        asChild
-        variant="ghost"
-        size="default"
-        dataCY={dataCY}
-        className="h-7 w-full justify-start"
-      >
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a
-          href={href}
-          target={target}
-          rel={rel}
-          onClick={handleClick}
-        >
-          {children}
-        </a>
-      </Button>
-    );
-  }
 
   return (
     <Button
       variant="ghost"
       size="default"
       onClick={handleClick}
-      dataCY={dataCY}
       className="h-7 w-full justify-start"
     >
       {children}
