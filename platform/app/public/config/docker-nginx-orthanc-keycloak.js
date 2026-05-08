@@ -5,6 +5,7 @@ window.config = {
   modes: [],
   customizationService: {},
   showStudyList: true,
+  hideUndoRedo: false,
   maxNumberOfWebWorkers: 3,
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,

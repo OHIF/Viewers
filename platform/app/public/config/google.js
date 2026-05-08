@@ -28,6 +28,7 @@ window.config = {
   extensions: [],
   modes: [],
   showStudyList: true,
+  hideUndoRedo: false,
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
   dataSources: [
