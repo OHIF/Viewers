@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+  waitForViewportRenderCycle,
+  waitForViewportsRendered,
+} from './utils';
 import { assertNumberOfModalityLoadBadges } from './utils/assertions';
 
 test.beforeEach(async ({ page }) => {
@@ -14,17 +21,19 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   viewportPageObject,
 }) => {
   await rightPanelPageObject.toggle();
-  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu.dataOverlay;
+  const dataOverlayPageObject = (await viewportPageObject.getById('default')).overlayMenu
+    .dataOverlay;
   await dataOverlayPageObject.toggle();
+  const viewportRenderCycle = waitForViewportRenderCycle(page);
   await dataOverlayPageObject.addSegmentation('ARIA RadOnc Structure Sets');
 
   // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+  await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 
   // Hide the overlay menu.
   await dataOverlayPageObject.toggle();
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await viewportRenderCycle;
 
   await checkForScreenshot(
     page,
@@ -34,7 +43,7 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
-  await mainToolbarPageObject.waitForVolumeLoad();
+  await waitForViewportsRendered(page, { timeout: 40000 });
 
   await checkForScreenshot(
     page,
@@ -43,5 +52,5 @@ test('should launch MPR with unhydrated RTSTRUCT chosen from the data overlay me
   );
 
   // Adding an overlay should not show the LOAD button.
-  assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
+  await assertNumberOfModalityLoadBadges({ page, expectedCount: 0 });
 });

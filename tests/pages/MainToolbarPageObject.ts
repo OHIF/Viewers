@@ -7,11 +7,6 @@ export class MainToolbarPageObject {
     this.page = page;
   }
 
-  async waitForVolumeLoad(): Promise<void> {
-    await this.page.waitForTimeout(2000);
-    await this.page.waitForLoadState('networkidle', { timeout: 120000 });
-  }
-
   get crosshairs() {
     const button = this.page.getByTestId('Crosshairs');
     return {
@@ -52,7 +47,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -63,7 +57,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -74,7 +67,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -85,7 +77,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -96,7 +87,6 @@ export class MainToolbarPageObject {
           async click() {
             await layoutSelection.click();
             await button.click();
-            await self.waitForVolumeLoad();
           },
         };
       },
@@ -318,6 +308,16 @@ export class MainToolbarPageObject {
       },
       get tagBrowser() {
         const button = page.getByTestId('TagBrowser');
+        return {
+          button,
+          async click() {
+            await moreTools.click();
+            await button.click();
+          },
+        };
+      },
+      get magnify() {
+        const button = page.getByTestId('Magnify');
         return {
           button,
           async click() {

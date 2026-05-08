@@ -5,6 +5,8 @@ import {
   screenShotPaths,
   test,
   visitStudy,
+  waitForViewportsRendered,
+  waitForViewportRenderCycle,
 } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -19,35 +21,45 @@ test.describe('3D four up SEG hydration', async () => {
     DOMOverlayPageObject,
     leftPanelPageObject,
     mainToolbarPageObject,
+    viewportPageObject,
   }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
     await attemptAction(() => reduce3DViewportSize(page), 10, 100);
 
-    await page.waitForTimeout(5000);
+    await waitForViewportsRendered(page);
 
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpBeforeSEG
     );
 
     await leftPanelPageObject.loadSeriesByDescription('SEG');
 
-    await page.waitForTimeout(5000);
+    await waitForViewportsRendered(page);
+
     await checkForScreenshot(
       page,
-      page,
+      viewportPageObject.grid,
       screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSEG
     );
 
+    // start watching for viewports to render
+
+    // High rendered timeout needed: layout has 4 viewports (3D volume + MPR planes + SEG overlays),
+    // which can take significantly longer time to fully render
+    const viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 180000 });
+
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
 
-    await page.waitForTimeout(5000);
-    await checkForScreenshot(
+    // Wait until all viewports have finished rendering
+    await viewportRenderCycle;
+
+    await checkForScreenshot({
       page,
-      page,
-      screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated
-    );
+      locator: viewportPageObject.grid,
+      screenshotPath: screenShotPaths.segHydrationFrom3DFourUp.threeDFourUpAfterSegHydrated,
+    });
   });
 });
