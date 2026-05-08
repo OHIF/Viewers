@@ -211,7 +211,7 @@ function TableContent({
                   onChange={next => setValue(next)}
                 >
                   <InputMultiSelect.Field>
-                    <InputMultiSelect.Summary variant="single" />
+                    <InputMultiSelect.Summary />
                     <InputMultiSelect.Input
                       ariaLabel="Filter Modalities"
                       placeholder=""
