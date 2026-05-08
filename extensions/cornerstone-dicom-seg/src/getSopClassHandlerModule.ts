@@ -251,26 +251,32 @@ async function _loadSegments({
   }
 
   const tolerance = 0.001;
-  eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
+  const onProgress = evt => {
     const { percentComplete } = evt.detail;
     segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
       percentComplete,
     });
-  });
+  };
+  eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
 
-  const results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
-    imageIds,
-    segImageIdStr,
-    {
-      metadataProvider: metaData,
-      tolerance,
-      parserType:
-        segDisplaySet.SOPClassUID === LABELMAP_SEG_SOP_CLASS_UID
-          ? 'labelmap'
-          : 'bitmap',
-      decodeImageData: decodeSegImageDataWithLogging,
-    }
-  );
+  let results;
+  try {
+    results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
+      imageIds,
+      segImageIdStr,
+      {
+        metadataProvider: metaData,
+        tolerance,
+        parserType:
+          segDisplaySet.SOPClassUID === LABELMAP_SEG_SOP_CLASS_UID
+            ? 'labelmap'
+            : 'bitmap',
+        decodeImageData: decodeSegImageDataWithLogging,
+      }
+    );
+  } finally {
+    eventTarget.removeEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, onProgress);
+  }
 
   let usedRecommendedDisplayCIELabValue = true;
   const resultsTyped = results as {
