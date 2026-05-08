@@ -3,7 +3,7 @@
  *
  * What it is
  * - A compact summary API composed under a root provider: Patient and Workflows.
- * - All subcomponents read `data` from the nearest <PreviewPatientSummary> via context.
+ * - Subcomponents read the current study row from context.
  *
  * Minimal usage
  *   <PreviewPatientSummary data={row}>
@@ -11,14 +11,10 @@
  *     <PreviewPatientSummary.Workflows />
  *   </PreviewPatientSummary>
  *
- * Adapting data shapes
- * - Use `get` on the root to map custom fields:
- *   <PreviewPatientSummary data={row} get={{ title: r => r.displayName, subtitle: r => r.patientId }}>
- *
  * Default workflow behavior
- * - Workflows component automatically uses WorkflowsProvider context.
- * - Shows default workflow badge and allows clearing it.
- * - Renders buttons for other available workflows.
+ * - Workflows uses WorkflowsProvider context for available workflows and the default selection.
+ * - Shows the default workflow as a badge (with a clear-X) and the remaining applicable
+ *   workflows as buttons below.
  *
  * Helpful references
  * - platform/ui-next/src/components/StudyList/components/PreviewContent.tsx (in-context example, including empty state handling)
@@ -31,454 +27,201 @@ import { Button } from '../../Button';
 import type { StudyRow } from '../types/types';
 import { useWorkflows } from './WorkflowsProvider';
 
-/** Public getters to adapt arbitrary data shapes to the PreviewPatientSummary defaults */
-export type PreviewPatientSummaryGetters<T> = {
-  title?: (data: T) => React.ReactNode;
-  subtitle?: (data: T) => React.ReactNode;
+type SummaryContextValue = {
+  data: StudyRow | null;
 };
 
-type ResolvedGetters<T> = {
-  title: (data: T) => React.ReactNode;
-  subtitle: (data: T) => React.ReactNode;
-};
+const SummaryContext = React.createContext<SummaryContextValue | null>(null);
 
-type SummaryContextValue<T> = {
-  data: T | null;
-  get: ResolvedGetters<T>;
-};
-
-const SummaryContext = React.createContext<SummaryContextValue<unknown> | null>(null);
-
-function useSummaryContext<T>() {
+function useSummaryContext(): SummaryContextValue {
   const context = React.useContext(SummaryContext);
   if (!context) {
     throw new Error(
       'PreviewPatientSummary.* components must be used within <PreviewPatientSummary>'
     );
   }
-  return context as SummaryContextValue<T>;
+  return context;
 }
 
-type RootProps<T = any> = {
-  data?: T | null;
-  get?: PreviewPatientSummaryGetters<T>;
+type RootProps = {
+  data?: StudyRow | null;
   className?: string;
   children?: React.ReactNode;
 };
 
-/**
- * Root context provider for PreviewPatientSummary compound components.
- *
- * Use `get` to adapt arbitrary data shapes (e.g., map `displayName` → name, `patientId` → mrn).
- */
-function Root<T = any>({ data: dataProp, get, className, children }: RootProps<T>) {
+function Root({ data: dataProp, className, children }: RootProps) {
   const data = dataProp ?? null;
-
-  const resolvedGetters = React.useMemo<ResolvedGetters<T>>(
-    () => ({
-      title: get?.title ?? ((item: T) => ((item as any)?.patientName ?? '') as React.ReactNode),
-      subtitle: get?.subtitle ?? ((item: T) => ((item as any)?.mrn ?? '') as React.ReactNode),
-    }),
-    [get]
-  );
+  const value = React.useMemo<SummaryContextValue>(() => ({ data }), [data]);
 
   return (
-    <SummaryContext.Provider value={{ data, get: resolvedGetters }}>
+    <SummaryContext.Provider value={value}>
       <div className={cn('flex w-full flex-col gap-1', className)}>{children}</div>
     </SummaryContext.Provider>
   );
 }
 
-type SectionProps = React.HTMLAttributes<HTMLDivElement> & {
-  variant?: 'card' | 'row' | 'ghost';
-  align?: 'start' | 'center' | 'end' | 'stretch';
-  gap?: number;
-};
+function Patient({ className }: { className?: string } = {}) {
+  const { data } = useSummaryContext();
+  const patientName = data?.patientName;
+  const mrn = data?.mrn;
 
-const Section = React.forwardRef<HTMLDivElement, SectionProps>(
-  ({ variant = 'card', align = 'center', gap = 3, className, style, children, ...rest }, ref) => {
-    const baseClassMap = {
-      card: 'bg-muted rounded-lg px-4 py-3',
-      row: 'rounded-lg px-4 py-3',
-      ghost: 'px-0 py-0',
-    } as const;
-    const baseClass = baseClassMap[variant] ?? baseClassMap.card;
-
-    const alignClassMap = {
-      start: 'items-start',
-      end: 'items-end',
-      stretch: 'items-stretch',
-      center: 'items-center',
-    } as const;
-    const alignmentClass = alignClassMap[align] ?? alignClassMap.center;
-
-    return (
-      <div
-        ref={ref}
-        className={cn(baseClass, 'flex', alignmentClass, className)}
-        style={{ gap: `${gap * 0.25}rem`, ...style }}
-        {...rest}
-      >
-        {children}
-      </div>
-    );
-  }
-);
-Section.displayName = 'PreviewPatientSummarySection';
-
-type IconProps = {
-  src?: string;
-  alt?: string;
-  size?: number;
-  className?: string;
-  hideWhenEmpty?: boolean;
-  children?: React.ReactNode;
-};
-
-function Icon({ src, alt = '', size = 33, className, hideWhenEmpty, children }: IconProps) {
-  if (hideWhenEmpty && !src && !children) {
-    return null;
-  }
-
-  if (children) {
-    return (
-      <div
-        className={cn('shrink-0', className)}
-        aria-hidden
-        style={{ width: size, height: size }}
-      >
-        {children}
-      </div>
-    );
-  }
-
-  if (!src) {
-    return null;
-  }
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className={cn('shrink-0', className)}
-      style={{ width: size, height: size }}
-    />
-  );
-}
-
-type TitleProps<T = any> = {
-  placeholder?: React.ReactNode;
-  className?: string;
-  children?: (value: React.ReactNode, data: T | null) => React.ReactNode;
-  showTitleOnTruncate?: boolean;
-};
-
-function Title<T = any>({
-  placeholder = 'Select a study',
-  className,
-  children,
-  showTitleOnTruncate = true,
-}: TitleProps<T>) {
-  const { data, get } = useSummaryContext<T>();
-  const value = data ? get.title(data) : null;
-  const content = value ?? placeholder;
-  const title =
-    showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
-      ? String(value)
+  const nameContent = patientName ?? 'Select a study';
+  const nameTitle =
+    typeof patientName === 'string' || typeof patientName === 'number'
+      ? String(patientName)
       : undefined;
 
+  const showMrn = mrn !== null && mrn !== undefined && mrn !== '';
+  const mrnTitle =
+    typeof mrn === 'string' || typeof mrn === 'number' ? String(mrn) : undefined;
+
   return (
-    <span
-      title={title}
-      className={cn('text-foreground truncate text-lg font-medium leading-tight', className)}
-    >
-      {typeof children === 'function' ? children(content, data) : content}
-    </span>
+    <div className={cn('bg-muted flex items-center gap-3 rounded-lg px-4 py-3', className)}>
+      <div
+        className="text-primary shrink-0"
+        aria-hidden
+        style={{ width: 33, height: 33 }}
+      >
+        <Icons.PatientStudyList />
+      </div>
+      <div className="flex h-[38px] min-w-0 flex-col justify-center gap-px">
+        <span
+          className="text-foreground truncate text-lg font-medium leading-tight"
+          title={nameTitle}
+        >
+          {nameContent}
+        </span>
+        {showMrn && (
+          <span
+            className="text-muted-foreground truncate text-lg leading-tight"
+            title={mrnTitle}
+          >
+            {mrn}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 
-type SubtitleProps<T = any> = {
-  hideWhenEmpty?: boolean;
-  prefix?: React.ReactNode;
-  className?: string;
-  children?: (value: React.ReactNode, data: T | null) => React.ReactNode;
-  showTitleOnTruncate?: boolean;
-};
+/**
+ * Workflows panel.
+ *
+ * - Must be used inside `<PreviewPatientSummary>` to read the current study from context.
+ * - Must be used inside `<WorkflowsProvider>` to access workflow context.
+ * - Shows the default workflow badge (with a clear-X) when one is set, and renders the
+ *   remaining applicable workflows as buttons below.
+ */
+function Workflows({ className }: { className?: string } = {}) {
+  const { data: studyRow } = useSummaryContext();
+  const { workflows, getWorkflowsForStudy, getDefaultWorkflowForStudy, setDefaultWorkflowId } =
+    useWorkflows();
 
-function Subtitle<T = any>({
-  hideWhenEmpty = true,
-  prefix,
-  className,
-  children,
-  showTitleOnTruncate = true,
-}: SubtitleProps<T>) {
-  const { data, get } = useSummaryContext<T>();
-  const value = data ? get.subtitle(data) : null;
-
-  if ((value === null || value === undefined || value === '') && hideWhenEmpty) {
-    return null;
-  }
-
-  const baseContent = (
-    <>
-      {prefix}
-      {value}
-    </>
-  );
-
-  return (
-    <span
-      title={
-        showTitleOnTruncate && (typeof value === 'string' || typeof value === 'number')
-          ? String(value)
-          : undefined
-      }
-      className={cn('text-muted-foreground truncate text-lg leading-tight', className)}
-    >
-      {typeof children === 'function' ? children(value, data) : baseContent}
-    </span>
-  );
-}
-
-type WorkflowButtonProps<T = any> = {
-  label?: React.ReactNode;
-  onClick?: (data: T) => void;
-  disabled?: boolean;
-  disabledReason?: string;
-  className?: string;
-  icon?: React.ReactNode;
-  iconPosition?: 'start' | 'end';
-  iconSize?: number;
-} & Omit<React.HTMLAttributes<HTMLElement>, 'onClick'>;
-
-const WorkflowButtonInner = <T = any,>(
-  {
-    label = 'Launch workflow',
-    onClick,
-    disabled,
-    disabledReason,
-    className,
-    icon = <Icons.Info />,
-    iconPosition = 'end',
-    iconSize = 18,
-    style,
-    ...rest
-  }: WorkflowButtonProps<T>,
-  ref: React.ForwardedRef<HTMLElement>
-) => {
-  const { data } = useSummaryContext<T>();
-  const workflowContext = useWorkflows();
-  const computedDisabled = disabled ?? false;
-  const id = React.useId();
-  const reasonId = `${id}-reason`;
-
-  // Get workflows for the current study (or all workflows if no study)
-  const studyRow = data as StudyRow | null;
   const availableWorkflows = React.useMemo(() => {
     if (studyRow) {
-      return workflowContext.getWorkflowsForStudy(studyRow);
+      return getWorkflowsForStudy(studyRow);
     }
-    return workflowContext.workflows;
-  }, [studyRow, workflowContext]);
+    return workflows;
+  }, [studyRow, workflows, getWorkflowsForStudy]);
 
   const defaultWorkflow = React.useMemo(() => {
     if (studyRow) {
-      return workflowContext.getDefaultWorkflowForStudy(studyRow);
+      return getDefaultWorkflowForStudy(studyRow);
     }
-    return workflowContext.workflows.find(w => w.isDefault);
-  }, [studyRow, workflowContext]);
+    return workflows.find(w => w.isDefault);
+  }, [studyRow, workflows, getDefaultWorkflowForStudy]);
 
-  const workflowButtons = React.useMemo(() => {
-    return availableWorkflows.map(w => w.displayName);
-  }, [availableWorkflows]);
-
-  const hasDefault = !!defaultWorkflow;
-  const filteredWorkflows = React.useMemo(() => {
-    if (!hasDefault) {
-      return workflowButtons;
+  const otherWorkflows = React.useMemo(() => {
+    if (!defaultWorkflow) {
+      return availableWorkflows;
     }
-    return workflowButtons.filter(wf => wf !== defaultWorkflow.displayName);
-  }, [workflowButtons, hasDefault, defaultWorkflow]);
+    return availableWorkflows.filter(w => w.displayName !== defaultWorkflow.displayName);
+  }, [availableWorkflows, defaultWorkflow]);
 
-  const handleLaunch = (wfDisplayName: string) => {
-    if (computedDisabled || !data) {
+  const handleLaunch = (displayName: string) => {
+    if (!studyRow) {
       return;
     }
-    const wf = availableWorkflows.find(w => w.displayName === wfDisplayName);
-    if (wf && studyRow) {
-      wf.launchWithStudy(studyRow);
-    }
-    onClick?.(data);
+    const wf = availableWorkflows.find(w => w.displayName === displayName);
+    wf?.launchWithStudy(studyRow);
   };
 
-  const handleDefaultModeChange = () => {
-    workflowContext.setDefaultWorkflowId();
+  const handleClearDefault = () => {
+    setDefaultWorkflowId();
   };
-
-  const iconNode = icon ? (
-    <span
-      className="text-primary shrink-0 -translate-y-0.5"
-      aria-hidden
-      style={{ width: iconSize, height: iconSize }}
-    >
-      {icon}
-    </span>
-  ) : null;
-
-  const srOnly =
-    computedDisabled && disabledReason ? (
-      <span
-        id={reasonId}
-        className="sr-only"
-      >
-        {disabledReason}
-      </span>
-    ) : null;
-
-  const renderDefaultWorkflow = (labelValue: string) => (
-    <div
-      className="mt-2 flex flex-wrap items-center gap-0"
-      role="status"
-      aria-live="polite"
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-        className="bg-primary/20 text-primary ring-primary ring-offset-background ml-1 mb-1 h-6 w-32 overflow-hidden ring-1 ring-offset-2"
-        disabled={computedDisabled}
-        onClick={() => handleLaunch(labelValue)}
-        title={labelValue}
-      >
-        <span className="truncate">{labelValue}</span>
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        aria-label="Clear default mode"
-        className="text-primary focus-visible:ring-ring focus-visible:ring-offset-background ml-1.5 mb-1 opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2"
-        onClick={handleDefaultModeChange}
-      >
-        <Cross2Icon
-          className="text-primary h-3.5 w-3.5"
-          aria-hidden
-        />
-        <span className="sr-only">Clear default mode</span>
-      </Button>
-    </div>
-  );
 
   return (
     <div
-      ref={ref as React.Ref<HTMLDivElement>}
       className={cn(
         'border-border/50 bg-muted w-full rounded-lg px-4 py-3 text-left transition',
         className
       )}
-      style={style}
-      aria-disabled={computedDisabled || undefined}
-      aria-describedby={computedDisabled && disabledReason ? reasonId : undefined}
-      {...rest}
     >
-      {srOnly}
       <div className="flex w-full items-center justify-between">
-        {iconNode && iconPosition === 'start' ? (
-          <span className="text-foreground flex items-center gap-2 text-base font-medium leading-tight">
-            {iconNode}
-            {label}
-          </span>
-        ) : (
-          <span className="text-foreground text-base font-medium leading-tight">{label}</span>
-        )}
-        {iconNode && iconPosition === 'end' ? iconNode : null}
+        <span className="text-foreground text-base font-medium leading-tight">Launch workflow</span>
+        <span
+          className="text-primary shrink-0 -translate-y-0.5"
+          aria-hidden
+          style={{ width: 18, height: 18 }}
+        >
+          <Icons.Info />
+        </span>
       </div>
 
-      {/* Default workflow badge + other workflows */}
-      {hasDefault && renderDefaultWorkflow(defaultWorkflow.displayName)}
-      {hasDefault && data && filteredWorkflows.length > 0 && (
+      {defaultWorkflow && (
+        <div
+          className="mt-2 flex flex-wrap items-center gap-0"
+          role="status"
+          aria-live="polite"
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            className="bg-primary/20 text-primary ring-primary ring-offset-background ml-1 mb-1 h-6 w-32 overflow-hidden ring-1 ring-offset-2"
+            onClick={() => handleLaunch(defaultWorkflow.displayName)}
+            title={defaultWorkflow.displayName}
+          >
+            <span className="truncate">{defaultWorkflow.displayName}</span>
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Clear default mode"
+            className="text-primary focus-visible:ring-ring focus-visible:ring-offset-background ml-1.5 mb-1 opacity-70 transition hover:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2"
+            onClick={handleClearDefault}
+          >
+            <Cross2Icon
+              className="text-primary h-3.5 w-3.5"
+              aria-hidden
+            />
+            <span className="sr-only">Clear default mode</span>
+          </Button>
+        </div>
+      )}
+
+      {defaultWorkflow && studyRow && otherWorkflows.length > 0 && (
         <div className="text-muted-foreground mt-2 text-sm">Other Available Workflows</div>
       )}
-      {data && filteredWorkflows.length > 0 && (
+
+      {studyRow && otherWorkflows.length > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-0">
-          {filteredWorkflows.map(wf => (
+          {otherWorkflows.map(wf => (
             <Button
-              key={wf}
+              key={wf.displayName}
               variant="ghost"
               size="sm"
               className="bg-primary/20 ml-1 mb-1 h-6 w-32 overflow-hidden"
-              disabled={computedDisabled}
-              onClick={() => handleLaunch(wf)}
-              title={wf}
+              onClick={() => handleLaunch(wf.displayName)}
+              title={wf.displayName}
             >
-              <span className="truncate">{wf}</span>
+              <span className="truncate">{wf.displayName}</span>
             </Button>
           ))}
         </div>
       )}
     </div>
   );
-};
-
-const WorkflowButton = React.forwardRef(WorkflowButtonInner);
-WorkflowButton.displayName = 'PreviewPatientSummaryWorkflowButton';
-
-type PatientProps = {
-  placeholder?: React.ReactNode;
-  className?: string;
-  hideIcon?: boolean;
-  hideTitle?: boolean;
-  hideSubtitle?: boolean;
-  icon?: React.ReactNode;
-  align?: SectionProps['align'];
-  gap?: number;
-  variant?: SectionProps['variant'];
-};
-
-function Patient({
-  placeholder = 'Select a study',
-  className,
-  hideIcon,
-  hideTitle,
-  hideSubtitle,
-  icon,
-  align,
-  gap,
-  variant,
-}: PatientProps) {
-  return (
-    <Section
-      className={className}
-      align={align}
-      gap={gap}
-      variant={variant}
-    >
-      {!hideIcon && (
-        <Icon
-          size={33}
-          className="text-primary"
-        >
-          {icon ?? <Icons.PatientStudyList />}
-        </Icon>
-      )}
-      <div className="flex h-[38px] min-w-0 flex-col justify-center gap-px">
-        {!hideTitle && <Title placeholder={placeholder} />}
-        {!hideSubtitle && <Subtitle />}
-      </div>
-    </Section>
-  );
-}
-
-/**
- * Public API for the workflow picker.
- *
- * Usage:
- * - Must be used inside `<PreviewPatientSummary>` so it can read the current `data` from context.
- * - Must be used inside `<WorkflowsProvider>` to access workflow context.
- * - Automatically gets workflows for the current study and handles launching.
- * - Shows default workflow badge and allows clearing it.
- */
-function Workflows<T = any>(props: WorkflowButtonProps<T>) {
-  return <WorkflowButton {...props} />;
 }
 
 type PreviewPatientSummaryNamespace = typeof Root & {
