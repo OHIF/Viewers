@@ -129,7 +129,7 @@ import {
 } from './ToolButton';
 import { LayoutSelector } from './LayoutSelector';
 import { ToolSettings } from './OHIFToolSettings';
-import { ContextMenuLegacy } from './ContextMenuLegacy';
+import { ContextMenuViewport } from './ContextMenuViewport';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
@@ -281,7 +281,7 @@ export {
   ViewportDialog,
   CinePlayer,
   LayoutSelector,
-  ContextMenuLegacy,
+  ContextMenuViewport,
   SmartScrollbar,
   useSmartScrollbarLayoutContext,
   useSmartScrollbarScrollContext,

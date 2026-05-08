@@ -1,5 +1,5 @@
-import { ContextMenuLegacy } from '@ohif/ui-next';
+import { ContextMenuViewport } from '@ohif/ui-next';
 
 export default {
-  'ui.contextMenu': ContextMenuLegacy,
+  'ui.contextMenu': ContextMenuViewport,
 };

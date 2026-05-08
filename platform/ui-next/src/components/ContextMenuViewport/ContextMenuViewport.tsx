@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icons } from '../Icons';
 
-interface ContextMenuLegacyProps {
+interface ContextMenuViewportProps {
   items?: Array<{
     label: string;
     action: (item: any, props: any) => void;
@@ -12,7 +12,7 @@ interface ContextMenuLegacyProps {
   [key: string]: unknown;
 }
 
-const ContextMenuLegacy = ({ items, ...props }: ContextMenuLegacyProps) => {
+const ContextMenuViewport = ({ items, ...props }: ContextMenuViewportProps) => {
   if (!items) {
     return null;
   }
@@ -43,4 +43,4 @@ const ContextMenuLegacy = ({ items, ...props }: ContextMenuLegacyProps) => {
   );
 };
 
-export default ContextMenuLegacy;
+export default ContextMenuViewport;
