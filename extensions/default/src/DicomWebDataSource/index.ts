@@ -332,7 +332,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
         if (thumbnailRendering === 'thumbnail') {
           return async function getThumbnailSrc() {
-            const endpoint = buildThumbnailEndpointPath(thumbnailContext, 'thumbnail');
+            const endpoint = buildThumbnailEndpointPath(
+              thumbnailContext,
+              thumbnailRendering,
+              new URLSearchParams({ accept: 'image/jpeg' })
+            );
             const bulkDataURI = `${dicomWebConfig.wadoRoot}${endpoint}`;
             return URL.createObjectURL(
               new Blob(
@@ -351,7 +355,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         }
         if (thumbnailRendering === 'rendered') {
           return async function getThumbnailSrc() {
-            const endpoint = buildThumbnailEndpointPath(thumbnailContext, 'rendered');
+            const endpoint = buildThumbnailEndpointPath(
+              thumbnailContext,
+              thumbnailRendering,
+              new URLSearchParams({ accept: 'image/jpeg' })
+            );
             const bulkDataURI = `${dicomWebConfig.wadoRoot}${endpoint}`;
             return URL.createObjectURL(
               new Blob(
