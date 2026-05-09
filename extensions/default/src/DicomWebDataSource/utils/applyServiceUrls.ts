@@ -11,11 +11,15 @@ export function applyServiceUrls(
   wadoClient: { qidoURL: string; stowURL: string },
   config: { qidoRoot?: string; wadoRoot?: string; stowRoot?: string }
 ): void {
-  const effectiveStowRoot = config.stowRoot || config.wadoRoot;
+  const effectiveStowRoot = config.stowRoot ?? config.wadoRoot;
 
-  qidoClient.wadoURL = config.wadoRoot;
-  qidoClient.stowURL = effectiveStowRoot;
+  if (config.wadoRoot !== undefined) {
+    qidoClient.wadoURL = config.wadoRoot;
+    qidoClient.stowURL = effectiveStowRoot;
+  }
 
-  wadoClient.qidoURL = config.qidoRoot;
-  wadoClient.stowURL = effectiveStowRoot;
+  if (config.qidoRoot !== undefined) {
+    wadoClient.qidoURL = config.qidoRoot;
+    wadoClient.stowURL = effectiveStowRoot;
+  }
 }
