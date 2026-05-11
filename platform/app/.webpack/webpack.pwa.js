@@ -24,6 +24,7 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
+const FHIR_SERVER = process.env.FHIR_SERVER || 'http://localhost:3000';
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
@@ -160,7 +161,7 @@ module.exports = (env, argv) => {
         },
         {
           context: ['/fhir-proxy'],
-          target: 'http://localhost:3100',
+          target: FHIR_SERVER,
           changeOrigin: true,
           pathRewrite: { '^/fhir-proxy': '' },
           ws: true,
