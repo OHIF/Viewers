@@ -24,6 +24,7 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
+const FHIR_SERVER = process.env.FHIR_SERVER || 'http://localhost:3000';
 const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
@@ -155,7 +156,15 @@ module.exports = (env, argv) => {
       },
       proxy: [
         {
-          '/dicomweb': 'http://localhost:5000',
+          context: ['/dicomweb'],
+          target: 'http://localhost:5000',
+        },
+        {
+          context: ['/fhir-proxy'],
+          target: FHIR_SERVER,
+          changeOrigin: true,
+          pathRewrite: { '^/fhir-proxy': '' },
+          ws: true,
         },
       ],
       static: [
@@ -183,17 +192,15 @@ module.exports = (env, argv) => {
   });
 
   if (hasProxy) {
-    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy = [
-      {
-        context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
-        target: PROXY_DOMAIN,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
-        },
+    mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || [];
+    mergedConfig.devServer.proxy.push({
+      context: [PROXY_PATH_REWRITE_FROM || '/dicomweb'],
+      target: PROXY_DOMAIN,
+      changeOrigin: true,
+      pathRewrite: {
+        [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
       },
-    ];
+    });
   }
 
   if (isProdBuild) {

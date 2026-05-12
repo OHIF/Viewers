@@ -118,6 +118,14 @@ export default function ModeRoute({
       return;
     }
 
+    if (!dataSource) {
+      console.warn(
+        '[ModeRoute] Data source not available after extension dependencies loaded. Active:',
+        extensionManager.activeDataSourceName
+      );
+      return;
+    }
+
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
       await dataSource.initialize({
@@ -131,7 +139,7 @@ export default function ModeRoute({
     return () => {
       layoutTemplateData.current = null;
     };
-  }, [location, ExtensionDependenciesLoaded]);
+  }, [location, ExtensionDependenciesLoaded, dataSource]);
 
   /**
    * Validates study existence before loading the viewer.
