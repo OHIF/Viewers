@@ -30,16 +30,18 @@ function PanelMeasurementTableTracking(props) {
 
   const onDelete = () => {
     const hasMeasurements = measurementService.getMeasurements().length > 0;
-    hasMeasurements
-      ? uiModalService.show({
-          title: 'Untrack Study',
-          content: UntrackSeriesModal,
-          contentProps: {
-            onConfirm: onUntrackConfirm,
-            message: 'Are you sure you want to untrack study and delete all measurements?',
-          },
-        })
-      : onUntrackConfirm();
+    if (hasMeasurements) {
+      uiModalService.show({
+        title: 'Untrack Study',
+        content: UntrackSeriesModal,
+        contentProps: {
+          onConfirm: onUntrackConfirm,
+          message: 'Are you sure you want to untrack study and delete all measurements?',
+        },
+      });
+    } else {
+      onUntrackConfirm();
+    }
   };
 
   const EmptyComponent = () => (
