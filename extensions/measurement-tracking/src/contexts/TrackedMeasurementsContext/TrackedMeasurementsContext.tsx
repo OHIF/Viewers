@@ -375,14 +375,12 @@ function TrackedMeasurementsContextProvider(
   ]);
 
   useEffect(() => {
-    // The command needs to be bound to the context's sendTrackedMeasurementsEvent
-    // so the command has to be registered in a React component.
+    // These commands are bound to the context's sendTrackedMeasurementsEvent, so they have
+    // to be registered from inside this (React) component. Re-registration on each
+    // render is safe — registerCommand overwrites by key.
     commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
       commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
     });
-  }, [commandsManager, sendTrackedMeasurementsEvent]);
-
-  useEffect(() => {
     commandsManager.registerCommand('DEFAULT', 'restoreTrackedSeries', {
       commandFn: ({ StudyInstanceUID, SeriesInstanceUIDs }) =>
         sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
@@ -390,9 +388,6 @@ function TrackedMeasurementsContextProvider(
           SeriesInstanceUIDs,
         }),
     });
-  }, [commandsManager, sendTrackedMeasurementsEvent]);
-
-  useEffect(() => {
     commandsManager.registerCommand('DEFAULT', 'clearTrackedSeries', {
       commandFn: () => sendTrackedMeasurementsEvent('CLEAR_TRACKING_CONTEXT'),
     });

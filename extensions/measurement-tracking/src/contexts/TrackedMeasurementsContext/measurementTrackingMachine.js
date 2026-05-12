@@ -140,6 +140,8 @@ const machineConfiguration = {
             ],
           },
         ],
+        // Redo of measurement clear: annotations are already deleted via Cornerstone memo;
+        // this only clears XState tracking context. UNTRACK_ALL would clear measurements again.
         CLEAR_TRACKING_CONTEXT: [
           {
             target: 'tracking',
