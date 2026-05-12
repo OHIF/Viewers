@@ -2,10 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './tests/globalSetup.ts',
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
-  workers: process.env.CI ? 6 : undefined,
+  workers: process.env.CI ? 6 : 1,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [
@@ -49,7 +50,8 @@ export default defineConfig({
     //},
   ],
   webServer: {
-    command: 'cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 nyc yarn start',
+    command:
+      'cross-env APP_CONFIG=config/e2e.js COVERAGE=true OHIF_PORT=3335 OHIF_OPEN=false nyc pnpm --filter @ohif/app exec rspack serve --config .webpack/webpack.pwa.js',
     url: 'http://localhost:3335',
     reuseExistingServer: !process.env.CI,
     timeout: 360_000,

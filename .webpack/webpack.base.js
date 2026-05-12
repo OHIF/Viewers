@@ -215,8 +215,9 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       ],
       // Attempt to resolve these extensions in order.
       extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '*'],
-      // pnpm with shamefully-hoist hoists flat; symlinks: false avoids memory-heavy symlink resolution
-      symlinks: false,
+      // Workspace packages use relative imports between sibling packages.
+      // Resolve symlinks to keep those imports anchored at the real package paths.
+      symlinks: true,
       fallback: {
         fs: false,
         path: false,
@@ -229,7 +230,9 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      ...(isProdBuild || !ReactRefreshWebpackPlugin ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
+      ...(isProdBuild || IS_COVERAGE || !ReactRefreshWebpackPlugin
+        ? []
+        : [new ReactRefreshWebpackPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],
