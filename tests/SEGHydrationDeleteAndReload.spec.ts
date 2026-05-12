@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should fully remove SEG actors on repeated load-and-delete cycles without color darkening', async ({
+test('should fully remove segmentation overlay after each load-and-delete cycle', async ({
   page,
   DOMOverlayPageObject,
   leftPanelPageObject,
@@ -52,6 +52,8 @@ test('should fully remove SEG actors on repeated load-and-delete cycles without 
   viewportRenderCycle = waitForViewportRenderCycle(page);
   await leftPanelPageObject.loadSeriesByModality('SEG');
   await viewportRenderCycle;
+
+  await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
 
   viewportRenderCycle = waitForViewportRenderCycle(page);
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
