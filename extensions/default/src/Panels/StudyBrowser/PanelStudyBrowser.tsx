@@ -87,7 +87,7 @@ function PanelStudyBrowser({
         commandsManager,
         servicesManager,
         isHangingProtocolLayout,
-        appConfig: extensionManager._appConfig,
+        appConfig: extensionManager.appConfig,
       };
 
       const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
@@ -121,11 +121,6 @@ function PanelStudyBrowser({
       const qidoForStudyUID = await dataSource.query.studies.search({
         studyInstanceUid: StudyInstanceUID,
       });
-
-      if (!qidoForStudyUID?.length) {
-        navigate('/notfoundstudy', '_self');
-        throw new Error('Invalid study URL');
-      }
 
       let qidoStudiesForPatient = qidoForStudyUID;
 
@@ -415,7 +410,7 @@ function PanelStudyBrowser({
         />
         <Separator
           orientation="horizontal"
-          className="bg-black"
+          className="bg-background"
           thickness="2px"
         />
       </>

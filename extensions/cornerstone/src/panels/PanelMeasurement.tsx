@@ -65,7 +65,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     return EmptyComponent ? (
       <EmptyComponent items={displayMeasurements} />
     ) : (
-      <span className="text-white">No Measurements</span>
+      <span className="text-foreground">No Measurements</span>
     );
   }
 

@@ -49,7 +49,7 @@ export default function Measurements() {
   return (
     <BrowserOnly>
       {() => (
-        <div className="px-auto my-4 flex min-h-screen w-full justify-center bg-black py-12">
+        <div className="px-auto my-4 flex min-h-screen w-full justify-center bg-background py-12">
           <TooltipProvider>
             {/* Simulated Panel List for "Segmentation" */}
             <div className="w-64 space-y-0">

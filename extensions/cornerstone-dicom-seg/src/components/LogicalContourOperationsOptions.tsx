@@ -189,7 +189,7 @@ function LogicalContourOperationOptions() {
           </Tabs>
           <div>{t(operation.label)}</div>
         </div>
-        <div className="bg-primary-dark flex h-[62px] w-[88px] items-center justify-center rounded-lg">
+        <div className="bg-muted flex h-[62px] w-[88px] items-center justify-center rounded-lg">
           <Icons.ByName name={operation.helperIcon}></Icons.ByName>
         </div>
       </div>

@@ -203,7 +203,7 @@ function ViewportOrientationMenu({
           <div className="flex-1 text-left">Acquisition</div>
         </Button>
         {/* Divider */}
-        <div className="mx-1 my-2 border-t border-white/20" />
+        <div className="border-input mx-1 my-2 border-t" />
         <Button
           variant="ghost"
           className="flex h-7 w-full flex-shrink-0 items-center justify-start self-stretch px-1 py-0"

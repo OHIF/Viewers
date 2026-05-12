@@ -5,7 +5,7 @@ function DynamicDataPanel({ servicesManager, commandsManager, tab }: withAppType
   return (
     <>
       <div
-        className="flex flex-col text-white"
+        className="text-foreground flex flex-col"
         data-cy={'dynamic-volume-panel'}
       >
         <PanelGenerateImage

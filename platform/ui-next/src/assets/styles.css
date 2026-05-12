@@ -26,12 +26,12 @@
 
 .ohif-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded;
-  @apply bg-secondary-dark;
+  @apply bg-popover;
   background-color: #041c4a;
 }
 
 .ohif-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  @apply bg-secondary-dark;
+  @apply bg-popover;
   background-color: #041c4a;
 }
 

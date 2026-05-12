@@ -1,4 +1,10 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy } from './utils';
+import {
+  addOHIFGlobalCustomizations,
+  checkForScreenshot,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page }) => {
@@ -15,13 +21,8 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   viewportPageObject,
 }) => {
   // disable editing of segmentations via the customization service
-  await page.evaluate(() => {
-    window.services.customizationService.setGlobalCustomization(
-      'panelSegmentation.disableEditing',
-      {
-        $set: true,
-      }
-    );
+  await addOHIFGlobalCustomizations(page, {
+    'panelSegmentation.disableEditing': true,
   });
   await rightPanelPageObject.labelMapSegmentationPanel.select();
 
@@ -46,15 +47,16 @@ test('should prevent editing of label map segmentations when panelSegmentation.d
   await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.setRadius(1000);
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
-  await viewportPageObject.getById('default').normalizedDragAt({
+  const defaultViewport = await viewportPageObject.getById('default');
+  await defaultViewport.normalizedDragAt({
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
-  await viewportPageObject.getById('default').normalizedDragAt({
+  await defaultViewport.normalizedDragAt({
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
-  await viewportPageObject.getById('default').normalizedDragAt({
+  await defaultViewport.normalizedDragAt({
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });
@@ -70,13 +72,8 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   viewportPageObject,
 }) => {
   // disable editing of segmentations via the customization service
-  await page.evaluate(() => {
-    window.services.customizationService.setGlobalCustomization(
-      'panelSegmentation.disableEditing',
-      {
-        $set: false,
-      }
-    );
+  await addOHIFGlobalCustomizations(page, {
+    'panelSegmentation.disableEditing': false,
   });
 
   await rightPanelPageObject.labelMapSegmentationPanel.select();
@@ -101,15 +98,16 @@ test('should allow editing of label map segmentations when panelSegmentation.dis
   await rightPanelPageObject.labelMapSegmentationPanel.tools.eraser.setRadius(1000);
 
   // Attempt to erase the segmentations by dragging the eraser tool across the image several times.
-  await viewportPageObject.getById('default').normalizedDragAt({
+  const defaultViewport = await viewportPageObject.getById('default');
+  await defaultViewport.normalizedDragAt({
     start: { x: 0.01, y: 0.25 },
     end: { x: 1.0, y: 0.25 },
   });
-  await viewportPageObject.getById('default').normalizedDragAt({
+  await defaultViewport.normalizedDragAt({
     start: { x: 0.01, y: 0.5 },
     end: { x: 1.0, y: 0.5 },
   });
-  await viewportPageObject.getById('default').normalizedDragAt({
+  await defaultViewport.normalizedDragAt({
     start: { x: 0.01, y: 0.75 },
     end: { x: 1.0, y: 0.75 },
   });

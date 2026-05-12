@@ -40,7 +40,7 @@ export default function ShowcaseRow({ title, description, children, code }: Show
         </div>
       </div>
       {showCode && (
-        <pre className="border-input mt-4 overflow-x-auto rounded-md border bg-black p-4 text-sm">
+        <pre className="border-input mt-4 overflow-x-auto rounded-md border bg-background p-4 text-sm">
           <code>{code}</code>
         </pre>
       )}

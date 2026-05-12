@@ -43,7 +43,7 @@ const DefaultStatsList = () => {
           >
             <div>{label}</div>
             <div>
-              <span className="text-white">{handleNumber(value)}</span>{' '}
+              <span className="text-foreground">{handleNumber(value)}</span>{' '}
               <span className="">{unit && unit !== 'none' ? unit : ''}</span>
             </div>
           </div>

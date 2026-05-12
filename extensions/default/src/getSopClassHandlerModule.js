@@ -39,6 +39,7 @@ const sopClassUids = [
   sopClassDictionary.XRay3DAngiographicImageStorage,
   sopClassDictionary.XRay3DCraniofacialImageStorage,
   sopClassDictionary.BreastTomosynthesisImageStorage,
+  sopClassDictionary.CornealTopographyMapStorage,
   sopClassDictionary.BreastProjectionXRayImageStorageForPresentation,
   sopClassDictionary.BreastProjectionXRayImageStorageForProcessing,
   sopClassDictionary.IntravascularOpticalCoherenceTomographyImageStorageForPresentation,
@@ -61,6 +62,7 @@ const sopClassUids = [
   sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,
   sopClassDictionary.RTImageStorage,
   sopClassDictionary.EnhancedUSVolumeStorage,
+  sopClassDictionary.RTDoseStorage,
 ];
 
 function getSopClassHandlerModule(appContextParam) {

@@ -1,10 +1,12 @@
 import { test as base } from 'playwright-test-coverage';
+import { addOHIFConfiguration } from './OHIFConfiguration';
 import {
   DOMOverlayPageObject,
   MainToolbarPageObject,
   LeftPanelPageObject,
   RightPanelPageObject,
   ViewportPageObject,
+  NotFoundStudyPageObject,
 } from '../pages';
 
 type PageObjects = {
@@ -13,9 +15,21 @@ type PageObjects = {
   leftPanelPageObject: LeftPanelPageObject;
   rightPanelPageObject: RightPanelPageObject;
   viewportPageObject: ViewportPageObject;
+  notFoundStudyPageObject: NotFoundStudyPageObject;
 };
 
-export const test = base.extend<PageObjects>({
+type TestFixtures = PageObjects & {
+  _applyGlobalE2EOHIFBaseline: void;
+};
+
+export const test = base.extend<TestFixtures>({
+  _applyGlobalE2EOHIFBaseline: [
+    async ({ page }, use) => {
+      await addOHIFConfiguration(page, {});
+      await use();
+    },
+    { auto: true },
+  ],
   DOMOverlayPageObject: async ({ page }, use) => {
     await use(new DOMOverlayPageObject(page));
   },
@@ -30,6 +44,9 @@ export const test = base.extend<PageObjects>({
   },
   viewportPageObject: async ({ page }, use) => {
     await use(new ViewportPageObject(page));
+  },
+  notFoundStudyPageObject: async ({ page }, use) => {
+    await use(new NotFoundStudyPageObject(page));
   },
 });
 

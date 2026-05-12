@@ -28,7 +28,7 @@ export default function PanelAccordionTrigger(props) {
       <div className={`inline-flex text-base ${isActive ? 'bg-popover' : 'bg-muted'} flex-grow`}>
         <button onClick={onClickDefault.bind(props)}>
           <span
-            className={`inline-flex rounded-l border-r border-black ${isActive ? 'bg-highlight' : 'bg-muted'}`}
+            className={`inline-flex rounded-l border-r border-background ${isActive ? 'bg-highlight' : 'bg-muted'}`}
           >
             {count !== undefined ? <span className="px-2">{count}</span> : null}
             {colorHex && <ColorCircle colorHex={colorHex} />}

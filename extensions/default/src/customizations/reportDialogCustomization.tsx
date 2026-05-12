@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { InputDialog } from '@ohif/ui-next';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
@@ -21,6 +22,7 @@ type ReportDialogProps = {
     priorSeriesNumber: number;
   }) => void;
   onCancel: () => void;
+  enableDownload?: boolean;
 };
 
 function ReportDialog({
@@ -31,8 +33,11 @@ function ReportDialog({
   hide,
   onSave,
   onCancel,
+  enableDownload = false,
 }: ReportDialogProps) {
+  const { t } = useTranslation('Buttons');
   const { servicesManager } = useSystem();
+  const actionTakenRef = useRef(false);
   const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
     dataSources?.[0]?.value ?? null
   );
@@ -72,6 +77,7 @@ function ReportDialog({
   }, [selectedSeries, seriesOptions]);
 
   const handleSave = useCallback(() => {
+    actionTakenRef.current = true;
     onSave({
       reportName,
       dataSource: selectedDataSource,
@@ -82,11 +88,33 @@ function ReportDialog({
   }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
 
   const handleCancel = useCallback(() => {
+    actionTakenRef.current = true;
     onCancel();
     hide();
   }, [onCancel, hide]);
 
+  const handleDownload = useCallback(() => {
+    actionTakenRef.current = true;
+    onSave({
+      reportName,
+      dataSource: 'download',
+      priorSeriesNumber: Math.max(...seriesOptions.map(it => it.seriesNumber)),
+      series: selectedSeries,
+    });
+    hide();
+  }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
+
+  // Handles the close dialog button/external close as a cancel
+  useEffect(() => {
+    return () => {
+      if (!actionTakenRef.current) {
+        onCancel();
+      }
+    };
+  }, [onCancel]);
+
   const showDataSourceSelect = dataSources?.length > 1;
+  const showDownloadButton = enableDownload;
 
   return (
     <div className="text-foreground flex min-w-[400px] max-w-md flex-col">
@@ -181,9 +209,11 @@ function ReportDialog({
         <div className="flex justify-end gap-2">
           <InputDialog>
             <InputDialog.Actions>
-              <InputDialog.ActionsSecondary onClick={handleCancel}>
-                Cancel
-              </InputDialog.ActionsSecondary>
+              {showDownloadButton && (
+                <InputDialog.ActionsSecondary onClick={handleDownload}>
+                  {t('Download')}
+                </InputDialog.ActionsSecondary>
+              )}
               <InputDialog.ActionsPrimary onClick={handleSave}>Save</InputDialog.ActionsPrimary>
             </InputDialog.Actions>
           </InputDialog>

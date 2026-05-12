@@ -40,7 +40,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
 
   return (
     <div
-      className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
+      className="hover:bg-muted flex cursor-pointer items-center justify-center gap-1 rounded-lg"
       onClick={handleOnClick}
     >
       {isMixedPatients ? (
@@ -51,10 +51,10 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
       <div className="flex flex-col justify-center">
         {expanded ? (
           <>
-            <div className="self-start text-[13px] font-bold text-white">
+            <div className="text-foreground self-start text-[13px] font-bold">
               {formattedPatientName}
             </div>
-            <div className="text-aqua-pale flex gap-2 text-[11px]">
+            <div className="text-muted-foreground flex gap-2 text-[11px]">
               <div>{formattedPatientID}</div>
               <div>{patientInfo.PatientSex}</div>
               <div>{patientInfo.PatientDOB}</div>

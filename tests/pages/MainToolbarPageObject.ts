@@ -18,6 +18,7 @@ export class MainToolbarPageObject {
   }
   get layoutSelection() {
     const page = this.page;
+    const self = this;
 
     const button = page.getByTestId('Layout');
     const layoutSelection = {
@@ -194,6 +195,31 @@ export class MainToolbarPageObject {
           },
         };
       },
+      get freehandROI() {
+        const button = page.getByTestId('PlanarFreehandROI');
+        return {
+          button,
+          async click() {
+            await measurementTools.click();
+            await button.click();
+          },
+        };
+      },
+      /* microscopy specific tools */
+      // `.last()` targets the menu item inside the dropdown, not the active-tool
+      // indicator inside the split-button primary
+      // because both share the same data-cy value (e.g. "line")
+      // Other microscopy tools might follow the same pattern
+      get line() {
+        const button = page.getByTestId('line').last();
+        return {
+          button,
+          async click() {
+            await measurementTools.click();
+            await button.click();
+          },
+        };
+      },
     };
   }
 
@@ -282,6 +308,16 @@ export class MainToolbarPageObject {
       },
       get tagBrowser() {
         const button = page.getByTestId('TagBrowser');
+        return {
+          button,
+          async click() {
+            await moreTools.click();
+            await button.click();
+          },
+        };
+      },
+      get magnify() {
+        const button = page.getByTestId('Magnify');
         return {
           button,
           async click() {

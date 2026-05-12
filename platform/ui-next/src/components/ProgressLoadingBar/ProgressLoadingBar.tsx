@@ -15,10 +15,10 @@ function ProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement
   return (
     <div className="loading">
       {progress === undefined || progress === null ? (
-        <div className="infinite-loading-bar bg-primary-light"></div>
+        <div className="infinite-loading-bar bg-highlight"></div>
       ) : (
         <div
-          className="bg-primary-light"
+          className="bg-highlight"
           style={{
             width: `${progress}%`,
             height: '8px',

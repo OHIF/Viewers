@@ -66,6 +66,56 @@ http://localhost:3000/viewer?StudyInstanceUIDs=1.2.3.4.5.6.6.7&token=e123125jsdf
 
 
 
+## Securing dynamic datasource URLs
+When using `dicomwebproxy` or `dicomjson` data sources with a runtime `?url=...` query parameter,
+configure explicit trust boundaries to prevent credential exfiltration.
+
+Use these datasource configuration options:
+
+- `dangerouslyAllowedOriginsForAuthenticatedEnvironments`: Origin allowlist used only when the viewer is running in an authenticated environment. Entries may use `http://` or `https://` and can include localhost origins.
+
+Allowed entry format for `dangerouslyAllowedOriginsForAuthenticatedEnvironments`:
+
+- Must be a bare origin only: `scheme://host[:port]`
+- `http://` and `https://` are both allowed
+- Localhost is allowed when explicitly listed (for example, `http://localhost:5000`)
+- Must not include username/password, path, query string, or hash
+- Invalid entries are ignored and logged as misconfigured
+
+Policy summary:
+
+- In unauthenticated environments, any HTTP(S) `?url=` origin is allowed.
+- In authenticated environments, same-origin `?url=` values are allowed by default.
+- In authenticated environments, cross-origin `?url=` values must be present in `dangerouslyAllowedOriginsForAuthenticatedEnvironments`, otherwise loading fails closed.
+- In unauthenticated environments, cross-origin config URLs are fetched with:
+  - `method: 'GET'`
+  - `mode: 'cors'`
+  - `credentials: 'omit'`
+  - `redirect: 'error'`
+  - `referrerPolicy: 'no-referrer'`
+- In unauthenticated environments, same-origin config URLs use a plain `fetch()` call (browser default `credentials: 'same-origin'`).
+- Same-origin config URLs are fetched using simple fetch behavior (so same-origin session/cookie auth is preserved).
+- In authenticated environments, allowlisted cross-origin config URLs are fetched using simple fetch behavior.
+- Returned datasource configuration payloads are consumed as-is (no additional URL/config scrubbing).
+
+Example:
+
+```js
+dataSources: [
+  {
+    namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
+    sourceName: 'dicomwebproxy',
+    configuration: {
+      name: 'dicomwebproxy',
+      dangerouslyAllowedOriginsForAuthenticatedEnvironments: [
+        'https://config.example.com',
+        'http://localhost:5000',
+      ],
+    },
+  },
+]
+```
+
 ## Implicit Flow vs Authorization Code Flow
 
 The Viewer supports both the Implicit Flow and the Authorization Code Flow. The Implicit Flow is the default currently, as it is easier to set up and use. However, you can opt for better security by using the Authorization Code Flow. To do so, add `useAuthorizationCodeFlow` to the configuration and change the `response_type` from `id_token token` to `code`.

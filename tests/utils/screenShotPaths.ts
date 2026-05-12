@@ -97,6 +97,9 @@ const screenShotPaths = {
   reset: {
     resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
   },
+  zoomIn: {
+    magnifyViewportDisplayedCorrectly: 'magnifyViewportDisplayedCorrectly.png',
+  },
   rtDataOverlayForUnreferencedDisplaySetNoHydration: {
     overlayFirstImage: 'overlayFirstImage.png',
     overlayMiddleImage: 'overlayMiddleImage.png',
@@ -176,6 +179,12 @@ const screenShotPaths = {
   rtHydration2: {
     rtPostHydration: 'rtPostHydration.png',
     rtPreHydration: 'rtPreHydration.png',
+  },
+  rtHydrationDisableConfirmation: {
+    firstLoadPostHydration: 'firstLoadPostHydration.png',
+    viewportAfterFirstDelete: 'viewportAfterFirstDelete.png',
+    secondLoadPostHydration: 'secondLoadPostHydration.png',
+    viewportAfterSecondDelete: 'viewportAfterSecondDelete.png',
   },
   crosshairs: {
     crosshairsRendered: 'crosshairsRendered.png',
