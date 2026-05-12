@@ -28,6 +28,8 @@ import {
   type LoadedModeRouteHint,
 } from '../utils/modeSelectorUtils';
 
+const HIDDEN_MODE_IDS = new Set(['ohif-gcp-mode']);
+
 type ToolbarMenuRow = {
   mode: LoadedModeRouteHint & { displayName?: string; hide?: boolean; isValidMode?: unknown };
   validity: Exclude<ReturnType<typeof evaluateModeValidity>, undefined>;
@@ -101,7 +103,10 @@ function ToolbarModeSelector({ commandsManager: _commandsManager, servicesManage
     };
   }, [primaryUid, dataSource]);
 
-  const modesForToolbar = useMemo(() => loadedModes.filter(m => !m.hide), [loadedModes]);
+  const modesForToolbar = useMemo(
+    () => loadedModes.filter(m => !m.hide && !HIDDEN_MODE_IDS.has(m.id)),
+    [loadedModes]
+  );
 
   const comparableModesList = useMemo(() => {
     if (!studyEnvelope || !modesForToolbar?.length) {
