@@ -1,3 +1,5 @@
+import qs from 'qs';
+
 import { preserveQueryParameters, preserveQueryStrings } from './preserveQueryParameters';
 
 describe('preserveQueryParameters', () => {
@@ -70,5 +72,33 @@ describe('preserveQueryStrings', () => {
     preserveQueryStrings(out, customizationService, current);
     expect(out.customizationAlt).toEqual(['c']);
     expect(customizationService.getValue).toHaveBeenCalled();
+  });
+
+  it('serializes single preserved values as plain query keys with arrayFormat repeat', () => {
+    const current = new URLSearchParams();
+    current.append('configUrl', 'foo.js');
+    const out: Record<string, string | string[]> = {};
+    preserveQueryStrings(out, undefined, current);
+    const search = qs.stringify(out, {
+      skipNull: true,
+      skipEmptyString: true,
+      arrayFormat: 'repeat',
+    });
+    expect(search).toBe('configUrl=foo.js');
+    expect(search).not.toMatch(/configUrl\[/);
+  });
+
+  it('serializes repeated preserved values as repeated keys', () => {
+    const current = new URLSearchParams();
+    current.append('customization', 'a');
+    current.append('customization', 'b');
+    const out: Record<string, string | string[]> = {};
+    preserveQueryStrings(out, undefined, current);
+    const search = qs.stringify(out, {
+      skipNull: true,
+      skipEmptyString: true,
+      arrayFormat: 'repeat',
+    });
+    expect(search).toBe('customization=a&customization=b');
   });
 });

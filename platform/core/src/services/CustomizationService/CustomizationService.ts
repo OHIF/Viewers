@@ -117,10 +117,23 @@ export default class CustomizationService extends PubSubService {
   private transformedCustomizations = new Map<string, Customization>();
   private configuration: AppTypes.Config;
 
-  /** URL customization modules already imported and applied (key = normalized `/prefix/name`). */
+  /**
+   * URL customization modules already imported and applied (key = normalized `/prefix/name`).
+   * Entries are kept for the lifetime of the page: repeated loads skip imports, and the app
+   * normally applies `?customization=` only at bootstrap (see {@link applyWindowUrlCustomizations}).
+   */
   private _urlCustomizationLoaded = new Map<string, LoadedCustomization>();
 
   private _urlCustomizationPending = new Map<string, Promise<LoadedCustomization | null>>();
+
+  /**
+   * Extension module entry ids (e.g. `${extensionId}.customizationModule.default`) whose
+   * default/global payloads have already been merged via {@link init}. Matches the URL
+   * loader pattern: repeated {@link init} skips work for the same slot so immutability-style
+   * merges are not applied twice. A slot is recorded only after a module was present and applied;
+   * if a module appears only on a later {@link init} (e.g. a newly registered extension), it is merged then.
+   */
+  private _extensionCustomizationModuleApplied = new Set<string>();
 
   constructor({ configuration, commandsManager }) {
     super(EVENTS);
@@ -128,6 +141,13 @@ export default class CustomizationService extends PubSubService {
     this.commandsManager = commandsManager;
   }
 
+  /**
+   * Clears mode customizations and merges each extension's `customizationModule.default` /
+   * `customizationModule.global` into the service. Safe to call multiple times (e.g. from
+   * {@link onModeEnter}): each extension module slot is merged at most once per page session,
+   * matching the deduplication pattern used for URL-loaded modules in {@link requires}.
+   * Slots with no module yet are left unmarked so a later call can merge when the module appears.
+   */
   public init(extensionManager: ExtensionManager): void {
     this.extensionManager = extensionManager;
     // Mode customizations are defined per mode in onModeEnter; reset them here.
@@ -137,16 +157,22 @@ export default class CustomizationService extends PubSubService {
 
     this.extensionManager.getRegisteredExtensionIds().forEach(extensionId => {
       const keyDefault = `${extensionId}.customizationModule.default`;
-      const defaultCustomizations = this._findExtensionValue(keyDefault);
-      if (defaultCustomizations) {
-        const { value } = defaultCustomizations;
-        this._addReference(value, CustomizationScope.Default);
+      if (!this._extensionCustomizationModuleApplied.has(keyDefault)) {
+        const defaultCustomizations = this._findExtensionValue(keyDefault);
+        if (defaultCustomizations) {
+          const { value } = defaultCustomizations;
+          this._addReference(value, CustomizationScope.Default);
+          this._extensionCustomizationModuleApplied.add(keyDefault);
+        }
       }
       const keyGlobal = `${extensionId}.customizationModule.global`;
-      const globalCustomizations = this._findExtensionValue(keyGlobal);
-      if (globalCustomizations) {
-        const { value } = globalCustomizations;
-        this._addReference(value, CustomizationScope.Global);
+      if (!this._extensionCustomizationModuleApplied.has(keyGlobal)) {
+        const globalCustomizations = this._findExtensionValue(keyGlobal);
+        if (globalCustomizations) {
+          const { value } = globalCustomizations;
+          this._addReference(value, CustomizationScope.Global);
+          this._extensionCustomizationModuleApplied.add(keyGlobal);
+        }
       }
     });
 
@@ -161,6 +187,14 @@ export default class CustomizationService extends PubSubService {
    * Loads and applies `?customization=` modules from `window.location.search`.
    * Wraps {@link applyCustomizationUrlSearchParams} in try/catch so callers
    * (e.g. app bootstrap) do not need their own error handling.
+   *
+   * **Intended SPA behavior:** The shell typically calls this once during startup. It does not
+   * run again on client-side route changes. The query key `customization` may still appear in
+   * URLs (for example preserved by worklist navigation) without implying that modules are
+   * re-evaluated on every navigation. Modules resolved here are also deduplicated by normalized
+   * URL for the lifetime of the page in {@link requires}. To pick up a different `?customization=`
+   * set, use a full page load or call {@link applyCustomizationUrlSearchParams} /
+   * {@link requires} from your own integration code when appropriate.
    */
   public async applyWindowUrlCustomizations(overrides?: Partial<LoadOptions>): Promise<void> {
     try {
@@ -194,7 +228,8 @@ export default class CustomizationService extends PubSubService {
   /**
    * Depth-first dynamic import of URL customization modules
    * `requires` edges and `customization` field
-   * references are loaded before dependents. Already-loaded modules are skipped.
+   * references are loaded before dependents. Already-loaded modules (same normalized key) are
+   * skipped for the rest of the page session; they are not unloaded when the address bar changes.
    *
    * When `policy.strict` is true, invalid query entries, resolve failures, failed
    * imports, or modules without a customization payload reject the returned promise.

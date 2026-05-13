@@ -205,6 +205,8 @@ function WorkList({
     const search = qs.stringify(queryString, {
       skipNull: true,
       skipEmptyString: true,
+      // preserveQueryStrings stores preserved keys as arrays; default indices format breaks plain keys like configUrl
+      arrayFormat: 'repeat',
     });
     navigate({
       pathname: '/',

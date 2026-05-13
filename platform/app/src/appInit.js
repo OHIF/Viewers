@@ -94,9 +94,8 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
 
   const { customizationService } = servicesManager.services;
-  // There might be more defaults loaded here.
+  // Merge extension default/global modules first; then URL ?customization= globals layer on top.
   customizationService.init(extensionManager);
-  // After the default extensions are loaded, the customizations parameter ones can be loaded.
   await customizationService.applyWindowUrlCustomizations();
 
   // TODO: We no longer use `utils.addServer`
