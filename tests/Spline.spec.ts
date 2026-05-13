@@ -24,7 +24,11 @@ test('should display the spline tool', async ({
     { x: 383, y: 461 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.spline.splineDisplayedCorrectly);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.spline.splineDisplayedCorrectly
+  );
 });
 
 test('should restore viewport interactivity after deleting an in-progress Spline annotation via context menu', async ({
