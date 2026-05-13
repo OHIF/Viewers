@@ -174,7 +174,7 @@ Always prioritrize pub sub, by calling a services subscribe over useEffects as i
 ```
 
 ### Never modify core architecture
-Do not modify the core and always find a way to implement the solution via the extensions and modes, only modify core as a last resort if all other fail or there's an architectural constriant.
+Do not modify the core and always find a way to implement the solution via the extensions and modes, only modify core as a last resort if all other fail or there's an architectural constraint.
 
 ## Configuration
 
