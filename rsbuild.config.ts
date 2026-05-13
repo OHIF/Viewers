@@ -27,7 +27,18 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const OHIF_OPEN = process.env.OHIF_OPEN !== 'false';
 
+const shouldIgnoreWatchedPath = (watchedPath: string) => {
+  const normalizedPath = watchedPath.replace(/\\/g, '/');
+  return (
+    /(^|\/)node_modules\//.test(normalizedPath) &&
+    !/(^|\/)node_modules\/@cornerstonejs(\/|$)/.test(normalizedPath)
+  );
+};
+
 export default defineConfig({
+  dev: {
+    lazyCompilation: false,
+  },
   source: {
     entry: {
       index: `${SRC_DIR}/index.js`,
@@ -83,7 +94,8 @@ export default defineConfig({
         },
       },
       watchOptions: {
-        ignored: /node_modules\/@cornerstonejs/,
+        ignored: shouldIgnoreWatchedPath,
+        followSymlinks: true,
       },
     },
   },
