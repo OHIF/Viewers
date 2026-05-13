@@ -125,7 +125,7 @@ test('should hydrate in MPR correctly', async ({
 
   await checkForScreenshot(
     page,
-    page,
+    viewportPageObject.grid,
     screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementAfterSeriesChange
   );
 });
