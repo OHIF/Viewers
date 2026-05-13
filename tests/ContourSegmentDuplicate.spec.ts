@@ -44,7 +44,7 @@ test('should duplicate a contour segment and add a new row to the panel', async 
 
   //New segment's default name is formatted as "Segment {segmentCount}"
   const newSegmentLocator = panel.nthSegment(initialCount).title;
-  expect(newSegmentLocator, 'Expected correct title for duplicated segment').toHaveText(`Segment 5`);
+  await expect(newSegmentLocator, 'Expected correct title for duplicated segment').toHaveText(`Segment 5`);
 
   // Original segment titles should be unchanged
   await expect(panel.nthSegment(0).title).toHaveText(defaultSegment0Name);
@@ -63,13 +63,13 @@ test('should duplicate the same segment multiple times', async ({
   expect(await panel.getSegmentCount(), 'Expected one additional segment row after duplicating').toBe(5);
 
   const firstDuplicateTitleLocator = panel.nthSegment(4).title;
-  expect(firstDuplicateTitleLocator, 'Expected correct title for first duplicated segment').toHaveText(`Segment 5`);
+  await expect(firstDuplicateTitleLocator, 'Expected correct title for first duplicated segment').toHaveText(`Segment 5`);
 
   await segment0.actions.duplicate();
   expect(await panel.getSegmentCount(), 'Expected another segment row after duplicating the same segment again').toBe(6);
 
   const secondDuplicateTitleLocator = panel.nthSegment(5).title;
-  expect(secondDuplicateTitleLocator, 'Expected correct title for second duplicated segment').toHaveText(`Segment 6`);
+  await expect(secondDuplicateTitleLocator, 'Expected correct title for second duplicated segment').toHaveText(`Segment 6`);
 });
 
 test('should render the duplicated contour on the viewport', async ({
