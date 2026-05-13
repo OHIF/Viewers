@@ -24,7 +24,12 @@ test('should display the livewire tool', async ({
     { x: 383, y: 461 },
   ]);
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
-  await checkForScreenshot(page, page, screenShotPaths.livewire.livewireDisplayedCorrectly);
+
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.livewire.livewireDisplayedCorrectly
+  );
 });
 
 test('should restore viewport interactivity after deleting an in-progress Livewire annotation via context menu', async ({

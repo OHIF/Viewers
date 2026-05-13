@@ -54,7 +54,11 @@ test('should hydrate in MPR correctly', async ({
   await DOMOverlayPageObject.viewport.measurementTracking.confirm.click();
 
   // scroll away
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.initialDraw
+  );
 
   // Focus on the canvas first, then use mouse wheel to scroll away
   await page.evaluate(() => {
@@ -78,11 +82,19 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.scrollAway);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.scrollAway
+  );
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.jumpToMeasurementStack
+  );
 
   await mainToolbarPageObject.layoutSelection.MPR.click();
 
@@ -93,13 +105,21 @@ test('should hydrate in MPR correctly', async ({
 
   await page.waitForTimeout(3000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.jumpInMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.jumpInMPR
+  );
 
   await leftPanelPageObject.loadSeriesByDescription('Lung 3.0 CE');
 
   await page.waitForTimeout(5000);
 
-  await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR);
+  await checkForScreenshot(
+    page,
+    viewportPageObject.grid,
+    screenShotPaths.jumpToMeasurementMPR.changeSeriesInMPR
+  );
 
   await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).click();
 
