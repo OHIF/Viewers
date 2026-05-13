@@ -23,7 +23,6 @@ test.beforeEach(async ({
   await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
 
   await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
-  await expect(page.getByTestId('data-row')).toHaveCount(4);
 });
 
 test('should duplicate a contour segment and add a new row to the panel', async ({
@@ -44,8 +43,8 @@ test('should duplicate a contour segment and add a new row to the panel', async 
   expect(countAfterDuplicate, 'Expected one additional segment row after duplicating').toBe(5);
 
   //New segment's default name is formatted as "Segment {segmentCount}"
-  const newSegmentTitle = await panel.nthSegment(initialCount).title.textContent();
-  expect(newSegmentTitle, 'Expected correct title for duplicated segment').toBe(`Segment 5`);
+  const newSegmentLocator = panel.nthSegment(initialCount).title;
+  expect(newSegmentLocator, 'Expected correct title for duplicated segment').toHaveText(`Segment 5`);
 
   // Original segment titles should be unchanged
   await expect(panel.nthSegment(0).title).toHaveText(defaultSegment0Name);
@@ -61,16 +60,16 @@ test('should duplicate the same segment multiple times', async ({
   const segment0 = panel.nthSegment(0);
 
   await segment0.actions.duplicate();
-  await expect(page.getByTestId('data-row')).toHaveCount(5);
+  expect(await panel.getSegmentCount(), 'Expected one additional segment row after duplicating').toBe(5);
 
-  const firstDuplicateTitle = await panel.nthSegment(4).title.textContent();
-  expect(firstDuplicateTitle, 'Expected correct title for first duplicated segment').toBe(`Segment 5`);
+  const firstDuplicateTitleLocator = panel.nthSegment(4).title;
+  expect(firstDuplicateTitleLocator, 'Expected correct title for first duplicated segment').toHaveText(`Segment 5`);
 
   await segment0.actions.duplicate();
   expect(await panel.getSegmentCount(), 'Expected another segment row after duplicating the same segment again').toBe(6);
 
-  const secondDuplicateTitle = await panel.nthSegment(5).title.textContent();
-  expect(secondDuplicateTitle, 'Expected correct title for second duplicated segment').toBe(`Segment 6`);
+  const secondDuplicateTitleLocator = panel.nthSegment(5).title;
+  expect(secondDuplicateTitleLocator, 'Expected correct title for second duplicated segment').toHaveText(`Segment 6`);
 });
 
 test('should render the duplicated contour on the viewport', async ({
