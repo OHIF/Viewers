@@ -1,11 +1,11 @@
 # OHIF Test Utility guide
 
-> This file documents the **stable import rules and conventions** around `tests/utils/`. For the current list of exported helpers and their exact signatures, **read [tests/utils/index.ts](tests/utils/index.ts) and the files it re-exports** — the barrel is always current; a static table here is not. Utilities get added, renamed, and refactored; the rules below change much more slowly.
+> This file documents the **stable import rules and conventions** around `tests/utils/`. For the current list of exported helpers and their exact signatures, **read `tests/utils/index.ts` and the files it re-exports** — the barrel is always current; a static table here is not. Utilities get added, renamed, and refactored; the rules below change much more slowly.
 
 ## How to discover what's available
 
-1. Open [tests/utils/index.ts](tests/utils/index.ts). Every symbol exported from the barrel is importable as `import { foo } from './utils'`.
-2. If what you need isn't in the barrel, look in the rest of [tests/utils/](tests/utils/) — there are a handful of specialized files (`keyboardUtils.ts`, `assertions.ts`, `download.ts`, …). These need the **deeper import path**; see the rule below.
+1. Open `tests/utils/index.ts`. Every symbol exported from the barrel is importable as `import { foo } from './utils'`.
+2. If what you need isn't in the barrel, look in the rest of `tests/utils/` — there are a handful of specialized files (`keyboardUtils.ts`, `assertions.ts`, `download.ts`, …). These need the **deeper import path**; see the rule below.
 3. For the actual signature, read the utility's `.ts` file. It's one short function per file in most cases.
 4. To see a utility in context, grep `tests/` (`grep -rn visitStudy tests/`) — or open the seed spec for the relevant feature area ([patterns-by-feature.md](patterns-by-feature.md)). Existing specs are the most reliable signature reference because they co-evolve with the API.
 
@@ -60,7 +60,7 @@ So: pick `10000` when the mode is `tmtv`, `2000` otherwise, and only ramp up if 
 - **Object form** (preferred in newer specs): `checkForScreenshot({ page, screenshotPath, maxDiffPixelRatio?, threshold?, normalizedClip?, fullPage? })`
 - **Positional form** (still in use across older specs): `checkForScreenshot(page, locator, screenshotPath, ...)`
 
-The object form exposes tuning knobs the positional form doesn't — `maxDiffPixelRatio`, `threshold`, `normalizedClip`. For 3D content, bump `maxDiffPixelRatio` to around `0.04` because GPU rendering is noisier. Check the current signature in [tests/utils/checkForScreenshot.ts](tests/utils/checkForScreenshot.ts) (or wherever the barrel points) if something looks off.
+The object form exposes tuning knobs the positional form doesn't — `maxDiffPixelRatio`, `threshold`, `normalizedClip`. For 3D content, bump `maxDiffPixelRatio` to around `0.04` because GPU rendering is noisier. Check the current signature in `tests/utils/checkForScreenshot.ts` (or wherever the barrel points) if something looks off.
 
 ### `screenShotPaths` — use keys, not raw strings
 
@@ -68,7 +68,7 @@ The object form exposes tuning knobs the positional form doesn't — `maxDiffPix
 await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
 ```
 
-The full tree of categories lives in [tests/utils/screenShotPaths.ts](tests/utils/screenShotPaths.ts). When you need a new baseline, **add the key there and reference it by name** rather than typing a raw path. A typo in a key becomes a compile error instead of a silent mismatch, and other tests become discoverable through the object.
+The full tree of categories lives in `tests/utils/screenShotPaths.ts`. When you need a new baseline, **add the key there and reference it by name** rather than typing a raw path. A typo in a key becomes a compile error instead of a silent mismatch, and other tests become discoverable through the object.
 
 ### Object-param convention
 
@@ -82,7 +82,7 @@ Read the one-line signature at the top of the utility's source file before calli
 
 Most utilities are obvious once you read the source; these earn a mention:
 
-- **`waitForViewportRenderCycle(page, options?)`** — preferred replacement for `page.waitForTimeout(...)` after any viewport-mutating action (hydration confirm, layout change, segmentation add, series load, etc.). Start it **before** the action, await it after — it captures the `needsRender → rendered` transition the action triggers. Use `waitForViewportsRendered(page)` (the second-half-only variant) when the render is already in flight before you can attach a watcher. Source: [tests/utils/waitForViewportsRendered.ts](tests/utils/waitForViewportsRendered.ts). Seed: [tests/SEGHydrationFromMPR.spec.ts](tests/SEGHydrationFromMPR.spec.ts). The "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) covers the idiom in full.
+- **`waitForViewportRenderCycle(page, options?)`** — preferred replacement for `page.waitForTimeout(...)` after any viewport-mutating action (hydration confirm, layout change, segmentation add, series load, etc.). Start it **before** the action, await it after — it captures the `needsRender → rendered` transition the action triggers. Use `waitForViewportsRendered(page)` (the second-half-only variant) when the render is already in flight before you can attach a watcher. Source: `tests/utils/waitForViewportsRendered.ts`. Seed: `tests/SEGHydrationFromMPR.spec.ts`. The "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) covers the idiom in full.
 - **`subscribeToMeasurementAdded(page)`** — returns `{ waitFired(timeout?), unsubscribe() }`. Use in freehand/livewire/spline specs to assert the event fired. Always wrap in `try { ... } finally { await sub.unsubscribe() }` so a failing assertion doesn't leak the listener across tests.
 - **`attemptAction(action, attempts?, delay?)`** — retries a flaky async action without masking real failures. Mainly used to stabilize 3D scenes (`attemptAction(() => reduce3DViewportSize(page), 10, 100)`).
 

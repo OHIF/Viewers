@@ -1,10 +1,10 @@
 # OHIF Page Object guide
 
-> This file documents the **stable structural rules** of the page object system. For the current list of methods and properties on any class, **read the source under [tests/pages/](tests/pages/)** — it is always authoritative, and it evolves as the product does. A static method table in a reference file goes stale the moment someone refactors; the source does not.
+> This file documents the **stable structural rules** of the page object system. For the current list of methods and properties on any class, **read the source under `tests/pages/`** — it is always authoritative, and it evolves as the product does. A static method table in a reference file goes stale the moment someone refactors; the source does not.
 
 ## How to discover the API of a page object
 
-1. Find the relevant class in [tests/pages/](tests/pages/). File names match class names.
+1. Find the relevant class in `tests/pages/`. File names match class names.
 2. Read it end-to-end once — most are under a few hundred lines.
 3. Some classes compose sub-objects (e.g. `RightPanelPageObject` holds a measurementsPanel, contourSegmentationPanel, labelMapSegmentationPanel, tmtvPanel, etc.). Those sub-objects usually live in the same file or a sibling under `tests/pages/`.
 4. To see how a method is actually used, grep `tests/` or open the seed spec listed in [patterns-by-feature.md](patterns-by-feature.md). Real usage beats a synthesized signature every time.
@@ -17,7 +17,7 @@ Do not try to memorize a method surface from this file — it intentionally does
 
 ### Fixture keys (case-sensitive)
 
-These are injected via [tests/utils/fixture.ts](tests/utils/fixture.ts). Destructure them from the test function's first argument — do not `new` them, because the fixture wires sub-objects to the correct `page` and hand-constructed instances skip that wiring.
+These are injected via `tests/utils/fixture.ts`. Destructure them from the test function's first argument — do not `new` them, because the fixture wires sub-objects to the correct `page` and hand-constructed instances skip that wiring.
 
 - `viewportPageObject`
 - `mainToolbarPageObject`
@@ -76,14 +76,14 @@ This table exists to help you pick the right file to open, not to enumerate meth
 
 | Class | File | Covers |
 |-------|------|--------|
-| ViewportPageObject | [tests/pages/ViewportPageObject.ts](tests/pages/ViewportPageObject.ts) | Cornerstone viewports — clicks, drags, overlays, annotations, crosshairs |
-| MainToolbarPageObject | [tests/pages/MainToolbarPageObject.ts](tests/pages/MainToolbarPageObject.ts) | Top toolbar — measurement tools, more tools, layouts, crosshairs, pan |
-| LeftPanelPageObject | [tests/pages/LeftPanelPageObject.ts](tests/pages/LeftPanelPageObject.ts) | Study browser — thumbnails, load by modality or description |
-| RightPanelPageObject | [tests/pages/RightPanelPageObject.ts](tests/pages/RightPanelPageObject.ts) | Side panels — measurements, contour seg, labelmap seg, TMTV, microscopy |
-| DOMOverlayPageObject | [tests/pages/DOMOverlayPageObject.ts](tests/pages/DOMOverlayPageObject.ts) | DOM overlays — dialogs, hydration/tracking prompts, context menus, tag-browser accessor |
-| NotFoundStudyPageObject | [tests/pages/NotFoundStudyPageObject.ts](tests/pages/NotFoundStudyPageObject.ts) | Study-not-found error page |
-| DicomTagBrowserPageObject | [tests/pages/DicomTagBrowserPageObject.ts](tests/pages/DicomTagBrowserPageObject.ts) | Tag-browser dialog (non-fixture; reach via `DOMOverlayPageObject.dialog`) |
-| DataOverlayPageObject | [tests/pages/DataOverlayPageObject.ts](tests/pages/DataOverlayPageObject.ts) | Data-overlay menu (non-fixture; reach via `viewport.overlayMenu`) |
+| ViewportPageObject | `tests/pages/ViewportPageObject.ts` | Cornerstone viewports — clicks, drags, overlays, annotations, crosshairs |
+| MainToolbarPageObject | `tests/pages/MainToolbarPageObject.ts` | Top toolbar — measurement tools, more tools, layouts, crosshairs, pan |
+| LeftPanelPageObject | `tests/pages/LeftPanelPageObject.ts` | Study browser — thumbnails, load by modality or description |
+| RightPanelPageObject | `tests/pages/RightPanelPageObject.ts` | Side panels — measurements, contour seg, labelmap seg, TMTV, microscopy |
+| DOMOverlayPageObject | `tests/pages/DOMOverlayPageObject.ts` | DOM overlays — dialogs, hydration/tracking prompts, context menus, tag-browser accessor |
+| NotFoundStudyPageObject | `tests/pages/NotFoundStudyPageObject.ts` | Study-not-found error page |
+| DicomTagBrowserPageObject | `tests/pages/DicomTagBrowserPageObject.ts` | Tag-browser dialog (non-fixture; reach via `DOMOverlayPageObject.dialog`) |
+| DataOverlayPageObject | `tests/pages/DataOverlayPageObject.ts` | Data-overlay menu (non-fixture; reach via `viewport.overlayMenu`) |
 
 If the directory adds or renames a file, that diff is your first clue and this table is your second — trust the directory.
 

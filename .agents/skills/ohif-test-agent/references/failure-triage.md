@@ -22,7 +22,7 @@ await cycle;
 await check();
 ```
 
-The watcher must be created **before** the action — it waits for `needsRender` first, and that transition is gone by the time the action returns. See the "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) and [tests/SEGHydrationFromMPR.spec.ts](tests/SEGHydrationFromMPR.spec.ts).
+The watcher must be created **before** the action — it waits for `needsRender` first, and that transition is gone by the time the action returns. See the "Wait for renders, don't sleep" section in [SKILL.md](../SKILL.md) and `tests/SEGHydrationFromMPR.spec.ts`.
 
 ### When the cycle helper times out at `waitForAnyViewportNeedsRender`
 

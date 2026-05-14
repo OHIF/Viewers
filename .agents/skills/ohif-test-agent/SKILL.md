@@ -9,16 +9,14 @@ This skill teaches you to generate correct, runnable Playwright end-to-end tests
 
 ## Environment model
 
-This package is designed for any runtime that supports the agentskills.io conventions.
-
-Use this file as the core behavior contract and use `AGENTS.md` in this folder as the runtime entrypoint.
+This package follows the agentskills.io SKILL.md convention. `SKILL.md` is the entire behavior contract — there is no separate runtime entrypoint.
 
 ## Workflow: how to write a new OHIF test
 
 1. **Classify the feature.** What area does the test belong to — a measurement tool, segmentation hydration, contour panel interaction, MPR layout, crosshairs, tag browser, etc.? The area determines the mode, the StudyInstanceUID, and the seed spec you'll read.
 2. **Read the seed spec.** Consult [references/patterns-by-feature.md](references/patterns-by-feature.md) to find the canonical existing spec for that area. Read it end-to-end before writing. This is the single most important step — OHIF specs follow consistent idioms that are easier to mimic than to reconstruct from first principles. (This mirrors Playwright's own agent guidance: use seed tests as the example for generated tests.)
 3. **Scaffold from the template.** Start from [assets/spec-template.ts](assets/spec-template.ts) — or copy the seed spec and adapt.
-4. **Look up specifics in the source, not from memory.** The reference files [page-objects.md](references/page-objects.md) and [utilities.md](references/utilities.md) capture the **stable rules** — fixture keys, import conventions, access idioms, the reasons certain things trip people up. They deliberately do not enumerate methods. For the current method surface or a utility's exact signature, open the relevant file under [tests/pages/](tests/pages/) or [tests/utils/](tests/utils/) — the source evolves, and the source is always right. The seed spec you picked in step 2 is usually the fastest second source, because it co-evolves with the API.
+4. **Look up specifics in the source, not from memory.** The reference files [page-objects.md](references/page-objects.md) and [utilities.md](references/utilities.md) capture the **stable rules** — fixture keys, import conventions, access idioms, the reasons certain things trip people up. They deliberately do not enumerate methods. For the current method surface or a utility's exact signature, open the relevant file under `tests/pages/` or `tests/utils/` — the source evolves, and the source is always right. The seed spec you picked in step 2 is usually the fastest second source, because it co-evolves with the API.
 5. **Run the test when execution is available.** `yarn test:e2e:ci` runs the whole suite, but for iteration use `yarn playwright test tests/YourNew.spec.ts` (or via the Playwright VS Code extension).
 6. **If runtime execution is unavailable, do static validation.** Validate import source, fixture keys, normalized viewport usage, UID/mode pairing, and hydration/tracking prompt handling. Then report clearly that execution was not performed.
 7. **If it fails, triage before debugging.** Use [references/failure-triage.md](references/failure-triage.md) — most OHIF test failures are timing / hydration, not real regressions.
@@ -117,7 +115,7 @@ For 3D / MPR scenes, wrap stabilization in `attemptAction(() => reduce3DViewport
 
 ## Wait for renders, don't sleep
 
-`page.waitForTimeout(...)` after an action that re-renders the viewport is a smell. The viewports tell us when they're done — use that signal. [tests/utils/waitForViewportsRendered.ts](tests/utils/waitForViewportsRendered.ts) exposes three helpers, all barrel-exported from `./utils`:
+`page.waitForTimeout(...)` after an action that re-renders the viewport is a smell. The viewports tell us when they're done — use that signal. `tests/utils/waitForViewportsRendered.ts` exposes three helpers, all barrel-exported from `./utils`:
 
 - `waitForViewportRenderCycle(page)` — wait for the next full cycle: a viewport enters `needsRender`, then **all** viewports report `rendered` (and volumes are loaded, by default).
 - `waitForViewportsRendered(page)` — only the second half: wait until all viewports are `rendered`. Use this when the action has already requested a render before you started waiting (e.g. a layout change or `loadSeriesByDescription`).
@@ -162,7 +160,7 @@ await cycle;
 await checkForScreenshot(...);
 ```
 
-This shaves real wall-clock time off the suite and removes a class of flake (sleep too short → flake; sleep too long → slow). [tests/SEGHydrationFromMPR.spec.ts](tests/SEGHydrationFromMPR.spec.ts) is the canonical seed for this pattern.
+This shaves real wall-clock time off the suite and removes a class of flake (sleep too short → flake; sleep too long → slow). `tests/SEGHydrationFromMPR.spec.ts` is the canonical seed for this pattern.
 
 Caveats:
 - These helpers wait on Cornerstone viewport state. They won't help for purely DOM-side state (panel rows appearing, dialogs opening) — for those, prefer `expect(locator).toHaveCount(n)` / `toBeVisible()` which auto-retry, or `expect.toPass({ timeout })`.
@@ -188,7 +186,7 @@ Two page objects are **not** fixture-injected:
 - `DataOverlayPageObject` — reach via `viewportPageObject.getById(id).overlayMenu.dataOverlay`.
 - `DicomTagBrowserPageObject` — reach via `DOMOverlayPageObject.dialog.dicomTagBrowser`.
 
-See [references/page-objects.md](references/page-objects.md) for fixture rules and a map of which file covers which concern; read the `.ts` file under [tests/pages/](tests/pages/) for the current method surface.
+See [references/page-objects.md](references/page-objects.md) for fixture rules and a map of which file covers which concern; read the `.ts` file under `tests/pages/` for the current method surface.
 
 ## Visual regression
 
@@ -198,7 +196,7 @@ For anything drawn onto the WebGL canvas, compare a screenshot:
 await checkForScreenshot(page, page, screenShotPaths.length.lengthDisplayedCorrectly);
 ```
 
-`checkForScreenshot` retries up to 10 times at 500 ms intervals (defaults), with `maxDiffPixelRatio: 0.02` and `threshold: 0.05`. Raise `maxDiffPixelRatio` to ~0.04 for 3D content, which is noisier. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in [tests/utils/screenShotPaths.ts](tests/utils/screenShotPaths.ts).
+`checkForScreenshot` retries up to 10 times at 500 ms intervals (defaults), with `maxDiffPixelRatio: 0.02` and `threshold: 0.05`. Raise `maxDiffPixelRatio` to ~0.04 for 3D content, which is noisier. Use `screenShotPaths.<category>.<name>` rather than a hand-typed string — the tree of valid keys lives in `tests/utils/screenShotPaths.ts`.
 
 ## Playwright config facts worth remembering
 
@@ -265,5 +263,5 @@ When execution cannot be performed in the current environment, the response shou
 
 - **Before writing** → [references/patterns-by-feature.md](references/patterns-by-feature.md). Pick the seed spec for the feature area and read it. The seed spec is the closest thing to a live API example because it co-evolves with the code.
 - **For a stable rule or idiom** (fixture keys, import paths, panel-access order, capital-D quirk, object-param convention) → [references/page-objects.md](references/page-objects.md), [references/utilities.md](references/utilities.md).
-- **For a method name, property, or signature** → read the source under [tests/pages/](tests/pages/) or [tests/utils/](tests/utils/). Do not rely on a static table for these; they drift as the code is refactored.
+- **For a method name, property, or signature** → read the source under `tests/pages/` or `tests/utils/`. Do not rely on a static table for these; they drift as the code is refactored.
 - **When a test fails** → [references/failure-triage.md](references/failure-triage.md).
