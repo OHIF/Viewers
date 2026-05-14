@@ -49,7 +49,7 @@ function CornerstoneOverlays(props: withAppTypes) {
   }
 
   return (
-    <div className="noselect cornerstone-overlays-container">
+    <div className="noselect">                                                                                                    
       <ViewportImageScrollbar
         viewportId={viewportId}
         viewportData={viewportData}
