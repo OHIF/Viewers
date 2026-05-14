@@ -23,6 +23,12 @@ type Tools = {
   disabled?: Tool[];
 };
 
+type ToolBindings = Array<Record<string, unknown>>;
+type PersistedToolBindings = Record<string, Record<string, ToolBindings>>;
+type ApplyToolBindingsOptions = {
+  replaceExisting?: boolean;
+};
+
 export default class ToolGroupService {
   public static REGISTRATION = {
     name: 'toolGroupService',
@@ -39,6 +45,7 @@ export default class ToolGroupService {
   customizationService: any;
   private toolGroupIds: Set<string> = new Set();
   private toolBindingsMap: Map<string, Map<string, Array<Record<string, unknown>>>> = new Map();
+  private defaultToolBindingsMap: Map<string, Map<string, ToolBindings>> = new Map();
   /**
    * Service-specific
    */
@@ -131,6 +138,7 @@ export default class ToolGroupService {
     ToolGroupManager.destroy();
     this.toolGroupIds = new Set();
     this.toolBindingsMap.clear();
+    this.defaultToolBindingsMap.clear();
 
     eventTarget.removeEventListener(Enums.Events.TOOL_ACTIVATED, this._onToolActivated);
   }
@@ -255,22 +263,61 @@ export default class ToolGroupService {
   public getToolBindings(
     toolGroupId: string,
     toolName: string
-  ): Array<Record<string, unknown>> | undefined {
+  ): ToolBindings | undefined {
     return this.toolBindingsMap.get(toolGroupId)?.get(toolName);
   }
 
-  public setToolBindings(
-    toolGroupId: string,
-    toolName: string,
-    bindings: Array<Record<string, unknown>>
-  ): void {
+  public setToolBindings(toolGroupId: string, toolName: string, bindings: ToolBindings): void {
     if (!this.toolBindingsMap.has(toolGroupId)) {
       this.toolBindingsMap.set(toolGroupId, new Map());
     }
-    this.toolBindingsMap.get(toolGroupId).set(toolName, bindings);
+    this.toolBindingsMap.get(toolGroupId).set(toolName, this._cloneToolBindings(bindings));
   }
 
-  public applyToolBindings(toolGroupId: string, toolName: string): void {
+  public getDefaultToolBindings(toolGroupId: string, toolName: string): ToolBindings | undefined {
+    const defaultBindings = this.defaultToolBindingsMap.get(toolGroupId)?.get(toolName);
+    return defaultBindings ? this._cloneToolBindings(defaultBindings) : undefined;
+  }
+
+  public persistToolBindings(toolGroupId: string, toolName: string, bindings: ToolBindings): void {
+    const persistedBindings = this._readPersistedToolBindings();
+    if (!persistedBindings[toolGroupId]) {
+      persistedBindings[toolGroupId] = {};
+    }
+
+    persistedBindings[toolGroupId][toolName] = bindings;
+    this._writePersistedToolBindings(persistedBindings);
+  }
+
+  public removePersistedToolBindings(toolGroupId: string, toolName?: string): void {
+    const persistedBindings = this._readPersistedToolBindings();
+    if (!persistedBindings[toolGroupId]) {
+      return;
+    }
+
+    if (toolName) {
+      delete persistedBindings[toolGroupId][toolName];
+      if (!Object.keys(persistedBindings[toolGroupId]).length) {
+        delete persistedBindings[toolGroupId];
+      }
+    } else {
+      delete persistedBindings[toolGroupId];
+    }
+
+    this._writePersistedToolBindings(persistedBindings);
+  }
+
+  /**
+   * Applies the currently tracked bindings to the runtime tool instance.
+   *
+   * Note: this method may activate tools that are currently Passive or Enabled.
+   * Assigning bindings is treated as making the tool interactable.
+   */
+  public applyToolBindings(
+    toolGroupId: string,
+    toolName: string,
+    options: ApplyToolBindingsOptions = {}
+  ): void {
     const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     if (!toolGroup || !toolGroup.hasTool(toolName)) {
       return;
@@ -285,6 +332,10 @@ export default class ToolGroupService {
       mode === Enums.ToolModes.Passive ||
       mode === Enums.ToolModes.Enabled
     ) {
+      if (options.replaceExisting) {
+        // Opt-in behavior for callers that need replacement semantics.
+        toolGroup.setToolDisabled(toolName);
+      }
       toolGroup.setToolActive(toolName, { bindings });
     }
   }
@@ -310,6 +361,7 @@ export default class ToolGroupService {
       active.forEach(({ toolName, bindings }) => {
         if (bindings) {
           this.setToolBindings(toolGroup.id, toolName, bindings);
+          this._setDefaultToolBindingsIfMissing(toolGroup.id, toolName, bindings);
         }
         toolGroup.setToolActive(toolName, { bindings });
       });
@@ -319,6 +371,7 @@ export default class ToolGroupService {
       passive.forEach(({ toolName, bindings }) => {
         if (bindings) {
           this.setToolBindings(toolGroup.id, toolName, bindings);
+          this._setDefaultToolBindingsIfMissing(toolGroup.id, toolName, bindings);
         }
         toolGroup.setToolPassive(toolName);
       });
@@ -328,6 +381,7 @@ export default class ToolGroupService {
       enabled.forEach(({ toolName, bindings }) => {
         if (bindings) {
           this.setToolBindings(toolGroup.id, toolName, bindings);
+          this._setDefaultToolBindingsIfMissing(toolGroup.id, toolName, bindings);
         }
         toolGroup.setToolEnabled(toolName);
       });
@@ -337,9 +391,25 @@ export default class ToolGroupService {
       disabled.forEach(({ toolName, bindings }) => {
         if (bindings) {
           this.setToolBindings(toolGroup.id, toolName, bindings);
+          this._setDefaultToolBindingsIfMissing(toolGroup.id, toolName, bindings);
         }
         toolGroup.setToolDisabled(toolName);
       });
+    }
+  }
+
+  private _setDefaultToolBindingsIfMissing(
+    toolGroupId: string,
+    toolName: string,
+    bindings: ToolBindings
+  ): void {
+    if (!this.defaultToolBindingsMap.has(toolGroupId)) {
+      this.defaultToolBindingsMap.set(toolGroupId, new Map());
+    }
+
+    const toolMap = this.defaultToolBindingsMap.get(toolGroupId);
+    if (!toolMap.has(toolName)) {
+      toolMap.set(toolName, this._cloneToolBindings(bindings));
     }
   }
 
@@ -374,22 +444,58 @@ export default class ToolGroupService {
   }
 
   private _loadPersistedBindings(toolGroupId: string): void {
+    const toolGroupBindings = this._readPersistedToolBindings()[toolGroupId];
+    if (!toolGroupBindings) {
+      return;
+    }
+
+    const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+
+    for (const [toolName, bindings] of Object.entries(toolGroupBindings)) {
+      this.setToolBindings(toolGroupId, toolName, bindings as ToolBindings);
+
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        continue;
+      }
+
+      const { mode } = toolGroup.getToolOptions(toolName);
+      if (mode === Enums.ToolModes.Active) {
+        this.applyToolBindings(toolGroupId, toolName, { replaceExisting: true });
+      }
+    }
+  }
+
+  private _readPersistedToolBindings(): PersistedToolBindings {
     try {
       const stored = localStorage.getItem(this._getToolBindingsStorageKey());
       if (!stored) {
-        return;
+        return {};
       }
+
       const parsed = JSON.parse(stored);
-      const toolGroupBindings = parsed[toolGroupId];
-      if (!toolGroupBindings) {
-        return;
+      if (!parsed || typeof parsed !== 'object') {
+        return {};
       }
-      for (const [toolName, bindings] of Object.entries(toolGroupBindings)) {
-        this.setToolBindings(toolGroupId, toolName, bindings as Array<Record<string, unknown>>);
-      }
+
+      return parsed as PersistedToolBindings;
     } catch {
       // ignore corrupt localStorage
+      return {};
     }
+  }
+
+  private _writePersistedToolBindings(bindings: PersistedToolBindings): void {
+    const storageKey = this._getToolBindingsStorageKey();
+    if (!Object.keys(bindings).length) {
+      localStorage.removeItem(storageKey);
+      return;
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(bindings));
+  }
+
+  private _cloneToolBindings(bindings: ToolBindings): ToolBindings {
+    return bindings.map(binding => ({ ...binding }));
   }
 
   private _getToolBindingsStorageKey(): string {

@@ -26,17 +26,12 @@ const MODIFIER_OPTIONS = [
 
 const DEFAULT_TOOL_BINDINGS_STORAGE_KEY = 'user-preferred-tool-bindings';
 
-function getToolBindingsStorageKey(customizationService: any): string {
-  const customizationValue = customizationService?.getCustomization(
-    'ohif.userPreferences.toolBindingsStorageKey'
-  );
-
-  return typeof customizationValue === 'string' && customizationValue.length > 0
-    ? customizationValue
-    : DEFAULT_TOOL_BINDINGS_STORAGE_KEY;
-}
-
-function getToolModifier(toolGroupService: any, toolGroupId: string, toolName: string): string | null {
+function getToolModifier(
+  toolGroupService: any,
+  toolGroupId: string,
+  toolName: string,
+  mouseButton: number
+): string | null {
   if (!toolGroupService) {
     return null;
   }
@@ -45,7 +40,28 @@ function getToolModifier(toolGroupService: any, toolGroupId: string, toolName: s
     return null;
   }
   const modifierBinding = bindings.find(
-    binding => binding.modifierKey != null && binding.numTouchPoints == null
+    binding =>
+      binding.mouseButton === mouseButton &&
+      binding.modifierKey != null &&
+      binding.numTouchPoints == null
+  );
+
+  return modifierBinding?.modifierKey != null ? String(modifierBinding.modifierKey) : null;
+}
+
+function getModifierFromBindings(
+  bindings: Array<Record<string, unknown>> | undefined,
+  mouseButton: number
+): string | null {
+  if (!bindings?.length) {
+    return null;
+  }
+
+  const modifierBinding = bindings.find(
+    binding =>
+      binding.mouseButton === mouseButton &&
+      binding.modifierKey != null &&
+      binding.numTouchPoints == null
   );
 
   return modifierBinding?.modifierKey != null ? String(modifierBinding.modifierKey) : null;
@@ -55,8 +71,6 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager, servicesManager } = useSystem();
   const { t, i18n: i18nextInstance } = useTranslation('UserPreferencesModal');
   const toolGroupService = (servicesManager as any)?.services?.toolGroupService;
-  const customizationService = (servicesManager as any)?.services?.customizationService;
-  const toolBindingsStorageKey = getToolBindingsStorageKey(customizationService);
 
   const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
 
@@ -89,7 +103,11 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const currentLanguage = currentLanguageFn();
 
   const initialCrosshairModifier = useMemo(
-    () => getToolModifier(toolGroupService, 'mpr', 'Crosshairs'),
+    () => getToolModifier(toolGroupService, 'mpr', 'Crosshairs', 1),
+    [toolGroupService]
+  );
+  const defaultCrosshairBindings = useMemo(
+    () => toolGroupService?.getDefaultToolBindings?.('mpr', 'Crosshairs'),
     [toolGroupService]
   );
 
@@ -121,11 +139,17 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
       ...state,
       languageValue: defaultLanguage.value,
       hotkeyDefinitions: resolvedHotkeyDefaults,
-      crosshairModifier: initialCrosshairModifier,
+      crosshairModifier: getModifierFromBindings(defaultCrosshairBindings, 1),
     }));
 
     hotkeysManager.restoreDefaultBindings();
-    localStorage.removeItem(toolBindingsStorageKey);
+    if (toolGroupService && defaultCrosshairBindings?.length) {
+      toolGroupService.setToolBindings('mpr', 'Crosshairs', defaultCrosshairBindings);
+      toolGroupService.applyToolBindings('mpr', 'Crosshairs', {
+        replaceExisting: true,
+      });
+    }
+    toolGroupService?.removePersistedToolBindings('mpr', 'Crosshairs');
   };
 
   const displayNames = React.useMemo(() => {
@@ -280,11 +304,10 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
                   { mouseButton: 1, modifierKey: Number(state.crosshairModifier) },
                 ];
                 toolGroupService.setToolBindings('mpr', 'Crosshairs', bindings);
-                toolGroupService.applyToolBindings('mpr', 'Crosshairs');
-                localStorage.setItem(
-                  toolBindingsStorageKey,
-                  JSON.stringify({ mpr: { Crosshairs: bindings } })
-                );
+                toolGroupService.applyToolBindings('mpr', 'Crosshairs', {
+                  replaceExisting: true,
+                });
+                toolGroupService.persistToolBindings('mpr', 'Crosshairs', bindings);
               }
 
               hotkeysModule.stopRecord();
