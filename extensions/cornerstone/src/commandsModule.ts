@@ -115,6 +115,22 @@ const segmentAI = new ONNXSegmentationController({
 });
 let segmentAIEnabled = false;
 
+/** Clone camera fields so a post-reload setCamera does not mutate the saved snapshot. */
+function cloneCameraForDecimationReload(camera: unknown): unknown {
+  if (!camera || typeof camera !== 'object') {
+    return undefined;
+  }
+  const c = camera as Record<string, unknown>;
+  const copyArr = (v: unknown) => (Array.isArray(v) ? [...v] : v);
+  return {
+    ...c,
+    position: copyArr(c.position),
+    focalPoint: copyArr(c.focalPoint),
+    viewUp: copyArr(c.viewUp),
+    viewPlaneNormal: copyArr(c.viewPlaneNormal),
+  };
+}
+
 function commandsModule({
   servicesManager,
   commandsManager,
@@ -1708,7 +1724,12 @@ function commandsModule({
 
       const viewportPropertiesMap = new Map<
         string,
-        { properties?: unknown; viewportProperties?: unknown; preset?: unknown }
+        {
+          properties?: unknown;
+          viewportProperties?: unknown;
+          preset?: unknown;
+          camera?: unknown;
+        }
       >();
       affectedViewports.forEach((vp: CoreTypes.IVolumeViewport) => {
         const props = (
@@ -1720,10 +1741,18 @@ function commandsModule({
         const vpProps = (
           vp as unknown as { viewportProperties?: { preset?: unknown } }
         ).viewportProperties;
+        const vpWithCamera = vp as CoreTypes.IVolumeViewport & {
+          getCamera?: () => unknown;
+        };
+        const camera =
+          typeof vpWithCamera.getCamera === 'function'
+            ? cloneCameraForDecimationReload(vpWithCamera.getCamera())
+            : undefined;
         viewportPropertiesMap.set(vp.id, {
           properties: props,
           viewportProperties: vpProps,
           preset: vpProps?.preset,
+          camera,
         });
       });
 
@@ -1881,12 +1910,6 @@ function commandsModule({
               },
             },
           ]);
-          if (
-            typeof (vp as unknown as { resetCamera?: () => void })
-              .resetCamera === 'function'
-          ) {
-            (vp as unknown as { resetCamera: () => void }).resetCamera();
-          }
         } else {
           await vp.setVolumes?.([{ volumeId: newVolumeId }]);
           if (savedProps?.properties) {
@@ -1897,11 +1920,19 @@ function commandsModule({
             );
           }
         }
-        if (
-          typeof (vp as unknown as { resetCamera?: () => void })
-            .resetCamera === 'function'
-        ) {
-          (vp as unknown as { resetCamera: () => void }).resetCamera();
+
+        const vpWithCamera = vp as CoreTypes.IVolumeViewport & {
+          setCamera?: (state: unknown) => void;
+          resetCamera?: () => void;
+        };
+        if (savedProps?.camera && typeof vpWithCamera.setCamera === 'function') {
+          try {
+            vpWithCamera.setCamera(savedProps.camera);
+          } catch {
+            vpWithCamera.resetCamera?.();
+          }
+        } else {
+          vpWithCamera.resetCamera?.();
         }
       }
 
