@@ -90,7 +90,7 @@ test.describe('3D four up to 3x2 SEG hydration', () => {
 
     await expect(viewportPageObject.getNthLocator(2)).toHaveAttribute('data-is-active', 'true');
 
-    await await leftPanelPageObject.loadSeriesByDescription('SEG');
+    await leftPanelPageObject.loadSeriesByDescription('SEG');
 
     await expect(DOMOverlayPageObject.viewport.segmentationHydration.locator).toBeVisible();
 
