@@ -98,8 +98,6 @@ test.describe('3D four up to 3x2 SEG hydration', () => {
     await DOMOverlayPageObject.viewport.segmentationHydration.yes.click();
     await viewportRenderCycle;
 
-    await page.waitForTimeout(5000);
-
     await checkForScreenshot({
       page,
       locator: viewportPageObject.grid,
@@ -107,8 +105,6 @@ test.describe('3D four up to 3x2 SEG hydration', () => {
     });
 
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
-
-    await page.waitForTimeout(5000);
 
     await checkForScreenshot({
       page,
