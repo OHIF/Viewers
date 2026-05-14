@@ -42,7 +42,7 @@ function CornerstoneOverlays(props: withAppTypes) {
 
   if (viewportInfo && hideOverlays) {
     return (
-      <div className="noselect cornerstone-overlays-container">
+      <div className="noselect">
         <AutoDecimationOverlay viewportId={viewportId} servicesManager={servicesManager} />
       </div>
     );
