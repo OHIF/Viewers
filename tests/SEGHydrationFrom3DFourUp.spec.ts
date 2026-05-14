@@ -65,7 +65,7 @@ test.describe('3D four up SEG hydration', async () => {
   });
 });
 
-test.describe('3D four up to 3x2 SEG hydration', () => {
+test.describe('3D four up to 3x2 layout SEG hydration', () => {
   test.beforeEach(async ({ page }) => {
     const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
     const mode = 'viewer';
@@ -80,7 +80,7 @@ test.describe('3D four up to 3x2 SEG hydration', () => {
   }) => {
     await mainToolbarPageObject.layoutSelection.threeDFourUp.click();
 
-    let viewportRenderCycle = waitForViewportRenderCycle(page, { renderedTimeout: 180000 });
+    let viewportRenderCycle = waitForViewportRenderCycle(page);
     // Switch to a manual 3x2 grid layout
     await mainToolbarPageObject.layoutSelection.grid(3, 2).click();
     await viewportRenderCycle;
