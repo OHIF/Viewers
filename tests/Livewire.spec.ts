@@ -1,4 +1,11 @@
-import { checkForScreenshot, screenShotPaths, test, visitStudy, expect } from './utils';
+import {
+  checkForScreenshot,
+  expect,
+  getAnnotationStats,
+  screenShotPaths,
+  test,
+  visitStudy,
+} from './utils';
 import { press } from './utils/keyboardUtils';
 
 test.beforeEach(async ({ page }) => {
@@ -30,6 +37,17 @@ test('should display the livewire tool', async ({
     viewportPageObject.grid,
     screenShotPaths.livewire.livewireDisplayedCorrectly
   );
+
+  const livewires = await getAnnotationStats(page, { toolName: 'LivewireContour' });
+  expect(livewires.length).toBeGreaterThan(0);
+
+  const stats = livewires[0].firstTargetStats!;
+  expect(stats.areaUnit).toBe('mm²');
+  expect(Math.round(stats.area as number)).toBe(28906);
+
+  const lines = activeViewport.getSvgAnnotationStatTextLines(livewires[0].annotationUID);
+  await expect(lines).toHaveCount(1);
+  await expect(lines.nth(0)).toHaveText('Area: 28906 mm²');
 });
 
 test('should restore viewport interactivity after deleting an in-progress Livewire annotation via context menu', async ({
