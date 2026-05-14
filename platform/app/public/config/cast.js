@@ -7,7 +7,13 @@ window.config = {
   extensions: [],
   modes: [],
 
-  showStudyList: true,
+  /**
+   * Routes (see platform/app/src/routes/index.tsx + appInit.js):
+   * - showStudyList: false -> '/' is an empty home (header only); study list is at studyListPath.
+   * - studyListPath defaults to '/worklist' when showStudyList is false.
+   */
+  showStudyList: false,
+  studyListPath: '/worklist',
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers

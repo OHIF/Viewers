@@ -51,6 +51,14 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   appConfig.measurementTrackingMode ||= 'standard';
   appConfig.routerBasename ||= publicUrl;
 
+  // When the study list is disabled, it is served at studyListPath (default /worklist); '/' is the empty home shell.
+  const studyListPathExplicit = appConfig.studyListPath;
+  if (appConfig.showStudyList === false) {
+    appConfig.studyListPath = studyListPathExplicit || '/worklist';
+  } else {
+    appConfig.studyListPath = studyListPathExplicit || '/';
+  }
+
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,

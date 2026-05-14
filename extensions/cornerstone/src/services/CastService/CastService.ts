@@ -93,7 +93,15 @@ export default class CastService extends PubSubService {
     this._logger = new CastLogger({ prefix: LOG_PREFIX, debug });
     this._castOrigin = new CastOriginTracker();
 
-    const validation = validateCastConfig(this.castConfig as { defaultHub?: string; hubs?: HubConfig[] });
+    const castCfg = this.castConfig as
+      | { defaultHub?: string; defaultHubName?: string; hubs?: HubConfig[] }
+      | undefined;
+    const resolvedDefaultHub = castCfg?.defaultHub ?? castCfg?.defaultHubName;
+
+    const validation = validateCastConfig({
+      defaultHub: resolvedDefaultHub,
+      hubs: castCfg?.hubs,
+    });
     if (!validation.valid) {
       this._logger.warn('Cast config validation failed:', validation.error);
     }
@@ -104,6 +112,7 @@ export default class CastService extends PubSubService {
       ...this.castConfig,
       productName: this.castConfig?.productName ?? 'OHIF',
       callbackUrl,
+      defaultHub: resolvedDefaultHub,
     });
 
     this._handler = new CastMessageHandler({
@@ -123,14 +132,14 @@ export default class CastService extends PubSubService {
 
     this._logger.info('Config loaded:', {
       hasCastConfig: !!this.castConfig,
-      defaultHub: this.castConfig?.defaultHub,
+      defaultHub: resolvedDefaultHub,
       autoStart: this.castConfig?.autoStart,
     });
 
-    if (this.castConfig?.defaultHub) {
-      const result = this.setHub(this.castConfig.defaultHub);
+    if (resolvedDefaultHub) {
+      const result = this.setHub(resolvedDefaultHub);
       this._logger.info('Hub set result:', result, 'Hub:', this.hub.name);
-      if (this.castConfig.autoStart) {
+      if (this.castConfig?.autoStart) {
         this.getToken();
       }
     }

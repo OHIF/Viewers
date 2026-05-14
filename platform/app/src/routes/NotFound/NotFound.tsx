@@ -9,7 +9,9 @@ const NotFound = ({
   showGoBackButton = true,
 }) => {
   const [appConfig] = useAppConfig();
-  const { showStudyList } = appConfig;
+  const { showStudyList, studyListPath } = appConfig;
+  const listPath = studyListPath || '/';
+  const showReturnToStudyList = showGoBackButton && (showStudyList !== false || studyListPath);
   const navigate = useNavigate();
 
   return (
@@ -22,10 +24,10 @@ const NotFound = ({
         <div className="bg-muted flex flex-col items-center justify-center rounded-b-2xl p-8 text-center">
           <h1 className="text-foreground text-[22px] font-light">Error (404)</h1>
           <p className="text-muted-foreground mt-1 text-[16px] font-light">{message}</p>
-          {showGoBackButton && showStudyList && (
+          {showReturnToStudyList && (
             <Button
               className="mt-8 px-3 text-lg"
-              onClick={() => navigate('/')}
+              onClick={() => navigate(listPath)}
             >
               Return to Study List
             </Button>

@@ -127,6 +127,8 @@ declare global {
       activateViewportBeforeInteraction?: boolean;
       autoPlayCine?: boolean;
       showStudyList?: boolean;
+      /** Resolved study list URL path; defaults to '/' or '/worklist' when showStudyList is false (see appInit). */
+      studyListPath?: string;
       whiteLabeling?: Record<string, unknown>;
       httpErrorHandler?: (error: Error) => void;
       dangerouslyUseDynamicConfig?: {

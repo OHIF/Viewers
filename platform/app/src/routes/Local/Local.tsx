@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import { DicomMetadataStore, MODULE_TYPES, useSystem } from '@ohif/core';
+import { useAppConfig } from '@state';
 
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
@@ -51,6 +52,7 @@ type LocalProps = {
 
 function Local({ modePath }: LocalProps) {
   const { servicesManager } = useSystem();
+  const [appConfig] = useAppConfig();
   const { customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const dropzoneRef = useRef();
@@ -106,7 +108,9 @@ function Local({ modePath }: LocalProps) {
     studies.forEach(id => query.append('StudyInstanceUIDs', id));
     query.append('datasources', 'dicomlocal');
 
-    navigate(`/${modePath}?${decodeURIComponent(query.toString())}`);
+    const pathPrefix =
+      modePath === '' ? appConfig.studyListPath || '/' : `/${modePath}`;
+    navigate(`${pathPrefix}?${decodeURIComponent(query.toString())}`);
   };
 
   // Set body style

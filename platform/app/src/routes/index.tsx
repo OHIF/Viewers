@@ -5,6 +5,7 @@ import { ErrorBoundary } from '@ohif/ui-next';
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
 import WorkList from './WorkList';
+import HomeShell from './HomeShell';
 import Local from './Local';
 import Debug from './Debug';
 import NotFound from './NotFound';
@@ -33,7 +34,9 @@ NotFoundServer.propTypes = {
 
 const NotFoundStudy = () => {
   const [appConfig] = useAppConfig();
-  const { showStudyList } = appConfig;
+  const { showStudyList, studyListPath } = appConfig;
+  const listPath = studyListPath || '/';
+  const showStudyListLink = showStudyList !== false || studyListPath;
 
   return (
     <div className="text-foreground absolute flex h-full w-full items-center justify-center">
@@ -41,7 +44,7 @@ const NotFoundStudy = () => {
         <h4 data-cy="study-not-found-message">
           One or more of the requested studies are not available at this time.
         </h4>
-        {showStudyList && (
+        {showStudyListLink && (
           <p
             className="mt-2"
             data-cy="return-to-study-list-message"
@@ -49,7 +52,7 @@ const NotFoundStudy = () => {
             Return to the{' '}
             <Link
               className="text-highlight"
-              to="/"
+              to={listPath}
             >
               study list
             </Link>{' '}
@@ -100,6 +103,7 @@ const createRoutes = ({
   commandsManager,
   hotkeysManager,
   showStudyList,
+  studyListPath,
 }: withAppTypes) => {
   const routes =
     buildModeRoutes({
@@ -118,20 +122,34 @@ const createRoutes = ({
       ? routerBasename.substring(0, routerBasename.length - 1)
       : routerBasename;
 
-  console.log('Registering worklist route', routerBasename, path);
+  const listPath = studyListPath || '/';
+  console.log('Registering worklist route', routerBasename, path, listPath);
 
-  const WorkListRoute = {
-    path: '/',
+  const workListRoute = {
+    path: listPath,
     children: DataSourceWrapper,
     private: true,
     props: { children: WorkList, servicesManager, extensionManager },
   };
 
+  const homeShellRoute =
+    showStudyList === false
+      ? [
+          {
+            path: '/',
+            children: HomeShell,
+            private: true,
+            props: { servicesManager },
+          },
+        ]
+      : [];
+
   const customRoutes = customizationService.getCustomization('routes.customRoutes');
 
   const allRoutes = [
     ...routes,
-    ...(showStudyList ? [WorkListRoute] : []),
+    ...homeShellRoute,
+    workListRoute,
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,

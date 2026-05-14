@@ -207,7 +207,7 @@ function WorkList({
       skipEmptyString: true,
     });
     navigate({
-      pathname: '/',
+      pathname: appConfig.studyListPath || '/',
       search: search ? `?${search}` : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

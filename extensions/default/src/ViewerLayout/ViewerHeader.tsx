@@ -84,7 +84,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
     preserveQueryParameters(searchQuery);
 
     navigate({
-      pathname: '/',
+      pathname: appConfig.studyListPath || '/',
       search: decodeURIComponent(searchQuery.toString()),
     });
   };
@@ -213,7 +213,9 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
   return (
     <Header
       menuOptions={menuOptions}
-      isReturnEnabled={!!appConfig.showStudyList}
+      isReturnEnabled={
+        !!(appConfig.showStudyList !== false || appConfig.studyListPath)
+      }
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
       subscriberName={
