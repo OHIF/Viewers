@@ -74,10 +74,14 @@ test('rectangle and freehand at identical coordinates should yield comparable ar
 
   const rectangles = await getAnnotationStats(page, { toolName: 'RectangleROI' });
   const rectArea = rectangles[0].firstTargetStats!.area as number;
+  const rectRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  const rectSvgLines = activeViewport.getSvgAnnotationStatTextLines(rectangles[0].annotationUID);
+  await expect(rectSvgLines.nth(0)).toHaveText(`Area: ${Math.round(rectArea)} mm²`);
+  await expect(rectRow.stats.primary.lines.nth(0)).toHaveText(`${Math.round(rectArea)} mm²`);
 
   // Remove the rectangle so the freehand can drag through the same coords
   // without grabbing the rectangle's handles.
-  await rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0).actions.delete();
+  await rectRow.actions.delete();
 
   await mainToolbarPageObject.measurementTools.freehandROI.click();
   await activeViewport.normalizedPathDragAt({
@@ -87,6 +91,10 @@ test('rectangle and freehand at identical coordinates should yield comparable ar
 
   const freehands = await getAnnotationStats(page, { toolName: 'PlanarFreehandROI' });
   const freehandArea = freehands[0].firstTargetStats!.area as number;
+  const freehandRow = rightPanelPageObject.measurementsPanel.panel.nthMeasurement(0);
+  const freehandSvgLines = activeViewport.getSvgAnnotationStatTextLines(freehands[0].annotationUID);
+  await expect(freehandSvgLines.nth(0)).toHaveText(`Area: ${Math.round(freehandArea)} mm²`);
+  await expect(freehandRow.stats.primary.lines.nth(0)).toHaveText(`${Math.round(freehandArea)} mm²`);
 
   const pctDiff = (Math.abs(rectArea - freehandArea) / rectArea) * 100;
   console.log(
