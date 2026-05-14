@@ -245,10 +245,15 @@ function areQueryFiltersEqual(query1, query2) {
       if (val1.length !== val2.length) {
         return false;
       }
-      const sorted1 = [...val1].sort().join(',');
-      const sorted2 = [...val2].sort().join(',');
-      if (sorted1 !== sorted2) {
+      const s1 = new Set(val1);
+      const s2 = new Set(val2);
+      if (s1.size !== s2.size) {
         return false;
+      }
+      for (const v of s2.values()) {
+        if (!s1.has(v)) {
+          return false;
+        }
       }
     } else if (val1 !== val2) {
       return false;
